@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.ClusterManager;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.events.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.*;
@@ -53,6 +54,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     protected UserSessionSource userSessionSource;
     @Inject
     protected UserSessionManager userSessionManager;
+    @Inject
+    protected UserSessionsAPI userSessions;
     @Inject
     protected Persistence persistence;
     @Inject
@@ -141,12 +144,12 @@ public class AuthenticationManagerBean implements AuthenticationManager {
             boolean saved = clusterManager.getSyncSendingForCurrentThread();
             clusterManager.setSyncSendingForCurrentThread(true);
             try {
-                userSessionManager.storeSession(authenticationDetails.getSession());
+                userSessions.add(authenticationDetails.getSession());
             } finally {
                 clusterManager.setSyncSendingForCurrentThread(saved);
             }
         } else {
-            userSessionManager.storeSession(authenticationDetails.getSession());
+            userSessions.add(authenticationDetails.getSession());
         }
     }
 
@@ -174,9 +177,9 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
             tx.commit();
 
-            userSessionManager.removeSession(currentSession);
+            userSessions.remove(currentSession);
             userSessionManager.clearPermissionsOnUser(session);
-            userSessionManager.storeSession(session);
+            userSessions.add(session);
 
             return session;
         }
@@ -186,7 +189,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     public void logout() {
         try {
             UserSession session = userSessionSource.getUserSession();
-            userSessionManager.removeSession(session);
+            userSessions.remove(session);
             log.info("Logged out: {}", session);
 
             publishUserLoggedOut(session);

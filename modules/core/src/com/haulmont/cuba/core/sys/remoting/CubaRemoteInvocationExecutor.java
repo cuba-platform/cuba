@@ -26,8 +26,8 @@ import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.core.sys.remoting.discovery.StaticServerSelector;
 import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +48,12 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     protected volatile ServerSelector serverSelector;
 
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
     protected Configuration configuration;
     protected GlobalConfig globalConfig;
 
     public CubaRemoteInvocationExecutor() {
-        userSessionManager = AppBeans.get(UserSessionManager.NAME);
+        userSessions = AppBeans.get(UserSessionsAPI.NAME);
         configuration = AppBeans.get(Configuration.NAME);
         globalConfig = configuration.getConfig(GlobalConfig.class);
     }
@@ -66,7 +66,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
             UUID sessionId = cubaInvocation.getSessionId();
             if (sessionId != null) {
-                UserSession session = userSessionManager.findSession(sessionId);
+                UserSession session = userSessions.getAndRefresh(sessionId);
                 if (session == null) {
                     ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
                     String sessionProviderUrl = serverConfig.getUserSessionProviderUrl();
@@ -81,7 +81,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                             if (trustedClientService != null) {
                                 UserSession userSession = trustedClientService.findSession(serverConfig.getTrustedClientPassword(), sessionId);
                                 if (userSession != null) {
-                                    userSessionManager.storeSession(userSession);
+                                    userSessions.add(userSession);
                                 } else {
                                     log.debug("User session {} not found on {}", sessionId, sessionProviderUrl);
                                 }

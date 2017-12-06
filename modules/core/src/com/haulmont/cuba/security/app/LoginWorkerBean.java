@@ -28,7 +28,6 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -58,7 +57,7 @@ public class LoginWorkerBean implements LoginWorker {
     protected GlobalConfig globalConfig;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @Inject
     protected TrustedLoginHandler trustedLoginHandler;
@@ -152,7 +151,7 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession getSession(UUID sessionId) {
-        return userSessionManager.findSession(sessionId);
+        return userSessions.getAndRefresh(sessionId);
     }
 
     @Override

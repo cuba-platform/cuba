@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 
 /**
  * Configuration parameters interface used by the CORE layer.
@@ -85,7 +86,8 @@ public interface ServerConfig extends Config {
 
     /**
      * @return User session ping timeout in cluster.
-     * If ping performed {@link com.haulmont.cuba.security.app.UserSessions#get}, user session sends in cluster only after sendTimeout
+     * If ping is performed by {@link UserSessionsAPI#getAndRefresh}, user session is sent to the cluster only
+     * after this timeout
      */
     @Property("cuba.userSessionSendTimeoutSec")
     @DefaultInt(10)

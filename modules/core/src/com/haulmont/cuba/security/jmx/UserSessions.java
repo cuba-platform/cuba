@@ -18,11 +18,12 @@
 package com.haulmont.cuba.security.jmx;
 
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import org.apache.commons.lang.text.StrBuilder;
-
+import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component("cuba_UserSessionsMBean")
 public class UserSessions implements UserSessionsMBean {
@@ -57,9 +58,9 @@ public class UserSessions implements UserSessionsMBean {
 
     @Override
     public String printSessions() {
-        StrBuilder sb = new StrBuilder();
-        sb.appendWithSeparators(userSessions.getUserSessionInfo(), "\n");
-        return sb.toString();
+        return userSessions.getUserSessionEntitiesStream()
+                .map(UserSessionEntity::toString)
+                .collect(Collectors.joining("\n"));
     }
 
     @Override

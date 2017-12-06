@@ -22,8 +22,8 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class FileUploadController {
     private Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     @Inject
-    private UserSessionManager userSessionManager;
+    private UserSessionsAPI userSessions;
 
     @Inject
     private FileStorageAPI fileStorage;
@@ -89,7 +89,7 @@ public class FileUploadController {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        UserSession session = userSessionManager.findSession(sessionId);
+        UserSession session = userSessions.getAndRefresh(sessionId);
         if (session == null)
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return session;

@@ -31,10 +31,10 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     protected AuthenticationManager authenticationManager;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @Inject
     protected ClusterManagerAPI clusterManagerAPI;
@@ -593,7 +593,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         }
         if (sessionInfo != null) {
             try {
-                UserSession session = userSessionManager.findSession(sessionInfo.getId());
+                UserSession session = userSessions.get(sessionInfo.getId());
                 if (session != null) {
                     AppContext.setSecurityContext(new SecurityContext(session));
                     try {

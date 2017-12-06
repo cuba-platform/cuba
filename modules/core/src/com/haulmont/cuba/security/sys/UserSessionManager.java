@@ -19,21 +19,23 @@ package com.haulmont.cuba.security.sys;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
-import com.haulmont.cuba.core.sys.UserSessionFinder;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -43,10 +45,12 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
+ * INTERNAL.
+ *
  * System-level class managing {@link UserSession}s.
  */
 @Component(UserSessionManager.NAME)
-public class UserSessionManager implements UserSessionFinder {
+public class UserSessionManager {
 
     private final Logger log = LoggerFactory.getLogger(UserSessionManager.class);
 
@@ -214,29 +218,25 @@ public class UserSessionManager implements UserSessionFinder {
     }
 
     /**
-     * Store session in the distributed sessions cache.
-     * Should be called outside of transaction to ensure all persistent objects have been detached.
-     * @param session   session instance
+     * @deprecated use {@link UserSessionsAPI#add(UserSession)}}
      */
+    @Deprecated
     public void storeSession(UserSession session) {
         sessions.add(session);
     }
 
     /**
-     * Remove the session from the distributed sessions cache.
-     * Should be called outside of transaction to ensure all persistent objects have been detached.
-     * @param session   session instance
+     * @deprecated use {@link UserSessionsAPI#remove(UserSession)}}
      */
+    @Deprecated
     public void removeSession(UserSession session) {
         sessions.remove(session);
     }
 
     /**
-     * Search for session in cache.
-     * @param sessionId session's ID
-     * @return          session instance
-     * @throws NoUserSessionException in case of session with the specified ID is not found in cache.
+     * @deprecated use {@link UserSessionsAPI#getNN(UUID)}}
      */
+    @Deprecated
     public UserSession getSession(UUID sessionId) {
         UserSession session = findSession(sessionId);
         if (session == null) {
@@ -246,13 +246,11 @@ public class UserSessionManager implements UserSessionFinder {
     }
 
     /**
-     * Search for session in cache.
-     * @param sessionId session's ID
-     * @return          session instance or null if not found
+     * @deprecated use {@link UserSessionsAPI#get(UUID)}
      */
-    @Override
+    @Deprecated
     public UserSession findSession(UUID sessionId) {
-        return sessions.get(sessionId, false);
+        return sessions.getAndRefresh(sessionId, false);
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {

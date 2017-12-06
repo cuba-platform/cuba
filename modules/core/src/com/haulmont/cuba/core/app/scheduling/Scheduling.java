@@ -27,9 +27,9 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +79,7 @@ public class Scheduling implements SchedulingAPI {
     protected Runner runner;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @Inject
     protected ServerInfoService serverInfoService;
@@ -395,9 +396,9 @@ public class Scheduling implements SchedulingAPI {
         return null;
     }
 
-    protected UserSession getUserSession(ScheduledTask task) throws LoginException {
+    protected @Nullable UserSession getUserSession(ScheduledTask task) throws LoginException {
         if (StringUtils.isBlank(task.getUserName())) {
-            return userSessionManager.findSession(AppContext.getSecurityContextNN().getSessionId());
+            return userSessions.getAndRefresh(AppContext.getSecurityContextNN().getSessionId());
         } else {
             return null;
         }

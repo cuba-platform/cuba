@@ -20,8 +20,8 @@ package com.haulmont.cuba.core.controllers;
 import com.haulmont.cuba.core.global.LogControl;
 import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -49,7 +49,7 @@ public class LogDownloadController {
     protected LogControl logControl;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-_]+}", method = RequestMethod.GET)
     public void getLogFile(HttpServletResponse response,
@@ -110,7 +110,7 @@ public class LogDownloadController {
             return null;
         }
 
-        UserSession session = userSessionManager.findSession(sessionUUID);
+        UserSession session = userSessions.getAndRefresh(sessionUUID);
         if (session == null)
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
 

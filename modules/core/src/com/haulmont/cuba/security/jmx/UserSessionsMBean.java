@@ -16,9 +16,10 @@
  */
 package com.haulmont.cuba.security.jmx;
 
+import com.haulmont.cuba.security.app.UserSessionsAPI;
+
 /**
- * JMX interface for {@link com.haulmont.cuba.security.app.UserSessionsAPI}
- *
+ * JMX interface for {@link UserSessionsAPI}
  */
 public interface UserSessionsMBean {
 
@@ -36,13 +37,15 @@ public interface UserSessionsMBean {
 
     /**
      * @return session send timeout in cluster
+     * @see #setSendTimeoutSec(int)
      */
     int getSendTimeoutSec();
 
     /**
      * Set user session ping timeout in cluster.
-     * If ping performed {@link com.haulmont.cuba.security.app.UserSessions#get},
-     * user session sends in cluster only after specified timeout
+     * If ping is performed by {@link UserSessionsAPI#getAndRefresh},
+     * the user session is sent to the cluster only after the specified timeout.
+     *
      * @param timeout in seconds
      */
     void setSendTimeoutSec(int timeout);

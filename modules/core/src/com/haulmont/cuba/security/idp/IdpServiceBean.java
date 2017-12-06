@@ -19,12 +19,13 @@ package com.haulmont.cuba.security.idp;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.app.UserSessions;
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
-import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,10 @@ public class IdpServiceBean implements IdpService {
 
     @Override
     public boolean logoutUserSession(String idpSessionId) {
-        List<UUID> sessionIds = userSessions.findUserSessionsByAttribute(IDP_USER_SESSION_ATTRIBUTE, idpSessionId);
+        List<UUID> sessionIds = userSessions.getUserSessionsStream()
+                .filter(session -> Objects.equals(session.getAttribute(IDP_USER_SESSION_ATTRIBUTE), idpSessionId))
+                .map(UserSession::getId)
+                .collect(Collectors.toList());
 
         for (UUID sessionId : sessionIds) {
             userSessions.killSession(sessionId);

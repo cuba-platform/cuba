@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.haulmont.cuba.security.app;
 
@@ -27,6 +26,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +38,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * User sessions distributed cache.
@@ -45,13 +46,13 @@ import java.util.stream.Collectors;
 @Component(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsAPI {
 
-    protected static class UserSessionInfo implements Serializable {
+    public static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
-        protected final UserSession session;
-        protected final long since;
-        protected volatile long lastUsedTs; // set to 0 when propagating removal to cluster
-        protected volatile long lastSentTs;
+        public final UserSession session;
+        public final long since;
+        public volatile long lastUsedTs; // set to 0 when propagating removal to cluster
+        public volatile long lastSentTs;
 
         public UserSessionInfo(UserSession session, long now) {
             this.session = session;
@@ -135,61 +136,74 @@ public class UserSessions implements UserSessionsAPI {
 
                     @Override
                     public void receive(UserSessionInfo message) {
-                        UUID id = message.session.getId();
-                        if (message.lastUsedTs == 0) {
-                            log.debug("Removing session due to cluster message: {}", message);
-                            cache.remove(id);
-                        } else {
-                            UserSessionInfo usi = cache.get(id);
-                            if (usi == null || usi.lastUsedTs < message.lastUsedTs) {
-                                cache.put(id, message);
-                            }
-                        }
+                        receiveClusterMessage(message);
                     }
 
                     @Override
                     public byte[] getState() {
-                        if (cache.isEmpty())
-                            return new byte[0];
-
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        try {
-                            ObjectOutputStream oos = new ObjectOutputStream(bos);
-                            oos.writeInt(cache.size());
-                            for (UserSessionInfo usi : cache.values()) {
-                                oos.writeObject(usi);
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return bos.toByteArray();
+                        return sendClusterState();
                     }
 
                     @Override
                     public void setState(byte[] state) {
-                        if (state == null || state.length == 0)
-                            return;
-
-                        ByteArrayInputStream bis = new ByteArrayInputStream(state);
-                        try {
-                            ObjectInputStream ois = new ObjectInputStream(bis);
-                            int size = ois.readInt();
-                            for (int i = 0; i < size; i++) {
-                                UserSessionInfo usi = (UserSessionInfo) ois.readObject();
-                                receive(usi);
-                            }
-                        } catch (IOException | ClassNotFoundException e) {
-                            log.error("Error receiving state", e);
-                        }
+                        receiveClusterState(state);
                     }
                 }
         );
     }
 
+    protected void receiveClusterMessage(UserSessionInfo message) {
+        UUID id = message.session.getId();
+        if (message.lastUsedTs == 0) {
+            log.debug("Removing session due to cluster message: {}", message);
+            removeSessionInfo(id);
+        } else {
+            UserSessionInfo usi = getSessionInfo(id);
+            if (usi == null || usi.lastUsedTs < message.lastUsedTs) {
+                putSessionInfo(id, message);
+            }
+        }
+    }
+
+    protected void receiveClusterState(byte[] state) {
+        if (state == null || state.length == 0)
+            return;
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(state);
+        try {
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            int size = ois.readInt();
+            for (int i = 0; i < size; i++) {
+                UserSessionInfo usi = (UserSessionInfo) ois.readObject();
+                receiveClusterMessage(usi);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            log.error("Error receiving state", e);
+        }
+    }
+
+    protected byte[] sendClusterState() {
+        List<UserSessionInfo> infoList = getSessionInfoStream().collect(Collectors.toList());
+        if (infoList.isEmpty())
+            return new byte[0];
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeInt(infoList.size());
+            for (UserSessionInfo usi : infoList) {
+                oos.writeObject(usi);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error sending state", e);
+        }
+        return bos.toByteArray();
+    }
+
     @Override
     public void add(UserSession session) {
         UserSessionInfo usi = new UserSessionInfo(session, timeSource.currentTimeMillis());
-        cache.put(session.getId(), usi);
+        putSessionInfo(session.getId(), usi);
         if (!session.isSystem()) {
             if (serverConfig.getSyncNewUserSessionReplication())
                 clusterManager.sendSync(usi);
@@ -200,7 +214,7 @@ public class UserSessions implements UserSessionsAPI {
 
     @Override
     public void remove(UserSession session) {
-        UserSessionInfo usi = cache.remove(session.getId());
+        UserSessionInfo usi = removeSessionInfo(session.getId());
         if (usi != null) {
             log.debug("Removed session: {}", usi);
             if (!session.isSystem()) {
@@ -213,23 +227,47 @@ public class UserSessions implements UserSessionsAPI {
     @Nullable
     @Override
     public UserSession get(UUID id) {
-        return get(id, false);
+        return internalGet(id, false, false);
+    }
+
+    @Override
+    public UserSession getNN(UUID id) {
+        UserSession userSession = internalGet(id, false, false);
+        if (userSession == null)
+            throw new NoUserSessionException(id);
+        return userSession;
     }
 
     @Nullable
     @Override
-    public UserSession get(UUID id, boolean propagate) {
+    public UserSession getAndRefresh(UUID id) {
+        return internalGet(id, true, false);
+    }
+
+    @Nullable
+    @Override
+    public UserSession getAndRefresh(UUID id, boolean propagate) {
+        return internalGet(id, true, propagate);
+    }
+
+    @Nullable
+    protected UserSession internalGet(UUID id, boolean touch, boolean propagate) {
         if (!AppContext.isStarted())
             return NO_USER_SESSION;
 
-        UserSessionInfo usi = cache.get(id);
+        UserSessionInfo usi = getSessionInfo(id);
         if (usi != null) {
-            long now = timeSource.currentTimeMillis();
-            usi.lastUsedTs = now;
-            if (propagate && !usi.session.isSystem()) {
-                if (now > (usi.lastSentTs + sendTimeout * 1000)) {
-                    usi.lastSentTs = now;
-                    clusterManager.send(usi);
+            if (touch) {
+                long now = timeSource.currentTimeMillis();
+
+                usi.lastUsedTs = now;
+                putSessionInfo(id, usi);
+
+                if (propagate && !usi.session.isSystem()) {
+                    if (now > (usi.lastSentTs + sendTimeout * 1000)) {
+                        usi.lastSentTs = now;
+                        clusterManager.send(usi);
+                    }
                 }
             }
             return usi.session;
@@ -239,11 +277,12 @@ public class UserSessions implements UserSessionsAPI {
 
     @Override
     public void propagate(UUID id) {
-        UserSessionInfo usi = cache.get(id);
+        UserSessionInfo usi = getSessionInfo(id);
         if (usi != null) {
             long now = timeSource.currentTimeMillis();
             usi.lastUsedTs = now;
             usi.lastSentTs = now;
+            putSessionInfo(id, usi);
             clusterManager.send(usi);
         }
     }
@@ -270,12 +309,9 @@ public class UserSessions implements UserSessionsAPI {
 
     @Override
     public Collection<UserSessionEntity> getUserSessionInfo() {
-        ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<>();
-        for (UserSessionInfo nfo : cache.values()) {
-            UserSessionEntity use = createUserSessionEntity(nfo.session, nfo.since, nfo.lastUsedTs);
-            sessionInfoList.add(use);
-        }
-        return sessionInfoList;
+        return getSessionInfoStream()
+                .map(info -> createUserSessionEntity(info.session, info.since, info.lastUsedTs))
+                .collect(Collectors.toList());
     }
 
     protected UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
@@ -285,19 +321,26 @@ public class UserSessions implements UserSessionsAPI {
         use.setUserName(session.getUser().getName());
         use.setAddress(session.getAddress());
         use.setClientInfo(session.getClientInfo());
-        Date currSince = timeSource.currentTimestamp();
-        currSince.setTime(since);
-        use.setSince(currSince);
-        Date last = timeSource.currentTimestamp();
-        last.setTime(lastUsedTs);
-        use.setLastUsedTs(last);
+        use.setSince(new Date(since));
+        use.setLastUsedTs(new Date(lastUsedTs));
         use.setSystem(session.isSystem());
         return use;
     }
 
     @Override
+    public Stream<UserSessionEntity> getUserSessionEntitiesStream() {
+        return getSessionInfoStream()
+                .map(info -> createUserSessionEntity(info.session, info.since, info.lastUsedTs));
+    }
+
+    @Override
+    public Stream<UserSession> getUserSessionsStream() {
+        return getSessionInfoStream().map(info -> info.session);
+    }
+
+    @Override
     public void killSession(UUID id) {
-        UserSessionInfo usi = cache.remove(id);
+        UserSessionInfo usi = removeSessionInfo(id);
 
         if (usi != null) {
             log.debug("Killed session: {}", usi);
@@ -311,10 +354,8 @@ public class UserSessions implements UserSessionsAPI {
     public List<UUID> findUserSessionsByAttribute(String attributeName, Object attributeValue) {
         Preconditions.checkNotNullArgument(attributeName);
 
-        List<UserSessionInfo> sessionInfos = new ArrayList<>(cache.values());
-
         //noinspection UnnecessaryLocalVariable
-        List<UUID> sessionIds = sessionInfos.stream()
+        List<UUID> sessionIds = getSessionInfoStream()
                 .filter(usInfo -> Objects.equals(usInfo.session.getAttribute(attributeName), attributeValue))
                 .map(userSessionInfo -> userSessionInfo.session.getId())
                 .collect(Collectors.toList());
@@ -329,18 +370,38 @@ public class UserSessions implements UserSessionsAPI {
 
         log.trace("Processing eviction");
         long now = timeSource.currentTimeMillis();
-        for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
+
+        List<UserSessionInfo> infoList = getSessionInfoStream()
+                .filter(info -> !info.session.isSystem() && now > (info.lastUsedTs + expirationTimeout * 1000))
+                .collect(Collectors.toList());
+
+        for (Iterator<UserSessionInfo> it = infoList.iterator(); it.hasNext();) {
             UserSessionInfo usi = it.next();
-            if (!usi.session.isSystem() && now > (usi.lastUsedTs + expirationTimeout * 1000)) {
-                log.debug("Removing session due to timeout: {}", usi);
+            log.debug("Removing session due to timeout: {}", usi);
 
-                userSessionLog.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
-                it.remove();
+            userSessionLog.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
 
-                usi.lastUsedTs = 0;
-                clusterManager.send(usi);
-            }
+            it.remove();
+
+            usi.lastUsedTs = 0;
+            clusterManager.send(usi);
         }
     }
 
+    protected UserSessionInfo getSessionInfo(UUID id) {
+        return cache.get(id);
+    }
+
+    protected void putSessionInfo(UUID id, UserSessionInfo info) {
+        cache.put(id, info);
+    }
+
+    @Nullable
+    protected UserSessionInfo removeSessionInfo(UUID id) {
+        return cache.remove(id);
+    }
+
+    protected Stream<UserSessionInfo> getSessionInfoStream() {
+        return cache.values().stream();
+    }
 }

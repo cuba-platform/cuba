@@ -24,7 +24,6 @@ import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.SystemUserCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public class Authentication {
     protected AuthenticationManager authenticationManager;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @Inject
     protected ServerConfig serverConfig;
@@ -94,7 +93,7 @@ public class Authentication {
         // check if a current thread session exists, that is we got here from authenticated code
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext != null) {
-            UserSession userSession = userSessionManager.findSession(securityContext.getSessionId());
+            UserSession userSession = userSessions.getAndRefresh(securityContext.getSessionId());
             if (userSession != null) {
                 log.trace("Already authenticated, do nothing");
                 cleanupCounter.set(cleanupCounter.get() + 1);
@@ -114,7 +113,7 @@ public class Authentication {
         log.trace("Authenticating as {}", login);
         UUID sessionId = sessions.get(login);
         if (sessionId != null) {
-            session = userSessionManager.findSession(sessionId);
+            session = userSessions.getAndRefresh(sessionId);
         }
         if (session == null) {
             // saved session doesn't exist or is expired
@@ -122,7 +121,7 @@ public class Authentication {
                 // double check to prevent the same log in by subsequent threads
                 sessionId = sessions.get(login);
                 if (sessionId != null) {
-                    session = userSessionManager.findSession(sessionId);
+                    session = userSessions.get(sessionId);
                 }
                 if (session == null) {
                     try {

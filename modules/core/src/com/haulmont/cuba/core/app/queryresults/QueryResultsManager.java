@@ -28,15 +28,16 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryHolder;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Supports functionality that allows queries from previously selected results.
@@ -231,12 +232,12 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         log.debug("Delete query results for inactive user sessions");
 
         StringBuilder sb = new StringBuilder("delete from SYS_QUERY_RESULT");
-        Collection<UserSessionEntity> userSessionEntities = userSessions.getUserSessionInfo();
+        Collection<UserSession> userSessionEntities = userSessions.getUserSessionsStream().collect(Collectors.toList());
         if (!userSessionEntities.isEmpty()) {
             sb.append(" where SESSION_ID not in (");
-            for (Iterator<UserSessionEntity> it = userSessionEntities.iterator(); it.hasNext(); ) {
-                UserSessionEntity userSessionEntity = it.next();
-                sb.append("'").append(userSessionEntity.getId()).append("'");
+            for (Iterator<UserSession> it = userSessionEntities.iterator(); it.hasNext(); ) {
+                UserSession userSession = it.next();
+                sb.append("'").append(userSession.getId()).append("'");
                 if (it.hasNext())
                     sb.append(",");
             }

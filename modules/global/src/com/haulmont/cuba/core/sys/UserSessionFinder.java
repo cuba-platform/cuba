@@ -19,9 +19,14 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
+/**
+ * INTERNAL.
+ */
 public interface UserSessionFinder {
 
-    UserSession findSession(UUID sessionId);
+    @Nullable
+    UserSession get(UUID id);
 }

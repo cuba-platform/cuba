@@ -20,7 +20,6 @@ import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -50,7 +49,7 @@ public interface LoginWorker {
     UserSession substituteUser(User substitutedUser);
 
     /**
-     * @deprecated User {@link UserSessionManager#findSession(UUID)}
+     * @deprecated Use {@link UserSessionsAPI#get(UUID)} or {@link UserSessionsAPI#getAndRefresh(UUID)}
      */
     @Nullable
     @Deprecated

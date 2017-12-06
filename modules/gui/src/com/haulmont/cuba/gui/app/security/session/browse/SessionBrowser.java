@@ -82,16 +82,16 @@ public class SessionBrowser extends AbstractLookup {
         Map<String, Object> fieldValues = new HashMap<>();
         String userLoginStr = userLogin.getValue();
         if (!StringUtils.isEmpty(userLoginStr))
-            fieldValues.put("userLogin", userLoginStr.toLowerCase());
+            fieldValues.put("userLogin", userLoginStr);
         String userNameStr = userName.getValue();
         if (!StringUtils.isEmpty(userNameStr))
-            fieldValues.put("userName", userNameStr.toLowerCase());
+            fieldValues.put("userName", userNameStr);
         String userAddressStr = userAddress.getValue();
         if (!StringUtils.isEmpty(userAddressStr))
-            fieldValues.put("userAddress", userAddressStr.toLowerCase());
+            fieldValues.put("userAddress", userAddressStr);
         String userInfoStr = userInfo.getValue();
         if (!StringUtils.isEmpty(userInfoStr))
-            fieldValues.put("userInfo", userInfoStr.toLowerCase());
+            fieldValues.put("userInfo", userInfoStr);
         sessionsDs.refresh(fieldValues);
     }
 

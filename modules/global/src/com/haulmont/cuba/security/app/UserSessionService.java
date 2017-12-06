@@ -27,15 +27,19 @@ import java.util.*;
 
 /**
  * Service interface to active {@link UserSession}s management.
- *
  */
 public interface UserSessionService {
 
     String NAME = "cuba_UserSessionService";
 
     /**
+     * Get a UserSession by its identifier.
+     * <p>
+     * When called from the client tier, returns a copy of the session object, so any modifications of its state
+     * affect nothing.
+     *
      * @param sessionId a session identifier
-     * @return an active user session instance if exists
+     * @return an active user session instance copy, if exists
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
      */
@@ -97,8 +101,9 @@ public interface UserSessionService {
     void setSessionClientInfo(UUID sessionId, String clientInfo);
 
     /**
-     * @return the list of active user sessions
+     * @deprecated Use {@link #loadUserSessionEntities(Filter)} method passing a filter
      */
+    @Deprecated
     Collection<UserSessionEntity> getUserSessionInfo();
 
     /**
@@ -131,4 +136,89 @@ public interface UserSessionService {
      */
     Integer getPermissionValue(User user, PermissionType permissionType, String target);
 
+    /**
+     * Load list of non-persistent entities representing active user sessions.
+     *
+     * @param filter can be used to limit the loaded list. Pass {@link Filter#ALL} to load all.
+     * @return list of entities
+     */
+    Collection<UserSessionEntity> loadUserSessionEntities(Filter filter);
+
+    class Filter implements Serializable {
+
+        /**
+         * An empty filter for loading all active sessions.
+         */
+        public static final Filter ALL = create();
+
+        private String userLogin;
+        private String userName;
+        private String address;
+        private String clientInfo;
+        private boolean strict;
+
+        public static Filter create() {
+            return new Filter();
+        }
+
+        public String getUserLogin() {
+            return userLogin;
+        }
+
+        /**
+         * User login in lower case.
+         */
+        public Filter setUserLogin(String userLogin) {
+            this.userLogin = userLogin;
+            return this;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        /**
+         * User name.
+         */
+        public Filter setUserName(String userName) {
+            this.userName = userName;
+            return this;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        /**
+         * Client IP address.
+         */
+        public Filter setAddress(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public String getClientInfo() {
+            return clientInfo;
+        }
+
+        /**
+         * Client browser info.
+         */
+        public Filter setClientInfo(String clientInfo) {
+            this.clientInfo = clientInfo;
+            return this;
+        }
+
+        public boolean isStrict() {
+            return strict;
+        }
+
+        /**
+         * Whether to check for strict equality of other parameters.
+         */
+        public Filter setStrict(boolean strict) {
+            this.strict = strict;
+            return this;
+        }
+    }
 }

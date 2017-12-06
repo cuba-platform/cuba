@@ -40,9 +40,9 @@ public class LogMdc {
                         user = session.getUser().getLogin();
                     else if (securityContext.getSessionId() != null) {
                         ApplicationContext applicationContext = AppContext.getApplicationContext();
-                        if (applicationContext.containsBean("cuba_UserSessionManager")) {
-                            UserSessionFinder sessionFinder = (UserSessionFinder) applicationContext.getBean("cuba_UserSessionManager");
-                            session = sessionFinder.findSession(securityContext.getSessionId());
+                        if (applicationContext.containsBean("cuba_UserSessions")) {
+                            UserSessionFinder sessionFinder = (UserSessionFinder) applicationContext.getBean("cuba_UserSessions");
+                            session = sessionFinder.get(securityContext.getSessionId());
                             if (session != null) {
                                 user = session.getUser().getLogin();
                             }

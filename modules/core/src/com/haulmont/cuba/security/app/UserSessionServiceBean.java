@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.google.common.base.Strings;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -34,6 +36,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service facade to active {@link UserSession}s management.
@@ -61,48 +64,48 @@ public class UserSessionServiceBean implements UserSessionService {
 
     @Override
     public UserSession getUserSession(UUID sessionId) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.getAndRefresh(sessionId);
         return userSession;
     }
 
     @Override
     public void setSessionAttribute(UUID sessionId, String name, Serializable value) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.setAttribute(name, value);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void removeSessionAttribute(UUID sessionId, String name) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.removeAttribute(name);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionLocale(UUID sessionId, Locale locale) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.setLocale(locale);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionTimeZone(UUID sessionId, TimeZone timeZone) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.setTimeZone(timeZone);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionAddress(UUID sessionId, String address) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.setAddress(address);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionClientInfo(UUID sessionId, String clientInfo) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
+        UserSession userSession = userSessions.get(sessionId);
         userSession.setClientInfo(clientInfo);
         userSessions.propagate(sessionId);
     }
@@ -113,8 +116,39 @@ public class UserSessionServiceBean implements UserSessionService {
     }
 
     @Override
+    public Collection<UserSessionEntity> loadUserSessionEntities(Filter filter) {
+        Preconditions.checkNotNullArgument(filter, "filter is null");
+
+        return userSessions.getUserSessionEntitiesStream()
+                .filter(e -> {
+                    if (filter == Filter.ALL)
+                        return true;
+                    boolean result = true;
+                    if (!Strings.isNullOrEmpty(filter.getUserLogin())) {
+                        result = testString(e.getLogin(), filter.getUserLogin(), filter.isStrict());
+                    }
+                    if (!Strings.isNullOrEmpty(filter.getUserName())) {
+                        result = result && testString(e.getUserName(), filter.getUserName(), filter.isStrict());
+                    }
+                    if (!Strings.isNullOrEmpty(filter.getAddress())) {
+                        result = result && testString(e.getAddress(), filter.getAddress(), filter.isStrict());
+                    }
+                    if (!Strings.isNullOrEmpty(filter.getClientInfo())) {
+                        result = result && testString(e.getClientInfo(), filter.getClientInfo(), filter.isStrict());
+                    }
+                    return result;
+                })
+                .collect(Collectors.toList());
+    }
+
+    protected boolean testString(String value, String test, boolean strict) {
+        return value != null
+                && (strict ? value.equals(test) : value.toLowerCase().contains(test.toLowerCase()));
+    }
+
+    @Override
     public void killSession(UUID id) {
-        UserSession userSession = userSessions.get(id, false);
+        UserSession userSession = userSessions.get(id);
         userSessionLog.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
         userSessions.killSession(id);
     }
@@ -123,7 +157,7 @@ public class UserSessionServiceBean implements UserSessionService {
     public void postMessage(List<UUID> sessionIds, String message) {
         long time = timeSource.currentTimeMillis();
         for (UUID sessionId : sessionIds) {
-            UserSession userSession = userSessionManager.findSession(sessionId);
+            UserSession userSession = userSessions.get(sessionId);
             if (userSession != null) {
                 userSession.setAttribute(MESSAGE_ATTR_PREFIX + time, message);
                 userSessions.propagate(sessionId);

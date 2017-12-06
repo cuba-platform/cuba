@@ -62,9 +62,7 @@ public class UserInvalidationListener {
         log.info("Handling user invalidation: {}", user.getLogin());
 
         try (Transaction tx = persistence.createTransaction()) {
-            List<UUID> sessionsIds = userSessionsAPI.getUserSessionInfo()
-                    .stream()
-                    .map(sessionInfo -> userSessionsAPI.get(sessionInfo.getId()))
+            List<UUID> sessionsIds = userSessionsAPI.getUserSessionsStream()
                     .filter(session -> session != null &&
                             (user.equals(session.getUser()) || user.equals(session.getSubstitutedUser())))
                     .map(UserSession::getId)

@@ -106,7 +106,7 @@ public class ExecutionsImpl implements Executions {
     }
 
     public void cancelExecution(UUID userSessionId, String group, String key) {
-        UserSession userSession = userSessionsAPI.get(userSessionId, false);
+        UserSession userSession = userSessionsAPI.getAndRefresh(userSessionId, false);
         if (userSession == null) {
             log.warn("User session {} not found, execution context: group={}, key={}", userSessionId, group, key);
             throw new IllegalStateException(String.format("User session {%s} not found", userSessionId));
@@ -171,7 +171,7 @@ public class ExecutionsImpl implements Executions {
     protected class CancelExecutionClusterListener implements ClusterListener<CancelExecutionMessage> {
         @Override
         public void receive(CancelExecutionMessage message) {
-            UserSession userSession = userSessionsAPI.get(message.userSessionId, false);
+            UserSession userSession = userSessionsAPI.getAndRefresh(message.userSessionId, false);
             if (userSession == null) {
                 log.warn("User session {} not found, execution context: group={}, key={}", message.userSessionId,
                         message.group, message.key);

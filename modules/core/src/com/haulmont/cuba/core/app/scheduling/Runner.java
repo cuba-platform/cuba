@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.app.scheduling;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
+
 /**
  * Interface used by {@link Scheduling} to run scheduled tasks.
  *
@@ -28,5 +30,5 @@ public interface Runner {
 
     String NAME = "cuba_SchedulingRunner";
 
-    void runTask(ScheduledTask task, long now, UserSession userSession);
+    void runTask(ScheduledTask task, long now, @Nullable UserSession userSession);
 }

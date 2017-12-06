@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.app.UserSessionService.Filter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 
@@ -47,26 +48,35 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
             return;
 
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
+        Collection<UserSessionEntity> userSessionList = uss.loadUserSessionEntities(createFilter(params));
         for (UserSessionEntity entity : userSessionList) {
             if (!sessionFilter.test(entity)) {
                 continue;
             }
-
-            Object userLoginObj = params.get("userLogin");
-            if (userLoginObj != null && (entity.getLogin() == null || !entity.getLogin().toLowerCase().contains(userLoginObj.toString())))
-                continue;
-            Object userNameObj = params.get("userName");
-            if (userNameObj != null && (entity.getUserName() == null || !entity.getUserName().toLowerCase().contains(userNameObj.toString())))
-                continue;
-            Object userAddressObj = params.get("userAddress");
-            if (userAddressObj != null && (entity.getAddress() == null || !entity.getAddress().toLowerCase().contains(userAddressObj.toString())))
-                continue;
-            Object userClientInfoObj = params.get("userInfo");
-            if (userClientInfoObj != null && (entity.getClientInfo() == null || !entity.getClientInfo().toLowerCase().contains(userClientInfoObj.toString())))
-                continue;
             data.put(entity.getId(), entity);
         }
+    }
+
+    protected Filter createFilter(Map<String, Object> params) {
+        Filter context = Filter.create();
+
+        Object userLoginObj = params.get("userLogin");
+        if (userLoginObj != null)
+            context.setUserLogin(userLoginObj.toString());
+
+        Object userNameObj = params.get("userName");
+        if (userNameObj != null)
+            context.setUserName(userNameObj.toString());
+
+        Object userAddressObj = params.get("userAddress");
+        if (userAddressObj != null)
+            context.setAddress(userAddressObj.toString());
+
+        Object userClientInfoObj = params.get("userInfo");
+        if (userClientInfoObj != null)
+            context.setClientInfo(userClientInfoObj.toString());
+
+        return context;
     }
 
     public Date getUpdateTs() {

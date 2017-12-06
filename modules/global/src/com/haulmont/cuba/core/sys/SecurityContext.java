@@ -16,10 +16,10 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -62,7 +62,7 @@ public class SecurityContext {
     private boolean authorizationRequired;
 
     public SecurityContext(UUID sessionId) {
-        Objects.requireNonNull(sessionId, "sessionId is null");
+        Preconditions.checkNotNullArgument(sessionId, "sessionId is null");
         this.sessionId = sessionId;
     }
 
@@ -72,7 +72,7 @@ public class SecurityContext {
     }
 
     public SecurityContext(UserSession session) {
-        Objects.requireNonNull(session, "session is null");
+        Preconditions.checkNotNullArgument(session, "session is null");
         this.session = session;
         this.sessionId = session.getId();
         this.user = session.getUser().getLogin();

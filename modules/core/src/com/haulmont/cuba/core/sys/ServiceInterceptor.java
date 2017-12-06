@@ -102,7 +102,7 @@ public class ServiceInterceptor {
                 statisticsAccumulator.incMiddlewareRequestsCount();
                 try {
                     // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
-                    UserSession userSession = userSessions.get(securityContext.getSessionId(), true);
+                    UserSession userSession = userSessions.getAndRefresh(securityContext.getSessionId(), true);
                     if (userSession == null) {
                         throw new NoUserSessionException(securityContext.getSessionId());
                     }

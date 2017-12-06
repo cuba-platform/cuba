@@ -23,7 +23,6 @@ import com.haulmont.cuba.security.auth.AnonymousSessionHolder;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,7 +51,7 @@ public class TrustedClientServiceBean implements TrustedClientService {
     @Inject
     protected Authentication authentication;
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
     @Inject
     protected AnonymousSessionHolder anonymousSessionHolder;
 
@@ -82,7 +81,7 @@ public class TrustedClientServiceBean implements TrustedClientService {
     public UserSession findSession(String trustedClientPassword, UUID sessionId) throws LoginException {
         checkTrustedClientCredentials(trustedClientPassword);
 
-        return userSessionManager.findSession(sessionId);
+        return userSessions.getAndRefresh(sessionId);
     }
 
     protected String getInvalidCredentialsMessage(String login, Locale locale) {

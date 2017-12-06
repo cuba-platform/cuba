@@ -18,8 +18,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -28,17 +29,21 @@ import javax.inject.Inject;
 public class UserSessionSourceImpl extends AbstractUserSessionSource {
 
     @Inject
-    private UserSessionManager userSessionManager;
+    private UserSessionsAPI userSessions;
 
     @Override
     public boolean checkCurrentUserSession() {
         SecurityContext securityContext = AppContext.getSecurityContext();
-        return securityContext != null && userSessionManager.findSession(securityContext.getSessionId()) != null;
+        return securityContext != null && userSessions.get(securityContext.getSessionId()) != null;
     }
 
     @Override
     public UserSession getUserSession() {
         SecurityContext securityContext = AppContext.getSecurityContextNN();
-        return userSessionManager.getSession(securityContext.getSessionId());
+        UserSession session = userSessions.getAndRefresh(securityContext.getSessionId());
+        if (session == null) {
+            throw new NoUserSessionException(securityContext.getSessionId());
+        }
+        return session;
     }
 }

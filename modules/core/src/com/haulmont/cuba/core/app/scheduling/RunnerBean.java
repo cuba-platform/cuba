@@ -30,17 +30,18 @@ import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.SystemUserCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
@@ -75,7 +76,7 @@ public class RunnerBean implements Runner {
     protected AuthenticationManager authenticationManager;
 
     @Inject
-    protected UserSessionManager userSessionManager;
+    protected UserSessionsAPI userSessions;
 
     @Inject
     protected Scripting scripting;
@@ -106,7 +107,7 @@ public class RunnerBean implements Runner {
     }
 
     @Override
-    public void runTask(ScheduledTask task, final long now, final UserSession userSession) {
+    public void runTask(ScheduledTask task, final long now, final @Nullable UserSession userSession) {
         // It's better not to pass an entity instance in managed state to another thread
         final ScheduledTask taskCopy = metadata.getTools().copy(task);
 
@@ -139,10 +140,10 @@ public class RunnerBean implements Runner {
         });
     }
 
-    protected void setSecurityContext(ScheduledTask task, UserSession userSession) throws LoginException {
+    protected void setSecurityContext(ScheduledTask task, @Nullable UserSession userSession) throws LoginException {
         if (userSession == null) {
             UUID sessionId = userSessionIds.get(task.getUserName());
-            userSession = sessionId == null ? null : userSessionManager.findSession(sessionId);
+            userSession = sessionId == null ? null : userSessions.getAndRefresh(sessionId);
             if (userSession == null) {
                 userSession = authenticationManager.login(new SystemUserCredentials(task.getUserName())).getSession();
                 userSessionIds.put(task.getUserName(), userSession.getId());
