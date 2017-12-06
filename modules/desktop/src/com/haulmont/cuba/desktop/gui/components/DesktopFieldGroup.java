@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -975,7 +976,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         ToolTipButton toolTipButton = fci.getToolTipButton();
         String contextHelpText = DesktopComponentsHelper.getContextHelpText(
                 fci.getContextHelpText(),
-                fci.isContextHelpTextHtmlEnabled());
+                BooleanUtils.isTrue(fci.isContextHelpTextHtmlEnabled()));
         toolTipButton.setToolTipText(contextHelpText);
         toolTipButton.setVisible(componentVisible && StringUtils.isNotEmpty(contextHelpText));
     }
