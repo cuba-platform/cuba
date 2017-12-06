@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,9 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import static com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils.isDynamicAttribute;
 
 @Component(PersistentAttributesLoadChecker.NAME)
 public class GlobalPersistentAttributesLoadChecker implements PersistentAttributesLoadChecker {
@@ -48,6 +52,14 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
     @Override
     public boolean isLoaded(Object entity, String property) {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        if (isDynamicAttribute(property)) {
+            @SuppressWarnings("unchecked")
+            Map<String, CategoryAttributeValue> dynamicAttributes =
+                    ((BaseGenericIdEntity) entity).getDynamicAttributes();
+
+            return dynamicAttributes != null && dynamicAttributes.containsKey(property);
+        }
+
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
 
         if (!metadataTools.isPersistent(metaProperty)) {
