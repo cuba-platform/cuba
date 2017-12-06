@@ -21,13 +21,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,8 @@ public class CollectionDsHelper {
 
     public static List<MetaPropertyPath> createProperties(View view, MetaClass metaClass) {
         List<MetaPropertyPath> properties = new ArrayList<>();
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
-        if (view != null && metadataTools.isPersistent(metaClass)) {
+        if (view != null) {
             for (ViewProperty property : view.getProperties()) {
                 final String name = property.getName();
 
@@ -46,15 +46,6 @@ public class CollectionDsHelper {
                 if (metaProperty == null) {
                     String message = String.format("Unable to find property %s for entity %s", name, metaClass.getName());
                     throw new DevelopmentException(message);
-                }
-
-                if (!metadataTools.isPersistent(metaProperty)) {
-                    String message = String.format(
-                            "Specified transient property %s in view for datasource with persistent entity %s",
-                            name, metaClass.getName());
-
-                    LoggerFactory.getLogger(CollectionDsHelper.class).warn(message);
-                    continue;
                 }
 
                 final Range range = metaProperty.getRange();
@@ -67,20 +58,7 @@ public class CollectionDsHelper {
                     properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
-
-            // add all non-persistent properties
-            for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (metadataTools.isNotPersistent(metaProperty)) {
-                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
-                }
-            }
         } else {
-            if (view != null) {
-                LoggerFactory.getLogger(CollectionDsHelper.class).
-                        warn("Specified view {} for datasource with not persistent entity {}",
-                                view.getName(), metaClass.getName());
-            }
-
             for (MetaProperty metaProperty : metaClass.getProperties()) {
                 final Range range = metaProperty.getRange();
                 if (range == null) continue;
