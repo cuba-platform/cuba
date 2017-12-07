@@ -125,6 +125,12 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
                 if (StringUtils.isNotEmpty(enable)) {
                     tab.setEnabled(Boolean.parseBoolean(enable));
                 }
+
+                String description = tabElement.attributeValue("description");
+                if (StringUtils.isNotEmpty(description)) {
+                    description = loadResourceString(description);
+                    tab.setDescription(description);
+                }
             }
         }
     }
