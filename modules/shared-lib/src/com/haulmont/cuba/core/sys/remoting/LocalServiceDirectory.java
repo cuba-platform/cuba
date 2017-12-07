@@ -25,6 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * INTERNAL.
+ * <p>
+ * This class holds a collection of {@link LocalServiceInvoker} instances. It must be loaded to a classloader shared
+ * between the client tier and middleware.
+ */
 public class LocalServiceDirectory {
 
     private static Map<String, LocalServiceInvoker> invokers = new ConcurrentHashMap<>();

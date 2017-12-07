@@ -17,6 +17,13 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+/**
+ * INTERNAL.
+ * <p>
+ * Enables direct invocation of middleware services from the client tier.
+ * Implementation objects are created on the middleware side and registered in {@link LocalServiceDirectory},
+ * which is available both to the client and middle tier.
+ */
 public interface LocalServiceInvoker {
 
     LocalServiceInvocationResult invoke(LocalServiceInvocation invocation);

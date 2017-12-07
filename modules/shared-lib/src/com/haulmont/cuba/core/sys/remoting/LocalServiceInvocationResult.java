@@ -17,6 +17,11 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+/**
+ * INTERNAL.
+ * <p>
+ * A result object that is returned to the client when invoking middleware services using {@link LocalServiceInvoker}.
+ */
 public class LocalServiceInvocationResult {
 
     private byte[] data;

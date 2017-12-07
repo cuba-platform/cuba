@@ -20,6 +20,11 @@ package com.haulmont.cuba.core.sys.remoting;
 import java.util.TimeZone;
 import java.util.UUID;
 
+/**
+ * INTERNAL.
+ * <p>
+ * An object that is passed when invoking middleware services using {@link LocalServiceInvoker}.
+ */
 public class LocalServiceInvocation {
     private String methodName;
     private String[] parameterTypeNames;

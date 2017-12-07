@@ -34,6 +34,12 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
+/**
+ * INTERNAL.
+ * <p>
+ * Bean of the web block that creates a proxy object to invoke middleware services directly
+ * using {@link LocalServiceInvoker}.
+ */
 public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Object>, InitializingBean {
 
     private Object serviceProxy;
@@ -146,7 +152,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             invocation.setResultBypassSerialization(canMethodResultBypassSerialization(method));
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
-            AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread
+            AppContext.setSecurityContext(AppContext.getSecurityContext());// to reset application name in LogMDC for the current thread
 
             // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
             if (result.getException() != null) {
