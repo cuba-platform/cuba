@@ -269,6 +269,16 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     .get(icon);
             setIcon(iconPath);
         }
+
+        @Override
+        public void setDescription(String description) {
+            getVaadinTab().setDescription(description);
+        }
+
+        @Override
+        public String getDescription() {
+            return getVaadinTab().getDescription();
+        }
     }
 
     @Override

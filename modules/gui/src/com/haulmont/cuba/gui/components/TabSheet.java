@@ -154,7 +154,7 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
     /**
      * Tab interface.
      */
-    interface Tab extends Component.HasIcon {
+    interface Tab extends Component.HasIcon, Component.HasCaption {
         /**
          * Get tab id.
          */
@@ -164,16 +164,6 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
          * INTERNAL. Set tab id.
          */
         void setName(String name);
-
-        /**
-         * Get tab caption.
-         */
-        String getCaption();
-
-        /**
-         * Set tab caption.
-         */
-        void setCaption(String caption);
 
         /**
          * Whether the tab is enabled.

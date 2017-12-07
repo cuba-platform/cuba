@@ -757,6 +757,16 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
         @Override
         public void setIconByName(Icons.Icon icon) {
         }
+
+        @Override
+        public void setDescription(String description) {
+            // do nothing
+        }
+
+        @Override
+        public String getDescription() {
+            return null;
+        }
     }
 
     protected static class LazyTabInfo {
