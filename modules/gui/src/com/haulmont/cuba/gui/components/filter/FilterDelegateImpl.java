@@ -2229,6 +2229,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                     saveFilterEntity();
                     initAdHocFilter();
+                    Set<FilterEntity> modifiedGlobalDefaultFilters = window.getModifiedGlobalDefaultFilters();
+                    for (FilterEntity modifiedGlobalDefaultFilter : modifiedGlobalDefaultFilters) {
+                        if (filterEntities.contains(modifiedGlobalDefaultFilter)) {
+                            filterEntities.set(filterEntities.indexOf(modifiedGlobalDefaultFilter), modifiedGlobalDefaultFilter);
+                        }
+                    }
                     initFilterSelectComponents();
                     updateWindowCaption();
                     fillConditionsLayout(ConditionsFocusType.FIRST);

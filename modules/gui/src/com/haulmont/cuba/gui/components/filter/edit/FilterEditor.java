@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -140,8 +141,11 @@ public class FilterEditor extends AbstractWindow {
             "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
 
     protected final List<String> componentsForHiddenOption = Arrays.asList("hiddenLabel", "hidden");
+
     @Inject
     private DataManager dataManager;
+
+    protected Set<Entity> modifiedGlobalDefaultFilters = new HashSet<>();
 
     public interface Companion {
         void showComponentName(WindowManager windowManager, String title, String message);
@@ -354,7 +358,7 @@ public class FilterEditor extends AbstractWindow {
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES, Action.Status.PRIMARY).withHandler(e -> {
                                 otherDefaultFilters.forEach(otherDefaultFilter -> otherDefaultFilter.setGlobalDefault(false));
-                                dataManager.commit(new CommitContext(otherDefaultFilters));
+                                modifiedGlobalDefaultFilters = dataManager.commit(new CommitContext(otherDefaultFilters));
                                 close(COMMIT_ACTION_ID, true);
                             }),
                             new DialogAction(DialogAction.Type.NO, Action.Status.NORMAL).withHandler(e -> {
@@ -473,5 +477,11 @@ public class FilterEditor extends AbstractWindow {
 
     public Filter getFilter() {
         return filter;
+    }
+
+    public Set<FilterEntity> getModifiedGlobalDefaultFilters() {
+        return modifiedGlobalDefaultFilters.stream()
+                .map(entity -> (FilterEntity) entity)
+                .collect(Collectors.toSet());
     }
 }
