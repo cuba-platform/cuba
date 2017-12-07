@@ -250,4 +250,39 @@ public class EntityStateTest {
         assertFalse(BaseEntityInternalAccess.isManaged(user));
         assertTrue(BaseEntityInternalAccess.isDetached(user));
     }
+
+    @Test
+    public void testTransactionRollback() throws Exception {
+        User user = null;
+
+        // create and persist
+
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            user = new User();
+            assertTrue(BaseEntityInternalAccess.isNew(user));
+            assertFalse(BaseEntityInternalAccess.isManaged(user));
+            assertFalse(BaseEntityInternalAccess.isDetached(user));
+
+            userId = user.getId();
+            user.setLogin("testLogin");
+            cont.persistence().getEntityManager().persist(user);
+
+            assertTrue(BaseEntityInternalAccess.isNew(user));
+            assertTrue(BaseEntityInternalAccess.isManaged(user));
+            assertFalse(BaseEntityInternalAccess.isDetached(user));
+
+            tx.commit();
+
+            fail(); // due to absence of Group
+        } catch (Exception e) {
+            // ok
+        } finally {
+            tx.end();
+        }
+
+        assertTrue(BaseEntityInternalAccess.isNew(user));
+        assertFalse(BaseEntityInternalAccess.isManaged(user));
+        assertFalse(BaseEntityInternalAccess.isDetached(user));
+    }
 }

@@ -384,10 +384,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 for (Object instance : instances) {
                     if (instance instanceof BaseGenericIdEntity) {
                         BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
-
-                        BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
                         BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
-                        BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                        if (status == TransactionSynchronization.STATUS_COMMITTED) {
+                            BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
+                            BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                        }
                     }
                     if (instance instanceof FetchGroupTracker) {
                         ((FetchGroupTracker) instance)._persistence_setSession(null);
