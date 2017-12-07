@@ -20,8 +20,12 @@ package com.haulmont.cuba.gui.app.core.entitylog;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.EntityLogService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -37,6 +41,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
@@ -61,6 +66,9 @@ public class EntityLogBrowser extends AbstractWindow {
 
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
+
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
 
     @Inject
     protected CollectionDatasource<EntityLogItem, UUID> entityLogDs;
@@ -306,41 +314,47 @@ public class EntityLogBrowser extends AbstractWindow {
         actionsPaneLayout.setVisible(false);
     }
 
-    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean setEditableCheckboxes) {
+    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
         clearAttributes();
         setSelectAllCheckBox(false);
 
         if (metaClassName != null) {
             MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
                     metadata.getClassNN(metaClassName));
-            Collection<MetaProperty> metaProperties = metaClass.getProperties();
-            selectAllCheckBox.setEditable(setEditableCheckboxes);
+            List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
+            selectAllCheckBox.setEditable(editable);
             Set<LoggedAttribute> enabledAttr = null;
             if (item != null)
                 enabledAttr = item.getAttributes();
             for (MetaProperty property : metaProperties) {
-                if (!systemAttrsList.contains(property.getName())) {
-                    Range range = property.getRange();
-                    if (range.isClass() && metadata.getTools().hasCompositePrimaryKey(range.asClass()) &&
-                            !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
-                        continue;
+                if (allowLogProperty(property, null)) {
+                    addAttribute(enabledAttr, property, editable);
+                }
+            }
+            Collection<CategoryAttribute> attributes = dynamicAttributes.getAttributesForMetaClass(metaClass);
+            if (attributes != null) {
+                for (CategoryAttribute categoryAttribute : attributes) {
+                    MetaPropertyPath propertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, categoryAttribute);
+                    MetaProperty property = propertyPath.getMetaProperty();
+                    if (allowLogProperty(property, categoryAttribute)) {
+                        addAttribute(enabledAttr, property, editable);
                     }
-                    if (range.isClass() && range.getCardinality().isMany()) {
-                        continue;
-                    }
-                    CheckBox checkBox = factory.createComponent(CheckBox.class);
-                    if (enabledAttr != null && isEntityHaveAttribute(property.getName(), enabledAttr)) {
-                        checkBox.setValue(true);
-                    }
-                    checkBox.setId(property.getName());
-                    checkBox.setCaption(property.getName());
-                    checkBox.setEditable(setEditableCheckboxes);
-                    checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-
-                    attributesBoxScroll.add(checkBox);
                 }
             }
         }
+    }
+
+    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, MetaProperty property, boolean editable) {
+        CheckBox checkBox = factory.createComponent(CheckBox.class);
+        if (enabledAttributes != null && isEntityHaveAttribute(property.getName(), enabledAttributes)) {
+            checkBox.setValue(true);
+        }
+        checkBox.setId(property.getName());
+        checkBox.setCaption(property.getName());
+        checkBox.setEditable(editable);
+        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
+
+        attributesBoxScroll.add(checkBox);
     }
 
     protected void enableAllCheckBoxes(boolean b) {
@@ -472,6 +486,25 @@ public class EntityLogBrowser extends AbstractWindow {
 
         loggedEntityTable.setEnabled(false);
         cancelBtn.requestFocus();
+    }
+
+    protected boolean allowLogProperty(MetaProperty metaProperty, CategoryAttribute categoryAttribute) {
+        if (systemAttrsList.contains(metaProperty.getName())) {
+            return false;
+        }
+        Range range = metaProperty.getRange();
+        if (range.isClass() && metadata.getTools().hasCompositePrimaryKey(range.asClass()) &&
+                !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
+            return false;
+        }
+        if (range.isClass() && range.getCardinality().isMany()) {
+            return false;
+        }
+        if (categoryAttribute != null &&
+                BooleanUtils.isTrue(categoryAttribute.getIsCollection())) {
+            return false;
+        }
+        return true;
     }
 
     protected class SaveAction extends AbstractAction {
