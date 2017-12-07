@@ -161,17 +161,19 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         useUserTimeZone.addValueChangeListener(e -> {
             if (defaultValueComponent != null) {
-                DateField dateField = (DateField) defaultValueComponent;
-                if (Boolean.TRUE.equals(e.getValue())) {
-                    UserSession userSession = userSessionSource.getUserSession();
-                    if (userSession.getTimeZone() != null) {
-                        dateField.setTimeZone(userSession.getTimeZone());
+                if (defaultValueComponent instanceof DateField) {
+                    DateField dateField = (DateField) defaultValueComponent;
+                    if (Boolean.TRUE.equals(e.getValue())) {
+                        UserSession userSession = userSessionSource.getUserSession();
+                        if (userSession.getTimeZone() != null) {
+                            dateField.setTimeZone(userSession.getTimeZone());
+                        }
+                        dateField.setValue(null);
+                        dateField.setEditable(false);
+                    } else {
+                        dateField.setTimeZone(TimeZone.getDefault());
+                        dateField.setEditable(true);
                     }
-                    dateField.setValue(null);
-                    dateField.setEditable(false);
-                } else {
-                    dateField.setTimeZone(TimeZone.getDefault());
-                    dateField.setEditable(true);
                 }
             }
         });
