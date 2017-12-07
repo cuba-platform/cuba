@@ -20,6 +20,9 @@ package com.haulmont.cuba.gui.app.core.bulk;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -73,6 +76,9 @@ public class BulkEditorWindow extends AbstractWindow {
     protected Security security;
 
     @Inject
+    protected DynamicAttributes dynamicAttributes;
+
+    @Inject
     protected BoxLayout contentPane;
 
     @Inject
@@ -92,6 +98,9 @@ public class BulkEditorWindow extends AbstractWindow {
 
     @WindowParam
     protected String exclude;
+
+    @WindowParam
+    protected boolean loadDynamicAttributes = true;
 
     @WindowParam
     protected Map<String, Field.Validator> fieldValidators;
@@ -445,6 +454,21 @@ public class BulkEditorWindow extends AbstractWindow {
                 }
             }
         }
+
+        if (loadDynamicAttributes) {
+            List<CategoryAttribute> categoryAttributes = (List<CategoryAttribute>) dynamicAttributes.getAttributesForMetaClass(metaClass);
+            if (!categoryAttributes.isEmpty()) {
+                for (CategoryAttribute attribute : categoryAttributes) {
+                    MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, attribute);
+                    String propertyCaption = attribute.getLocaleName();
+
+                    if (isPermitted(metaClass, metaPropertyPath.getMetaProperty())) {
+                        managedFields.add(new ManagedField(metaPropertyPath.getMetaProperty().getName(), metaPropertyPath.getMetaProperty(),
+                                propertyCaption, null));
+                    }
+                }
+            }
+        }
         return managedFields;
     }
 
@@ -566,6 +590,7 @@ public class BulkEditorWindow extends AbstractWindow {
         lc.setSoftDeletion(false);
         lc.setQuery(query);
         lc.setView(view);
+        lc.setLoadDynamicAttributes(loadDynamicAttributes);
 
         return dataSupplier.loadList(lc);
     }

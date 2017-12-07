@@ -107,6 +107,11 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
                     context.getFullFrameId(), "componentId", resultComponent.getId());
         }
 
+        String loadDynamicAttributes = element.attributeValue("loadDynamicAttributes");
+        if (StringUtils.isNotEmpty(loadDynamicAttributes)) {
+            resultComponent.setLoadDynamicAttributes(Boolean.parseBoolean(loadDynamicAttributes));
+        }
+
         context.addPostInitTask((context1, window) -> {
             // todo artamonov here we can use post wrap instead of post init
             if (resultComponent.getListComponent() == null) {

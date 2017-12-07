@@ -49,6 +49,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
+    protected Boolean loadDynamicAttributes;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
@@ -105,6 +106,14 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
         this.fieldValidators = fieldValidators;
     }
 
+    public Boolean getLoadDynamicAttributes() {
+        return loadDynamicAttributes;
+    }
+
+    public void setLoadDynamicAttributes(Boolean loadDynamicAttribute) {
+        this.loadDynamicAttributes = loadDynamicAttribute;
+    }
+
     @Override
     public void actionPerform(Component component) {
         if (beforeActionPerformedHandler != null) {
@@ -138,7 +147,8 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                 "selected", target.getSelected(),
                 "exclude", exclude,
                 "fieldValidators", fieldValidators,
-                "modelValidators", modelValidators
+                "modelValidators", modelValidators,
+                "loadDynamicAttributes", loadDynamicAttributes
         );
 
         Window bulkEditor = target.getFrame().openWindow("bulkEditor", openType, params);
