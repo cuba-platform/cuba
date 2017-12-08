@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils.decodeAttributeCode;
 import static com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils.isDynamicAttribute;
 
 @Component(PersistentAttributesLoadChecker.NAME)
@@ -57,7 +58,12 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
             Map<String, CategoryAttributeValue> dynamicAttributes =
                     ((BaseGenericIdEntity) entity).getDynamicAttributes();
 
-            return dynamicAttributes != null && dynamicAttributes.containsKey(property);
+            if (dynamicAttributes == null) {
+                return false;
+            }
+
+            String attributeCode = decodeAttributeCode(property);
+            return dynamicAttributes.containsKey(attributeCode);
         }
 
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
