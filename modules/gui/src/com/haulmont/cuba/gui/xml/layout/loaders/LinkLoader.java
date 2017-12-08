@@ -53,6 +53,11 @@ public class LinkLoader extends AbstractComponentLoader<Link> {
             resultComponent.setIcon(icon);
         }
 
+        String rel = element.attributeValue("rel");
+        if (StringUtils.isNotEmpty(rel)) {
+            resultComponent.setRel(rel);
+        }
+
         loadWidth(resultComponent, element, Component.AUTO_SIZE);
         loadHeight(resultComponent, element, Component.AUTO_SIZE);
     }

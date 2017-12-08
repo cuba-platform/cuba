@@ -35,6 +35,7 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
     protected String url;
     protected String target;
     protected String icon;
+    protected String rel;
 
     public DesktopLink() {
         impl = new JXHyperlink();
@@ -106,5 +107,15 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
     @Override
     public void setDescription(String description) {
         impl.setToolTipText(description);
+    }
+
+    @Override
+    public void setRel(String rel) {
+        this.rel = rel;
+    }
+
+    @Override
+    public String getRel() {
+        return rel;
     }
 }

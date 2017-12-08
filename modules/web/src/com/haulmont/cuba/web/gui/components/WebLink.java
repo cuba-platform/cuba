@@ -17,13 +17,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Link;
+import com.haulmont.cuba.web.toolkit.ui.CubaLink;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 
-public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements Link {
+public class WebLink extends WebAbstractComponent<CubaLink> implements Link {
 
     public WebLink() {
-        component = new com.vaadin.ui.Link();
+        component = new CubaLink();
         component.setDescription(null);
     }
 
@@ -49,5 +50,15 @@ public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements
     @Override
     public String getTarget() {
         return component.getTargetName();
+    }
+
+    @Override
+    public void setRel(String rel) {
+        component.setRel(rel);
+    }
+
+    @Override
+    public String getRel() {
+        return component.getRel();
     }
 }

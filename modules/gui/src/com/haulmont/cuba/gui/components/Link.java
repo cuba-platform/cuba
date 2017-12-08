@@ -30,4 +30,17 @@ public interface Link extends Component, Component.HasCaption, Component.BelongT
 
     void setTarget(String target);
     String getTarget();
+
+    /**
+     * Sets the relation between current document and the target document.
+     * Default value is "noopener noreferrer".
+     *
+     * @param rel string value of relation (e.g. noreferrer)
+     */
+    void setRel(String rel);
+
+    /**
+     * @return string value of relation
+     */
+    String getRel();
 }

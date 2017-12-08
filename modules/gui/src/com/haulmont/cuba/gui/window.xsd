@@ -1150,6 +1150,7 @@
             <xs:extension base="baseComponent">
                 <xs:attribute name="url" type="xs:anyURI"/>
                 <xs:attribute name="target" type="linkTarget"/>
+                <xs:attribute name="rel" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
