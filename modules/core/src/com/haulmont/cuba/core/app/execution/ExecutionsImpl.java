@@ -91,6 +91,15 @@ public class ExecutionsImpl implements Executions {
     }
 
     public void endExecution() {
+        log.debug("End execution clear interrupt flag");
+        Thread thread = Thread.currentThread();
+        try {
+            if (thread.isInterrupted()) {
+                Thread.interrupted();
+            }
+        } catch (Exception e) {
+            log.warn("Error while clear interrupt flag", e);
+        }
         ExecutionContextImpl context = (ExecutionContextImpl) ExecutionContextHolder.getCurrentContext();
         if (context == null) {
             throw new IllegalStateException("No execution context found");
@@ -130,6 +139,11 @@ public class ExecutionsImpl implements Executions {
             if (context.getState() == ExecutionContext.State.ACTIVE) {
                 ExecutionContextImpl contextImpl = (ExecutionContextImpl) context;
                 contextImpl.setState(ExecutionContextImpl.State.CANCELED);
+                //CAUTION: let all the code paths to check isInterrupted on Thread.currentThread()
+                //CAUTION: cancel resources only after thread interruption
+                if (contextImpl.getThread() != null) {
+                    contextImpl.getThread().interrupt();
+                }
                 for (CancelableResource resource : contextImpl.getResources()) {
                     try {
                         resource.cancel();
@@ -138,9 +152,6 @@ public class ExecutionsImpl implements Executions {
                     }
                 }
                 contextImpl.clearResources();
-                if (contextImpl.getThread() != null) {
-                    contextImpl.getThread().interrupt();
-                }
                 removeExecutionContextFromUserSession(userSession, context);
             }
         }
