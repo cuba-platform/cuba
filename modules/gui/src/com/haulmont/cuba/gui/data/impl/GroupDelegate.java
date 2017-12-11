@@ -22,11 +22,21 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang.ArrayUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class GroupDelegate<T extends Entity<K>, K> {
@@ -65,6 +75,16 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 if (!ArrayUtils.isEmpty(groupProperties)) {
                     if (datasource.getState() == Datasource.State.VALID) {
                         doGroup();
+                    } else if (datasource instanceof PropertyDatasource) {
+                        datasource.addStateChangeListener(new Datasource.StateChangeListener<T>() {
+                            @Override
+                            public void stateChanged(Datasource.StateChangeEvent<T> e) {
+                                if (e.getState() == Datasource.State.VALID) {
+                                    doGroup();
+                                    datasource.removeStateChangeListener(this);
+                                }
+                            }
+                        });
                     }
                 } else {
                     roots = null;
