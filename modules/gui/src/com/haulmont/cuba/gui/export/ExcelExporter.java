@@ -422,34 +422,50 @@ public class ExcelExporter {
         GroupDatasource ds = table.getDatasource();
 
         HSSFRow row = sheet.createRow(rowNumber);
-        HSSFCell cell = row.createCell(groupNumber);
-        Object val = groupInfo.getValue();
+        Map<Object, Object> aggregations = table.getAggregationResults(groupInfo);
 
-        if (val == null) {
-            val = messages.getMessage(getClass(), "excelExporter.empty");
-        }
+        int i = 0;
+        int initialGroupNumber = groupNumber;
+        for (Table.Column column : columns) {
+            if (i == initialGroupNumber) {
+                HSSFCell cell = row.createCell(i);
+                Object val = groupInfo.getValue();
 
-        Integer groupChildCount = null;
-        if (table.isShowItemsCountForGroup()) {
-            groupChildCount = ds.getGroupItemIds(groupInfo).size();
-        }
+                if (val == null) {
+                    val = messages.getMessage(getClass(), "excelExporter.empty");
+                }
 
-        MetaPropertyPath propertyPath = (MetaPropertyPath) groupInfo.getProperty();
-        Table.Column column = table.getColumn(propertyPath.toString());
-        Element xmlDescriptor = column.getXmlDescriptor();
-        if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
-            String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-            Collection children = table.getDatasource().getGroupItemIds(groupInfo);
-            if (children.isEmpty()) {
-                return rowNumber;
+                Integer groupChildCount = null;
+                if (table.isShowItemsCountForGroup()) {
+                    groupChildCount = ds.getGroupItemIds(groupInfo).size();
+                }
+
+                Element xmlDescriptor = column.getXmlDescriptor();
+                if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
+                    String captionProperty = xmlDescriptor.attributeValue("captionProperty");
+                    Collection children = table.getDatasource().getGroupItemIds(groupInfo);
+                    if (children.isEmpty()) {
+                        return rowNumber;
+                    }
+
+                    Object itemId = children.iterator().next();
+                    Instance item = table.getDatasource().getItem(itemId);
+                    Object captionValue = item.getValueEx(captionProperty);
+                    formatValueCell(cell, captionValue, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
+                } else {
+                    formatValueCell(cell, val, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
+                }
+            } else {
+                AggregationInfo agr = column.getAggregation();
+                if (agr != null) {
+                    Object agregationResult = aggregations.get(agr.getPropertyPath());
+                    if (agregationResult != null) {
+                        HSSFCell cell = row.createCell(i);
+                        formatValueCell(cell, agregationResult, null, i, rowNumber, 0, null);
+                    }
+                }
             }
-
-            Object itemId = children.iterator().next();
-            Instance item = table.getDatasource().getItem(itemId);
-            Object captionValue = item.getValueEx(captionProperty);
-            formatValueCell(cell, captionValue, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
-        } else {
-            formatValueCell(cell, val, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
+            i++;
         }
 
         int oldRowNumber = rowNumber;

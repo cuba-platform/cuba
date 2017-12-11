@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 public interface GroupTable<E extends Entity> extends Table<E> {
 
@@ -66,6 +67,15 @@ public interface GroupTable<E extends Entity> extends Table<E> {
      * Default value is true.
      */
     void setShowItemsCountForGroup(boolean showItemsCountForGroup);
+
+    /**
+     * Returns a map with aggregation results for the given group info instance,
+     * where keys are table column ids and values are aggregation value.
+     *
+     * @param info the group info instance
+     * @return aggregation results for the given group info instance
+     */
+    Map<Object, Object> getAggregationResults(GroupInfo info);
 
     /**
      * Allows to define different styles for table cells.

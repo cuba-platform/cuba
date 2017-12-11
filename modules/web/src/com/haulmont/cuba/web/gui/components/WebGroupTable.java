@@ -343,6 +343,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         return null;
     }
 
+    @Override
+    public Map<Object, Object> getAggregationResults(GroupInfo info) {
+        return component.aggregate(new CubaGroupTable.GroupAggregationContext(component, info));
+    }
+
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer, AggregationContainer {
 

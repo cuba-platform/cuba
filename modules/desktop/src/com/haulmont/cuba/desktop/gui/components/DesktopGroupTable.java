@@ -22,6 +22,9 @@ import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
+import java.util.Collections;
+import java.util.Map;
+
 public class DesktopGroupTable<E extends Entity>
         extends DesktopTable<E>
         implements GroupTable<E> {
@@ -108,5 +111,10 @@ public class DesktopGroupTable<E extends Entity>
     @Override
     public void setShowItemsCountForGroup(boolean showItemsCountForGroup) {
         this.showItemsCountForGroup = showItemsCountForGroup;
+    }
+
+    @Override
+    public Map<Object, Object> getAggregationResults(GroupInfo info) {
+        return Collections.emptyMap();
     }
 }
