@@ -44,6 +44,27 @@ public class TimeZones {
     protected TimeSource timeSource;
 
     /**
+     * Not recommended for use. Will be removed in a future version
+     * Converts date between time zones.
+     *
+     * @param srcDate       date
+     * @param srcTimeZone   source time zone
+     * @param dstTimeZone   destination time zone
+     * @return              date in destination time zone, or null if the source date is null
+     */
+    @Nullable
+    @Deprecated
+    public Date convert(@Nullable Date srcDate, TimeZone srcTimeZone, TimeZone dstTimeZone) {
+        if (srcDate == null)
+            return null;
+        Preconditions.checkNotNullArgument(srcTimeZone, "srcTimeZone is null");
+        Preconditions.checkNotNullArgument(dstTimeZone, "dstTimeZone is null");
+        int srcOffset = srcTimeZone.getOffset(srcDate.getTime());
+        int dstOffset = dstTimeZone.getOffset(srcDate.getTime());
+        return new Date(srcDate.getTime() - srcOffset + dstOffset);
+    }
+
+    /**
      * @return string representing the offset of the given time zone from GMT
      */
     public String getDisplayOffset(@Nullable TimeZone timeZone) {
