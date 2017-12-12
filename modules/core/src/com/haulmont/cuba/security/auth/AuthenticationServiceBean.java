@@ -16,12 +16,15 @@
 
 package com.haulmont.cuba.security.auth;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.entity.SessionAction;
+import com.haulmont.cuba.security.entity.SessionLogEntry;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.InternalAuthenticationException;
 import com.haulmont.cuba.security.global.LoginException;
@@ -33,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.Map;
 
 import static com.haulmont.cuba.core.sys.AppContext.getSecurityContext;
 import static com.haulmont.cuba.core.sys.AppContext.setSecurityContext;
@@ -86,7 +90,15 @@ public class AuthenticationServiceBean implements AuthenticationService {
                     authenticationManager.login(credentials)
             );
 
-            userSessionLog.createSessionLogRecord(details.getSession(), SessionAction.LOGIN, emptyMap());
+            Map<String, Object> logParams = emptyMap();
+            if (credentials instanceof AbstractClientCredentials) {
+                ClientType clientType = ((AbstractClientCredentials) credentials).getClientType();
+                if (clientType != null) {
+                    logParams = ParamsMap.of(ClientType.class.getName(), clientType.name());
+                }
+            }
+
+            userSessionLog.createSessionLogRecord(details.getSession(), SessionAction.LOGIN, logParams);
 
             return details;
         } catch (InternalAuthenticationException ie) {
@@ -106,13 +118,18 @@ public class AuthenticationServiceBean implements AuthenticationService {
     public UserSession substituteUser(User substitutedUser) {
         try {
             UserSession currentSession = userSessionSource.getUserSession();
-            userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
+            SessionLogEntry logEntry = userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
             UserSession substitutionSession = withSystemUser(() ->
                     authenticationManager.substituteUser(substitutedUser)
             );
 
-            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, emptyMap());
+            Map<String, Object> logParams = emptyMap();
+            if (logEntry != null && logEntry.getClientType() != null) {
+                logParams = ParamsMap.of(ClientType.class.getName(), logEntry.getClientType().name());
+            }
+
+            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, logParams);
 
             return substitutionSession;
         } catch (Throwable e) {

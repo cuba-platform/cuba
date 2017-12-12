@@ -69,6 +69,7 @@ public class UserSessionLogBean implements UserSessionLog {
     }
 
     @Override
+    @Nullable
     public SessionLogEntry createSessionLogRecord(UserSession userSession, SessionAction action,
                                                   @Nullable UserSession substitutedSession,
                                                   @Nullable Map<String, Object> params) {
@@ -110,13 +111,14 @@ public class UserSessionLogBean implements UserSessionLog {
     }
 
     @Override
-    public void updateSessionLogRecord(UserSession userSession, @Nullable SessionAction action) {
+    @Nullable
+    public SessionLogEntry updateSessionLogRecord(UserSession userSession, @Nullable SessionAction action) {
         Preconditions.checkNotNullArgument(userSession);
         if (!shouldLogSession(userSession)) {
-            return;
+            return null;
         }
 
-        authentication.withSystemUser(() -> {
+        return authentication.withSystemUser(() -> {
             SessionLogEntry sessionLogEntry = getLastSessionLogRecord(userSession.getId());
             if (sessionLogEntry != null) {
                 if (userSession.getClientInfo() != null) {
@@ -131,11 +133,10 @@ public class UserSessionLogBean implements UserSessionLog {
                         sessionLogEntry.setFinishedTs(timeSource.currentTimestamp());
                     }
                 }
-                dataManager.commit(sessionLogEntry);
+                return dataManager.commit(sessionLogEntry);
             }
             return null;
         });
-
     }
 
     @Override
