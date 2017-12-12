@@ -48,7 +48,7 @@ public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
 
     protected abstract String doExpand(String macro);
 
-    protected TimeZone awareTimeZoneFromArgs(String[] args, int pos) {
+    protected TimeZone getTimeZoneFromArgs(String[] args, int pos) {
         if (pos < args.length) {
             if ("USER_TIMEZONE".equalsIgnoreCase(args[pos].trim())) {
                 UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);

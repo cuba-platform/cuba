@@ -98,7 +98,7 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
             throw new RuntimeException("Invalid macro: " + macro);
 
         String field = args[0];
-        TimeZone timeZone = awareTimeZoneFromArgs(args, 4);
+        TimeZone timeZone = getTimeZoneFromArgs(args, 4);
         if (timeZone == null) {
             timeZone = TimeZone.getDefault();
         }

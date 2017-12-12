@@ -65,7 +65,7 @@ public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
         String param1 = field.replace(".", "_") + "_" + count + "_1";
         String param2 = field.replace(".", "_") + "_" + count + "_2";
 
-        TimeZone timeZone = awareTimeZoneFromArgs(args, 1);
+        TimeZone timeZone = getTimeZoneFromArgs(args, 1);
         if (timeZone == null) {
             timeZone = TimeZone.getDefault();
         }

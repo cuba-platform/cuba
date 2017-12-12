@@ -46,7 +46,7 @@ public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
 
         String field = args[0].trim();
         String param = args[1].trim().substring(1);
-        TimeZone timeZone = awareTimeZoneFromArgs(args, 2);
+        TimeZone timeZone = getTimeZoneFromArgs(args, 2);
         paramNames.add(new Pair<>(param, timeZone));
 
         return String.format("(%s >= :%s)", field, param);

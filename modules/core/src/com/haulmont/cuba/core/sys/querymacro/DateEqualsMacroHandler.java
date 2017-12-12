@@ -56,7 +56,7 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
         String field = args[0].trim();
         String param1 = args[1].trim().substring(1);
         String param2 = field.replace(".", "_") + "_" + count;
-        TimeZone timeZone = awareTimeZoneFromArgs(args, 2);
+        TimeZone timeZone = getTimeZoneFromArgs(args, 2);
         paramNames.add(new MacroArgs(param1, param2, timeZone));
 
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
