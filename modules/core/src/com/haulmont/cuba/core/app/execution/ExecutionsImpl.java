@@ -91,20 +91,15 @@ public class ExecutionsImpl implements Executions {
     }
 
     public void endExecution() {
-        log.debug("End execution clear interrupt flag");
-        Thread thread = Thread.currentThread();
         try {
+            Thread thread = Thread.currentThread();
             if (thread.isInterrupted()) {
                 Thread.interrupted();
             }
-        } catch (Exception e) {
-            log.warn("Error while clear interrupt flag", e);
-        }
-        ExecutionContextImpl context = (ExecutionContextImpl) ExecutionContextHolder.getCurrentContext();
-        if (context == null) {
-            throw new IllegalStateException("No execution context found");
-        }
-        try {
+            ExecutionContextImpl context = (ExecutionContextImpl) ExecutionContextHolder.getCurrentContext();
+            if (context == null) {
+                throw new IllegalStateException("No execution context found");
+            }
             log.debug("End execution context: group={}, key={}", context.getGroup(), context.getKey());
             UserSession userSession = userSessionSource.getUserSession();
             removeExecutionContextFromUserSession(userSession, context);
