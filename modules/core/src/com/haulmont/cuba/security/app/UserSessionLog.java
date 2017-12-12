@@ -20,6 +20,7 @@ import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.SessionLogEntry;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,9 +39,10 @@ public interface UserSessionLog {
      * @param action      session action, like login, logout, etc
      * @param params      additional params for log entry, like client's address and other info.
      *                    Use id property of SessionParams entry to pass in params map.
-     * @return created log  entry
+     * @return created log entry or null if session is not logged
      * @see com.haulmont.cuba.security.global.SessionParams
      */
+    @Nullable
     SessionLogEntry createSessionLogRecord(UserSession userSession, SessionAction action, Map<String, Object> params);
 
     /**
@@ -51,9 +53,10 @@ public interface UserSessionLog {
      * @param substitutedSession session that was substituted by new session from {@code userSession} param
      * @param params             additional params for log entry, like client's address and other info.
      *                           Use id property of SessionParams entry to pass in params map
-     * @return created log  entry
+     * @return created log entry or null if session is not logged
      * @see com.haulmont.cuba.security.global.SessionParams
      */
+    @Nullable
     SessionLogEntry createSessionLogRecord(UserSession userSession, SessionAction action, UserSession substitutedSession, Map<String, Object> params);
 
     /**
@@ -61,8 +64,10 @@ public interface UserSessionLog {
      *
      * @param userSession update log record for this session
      * @param action      last session action
+     * @return null in case of session is not logged
      */
-    void updateSessionLogRecord(UserSession userSession, SessionAction action);
+    @Nullable
+    SessionLogEntry updateSessionLogRecord(UserSession userSession, SessionAction action);
 
     /**
      * Get latest session log record. Session could have multiple log records in case of user substitution.

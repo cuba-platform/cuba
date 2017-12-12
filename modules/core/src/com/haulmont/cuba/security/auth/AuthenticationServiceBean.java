@@ -16,10 +16,13 @@
 
 package com.haulmont.cuba.security.auth;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.entity.SessionAction;
+import com.haulmont.cuba.security.entity.SessionLogEntry;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -30,7 +33,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.Collections;
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 @Component(AuthenticationService.NAME)
 public class AuthenticationServiceBean implements AuthenticationService {
@@ -69,11 +74,19 @@ public class AuthenticationServiceBean implements AuthenticationService {
             preprocessCredentials(credentials);
 
             //noinspection UnnecessaryLocalVariable
-            AuthenticationDetails authenticationDetails = authenticationManager.login(credentials);
+            AuthenticationDetails details = authenticationManager.login(credentials);
 
-            userSessionLog.createSessionLogRecord(authenticationDetails.getSession(), SessionAction.LOGIN, Collections.emptyMap());
+            Map<String, Object> logParams = emptyMap();
+            if (credentials instanceof AbstractClientCredentials) {
+                ClientType clientType = ((AbstractClientCredentials) credentials).getClientType();
+                if (clientType != null) {
+                    logParams = ParamsMap.of(ClientType.class.getName(), clientType.name());
+                }
+            }
 
-            return authenticationDetails;
+            userSessionLog.createSessionLogRecord(details.getSession(), SessionAction.LOGIN, logParams);
+
+            return details;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -88,11 +101,17 @@ public class AuthenticationServiceBean implements AuthenticationService {
     public UserSession substituteUser(User substitutedUser) {
         try {
             UserSession currentSession = userSessionSource.getUserSession();
-            userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
+            SessionLogEntry logEntry = userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
             UserSession substitutionSession = authenticationManager.substituteUser(substitutedUser);
 
-            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
+            Map<String, Object> logParams = emptyMap();
+            if (logEntry != null && logEntry.getClientType() != null) {
+                logParams = ParamsMap.of(ClientType.class.getName(), logEntry.getClientType().name());
+            }
+
+            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, logParams);
+
             return substitutionSession;
         } catch (Throwable e) {
             log.error("Substitution error", e);
