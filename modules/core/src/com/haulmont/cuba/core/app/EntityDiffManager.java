@@ -65,7 +65,7 @@ public class EntityDiffManager {
     @Inject
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
-    protected Logger log = LoggerFactory.getLogger(EntityDiffManager.class);
+    protected final Logger log = LoggerFactory.getLogger(EntityDiffManager.class);
 
     public EntityDiff getDifference(@Nullable EntitySnapshot first, EntitySnapshot second) {
 
