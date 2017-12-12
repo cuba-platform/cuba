@@ -17,7 +17,9 @@
 package com.haulmont.cuba.security.auth;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
@@ -31,7 +33,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.Collections;
+
+import static com.haulmont.cuba.core.sys.AppContext.getSecurityContext;
+import static com.haulmont.cuba.core.sys.AppContext.setSecurityContext;
+import static java.util.Collections.emptyMap;
 
 @Component(AuthenticationService.NAME)
 public class AuthenticationServiceBean implements AuthenticationService {
@@ -44,6 +49,8 @@ public class AuthenticationServiceBean implements AuthenticationService {
     protected UserSessionSource userSessionSource;
     @Inject
     protected UserSessionLog userSessionLog;
+    @Inject
+    protected Authentication authentication;
 
     @Nonnull
     @Override
@@ -51,9 +58,11 @@ public class AuthenticationServiceBean implements AuthenticationService {
         try {
             preprocessCredentials(credentials);
 
-            //noinspection UnnecessaryLocalVariable
-            AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
-            return authenticationDetails;
+            return withSystemUser(() -> {
+                //noinspection UnnecessaryLocalVariable
+                AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
+                return authenticationDetails;
+            });
         } catch (InternalAuthenticationException ie) {
             log.error("Authentication error", ie);
             throw ie;
@@ -73,11 +82,13 @@ public class AuthenticationServiceBean implements AuthenticationService {
             preprocessCredentials(credentials);
 
             //noinspection UnnecessaryLocalVariable
-            AuthenticationDetails authenticationDetails = authenticationManager.login(credentials);
+            AuthenticationDetails details = withSystemUser(() ->
+                    authenticationManager.login(credentials)
+            );
 
-            userSessionLog.createSessionLogRecord(authenticationDetails.getSession(), SessionAction.LOGIN, Collections.emptyMap());
+            userSessionLog.createSessionLogRecord(details.getSession(), SessionAction.LOGIN, emptyMap());
 
-            return authenticationDetails;
+            return details;
         } catch (InternalAuthenticationException ie) {
             log.error("Login error", ie);
             throw ie;
@@ -97,9 +108,12 @@ public class AuthenticationServiceBean implements AuthenticationService {
             UserSession currentSession = userSessionSource.getUserSession();
             userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
-            UserSession substitutionSession = authenticationManager.substituteUser(substitutedUser);
+            UserSession substitutionSession = withSystemUser(() ->
+                    authenticationManager.substituteUser(substitutedUser)
+            );
 
-            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
+            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, emptyMap());
+
             return substitutionSession;
         } catch (Throwable e) {
             log.error("Substitution error", e);
@@ -143,12 +157,33 @@ public class AuthenticationServiceBean implements AuthenticationService {
         if (credentials instanceof TrustedClientCredentials) {
             RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
 
-            TrustedClientCredentials trustedClientCredentials = (TrustedClientCredentials) credentials;
+            TrustedClientCredentials tcCredentials = (TrustedClientCredentials) credentials;
             if (remoteClientInfo != null) {
-                trustedClientCredentials.setClientIpAddress(remoteClientInfo.getAddress());
+                tcCredentials.setClientIpAddress(remoteClientInfo.getAddress());
             } else {
-                trustedClientCredentials.setClientIpAddress(null);
+                tcCredentials.setClientIpAddress(null);
             }
         }
+    }
+
+    /**
+     * Execute code on behalf of the system user.
+     *
+     * @param operation code to execute
+     * @return result of the execution
+     */
+    protected <T> T withSystemUser(AuthenticationOperation<T> operation) throws LoginException {
+        SecurityContext previousSecurityContext = getSecurityContext();
+        setSecurityContext(null);
+        try {
+            authentication.begin();
+            return operation.call();
+        } finally {
+            setSecurityContext(previousSecurityContext);
+        }
+    }
+
+    public interface AuthenticationOperation<T> {
+        T call() throws LoginException;
     }
 }
