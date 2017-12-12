@@ -258,8 +258,8 @@ public class AttributeSecuritySupport {
      * @param event - SetupAttributeAccessEvent
      */
     public boolean isAttributeAccessEnabled(SetupAttributeAccessEvent event) {
-        Collection listeners = applicationEventMulticaster.getApplicationListeners(event, event.getResolvableType());
-        return listeners != null && listeners.size() > 0;
+        Collection listeners = applicationEventMulticaster.getListeners(event, event.getResolvableType());
+        return listeners != null && !listeners.isEmpty();
     }
 
     protected void checkRequiredAttributes(Entity entity) {

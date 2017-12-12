@@ -24,8 +24,7 @@ import org.springframework.core.ResolvableType;
 import java.util.Collection;
 
 public class CubaApplicationEventMulticaster extends SimpleApplicationEventMulticaster {
-    @Override
-    public Collection<ApplicationListener<?>> getApplicationListeners(ApplicationEvent event, ResolvableType eventType) {
+    public Collection<ApplicationListener<?>> getListeners(ApplicationEvent event, ResolvableType eventType) {
         return super.getApplicationListeners(event, eventType);
     }
 }
