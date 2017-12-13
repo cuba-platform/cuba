@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Base class for persistent entities.
+ * Base class for entities.
  * <br>
  * When choosing a base class for your entity, consider more specific base classes defining the primary key type:
  * <ul>

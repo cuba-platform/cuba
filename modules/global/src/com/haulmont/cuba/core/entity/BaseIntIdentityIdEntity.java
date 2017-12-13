@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints
 import javax.persistence.*;
 
 /**
- * Base class for persistent entities with Integer Identity identifier.
+ * Base class for entities with Integer Identity identifier.
  */
 @MappedSuperclass
 @MetaClass(name = "sys$BaseIntIdentityIdEntity")

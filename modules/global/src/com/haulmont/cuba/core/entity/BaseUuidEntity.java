@@ -26,7 +26,7 @@ import javax.persistence.MappedSuperclass;
 import java.util.UUID;
 
 /**
- * Base class for persistent entities with UUID identifier.
+ * Base class for entities with UUID identifier.
  * <p>
  * Inherit from it if you need an entity without optimistic locking, create, update and soft deletion info.
  */

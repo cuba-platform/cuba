@@ -24,7 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Base class for persistent entities with Long identifier.
+ * Base class for entities with Long identifier.
  */
 @MappedSuperclass
 @MetaClass(name = "sys$BaseLongIdEntity")
