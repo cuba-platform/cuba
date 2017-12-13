@@ -202,7 +202,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setCategoryId(categoryLookup.<Category>getValue().getId());
         condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
         condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.<CategoryAttribute>getValue().getIsCollection()));
-        condition.setLocCaption(attribute.getName());
+        condition.setLocCaption(attribute.getLocaleName());
 
         return true;
     }
@@ -250,7 +250,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         CategoryAttribute selectedAttribute = null;
         Map<String, Object> attributesMap = new TreeMap<>();
         for (CategoryAttribute attribute : category.getCategoryAttrs()) {
-            attributesMap.put(attribute.getName(), attribute);
+            attributesMap.put(attribute.getLocaleName(), attribute);
             if (attribute.getId().equals(attrId)) {
                 selectedAttribute = attribute;
             }

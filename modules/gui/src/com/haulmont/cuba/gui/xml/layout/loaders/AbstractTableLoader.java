@@ -374,7 +374,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    columnCaption = categoryAttribute != null ? categoryAttribute.getName() : propertyName;
+                    columnCaption = categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName;
                 } else {
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
                     columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
