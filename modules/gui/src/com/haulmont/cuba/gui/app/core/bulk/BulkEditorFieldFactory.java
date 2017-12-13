@@ -18,11 +18,14 @@
 package com.haulmont.cuba.gui.app.core.bulk;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.annotation.Nullable;
@@ -40,6 +43,10 @@ public class BulkEditorFieldFactory {
 
     @Nullable
     public Field createField(Datasource datasource, MetaProperty property) {
+        if (isDynamicAttributeCollection(property)) {
+            return createListEditorField(datasource, property);
+        }
+
         if (property.getRange().isDatatype()) {
             Class type = property.getRange().asDatatype().getJavaClass();
             if (type.equals(String.class)) {
@@ -59,6 +66,14 @@ public class BulkEditorFieldFactory {
             return createEnumField(datasource, property);
         }
         return null;
+    }
+
+    protected boolean isDynamicAttributeCollection(MetaProperty property) {
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
+            return attribute.getIsCollection();
+        }
+        return false;
     }
 
     protected Field createStringField(Datasource datasource, MetaProperty property) {
@@ -143,5 +158,13 @@ public class BulkEditorFieldFactory {
         lookupField.setDatasource(datasource, property.getName());
 
         return lookupField;
+    }
+
+    protected Field createListEditorField(Datasource datasource, MetaProperty property) {
+        DynamicAttributeCustomFieldGenerator generator = new DynamicAttributeCustomFieldGenerator();
+
+        //noinspection UnnecessaryLocalVariable
+        ListEditor editor = (ListEditor) generator.generateField(datasource, property.getName());
+        return editor;
     }
 }
