@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints
 import javax.persistence.*;
 
 /**
- * Base class for persistent entities with Long Identity identifier.
+ * Base class for entities with Long Identity identifier.
  */
 @MappedSuperclass
 @MetaClass(name = "sys$BaseIdentityIdEntity")

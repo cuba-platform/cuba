@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints
 import javax.persistence.MappedSuperclass;
 
 /**
- * Base class for persistent entities with String identifier.
+ * Base class for entities with String identifier.
  * <p>
  * Does not define an identifier field. Inheritors must define a field of type String and add
  * {@link javax.persistence.Id} annotation to it, e.g.

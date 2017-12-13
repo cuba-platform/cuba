@@ -25,7 +25,7 @@ import javax.persistence.Version;
 import java.util.Date;
 
 /**
- * The most widely used base class for persistent entities. <br>
+ * The most widely used base class for entities. <br>
  * Optimistically locked, implements Updatable and SoftDelete.
  */
 @MappedSuperclass
