@@ -24,6 +24,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
@@ -109,6 +110,11 @@ public class MetadataTools {
         Range range = property.getRange();
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(property);
+
+            if (categoryAttribute.getDataType().equals(PropertyType.ENUMERATION)) {
+                return LocaleHelper.getEnumLocalizedValue((String) value, categoryAttribute.getEnumerationLocales());
+            }
+
             if (categoryAttribute.getIsCollection() && value instanceof Collection) {
                 return DynamicAttributesUtils.getDynamicAttributeValueAsString(property, value);
             }
