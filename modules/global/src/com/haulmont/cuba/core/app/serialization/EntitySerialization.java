@@ -531,10 +531,10 @@ public class EntitySerialization implements EntitySerializationAPI {
                             } else {
                                 if (isCollectionDynamicAttribute(metaProperty)) {
                                     Collection<Entity> entities = new ArrayList<>();
-                                    propertyValue.getAsJsonArray().forEach(jsonElement -> {
+                                    for (JsonElement jsonElement : propertyValue.getAsJsonArray()) {
                                         Entity entityForList = readEntity(jsonElement.getAsJsonObject(), metaProperty.getRange().asClass());
                                         entities.add(entityForList);
-                                    });
+                                    }
                                     entity.setValue(propertyName, entities);
                                 } else {
                                     entity.setValue(propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
