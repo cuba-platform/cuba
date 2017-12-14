@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.UuidConverter;
 import org.apache.commons.lang.BooleanUtils;
@@ -89,7 +90,9 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             if (SoftDelete.class.isAssignableFrom(desc.getJavaClass())) {
                 desc.getQueryManager().setAdditionalCriteria("this.deleteTs is null");
-                desc.setDeletePredicate(entity -> entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted());
+                desc.setDeletePredicate(entity -> entity instanceof SoftDelete &&
+                        PersistenceHelper.isLoaded(entity, "deleteTs") &&
+                        ((SoftDelete) entity).isDeleted());
             }
 
             List<DatabaseMapping> mappings = desc.getMappings();
