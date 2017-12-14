@@ -41,6 +41,7 @@ import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -149,6 +150,8 @@ public class App implements ConnectionListener {
             initTestMode();
             initUI();
             initExceptionHandling();
+            AppBeans.get(ExternalUIComponentsSource.class)
+                    .checkInitialized();
         } catch (Throwable t) {
             log.error("Error initializing application", t);
             System.exit(-1);

@@ -19,16 +19,14 @@
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/components.xsd"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns="http://schemas.haulmont.com/cuba/components.xsd"
-           elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
-
+           elementFormDefault="qualified">
     <xs:element name="components">
         <xs:complexType>
             <xs:sequence minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="component">
                     <xs:complexType>
                         <xs:all>
-                            <xs:element name="tag" minOccurs="0" maxOccurs="1">
+                            <xs:element name="tag" minOccurs="0">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -37,7 +35,7 @@
                                 </xs:complexType>
                             </xs:element>
 
-                            <xs:element name="name" minOccurs="1" maxOccurs="1">
+                            <xs:element name="name">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -46,7 +44,7 @@
                                 </xs:complexType>
                             </xs:element>
 
-                            <xs:element name="class" minOccurs="1" maxOccurs="1">
+                            <xs:element name="class">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -55,7 +53,7 @@
                                 </xs:complexType>
                             </xs:element>
 
-                            <xs:element name="componentLoader" minOccurs="1" maxOccurs="1">
+                            <xs:element name="componentLoader">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -66,7 +64,30 @@
                         </xs:all>
                     </xs:complexType>
                 </xs:element>
+                <xs:group ref="loadersGroup" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <xs:group name="loadersGroup">
+        <xs:all>
+            <xs:element name="windowLoader" type="loaderType" minOccurs="0"/>
+            <xs:element name="frameLoader" type="loaderType" minOccurs="0"/>
+            <xs:element name="editorLoader" type="loaderType" minOccurs="0"/>
+            <xs:element name="lookupLoader" type="loaderType" minOccurs="0"/>
+        </xs:all>
+    </xs:group>
+
+    <xs:complexType name="loaderType">
+        <xs:sequence>
+            <xs:element name="class">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

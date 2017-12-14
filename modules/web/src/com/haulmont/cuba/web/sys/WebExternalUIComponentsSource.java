@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -24,12 +25,13 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 
@@ -54,6 +57,18 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     private static final String WEB_COMPONENTS_CONFIG_XML_PROP = "cuba.web.componentsConfig";
 
     private final Logger log = LoggerFactory.getLogger(WebExternalUIComponentsSource.class);
+
+    protected static final String WINDOW_LOADER_EL = "windowLoader";
+    protected static final String FRAME_LOADER_EL = "frameLoader";
+    protected static final String EDITOR_LOADER_EL = "editorLoader";
+    protected static final String LOOKUP_LOADER_EL = "lookupLoader";
+
+    protected static final Map<String, Class<? extends FrameLoader>> loaders = ImmutableMap.of(
+            WINDOW_LOADER_EL, WindowLoader.class,
+            FRAME_LOADER_EL, FrameLoader.class,
+            EDITOR_LOADER_EL, WindowLoader.Editor.class,
+            LOOKUP_LOADER_EL, WindowLoader.Lookup.class
+    );
 
     @Inject
     protected Resources resources;
@@ -123,11 +138,12 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void _registerComponent(InputStream is) throws ClassNotFoundException {
         ClassLoader classLoader = App.class.getClassLoader();
 
-        Document document = Dom4j.readDocument(is);
-        List<Element> components = document.getRootElement().elements("component");
+        Element rootElement = Dom4j.readDocument(is).getRootElement();
+        List<Element> components = rootElement.elements("component");
         for (Element component : components) {
             String name = trimToEmpty(component.elementText("name"));
             String componentClassName = trimToEmpty(component.elementText("class"));
@@ -158,5 +174,55 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
                         componentLoaderClassName);
             }
         }
+
+        _loadWindowLoaders(rootElement);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void _loadWindowLoaders(Element rootElement) {
+        Class loader = loadWindowLoader(rootElement, WINDOW_LOADER_EL);
+        if (loader != null) {
+            LayoutLoaderConfig.registerWindowLoader(loader);
+        }
+
+        loader = loadWindowLoader(rootElement, FRAME_LOADER_EL);
+        if (loader != null) {
+            LayoutLoaderConfig.registerFrameLoader(loader);
+        }
+
+        loader = loadWindowLoader(rootElement, EDITOR_LOADER_EL);
+        if (loader != null) {
+            LayoutLoaderConfig.registerEditorLoader(loader);
+        }
+
+        loader = loadWindowLoader(rootElement, LOOKUP_LOADER_EL);
+        if (loader != null) {
+            LayoutLoaderConfig.registerLookupLoader(loader);
+        }
+    }
+
+    protected Class loadWindowLoader(Element rootElement, String loaderElem) {
+        ClassLoader classLoader = App.class.getClassLoader();
+
+        Element elem = rootElement.element(loaderElem);
+        if (elem == null) {
+            return null;
+        }
+
+        String loaderClass = elem.element("class").getStringValue();
+        try {
+            Class clazz = classLoader.loadClass(loaderClass);
+
+            if (loaders.get(loaderElem).isAssignableFrom(clazz)) {
+                //noinspection unchecked
+                return clazz;
+            }
+
+            log.warn("Class {} is not suitable as {}", loaderClass, loaderElem);
+        } catch (ClassNotFoundException e) {
+            log.warn("Unable to load window loader class: {}", loaderClass);
+        }
+
+        return null;
     }
 }
