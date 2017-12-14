@@ -1,3 +1,7 @@
+/**
+ * The background color of suggestion field input that is applied while a user entering value.
+ * @group suggestionfield
+ */
 $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
 
 @mixin halo-cuba-suggestionfield($primary-stylename: c-suggestionfield) {

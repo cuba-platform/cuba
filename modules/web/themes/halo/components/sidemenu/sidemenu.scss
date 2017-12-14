@@ -142,7 +142,15 @@
   }
 }
 
+/**
+ * The top offset of mobile buttons and show/hide toggle button.
+ * @group sidemenu
+ */
 $cuba-sidemenu-top-offset: floor(($v-unit-size - $v-unit-size * 0.8) / 2);
+/**
+ * The reserved height for mobile buttons and show/hide toggle button in mobile mode.
+ * @group sidemenu
+ */
 $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
 @mixin halo-cuba-sidemenu($primary-stylename: c-sidemenu) {

@@ -15,10 +15,26 @@
  *
  */
 
+/**
+ * The extra height of checkbox.
+ * @group checkbox
+ */
 $cuba-checkbox-extra-height: ceil($v-unit-size / 10);
 
+/**
+ * The line height of checkbox.
+ * @group checkbox
+ */
 $cuba-checkbox-line-height: ceil($v-unit-size / 1.9);
+/**
+ * The line height of small checkbox.
+ * @group checkbox
+ */
 $cuba-checkbox-line-height--small: ceil($v-unit-size / 2.1);
+/**
+ * The line height of large checkbox.
+ * @group checkbox
+ */
 $cuba-checkbox-line-height--large: ceil($v-unit-size / 1.6);
 
 @mixin halo-checkbox($primary-stylename: v-checkbox) {

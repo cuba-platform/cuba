@@ -15,7 +15,15 @@
  *
  */
 
+/**
+ * The width of split panel splitter.
+ * @group splitpanel
+ */
 $cuba-splitpanel-splitter-width: 3px !default;
+/**
+ * The width of split panel dock button.
+ * @group splitpanel
+ */
 $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
 
 @mixin halo-splitpanel($primary-stylename: v-splitpanel) {

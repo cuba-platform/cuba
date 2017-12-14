@@ -15,6 +15,10 @@
  *
  */
 
+/**
+ * The background color of search field input that is applied while a user entering value.
+ * @group searchselect
+ */
 $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
 
 @mixin halo-cuba-searchselect($primary-stylename: c-searchselect) {

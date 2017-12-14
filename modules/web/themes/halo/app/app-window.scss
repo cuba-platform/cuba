@@ -15,7 +15,15 @@
  *
  */
 
+/**
+ * The top padding of main menu bar.
+ * @group menubar
+ */
 $cuba-app-menubar-padding-top: round($v-unit-size/8) !default;
+/**
+ * The bottom padding of main menu bar.
+ * @group menubar
+ */
 $cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
 
 // Application Window styles

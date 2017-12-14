@@ -15,7 +15,15 @@
  *
  */
 
+/**
+ * The background color of custom scrollbars for webkit/blink browsers.
+ * @group scrollbar
+ */
 $cuba-scrollbar-background-primary-color: $v-background-color !default;
+/**
+ * The border color of custom scrollbars for webkit/blink browsers.
+ * @group scrollbar
+ */
 $cuba-scrollbar-border-color: first-color(valo-border()) !default;
 
 @mixin cuba-scrollbar {

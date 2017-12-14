@@ -15,6 +15,10 @@
  *
  */
 
+/**
+ * The default background color for main menu bar header.
+ * @group menubar
+ */
 $cuba-default-menubar-background: #1c1e20 !default;
 
 @function get-menu-background-color($color) {
@@ -33,12 +37,36 @@ $cuba-default-menubar-background: #1c1e20 !default;
     }
 }
 
+/**
+ * The background color for main menu bar.
+ * @group menubar
+ */
 $cuba-menubar-background-color: get-menu-background-color($v-app-background-color) !default;
+/**
+ * The border color for main menu bar.
+ * @group menubar
+ */
 $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !default;
 
+/**
+ * The padding for main menu submenus.
+ * @group menubar
+ */
 $cuba-menubar-submenu-padding: 0px !default;
+/**
+ * The font color for main menu items.
+ * @group menubar
+ */
 $cuba-menubar-menuitem-text-color: #adaeb0 !default;
+/**
+ * The font color for application header components.
+ * @group menubar
+ */
 $cuba-menubar-text-color: #adaeb0 !default;
+/**
+ * The font color for main menu selected item.
+ * @group menubar
+ */
 $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
 
 @mixin cuba-menubar {

@@ -15,10 +15,22 @@
  *
  */
 
+/**
+ * The background color of source code editor.
+ * @group sourcecodeeditor
+ */
 $cuba-sourcecodeeditor-background-color: if(is-dark-color($v-app-background-color), darken($v-app-background-color, 4%), lighten($v-app-background-color, 8%)) !default;
 
+/**
+ * The background color of source code editor gutter.
+ * @group sourcecodeeditor
+ */
 $cuba-sourcecodeeditor-gutter-background-color: if(is-dark-color($v-app-background-color), lighten($v-app-background-color, 8%), darken($v-app-background-color, 4%)) !default;
 
+/**
+ * The background color of active line of source code editor.
+ * @group sourcecodeeditor
+ */
 $cuba-sourcecodeeditor-gutter-active-line-background-color: if(is-dark-color($v-app-background-color), lighten($v-app-background-color, 4%), darken($v-app-background-color, 16%)) !default;
 
 @mixin halo-sourcecodeeditor($primary-stylename : AceEditorWidget) {
