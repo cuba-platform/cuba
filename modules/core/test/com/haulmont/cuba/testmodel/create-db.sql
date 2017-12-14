@@ -525,3 +525,85 @@ create table TEST_USER_RELATED_NEWS (
 )^
 
 alter table TEST_USER_RELATED_NEWS add constraint TEST_USER_RELATED_NEWS_PARENT foreign key (PARENT_ID) references TEST_USER_RELATED_NEWS(ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+-- begin TEST_SOFT_DELETE_TASK
+create table TEST_SOFT_DELETE_TASK (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    MESSAGE varchar(255),
+    SERVICE_ID varchar(36),
+    --
+    primary key (ID)
+)^
+-- end TEST_SOFT_DELETE_TASK
+-- begin TEST_SOFT_DELETE_SERVICE
+create table TEST_SOFT_DELETE_SERVICE (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    CODE varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TEST_SOFT_DELETE_SERVICE
+-- begin TEST_SOFT_DELETE_PROJECT
+create table TEST_SOFT_DELETE_PROJECT (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    A_VALUE_ID varchar(36),
+    TASK_ID varchar(36),
+    --
+    primary key (ID)
+)^
+-- end TEST_SOFT_DELETE_PROJECT
+-- begin TEST_SOFT_DELETE_TASK_VALUE
+create table TEST_SOFT_DELETE_TASK_VALUE (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    TASK_ID varchar(36),
+    --
+    primary key (ID)
+)^
+-- end TEST_SOFT_DELETE_TASK_VALUE
+alter table TEST_SOFT_DELETE_TASK add constraint FK_TEST_SOFT_DELETE_TASK_SERVICE foreign key (SERVICE_ID) references TEST_SOFT_DELETE_SERVICE(ID)^
+create index IDX_TEST_SOFT_DELETE_TASK_SERVICE on TEST_SOFT_DELETE_TASK (SERVICE_ID)^
+-- end TEST_SOFT_DELETE_TASK
+-- begin TEST_SOFT_DELETE_PROJECT
+alter table TEST_SOFT_DELETE_PROJECT add constraint FK_TEST_SOFT_DELETE_PROJECT_A_VALUE foreign key (A_VALUE_ID) references TEST_SOFT_DELETE_TASK_VALUE(ID)^
+alter table TEST_SOFT_DELETE_PROJECT add constraint FK_TEST_SOFT_DELETE_PROJECT_TASK foreign key (TASK_ID) references TEST_SOFT_DELETE_TASK(ID)^
+create index IDX_TEST_SOFT_DELETE_PROJECT_A_VALUE on TEST_SOFT_DELETE_PROJECT (A_VALUE_ID)^
+create index IDX_TEST_SOFT_DELETE_PROJECT_TASK on TEST_SOFT_DELETE_PROJECT (TASK_ID)^
+-- end TEST_SOFT_DELETE_PROJECT
+-- begin TEST_SOFT_DELETE_TASK_VALUE
+alter table TEST_SOFT_DELETE_TASK_VALUE add constraint FK_TEST_SOFT_DELETE_TASK_VALUE_TASK foreign key (TASK_ID) references TEST_SOFT_DELETE_TASK(ID)^
+create index IDX_TEST_SOFT_DELETE_TASK_VALUE_TASK on TEST_SOFT_DELETE_TASK_VALUE (TASK_ID)^

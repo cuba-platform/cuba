@@ -59,5 +59,10 @@
         <class>com.haulmont.cuba.testmodel.fetchjoin.SalesPerson</class>
 
         <class>com.haulmont.cuba.testmodel.checkview.UserRelatedNews</class>
+
+        <class>com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_Task</class>
+        <class>com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_Service</class>
+        <class>com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_Project</class>
+        <class>com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_TaskValue</class>
     </persistence-unit>
 </persistence>
