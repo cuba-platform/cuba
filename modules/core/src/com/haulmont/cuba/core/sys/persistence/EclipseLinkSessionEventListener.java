@@ -89,6 +89,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             if (SoftDelete.class.isAssignableFrom(desc.getJavaClass())) {
                 desc.getQueryManager().setAdditionalCriteria("this.deleteTs is null");
+                desc.setDeletePredicate(entity -> entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted());
             }
 
             List<DatabaseMapping> mappings = desc.getMappings();
