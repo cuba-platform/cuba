@@ -53,6 +53,7 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
 
         List<MetaClassRepresentation> classes = new ArrayList<>();
         List<TemplateHashModel> enums = new ArrayList<>();
+        Set<String> addedEnums = new HashSet<>();
 
         Set<MetaClass> metas = new HashSet<>(metadataTools.getAllPersistentMetaClasses());
         metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
@@ -74,7 +75,12 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
 
             for (MetaClassRepresentation.MetaClassRepProperty metaProperty : rep.getProperties()) {
                 TemplateHashModel enumValues = metaProperty.getEnumValues();
-                if (enumValues!=null) enums.add(enumValues);
+                if (enumValues != null) {
+                    if (!addedEnums.contains(metaProperty.getJavaType())) {
+                        addedEnums.add(metaProperty.getJavaType());
+                        enums.add(enumValues);
+                    }
+                }
             }
 
         }
