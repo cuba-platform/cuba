@@ -21,7 +21,10 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.config.QueryHints;
@@ -32,6 +35,7 @@ import org.eclipse.persistence.queries.LoadGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -315,6 +319,21 @@ public class FetchGroupManager {
                 FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
                 fetchGroupFields.add(field);
                 if (property.getView() != null) {
+                    if (ClassUtils.isPrimitiveOrWrapper(metaProperty.getJavaType()) ||
+                            String.class.isAssignableFrom(metaProperty.getJavaType())) {
+                        String message = "Wrong Views mechanism usage found. View%s is set for property \"%s\" of " +
+                                "class \"%s\", but this property does not point to an Entity";
+
+                        String propertyViewName = property.getView().getName();
+                        propertyViewName = propertyViewName != null && !propertyViewName.isEmpty()
+                                ? " \"" + propertyViewName + "\""
+                                : "";
+
+                        message = String.format(message, propertyViewName, property.getName(),
+                                metaClass.getName());
+                        throw new DevelopmentException(message);
+                    }
+
                     processView(property.getView(), field, fetchGroupFields, useFetchGroup);
                 }
             }
