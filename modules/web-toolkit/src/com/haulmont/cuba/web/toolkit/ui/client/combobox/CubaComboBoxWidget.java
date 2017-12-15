@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.combobox;
 
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
@@ -166,6 +167,16 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
             addStyleName(CUBA_DISABLED_OR_READONLY);
         } else {
             removeStyleName(CUBA_DISABLED_OR_READONLY);
+        }
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        super.onBlur(event);
+
+        if (!readonly && !"".equals(inputPrompt)
+                && ("".equals(selectedOptionKey) || null == selectedOptionKey)) {
+            setPromptingOn();
         }
     }
 }
