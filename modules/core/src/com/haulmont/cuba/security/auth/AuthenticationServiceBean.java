@@ -120,9 +120,8 @@ public class AuthenticationServiceBean implements AuthenticationService {
             UserSession currentSession = userSessionSource.getUserSession();
             SessionLogEntry logEntry = userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
-            UserSession substitutionSession = withSystemUser(() ->
-                    authenticationManager.substituteUser(substitutedUser)
-            );
+            UserSession substitutionSession =
+                    authenticationManager.substituteUser(substitutedUser);
 
             Map<String, Object> logParams = emptyMap();
             if (logEntry != null && logEntry.getClientType() != null) {
