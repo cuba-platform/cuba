@@ -69,8 +69,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected ConditionsTree conditionsTree;
 
     /**
-     * @param filter filter
-     * @param hierarchyDepth max level of properties hierarchy
+     * @param filter                filter
+     * @param hierarchyDepth        max level of properties hierarchy
      * @param hideDynamicAttributes hide dynamic attributes conditions from wizard
      */
     public ConditionDescriptorsTreeBuilder(Filter filter,
@@ -180,11 +180,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         }
 
         if (FtsConfigHelper.getEnabled()) {
-            boolean ftsConditionAlreadyAdded = conditionsTree.getRoots().stream()
-                    .anyMatch(condition -> condition instanceof FtsCondition);
-            if (!ftsConditionAlreadyAdded) {
-                rootNodes.add(new Node<>(new FtsConditionDescriptor(filterComponentName, datasource)));
-            }
+            rootNodes.add(new Node<>(new FtsConditionDescriptor(filterComponentName, datasource)));
         }
 
         tree.setRootNodes(rootNodes);
@@ -285,7 +281,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         return security.isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && (metadataTools.isPersistent(property)            // exclude transient properties
-                    || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
+                || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
                 && !defaultExcludedProps.contains(property.getName())
                 && !(byte[].class.equals(property.getJavaType()))
                 && !property.getRange().getCardinality().isMany();  // exclude ToMany

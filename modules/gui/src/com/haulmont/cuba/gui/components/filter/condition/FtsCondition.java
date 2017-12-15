@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.filter.descriptor.FtsConditionDescriptor
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.FtsOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.RandomStringUtils;
 import org.dom4j.Element;
 
 /**
@@ -38,11 +39,13 @@ import org.dom4j.Element;
 @SystemLevel
 public class FtsCondition extends AbstractCondition {
 
-    public static final String QUERY_KEY_PARAM_NAME = "__queryKey";
-    public static final String SESSION_ID_PARAM_NAME = "__sessionId";
+    protected String queryKeyParamName;
+    protected String sessionIdParamName;
 
     public FtsCondition(FtsCondition other) {
         super(other);
+        this.queryKeyParamName = other.queryKeyParamName;
+        this.sessionIdParamName = other.sessionIdParamName;
     }
 
     @Override
@@ -54,12 +57,17 @@ public class FtsCondition extends AbstractCondition {
         super(descriptor);
         if (AppBeans.containsBean(FtsFilterHelper.NAME)) {
             FtsFilterHelper ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
-            this.text = ftsFilterHelper.createFtsWhereClause(datasource.getMetaClass().getName());
+            this.queryKeyParamName = generateQueryKeyParamName();
+            this.sessionIdParamName = generateSessionIdParamName();
+            this.text = ftsFilterHelper.createFtsWhereClause(datasource.getMetaClass().getName(),
+                    queryKeyParamName, sessionIdParamName);
         }
     }
 
     public FtsCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
+        queryKeyParamName = element.attributeValue("queryKeyParamName");
+        sessionIdParamName = element.attributeValue("sessionIdParamName");
     }
 
     @Override
@@ -82,5 +90,25 @@ public class FtsCondition extends AbstractCondition {
     public void toXml(Element element, Param.ValueProperty valueProperty) {
         super.toXml(element, valueProperty);
         element.addAttribute("type", ConditionType.FTS.name());
+        element.addAttribute("queryKeyParamName", queryKeyParamName);
+        element.addAttribute("sessionIdParamName", sessionIdParamName);
+    }
+
+    public String getQueryKeyParamName() {
+        //for backward compatibility with v 6.7 a default param name may be returned, if filter xml doesn't contain it
+        return queryKeyParamName != null ? queryKeyParamName : FtsFilterHelper.QUERY_KEY_PARAM_NAME;
+    }
+
+    public String getSessionIdParamName() {
+        //for backward compatibility with v 6.7 a default param name may be returned, if filter xml doesn't contain it
+        return sessionIdParamName != null ? sessionIdParamName : FtsFilterHelper.SESSION_ID_PARAM_NAME;
+    }
+
+    protected String generateQueryKeyParamName() {
+        return "__queryKey" + RandomStringUtils.randomAlphanumeric(6);
+    }
+
+    protected String generateSessionIdParamName() {
+        return "__sessionId" + RandomStringUtils.randomAlphanumeric(6);
     }
 }

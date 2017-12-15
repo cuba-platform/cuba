@@ -78,6 +78,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Component(FilterDelegate.NAME)
 @Scope("prototype")
@@ -198,6 +199,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected Filter.AfterFilterAppliedHandler afterFilterAppliedHandler;
     protected boolean borderVisible = true;
+
+    protected Set<String> ftsLastDatasourceRefreshParamsNames = new HashSet<>();
 
     protected enum ConditionsFocusType {
         NONE,
@@ -522,7 +525,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (AbstractCondition condition : conditions.toConditionsList()) {
             condition.addListener(new AbstractCondition.Listener() {
                 @Override
-                public void captionChanged() {}
+                public void captionChanged() {
+                }
 
                 @Override
                 public void paramChanged(Param oldParam, Param newParam) {
@@ -836,7 +840,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
 
             //groupBox for group conditions must occupy the whole line in conditions grid
-            Integer conditionWidth = condition.isGroup() ? (Integer)conditionsCount : condition.getWidth();
+            Integer conditionWidth = condition.isGroup() ? (Integer) conditionsCount : condition.getWidth();
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
             if (nextColumnEnd >= conditionsCount) {
                 //complete current row in grid with gaps if next cell will be on next row
@@ -965,8 +969,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean isFilterModified() {
         boolean filterPropertiesModified =
                 !Objects.equals(initialFilterEntity.getName(), filterEntity.getName()) ||
-                !Objects.equals(initialFilterEntity.getCode(), filterEntity.getCode()) ||
-                !Objects.equals(initialFilterEntity.getUser(), filterEntity.getUser());
+                        !Objects.equals(initialFilterEntity.getCode(), filterEntity.getCode()) ||
+                        !Objects.equals(initialFilterEntity.getUser(), filterEntity.getUser());
         if (filterPropertiesModified) return true;
         String filterXml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
                 : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
@@ -1457,21 +1461,25 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected Map<String, Object> prepareDatasourceCustomParams() {
         Map<String, Object> lastRefreshParameters = new HashMap<>(datasource.getLastRefreshParameters());
-        lastRefreshParameters.remove(FtsFilterHelper.SESSION_ID_PARAM_NAME);
-        lastRefreshParameters.remove(FtsFilterHelper.QUERY_KEY_PARAM_NAME);
-
-        AbstractCondition ftsCondition = conditions.toConditionsList().stream()
+        for (String paramName : ftsLastDatasourceRefreshParamsNames) {
+            lastRefreshParameters.remove(paramName);
+        }
+        List<FtsCondition> ftsConditions = conditions.toConditionsList().stream()
                 .filter(abstractCondition -> abstractCondition instanceof FtsCondition)
-                .findAny()
-                .orElse(null);
+                .map(abstractCondition -> (FtsCondition) abstractCondition)
+                .collect(Collectors.toList());
 
-        if (ftsCondition != null) {
+        for (FtsCondition ftsCondition : ftsConditions) {
             String searchTerm = (String) ftsCondition.getParam().getValue();
             if (!Strings.isNullOrEmpty(searchTerm)) {
                 FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
                 int queryKey = ftsSearchResult.getQueryKey();
-                lastRefreshParameters.put(FtsFilterHelper.SESSION_ID_PARAM_NAME, userSessionSource.getUserSession().getId());
-                lastRefreshParameters.put(FtsFilterHelper.QUERY_KEY_PARAM_NAME, queryKey);
+
+                lastRefreshParameters.put(ftsCondition.getSessionIdParamName(), userSessionSource.getUserSession().getId());
+                lastRefreshParameters.put(ftsCondition.getQueryKeyParamName(), queryKey);
+
+                ftsLastDatasourceRefreshParamsNames.add(ftsCondition.getSessionIdParamName());
+                ftsLastDatasourceRefreshParamsNames.add(ftsCondition.getQueryKeyParamName());
             }
         }
         return lastRefreshParameters;
@@ -2145,7 +2153,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     });
                 }
 
-                String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                String xml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
                         : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
                 filterEntity.setXml(xml);
                 saveFilterEntity();
@@ -2182,7 +2190,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
                         newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                     }
-                    String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                    String xml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
                             : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
                     filterEntity = newFilterEntity;
                     filterEntity.setName(filterName);

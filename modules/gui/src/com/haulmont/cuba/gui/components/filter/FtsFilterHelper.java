@@ -56,6 +56,8 @@ public interface FtsFilterHelper {
 
     String createFtsWhereClause(String entityName);
 
+    String createFtsWhereClause(String entityName, String queryParamName, String sessionIdParamName);
+
     /**
      * Class for holding search result.
      * <p>
