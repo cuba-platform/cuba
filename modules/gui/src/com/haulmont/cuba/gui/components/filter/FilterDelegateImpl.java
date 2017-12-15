@@ -24,6 +24,7 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
@@ -523,6 +524,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         prevConditions = conditions;
         initialConditions = conditions.toConditionsList();
         for (AbstractCondition condition : conditions.toConditionsList()) {
+            MetaClass metaClass = datasource.getMetaClass();
+            if (metaClass.getPropertyPath(condition.getName()) == null) {
+                String message = String.format(getMainMessage("filter.inappropriate.filter"),
+                        filterEntity.getName(), metaClass.getName());
+
+                windowManager.showNotification(message, Frame.NotificationType.HUMANIZED);
+                setFilterEntity(adHocFilter);
+                break;
+            }
+
             condition.addListener(new AbstractCondition.Listener() {
                 @Override
                 public void captionChanged() {
