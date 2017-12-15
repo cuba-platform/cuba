@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.bulk;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -43,8 +44,13 @@ public class BulkEditorFieldFactory {
 
     @Nullable
     public Field createField(Datasource datasource, MetaProperty property) {
-        if (isDynamicAttributeCollection(property)) {
-            return createListEditorField(datasource, property);
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
+            if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+                return createEnumField(datasource, property);
+            } else if (attribute.getIsCollection()) {
+                return createListEditorField(datasource, property);
+            }
         }
 
         if (property.getRange().isDatatype()) {
@@ -66,14 +72,6 @@ public class BulkEditorFieldFactory {
             return createEnumField(datasource, property);
         }
         return null;
-    }
-
-    protected boolean isDynamicAttributeCollection(MetaProperty property) {
-        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
-            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
-            return attribute.getIsCollection();
-        }
-        return false;
     }
 
     protected Field createStringField(Datasource datasource, MetaProperty property) {

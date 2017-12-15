@@ -554,9 +554,22 @@ public class BulkEditorWindow extends AbstractWindow {
     private boolean hasChanges() {
         for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
             Field field = fieldEntry.getValue();
-            if (field.getValue() != null || !field.isEnabled()) {
+            if (isFieldChanged(field)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    protected boolean isFieldChanged(Field field) {
+        if (!field.isEnabled()) {
+            return true;
+        }
+
+        if (field instanceof ListEditor) {
+            return !((Collection) field.getValue()).isEmpty();
+        } else if (field.getValue() != null) {
+            return true;
         }
         return false;
     }
@@ -578,7 +591,7 @@ public class BulkEditorWindow extends AbstractWindow {
                 List<String> fields = new ArrayList<>();
                 for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
                     Field field = fieldEntry.getValue();
-                    if (field.getValue() != null || !field.isEnabled()) {
+                    if (isFieldChanged(field)) {
                         String localizedName = managedFields.get(fieldEntry.getKey()).getLocalizedName();
                         fields.add("- " + localizedName);
                     }
@@ -632,11 +645,10 @@ public class BulkEditorWindow extends AbstractWindow {
         List<String> fields = new ArrayList<>();
         for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
             Field field = fieldEntry.getValue();
-            if (field.getValue() != null || !field.isEnabled()) {
+            if (isFieldChanged(field)) {
                 fields.add(managedFields.get(fieldEntry.getKey()).getFqn());
             }
         }
-
         for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
             Field field = fieldEntry.getValue();
             if (!field.isEnabled()) {
@@ -645,7 +657,7 @@ public class BulkEditorWindow extends AbstractWindow {
 
                     item.setValueEx(fieldEntry.getKey(), null);
                 }
-            } else if (field.getValue() != null) {
+            } else if (isFieldChanged(field)) {
                 for (Entity item : items) {
                     ensureEmbeddedPropertyCreated(item, fieldEntry.getKey());
 
