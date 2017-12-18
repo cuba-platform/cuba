@@ -23,6 +23,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,7 +33,6 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class UnfetchedAttributeTest {
 
@@ -122,5 +122,47 @@ public class UnfetchedAttributeTest {
         assertNotNull(user.getUserRoles());
         user.getUserRoles().size();
         assertNotNull(user.getGroup());
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            // load default 'Company' group
+            Query q = em.createQuery("select g from sec$Group g where g.name = ?1");
+            q.setView(new View(Group.class, false)
+                    .addProperty("name"));
+            q.setParameter(1, "Company");
+
+            //noinspection unchecked
+            List<Group> groups = q.getResultList();
+            if (!groups.isEmpty()) {
+                Group defaultGroup = groups.get(0);
+
+                // load 'admin' user
+                q = em.createQuery("select u from sec$User u where u.id = ?1");
+                q.setView(
+                        new View(User.class, false)
+                                .addProperty("login")
+                                .addProperty("userRoles", new View(UserRole.class)
+                                        .addProperty("role", new View(Role.class)
+                                                .addProperty("name")))
+                );
+                q.setParameter(1, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+                List<User> list = q.getResultList();
+                if (!list.isEmpty()) {
+                    User user = list.get(0);
+                    // set the default value
+                    user.setGroup(defaultGroup);
+                }
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
     }
 }
