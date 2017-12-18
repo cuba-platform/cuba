@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.*;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.InputStream;
 
 /**
  * Allows to show exported data in web browser or download it.
@@ -41,7 +39,6 @@ import java.io.InputStream;
 @Component(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
-
     @Inject
     protected BackgroundWorker backgroundWorker;
 
@@ -82,6 +79,8 @@ public class WebExportDisplay implements ExportDisplay {
     public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat exportFormat) {
         backgroundWorker.checkUIAccess();
 
+        boolean showNewWindow = this.newWindow;
+
         if (useViewList) {
             String fileExt;
 
@@ -92,7 +91,7 @@ public class WebExportDisplay implements ExportDisplay {
             }
 
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
-            newWindow = webConfig.getViewFileExtensions().contains(StringUtils.lowerCase(fileExt));
+            showNewWindow = webConfig.getViewFileExtensions().contains(StringUtils.lowerCase(fileExt));
         }
 
         if (exportFormat != null) {
@@ -103,12 +102,7 @@ public class WebExportDisplay implements ExportDisplay {
 
         CubaFileDownloader fileDownloader = AppUI.getCurrent().getFileDownloader();
 
-        StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
-            @Override
-            public InputStream getStream() {
-                return dataProvider.provide();
-            }
-        }, resourceName);
+        StreamResource resource = new StreamResource(dataProvider::provide, resourceName);
 
         if (exportFormat != null && StringUtils.isNotEmpty(exportFormat.getContentType())) {
             resource.setMIMEType(exportFormat.getContentType());
@@ -116,7 +110,7 @@ public class WebExportDisplay implements ExportDisplay {
             resource.setMIMEType(FileTypesHelper.getMIMEType(resourceName));
         }
 
-        if (newWindow) {
+        if (showNewWindow) {
             fileDownloader.viewDocument(resource);
         } else {
             fileDownloader.downloadFile(resource);
@@ -163,5 +157,8 @@ public class WebExportDisplay implements ExportDisplay {
 
     public void setNewWindow(boolean newWindow) {
         this.newWindow = newWindow;
+
+        // newWindow is set explicitly
+        this.useViewList = false;
     }
 }
