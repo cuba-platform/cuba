@@ -42,7 +42,16 @@ public class SuggestionFieldLoader extends SuggestionFieldQueryLoader<Suggestion
         loadCaptionProperty(resultComponent, element);
         loadInputPrompt(resultComponent, element);
 
+        loadPopupWidth(resultComponent, element);
+
         loadQuery(resultComponent, element);
+    }
+
+    protected void loadPopupWidth(SuggestionField suggestionField, Element element) {
+        String popupWidth = element.attributeValue("popupWidth");
+        if (StringUtils.isNotEmpty(popupWidth)) {
+            suggestionField.setPopupWidth(popupWidth);
+        }
     }
 
     protected void loadCaptionProperty(SuggestionField suggestionField, Element element) {

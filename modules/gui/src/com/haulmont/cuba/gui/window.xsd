@@ -1504,6 +1504,20 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:simpleType name="popupWidthType">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="resourceString"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="auto"/>
+                    <xs:enumeration value="parent"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <!-- SuggestionField -->
     <xs:complexType name="suggestionFieldComponent">
         <xs:complexContent>
@@ -1517,7 +1531,9 @@
                 <xs:attribute name="suggestionsLimit" type="xs:integer"/>
 
                 <xs:attribute name="inputPrompt" type="resourceString"/>
-                
+
+                <xs:attribute name="popupWidth" type="popupWidthType"/>
+
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>

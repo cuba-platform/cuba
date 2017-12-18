@@ -52,30 +52,39 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
 
         loadInputPrompt(resultComponent, element);
 
+        loadPopupWidth(resultComponent, element);
+
         loadQuery(resultComponent, element);
     }
 
-    protected void loadCaptionProperty(SuggestionPickerField searchPickerField, Element element) {
+    protected void loadPopupWidth(SuggestionPickerField suggestionField, Element element) {
+        String popupWidth = element.attributeValue("popupWidth");
+        if (StringUtils.isNotEmpty(popupWidth)) {
+            suggestionField.setPopupWidth(popupWidth);
+        }
+    }
+
+    protected void loadCaptionProperty(SuggestionPickerField suggestionField, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
-            searchPickerField.setCaptionMode(CaptionMode.PROPERTY);
-            searchPickerField.setCaptionProperty(captionProperty);
+            suggestionField.setCaptionMode(CaptionMode.PROPERTY);
+            suggestionField.setCaptionProperty(captionProperty);
         }
     }
 
-    protected void loadActions(SuggestionPickerField searchPickerField) {
-        loadActions(searchPickerField, element);
-        if (searchPickerField.getActions().isEmpty()) {
-            searchPickerField.addLookupAction();
-            searchPickerField.addOpenAction();
+    protected void loadActions(SuggestionPickerField suggestionField) {
+        loadActions(suggestionField, element);
+        if (suggestionField.getActions().isEmpty()) {
+            suggestionField.addLookupAction();
+            suggestionField.addOpenAction();
         }
     }
 
-    protected void loadMetaClass(SuggestionPickerField searchPickerField, Element element) {
+    protected void loadMetaClass(SuggestionPickerField suggestionField, Element element) {
         String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
             Metadata metadata = AppBeans.get(Metadata.NAME);
-            searchPickerField.setMetaClass(metadata.getSession().getClass(metaClass));
+            suggestionField.setMetaClass(metadata.getSession().getClass(metaClass));
         }
     }
 
