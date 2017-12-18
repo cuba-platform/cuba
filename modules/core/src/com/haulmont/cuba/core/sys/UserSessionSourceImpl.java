@@ -34,12 +34,23 @@ public class UserSessionSourceImpl extends AbstractUserSessionSource {
     @Override
     public boolean checkCurrentUserSession() {
         SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null
+                && securityContext.getSession() != null
+                && securityContext.getSession().isSystem()) {
+            return true;
+        }
+
         return securityContext != null && userSessions.get(securityContext.getSessionId()) != null;
     }
 
     @Override
     public UserSession getUserSession() {
         SecurityContext securityContext = AppContext.getSecurityContextNN();
+        if (securityContext.getSession() != null
+                && securityContext.getSession().isSystem()) {
+            return securityContext.getSession();
+        }
+
         UserSession session = userSessions.getAndRefresh(securityContext.getSessionId());
         if (session == null) {
             throw new NoUserSessionException(securityContext.getSessionId());

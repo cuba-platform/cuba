@@ -23,6 +23,8 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.ClusterManager;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.events.*;
 import com.haulmont.cuba.security.entity.User;
@@ -37,9 +39,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -64,10 +64,29 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     @Inject
     protected List<AuthenticationProvider> authenticationProviders;
 
+    protected UserSession serverSession;
+
+    public AuthenticationManagerBean() {
+        //noinspection IncorrectCreateEntity
+        User noUser = new User();
+        noUser.setLogin("server");
+        serverSession = new UserSession(
+                UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
+                Collections.emptyList(), Locale.ENGLISH, true) {
+            @Override
+            public UUID getId() {
+                return AppContext.NO_USER_CONTEXT.getSessionId();
+            }
+        };
+    }
+
     @Override
     @Nonnull
     public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
         checkNotNullArgument(credentials, "credentials should not be null");
+
+        SecurityContext previousSecurityContext = AppContext.getSecurityContext();
+        AppContext.setSecurityContext(new SecurityContext(serverSession));
 
         try (Transaction tx = persistence.getTransaction()) {
             AuthenticationDetails authenticationDetails = authenticateInternal(credentials);
@@ -77,6 +96,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
             userSessionManager.clearPermissionsOnUser(authenticationDetails.getSession());
 
             return authenticationDetails;
+        } finally {
+            AppContext.setSecurityContext(previousSecurityContext);
         }
     }
 
@@ -85,30 +106,36 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         checkNotNullArgument(credentials, "credentials should not be null");
 
+        SecurityContext previousSecurityContext = AppContext.getSecurityContext();
+        AppContext.setSecurityContext(new SecurityContext(serverSession));
+
         AuthenticationDetails authenticationDetails = null;
+        try {
+            try (Transaction tx = persistence.getTransaction()) {
+                publishBeforeLoginEvent(credentials);
 
-        try (Transaction tx = persistence.getTransaction()) {
-            publishBeforeLoginEvent(credentials);
+                authenticationDetails = authenticateInternal(credentials);
 
-            authenticationDetails = authenticateInternal(credentials);
+                tx.commit();
 
-            tx.commit();
+                userSessionManager.clearPermissionsOnUser(authenticationDetails.getSession());
 
-            userSessionManager.clearPermissionsOnUser(authenticationDetails.getSession());
+                setTimeZone(credentials, authenticationDetails);
 
-            setTimeZone(credentials, authenticationDetails);
+                setSessionAttributes(credentials, authenticationDetails);
 
-            setSessionAttributes(credentials, authenticationDetails);
+                storeSession(credentials, authenticationDetails);
 
-            storeSession(credentials, authenticationDetails);
+                log.info("Logged in: {}", authenticationDetails.getSession());
 
-            log.info("Logged in: {}", authenticationDetails.getSession());
+                publishUserLoggedInEvent(credentials, authenticationDetails);
 
-            publishUserLoggedInEvent(credentials, authenticationDetails);
-
-            return authenticationDetails;
+                return authenticationDetails;
+            } finally {
+                publishAfterLoginEvent(credentials, authenticationDetails);
+            }
         } finally {
-            publishAfterLoginEvent(credentials, authenticationDetails);
+            AppContext.setSecurityContext(previousSecurityContext);
         }
     }
 

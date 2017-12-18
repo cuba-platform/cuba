@@ -19,7 +19,6 @@ package com.haulmont.cuba.security.auth;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.app.UserSessionLog;
@@ -38,8 +37,6 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Map;
 
-import static com.haulmont.cuba.core.sys.AppContext.getSecurityContext;
-import static com.haulmont.cuba.core.sys.AppContext.setSecurityContext;
 import static java.util.Collections.emptyMap;
 
 @Component(AuthenticationService.NAME)
@@ -62,11 +59,10 @@ public class AuthenticationServiceBean implements AuthenticationService {
         try {
             preprocessCredentials(credentials);
 
-            return withSystemUser(() -> {
-                //noinspection UnnecessaryLocalVariable
-                AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
-                return authenticationDetails;
-            });
+            //noinspection UnnecessaryLocalVariable
+            AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
+            return authenticationDetails;
+
         } catch (InternalAuthenticationException ie) {
             log.error("Authentication error", ie);
             throw ie;
@@ -86,9 +82,7 @@ public class AuthenticationServiceBean implements AuthenticationService {
             preprocessCredentials(credentials);
 
             //noinspection UnnecessaryLocalVariable
-            AuthenticationDetails details = withSystemUser(() ->
-                    authenticationManager.login(credentials)
-            );
+            AuthenticationDetails details = authenticationManager.login(credentials);
 
             Map<String, Object> logParams = emptyMap();
             if (credentials instanceof AbstractClientCredentials) {
@@ -180,26 +174,5 @@ public class AuthenticationServiceBean implements AuthenticationService {
                 tcCredentials.setClientIpAddress(null);
             }
         }
-    }
-
-    /**
-     * Execute code on behalf of the system user.
-     *
-     * @param operation code to execute
-     * @return result of the execution
-     */
-    protected <T> T withSystemUser(AuthenticationOperation<T> operation) throws LoginException {
-        SecurityContext previousSecurityContext = getSecurityContext();
-        setSecurityContext(null);
-        try {
-            authentication.begin();
-            return operation.call();
-        } finally {
-            setSecurityContext(previousSecurityContext);
-        }
-    }
-
-    public interface AuthenticationOperation<T> {
-        T call() throws LoginException;
     }
 }
