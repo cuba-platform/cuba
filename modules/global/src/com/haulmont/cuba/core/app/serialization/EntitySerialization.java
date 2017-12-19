@@ -511,7 +511,11 @@ public class EntitySerialization implements EntitySerializationAPI {
                     if (propertyRange.isDatatype()) {
                         Object value;
                         if (isCollectionDynamicAttribute(metaProperty)) {
-                            value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
+                            if (propertyValue.isJsonArray()) {
+                                value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
+                            } else {
+                                value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
+                            }
                         } else {
                             value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
                         }
