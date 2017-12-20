@@ -659,9 +659,11 @@ public class App implements ConnectionListener {
 
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassword");
-            Window changePasswordWindow = wm.openEditor(changePasswordDialog, user,
+
+            Window changePasswordWindow = wm.openWindow(changePasswordDialog,
                     OpenType.DIALOG.closeable(false),
                     ParamsMap.of("cancelEnabled", false));
+
             changePasswordWindow.addCloseListener(actionId -> {
                 for (Window window : wm.getOpenWindows()) {
                     window.setEnabled(true);
