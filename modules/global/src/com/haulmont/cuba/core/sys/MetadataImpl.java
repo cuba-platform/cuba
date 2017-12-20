@@ -142,7 +142,8 @@ public class MetadataImpl implements Metadata {
             // create an instance of embedded ID
             Entity key = create(primaryKeyProperty.getRange().asClass());
             ((BaseGenericIdEntity) entity).setId(key);
-        } else {
+
+        } else if (tools.isPersistent(metaClass)) {
             if (entity instanceof BaseLongIdEntity) {
                 ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(getEntityNameForIdGeneration(metaClass)));
             } else if (entity instanceof BaseIntegerIdEntity) {
