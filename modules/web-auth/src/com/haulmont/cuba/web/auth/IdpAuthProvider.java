@@ -22,6 +22,8 @@ import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
@@ -58,6 +60,8 @@ import java.util.Locale;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
+
 /**
  * Authentication provider that supports CUBA IDP web service.
  */
@@ -72,15 +76,44 @@ public class IdpAuthProvider implements CubaAuthProvider {
 
     @Inject
     protected WebAuthConfig webAuthConfig;
-
     @Inject
     protected GlobalConfig globalConfig;
 
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected AuthenticationService authenticationService;
+
+    @Inject
+    protected TrustedClientService trustedClientService;
+
+    protected volatile String webAppUrl;
+
+    protected String getWebAppUrl() {
+        if (webAppUrl == null) {
+            synchronized (this) {
+                if (webAppUrl == null) {
+                    UserSession systemSession;
+                    try {
+                        systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+                    } catch (LoginException e) {
+                        throw new RuntimeException("Unable to get systemSession", e);
+                    }
+
+                    // webAppUrl can be overridden in DB, thus we need SecurityContext to obtain it from middleware
+                    withSecurityContext(new SecurityContext(systemSession), () -> {
+                        String webAppUrl = globalConfig.getWebAppUrl();
+                        if (!webAppUrl.endsWith("/")) {
+                            webAppUrl += "/";
+                        }
+                        this.webAppUrl = webAppUrl;
+                    });
+                }
+            }
+        }
+
+        return this.webAppUrl;
+    }
 
     @Override
     public void authenticate(String login, String password, Locale locale) throws LoginException {
@@ -261,7 +294,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
             idpBaseURL += "/";
         }
         String idpRedirectUrl = idpBaseURL + "logout?sp=" +
-                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
+                URLEncodeUtils.encodeUtf8(getWebAppUrl());
 
         return idpRedirectUrl;
     }
@@ -272,7 +305,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
             idpBaseURL += "/";
         }
         String idpRedirectUrl = idpBaseURL + "?sp=" +
-                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
+                URLEncodeUtils.encodeUtf8(getWebAppUrl());
 
         return idpRedirectUrl;
     }
