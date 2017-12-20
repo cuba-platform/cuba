@@ -373,8 +373,8 @@ public class EntityDiffManager {
     protected EntityPropertyDiff getDynamicAttributeCollectionDiff(Object firstValue,
                                                                    Object secondValue,
                                                                    MetaProperty metaProperty) {
-        Collection<Entity> firstCollection = Optional.of((Collection<Entity>)firstValue).orElse(Collections.emptyList());
-        Collection<Entity> secondCollection = Optional.of((Collection<Entity>)secondValue).orElse(Collections.emptyList());
+        Collection<Entity> firstCollection = Optional.ofNullable((Collection<Entity>)firstValue).orElse(Collections.emptyList());
+        Collection<Entity> secondCollection = Optional.ofNullable((Collection<Entity>)secondValue).orElse(Collections.emptyList());
         EntityCollectionPropertyDiff collectionDiff = new EntityCollectionPropertyDiff(metaProperty);
         boolean hasChanges = false;
         for (Entity item : secondCollection) {
