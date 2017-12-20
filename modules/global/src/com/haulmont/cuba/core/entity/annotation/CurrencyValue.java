@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @MetaAnnotation
 public @interface CurrencyValue {
     /**
-     * Currency name: USD, GBP, EUR, $, € or another currency sign.
+     * Currency name: USD, GBP, EUR, $ or another currency sign.
      */
     String currency() default StringUtils.EMPTY;
 }
