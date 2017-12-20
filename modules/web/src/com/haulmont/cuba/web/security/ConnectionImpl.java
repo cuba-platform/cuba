@@ -276,7 +276,7 @@ public class ConnectionImpl extends EventRouter implements Connection {
     }
 
     protected void publishUserSessionStartedEvent(Credentials credentials, AuthenticationDetails authenticationDetails) {
-        events.publish(new UserSessionStartedEvent(credentials, authenticationDetails));
+        events.publish(new UserSessionStartedEvent(this, credentials, authenticationDetails));
     }
 
     protected void rethrowLoginException(RuntimeException e) throws LoginException {
@@ -331,8 +331,13 @@ public class ConnectionImpl extends EventRouter implements Connection {
         fireStateChangeListeners(previousSession, null);
     }
 
-    private void publishUserSessionFinishedEvent(ClientUserSession session) {
-        UserSessionFinishedEvent event = new UserSessionFinishedEvent(session);
+    protected void publishUserSessionFinishedEvent(UserSession session) {
+        UserSessionFinishedEvent event = new UserSessionFinishedEvent(this, session);
+        events.publish(event);
+    }
+
+    protected void publishUserSessionSubstitutedEvent(UserSession previousSession, UserSession session) {
+        UserSessionSubstitutedEvent event = new UserSessionSubstitutedEvent(this, previousSession, session);
         events.publish(event);
     }
 
@@ -348,12 +353,17 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
     @Override
     public void substituteUser(User substitutedUser) {
+        UserSession previousSession = getSession();
+
         UserSession session = authenticationService.substituteUser(substitutedUser);
 
         ClientUserSession clientUserSession = createSession(session);
         clientUserSession.setAuthenticated(true);
 
         setSessionInternal(clientUserSession);
+
+        // publish login success
+        publishUserSessionSubstitutedEvent(previousSession, clientUserSession);
 
         fireSubstitutionListeners();
     }

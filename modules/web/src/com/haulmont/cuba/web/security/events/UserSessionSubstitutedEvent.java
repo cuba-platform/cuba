@@ -20,16 +20,14 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.Connection;
 import org.springframework.context.ApplicationEvent;
 
-/**
- * Event that is fired after logout of user session on middleware.
- */
-public class UserSessionFinishedEvent extends ApplicationEvent {
-    protected final UserSession session;
+public class UserSessionSubstitutedEvent extends ApplicationEvent {
+    protected final UserSession sourceSession;
+    protected final UserSession substitutedSession;
 
-    public UserSessionFinishedEvent(Connection source, UserSession session) {
+    public UserSessionSubstitutedEvent(Connection source, UserSession sourceSession, UserSession substitutedSession) {
         super(source);
-
-        this.session = session;
+        this.substitutedSession = substitutedSession;
+        this.sourceSession = sourceSession;
     }
 
     @Override
@@ -37,11 +35,11 @@ public class UserSessionFinishedEvent extends ApplicationEvent {
         return (Connection) super.getSource();
     }
 
-    public Connection getConnection() {
-        return (Connection) super.getSource();
+    public UserSession getSourceSession() {
+        return sourceSession;
     }
 
-    public UserSession getUserSession() {
-        return (UserSession) super.getSource();
+    public UserSession getSubstitutedSession() {
+        return substitutedSession;
     }
 }

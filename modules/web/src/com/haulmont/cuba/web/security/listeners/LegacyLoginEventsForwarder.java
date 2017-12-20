@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Locale;
 
+import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 import static com.haulmont.cuba.web.security.ExternalUserCredentials.isLoggedInWithExternalAuth;
 
 /**
@@ -105,6 +106,15 @@ public class LegacyLoginEventsForwarder {
 
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
+    protected void onSessionSubstituted(UserSessionSubstitutedEvent event) {
+        if (webAuthConfig.getExternalAuthentication()
+                && isLoggedInWithExternalAuth(event.getSourceSession())) {
+            event.getSubstitutedSession().setAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
+        }
+    }
+
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
+    @EventListener
     protected void pingExternalAuthentication(SessionHeartbeatEvent event) {
         Connection connection = event.getSource().getConnection();
 
@@ -126,6 +136,7 @@ public class LegacyLoginEventsForwarder {
         }
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
     protected void redirectToExternalAuthentication(AppLoggedOutEvent event) {
         Connection connection = event.getApp().getConnection();

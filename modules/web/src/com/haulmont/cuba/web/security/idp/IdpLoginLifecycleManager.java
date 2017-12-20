@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.security.idp;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.URLEncodeUtils;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
@@ -31,12 +32,14 @@ import com.haulmont.cuba.web.security.ExternalUserCredentials;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
 import com.haulmont.cuba.web.security.events.AppStartedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
+import com.haulmont.cuba.web.security.events.UserSessionSubstitutedEvent;
 import com.haulmont.cuba.web.sys.RequestContext;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -64,6 +67,7 @@ public class IdpLoginLifecycleManager {
     @Inject
     protected IdpSessionPingConnector idpSessionPingConnector;
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
     protected void onAppStarted(AppStartedEvent event) throws LoginException {
         Connection connection = event.getApp().getConnection();
@@ -93,6 +97,18 @@ public class IdpLoginLifecycleManager {
         }
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
+    @EventListener
+    protected void onSessionSubstituted(UserSessionSubstitutedEvent event) {
+        if (webIdpConfig.getIdpEnabled()) {
+            String idpSessionId = IdpService.IDP_USER_SESSION_ATTRIBUTE;
+            if (event.getSourceSession().getAttribute(idpSessionId) != null) {
+                event.getSubstitutedSession().setAttribute(IdpService.IDP_USER_SESSION_ATTRIBUTE, idpSessionId);
+            }
+        }
+    }
+
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
     protected void onAppLoggedOut(AppLoggedOutEvent event) {
         if (webIdpConfig.getIdpEnabled()
@@ -114,6 +130,7 @@ public class IdpLoginLifecycleManager {
         }
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
     protected void pingIdpSession(SessionHeartbeatEvent event) {
         Connection connection = event.getSource().getConnection();
