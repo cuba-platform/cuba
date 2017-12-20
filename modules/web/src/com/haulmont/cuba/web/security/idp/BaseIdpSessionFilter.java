@@ -21,7 +21,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.IdpSession;
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -49,6 +54,7 @@ import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 import static com.haulmont.cuba.web.security.idp.IdpSessionPrincipal.*;
 
 public abstract class BaseIdpSessionFilter implements Filter {
@@ -58,9 +64,41 @@ public abstract class BaseIdpSessionFilter implements Filter {
 
     @Inject
     protected WebIdpConfig webIdpConfig;
-
+    @Inject
+    protected WebAuthConfig webAuthConfig;
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected TrustedClientService trustedClientService;
+
+    protected volatile String webAppUrl;
+
+    protected String getWebAppUrl() {
+        if (webAppUrl == null) {
+            synchronized (this) {
+                if (webAppUrl == null) {
+                    UserSession systemSession;
+                    try {
+                        systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+                    } catch (LoginException e) {
+                        throw new RuntimeException("Unable to get systemSession", e);
+                    }
+
+                    // webAppUrl can be overridden in DB, thus we need SecurityContext to obtain it from middleware
+                    withSecurityContext(new SecurityContext(systemSession), () -> {
+                        String webAppUrl = globalConfig.getWebAppUrl();
+                        if (!webAppUrl.endsWith("/")) {
+                            webAppUrl += "/";
+                        }
+                        this.webAppUrl = webAppUrl;
+                    });
+                }
+            }
+        }
+
+        return this.webAppUrl;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -232,7 +270,7 @@ public abstract class BaseIdpSessionFilter implements Filter {
             idpBaseURL += "/";
         }
         String idpRedirectUrl = idpBaseURL + "logout?sp=" +
-                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
+                URLEncodeUtils.encodeUtf8(getWebAppUrl());
 
         return idpRedirectUrl;
     }
@@ -243,7 +281,7 @@ public abstract class BaseIdpSessionFilter implements Filter {
             idpBaseURL += "/";
         }
         String idpRedirectUrl = idpBaseURL + "?sp=" +
-                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
+                URLEncodeUtils.encodeUtf8(getWebAppUrl());
 
         return idpRedirectUrl;
     }

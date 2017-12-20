@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
@@ -32,9 +31,6 @@ import java.util.List;
 @ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "false", defaultValue = "false")
 @Component("cuba_IdpLoginHttpRequestFilter")
 public class IdpLoginHttpRequestFilter extends BaseIdpSessionFilter implements HttpRequestFilter, Ordered {
-    @Inject
-    protected WebIdpConfig webIdpConfig;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         if (webIdpConfig.getIdpEnabled()) {
