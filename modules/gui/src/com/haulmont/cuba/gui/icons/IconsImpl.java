@@ -16,13 +16,20 @@
 
 package com.haulmont.cuba.gui.icons;
 
+import com.google.common.base.Splitter;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -30,8 +37,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 @Component(Icons.NAME)
@@ -47,47 +52,33 @@ public class IconsImpl implements Icons {
             });
 
     @Inject
+    private Logger log;
+
+    @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
     protected static final List<Class<? extends Icon>> iconSets = new ArrayList<>();
 
-    protected ReadWriteLock lock = new ReentrantReadWriteLock();
-    protected volatile boolean initialized;
-
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
     public void init() {
         String iconSetsProp = AppContext.getProperty("cuba.iconsConfig");
         if (StringUtils.isEmpty(iconSetsProp))
             return;
 
-        String[] iconSetFqns = iconSetsProp.split(" ");
-        for (String iconSetFqn : iconSetFqns) {
+        for (String iconSetFqn : Splitter.on(' ').omitEmptyStrings().trimResults().split(iconSetsProp)) {
             try {
-                Class<?> iconSetClass = getClass().getClassLoader()
-                        .loadClass(iconSetFqn);
+                Class<?> iconSetClass = ReflectionHelper.loadClass(iconSetFqn);
 
-                if (!Icon.class.isAssignableFrom(iconSetClass))
+                if (!Icon.class.isAssignableFrom(iconSetClass)) {
+                    log.warn(iconSetClass + " is does not implement Icon");
                     continue;
+                }
 
                 //noinspection unchecked
                 iconSets.add((Class<? extends Icon>) iconSetClass);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(String.format("Unable to load icon set class: %s", iconSetFqn), e);
-            }
-        }
-    }
-
-    protected void checkInitialized() {
-        if (!initialized) {
-            lock.readLock().unlock();
-            lock.writeLock().lock();
-            try {
-                if (!initialized) {
-                    init();
-                    initialized = true;
-                }
-            } finally {
-                lock.readLock().lock();
-                lock.writeLock().unlock();
             }
         }
     }
@@ -108,19 +99,12 @@ public class IconsImpl implements Icons {
         if (!ICON_NAME_REGEX.matcher(icon).matches())
             throw new IllegalArgumentException("Icon name can contain only uppercase letters and underscores.");
 
-        lock.readLock().lock();
-        try {
-            checkInitialized();
+        String themeIcon = getThemeIcon(icon);
 
-            String themeIcon = getThemeIcon(icon);
+        if (StringUtils.isNotEmpty(themeIcon))
+            return themeIcon;
 
-            if (StringUtils.isNotEmpty(themeIcon))
-                return themeIcon;
-
-            return iconsCache.getUnchecked(icon);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return iconsCache.getUnchecked(icon);
     }
 
     protected String getThemeIcon(String iconName) {
@@ -145,6 +129,10 @@ public class IconsImpl implements Icons {
                 Object obj = iconSet.getDeclaredField(iconName).get(null);
                 iconSource = ((Icon) obj).source();
             } catch (IllegalAccessException | NoSuchFieldException ignored) {
+                // must be ignored, because some icon sets in the sequence may not contain the icon, e.g.:
+                // assuming icon sets CubaIcon > MyCompIcon > MyAppIcon,
+                // CubaIcon.OK - defined, MyCompIcon.OK - overrides, MyAppIcon.OK - not defined
+                // then using MyCompIcon.OK
             }
         }
 
