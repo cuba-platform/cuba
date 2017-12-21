@@ -1596,6 +1596,7 @@
                 <xs:attribute name="nullName" type="resourceString"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
                 <xs:attribute name="pageLength" type="xs:int"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
