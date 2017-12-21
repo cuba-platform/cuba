@@ -250,7 +250,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         }
 
         @Override
-        public void setIconByName(Icons.Icon icon) {
+        public void setIconFromSet(Icons.Icon icon) {
             String iconPath = AppBeans.get(Icons.class)
                     .get(icon);
             setIcon(iconPath);

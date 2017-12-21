@@ -67,7 +67,7 @@ public class DateInIntervalComponent {
         layout.add(textField);
 
         Button openEditorBtn = componentsFactory.createComponent(Button.class);
-        openEditorBtn.setIconByName(CubaIcon.PICKERFIELD_LOOKUP);
+        openEditorBtn.setIconFromSet(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-dateintervaleditor-button");
         openEditorBtn.setCaption("");
         openEditorBtn.setAction(new AbstractAction("openEditor") {
@@ -95,7 +95,7 @@ public class DateInIntervalComponent {
         layout.add(openEditorBtn);
 
         Button clearBtn = componentsFactory.createComponent(Button.class);
-        clearBtn.setIconByName(CubaIcon.PICKERFIELD_CLEAR);
+        clearBtn.setIconFromSet(CubaIcon.PICKERFIELD_CLEAR);
         clearBtn.setStyleName("c-dateintervaleditor-button");
         clearBtn.setCaption("");
         clearBtn.setAction(new AbstractAction("clear") {

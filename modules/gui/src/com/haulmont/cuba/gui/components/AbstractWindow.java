@@ -318,8 +318,8 @@ public class AbstractWindow extends AbstractFrame
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
-        frame.setIconByName(icon);
+    public void setIconFromSet(Icons.Icon icon) {
+        frame.setIconFromSet(icon);
     }
 
     @Override

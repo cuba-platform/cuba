@@ -837,15 +837,20 @@ public interface Component {
      * Component having an icon.
      */
     interface HasIcon {
+        /**
+         * Get icon source: "font-icon:ADD", "icons/myicon.png", "theme://createIcon", etc.
+         */
         String getIcon();
+
+        /**
+         * Set an icon by its source: "font-icon:ADD", "icons/myicon.png", "theme://createIcon", etc.
+         */
         void setIcon(String icon);
 
         /**
-         * Sets the given <code>icon</code> to the component.
-         *
-         * @param icon {@link Icons.Icon} instance
+         * Set an icon from an icon set.
          */
-        void setIconByName(Icons.Icon icon);
+        void setIconFromSet(Icons.Icon icon);
     }
 
     /**

@@ -755,7 +755,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
         // just stub
         @Override
-        public void setIconByName(Icons.Icon icon) {
+        public void setIconFromSet(Icons.Icon icon) {
         }
 
         @Override

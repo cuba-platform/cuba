@@ -237,8 +237,8 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
-        frame.setIconByName(icon);
+    public void setIconFromSet(Icons.Icon icon) {
+        frame.setIconFromSet(icon);
     }
 
     @Override

@@ -305,7 +305,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         String iconPath = AppBeans.get(Icons.class)
                 .get(icon);
         setIcon(iconPath);
@@ -522,7 +522,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
         // just stub
         @Override
-        public void setIconByName(Icons.Icon icon) {
+        public void setIconFromSet(Icons.Icon icon) {
         }
 
         @Override

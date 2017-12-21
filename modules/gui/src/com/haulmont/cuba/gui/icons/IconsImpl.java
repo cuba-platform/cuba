@@ -55,7 +55,7 @@ public class IconsImpl implements Icons {
     protected volatile boolean initialized;
 
     public void init() {
-        String iconSetsProp = AppContext.getProperty("cuba.icons.iconSets");
+        String iconSetsProp = AppContext.getProperty("cuba.iconsConfig");
         if (StringUtils.isEmpty(iconSetsProp))
             return;
 
@@ -138,16 +138,16 @@ public class IconsImpl implements Icons {
     }
 
     protected static String resolveIcon(String iconName) {
-        String iconPath = null;
+        String iconSource = null;
 
         for (Class<? extends Icon> iconSet : iconSets) {
             try {
                 Object obj = iconSet.getDeclaredField(iconName).get(null);
-                iconPath = ((Icon) obj).id();
+                iconSource = ((Icon) obj).source();
             } catch (IllegalAccessException | NoSuchFieldException ignored) {
             }
         }
 
-        return iconPath;
+        return iconSource;
     }
 }

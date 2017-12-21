@@ -19,55 +19,53 @@ package com.haulmont.cuba.gui.icons;
 import javax.annotation.Nullable;
 
 /**
- * A bean that gives an ability to set icons from icon sets - {@link Icon} inheritors.
- * <p>
- * It automatically resolves icons from icon sets that override the default icon set - {@link CubaIcon} or icons that
- * are overridden for a current theme in {@code theme-name-theme.properties} (e.g. halo-theme.properties) file.
+ * A bean that resolves icon sources for icon sets defined for the project.
  * <p>
  * Examples:
- * <pre><code>
+ * <pre>
  * excelButton.setIcon(icons.get(CubaIcon.EXCEL_ACTION));
- *
  * helpButton.setIcon(icons.get(CubaIcon.INFO));
- * </code></pre>
+ * </pre>
+ *
+ * @see Icon
  */
 public interface Icons {
     String NAME = "cuba_Icons";
 
     /**
-     * Returns icon path for the given {@link Icon} instance that can be used to set this icon to components.
+     * For the given {@link Icon} instance, returns the icon source that can be used to set this icon to components.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>
      * createButton.setIcon(icons.get(CubaIcon.CREATE));
-     * </code></pre>
+     * </pre>
      *
      * @param icon {@link Icons.Icon} instance
-     * @return actual icon path
+     * @return icon source (see {@link Icon#source()})
      */
     String get(@Nullable Icon icon);
 
     /**
-     * Returns icon path for the given {@code iconName} that can be used to set this icon to components.
+     * For the given {@link Icon#name()}, returns the icon source that can be used to set this icon to components.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>
      * importButton.setIcon(icons.get("IMPORT"));
-     * </code></pre>
+     * </pre>
      *
      * @param iconName icon name that contains only uppercase letters and underscores
-     * @return icon full string path
+     * @return icon source (see {@link Icon#source()})
      */
     String get(@Nullable String iconName);
 
     /**
-     * Marker interface for special enumerations - icon sets.
+     * Interface for enumerations that represent icon sets.
      */
     interface Icon {
         /**
          * @return icon source: "font-icon:ADD", "theme://createIcon", etc
          */
-        String id();
+        String source();
 
         /**
          * @return icon name: "ADD", "CREATE", etc

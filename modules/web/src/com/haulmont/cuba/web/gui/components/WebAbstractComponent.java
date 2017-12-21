@@ -275,7 +275,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         String iconName = AppBeans.get(Icons.class)
                 .get(icon);
         setIcon(iconName);

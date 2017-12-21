@@ -564,14 +564,14 @@ public enum CubaIcon implements Icons.Icon {
     YOUTUBE_PLAY("font-icon:YOUTUBE_PLAY"),
     YOUTUBE_SQUARE("font-icon:YOUTUBE_SQUARE");
 
-    protected String id;
+    protected String source;
 
-    CubaIcon(String id) {
-        this.id = id;
+    CubaIcon(String source) {
+        this.source = source;
     }
 
     @Override
-    public String id() {
-        return id;
+    public String source() {
+        return source;
     }
 }

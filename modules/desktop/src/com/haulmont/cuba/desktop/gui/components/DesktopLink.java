@@ -86,7 +86,7 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         String iconPath = AppBeans.get(Icons.class)
                 .get(icon);
         setIcon(iconPath);

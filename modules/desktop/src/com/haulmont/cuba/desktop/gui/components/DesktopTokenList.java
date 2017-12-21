@@ -754,7 +754,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                     return "";
                 }
             });
-            openButton.setIconByName(CubaIcon.PICKERFIELD_OPEN);
+            openButton.setIconFromSet(CubaIcon.PICKERFIELD_OPEN);
             composition.add(openButton);
             openButton.setVisible(false);
 

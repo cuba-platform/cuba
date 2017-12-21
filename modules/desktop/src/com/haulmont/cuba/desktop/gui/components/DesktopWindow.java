@@ -1518,7 +1518,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         this.icon = icons.get(icon);
     }
 

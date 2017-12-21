@@ -89,7 +89,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
         displayValuesField.setStyleName("c-listeditor-text");
         displayValuesField.setEditable(false);
         Button openEditorBtn = componentsFactory.createComponent(Button.class);
-        openEditorBtn.setIconByName(CubaIcon.PICKERFIELD_LOOKUP);
+        openEditorBtn.setIconFromSet(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-listeditor-button");
         openEditorBtn.setCaption("");
         openEditorBtn.setAction(new AbstractAction("openEditor") {
@@ -321,7 +321,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
 
     protected void addClearBtn() {
         clearBtn = componentsFactory.createComponent(Button.class);
-        clearBtn.setIconByName(CubaIcon.PICKERFIELD_CLEAR);
+        clearBtn.setIconFromSet(CubaIcon.PICKERFIELD_CLEAR);
         clearBtn.setStyleName("c-listeditor-button");
         clearBtn.setCaption("");
         clearBtn.setAction(new BaseAction("clear")

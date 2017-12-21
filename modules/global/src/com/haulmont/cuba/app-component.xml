@@ -118,7 +118,7 @@
         <property name="cuba.rest.reuseRefreshToken" value="true"/>
         <property name="cuba.rest.allowedOrigins" value="*"/>
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
-        <property name="cuba.icons.iconSets" value="com.haulmont.cuba.gui.icons.CubaIcon"/>
+        <property name="cuba.iconsConfig" value="com.haulmont.cuba.gui.icons.CubaIcon"/>
     </module>
 
     <module name="web-toolkit" dependsOn="web">
@@ -166,6 +166,6 @@
 
         <property name="cuba.useLocalServiceInvocation" value="false"/>
         <property name="cuba.themeConfig" value="nimbus-theme.properties"/>
-        <property name="cuba.icons.iconSets" value="com.haulmont.cuba.gui.icons.CubaIcon"/>
+        <property name="cuba.iconsConfig" value="com.haulmont.cuba.gui.icons.CubaIcon"/>
     </module>
 </app-component>

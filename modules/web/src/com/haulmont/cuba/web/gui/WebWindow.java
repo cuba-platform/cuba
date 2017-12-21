@@ -1404,7 +1404,7 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         setIcon(icons.get(icon));
     }
 

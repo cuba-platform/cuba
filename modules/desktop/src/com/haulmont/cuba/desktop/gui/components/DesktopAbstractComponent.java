@@ -518,7 +518,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     @Override
-    public void setIconByName(Icons.Icon icon) {
+    public void setIconFromSet(Icons.Icon icon) {
         // do nothing
     }
 
