@@ -16,9 +16,8 @@
 package com.haulmont.cuba.gui.commonlookup;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -39,6 +38,8 @@ public class CommonLookupController extends AbstractLookup {
     protected ViewRepository viewRepository;
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected BoxLayout mainPane;
@@ -116,9 +117,19 @@ public class CommonLookupController extends AbstractLookup {
     protected void initView() {
         View localView = viewRepository.getView(metaClass, View.LOCAL);
         View minimalView = viewRepository.getView(metaClass, View.MINIMAL);
-        view = new View(localView, "entitiesView", false);
-        minimalView.getProperties().stream().filter(property -> !view.containsProperty(property.getName())).forEach(property -> {
-            view.addProperty(property.getName(), property.getView(), property.getFetchMode());
-        });
+        view = new View(localView.getEntityClass(), "entitiesView", false);
+        copyViewProperties(localView, view);
+        copyViewProperties(minimalView, view);
+    }
+
+    protected void copyViewProperties(View src, View target) {
+        for (ViewProperty viewProperty :  src.getProperties()) {
+            MetaProperty metaProperty = metaClass.getProperty(viewProperty.getName());
+            if (metaProperty == null || !metadata.getTools().isSystemLevel(metaProperty)) {
+                if (!target.containsProperty(viewProperty.getName())) {
+                    target.addProperty(viewProperty.getName(), viewProperty.getView(), viewProperty.getFetchMode());
+                }
+            }
+        }
     }
 }
