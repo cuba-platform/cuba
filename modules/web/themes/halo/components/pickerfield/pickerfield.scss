@@ -16,10 +16,13 @@
  */
 
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
+  .#{$primary-stylename} {
+    height: $v-unit-size;
+  }
+
   & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;
-    height: $v-unit-size
   }
 
   .#{$primary-stylename}-layout {
@@ -29,8 +32,8 @@
     height: 100%;
 
     & .v-filterselect,
-    & input {
-      height: 100%;
+    & [class*="input"] {
+      height: $v-unit-size;
     }
   }
 
@@ -198,20 +201,84 @@
   .#{$primary-stylename}-tiny {
     @include valo-combobox-style($unit-size: $v-unit-size--tiny, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
     font-size: $v-font-size--tiny;
+
+    .v-filterselect,
+    .v-textfield,
+    [class*="input"] {
+      height: $v-unit-size--tiny;
+    }
+
+    .#{$primary-stylename}-button {
+      width: $v-unit-size--tiny;
+      min-width: $v-unit-size--tiny;
+
+      &:after,
+      &:hover:after {
+        height: $v-unit-size--tiny;
+      }
+    }
   }
 
   .#{$primary-stylename}-small {
     @include valo-combobox-style($unit-size: $v-unit-size--small, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
     font-size: $v-font-size--small;
+
+    .v-filterselect,
+    .v-textfield,
+    [class*="input"] {
+      height: $v-unit-size--small;
+    }
+
+    .#{$primary-stylename}-button {
+      width: $v-unit-size--small;
+      min-width: $v-unit-size--small;
+
+      &:after,
+      &:hover:after {
+        height: $v-unit-size--small;
+      }
+    }
   }
 
   .#{$primary-stylename}-large {
     @include valo-combobox-style($unit-size: $v-unit-size--large, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
     font-size: $v-font-size--large;
+
+    .v-filterselect,
+    .v-textfield,
+    [class*="input"] {
+      height: $v-unit-size--large;
+    }
+
+    .#{$primary-stylename}-button {
+      width: $v-unit-size--large;
+      min-width: $v-unit-size--large;
+
+      &:after,
+      &:hover:after {
+        height: $v-unit-size--large;
+      }
+    }
   }
 
   .#{$primary-stylename}-huge {
     @include valo-combobox-style($unit-size: $v-unit-size--huge, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
     font-size: $v-font-size--huge;
+
+    .v-filterselect,
+    .v-textfield,
+    [class*="input"] {
+      height: $v-unit-size--huge;
+    }
+
+    .#{$primary-stylename}-button {
+      width: $v-unit-size--huge;
+      min-width: $v-unit-size--huge;
+
+      &:after,
+      &:hover:after {
+        height: $v-unit-size--huge;
+      }
+    }
   }
 }
