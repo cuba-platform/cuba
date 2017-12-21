@@ -19,17 +19,18 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.haulmont.bali.util.StackTrace;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
-import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
-import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
 import com.haulmont.cuba.core.app.FtsSender;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
+import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -218,13 +219,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         if (warnAboutImplicitFlush) {
             statisticsAccumulator.incImplicitFlushCount();
             if (implicitFlushLog.isTraceEnabled()) {
-                StringBuilder sb = new StringBuilder();
-                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-                for (int i = 1; i < stackTrace.length; i++) {
-                    StackTraceElement element = stackTrace[i];
-                    sb.append(element).append("\n");
-                }
-                implicitFlushLog.trace("Implicit flush due to query execution, see stack trace for the cause:\n" + sb);
+                implicitFlushLog.trace("Implicit flush due to query execution, see stack trace for the cause:\n"
+                        + StackTrace.asString());
             } else {
                 implicitFlushLog.debug("Implicit flush due to query execution");
             }

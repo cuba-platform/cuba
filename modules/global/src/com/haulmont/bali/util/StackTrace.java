@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.events;
-
-import com.haulmont.cuba.core.sys.AppContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ApplicationContextEvent;
+package com.haulmont.bali.util;
 
 /**
- * Application lifecycle event. Published before application shutdown.
+ * Utility class for working with the current stack trace.
  */
-public class AppContextStoppedEvent extends ApplicationContextEvent {
+public class StackTrace {
 
-    public AppContextStoppedEvent(ApplicationContext source) {
-        super(source);
+    /**
+     * Get current stack trace as string.
+     */
+    public static String asString() {
+        StringBuilder sb = new StringBuilder();
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            sb.append(element).append("\n");
+        }
+        return sb.toString();
     }
 }

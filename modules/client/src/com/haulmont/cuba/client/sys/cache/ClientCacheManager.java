@@ -18,11 +18,13 @@
 package com.haulmont.cuba.client.sys.cache;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.sys.AppContext;
-
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
+import com.haulmont.cuba.core.sys.events.AppContextStoppedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.Ordered;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -38,14 +40,11 @@ import java.util.concurrent.locks.Lock;
  * Provides ability to cache any abstract object in client application
  */
 @Component(ClientCacheManager.NAME)
-public class ClientCacheManager implements AppContext.Listener, Ordered {
+public class ClientCacheManager {
 
     public static final String NAME = "cuba_ClientCacheManager";
 
     private static final Logger log = LoggerFactory.getLogger(ClientCacheManager.class);
-
-    protected final Object initializationLock = new Object();
-    protected volatile boolean initialized = false;
 
     protected ConcurrentHashMap<String, CachingStrategy> cache = new ConcurrentHashMap<>();
     protected ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1, new ThreadFactory() {
@@ -62,19 +61,21 @@ public class ClientCacheManager implements AppContext.Listener, Ordered {
         }
     });
 
-    public ClientCacheManager() {
-        AppContext.addListener(this);
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 120)
+    public void initialize() {
+        Map<String, CachingStrategy> cachingStrategyMap = AppBeans.getAll(CachingStrategy.class);
+        for (Map.Entry<String, CachingStrategy> entry : cachingStrategyMap.entrySet()) {
+            addCachedObject(entry.getKey(), entry.getValue());
+        }
     }
 
-    public void initialize() {
-        if (!initialized) {
-            synchronized (initializationLock) {
-                Map<String, CachingStrategy> cachingStrategyMap = AppBeans.getAll(CachingStrategy.class);
-                for (Map.Entry<String, CachingStrategy> entry : cachingStrategyMap.entrySet()) {
-                    addCachedObject(entry.getKey(), entry.getValue());
-                }
-            }
-            initialized = true;
+    @EventListener(AppContextStoppedEvent.class)
+    public void destroy() {
+        try {
+            executorService.shutdownNow();
+        } catch (Exception e) {
+            //do nothing
         }
     }
 
@@ -144,23 +145,5 @@ public class ClientCacheManager implements AppContext.Listener, Ordered {
 
     public ScheduledExecutorService getExecutorService() {
         return executorService;
-    }
-
-    @Override
-    public void applicationStarted() {
-    }
-
-    @Override
-    public void applicationStopped() {
-        try {
-            executorService.shutdownNow();
-        } catch (Exception e) {
-            //do nothing
-        }
-    }
-
-    @Override
-    public int getOrder() {
-        return LOWEST_PLATFORM_PRECEDENCE - 120;
     }
 }

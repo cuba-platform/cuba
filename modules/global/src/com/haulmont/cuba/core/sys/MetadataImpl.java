@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.StackTrace;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
@@ -26,12 +27,12 @@ import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -73,10 +74,13 @@ public class MetadataImpl implements Metadata {
 
     protected List<String> rootPackages = new ArrayList<>();
 
-    @EventListener({ContextStartedEvent.class, ContextRefreshedEvent.class})
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     protected void initMetadata() {
-        if (session != null)
+        if (session != null) {
+            log.warn("Repetitive initialization\n" + StackTrace.asString());
             return;
+        }
 
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();

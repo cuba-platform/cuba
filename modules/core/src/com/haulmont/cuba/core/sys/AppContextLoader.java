@@ -16,10 +16,8 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
@@ -89,64 +87,5 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations);
-    }
-
-    @Override
-    protected void afterInitAppContext() {
-        // Start cluster
-        boolean isMaster = true;
-        if (Boolean.valueOf(AppContext.getProperty("cuba.cluster.enabled"))) {
-            ClusterManagerAPI clusterManager =
-                    (ClusterManagerAPI) AppContext.getApplicationContext().getBean(ClusterManagerAPI.NAME);
-            clusterManager.start();
-            isMaster = clusterManager.isMaster();
-        }
-        // Init database
-        DbUpdater updater = (DbUpdater) AppContext.getApplicationContext().getBean(DbUpdater.NAME);
-        if (isMaster && Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate"))) {
-            updateDatabase(updater);
-        } else {
-            checkDatabase(updater);
-        }
-    }
-
-    protected void updateDatabase(DbUpdater updater) {
-        try {
-            updater.updateDatabase();
-        } catch (DbInitializationException e) {
-            throw new RuntimeException("\n" +
-                    "==============================================================================\n" +
-                    "ERROR: Cannot check and update database. See the stacktrace below for details.\n" +
-                    "==============================================================================", e);
-        }
-    }
-
-    protected void checkDatabase(DbUpdater updater) {
-        try {
-            boolean initialized = updater.dbInitialized();
-            if (!initialized) {
-                throw new IllegalStateException("\n" +
-                        "============================================================================\n" +
-                        "ERROR: Database is not initialized. Set 'cuba.automaticDatabaseUpdate'\n" +
-                        "application property to 'true' to initialize and update database on startup.\n" +
-                        "============================================================================");
-            }
-            List<String> scripts = updater.findUpdateDatabaseScripts();
-            if (!scripts.isEmpty()) {
-                log.warn("\n" +
-                        "====================================================================\n" +
-                        "WARNING: The application contains unapplied database update scripts:\n\n" +
-                        Joiner.on('\n').join(scripts) + "\n\n" +
-                        "Set 'cuba.automaticDatabaseUpdate' application property to 'true' to\n " +
-                        "initialize and update database on startup.\n" +
-                        "====================================================================");
-            }
-        } catch (DbInitializationException e) {
-            throw new RuntimeException("\n" +
-                    "===================================================================\n" +
-                    "ERROR: Cannot check database. See the stacktrace below for details.\n" +
-                    "===================================================================", e);
-        }
-
     }
 }

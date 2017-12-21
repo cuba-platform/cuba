@@ -16,13 +16,19 @@
  */
 package com.haulmont.cuba.core.sys.dbupdate;
 
+import com.google.common.base.Joiner;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.ScriptExecutionPolicy;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
@@ -30,6 +36,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -46,6 +54,9 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected ClusterManagerAPI clusterManager;
+
     protected PostUpdateScripts postUpdate;
 
     protected Map<Closure, ScriptResource> postUpdateScripts = new HashMap<>();
@@ -60,6 +71,55 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
         dbmsVersion = DbmsType.getVersion();
     }
 
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 90) // after starting cluster
+    protected void applicationInitialized() {
+        if (clusterManager.isMaster() && Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate"))) {
+            updateDatabaseOnStart();
+        } else {
+            checkDatabaseOnStart();
+        }
+    }
+
+    protected void updateDatabaseOnStart() {
+        try {
+            updateDatabase();
+        } catch (DbInitializationException e) {
+            throw new RuntimeException("\n" +
+                    "==============================================================================\n" +
+                    "ERROR: Cannot check and update database. See the stacktrace below for details.\n" +
+                    "==============================================================================", e);
+        }
+    }
+
+    protected void checkDatabaseOnStart() {
+        try {
+            boolean initialized = dbInitialized();
+            if (!initialized) {
+                throw new IllegalStateException("\n" +
+                        "============================================================================\n" +
+                        "ERROR: Database is not initialized. Set 'cuba.automaticDatabaseUpdate'\n" +
+                        "application property to 'true' to initialize and update database on startup.\n" +
+                        "============================================================================");
+            }
+            List<String> scripts = findUpdateDatabaseScripts();
+            if (!scripts.isEmpty()) {
+                log.warn("\n" +
+                        "====================================================================\n" +
+                        "WARNING: The application contains unapplied database update scripts:\n\n" +
+                        Joiner.on('\n').join(scripts) + "\n\n" +
+                        "Set 'cuba.automaticDatabaseUpdate' application property to 'true' to\n " +
+                        "initialize and update database on startup.\n" +
+                        "====================================================================");
+            }
+        } catch (DbInitializationException e) {
+            throw new RuntimeException("\n" +
+                    "===================================================================\n" +
+                    "ERROR: Cannot check database. See the stacktrace below for details.\n" +
+                    "===================================================================", e);
+        }
+
+    }
     @Override
     public DataSource getDataSource() {
         return persistence.getDataSource();

@@ -73,7 +73,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
             afterInitAppContext();
 
             AppContext.Internals.startContext();
-            log.info("AppContext initialized");
+            log.info("AppContext started");
         } catch (RuntimeException e) {
             log.error("Error initializing application", e);
             try {

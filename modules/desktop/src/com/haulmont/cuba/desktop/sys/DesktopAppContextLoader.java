@@ -84,7 +84,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
         initEnvironment();
 
         AppContext.Internals.startContext();
-        log.info("AppContext initialized");
+        log.info("AppContext started");
     }
 
     protected void initEnvironment() {

@@ -17,11 +17,15 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -33,6 +37,8 @@ import java.io.File;
 public abstract class AbstractAppContextLoader {
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
+
+    private Logger log = LoggerFactory.getLogger(AbstractAppContextLoader.class);
 
     protected abstract String getBlock();
 
@@ -55,6 +61,11 @@ public abstract class AbstractAppContextLoader {
 
         ApplicationContext appContext = createApplicationContext(locations);
         AppContext.Internals.setApplicationContext(appContext);
+
+        Events events = AppBeans.get(Events.NAME);
+        events.publish(new AppContextInitializedEvent(appContext));
+
+        log.debug("AppContext initialized");
     }
 
     protected void replaceLocationsFromConf(String[] locations) {

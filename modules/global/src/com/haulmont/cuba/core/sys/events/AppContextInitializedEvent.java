@@ -16,16 +16,22 @@
 
 package com.haulmont.cuba.core.sys.events;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 
 /**
- * Application lifecycle event. Published before application shutdown.
+ * Application lifecycle event.
+ * <p>
+ * Published right after initialization of Spring context. {@link AppContext} and {@link AppBeans} can be used
+ * in the handlers of this event.
+ *
+ * @see AppContextStartedEvent
  */
-public class AppContextStoppedEvent extends ApplicationContextEvent {
+public class AppContextInitializedEvent extends ApplicationContextEvent {
 
-    public AppContextStoppedEvent(ApplicationContext source) {
+    public AppContextInitializedEvent(ApplicationContext source) {
         super(source);
     }
 }

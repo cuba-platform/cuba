@@ -21,7 +21,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 
 /**
- * Application startup event. Published by {@link AppContext} after successful application startup and initialization.
+ * Application lifecycle event.
+ * <p>
+ * Published after {@link AppContextInitializedEvent} and after running all {@link AppContext.Listener}s.
  */
 public class AppContextStartedEvent extends ApplicationContextEvent {
 

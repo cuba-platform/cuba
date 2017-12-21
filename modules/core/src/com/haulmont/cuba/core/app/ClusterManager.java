@@ -19,9 +19,12 @@ package com.haulmont.cuba.core.app;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
+import com.haulmont.cuba.core.sys.events.AppContextStoppedEvent;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.apache.commons.io.IOUtils;
 import org.jgroups.*;
@@ -31,7 +34,8 @@ import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.Ordered;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -49,7 +53,7 @@ import java.util.concurrent.atomic.LongAdder;
  * Standard implementation of middleware clustering based on JGroups.
  */
 @Component(ClusterManagerAPI.NAME)
-public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, Ordered {
+public class ClusterManager implements ClusterManagerAPI {
 
     private final Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
@@ -76,10 +80,6 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
 
     protected static final String STATE_MAGIC = "CUBA_STATE";
 
-    public ClusterManager() {
-        AppContext.addListener(this);
-    }
-
     public JChannel getChannel() {
         return channel;
     }
@@ -97,6 +97,20 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
                         log.info("Queue capacity is exceeded. Message: {}: {}", sendMessageRunnable.message.getClass(), sendMessageRunnable.message);
                     }
                 });
+    }
+
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
+    public void applicationInitialized() {
+        if (Boolean.valueOf(AppContext.getProperty("cuba.cluster.enabled"))) {
+            start();
+        }
+    }
+
+    @EventListener(AppContextStoppedEvent.class)
+    public void applicationStopped() {
+        executor.shutdown();
+        stop();
     }
 
     @Override
@@ -170,17 +184,6 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
         String className = messageClass.getName();
         listeners.remove(className);
         messagesStat.remove(className);
-    }
-
-    @Override
-    public void applicationStarted() {
-        // Cluster starts in AppContextLoader.afterInitAppContext()
-    }
-
-    @Override
-    public void applicationStopped() {
-        executor.shutdown();
-        stop();
     }
 
     @Override
@@ -379,11 +382,6 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
             return stat.getReceivedBytes();
         }
         return 0;
-    }
-
-    @Override
-    public int getOrder() {
-        return LOWEST_PLATFORM_PRECEDENCE - 100;
     }
 
     protected class ClusterReceiver implements Receiver {
