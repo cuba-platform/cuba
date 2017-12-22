@@ -23,12 +23,17 @@ import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @org.springframework.stereotype.Component(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
+
+    @Inject
+    protected List<ComponentGenerationStrategy> componentGenerationStrategies;
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<>();
 
@@ -140,7 +145,26 @@ public class DesktopComponentsFactory implements ComponentsFactory {
     }
 
     @Override
+    public Component createComponent(ComponentGenerationContext context) {
+        List<ComponentGenerationStrategy> strategies = getComponentGenerationStrategies();
+
+        for (ComponentGenerationStrategy strategy : strategies) {
+            Component component = strategy.createComponent(context);
+            if (component != null) {
+                return component;
+            }
+        }
+
+        throw new IllegalArgumentException(String.format("Can't create component for the '%s' with " +
+                "given meta class '%s'", context.getProperty(), context.getMetaClass()));
+    }
+
+    @Override
     public Timer createTimer() {
         return new DesktopTimer();
+    }
+
+    protected List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
+        return componentGenerationStrategies;
     }
 }

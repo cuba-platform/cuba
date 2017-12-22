@@ -18,6 +18,8 @@ package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
+import com.haulmont.cuba.gui.components.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -28,6 +30,8 @@ import com.vaadin.ui.GridLayout;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class WebFieldGroupTest extends FieldGroupTest {
@@ -53,7 +57,14 @@ public class WebFieldGroupTest extends FieldGroupTest {
 
     @Override
     protected ComponentsFactory createComponentsFactory() {
-        return new WebComponentsFactory();
+        return new WebComponentsFactory() {
+            @Override
+            public List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
+                DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages);
+                strategy.setComponentsFactory(this);
+                return Collections.singletonList(strategy);
+            }
+        };
     }
 
     @Override

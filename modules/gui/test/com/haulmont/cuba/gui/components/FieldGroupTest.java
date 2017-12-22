@@ -55,7 +55,6 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         fieldFactory = new TestFieldGroupFieldFactoryImpl() {
             {
-                this.messages = FieldGroupTest.this.messages;
                 this.componentsFactory = FieldGroupTest.this.componentsFactory;
             }
         };

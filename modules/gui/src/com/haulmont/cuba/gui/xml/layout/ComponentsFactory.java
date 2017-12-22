@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentGenerationContext;
+import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.Timer;
 
 /**
@@ -44,6 +46,21 @@ public interface ComponentsFactory {
      * @return component instance for the current client type (web or desktop)
      */
     <T extends Component> T createComponent(Class<T> type);
+
+    /**
+     * Creates a component according to the given {@link ComponentGenerationContext}.
+     * <p>
+     * Trying to find {@link ComponentGenerationStrategy} realisations. If at least one strategy exists, then:
+     * <ol>
+     * <li>Iterates over strategies according to the {@link org.springframework.core.Ordered} interface.</li>
+     * <li>The first not {@code null} component will be returned.</li>
+     * </ol>
+     *
+     * @param context the {@link ComponentGenerationContext} instance
+     * @return a component instance for the current client type (web or desktop)
+     * @throws IllegalArgumentException if no component can be created for a given context
+     */
+    Component createComponent(ComponentGenerationContext context);
 
     /**
      * Create a timer instance.

@@ -22,5 +22,13 @@ import org.dom4j.Element;
 
 public interface FieldFactory {
 
+    /**
+     * Creates a component for {@link Table}.
+     *
+     * @param datasource    a datasource
+     * @param property      a property
+     * @param xmlDescriptor an xml descriptor
+     * @return created component
+     */
     Component createField(Datasource datasource, String property, Element xmlDescriptor);
 }

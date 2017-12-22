@@ -30,6 +30,7 @@ public interface DataGridEditorFieldFactory {
      * @param datasource editing item datasource
      * @param property   editing item property
      * @return generated component
+     * @throws IllegalStateException if created component doesn't implement the {@link Field} interface
      */
     Field createField(Datasource datasource, String property);
 }
