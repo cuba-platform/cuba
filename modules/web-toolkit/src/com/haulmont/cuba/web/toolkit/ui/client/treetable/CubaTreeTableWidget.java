@@ -823,4 +823,13 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
             }
         }
     }
+
+    public void updateTableBodyScroll() {
+        if (willHaveScrollbars()) {
+            scrollBodyPanel.getElement().getStyle().clearOverflowY();
+        } else {
+            scrollBodyPanel.getElement().getStyle()
+                    .setOverflowY(Style.Overflow.HIDDEN);
+        }
+    }
 }

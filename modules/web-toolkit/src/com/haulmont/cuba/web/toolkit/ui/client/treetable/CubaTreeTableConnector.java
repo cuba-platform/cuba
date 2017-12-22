@@ -231,6 +231,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 }
             }
         }
+
+        getWidget().updateTableBodyScroll();
     }
 
     @Override
