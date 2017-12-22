@@ -16,7 +16,10 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.HealthCheckEvent;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +41,23 @@ public class HealthCheckController {
     private Logger log = LoggerFactory.getLogger(HealthCheckController.class);
 
     @Inject
-    private GlobalConfig config;
+    protected GlobalConfig config;
+
+    @Inject
+    protected Events events;
 
     @RequestMapping(value = "/health", method = RequestMethod.GET)
     public void healthCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.trace("Health check request {} from {}", request.getRequestURI(), request.getRemoteAddr());
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
+
         if (AppContext.isReady()) {
-            response.setContentType("text/plain");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(config.getHealthCheckResponse());
+            HealthCheckEvent event = new HealthCheckEvent(this);
+            events.publish(event);
+
+            response.getOutputStream().print(Strings.isNullOrEmpty(event.getResponse()) ?
+                    config.getHealthCheckResponse() : event.getResponse());
         } else {
             response.getOutputStream().print("not ready");
         }
