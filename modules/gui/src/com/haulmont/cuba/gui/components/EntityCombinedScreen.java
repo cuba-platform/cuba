@@ -105,18 +105,28 @@ public class EntityCombinedScreen extends AbstractLookup {
      * Adds a CreateAction that removes selection in table, sets a newly created item to editDs
      * and enables controls for record editing.
      */
-    private void initBrowseCreateAction() {
+    protected void initBrowseCreateAction() {
         ListComponent table = getTable();
         table.addAction(new CreateAction(table) {
             @SuppressWarnings("unchecked")
             @Override
             protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
+                initNewItem(newItem);
                 table.setSelected(Collections.emptyList());
                 getFieldGroup().getDatasource().setItem(newItem);
                 refreshOptionsForLookupFields();
                 enableEditControls(true);
             }
         });
+    }
+
+    /**
+     * Hook to be implemented in subclasses. Called when the screen turns into editing mode
+     * for a new entity instance. Enables additional initialization of the new entity instance
+     * before setting it into the datasource.
+     * @param item  new entity instance
+     */
+    protected void initNewItem(Entity item) {
     }
 
     /**
