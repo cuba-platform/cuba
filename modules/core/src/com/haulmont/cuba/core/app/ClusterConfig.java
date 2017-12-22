@@ -33,6 +33,13 @@ import com.haulmont.cuba.core.config.defaults.DefaultLong;
 public interface ClusterConfig extends Config {
 
     /**
+     * @return whether the cluster communication is enabled
+     */
+    @Property("cuba.cluster.enabled")
+    @DefaultBoolean(false)
+    boolean getEnabled();
+
+    /**
      * @return timeout to receive state from cluster when node starts, in milliseconds
      */
     @Property("cuba.cluster.stateTransferTimeout")

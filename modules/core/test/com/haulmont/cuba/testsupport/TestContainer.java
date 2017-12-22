@@ -24,11 +24,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.*;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -368,6 +366,9 @@ public class TestContainer extends ExternalResource {
 
         springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[locations.size()]));
         AppContext.Internals.setApplicationContext(springAppContext);
+
+        Events events = AppBeans.get(Events.NAME);
+        events.publish(new AppContextInitializedEvent(springAppContext));
     }
 
     protected void cleanupContext() {

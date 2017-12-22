@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.ScriptExecutionPolicy;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
@@ -33,12 +32,11 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -57,6 +55,9 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     @Inject
     protected ClusterManagerAPI clusterManager;
 
+    @Inject
+    protected ServerConfig serverConfig;
+
     protected PostUpdateScripts postUpdate;
 
     protected Map<Closure, ScriptResource> postUpdateScripts = new HashMap<>();
@@ -74,7 +75,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 90) // after starting cluster
     protected void applicationInitialized() {
-        if (clusterManager.isMaster() && Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate"))) {
+        if (clusterManager.isMaster() && serverConfig.getAutomaticDatabaseUpdate()) {
             updateDatabaseOnStart();
         } else {
             checkDatabaseOnStart();

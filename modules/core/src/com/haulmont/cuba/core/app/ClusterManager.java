@@ -85,7 +85,7 @@ public class ClusterManager implements ClusterManagerAPI {
     }
 
     @PostConstruct
-    public void init() {
+    protected void init() {
         int nThreads = clusterConfig.getClusterMessageSendingThreadPoolSize();
         executor = new ThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(clusterConfig.getClusterMessageSendingQueueCapacity()),
@@ -101,14 +101,14 @@ public class ClusterManager implements ClusterManagerAPI {
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
-    public void applicationInitialized() {
-        if (Boolean.valueOf(AppContext.getProperty("cuba.cluster.enabled"))) {
+    protected void applicationInitialized() {
+        if (clusterConfig.getEnabled()) {
             start();
         }
     }
 
     @EventListener(AppContextStoppedEvent.class)
-    public void applicationStopped() {
+    protected void applicationStopped() {
         executor.shutdown();
         stop();
     }
