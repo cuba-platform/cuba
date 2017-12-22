@@ -381,8 +381,14 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     if (instance instanceof BaseGenericIdEntity) {
                         BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
                         BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
-                        if (status == TransactionSynchronization.STATUS_COMMITTED) {
-                            BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
+
+                        if (BaseEntityInternalAccess.isNew(baseGenericIdEntity)) {
+                            // new instances become not new and detached only if the transaction was committed
+                            if (status == TransactionSynchronization.STATUS_COMMITTED) {
+                                BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
+                                BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                            }
+                        } else {
                             BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
                         }
                     }

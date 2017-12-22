@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -252,7 +253,7 @@ public class EntityStateTest {
     }
 
     @Test
-    public void testTransactionRollback() throws Exception {
+    public void testTransactionRollback_new() throws Exception {
         User user = null;
 
         // create and persist
@@ -284,5 +285,25 @@ public class EntityStateTest {
         assertTrue(BaseEntityInternalAccess.isNew(user));
         assertFalse(BaseEntityInternalAccess.isManaged(user));
         assertFalse(BaseEntityInternalAccess.isDetached(user));
+    }
+
+    @Test
+    public void testTransactionRollback_loaded() {
+        User user;
+
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            user = cont.persistence().getEntityManager().find(User.class, TestSupport.ADMIN_USER_ID);
+
+            assertFalse(BaseEntityInternalAccess.isNew(user));
+            assertTrue(BaseEntityInternalAccess.isManaged(user));
+            assertFalse(BaseEntityInternalAccess.isDetached(user));
+        } finally {
+            tx.end();
+        }
+
+        assertFalse(BaseEntityInternalAccess.isNew(user));
+        assertFalse(BaseEntityInternalAccess.isManaged(user));
+        assertTrue(BaseEntityInternalAccess.isDetached(user));
     }
 }
