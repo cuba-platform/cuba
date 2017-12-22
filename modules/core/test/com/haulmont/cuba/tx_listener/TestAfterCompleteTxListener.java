@@ -86,7 +86,6 @@ public class TestAfterCompleteTxListener implements AfterCompleteTransactionList
 
         User user = null;
         for (Entity entity : detachedEntities) {
-            assertFalse(PersistenceHelper.isDetached(entity)); // "detached" flag was not set because of rollback
             if (entity instanceof User && ((User) entity).getLogin().startsWith("TxLstnrTst-1-"))
                 user = (User) entity;
         }
