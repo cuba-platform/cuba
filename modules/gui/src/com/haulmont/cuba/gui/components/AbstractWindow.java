@@ -60,11 +60,19 @@ public class AbstractWindow extends AbstractFrame
         frame.setDsContext(dsContext);
     }
 
+    /**
+     * @deprecated Use {@link #addCloseListener(CloseListener)}
+     */
+    @Deprecated
     @Override
     public void addListener(CloseListener listener) {
         addCloseListener(listener);
     }
 
+    /**
+     * @deprecated Use {@link #removeCloseListener(CloseListener)}
+     */
+    @Deprecated
     @Override
     public void removeListener(CloseListener listener) {
         removeCloseListener(listener);
