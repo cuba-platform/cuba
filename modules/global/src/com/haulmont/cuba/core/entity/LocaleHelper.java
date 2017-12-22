@@ -20,15 +20,18 @@ import com.google.common.base.Joiner;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class LocaleHelper {
+
+    private final static Logger log = LoggerFactory.getLogger(LocaleHelper.class);
 
     private LocaleHelper() {
     }
@@ -160,8 +163,13 @@ public final class LocaleHelper {
         try {
             localeProperties = new Properties();
             localeProperties.load(reader);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            log.debug("Unable to load properties: {}", localeBundle, e);
         }
         return localeProperties;
+    }
+
+    public static boolean isLocalizedValueDefined(String localeBundle) {
+        return getLocalizedName(localeBundle) != null;
     }
 }

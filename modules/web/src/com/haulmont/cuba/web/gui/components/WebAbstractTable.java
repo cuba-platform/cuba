@@ -26,7 +26,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -222,7 +224,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     WebComponentsHelper.convertColumnAlignment(column.getAlignment()));
         }
 
-        final String caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(columnId));
+        final String caption = getColumnCaption(columnId, column);
         setColumnHeader(columnId, caption);
 
         column.setOwner(this);
@@ -978,7 +980,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             final String caption;
             if (column != null) {
-                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(columnId));
+                caption = getColumnCaption(columnId, column);
             } else {
                 caption = StringUtils.capitalize(getColumnCaption(columnId));
             }
@@ -1109,6 +1111,34 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
         else
             return columnId.toString();
+    }
+
+    protected String getColumnCaption(Object columnId, Column column) {
+        String caption = column.getCaption();
+
+        if (caption != null) {
+            return caption;
+        }
+
+        if (!(columnId instanceof MetaPropertyPath)) {
+            return StringUtils.capitalize(getColumnCaption(columnId));
+        }
+
+        MetaPropertyPath mpp = (MetaPropertyPath) columnId;
+        MetaProperty metaProperty = mpp.getMetaProperty();
+
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+            if (LocaleHelper.isLocalizedValueDefined(categoryAttribute.getLocaleNames())) {
+                return categoryAttribute.getLocaleName();
+            }
+
+            caption = StringUtils.capitalize(categoryAttribute.getName());
+        } else {
+            caption = StringUtils.capitalize(getColumnCaption(columnId));
+        }
+
+        return caption;
     }
 
     protected void createStubsForGeneratedColumns() {

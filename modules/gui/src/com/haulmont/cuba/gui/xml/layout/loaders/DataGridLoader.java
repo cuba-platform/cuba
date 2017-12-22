@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -329,7 +330,9 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    columnCaption = categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName;
+                    columnCaption = LocaleHelper.isLocalizedValueDefined(categoryAttribute.getLocaleNames()) ?
+                            categoryAttribute.getLocaleName() :
+                            StringUtils.capitalize(categoryAttribute.getName());
                 } else {
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(column.getPropertyPath());
                     columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
@@ -419,7 +422,10 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
                     final Column column =
                             component.addColumn(metaPropertyPath.getMetaProperty().getName(), metaPropertyPath);
-                    column.setCaption(attribute.getLocaleName());
+
+                    column.setCaption(LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames()) ?
+                            attribute.getLocaleName() :
+                            StringUtils.capitalize(attribute.getName()));
                 }
             }
 

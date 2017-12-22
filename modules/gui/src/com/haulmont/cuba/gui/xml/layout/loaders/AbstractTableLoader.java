@@ -194,7 +194,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     }
 
                     final Table.Column column = new Table.Column(metaPropertyPath);
-                    column.setCaption(attribute.getLocaleName());
+
+                    column.setCaption(LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames()) ?
+                            attribute.getLocaleName() :
+                            StringUtils.capitalize(attribute.getName()));
 
                     if (attribute.getDataType().equals(PropertyType.STRING)) {
                         column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
@@ -374,7 +377,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    columnCaption = categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName;
+
+                    columnCaption = LocaleHelper.isLocalizedValueDefined(categoryAttribute.getLocaleNames()) ?
+                            categoryAttribute.getLocaleName() :
+                            StringUtils.capitalize(categoryAttribute.getName());
                 } else {
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
                     columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
