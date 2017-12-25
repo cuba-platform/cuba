@@ -62,11 +62,11 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     private Class<? extends com.haulmont.cuba.gui.components.Component> componentClass;
 
     private static final Set<Class> readOnlyComponentClasses = new HashSet<Class>(Arrays.asList(
-            Label.class, Checkbox.class
+            Label.class, Checkbox.class, Table.PlainTextCell.class
     ));
 
     private static final Set<Class> inlineComponentClasses = new HashSet<Class>(Arrays.asList(
-            Label.class, Checkbox.class
+            Label.class, Checkbox.class, Table.PlainTextCell.class
     ));
 
     public DesktopTableCellEditor(DesktopAbstractTable desktopAbstractTable, Table.ColumnGenerator columnGenerator,
