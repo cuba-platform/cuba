@@ -482,6 +482,7 @@ public class WebComponentsHelper {
      * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
      * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
      */
+    @Deprecated
     @Nullable
     public static Resource getFontIconResource(String fontIcon)
             throws NoSuchFieldException, IllegalAccessException {
@@ -503,6 +504,7 @@ public class WebComponentsHelper {
      * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
      * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
      */
+    @Deprecated
     @Nullable
     public static Resource getFontIconResource(String fontIconName, String fontIconField)
             throws NoSuchFieldException, IllegalAccessException {
