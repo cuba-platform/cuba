@@ -274,7 +274,7 @@ public class EntityLogBrowser extends AbstractWindow {
                 return new Table.PlainTextCell(entity.getObjectEntityId().toString());
             }
             return null;
-        });
+        }, Table.PlainTextCell.class);
     }
 
     public TreeMap<String, Object> getEntityMetaClasses() {
