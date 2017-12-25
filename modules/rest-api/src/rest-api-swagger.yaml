@@ -491,7 +491,7 @@ paths:
         User credentials must be passed in the request body. The request format must be `application/x-www-form-urlencoded`.
 
         To disable refresh tokens for the default client, remove the refresh_token type from the
-        `cuba.rest.client.authorizedGrandTypes` application property value.
+        `cuba.rest.client.authorizedGrantTypes` application property value.
       consumes:
         - application/x-www-form-urlencoded
       parameters:

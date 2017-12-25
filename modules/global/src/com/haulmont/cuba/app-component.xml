@@ -113,7 +113,7 @@
         <property name="cuba.rest.client.secret" value="secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
         <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
-        <property name="cuba.rest.client.authorizedGrandTypes" value="password,external,refresh_token"/>
+        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
         <property name="cuba.rest.supportRefreshToken" value="true"/>
         <property name="cuba.rest.reuseRefreshToken" value="true"/>
         <property name="cuba.rest.allowedOrigins" value="*"/>
@@ -142,7 +142,7 @@
         <property name="cuba.rest.client.secret" value="secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
         <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
-        <property name="cuba.rest.client.authorizedGrandTypes" value="password,external,refresh_token"/>
+        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
         <property name="cuba.rest.supportRefreshToken" value="true"/>
         <property name="cuba.rest.reuseRefreshToken" value="true"/>
         <property name="cuba.rest.allowedOrigins" value="*"/>

@@ -75,7 +75,7 @@
                        secret="${cuba.rest.client.secret}"
                        access-token-validity="${cuba.rest.client.tokenExpirationTimeSec}"
                        refresh-token-validity="${cuba.rest.client.refreshTokenExpirationTimeSec}"
-                       authorized-grant-types="${cuba.rest.client.authorizedGrandTypes}"
+                       authorized-grant-types="${cuba.rest.client.authorizedGrantTypes}"
                        scope="rest-api"/>
     </oauth2:client-details-service>
 
