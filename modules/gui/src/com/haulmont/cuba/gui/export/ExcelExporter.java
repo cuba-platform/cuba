@@ -424,7 +424,7 @@ public class ExcelExporter {
         HSSFRow row = sheet.createRow(rowNumber);
         Map<Object, Object> aggregations = table.isAggregatable()
                 ? table.getAggregationResults(groupInfo)
-                : new LinkedHashMap<>();
+                : Collections.emptyMap();
 
         int i = 0;
         int initialGroupNumber = groupNumber;
