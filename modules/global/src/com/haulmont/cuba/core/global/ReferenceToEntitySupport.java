@@ -87,10 +87,11 @@ public class ReferenceToEntitySupport {
      * @return metaProperty name for loading entity from database by primary key stored in the database
      */
     public String getPrimaryKeyForLoadingEntity(MetaClass metaClass) {
-        if (metadata.getTools().hasCompositePrimaryKey(metaClass) && HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
-            return "uuid";
-        } else {
-            return metadata.getTools().getPrimaryKeyName(metaClass);
+        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+            MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
+            if (primaryKeyProperty != null && !UUID.class.isAssignableFrom(primaryKeyProperty.getJavaType()))
+                return "uuid";
         }
+        return metadata.getTools().getPrimaryKeyName(metaClass);
     }
 }
