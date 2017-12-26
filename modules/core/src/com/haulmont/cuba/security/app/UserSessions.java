@@ -244,10 +244,26 @@ public class UserSessions implements UserSessionsAPI {
         return internalGet(id, true, false);
     }
 
+    @Override
+    public UserSession getAndRefreshNN(UUID id) {
+        UserSession userSession = getAndRefresh(id);
+        if (userSession == null)
+            throw new NoUserSessionException(id);
+        return userSession;
+    }
+
     @Nullable
     @Override
     public UserSession getAndRefresh(UUID id, boolean propagate) {
         return internalGet(id, true, propagate);
+    }
+
+    @Override
+    public UserSession getAndRefreshNN(UUID id, boolean propagate) {
+        UserSession userSession = getAndRefresh(id, propagate);
+        if (userSession == null)
+            throw new NoUserSessionException(id);
+        return userSession;
     }
 
     @Nullable

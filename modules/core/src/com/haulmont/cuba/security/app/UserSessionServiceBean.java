@@ -62,50 +62,62 @@ public class UserSessionServiceBean implements UserSessionService {
     @Inject
     private TimeSource timeSource;
 
+    protected void checkSession(UserSession userSession) {
+        if (userSession.isSystem())
+            throw new RuntimeException("Access to system session " + userSession.getId() + " is not allowed");
+    }
+
     @Override
     public UserSession getUserSession(UUID sessionId) {
-        UserSession userSession = userSessions.getAndRefresh(sessionId);
+        UserSession userSession = userSessions.getAndRefreshNN(sessionId);
+        checkSession(userSession);
         return userSession;
     }
 
     @Override
     public void setSessionAttribute(UUID sessionId, String name, Serializable value) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.setAttribute(name, value);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void removeSessionAttribute(UUID sessionId, String name) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.removeAttribute(name);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionLocale(UUID sessionId, Locale locale) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.setLocale(locale);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionTimeZone(UUID sessionId, TimeZone timeZone) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.setTimeZone(timeZone);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionAddress(UUID sessionId, String address) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.setAddress(address);
         userSessions.propagate(sessionId);
     }
 
     @Override
     public void setSessionClientInfo(UUID sessionId, String clientInfo) {
-        UserSession userSession = userSessions.get(sessionId);
+        UserSession userSession = userSessions.getNN(sessionId);
+        checkSession(userSession);
         userSession.setClientInfo(clientInfo);
         userSessions.propagate(sessionId);
     }
@@ -149,8 +161,10 @@ public class UserSessionServiceBean implements UserSessionService {
     @Override
     public void killSession(UUID id) {
         UserSession userSession = userSessions.get(id);
-        userSessionLog.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
-        userSessions.killSession(id);
+        if (userSession != null && !userSession.isSystem()) {
+            userSessionLog.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
+            userSessions.killSession(id);
+        }
     }
 
     @Override
@@ -158,7 +172,7 @@ public class UserSessionServiceBean implements UserSessionService {
         long time = timeSource.currentTimeMillis();
         for (UUID sessionId : sessionIds) {
             UserSession userSession = userSessions.get(sessionId);
-            if (userSession != null) {
+            if (userSession != null && !userSession.isSystem()) {
                 userSession.setAttribute(MESSAGE_ATTR_PREFIX + time, message);
                 userSessions.propagate(sessionId);
             }

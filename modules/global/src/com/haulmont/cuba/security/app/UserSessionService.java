@@ -42,6 +42,7 @@ public interface UserSessionService {
      * @return an active user session instance copy, if exists
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     UserSession getUserSession(UUID sessionId);
 
@@ -52,6 +53,7 @@ public interface UserSessionService {
      * @param value     attribute value
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void setSessionAttribute(UUID sessionId, String name, Serializable value);
 
@@ -61,6 +63,7 @@ public interface UserSessionService {
      * @param name      attribute name
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void removeSessionAttribute(UUID sessionId, String name);
 
@@ -70,6 +73,7 @@ public interface UserSessionService {
      * @param locale    user locale
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void setSessionLocale(UUID sessionId, Locale locale);
 
@@ -79,6 +83,7 @@ public interface UserSessionService {
      * @param timeZone  user time zone
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void setSessionTimeZone(UUID sessionId, TimeZone timeZone);
 
@@ -88,6 +93,7 @@ public interface UserSessionService {
      * @param address   client's address
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void setSessionAddress(UUID sessionId, String address);
 
@@ -97,6 +103,7 @@ public interface UserSessionService {
      * @param clientInfo    client's info
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
      * doesn't exist
+     * @throws RuntimeException if the session is system
      */
     void setSessionClientInfo(UUID sessionId, String clientInfo);
 
@@ -107,13 +114,13 @@ public interface UserSessionService {
     Collection<UserSessionEntity> getUserSessionInfo();
 
     /**
-     * Disconnect a session. Returns silently if there is no active session with the specified ID.
+     * Disconnect a session. Returns silently if there is no active session with the specified ID or the session is system.
      * @param id    an active session identifier
      */
     void killSession(UUID id);
 
     /**
-     * Post a message to the list of active user sessions. If a session is not found, it is ignored.
+     * Post a message to the list of active user sessions. If a session is not found or is system, it is ignored.
      * @param sessionIds    list of session identifiers
      * @param message       the message text
      */

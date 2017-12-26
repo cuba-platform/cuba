@@ -61,6 +61,15 @@ public interface UserSessionsAPI extends UserSessionFinder {
     UserSession getAndRefresh(UUID id);
 
     /**
+     * Get user session from cache, updating its "last used" timestamp.
+     *
+     * @param id        session id
+     * @return user session instance
+     * @throws NoUserSessionException  if not found
+     */
+    UserSession getAndRefreshNN(UUID id);
+
+    /**
      * Get user session from cache, updating its "last used" timestamp and optionally propagating the new timestamp
      * to the cluster.
      *
@@ -70,6 +79,17 @@ public interface UserSessionsAPI extends UserSessionFinder {
      */
     @Nullable
     UserSession getAndRefresh(UUID id, boolean propagate);
+
+    /**
+     * Get user session from cache, updating its "last used" timestamp and optionally propagating the new timestamp
+     * to the cluster.
+     *
+     * @param id        session id
+     * @param propagate whether to propagate the new "last used" timestamp to the cluster
+     * @return user session instance
+     * @throws NoUserSessionException  if not found
+     */
+    UserSession getAndRefreshNN(UUID id, boolean propagate);
 
     /**
      * Stream of non-persistent entities representing active user sessions.
