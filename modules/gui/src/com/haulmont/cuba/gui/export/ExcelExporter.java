@@ -36,6 +36,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.util.LocaleUtil;
 import org.dom4j.Element;
@@ -45,6 +46,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +87,8 @@ public class ExcelExporter {
 
     private final UserSessionSource userSessionSource;
 
+    private final MetadataTools metadataTools;
+
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -93,6 +97,7 @@ public class ExcelExporter {
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        metadataTools = AppBeans.get(MetadataTools.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
         falseStr = messages.getMessage(getClass(), "excelExporter.false");
@@ -437,36 +442,59 @@ public class ExcelExporter {
                     val = messages.getMessage(getClass(), "excelExporter.empty");
                 }
 
+                Collection children = table.getDatasource().getGroupItemIds(groupInfo);
+                if (children.isEmpty()) {
+                    return rowNumber;
+                }
+
                 Integer groupChildCount = null;
                 if (table.isShowItemsCountForGroup()) {
-                    groupChildCount = ds.getGroupItemIds(groupInfo).size();
+                    groupChildCount = children.size();
                 }
+
+                Object captionValue = val;
 
                 Element xmlDescriptor = column.getXmlDescriptor();
                 if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
                     String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-                    Collection children = table.getDatasource().getGroupItemIds(groupInfo);
-                    if (children.isEmpty()) {
-                        return rowNumber;
-                    }
 
                     Object itemId = children.iterator().next();
-                    Instance item = table.getDatasource().getItem(itemId);
-                    Object captionValue = item.getValueEx(captionProperty);
-                    formatValueCell(cell, captionValue, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
-                } else {
-                    formatValueCell(cell, val, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
+                    Instance item = ds.getItem(itemId);
+                    captionValue = item.getValueEx(captionProperty);
                 }
+
+                @SuppressWarnings("unchecked")
+                GroupTable.GroupCellValueFormatter<Entity> groupCellValueFormatter =
+                        table.getGroupCellValueFormatter();
+
+                if (groupCellValueFormatter != null) {
+                    // disable separate "(N)" printing
+                    groupChildCount = null;
+
+                    List<Entity> groupItems = ((Collection<Object>) ds.getGroupItemIds(groupInfo)).stream()
+                            .map((Function<Object, Entity>) ds::getItem)
+                            .collect(Collectors.toList());
+
+                    GroupTable.GroupCellContext<Entity> cellContext = new GroupTable.GroupCellContext<>(
+                            groupInfo, captionValue, metadataTools.format(captionValue), groupItems
+                    );
+
+                    captionValue = groupCellValueFormatter.format(cellContext);
+                }
+
+                MetaPropertyPath columnId = (MetaPropertyPath) column.getId();
+                formatValueCell(cell, captionValue, columnId, groupNumber++, rowNumber, 0, groupChildCount);
             } else {
                 AggregationInfo agr = column.getAggregation();
                 if (agr != null) {
-                    Object agregationResult = aggregations.get(agr.getPropertyPath());
-                    if (agregationResult != null) {
+                    Object aggregationResult = aggregations.get(agr.getPropertyPath());
+                    if (aggregationResult != null) {
                         HSSFCell cell = row.createCell(i);
-                        formatValueCell(cell, agregationResult, null, i, rowNumber, 0, null);
+                        formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
                     }
                 }
             }
+
             i++;
         }
 
@@ -615,9 +643,9 @@ public class ExcelExporter {
                         }
                     }
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to parse numeric value", e);
                 }
-                cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+                cell.setCellType(CellType.NUMERIC);
             }
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
