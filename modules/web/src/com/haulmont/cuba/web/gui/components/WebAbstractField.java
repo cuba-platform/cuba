@@ -28,13 +28,18 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
+import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.ValidationFailedException;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -43,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
@@ -66,6 +73,9 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
     protected Datasource.ItemChangeListener<Entity> securityItemChangeListener;
     protected WeakItemChangeListener securityWeakItemChangeListener;
     protected EditableChangeListener parentEditableChangeListener;
+
+    protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
+    protected ContextHelpIconClickListener contextHelpIconClickListener;
 
     @Override
     public Datasource getDatasource() {
@@ -445,5 +455,36 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
         component.setContextHelpTextHtmlEnabled(enabled);
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        return contextHelpIconClickHandler;
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        if (!Objects.equals(this.contextHelpIconClickHandler, handler)) {
+            this.contextHelpIconClickHandler = handler;
+
+            if (handler == null) {
+                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
+                contextHelpIconClickListener = null;
+            } else {
+                if (contextHelpIconClickListener == null) {
+                    contextHelpIconClickListener = (ContextHelpIconClickListener) e -> {
+                        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(WebAbstractField.this);
+                        fireContextHelpIconClick(event);
+                    };
+                    component.addContextHelpIconClickListener(contextHelpIconClickListener);
+                }
+            }
+        }
+    }
+
+    protected void fireContextHelpIconClick(ContextHelpIconClickEvent event) {
+        if (contextHelpIconClickHandler != null) {
+            contextHelpIconClickHandler.accept(event);
+        }
     }
 }

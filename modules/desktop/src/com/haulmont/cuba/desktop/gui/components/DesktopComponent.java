@@ -30,4 +30,17 @@ public interface DesktopComponent extends Component {
     void setContainer(DesktopContainer container);
 
     void setExpanded(boolean expanded);
+
+    /**
+     * A sub-interface implemented by components that provide additional
+     * capabilities for components that have context help icon click handler.
+     */
+    interface HasContextHelpClickHandler extends HasContextHelp {
+        /**
+         * Fires a {@link Component.ContextHelpIconClickEvent} for all listeners.
+         *
+         * @param event event to be fired
+         */
+        void fireContextHelpIconClickEvent(Component.ContextHelpIconClickEvent event);
+    }
 }

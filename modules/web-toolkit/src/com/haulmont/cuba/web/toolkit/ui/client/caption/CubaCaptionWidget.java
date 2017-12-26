@@ -19,16 +19,25 @@ package com.haulmont.cuba.web.toolkit.ui.client.caption;
 
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.vaadin.client.*;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.StyleConstants;
+import com.vaadin.client.VCaption;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.AbstractFieldConnector;
+import com.vaadin.client.ui.HasContextHelpConnector;
 import com.vaadin.client.ui.ImageIcon;
 import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ComponentConstants;
+import com.vaadin.shared.communication.SharedState;
 import com.vaadin.shared.ui.ComponentStateUtil;
 
-public class CubaCaptionWidget extends VCaption {
+public class CubaCaptionWidget extends VCaption implements ClickHandler {
 
     public static final String CUBA_CLASSNAME = "c-caption";
     public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
@@ -38,6 +47,8 @@ public class CubaCaptionWidget extends VCaption {
     protected boolean captionPlacedAfterComponentByDefault = true;
 
     protected CaptionHolder captionHolder = null;
+
+    protected HandlerRegistration clickHandlerRegistration = null;
 
     public CubaCaptionWidget(ComponentConnector component, ApplicationConnection client) {
         super(component, client);
@@ -172,21 +183,26 @@ public class CubaCaptionWidget extends VCaption {
             requiredFieldIndicator = null;
         }
 
-        if (owner.getState() instanceof AbstractFieldState) {
-            AbstractFieldState state = (AbstractFieldState) owner
-                    .getState();
-            if (state.contextHelpText != null && !state.contextHelpText.isEmpty()) {
-                if (contextHelpIndicatorElement == null) {
-                    contextHelpIndicatorElement = DOM.createDiv();
-                    contextHelpIndicatorElement.setClassName(CONTEXT_HELP_CLASSNAME);
+        if (isContextHelpIconEnabled(owner.getState())) {
+            if (contextHelpIndicatorElement == null) {
+                contextHelpIndicatorElement = DOM.createDiv();
+                contextHelpIndicatorElement.setClassName(CONTEXT_HELP_CLASSNAME);
 
-                    DOM.insertChild(getElement(), contextHelpIndicatorElement, getContextHelpInsertPosition());
+                DOM.insertChild(getElement(), contextHelpIndicatorElement, getContextHelpInsertPosition());
+
+                if (clickHandlerRegistration == null) {
+                    clickHandlerRegistration = addClickHandler(this);
                 }
-            } else {
-                if (contextHelpIndicatorElement != null) {
-                    contextHelpIndicatorElement.removeFromParent();
-                    contextHelpIndicatorElement = null;
-                }
+            }
+        } else {
+            if (contextHelpIndicatorElement != null) {
+                contextHelpIndicatorElement.removeFromParent();
+                contextHelpIndicatorElement = null;
+            }
+
+            if (clickHandlerRegistration != null) {
+                clickHandlerRegistration.removeHandler();
+                clickHandlerRegistration = null;
             }
         }
 
@@ -218,6 +234,31 @@ public class CubaCaptionWidget extends VCaption {
             captionHolder.captionUpdated(this);
         }
         return (wasPlacedAfterComponent != placedAfterComponent);
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        Element target = Element.as(event.getNativeEvent().getEventTarget());
+
+        if (target == contextHelpIndicatorElement
+                && getOwner() instanceof HasContextHelpConnector) {
+            HasContextHelpConnector connector = (HasContextHelpConnector) getOwner();
+            if (hasContextHelpIconListeners(getOwner().getState())) {
+                connector.contextHelpIconClick(event);
+            }
+        }
+    }
+
+    protected boolean isContextHelpIconEnabled(SharedState state) {
+        return hasContextHelpIconListeners(state)
+                || (state instanceof AbstractFieldState)
+                && ((AbstractFieldState) state).contextHelpText != null
+                && !((AbstractFieldState) state).contextHelpText.isEmpty();
+    }
+
+    protected boolean hasContextHelpIconListeners(SharedState state) {
+        return state.registeredEventListeners != null
+                && state.registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 
     @Override

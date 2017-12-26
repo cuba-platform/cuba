@@ -18,15 +18,24 @@
 package com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaSourceCodeEditor;
+import com.vaadin.client.MouseEventDetailsBuilder;
+import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.HasContextHelpConnector;
+import com.vaadin.shared.AbstractFieldState;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.hascontexthelp.HasContextHelpServerRpc;
 import org.vaadin.aceeditor.client.AceEditorConnector;
 import org.vaadin.aceeditor.client.AceEditorWidget;
 
 @Connect(CubaSourceCodeEditor.class)
-public class CubaSourceCodeEditorConnector extends AceEditorConnector {
+public class CubaSourceCodeEditorConnector extends AceEditorConnector implements HasContextHelpConnector {
     private boolean resetEditHistory = false;
 
     public CubaSourceCodeEditorConnector() {
@@ -58,6 +67,31 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
     }
 
     @Override
+    public boolean hasTooltip() {
+        return super.hasTooltip() || isContextHelpTooltipEnabled();
+    }
+
+    @Override
+    public TooltipInfo getTooltipInfo(Element element) {
+        TooltipInfo info = super.getTooltipInfo(element);
+
+        if (isContextHelpTooltipEnabled()) {
+            info.setContextHelp(getState().contextHelpText);
+            info.setContextHelpHtmlEnabled(getState().contextHelpTextHtmlEnabled);
+        }
+
+        return info;
+    }
+
+    protected boolean isContextHelpTooltipEnabled() {
+        boolean hasListeners = getState().registeredEventListeners != null
+                && getState().registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
+
+        return !hasListeners && getState().contextHelpText != null
+                && !getState().contextHelpText.isEmpty();
+    }
+
+    @Override
     public CubaSourceCodeEditorWidget getWidget() {
         return (CubaSourceCodeEditorWidget) super.getWidget();
     }
@@ -81,5 +115,18 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
         if (stateChangeEvent.isInitialStateChange()) {
             getWidget().resetEditHistory();
         }
+    }
+
+    @Override
+    public void contextHelpIconClick(NativeEvent event) {
+        MouseEventDetails details = MouseEventDetailsBuilder
+                .buildMouseEventDetails(event, getWidget().getElement());
+
+        getRpcProxy(HasContextHelpServerRpc.class).iconClick(details);
+    }
+
+    @Override
+    public void contextHelpIconClick(MouseEvent event) {
+        contextHelpIconClick(event.getNativeEvent());
     }
 }

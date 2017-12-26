@@ -18,11 +18,16 @@
 package com.haulmont.cuba.web.toolkit.ui.client.checkbox;
 
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.client.VTooltip;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
+import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaCheckBox.class, loadStyle = Connect.LoadStyle.EAGER)
@@ -52,18 +57,46 @@ public class CubaCheckBoxConnector extends CheckBoxConnector {
         super.onStateChanged(stateChangeEvent);
 
         if (!getWidget().captionManagedByLayout
-                && getState().contextHelpText != null
-                && !getState().contextHelpText.isEmpty()) {
-            getWidget().contextHelpIcon = DOM.createSpan();
-            getWidget().contextHelpIcon.setInnerHTML("?");
-            getWidget().contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
-            Roles.getTextboxRole().setAriaHiddenState(getWidget().contextHelpIcon, true);
+                && isContextHelpIconEnabled()) {
+            if (getWidget().contextHelpIcon == null) {
+                getWidget().contextHelpIcon = DOM.createSpan();
+                getWidget().contextHelpIcon.setInnerHTML("?");
+                getWidget().contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+                Roles.getTextboxRole().setAriaHiddenState(getWidget().contextHelpIcon, true);
 
-            getWidget().getElement().appendChild(getWidget().contextHelpIcon);
-            DOM.sinkEvents(getWidget().contextHelpIcon, VTooltip.TOOLTIP_EVENTS);
+                getWidget().getElement().appendChild(getWidget().contextHelpIcon);
+                DOM.sinkEvents(getWidget().contextHelpIcon, VTooltip.TOOLTIP_EVENTS | Event.ONCLICK);
+            } else {
+                getWidget().contextHelpIcon.getStyle().clearDisplay();
+            }
         } else if (getWidget().contextHelpIcon != null) {
-            getWidget().contextHelpIcon.removeFromParent();
-            getWidget().contextHelpIcon = null;
+            getWidget().contextHelpIcon.getStyle()
+                    .setDisplay(Style.Display.NONE);
+
+            getWidget().setAriaInvalid(false);
         }
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        super.onClick(event);
+
+        Element target = Element.as(event.getNativeEvent().getEventTarget());
+        if (target == getWidget().contextHelpIcon) {
+            if (hasContextHelpIconListeners()) {
+                contextHelpIconClick(event);
+            }
+        }
+    }
+
+    protected boolean isContextHelpIconEnabled() {
+        return hasContextHelpIconListeners()
+                || getState().contextHelpText != null
+                && !getState().contextHelpText.isEmpty();
+    }
+
+    protected boolean hasContextHelpIconListeners() {
+        return getState().registeredEventListeners != null
+                && getState().registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 }

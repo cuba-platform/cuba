@@ -18,7 +18,10 @@
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import com.vaadin.client.*;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.ShortcutActionHandler;
@@ -27,6 +30,7 @@ import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.CaptionPosition;
 import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ComponentConstants;
+import com.vaadin.shared.communication.SharedState;
 import com.vaadin.shared.communication.URLReference;
 import com.vaadin.shared.ui.Connect;
 
@@ -84,13 +88,10 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
         }
 
         // Haulmont API
-        String contextHelpText = null;
-        if (child.getState() instanceof AbstractFieldState) {
-            contextHelpText = ((AbstractFieldState) child.getState()).contextHelpText;
-        }
+        boolean contextHelpIconEnabled = isContextHelpIconEnabled(child.getState());
 
         // Haulmont API
-        slot.setCaption(caption, contextHelpText, icon, styles, error, showError, required,
+        slot.setCaption(caption, contextHelpIconEnabled, icon, styles, error, showError, required,
                 enabled, child.getState().captionAsHtml);
 
         AriaHelper.handleInputRequired(child.getWidget(), required);
@@ -108,5 +109,17 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
                 getWidget().updateCaptionOffset(slot.getCaptionElement());
             }
         }
+    }
+
+    protected boolean isContextHelpIconEnabled(SharedState state) {
+        return hasContextHelpIconListeners(state)
+                || (state instanceof AbstractFieldState)
+                && ((AbstractFieldState) state).contextHelpText != null
+                && !((AbstractFieldState) state).contextHelpText.isEmpty();
+    }
+
+    protected boolean hasContextHelpIconListeners(SharedState state) {
+        return state.registeredEventListeners != null
+                && state.registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 }

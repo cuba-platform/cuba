@@ -33,21 +33,18 @@
                 <columns>
                     <column/>
                     <column flex="1"/>
-                    <column/>
                 </columns>
                 <rows>
                     <row id="activeRow">
                         <label value="msg://com.haulmont.cuba.security.entity/Constraint.isActive" align="MIDDLE_LEFT"
                                width="120"/>
                         <checkBox id="isActive" datasource="constraint" property="isActive"/>
-                        <label value=""/>
                     </row>
                     <row id="nameRow">
                         <label value="msg://com.haulmont.cuba.security.entity/Constraint.entityName" align="MIDDLE_LEFT"
                                width="120"/>
                         <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                      width="${width}"/>
-                        <label value=""/>
                     </row>
                     <row id="operationTypeRow">
                         <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType"
@@ -61,7 +58,6 @@
                         <lookupField id="type" textInputAllowed="false" datasource="constraint" property="checkType"
                                      required="true"
                                      width="${width}"/>
-                        <label value=""/>
                     </row>
                     <row id="codeRow">
                         <label id="codeLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.code"
@@ -71,7 +67,7 @@
                     </row>
                     <row>
                         <label value=""/>
-                        <linkButton colspan="2" id="wizard" caption="msg://wizard" invoke="openWizard"/>
+                        <linkButton id="wizard" caption="msg://wizard" invoke="openWizard"/>
                     </row>
                     <row id="joinRow">
                         <label id="joinClauseLabel"
@@ -82,7 +78,6 @@
                                           highlightActiveLine="false"
                                           showGutter="false"
                                           printMargin="false"/>
-                        <linkButton id="joinClauseHelp" icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
                     </row>
                     <row id="whereRow">
                         <label id="whereClauseLabel"
@@ -94,7 +89,6 @@
                                           highlightActiveLine="false"
                                           showGutter="false"
                                           printMargin="false"/>
-                        <linkButton id="whereClauseHelp" icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
                     </row>
                     <row id="groovyRow">
                         <label id="groovyScriptLabel"
@@ -105,7 +99,6 @@
                                           width="100%"
                                           mode="Groovy"
                                           height="180px"/>
-                        <linkButton id="groovyScriptHelp" icon="icons/question-white.png" invoke="getGroovyScriptHelp"/>
                     </row>
                 </rows>
             </grid>

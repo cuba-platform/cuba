@@ -373,6 +373,38 @@ public interface Component {
          * @param enabled true if field accepts context help text in HTML format, false otherwise
          */
         void setContextHelpTextHtmlEnabled(boolean enabled);
+
+        /**
+         * @return a context help icon click handler
+         */
+        Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler();
+
+        /**
+         * Sets a context help icon click handler
+         *
+         * @param handler the handler to set
+         */
+        void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler);
+    }
+
+    /**
+     * Describes context help icon click event.
+     */
+    class ContextHelpIconClickEvent extends EventObject {
+
+        /**
+         * Constructor for a context help icon click event.
+         *
+         * @param component the Component from which this event originates
+         */
+        public ContextHelpIconClickEvent(HasContextHelp component) {
+            super(component);
+        }
+
+        @Override
+        public HasContextHelp getSource() {
+            return (HasContextHelp) super.getSource();
+        }
     }
 
     /**

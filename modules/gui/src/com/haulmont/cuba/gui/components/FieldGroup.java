@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Multi-column form component.
@@ -471,6 +472,18 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
          * @param enabled true if field accepts context help text in HTML format
          */
         void setContextHelpTextHtmlEnabled(Boolean enabled);
+
+        /**
+         * @return a context help icon click handler
+         */
+        Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler();
+
+        /**
+         * Sets a context help icon click handler
+         *
+         * @param handler the handler to set
+         */
+        void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler);
     }
 
     /**

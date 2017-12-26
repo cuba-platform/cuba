@@ -82,15 +82,6 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     protected Label whereClauseLabel;
 
     @Inject
-    protected LinkButton whereClauseHelp;
-
-    @Inject
-    protected LinkButton joinClauseHelp;
-
-    @Inject
-    protected LinkButton groovyScriptHelp;
-
-    @Inject
     protected TextField code;
 
     @Inject
@@ -156,13 +147,20 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 setupVisibility();
             }
         });
+
+        joinClause.setContextHelpIconClickHandler(event ->
+                getJoinClauseHelp());
+        whereClause.setContextHelpIconClickHandler(event ->
+                getWhereClauseHelp());
+        groovyScript.setContextHelpIconClickHandler(event ->
+                getGroovyScriptHelp());
     }
 
     protected void setupVisibility() {
         Constraint item = getItem();
-        asList(groovyScript, groovyScriptLabel, groovyScriptHelp)
+        asList(groovyScript, groovyScriptLabel)
                 .forEach(component -> component.setVisible(item.getCheckType().memory()));
-        asList(joinClause, joinClauseLabel, joinClauseHelp, whereClause, whereClauseLabel, whereClauseHelp)
+        asList(joinClause, joinClauseLabel, whereClause, whereClauseLabel)
                 .forEach(component -> component.setVisible(item.getCheckType().database() &&
                         item.getOperationType() != ConstraintOperationType.CREATE &&
                         item.getOperationType() != ConstraintOperationType.DELETE &&

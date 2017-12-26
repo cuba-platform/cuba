@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -331,6 +332,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             }
             if (fci.getTargetContextHelpTextHtmlEnabled() != null) {
                 cubaField.setContextHelpTextHtmlEnabled(fci.getTargetContextHelpTextHtmlEnabled());
+            }
+            if (fci.getTargetContextHelpIconClickHandler() != null) {
+                cubaField.setContextHelpIconClickHandler(fci.getTargetContextHelpIconClickHandler());
             }
             if (fci.getTargetEditable() != null) {
                 cubaField.setEditable(fci.getTargetEditable());
@@ -826,6 +830,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         protected boolean isTargetCustom;
 
         protected List<Field.Validator> targetValidators = new ArrayList<>(0);
+        protected Consumer<ContextHelpIconClickEvent> targetContextHelpIconClickHandler;
         protected FieldAttachMode attachMode = FieldAttachMode.APPLY_DEFAULTS;
 
         public FieldConfigImpl(String id) {
@@ -1262,6 +1267,23 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         @Override
+        public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+            if (component instanceof Field) {
+                return ((Field) component).getContextHelpIconClickHandler();
+            }
+            return targetContextHelpIconClickHandler;
+        }
+
+        @Override
+        public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+            if (component instanceof Field) {
+                ((Field) component).setContextHelpIconClickHandler(handler);
+            } else {
+                this.targetContextHelpIconClickHandler = handler;
+            }
+        }
+
+        @Override
         public Formatter getFormatter() {
             if (component instanceof HasFormatter) {
                 return ((HasFormatter) component).getFormatter();
@@ -1427,6 +1449,14 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
         public void setTargetContextHelpTextHtmlEnabled(Boolean targetContextHelpTextHtmlEnabled) {
             this.targetContextHelpTextHtmlEnabled = targetContextHelpTextHtmlEnabled;
+        }
+
+        public Consumer<ContextHelpIconClickEvent> getTargetContextHelpIconClickHandler() {
+            return targetContextHelpIconClickHandler;
+        }
+
+        public void setTargetContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> targetContextHelpIconClickHandler) {
+            this.targetContextHelpIconClickHandler = targetContextHelpIconClickHandler;
         }
 
         public CollectionDatasource getTargetOptionsDatasource() {

@@ -41,10 +41,17 @@ import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
-public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C> implements Field {
+public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C>
+        implements Field, DesktopComponent.HasContextHelpClickHandler {
 
     protected List<ValueChangeListener> listeners = new ArrayList<>();
 
@@ -66,6 +73,8 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     protected MetaPropertyPath metaPropertyPath;
     
     protected EditableChangeListener parentEditableChangeListener;
+
+    protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
 
     @Override
     public void addListener(ValueListener listener) {
@@ -328,6 +337,31 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
             if (parent instanceof DesktopFieldGroup) {
                 ((DesktopFieldGroup) parent).updateContextHelp(this);
             }
+        }
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        return contextHelpIconClickHandler;
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        if (!Objects.equals(this.contextHelpIconClickHandler, handler)) {
+            this.contextHelpIconClickHandler = handler;
+
+            requestContainerUpdate();
+
+            if (parent instanceof DesktopFieldGroup) {
+                ((DesktopFieldGroup) parent).updateContextHelp(this);
+            }
+        }
+    }
+
+    @Override
+    public void fireContextHelpIconClickEvent(ContextHelpIconClickEvent event) {
+        if (contextHelpIconClickHandler != null) {
+            contextHelpIconClickHandler.accept(event);
         }
     }
 }

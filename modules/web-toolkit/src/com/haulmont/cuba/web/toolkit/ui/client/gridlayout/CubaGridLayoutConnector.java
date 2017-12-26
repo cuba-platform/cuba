@@ -27,6 +27,7 @@ import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.AbstractFieldState;
+import com.vaadin.shared.communication.SharedState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGridLayout.class)
@@ -47,9 +48,7 @@ public class CubaGridLayoutConnector extends GridLayoutConnector implements Pain
         VGridLayout.Cell cell = layout.widgetToCell.get(childConnector.getWidget());
         AbstractComponentState state = childConnector.getState();
         if (VCaption.isNeeded(state)
-                || (state instanceof AbstractFieldState
-                && ((AbstractFieldState) state).contextHelpText != null
-                && !((AbstractFieldState) state).contextHelpText.isEmpty())) {
+                || isContextHelpIconEnabled(state)) {
             VLayoutSlot layoutSlot = cell.slot;
             VCaption caption = layoutSlot.getCaption();
             if (caption == null) {
@@ -67,6 +66,18 @@ public class CubaGridLayoutConnector extends GridLayoutConnector implements Pain
             layout.setCaption(childConnector.getWidget(), null);
             getLayoutManager().setNeedsLayout(this);
         }
+    }
+
+    protected boolean isContextHelpIconEnabled(SharedState state) {
+        return hasContextHelpIconListeners(state)
+                || (state instanceof AbstractFieldState)
+                && ((AbstractFieldState) state).contextHelpText != null
+                && !((AbstractFieldState) state).contextHelpText.isEmpty();
+    }
+
+    protected boolean hasContextHelpIconListeners(SharedState state) {
+        return state.registeredEventListeners != null
+                && state.registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 
     @Override

@@ -17,20 +17,24 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponent.HasContextHelpClickHandler;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Component.ContextHelpIconClickEvent;
 import com.haulmont.cuba.gui.components.Component.HasContextHelp;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 public class ComponentCaption extends JPanel {
 
-    private Component owner;
-    private JLabel label;
-    private ToolTipButton toolTipButton;
+    protected Component owner;
+    protected JLabel label;
+    protected ToolTipButton toolTipButton;
+    protected ActionListener toolTipButtonActionListener;
 
     public ComponentCaption(Component owner) {
         BoxLayoutAdapter.create(this);
@@ -49,21 +53,45 @@ public class ComponentCaption extends JPanel {
         }
 
         String contextHelpText = getContextHelpText();
-        if (StringUtils.isNotEmpty(contextHelpText)) {
+        boolean hasContextHelpIconClickListeners = hasContextHelpIconClickListeners();
+        if (StringUtils.isNotEmpty(contextHelpText)
+                || hasContextHelpIconClickListeners) {
             if (toolTipButton == null) {
                 toolTipButton = new ToolTipButton();
                 toolTipButton.setFocusable(false);
-                DesktopToolTipManager.getInstance().registerTooltip(toolTipButton);
                 add(toolTipButton);
             }
-            toolTipButton.setToolTipText(contextHelpText);
+
+            if (hasContextHelpIconClickListeners) {
+                if (toolTipButtonActionListener == null) {
+                    toolTipButtonActionListener = e ->
+                            fireContextHelpIconClickEvent();
+                    toolTipButton.addActionListener(toolTipButtonActionListener);
+                }
+
+                toolTipButton.setToolTipText(null);
+            } else {
+                removeToolTipButtonActionListener();
+
+                toolTipButton.setToolTipText(contextHelpText);
+            }
+
+            DesktopToolTipManager.getInstance().registerTooltip(toolTipButton);
         } else if (toolTipButton != null) {
+            removeToolTipButtonActionListener();
             remove(toolTipButton);
             toolTipButton = null;
         }
 
         setVisible(owner.isVisible());
         setEnabled(owner.isEnabled());
+    }
+
+    protected void removeToolTipButtonActionListener() {
+        if (toolTipButtonActionListener != null) {
+            toolTipButton.removeActionListener(toolTipButtonActionListener);
+            toolTipButtonActionListener = null;
+        }
     }
 
     protected String getContextHelpText() {
@@ -73,6 +101,18 @@ public class ComponentCaption extends JPanel {
                     ((HasContextHelp) owner).isContextHelpTextHtmlEnabled());
         }
         return null;
+    }
+
+    protected boolean hasContextHelpIconClickListeners() {
+        return owner instanceof HasContextHelpClickHandler
+                && ((HasContextHelpClickHandler) owner).getContextHelpIconClickHandler() != null;
+    }
+
+    protected void fireContextHelpIconClickEvent() {
+        if (owner instanceof HasContextHelpClickHandler) {
+            ContextHelpIconClickEvent event = new ContextHelpIconClickEvent((HasContextHelp) owner);
+            ((HasContextHelpClickHandler) owner).fireContextHelpIconClickEvent(event);
+        }
     }
 
     public void update() {
