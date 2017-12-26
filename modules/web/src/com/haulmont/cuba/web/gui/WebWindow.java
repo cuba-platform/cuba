@@ -49,6 +49,7 @@ import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -1417,6 +1418,13 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setContentSwitchMode(ContentSwitchMode mode) {
         Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
                 "Use ContentSwitchMode.DEFAULT option instead");
+
+        MainTabSheetMode tabSheetMode = AppBeans.get(Configuration.class)
+                .getConfig(WebConfig.class)
+                .getMainTabSheetMode();
+        if (tabSheetMode != MainTabSheetMode.MANAGED) {
+            log.debug("Content switch mode can be set only for the managed main TabSheet. Current invocation will be ignored.");
+        }
 
         this.contentSwitchMode = mode;
     }
