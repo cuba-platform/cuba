@@ -157,7 +157,7 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 
         for (Map.Entry<String, String> logger : updates.entrySet()) {
             log.info(String.format("Level for logger '%s' set to '%s' on '%s'",
-                    logger.getKey(), logger.getKey(), instance.getNodeName()));
+                    logger.getKey(), logger.getValue(), instance.getNodeName()));
         }
     }
 
