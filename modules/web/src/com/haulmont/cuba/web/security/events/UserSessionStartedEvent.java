@@ -29,7 +29,8 @@ public class UserSessionStartedEvent extends ApplicationEvent {
     protected final Credentials credentials;
     protected final AuthenticationDetails authenticationDetails;
 
-    public UserSessionStartedEvent(Connection source, Credentials credentials, AuthenticationDetails authenticationDetails) {
+    public UserSessionStartedEvent(Connection source, Credentials credentials,
+                                   AuthenticationDetails authenticationDetails) {
         super(source);
         this.credentials = credentials;
         this.authenticationDetails = authenticationDetails;

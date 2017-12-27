@@ -332,13 +332,11 @@ public class ConnectionImpl extends EventRouter implements Connection {
     }
 
     protected void publishUserSessionFinishedEvent(UserSession session) {
-        UserSessionFinishedEvent event = new UserSessionFinishedEvent(this, session);
-        events.publish(event);
+        events.publish(new UserSessionFinishedEvent(this, session));
     }
 
     protected void publishUserSessionSubstitutedEvent(UserSession previousSession, UserSession session) {
-        UserSessionSubstitutedEvent event = new UserSessionSubstitutedEvent(this, previousSession, session);
-        events.publish(event);
+        events.publish(new UserSessionSubstitutedEvent(this, previousSession, session));
     }
 
     protected void publishDisconnectedEvent(UserSession previousSession) {
@@ -362,7 +360,6 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
         setSessionInternal(clientUserSession);
 
-        // publish login success
         publishUserSessionSubstitutedEvent(previousSession, clientUserSession);
 
         fireSubstitutionListeners();

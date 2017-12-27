@@ -20,6 +20,10 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.Connection;
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * Event that is fired by {@link Connection} when session user has been substituted on middleware right before firing
+ * {@link Connection.StateChangeListener} listeners.
+ */
 public class UserSessionSubstitutedEvent extends ApplicationEvent {
     protected final UserSession sourceSession;
     protected final UserSession substitutedSession;

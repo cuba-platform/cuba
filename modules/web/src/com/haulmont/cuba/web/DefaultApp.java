@@ -41,8 +41,8 @@ import static com.haulmont.cuba.web.Connection.*;
 import static com.haulmont.cuba.web.security.ExternalUserCredentials.isLoggedInWithExternalAuth;
 
 /**
- * Default {@link App} implementation that shows {@link AppLoginWindow} on start.
- * Supports SSO through external authentication.
+ * Default {@link App} implementation that shows {@link AppLoginWindow} on start. Single instance of App is bound to
+ * single HTTP session.
  */
 @Component(App.NAME)
 @Scope(VaadinSessionScope.NAME)
@@ -199,7 +199,7 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
     }
 
     /**
-     * Perform actions after successful login.
+     * Perform actions after successful login. Will be removed in 7.0.
      *
      * @deprecated Use {@link AppLoggedInEvent} instead.
      */
@@ -221,9 +221,8 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
     }
 
     protected void publishAppStartedEvent() throws LoginException {
-        AppStartedEvent event = new AppStartedEvent(this);
         try {
-            events.publish(event);
+            events.publish(new AppStartedEvent(this));
         } catch (UndeclaredThrowableException ex) {
             Throwable cause = ex.getCause();
             if (cause instanceof LoginException) {

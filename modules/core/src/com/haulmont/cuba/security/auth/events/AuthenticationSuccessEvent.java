@@ -16,10 +16,26 @@
 
 package com.haulmont.cuba.security.auth.events;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.AuthenticationDetails;
+import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * Event that is fired by {@link AuthenticationManager} after user is successfully authenticated. There is an active
+ * database transaction when the event is published.
+ * <br>
+ * Event is fired when special instance of {@link SecurityContext} is set to {@link AppContext}. It has system user
+ * session that has full permissions in the system.
+ * <br>
+ * Event handlers may throw LoginException to abort authentication process.
+ *
+ * @see UserSession#isSystem()
+ * @see AfterAuthenticationEvent
+ */
 public class AuthenticationSuccessEvent extends ApplicationEvent {
     private final AuthenticationDetails authenticationDetails;
 

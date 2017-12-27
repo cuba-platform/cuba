@@ -16,9 +16,21 @@
 
 package com.haulmont.cuba.security.auth.events;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * Event that is fired by {@link AuthenticationManager} after user is substituted and the new session is created. There
+ * is an active database transaction when the event is published.
+ * <br>
+ * Event is fired when special instance of {@link SecurityContext} is set to {@link AppContext}. It has system user
+ * session that has full permissions in the system.
+ *
+ * @see UserSession#isSystem()
+ */
 public class UserSubstitutedEvent extends ApplicationEvent {
 
     private final UserSession substitutedSession;

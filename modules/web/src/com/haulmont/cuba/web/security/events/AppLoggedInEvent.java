@@ -21,6 +21,9 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Event that is fired after UI initialization of {@link App} when a user is logged in.
+ * <br>
+ * Note that: there is no guarantee that login has been processed from a thread bound to UI instance.
+ * Only HTTP session lock is acquired.
  */
 public class AppLoggedInEvent extends ApplicationEvent {
 

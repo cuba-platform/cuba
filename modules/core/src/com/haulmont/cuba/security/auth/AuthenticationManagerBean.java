@@ -42,6 +42,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 
 @Component(AuthenticationManager.NAME)
 public class AuthenticationManagerBean implements AuthenticationManager {
@@ -200,7 +201,9 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
             UserSession session = userSessionManager.createSession(currentSession, user);
 
-            publishUserSubstitutedEvent(currentSession, session);
+            withSecurityContext(new SecurityContext(serverSession), () ->
+                    publishUserSubstitutedEvent(currentSession, session)
+            );
 
             tx.commit();
 
@@ -219,8 +222,9 @@ public class AuthenticationManagerBean implements AuthenticationManager {
             userSessions.remove(session);
             log.info("Logged out: {}", session);
 
-            publishUserLoggedOut(session);
-
+            withSecurityContext(new SecurityContext(serverSession), () ->
+                    publishUserLoggedOut(session)
+            );
         } catch (SecurityException e) {
             log.warn("Couldn't logout: {}", e);
         } catch (NoUserSessionException e) {
@@ -229,12 +233,13 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     }
 
     protected AuthenticationDetails authenticateInternal(Credentials credentials) throws LoginException {
-        publishBeforeAuthenticationEvent(credentials);
+        AuthenticationDetails details = null;
 
         Class<? extends Credentials> credentialsClass = credentials.getClass();
 
-        AuthenticationDetails details = null;
         try {
+            publishBeforeAuthenticationEvent(credentials);
+
             List<AuthenticationProvider> providers = getProviders();
 
             for (AuthenticationProvider provider : providers) {

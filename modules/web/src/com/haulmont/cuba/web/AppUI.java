@@ -220,8 +220,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     }
 
     protected void publishAppInitializedEvent(App app) {
-        AppInitializedEvent event = new AppInitializedEvent(app);
-        events.publish(event);
+        events.publish(new AppInitializedEvent(app));
     }
 
     protected void showCriticalExceptionMessage(Exception exception) {
