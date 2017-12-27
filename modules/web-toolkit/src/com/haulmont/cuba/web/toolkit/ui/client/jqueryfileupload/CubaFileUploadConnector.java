@@ -183,6 +183,12 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
             getWidget().setDropZone(dropZone != null ? dropZone.getWidget() : null, getState().dropZonePrompt);
         }
 
+        if (stateChangeEvent.hasPropertyChanged("pasteZone")) {
+            ComponentConnector pasteZone = (ComponentConnector) getState().pasteZone;
+
+            getWidget().setPasteZone(pasteZone != null ? pasteZone.getWidget() : null);
+        }
+
         if (!isEnabled() || isReadOnly()) {
             getWidget().disableUpload();
         } else {

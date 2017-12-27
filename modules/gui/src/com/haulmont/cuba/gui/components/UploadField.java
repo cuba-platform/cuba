@@ -150,6 +150,21 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     void setDropZone(DropZone dropZone);
 
     /**
+     * Set paste zone reference to this upload component. PasteZone handles paste shortcut when a text input field
+     * in the container is focused.
+     * <br>
+     * It is supported by Chromium-based browsers.
+     *
+     * @param pasteZone paste zone container
+     */
+    void setPasteZone(Container pasteZone);
+
+    /**
+     * @return current paste zone container
+     */
+    Container getPasteZone();
+
+    /**
      * @return current drop zone prompt
      */
     String getDropZonePrompt();

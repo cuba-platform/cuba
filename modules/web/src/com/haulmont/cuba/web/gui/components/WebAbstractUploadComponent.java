@@ -35,6 +35,7 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Abstrac
 
     protected Set<String> permittedExtensions;
     protected DropZone dropZone;
+    protected Container pasteZone;
     protected String dropZonePrompt;
 
     @Override
@@ -89,6 +90,16 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Abstrac
     @Override
     public void setDropZone(DropZone dropZone) {
         this.dropZone = dropZone;
+    }
+
+    @Override
+    public void setPasteZone(Container pasteZone) {
+        this.pasteZone = pasteZone;
+    }
+
+    @Override
+    public Container getPasteZone() {
+        return pasteZone;
     }
 
     @Override

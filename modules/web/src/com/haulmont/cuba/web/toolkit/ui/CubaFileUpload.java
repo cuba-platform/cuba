@@ -289,6 +289,16 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
         }
     }
 
+    public void setPasteZone(Component component) {
+        if (getPasteZone() != component) {
+            getState().pasteZone = component;
+        }
+    }
+
+    public Component getPasteZone() {
+        return (Component) getState(false).pasteZone;
+    }
+
     public String getDropZonePrompt() {
         return getState(false).dropZonePrompt;
     }

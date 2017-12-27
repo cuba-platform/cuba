@@ -250,6 +250,11 @@ public class JQueryFileUploadOverlay {
         this.dropZoneElement = dropZoneElement;
     }
 
+    public void setPasteZone(Element pasteZoneElement) {
+        Element fileInput = fileUploadWidget.getFileInputElement();
+        setPasteZone(fileInput, pasteZoneElement);
+    }
+
     protected void subscribeGlobalDragDropHandlers() {
         RootPanel.get().addBitlessDomHandler(new DragOverHandler() {
             @Override
@@ -442,6 +447,15 @@ public class JQueryFileUploadOverlay {
 
         upload.fileupload({
             dropZone: dropZoneElement
+        });
+    }-*/;
+
+    protected native void setPasteZone(Element fileInput, Element pasteZoneElement) /*-{
+        //noinspection JSUnresolvedFunction
+        var upload = $wnd.jQuery(fileInput);
+
+        upload.fileupload({
+            pasteZone: pasteZoneElement
         });
     }-*/;
 

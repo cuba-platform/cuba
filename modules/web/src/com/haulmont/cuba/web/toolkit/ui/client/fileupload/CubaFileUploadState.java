@@ -58,5 +58,8 @@ public class CubaFileUploadState extends TabIndexState {
     public Connector dropZone;
 
     @NoLayout
+    public Connector pasteZone;
+
+    @NoLayout
     public String dropZonePrompt;
 }

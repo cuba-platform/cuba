@@ -430,6 +430,20 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbst
     }
 
     @Override
+    public void setPasteZone(Container pasteZone) {
+        super.setPasteZone(pasteZone);
+
+        if (component instanceof CubaFileUpload) {
+            if (pasteZone == null) {
+                ((CubaFileUpload) component).setPasteZone(null);
+            } else {
+                Component vComponent = pasteZone.unwrapComposition(Component.class);
+                ((CubaFileUpload) component).setPasteZone(vComponent);
+            }
+        }
+    }
+
+    @Override
     public void setDropZonePrompt(String dropZonePrompt) {
         super.setDropZonePrompt(dropZonePrompt);
 

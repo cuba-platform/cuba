@@ -953,6 +953,7 @@
         <xs:attribute name="permittedExtensions" type="xs:string"/>
         <xs:attribute name="fileSizeLimit" type="xs:long"/>
         <xs:attribute name="dropZone" type="xs:string"/>
+        <xs:attribute name="pasteZone" type="xs:string"/>
         <xs:attribute name="dropZonePrompt" type="resourceString"/>
     </xs:attributeGroup>
 

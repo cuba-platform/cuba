@@ -273,6 +273,19 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
         }
     }
 
+    public void setPasteZone(final Widget pasteZone) {
+        if (pasteZone != null) {
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    fileUpload.setPasteZone(pasteZone.getElement());
+                }
+            });
+        } else {
+            fileUpload.setPasteZone(null);
+        }
+    }
+
     public void setAccept(String accept) {
         if (accept != null) {
             getFileInputElement().setAttribute("accept", accept);
