@@ -29,6 +29,7 @@ public class CubaColorPickerWrapper extends CustomField {
         initColorPicker();
         setFocusDelegate(field);
         setPrimaryStyleName("c-color-picker");
+        setWidthUndefined();
     }
 
     protected void initColorPicker() {
