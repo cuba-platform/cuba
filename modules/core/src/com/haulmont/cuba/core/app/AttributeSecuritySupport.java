@@ -213,7 +213,7 @@ public class AttributeSecuritySupport {
         if (entity instanceof BaseGenericIdEntity) {
             BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
             setupAttributeAccess(genericIdEntity);
-            metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
+            metadataTools.traverseLoadedAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
         }
     }
 

@@ -607,3 +607,55 @@ create index IDX_TEST_SOFT_DELETE_PROJECT_TASK on TEST_SOFT_DELETE_PROJECT (TASK
 -- begin TEST_SOFT_DELETE_TASK_VALUE
 alter table TEST_SOFT_DELETE_TASK_VALUE add constraint FK_TEST_SOFT_DELETE_TASK_VALUE_TASK foreign key (TASK_ID) references TEST_SOFT_DELETE_TASK(ID)^
 create index IDX_TEST_SOFT_DELETE_TASK_VALUE_TASK on TEST_SOFT_DELETE_TASK_VALUE (TASK_ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+-- begin TEST_SEVERAL_FETCH_GROUPS_TARIFF
+create table TEST_SEVERAL_FETCH_GROUPS_TARIFF (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    PARENT_ID varchar(36),
+    ACTIVE_VERSION_ID varchar(36),
+    --
+    primary key (ID)
+)^
+-- end TEST_SEVERAL_FETCH_GROUPS_TARIFF
+-- begin TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION
+create table TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    PARENT_ID varchar(36),
+    --
+    primary key (ID)
+)^
+-- end TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION
+
+-- begin TEST_SEVERAL_FETCH_GROUPS_TARIFF
+alter table TEST_SEVERAL_FETCH_GROUPS_TARIFF add constraint FK_TEST_SEVERAL_FETCH_GROUPS_TARIFF_PARENT foreign key (PARENT_ID) references TEST_SEVERAL_FETCH_GROUPS_TARIFF(ID)^
+alter table TEST_SEVERAL_FETCH_GROUPS_TARIFF add constraint FK_TEST_SEVERAL_FETCH_GROUPS_TARIFF_ACTIVE_VERSION foreign key (ACTIVE_VERSION_ID) references TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION(ID)^
+create index IDX_TEST_SEVERAL_FETCH_GROUPS_TARIFF_PARENT on TEST_SEVERAL_FETCH_GROUPS_TARIFF (PARENT_ID)^
+create index IDX_TEST_SEVERAL_FETCH_GROUPS_TARIFF_ACTIVE_VERSION on TEST_SEVERAL_FETCH_GROUPS_TARIFF (ACTIVE_VERSION_ID)^
+-- end TEST_SEVERAL_FETCH_GROUPS_TARIFF
+-- begin TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION
+alter table TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION add constraint FK_TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION_PARENT foreign key (PARENT_ID) references TEST_SEVERAL_FETCH_GROUPS_TARIFF(ID)^
+create index IDX_TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION_PARENT on TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION (PARENT_ID)^
+-- end TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION
+
+------------------------------------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.bali.util.Preconditions.formatExceptionArgs;
 
 /**
  * Utility class to provide common metadata-related functionality. <br> Implemented as Spring bean to allow extension in
@@ -798,7 +799,23 @@ public class MetadataTools {
         checkNotNullArgument(entity, "entity is null");
         checkNotNullArgument(visitor, "visitor is null");
 
-        internalTraverseAttributesByView(view, entity, visitor, new HashMap<>());
+        internalTraverseAttributesByView(view, entity, visitor, new HashMap<>(), false);
+    }
+
+    /**
+     * Depth-first traversal of the object graph by the view starting from the specified entity instance.
+     * Visits attributes defined in the view. Not loaded attributes by the view aren't visited.
+     *
+     * @param view    view instance
+     * @param entity  entity graph entry point
+     * @param visitor the attribute visitor implementation
+     */
+    public void traverseLoadedAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor) {
+        checkNotNullArgument(view, "view is null");
+        checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(visitor, "visitor is null");
+
+        internalTraverseAttributesByView(view, entity, visitor, new HashMap<>(), true);
     }
 
     /**
@@ -984,7 +1001,7 @@ public class MetadataTools {
     }
 
     protected void internalTraverseAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor,
-                                                    Map<Entity, Set<View>> visited) {
+                                                    Map<Entity, Set<View>> visited, boolean checkLoaded) {
         Set<View> views = visited.get(entity);
         if (views == null) {
             views = new HashSet<>();
@@ -1001,6 +1018,9 @@ public class MetadataTools {
             if (visitor.skip(metaProperty))
                 continue;
 
+            if (checkLoaded && !persistentAttributesLoadChecker.isLoaded(entity, metaProperty.getName()))
+                continue;
+
             View propertyView = property.getView();
 
             visitor.visit(entity, metaProperty);
@@ -1011,10 +1031,10 @@ public class MetadataTools {
                 if (value instanceof Collection) {
                     for (Object item : ((Collection) value)) {
                         if (item instanceof Instance)
-                            internalTraverseAttributesByView(propertyView, (Entity) item, visitor, visited);
+                            internalTraverseAttributesByView(propertyView, (Entity) item, visitor, visited, checkLoaded);
                     }
                 } else if (value instanceof Instance) {
-                    internalTraverseAttributesByView(propertyView, (Entity) value, visitor, visited);
+                    internalTraverseAttributesByView(propertyView, (Entity) value, visitor, visited, checkLoaded);
                 }
             }
         }

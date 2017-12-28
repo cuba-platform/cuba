@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
+    <view entity="test$SeveralFetchGroups_TariffVersion"
+          extends="_local"
+          name="tariffVersion.withParent">
+        <property name="parent" view="tariff-with-version"/>
+    </view>
+
+    <view entity="test$SeveralFetchGroups_Tariff"
+          extends="_minimal"
+          name="tariff-with-version">
+        <property name="parent"
+                  view="_minimal"/>
+        <property name="activeVersion" view="_minimal"/>
+    </view>
+</views>
