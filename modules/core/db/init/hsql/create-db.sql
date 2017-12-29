@@ -892,7 +892,7 @@ alter table SEC_SESSION_LOG add constraint FK_SEC_SESSION_LOG_USER foreign key (
 create index IDX_SEC_SESSION_LOG_USER on SEC_SESSION_LOG (USER_ID)^
 alter table SEC_SESSION_LOG add constraint FK_SEC_SESSION_LOG_SUBUSER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
 create index IDX_SEC_SESSION_LOG_SUBUSER on SEC_SESSION_LOG (SUBSTITUTED_USER_ID)^
-create index IDX_SEC_SESSION_LOG_STARTED_TS_DESC on SEC_SESSION_LOG (STARTED_TS DESC)^
+create index IDX_SESSION_LOG_STARTED_TS on SEC_SESSION_LOG (STARTED_TS DESC)^
 
 
 ------------------------------------------------------------------------------------------------------------

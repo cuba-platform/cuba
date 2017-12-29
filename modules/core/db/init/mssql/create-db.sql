@@ -952,7 +952,7 @@ create table SEC_SESSION_LOG (
 create index IDX_SESSION_LOG_ENTRY_USER on SEC_SESSION_LOG (USER_ID)^
 create index IDX_SESSION_LOG_ENTRY_SUBUSER on SEC_SESSION_LOG (SUBSTITUTED_USER_ID)^
 create index IDX_SESSION_LOG_ENTRY_SESSION on SEC_SESSION_LOG (SESSION_ID)^
-create index IDX_SESSION_LOG_ENTRY_STARTED_TS_DESC on SEC_SESSION_LOG (STARTED_TS DESC)^
+create index IDX_SESSION_LOG_STARTED_TS on SEC_SESSION_LOG (STARTED_TS DESC)^
 
 ------------------------------------------------------------------------------------------------------------------
 
