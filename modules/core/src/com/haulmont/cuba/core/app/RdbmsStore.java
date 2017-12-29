@@ -116,7 +116,7 @@ public class RdbmsStore implements DataStore {
         }
 
         E result = null;
-        boolean needToApplyConstraints = needToApplyConstraints(context);
+        boolean needToApplyConstraints = needToApplyByPredicate(context);
         try (Transaction tx = createLoadTransaction()) {
             final EntityManager em = persistence.getEntityManager(storeName);
 
@@ -188,7 +188,7 @@ public class RdbmsStore implements DataStore {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
-        boolean needToApplyConstraints = needToApplyConstraints(context);
+        boolean needToApplyConstraints = needToApplyByPredicate(context);
         try (Transaction tx = createLoadTransaction()) {
             EntityManager em = persistence.getEntityManager(storeName);
             em.setSoftDeletion(context.isSoftDeletion());
@@ -594,7 +594,9 @@ public class RdbmsStore implements DataStore {
         View view = context.getView() != null ? context.getView() :
                 viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
         View copy = View.copy(attributeSecurity.createRestrictedView(view));
-        if (context.isLoadPartialEntities() && !needToApplyInMemoryReadConstraints(context)) {
+        if (context.isLoadPartialEntities()
+                && !needToApplyInMemoryReadConstraints(context)
+                && !needToApplyAttributeAccess(context)) {
             copy.setLoadPartialEntities(true);
         }
         return copy;
@@ -881,18 +883,21 @@ public class RdbmsStore implements DataStore {
     }
 
     protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {
-        return needToApplyConstraints(context, metaClass -> security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
+        return isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()
+                && needToApplyByPredicate(context,
+                metaClass -> security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
     }
 
-    protected boolean needToApplyConstraints(LoadContext context) {
-        return needToApplyConstraints(context, metaClass -> security.hasConstraints(metaClass));
+    protected boolean needToApplyByPredicate(LoadContext context) {
+        return isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()
+                && needToApplyByPredicate(context, metaClass -> security.hasConstraints(metaClass));
     }
 
-    protected boolean needToApplyConstraints(LoadContext context, Predicate<MetaClass> hasConstraints) {
-        if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
-            return false;
-        }
+    protected boolean needToApplyAttributeAccess(LoadContext context) {
+        return needToApplyByPredicate(context, metaClass -> attributeSecurity.isAttributeAccessEnabled(metaClass));
+    }
 
+    protected boolean needToApplyByPredicate(LoadContext context, Predicate<MetaClass> hasConstraints) {
         if (context.getView() == null) {
             MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
             return hasConstraints.test(metaClass);
