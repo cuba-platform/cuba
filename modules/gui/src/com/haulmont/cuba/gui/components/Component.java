@@ -380,7 +380,10 @@ public interface Component {
         Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler();
 
         /**
-         * Sets a context help icon click handler
+         * Sets a context help icon click handler. If set, then a special
+         * icon will be added for a field. Click handler has priority over
+         * context help text, i.e. no tooltip with context help text will be shown
+         * if click listener is set.
          *
          * @param handler the handler to set
          */
