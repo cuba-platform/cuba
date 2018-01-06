@@ -26,20 +26,20 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.filter.ConditionType;
-import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.DynamicAttributesOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Element;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -154,7 +154,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
 
     @Override
     public void setOperator(Op operator) {
-        if (!ObjectUtils.equals(this.operator, operator)) {
+        if (!Objects.equals(this.operator, operator)) {
             this.operator = operator;
             String paramName = param.getName();
             ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);

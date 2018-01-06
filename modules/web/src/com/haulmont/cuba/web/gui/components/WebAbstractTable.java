@@ -73,7 +73,6 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.dom4j.Document;
@@ -680,7 +679,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 Entity dsItem = datasource.getItemIfValid();
                 datasource.setItem(newItem);
 
-                if (ObjectUtils.equals(dsItem, newItem)) {
+                if (Objects.equals(dsItem, newItem)) {
                     // in this case item change event will not be generated
                     refreshActionsState();
                 }
@@ -1733,7 +1732,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void setColumnCaption(Column column, String caption) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (!StringUtils.equals(column.getCaption(), caption)) {
+        if (!Objects.equals(column.getCaption(), caption)) {
             column.setCaption(caption);
         }
         component.setColumnHeader(column.getId(), caption);
@@ -1753,7 +1752,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void setColumnDescription(Column column, String description) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (!StringUtils.equals(column.getDescription(), description)) {
+        if (!Objects.equals(column.getDescription(), description)) {
             column.setDescription(description);
         }
         component.setColumnDescription(column.getId(), description);

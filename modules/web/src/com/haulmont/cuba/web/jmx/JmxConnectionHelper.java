@@ -55,7 +55,7 @@ public final class JmxConnectionHelper {
             } catch (Exception e) {
                 throw new JmxControlException(e);
             }
-            return StringUtils.equals(objectClass.getName(), info.getClassName());
+            return Objects.equals(objectClass.getName(), info.getClassName());
         });
     }
 
@@ -63,7 +63,7 @@ public final class JmxConnectionHelper {
                                               final Class objectClass) throws IOException {
         Set<ObjectName> names = connection.queryNames(null, null);
         return IterableUtils.find(names, o -> {
-            if (!StringUtils.equals(remoteContext, o.getDomain())) {
+            if (!Objects.equals(remoteContext, o.getDomain())) {
                 return false;
             }
 
@@ -73,7 +73,7 @@ public final class JmxConnectionHelper {
             } catch (Exception e) {
                 throw new JmxControlException(e);
             }
-            return StringUtils.equals(objectClass.getName(), info.getClassName());
+            return Objects.equals(objectClass.getName(), info.getClassName());
         });
     }
 
@@ -90,7 +90,7 @@ public final class JmxConnectionHelper {
             } catch (Exception e) {
                 throw new JmxControlException(e);
             }
-            return StringUtils.equals(objectClass.getName(), info.getClassName());
+            return Objects.equals(objectClass.getName(), info.getClassName());
         });
 
         return suitableNames;

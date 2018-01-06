@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -213,7 +212,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                     public void actionPerformed(ActionEvent e) {
                         if (!multiselect) {
                             Object newValue = item.getValue();
-                            if (!ObjectUtils.equals(newValue, prevValue)) {
+                            if (!Objects.equals(newValue, prevValue)) {
                                 updateInstance(newValue);
                                 fireChangeListeners(newValue);
                             }
@@ -292,7 +291,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
         if (multiselect && value instanceof Collection) {
             for (Object v : ((Collection) value)) {
                 for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
-                    if (ObjectUtils.equals(entry.getKey().getValue(), v))
+                    if (Objects.equals(entry.getKey().getValue(), v))
                         entry.getValue().setSelected(true);
                     else
                         entry.getValue().setSelected(false);

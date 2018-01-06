@@ -29,7 +29,6 @@ import com.vaadin.server.UICreateEvent;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.UI;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
 import java.util.Objects;
@@ -54,7 +53,7 @@ public class CubaUIProvider extends DefaultUIProvider {
         String userAppTheme = getCookieValue(event.getRequest().getCookies(),
                 App.APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
         if (userAppTheme != null) {
-            if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
+            if (!Objects.equals(userAppTheme, appWindowTheme)) {
                 // check theme support
                 ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
                 Set<String> supportedThemes = themeRepository.getAvailableThemes();

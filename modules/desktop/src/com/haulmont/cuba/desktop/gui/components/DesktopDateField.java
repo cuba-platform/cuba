@@ -41,7 +41,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -229,7 +228,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         Date value = getValue();
         this.timeZone = timeZone;
         datePicker.setTimeZone(timeZone);
-        if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
+        if (value != null && !Objects.equals(prevTimeZone, timeZone)) {
             updateComponent(value);
         }
     }
@@ -316,7 +315,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             Date targetDate = (Date) value;
 
             updateInstance(targetDate);
@@ -480,7 +479,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     protected void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue)) {
+        if (!Objects.equals(prevValue, newValue)) {
             Object oldValue = prevValue;
 
             prevValue = newValue;
@@ -527,7 +526,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             datePicker.getEditor().setToolTipText(description);
             timeField.setDescription(description);
             DesktopToolTipManager.getInstance().registerTooltip(datePicker.getEditor());
@@ -545,7 +544,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         try {
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
-                if (ObjectUtils.equals(prevValue, value)) {
+                if (Objects.equals(prevValue, value)) {
                     valid = true;
                     return;
                 }

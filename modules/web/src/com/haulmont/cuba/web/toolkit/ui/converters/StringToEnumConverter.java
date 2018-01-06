@@ -25,6 +25,7 @@ import com.vaadin.server.VaadinSession;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class StringToEnumConverter implements Converter<String, Enum> {
 
@@ -56,7 +57,7 @@ public class StringToEnumConverter implements Converter<String, Enum> {
         Object[] enumConstants = enumClass.getEnumConstants();
         if (enumConstants != null) {
             for (Object enumValue : enumConstants) {
-                if (StringUtils.equals(value, messages.getMessage((Enum) enumValue, locale))) {
+                if (Objects.equals(value, messages.getMessage((Enum) enumValue, locale))) {
                     return (Enum) enumValue;
                 }
             }

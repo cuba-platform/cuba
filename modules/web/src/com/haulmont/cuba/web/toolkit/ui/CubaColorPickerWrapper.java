@@ -19,7 +19,8 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.shared.ui.colorpicker.Color;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 public class CubaColorPickerWrapper extends CustomField {
 
@@ -50,7 +51,7 @@ public class CubaColorPickerWrapper extends CustomField {
 
     @Override
     protected void setInternalValue(Object newValue) {
-        if (!ObjectUtils.equals(field.getColor(), newValue)) {
+        if (!Objects.equals(field.getColor(), newValue)) {
             field.setColor((Color) newValue);
         }
 

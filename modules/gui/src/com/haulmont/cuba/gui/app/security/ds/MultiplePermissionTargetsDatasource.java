@@ -31,10 +31,7 @@ import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImpl<MultiplePermissionTarget, String> {
@@ -106,11 +103,11 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
         for (Permission p : permissionDs.getItems()) {
             String permissionTargetString = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTargetString)) {
-                int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimeterIndex >= 0) {
-                    String attribute = permissionTargetString.substring(delimeterIndex + 1);
-                    String permissionTarget = permissionTargetString.substring(0, delimeterIndex);
-                    if (StringUtils.equals(permissionTarget, target.getPermissionValue())) {
+                int delimiterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
+                if (delimiterIndex >= 0) {
+                    String attribute = permissionTargetString.substring(delimiterIndex + 1);
+                    String permissionTarget = permissionTargetString.substring(0, delimiterIndex);
+                    if (Objects.equals(permissionTarget, target.getPermissionValue())) {
                         target.assignPermissionVariant(attribute, getPermissionVariant(p));
                     }
                 }

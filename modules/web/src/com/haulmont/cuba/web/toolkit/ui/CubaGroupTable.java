@@ -30,7 +30,6 @@ import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -183,7 +182,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         int i = 0;
         for (Object oldGroupProperty : oldGroupProperties) {
-            if (!ObjectUtils.equals(oldGroupProperty, newGroupProperties[i]))
+            if (!Objects.equals(oldGroupProperty, newGroupProperties[i]))
                 return true;
             i++;
         }

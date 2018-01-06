@@ -17,7 +17,8 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 public enum LockDescriptorNameType implements EnumClass<String> {
     ENTITY("E"),
@@ -36,7 +37,7 @@ public enum LockDescriptorNameType implements EnumClass<String> {
 
     public static LockDescriptorNameType fromId(String id) {
         for (LockDescriptorNameType type : LockDescriptorNameType.values()) {
-            if (ObjectUtils.equals(id, type.getId()))
+            if (Objects.equals(id, type.getId()))
                 return type;
         }
         return null; // unknown id

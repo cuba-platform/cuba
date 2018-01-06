@@ -35,7 +35,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -227,7 +226,7 @@ public class UiPermissionsFrame extends AbstractFrame {
                 // Remove permission
                 Permission permission = null;
                 for (Permission p : uiPermissionsDs.getItems()) {
-                    if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
+                    if (Objects.equals(p.getTarget(), target.getPermissionValue())) {
                         permission = p;
                         break;
                     }

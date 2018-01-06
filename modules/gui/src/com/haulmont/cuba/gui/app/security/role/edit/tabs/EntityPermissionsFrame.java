@@ -33,10 +33,10 @@ import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class EntityPermissionsFrame extends AbstractFrame {
@@ -541,7 +541,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 // Remove permission
                 Permission permission = null;
                 for (Permission p : entityPermissionsDs.getItems()) {
-                    if (ObjectUtils.equals(p.getTarget(), permissionValue)) {
+                    if (Objects.equals(p.getTarget(), permissionValue)) {
                         permission = p;
                         break;
                     }

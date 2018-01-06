@@ -42,7 +42,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -140,7 +139,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                     MetaClass actualMetaClass = ((Filter) screenComponent).getDatasource().getMetaClass();
                     MetaClass relatedMetaClass = metaProperty.getRange().asClass();
                     MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(relatedMetaClass);
-                    if (ObjectUtils.equals(actualMetaClass, effectiveMetaClass)) {
+                    if (Objects.equals(actualMetaClass, effectiveMetaClass)) {
                         MetaDataDescriptor metaDataDescriptor = new MetaDataDescriptor(metaClass, metaProperty);
 
                         applyFilter(((Filter) screenComponent), selectedEntities, descriptor, metaDataDescriptor);

@@ -17,7 +17,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 /**
  * Type of constraint.
@@ -44,7 +45,7 @@ public enum ConstraintCheckType implements EnumClass<String> {
 
     public static ConstraintCheckType fromId(String id) {
         for (ConstraintCheckType type : ConstraintCheckType.values()) {
-            if (ObjectUtils.equals(id, type.getId()))
+            if (Objects.equals(id, type.getId()))
                 return type;
         }
         return null; // unknown id

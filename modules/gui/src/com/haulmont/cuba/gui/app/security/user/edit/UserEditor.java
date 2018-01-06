@@ -418,7 +418,7 @@ public class UserEditor extends AbstractEditor<User> {
                 showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
                 return false;
             } else {
-                if (StringUtils.equals(password, passwordConfirmation)) {
+                if (Objects.equals(password, passwordConfirmation)) {
                     if (StringUtils.isNotEmpty(password)) {
                         ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
                         if (passwordPolicyConfig.getPasswordPolicyEnabled()) {

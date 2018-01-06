@@ -23,10 +23,10 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import java.text.ParseException;
+import java.util.Objects;
 
 public class LongValidator implements Field.Validator {
 
@@ -46,7 +46,7 @@ public class LongValidator implements Field.Validator {
     }
 
     private boolean checkPositive(Long value) {
-        return !ObjectUtils.equals("true", onlyPositive) || value != null && value >= 0;
+        return !Objects.equals("true", onlyPositive) || value != null && value >= 0;
     }
 
     @Override

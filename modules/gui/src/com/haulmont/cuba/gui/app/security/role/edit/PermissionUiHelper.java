@@ -28,8 +28,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import org.apache.commons.lang.ObjectUtils;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class PermissionUiHelper {
@@ -105,7 +105,7 @@ public final class PermissionUiHelper {
                                             final String permissionTarget, PermissionType type, Integer value) {
         Permission permission = null;
         for (Permission p : ds.getItems()) {
-            if (ObjectUtils.equals(p.getTarget(), permissionTarget)) {
+            if (Objects.equals(p.getTarget(), permissionTarget)) {
                 permission = p;
                 break;
             }
@@ -118,7 +118,7 @@ public final class PermissionUiHelper {
                 RestorablePermissionDatasource datasource = (RestorablePermissionDatasource) ds;
 
                 permission = datasource.findRemovedEntity(p ->
-                    p != null && ObjectUtils.equals(p.getTarget(), permissionTarget)
+                    p != null && Objects.equals(p.getTarget(), permissionTarget)
                 );
                 if (permission != null) {
                     datasource.restoreEntity(permission);

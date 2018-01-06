@@ -36,13 +36,13 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements Label {
 
@@ -164,7 +164,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
@@ -176,7 +176,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
             return;
         }
 
-        if (ObjectUtils.equals(prevValue, value)) {
+        if (Objects.equals(prevValue, value)) {
             return;
         }
 
@@ -215,7 +215,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }

@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import javax.persistence.MappedSuperclass;
@@ -97,7 +96,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                     categoryAttributeValue.setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
                     propertyChanged(property, oldValue, null);
                 }
-            } else if (!ObjectUtils.equals(oldValue, newValue)) {
+            } else if (!Objects.equals(oldValue, newValue)) {
                 if (categoryAttributeValue != null) {
                     categoryAttributeValue.setValue(newValue);
                     categoryAttributeValue.setDeleteTs(null);

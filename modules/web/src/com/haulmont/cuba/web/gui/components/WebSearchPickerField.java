@@ -28,10 +28,10 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Objects;
 
 public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
 
@@ -64,7 +64,7 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
                     return;
 
                 updateComponentValue = true;
-                if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
+                if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
                     //noinspection unchecked
                     picker.setValueIgnoreReadOnly(selectComponent.getValue());
                 }
@@ -79,7 +79,7 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
                     return;
 
                 updateComponentValue = true;
-                if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
+                if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
                     selectComponent.setValueIgnoreReadOnly(picker.getValue());
                 }
                 updateComponentValue = false;

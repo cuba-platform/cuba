@@ -25,11 +25,11 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ChangePasswordDialog extends AbstractWindow {
@@ -134,7 +134,7 @@ public class ChangePasswordDialog extends AbstractWindow {
             } else if (userManagementService.checkPassword(targetUserId, passwordEncryption.getPlainHash(password))) {
                 errors.add(passwField, getMessage("currentPasswordWarning"));
 
-            } else if (!ObjectUtils.equals(password, passwordConfirmation)) {
+            } else if (!Objects.equals(password, passwordConfirmation)) {
                 errors.add(confirmPasswField, getMessage("passwordsDoNotMatch"));
 
             } else {

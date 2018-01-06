@@ -33,7 +33,6 @@ import com.haulmont.cuba.core.entity.diff.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -251,7 +250,7 @@ public class EntityDiffManager {
                                                       ViewProperty viewProperty, MetaProperty metaProperty,
                                                       Stack<Object> diffBranch) {
         // link
-        boolean isLinkChange = !ObjectUtils.equals(firstValue, secondValue);
+        boolean isLinkChange = !Objects.equals(firstValue, secondValue);
         isLinkChange = !(diffObject instanceof EmbeddableEntity) && isLinkChange;
 
         EntityClassPropertyDiff classPropertyDiff = new EntityClassPropertyDiff(firstValue, secondValue,

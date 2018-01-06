@@ -27,12 +27,12 @@ import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class LogWindow extends CubaWindow {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -73,7 +73,7 @@ public class LogWindow extends CubaWindow {
 
             @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                if (ObjectUtils.equals(action, closeShortcutAction)) {
+                if (Objects.equals(action, closeShortcutAction)) {
                     close();
                 }
             }

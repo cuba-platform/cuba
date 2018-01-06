@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleTabSheetSelectedT
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +104,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     @Override
     public Component getOwnComponent(String id) {
         for (Component tabComponent : components.keySet()) {
-            if (StringUtils.equals(id, tabComponent.getId())) {
+            if (Objects.equals(id, tabComponent.getId())) {
                 return tabComponent;
             }
         }

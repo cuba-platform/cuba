@@ -22,11 +22,11 @@ import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.impl.*;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Datasources builder.
@@ -247,7 +247,7 @@ public class DsBuilder {
     }
 
     public DsBuilder setViewName(String viewName) {
-        if (!ObjectUtils.equals(viewName, this.viewName)) {
+        if (!Objects.equals(viewName, this.viewName)) {
             this.viewName = viewName;
             this.view = null;
         }

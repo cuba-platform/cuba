@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -347,7 +346,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     @Override
     public void setCaptionProperty(String captionProperty) {
-        if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
+        if (!Objects.equals(this.captionProperty, captionProperty)) {
             this.captionProperty = captionProperty;
             if (model != null) {
                 model.setCaptionProperty(captionProperty);
@@ -619,7 +618,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                     Entity dsItem = datasource.getItemIfValid();
                     datasource.setItem(newItem);
 
-                    if (ObjectUtils.equals(dsItem, newItem)) {
+                    if (Objects.equals(dsItem, newItem)) {
                         // in this case item change event will not be generated
                         refreshActionsState();
                     }

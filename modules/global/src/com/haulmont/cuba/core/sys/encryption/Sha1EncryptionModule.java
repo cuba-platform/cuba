@@ -21,8 +21,8 @@ import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component("cuba_Sha1EncryptionModule")
@@ -91,7 +92,7 @@ public class Sha1EncryptionModule implements EncryptionModule {
     @Override
     public boolean checkPassword(User user, String password) {
         String hashedPassword = getHash(password, user.getId().toString());
-        return StringUtils.equals(hashedPassword, user.getPassword());
+        return Objects.equals(hashedPassword, user.getPassword());
     }
 
     protected String generateSalt() throws NoSuchAlgorithmException {

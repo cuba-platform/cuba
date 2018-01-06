@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -239,7 +238,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 // Remove permission
                 Permission permission = null;
                 for (Permission p : propertyPermissionsDs.getItems()) {
-                    if (ObjectUtils.equals(p.getTarget(), permissionValue)) {
+                    if (Objects.equals(p.getTarget(), permissionValue)) {
                         permission = p;
                         break;
                     }

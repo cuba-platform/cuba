@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldState;
@@ -26,7 +27,6 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +117,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
     public void updateTextPresentation(Object value) {
         String stringValue = textViewConverter.apply(value);
 
-        if (!StringUtils.equals(getState(false).text, stringValue)) {
+        if (!Objects.equals(getState(false).text, stringValue)) {
             getState().text = stringValue;
         }
     }
@@ -228,14 +228,14 @@ public class CubaSuggestionField extends AbstractField<Object> {
     }
 
     public void setInputPrompt(String inputPrompt) {
-        if (!StringUtils.equals(inputPrompt, getState(false).inputPrompt)) {
+        if (!Objects.equals(inputPrompt, getState(false).inputPrompt)) {
             getState().inputPrompt = inputPrompt;
         }
     }
 
     // copied from com.vaadin.ui.AbstractComponent#setStyleName
     public void setPopupStyleName(String styleName) {
-        if (StringUtils.isEmpty(styleName)) {
+        if (Strings.isNullOrEmpty(styleName)) {
             getState().popupStylename = null;
             return;
         }
@@ -255,7 +255,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
     // copied from com.vaadin.ui.AbstractComponent#addStyleName
     public void addPopupStyleName(String styleName) {
-        if (StringUtils.isEmpty(styleName)) {
+        if (Strings.isNullOrEmpty(styleName)) {
             return;
         }
         if (styleName.contains(" ")) {

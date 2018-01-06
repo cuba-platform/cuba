@@ -28,7 +28,6 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -325,7 +324,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     public boolean isFirstId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {
             Object id = ((CollectionDatasource.Ordered) datasource).firstItemId();
-            return ObjectUtils.equals(datasource.getItem(id), itemId);
+            return Objects.equals(datasource.getItem(id), itemId);
         }
         throw new UnsupportedOperationException();
     }
@@ -335,7 +334,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     public boolean isLastId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {
             Object id = ((CollectionDatasource.Ordered) datasource).lastItemId();
-            return ObjectUtils.equals(datasource.getItem(id), itemId);
+            return Objects.equals(datasource.getItem(id), itemId);
         }
         throw new UnsupportedOperationException();
     }

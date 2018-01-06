@@ -22,13 +22,10 @@ import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * PasswordEncryptionSupport MBean implementation
@@ -144,7 +141,7 @@ public class PasswordEncryptionSupport implements PasswordEncryptionSupportMBean
     protected EncryptionModule getEncryptionModule(String hashMethod) {
         Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
         for (EncryptionModule module : encryptionModules.values()) {
-            if (StringUtils.equals(hashMethod, module.getHashMethod())) {
+            if (Objects.equals(hashMethod, module.getHashMethod())) {
                 return module;
             }
         }

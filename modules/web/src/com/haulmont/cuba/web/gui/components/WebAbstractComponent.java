@@ -30,7 +30,6 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
@@ -38,6 +37,7 @@ import org.dom4j.Element;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
         extends EventRouter
@@ -149,7 +149,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     @Override
     public void setId(String id) {
-        if (!ObjectUtils.equals(this.id, id)) {
+        if (!Objects.equals(this.id, id)) {
             if (frame != null) {
                 frame.unregisterComponent(this);
             }

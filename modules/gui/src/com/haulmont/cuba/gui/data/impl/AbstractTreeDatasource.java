@@ -22,7 +22,6 @@ import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import org.apache.commons.lang.ObjectUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.LoggerFactory;
@@ -136,7 +135,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         final Node<T> node = nodes.get(itemId);
 
         for (Node<T> tNode : tree.getRootNodes()) {
-            if (ObjectUtils.equals(tNode, node)) {
+            if (Objects.equals(tNode, node)) {
                 return true;
             }
         }

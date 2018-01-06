@@ -31,10 +31,10 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class SpecificPermissionsFrame extends AbstractFrame {
@@ -181,7 +181,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
                     // Remove permission
                     Permission permission = null;
                     for (Permission p : specificPermissionsDs.getItems()) {
-                        if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
+                        if (Objects.equals(p.getTarget(), target.getPermissionValue())) {
                             permission = p;
                             break;
                         }

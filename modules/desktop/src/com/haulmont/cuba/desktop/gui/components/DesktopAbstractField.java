@@ -34,20 +34,14 @@ import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrap
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C>
@@ -311,7 +305,7 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     @Override
     public void setContextHelpText(String contextHelpText) {
-        if (!ObjectUtils.equals(this.contextHelpText, contextHelpText)) {
+        if (!Objects.equals(this.contextHelpText, contextHelpText)) {
             this.contextHelpText = contextHelpText;
 
             requestContainerUpdate();
@@ -329,7 +323,7 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        if (!ObjectUtils.equals(this.contextHelpTextHtmlEnable, enabled)) {
+        if (!Objects.equals(this.contextHelpTextHtmlEnable, enabled)) {
             contextHelpTextHtmlEnable = enabled;
 
             requestContainerUpdate();

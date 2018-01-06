@@ -18,10 +18,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.LoadContext;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class QueryHolder implements Serializable {
 
@@ -41,8 +40,8 @@ public class QueryHolder implements Serializable {
         QueryHolder that = (QueryHolder) o;
 
         if (query == null || that.query == null) return false;
-        if (!ObjectUtils.equals(query.getQueryString(), that.query.getQueryString())) return false;
-        if (!ObjectUtils.equals(query.getParameters(), that.query.getParameters())) return false;
+        if (!Objects.equals(query.getQueryString(), that.query.getQueryString())) return false;
+        if (!Objects.equals(query.getParameters(), that.query.getParameters())) return false;
 
         return true;
     }

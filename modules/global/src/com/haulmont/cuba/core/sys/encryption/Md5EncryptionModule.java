@@ -20,9 +20,9 @@ package com.haulmont.cuba.core.sys.encryption;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 import java.util.UUID;
 
 @Component("cuba_Md5EncryptionModule")
@@ -55,6 +55,6 @@ public class Md5EncryptionModule implements EncryptionModule {
 
     @Override
     public boolean checkPassword(User user, String password) {
-        return StringUtils.equals(user.getPassword(), password);
+        return Objects.equals(user.getPassword(), password);
     }
 }

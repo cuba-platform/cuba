@@ -22,13 +22,12 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.DsContextCommitListenerWrapper;
-import com.haulmont.cuba.core.global.filter.ParameterInfo;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -158,7 +157,7 @@ public class DsContextImpl implements DsContextImplementation {
             Set<DataSupplier> suppliers = commitData.keySet();
 
             if (suppliers.size() == 1 &&
-                    ObjectUtils.equals(suppliers.iterator().next(), dataservice)) {
+                    Objects.equals(suppliers.iterator().next(), dataservice)) {
                 CommitContext context = createCommitContext(dataservice, commitData);
 
                 fireBeforeCommit(context);
@@ -216,14 +215,14 @@ public class DsContextImpl implements DsContextImplementation {
         List<Datasource> datasources = new LinkedList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
-                if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
+                if (Objects.equals(ds.getDataSupplier(), dataservice)
                         && ds.getCommitMode() == Datasource.CommitMode.DATASTORE) {
                     datasources.add(ds);
                 }
             }
         }
         for (Datasource ds : datasourceMap.values()) {
-            if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
+            if (Objects.equals(ds.getDataSupplier(), dataservice)
                     && ds.getCommitMode() == Datasource.CommitMode.DATASTORE) {
                 datasources.add(ds);
             }
@@ -441,7 +440,7 @@ public class DsContextImpl implements DsContextImplementation {
                 String listeningProperty = propertyName.split("\\.")[0];
                 if (listeningProperty.equals(e.getProperty())) {
                     final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
-                    if (ObjectUtils.equals(item, e.getItem())) {
+                    if (Objects.equals(item, e.getItem())) {
                         datasource.refresh();
                     }
                 }

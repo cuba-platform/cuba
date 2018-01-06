@@ -32,9 +32,9 @@ import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEd
 import com.haulmont.cuba.gui.components.filter.operationedit.PropertyOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,7 +167,7 @@ public class PropertyCondition extends AbstractCondition {
 
     @Override
     public void setOperator(Op operator) {
-        if (!ObjectUtils.equals(this.operator, operator)) {
+        if (!Objects.equals(this.operator, operator)) {
             this.operator = operator;
             String paramName = param.getName();
             ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);

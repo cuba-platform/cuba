@@ -23,7 +23,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
 import com.vaadin.server.*;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -496,7 +495,7 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
 
         public static UploadErrorType fromId(Integer id) {
             for (UploadErrorType type : UploadErrorType.values()) {
-                if (ObjectUtils.equals(id, type.getId())) {
+                if (Objects.equals(id, type.getId())) {
                     return type;
                 }
             }

@@ -43,6 +43,7 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
@@ -399,7 +400,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public boolean equals(Object obj) {
             if (obj instanceof DesktopAbstractOptionsField.MapKeyWrapper) {
                 DesktopAbstractOptionsField.MapKeyWrapper other = (DesktopAbstractOptionsField.MapKeyWrapper) obj;
-                return StringUtils.equals(this.key, other.key);
+                return Objects.equals(this.key, other.key);
             }
             return false;
         }

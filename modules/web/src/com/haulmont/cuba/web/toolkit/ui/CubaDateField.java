@@ -22,12 +22,13 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.*;
-import org.apache.commons.lang.ObjectUtils;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 public class CubaDateField extends com.vaadin.ui.DateField implements Action.Container {
 
@@ -96,7 +97,7 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
 
     @Override
     protected Date handleUnparsableDateString(String dateString) throws Converter.ConversionException {
-        if (ObjectUtils.equals(dateString, StringUtils.replaceChars(getState(false).dateMask, "#U", "__"))) {
+        if (Objects.equals(dateString, StringUtils.replaceChars(getState(false).dateMask, "#U", "__"))) {
             return null;
         }
 

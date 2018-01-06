@@ -31,7 +31,6 @@ import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -42,10 +41,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -134,7 +130,7 @@ public class Scheduling implements SchedulingAPI {
             return prev != null;
         } else {
             Long startTime = runningTasks.get(task);
-            if (ObjectUtils.equals(task.getCurrentStartTimestamp(), startTime)) {
+            if (Objects.equals(task.getCurrentStartTimestamp(), startTime)) {
                 runningTasks.remove(task);
             }
             return false;

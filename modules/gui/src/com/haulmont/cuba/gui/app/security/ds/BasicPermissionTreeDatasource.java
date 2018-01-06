@@ -19,18 +19,14 @@ package com.haulmont.cuba.gui.app.security.ds;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
+import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
-import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
-import org.apache.commons.lang.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasource<BasicPermissionTarget, String> {
 
@@ -92,7 +88,7 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
     private void loadPermissionVariant(BasicPermissionTarget target) {
         Permission permission = null;
         for (Permission p : permissionDs.getItems()) {
-            if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
+            if (Objects.equals(p.getTarget(), target.getPermissionValue())) {
                 permission = p;
                 break;
             }

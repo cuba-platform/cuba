@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -135,7 +134,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setId(String id) {
-        if (!ObjectUtils.equals(this.id, id)) {
+        if (!Objects.equals(this.id, id)) {
             if (frame != null) {
                 frame.unregisterComponent(this);
             }

@@ -34,11 +34,11 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Tree;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> implements LookupComponent.LookupSelectionChangeNotifier {
@@ -87,7 +87,7 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
                     Entity dsItem = datasource.getItemIfValid();
                     datasource.setItem(newItem);
 
-                    if (ObjectUtils.equals(dsItem, newItem)) {
+                    if (Objects.equals(dsItem, newItem)) {
                         // in this case item change event will not be generated
                         refreshActionsState();
                     }
@@ -167,7 +167,7 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
             setCaptionMode(CaptionMode.PROPERTY);
         }
 
-        if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
+        if (!Objects.equals(this.captionProperty, captionProperty)) {
             this.captionProperty = captionProperty;
 
             tryToAssignCaptionProperty();

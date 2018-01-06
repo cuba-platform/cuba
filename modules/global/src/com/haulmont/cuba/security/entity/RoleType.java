@@ -18,11 +18,11 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 /**
  * Role type.
- *
  */
 public enum RoleType implements EnumClass<Integer> {
 
@@ -89,7 +89,7 @@ public enum RoleType implements EnumClass<Integer> {
         if (id == null)
             return STANDARD; // for backward compatibility, just in case
         for (RoleType type : RoleType.values()) {
-            if (ObjectUtils.equals(id, type.getId()))
+            if (Objects.equals(id, type.getId()))
                 return type;
         }
         return null; // unknown id

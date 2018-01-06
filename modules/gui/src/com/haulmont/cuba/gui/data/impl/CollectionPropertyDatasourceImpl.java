@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.google.common.collect.Iterables;
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.*;
@@ -34,7 +33,6 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +116,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         });
 
         masterDs.addItemPropertyChangeListener(e -> {
-            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+            if (e.getProperty().equals(metaProperty.getName()) && !Objects.equals(e.getPrevValue(), e.getValue())) {
                 log.trace("master valueChanged: prop={}, prevValue={}, value={}", e.getProperty(), e.getPrevValue(), e.getValue());
 
                 reattachListeners((Collection) e.getPrevValue(), (Collection) e.getValue());
@@ -344,7 +342,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         attachListener(item);
 
-        if (ObjectUtils.equals(this.item, item)) {
+        if (Objects.equals(this.item, item)) {
             this.item = item;
         }
 

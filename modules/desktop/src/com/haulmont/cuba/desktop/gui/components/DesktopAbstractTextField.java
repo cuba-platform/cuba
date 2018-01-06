@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -46,6 +45,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.Objects;
 
 public abstract class DesktopAbstractTextField<T extends JTextComponent> extends DesktopAbstractField<T> {
 
@@ -137,7 +137,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             impl.setToolTipText(description);
             DesktopToolTipManager.getInstance().registerTooltip(impl);
 
@@ -161,7 +161,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
@@ -318,7 +318,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }
@@ -327,7 +327,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         if (updatingInstance)
             return;
 
-        if (ObjectUtils.equals(prevValue, value)) {
+        if (Objects.equals(prevValue, value)) {
             return;
         }
 
@@ -346,7 +346,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
             if ("".equals(newValue))
                 newValue = null;
 
-            if (!ObjectUtils.equals(prevValue, newValue))
+            if (!Objects.equals(prevValue, newValue))
                 setValue(newValue);
             else
                 updateComponent(newValue);

@@ -37,7 +37,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
@@ -248,7 +247,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         Date value = getValue();
         this.timeZone = timeZone;
         dateField.setTimeZone(timeZone);
-        if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
+        if (value != null && !Objects.equals(prevTimeZone, timeZone)) {
             setValueToFields(value);
         }
     }

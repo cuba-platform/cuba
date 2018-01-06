@@ -47,7 +47,6 @@ import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -605,7 +604,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     @Override
     public void setContextHelpText(String contextHelpText) {
-        if (!ObjectUtils.equals(this.contextHelpText, contextHelpText)) {
+        if (!Objects.equals(this.contextHelpText, contextHelpText)) {
             this.contextHelpText = contextHelpText;
 
             // for now, DesktopTokenList doesn't provide context help
@@ -614,7 +613,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        if (!ObjectUtils.equals(this.contextHelpTextHtmlEnable, enabled)) {
+        if (!Objects.equals(this.contextHelpTextHtmlEnable, enabled)) {
             contextHelpTextHtmlEnable = enabled;
         }
     }

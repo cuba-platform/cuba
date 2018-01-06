@@ -39,7 +39,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -647,11 +646,11 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         @Override
         public boolean isFirstId(Object itemId) {
-            if (ObjectUtils.equals(nullEntity, itemId)) {
+            if (Objects.equals(nullEntity, itemId)) {
                 return true;
             }
             if (nullEntity == null) {
-                if (ObjectUtils.equals(missingValue, itemId)) {
+                if (Objects.equals(missingValue, itemId)) {
                     return true;
                 }
             }
@@ -663,10 +662,10 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         public boolean isLastId(Object itemId) {
             int size = size();
             if (size == 1) {
-                if (ObjectUtils.equals(nullEntity, itemId)) {
+                if (Objects.equals(nullEntity, itemId)) {
                     return true;
                 }
-                if (ObjectUtils.equals(missingValue, itemId)) {
+                if (Objects.equals(missingValue, itemId)) {
                     return true;
                 }
             } else if (size == 2) {
@@ -728,10 +727,10 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         @Override
         public Item getItem(Object itemId) {
-            if (ObjectUtils.equals(nullOption, itemId)) {
+            if (Objects.equals(nullOption, itemId)) {
                 return new NullOptionItem();
             }
-            if (ObjectUtils.equals(missingValue, itemId)) {
+            if (Objects.equals(missingValue, itemId)) {
                 return new EnumerationItem(missingValue);
             }
 
@@ -796,10 +795,10 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         @Override
         public Item getItem(Object itemId) {
-            if (ObjectUtils.equals(nullOption, itemId)) {
+            if (Objects.equals(nullOption, itemId)) {
                 return new NullOptionItem();
             }
-            if (ObjectUtils.equals(missingValue, itemId)) {
+            if (Objects.equals(missingValue, itemId)) {
                 return new ObjectItem(missingValue);
             }
 
@@ -836,7 +835,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         }
 
         protected void adoptMissingValue(Object value) {
-            if (!ObjectUtils.equals(missingValue, value)) {
+            if (!Objects.equals(missingValue, value)) {
                 Object itemId = null;
                 if (value instanceof Entity) {
                     itemId = ((Entity) value).getId();

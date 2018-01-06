@@ -17,7 +17,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 /**
  * Type of permission. <br>
@@ -55,7 +56,7 @@ public enum PermissionType implements EnumClass<Integer> {
     /** Constructs type from corresponding database value */
     public static PermissionType fromId(Integer id) {
         for (PermissionType type : PermissionType.values()) {
-            if (ObjectUtils.equals(type.getId(), id)) {
+            if (Objects.equals(type.getId(), id)) {
                 return type;
             }
         }

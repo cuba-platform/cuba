@@ -241,7 +241,7 @@ public class WebWindowManager extends WindowManager {
                 tabSheet.setTabCaption(tabId, formattedCaption);
 
                 String formattedDescription = formatTabDescription(caption, description);
-                if (!StringUtils.equals(formattedDescription, formattedCaption)) {
+                if (!Objects.equals(formattedDescription, formattedCaption)) {
                     tabSheet.setTabDescription(tabId, formattedDescription);
                 } else {
                     tabSheet.setTabDescription(tabId, null);
@@ -562,7 +562,7 @@ public class WebWindowManager extends WindowManager {
             String formattedCaption = formatTabCaption(window.getCaption(), window.getDescription());
             tabSheet.setTabCaption(tabId, formattedCaption);
             String formattedDescription = formatTabDescription(window.getCaption(), window.getDescription());
-            if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+            if (!Objects.equals(formattedCaption, formattedDescription)) {
                 tabSheet.setTabDescription(tabId, formattedDescription);
             } else {
                 tabSheet.setTabDescription(tabId, null);
@@ -683,7 +683,7 @@ public class WebWindowManager extends WindowManager {
             tabSheet.setTabCaption(tabId, formattedCaption);
             String formattedDescription = formatTabDescription(caption, description);
 
-            if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+            if (!Objects.equals(formattedCaption, formattedDescription)) {
                 tabSheet.setTabDescription(tabId, formattedDescription);
             } else {
                 tabSheet.setTabDescription(tabId, null);
@@ -1104,7 +1104,7 @@ public class WebWindowManager extends WindowManager {
                         tabSheet.setTabCaption(tabId, formattedCaption);
                         String formattedDescription = formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription());
 
-                        if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+                        if (!Objects.equals(formattedCaption, formattedDescription)) {
                             tabSheet.setTabDescription(tabId, formattedDescription);
                         } else {
                             tabSheet.setTabDescription(tabId, null);

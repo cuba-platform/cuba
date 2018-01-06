@@ -22,11 +22,11 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.function.Supplier;
 
@@ -53,7 +53,7 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     protected void fireValueChanged(Object value) {
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             Object oldValue = prevValue;
             prevValue = (List) value;
 

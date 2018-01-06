@@ -20,7 +20,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -113,7 +112,7 @@ public class DesktopFrameActionsHolder {
 
     public Action getAction(String id) {
         for (com.haulmont.cuba.gui.components.Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

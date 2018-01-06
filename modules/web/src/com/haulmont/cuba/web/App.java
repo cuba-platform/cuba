@@ -131,7 +131,7 @@ public abstract class App {
         String appWindowTheme = webConfig.getAppWindowTheme();
         String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
         if (userAppTheme != null) {
-            if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
+            if (!Objects.equals(userAppTheme, appWindowTheme)) {
                 // check theme support
                 Set<String> supportedThemes = themeConstantsRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {

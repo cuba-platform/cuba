@@ -22,9 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Frame;
-import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
 import org.jdesktop.swingx.util.Contract;
@@ -41,6 +39,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class DatePicker extends JXDatePicker {
     protected String format;
@@ -166,14 +165,14 @@ public class DatePicker extends JXDatePicker {
 
         @Override
         public Object stringToValue(String text) throws ParseException {
-            if (text == null || text.trim().length() == 0 || ObjectUtils.equals(getMask(format), text)) {
+            if (text == null || text.trim().length() == 0 || Objects.equals(getMask(format), text)) {
                 return null;
             }
             try {
                 return super.stringToValue(text);
             } catch (ParseException e) {
                 DesktopComponentsHelper.getTopLevelFrame(getParent()).showNotification(
-                        AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                        AppBeans.get(Messages.class).getMainMessage("validationFail"),
                         Frame.NotificationType.TRAY
                 );
                 cancelEdit();

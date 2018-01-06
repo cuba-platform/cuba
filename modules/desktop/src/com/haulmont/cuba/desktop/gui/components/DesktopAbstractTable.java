@@ -48,7 +48,6 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -1143,7 +1142,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                             Entity dsItem = datasource.getItemIfValid();
                             datasource.setItem(newItem);
 
-                            if (ObjectUtils.equals(dsItem, newItem)) {
+                            if (Objects.equals(dsItem, newItem)) {
                                 // in this case item change event will not be generated
                                 refreshActionsState();
                             }
@@ -1617,7 +1616,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     public void setColumnCaption(Column column, String caption) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (!StringUtils.equals(column.getCaption(), caption)) {
+        if (!Objects.equals(column.getCaption(), caption)) {
             column.setCaption(caption);
         }
         TableColumn tableColumn = getColumn(column);
@@ -1642,7 +1641,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     public void setColumnDescription(Column column, String description) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (!StringUtils.equals(column.getDescription(), description)) {
+        if (!Objects.equals(column.getDescription(), description)) {
             column.setDescription(description);
         }
         // not supported for desktop

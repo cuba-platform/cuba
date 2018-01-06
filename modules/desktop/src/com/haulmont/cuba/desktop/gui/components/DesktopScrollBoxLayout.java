@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -31,6 +30,7 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane>
         implements ScrollBoxLayout, AutoExpanding, DesktopContainer {
@@ -259,7 +259,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
     @Override
     public void setOrientation(Orientation orientation) {
-        if (!ObjectUtils.equals(orientation, this.orientation)) {
+        if (!Objects.equals(orientation, this.orientation)) {
             if (!components.isEmpty())
                 throw new IllegalStateException("Unable to change scrollbox orientation after adding components to it");
 

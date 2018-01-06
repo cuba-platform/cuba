@@ -20,8 +20,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
@@ -93,7 +91,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setCaption(String caption) {
         String oldValue = this.caption;
-        if (!StringUtils.equals(oldValue, caption)) {
+        if (!Objects.equals(oldValue, caption)) {
             this.caption = caption;
             firePropertyChange(PROP_CAPTION, oldValue, caption);
         }
@@ -107,7 +105,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setDescription(String description) {
         String oldValue = this.description;
-        if (!StringUtils.equals(oldValue, description)) {
+        if (!Objects.equals(oldValue, description)) {
             this.description = description;
             firePropertyChange(PROP_DESCRIPTION, oldValue, description);
         }
@@ -144,7 +142,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setIcon(String icon) {
         String oldValue = this.icon;
-        if (!StringUtils.equals(oldValue, icon)) {
+        if (!Objects.equals(oldValue, icon)) {
             this.icon = icon;
             firePropertyChange(PROP_ICON, oldValue, icon);
         }
@@ -227,7 +225,7 @@ public abstract class AbstractAction implements Action {
     }
 
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (changeSupport == null || ObjectUtils.equals(oldValue, newValue)) {
+        if (changeSupport == null || Objects.equals(oldValue, newValue)) {
             return;
         }
         changeSupport.firePropertyChange(propertyName, oldValue, newValue);

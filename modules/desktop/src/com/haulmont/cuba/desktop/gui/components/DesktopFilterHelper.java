@@ -25,13 +25,13 @@ import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
+import java.util.Objects;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
@@ -128,8 +128,8 @@ public class DesktopFilterHelper implements FilterHelper {
         dTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (ObjectUtils.equals(e.getKeyCode(), keyStroke.getKeyCode()) &&
-                        ObjectUtils.equals(e.getModifiers(), keyStroke.getModifiers())) {
+                if (Objects.equals(e.getKeyCode(), keyStroke.getKeyCode()) &&
+                        Objects.equals(e.getModifiers(), keyStroke.getModifiers())) {
                     listener.handleShortcutPressed();
                 }
             }

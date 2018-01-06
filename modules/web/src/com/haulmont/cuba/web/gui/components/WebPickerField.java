@@ -36,7 +36,6 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -395,7 +394,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     @Nullable
     public Action getAction(String id) {
         for (Action action : actions) {
-            if (ObjectUtils.equals(id, action.getId())) {
+            if (Objects.equals(id, action.getId())) {
                 return action;
             }
         }

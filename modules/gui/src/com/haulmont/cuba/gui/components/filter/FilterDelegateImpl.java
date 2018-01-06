@@ -65,7 +65,6 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -985,7 +984,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterPropertiesModified) return true;
         String filterXml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
                 : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
-        return !StringUtils.equals(filterXml, initialFilterEntity.getXml());
+        return !Objects.equals(filterXml, initialFilterEntity.getXml());
     }
 
     protected void updateFilterModifiedIndicator() {
@@ -1711,7 +1710,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         String newDef = defaultId != null ? defaultId.toString() : null;
         Attribute attr = e.attribute("id");
         String oldDef = attr != null ? attr.getValue() : null;
-        if (!ObjectUtils.equals(oldDef, newDef)) {
+        if (!Objects.equals(oldDef, newDef)) {
             if (newDef == null && attr != null) {
                 e.remove(attr);
             } else {
@@ -1725,7 +1724,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         Boolean newApplyDef = BooleanUtils.isTrue(applyDefault);
         Attribute applyDefaultAttr = e.attribute("applyDefault");
         Boolean oldApplyDef = applyDefaultAttr != null ? Boolean.valueOf(applyDefaultAttr.getValue()) : false;
-        if (!ObjectUtils.equals(oldApplyDef, newApplyDef)) {
+        if (!Objects.equals(oldApplyDef, newApplyDef)) {
             if (applyDefaultAttr != null) {
                 applyDefaultAttr.setValue(newApplyDef.toString());
             } else {
@@ -1740,7 +1739,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         Boolean oldGroupBoxExpandedValue = Boolean.valueOf(groupBoxExpandedEl.getText());
         Boolean newGroupBoxExpandedValue = groupBoxLayout.isExpanded();
-        if (!ObjectUtils.equals(oldGroupBoxExpandedValue, newGroupBoxExpandedValue)) {
+        if (!Objects.equals(oldGroupBoxExpandedValue, newGroupBoxExpandedValue)) {
             groupBoxExpandedEl.setText(newGroupBoxExpandedValue.toString());
             changed = true;
         }
@@ -2075,7 +2074,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      */
     protected void resetDefaultFilters() {
         for (FilterEntity filter : filterEntities) {
-            if (!ObjectUtils.equals(filter, filterEntity)) {
+            if (!Objects.equals(filter, filterEntity)) {
                 if (BooleanUtils.isTrue(filter.getIsDefault())) {
                     filter.setIsDefault(false);
                 }

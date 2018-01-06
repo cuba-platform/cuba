@@ -281,7 +281,7 @@ public class ServerLogWindow extends AbstractWindow {
                     // replace one level per line
                     for (String level : logLevels) {
                         String highlightedLine = highlightLevel(line, level);
-                        if (!StringUtils.equals(highlightedLine, line)) {
+                        if (!Objects.equals(highlightedLine, line)) {
                             line = highlightedLine;
                             break;
                         }
@@ -452,7 +452,7 @@ public class ServerLogWindow extends AbstractWindow {
                         Level prevLevel = loggersMap.get(loggerName);
                         String logLevel = prevLevel == null ? null : prevLevel.toString();
 
-                        if (!StringUtils.equals(logLevel, newLogLevel.toString())) {
+                        if (!Objects.equals(logLevel, newLogLevel.toString())) {
                             updates.put(loggerName, newLogLevel.toString());
                         }
                     }

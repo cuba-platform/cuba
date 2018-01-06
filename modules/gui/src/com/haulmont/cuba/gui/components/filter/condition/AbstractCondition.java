@@ -33,13 +33,13 @@ import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescr
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -233,7 +233,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
     }
 
     public void setLocCaption(String locCaption) {
-        if (ObjectUtils.equals(this.locCaption, locCaption))
+        if (Objects.equals(this.locCaption, locCaption))
             return;
 
         this.locCaption = locCaption;

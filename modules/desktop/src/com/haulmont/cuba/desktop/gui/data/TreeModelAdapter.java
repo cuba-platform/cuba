@@ -27,16 +27,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class TreeModelAdapter implements TreeModel {
 
@@ -242,7 +238,7 @@ public class TreeModelAdapter implements TreeModel {
     public List<Object> getTreePath(Object node, Entity entity) {
         for (int i = 0; i < getChildCount(node); i++) {
             Node child = (Node) getChild(node, i);
-            if (ObjectUtils.equals(entity, child.entity)) {
+            if (Objects.equals(entity, child.entity)) {
                 List<Object> list = new LinkedList<>();
                 list.add(createNode(entity));
                 return list;

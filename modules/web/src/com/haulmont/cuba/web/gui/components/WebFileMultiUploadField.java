@@ -402,7 +402,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbst
 
     @Override
     public void setAccept(String accept) {
-        if (!StringUtils.equals(accept, getAccept())) {
+        if (!Objects.equals(accept, getAccept())) {
             this.accept = accept;
             component.setAccept(component instanceof CubaMultiUpload
                     ? FileUploadTypesHelper.convertSeparator(accept, ";")

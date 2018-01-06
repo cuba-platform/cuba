@@ -120,7 +120,7 @@ public class AbstractViewRepository implements ViewRepository {
             String key = getMetaClass(viewElem) + "/" + viewName;
             if (!Boolean.parseBoolean(viewElem.attributeValue("overwrite"))) {
                 String extend = viewElem.attributeValue("extends");
-                if (!StringUtils.equals(extend, viewName) && checked.contains(key)) {
+                if (!Objects.equals(extend, viewName) && checked.contains(key)) {
                     log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
                 }
             }
@@ -440,7 +440,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         String ancestor = viewElem.attributeValue("extends");
         if (!overwrite) {
-            overwrite = StringUtils.equals(ancestor, viewName);
+            overwrite = Objects.equals(ancestor, viewName);
         }
 
         if (v != null && !overwrite) {
@@ -493,7 +493,7 @@ public class AbstractViewRepository implements ViewRepository {
             View propertyView = property.getView();
 
             if (propertyView != null) {
-                if (StringUtils.equals(propertyView.getName(), replacementView.getName())
+                if (Objects.equals(propertyView.getName(), replacementView.getName())
                         && replacementView.getEntityClass() == propertyView.getEntityClass()) {
                     if (replacements == null) {
                         replacements = new LinkedList<>();

@@ -23,10 +23,10 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Objects;
 
 public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
 
@@ -75,7 +75,7 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
         try {
             Object newValue = valueHolder != null ? valueHolder.getAttributeValue(false) : null;
             if (newValue != null) {
-                if (!ObjectUtils.equals(mba.getValue(), newValue)) {
+                if (!Objects.equals(mba.getValue(), newValue)) {
                     mba.setValue(newValue);
                     jmxControlAPI.saveAttributeValue(mba);
                 }

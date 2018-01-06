@@ -38,7 +38,6 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -253,7 +252,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         if (optionsDatasource != null) {
             updatingInstance = true;
             if (optionsDatasource.getState() == Datasource.State.VALID) {
-                if (!ObjectUtils.equals(getValue(), optionsDatasource.getItem()))
+                if (!Objects.equals(getValue(), optionsDatasource.getItem()))
                     optionsDatasource.setItem((Entity) getValue());
             }
             updatingInstance = false;
@@ -510,7 +509,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             JComponent editorComponent = (JComponent) comboBox.getEditor().getEditorComponent();
 
             editorComponent.setToolTipText(description);
@@ -635,7 +634,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             updateOptionsDsItem();
             fireValueChanged(oldValue, newValue);
         }

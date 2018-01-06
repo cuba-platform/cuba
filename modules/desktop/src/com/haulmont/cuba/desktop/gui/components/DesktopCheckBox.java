@@ -29,9 +29,9 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
     protected Datasource datasource;
@@ -63,7 +63,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
             value = false;
         }
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateComponent(value);
             updateInstance();
             fireChangeListeners(value);
@@ -133,7 +133,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         if (datasource.getItemIfValid() != null) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
 
-            if (!ObjectUtils.equals(prevValue, newValue)) {
+            if (!Objects.equals(prevValue, newValue)) {
                 updateComponent(newValue);
                 fireChangeListeners(newValue);
             }
@@ -205,7 +205,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }

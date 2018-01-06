@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -402,7 +403,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public void setAccept(String accept) {
-        if (!StringUtils.equals(accept, getAccept())) {
+        if (!Objects.equals(accept, getAccept())) {
             this.accept = accept;
             uploadButton.setAccept(FileUploadTypesHelper.convertToMIME(accept));
         }

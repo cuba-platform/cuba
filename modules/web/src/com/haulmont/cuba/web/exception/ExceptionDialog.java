@@ -42,7 +42,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -50,10 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This dialog can be used by exception handlers to show an information about error.
@@ -111,7 +107,7 @@ public class ExceptionDialog extends CubaWindow {
 
             @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                if (ObjectUtils.equals(action, closeShortcutAction)) {
+                if (Objects.equals(action, closeShortcutAction)) {
                     close();
                 }
             }

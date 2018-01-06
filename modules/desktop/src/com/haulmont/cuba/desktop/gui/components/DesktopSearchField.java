@@ -33,7 +33,6 @@ import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -45,6 +44,7 @@ import java.awt.event.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> implements SearchField {
 
@@ -145,7 +145,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                             boolean found = false;
                             String newFilter = (String) selectedItem;
                             if (prevValue != null) {
-                                if (StringUtils.equals(getDisplayString((Entity) prevValue), newFilter)) {
+                                if (Objects.equals(getDisplayString((Entity) prevValue), newFilter)) {
                                     found = true;
                                 }
                             }
@@ -274,13 +274,13 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                         }
 
                         if (StringUtils.isNotEmpty(inputText) && nullOption == null
-                                || !StringUtils.equals(nullOptionText, inputText)) {
+                                || !Objects.equals(nullOptionText, inputText)) {
                             comboBox.setBackground(searchEditBgColor);
                         }
                     } else {
                         String valueText = getDisplayString((Entity) prevValue);
 
-                        if (!StringUtils.equals(inputText, valueText)) {
+                        if (!Objects.equals(inputText, valueText)) {
                             comboBox.setBackground(searchEditBgColor);
                         }
                     }
@@ -355,7 +355,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         if (optionsDatasource != null) {
             updatingInstance = true;
             if (optionsDatasource.getState() == Datasource.State.VALID) {
-                if (!ObjectUtils.equals(getValue(), optionsDatasource.getItem())) {
+                if (!Objects.equals(getValue(), optionsDatasource.getItem())) {
                     optionsDatasource.setItem((Entity) getValue());
                 }
             }
@@ -527,7 +527,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             JComponent editorComponent = (JComponent) comboBox.getEditor().getEditorComponent();
 
             editorComponent.setToolTipText(description);

@@ -49,7 +49,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
@@ -266,7 +265,7 @@ public class Param {
     }
 
     protected void setValue(Object value, boolean updateEditComponent) {
-        if (!ObjectUtils.equals(value, this.value)) {
+        if (!Objects.equals(value, this.value)) {
             Object prevValue = this.value;
             this.value = value;
             for (ParamValueChangeListener listener : new ArrayList<>(listeners)) {

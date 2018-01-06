@@ -42,7 +42,6 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -346,7 +345,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent((FileDescriptor) value);
             fireChangeListeners(value);
@@ -498,7 +497,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = (FileDescriptor) newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }

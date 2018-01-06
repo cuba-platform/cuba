@@ -546,12 +546,11 @@ public abstract class ComponentsHelper {
 
             MetaProperty[] propertiesChain = mpp.getMetaProperties();
             if (propertiesChain.length > 1) {
-                List<String> basePropertiesList = Arrays.stream(propertiesChain)
+                String basePropertyItem = Arrays.stream(propertiesChain)
                         .limit(propertiesChain.length - 1)
                         .map(MetadataObject::getName)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.joining("."));
 
-                String basePropertyItem = StringUtils.join(basePropertiesList, '.');
                 targetItem = datasource.getItem().getValueEx(basePropertyItem);
             }
 

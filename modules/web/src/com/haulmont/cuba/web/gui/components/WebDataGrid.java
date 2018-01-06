@@ -64,7 +64,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -243,7 +242,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 //noinspection unchecked
                 datasource.setItem(newItem);
 
-                if (ObjectUtils.equals(dsItem, newItem)) {
+                if (Objects.equals(dsItem, newItem)) {
                     // in this case item change event will not be generated
                     refreshActionsState();
                 }
@@ -1538,7 +1537,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public Action getAction(String id) {
         for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

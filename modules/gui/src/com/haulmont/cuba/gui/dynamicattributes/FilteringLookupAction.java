@@ -19,10 +19,8 @@ package com.haulmont.cuba.gui.dynamicattributes;
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -34,13 +32,13 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Extended PickerField.LookupAction. This action requires "join" and "where" clauses. When the lookup screen is
@@ -69,7 +67,7 @@ public class FilteringLookupAction extends PickerField.LookupAction {
             } else {
                 MetaClass actualMetaClass = ((Filter) screenComponent).getDatasource().getMetaClass();
                 MetaClass propertyMetaClass = extendedEntities.getEffectiveMetaClass(pickerField.getMetaClass());
-                if (ObjectUtils.equals(actualMetaClass, propertyMetaClass)) {
+                if (Objects.equals(actualMetaClass, propertyMetaClass)) {
                     applyFilter(((Filter) screenComponent));
                     return true;
                 }

@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.ShortcutsDelegate;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -199,7 +198,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

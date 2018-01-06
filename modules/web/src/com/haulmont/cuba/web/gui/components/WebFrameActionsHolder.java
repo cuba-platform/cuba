@@ -20,7 +20,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -83,7 +82,7 @@ public class WebFrameActionsHolder {
 
     public Action getAction(String id) {
         for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

@@ -28,16 +28,12 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.icons.Icons;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base class for frame controllers.
@@ -85,7 +81,7 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     public void setId(String id) {
         String currentId = getId();
 
-        if (!ObjectUtils.equals(currentId, id)) {
+        if (!Objects.equals(currentId, id)) {
             if (getFrame() != null) {
                 getFrame().unregisterComponent(this);
             }
@@ -94,7 +90,7 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
         frame.setId(id);
 
         // register this wrapper instead of underlying frame
-        if (!ObjectUtils.equals(currentId, id)) {
+        if (!Objects.equals(currentId, id)) {
             if (getFrame() != null) {
                 getFrame().registerComponent(this);
             }

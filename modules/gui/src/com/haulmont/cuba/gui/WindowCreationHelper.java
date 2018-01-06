@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,11 +87,11 @@ public final class WindowCreationHelper {
     @Nullable
     private static String getTargetComponentId(String target, String screenId) {
         if (StringUtils.isNotBlank(target)) {
-            int delimeterIndex = target.indexOf(Permission.TARGET_PATH_DELIMETER);
-            if (delimeterIndex >= 0) {
-                String targetScreenId = target.substring(0, delimeterIndex);
-                if (StringUtils.equals(screenId, targetScreenId)) {
-                    return target.substring(delimeterIndex + 1);
+            int delimiterIndex = target.indexOf(Permission.TARGET_PATH_DELIMETER);
+            if (delimiterIndex >= 0) {
+                String targetScreenId = target.substring(0, delimiterIndex);
+                if (Objects.equals(screenId, targetScreenId)) {
+                    return target.substring(delimiterIndex + 1);
                 }
             }
         }

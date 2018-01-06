@@ -18,7 +18,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 /**
  * Area of constraint application.
@@ -47,7 +48,7 @@ public enum ConstraintOperationType implements EnumClass<String> {
 
     public static ConstraintOperationType fromId(String id) {
         for (ConstraintOperationType area : ConstraintOperationType.values()) {
-            if (ObjectUtils.equals(id, area.getId()))
+            if (Objects.equals(id, area.getId()))
                 return area;
         }
         return null; // unknown id

@@ -19,13 +19,13 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Objects;
 
 @Component(UserFormatTools.NAME)
 public class UserFormatToolsImpl implements UserFormatTools {
@@ -53,7 +53,7 @@ public class UserFormatToolsImpl implements UserFormatTools {
 
     @Override
     public String formatUser(@Nonnull User user, @Nullable User substitutedUser) {
-        if (substitutedUser != null && !ObjectUtils.equals(user, substitutedUser)) {
+        if (substitutedUser != null && !Objects.equals(user, substitutedUser)) {
             return formatSubstitution(user, substitutedUser);
         } else {
             return formatOfficial(user);

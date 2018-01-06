@@ -29,7 +29,6 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -223,7 +222,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
 
     @Override
     public void setOrientation(Orientation orientation) {
-        if (!ObjectUtils.equals(orientation, this.orientation)) {
+        if (!Objects.equals(orientation, this.orientation)) {
             if (!ownComponents.isEmpty()) {
                 throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
             }

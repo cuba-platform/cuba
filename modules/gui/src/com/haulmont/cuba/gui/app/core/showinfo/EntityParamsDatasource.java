@@ -22,10 +22,10 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import org.apache.commons.lang.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEntity, UUID> {
@@ -60,7 +60,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
         Class<?> javaClass = effectiveMetaClass.getJavaClass();
         includeParam("table.showInfoAction.entityName", instanceMetaClass.getName());
 
-        if (!StringUtils.equals(effectiveMetaClass.getName(), instanceMetaClass.getName())) {
+        if (!Objects.equals(effectiveMetaClass.getName(), instanceMetaClass.getName())) {
             includeParam("table.showInfoAction.entityEffectiveName", effectiveMetaClass.getName());
         }
         includeParam("table.showInfoAction.entityClass", javaClass.getName());

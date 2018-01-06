@@ -33,7 +33,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -170,7 +169,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     protected void fireFieldListener(FieldListener listener, String fieldText) {
-        if (!(ObjectUtils.equals(prevTextValue, fieldText))) {
+        if (!(Objects.equals(prevTextValue, fieldText))) {
             prevTextValue = fieldText;
             listener.actionPerformed(fieldText, getValue());
         }
@@ -385,7 +384,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             impl.getEditor().setToolTipText(description);
             DesktopToolTipManager.getInstance().registerTooltip(impl.getEditor());
 
@@ -549,7 +548,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

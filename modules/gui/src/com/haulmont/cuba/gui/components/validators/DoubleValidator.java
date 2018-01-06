@@ -23,11 +23,11 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Objects;
 
 public class DoubleValidator implements Field.Validator {
 
@@ -51,11 +51,11 @@ public class DoubleValidator implements Field.Validator {
     }
 
     private boolean checkDoubleOnPositive(Double value) {
-        return !ObjectUtils.equals("true", onlyPositive) || value >= 0;
+        return !Objects.equals("true", onlyPositive) || value >= 0;
     }
 
     private boolean checkBigDecimalOnPositive(BigDecimal value) {
-        return !ObjectUtils.equals("true", onlyPositive) || value.compareTo(BigDecimal.ZERO) >= 0;
+        return !Objects.equals("true", onlyPositive) || value.compareTo(BigDecimal.ZERO) >= 0;
     }
 
     @Override

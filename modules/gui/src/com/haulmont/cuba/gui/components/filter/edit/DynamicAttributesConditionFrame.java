@@ -37,7 +37,6 @@ import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
 import javax.inject.Inject;
@@ -222,7 +221,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
         Map<String, Object> categoriesMap = new TreeMap<>();
-        if (categories.size() == 1 && (catId == null || ObjectUtils.equals(catId, categories.iterator().next().getId()))) {
+        if (categories.size() == 1 && (catId == null || Objects.equals(catId, categories.iterator().next().getId()))) {
             Category category = categories.iterator().next();
             categoryLookup.setVisible(false);
             categoryLabel.setVisible(false);

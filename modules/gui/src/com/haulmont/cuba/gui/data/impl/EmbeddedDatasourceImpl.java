@@ -27,13 +27,9 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.EmbeddedDatasource;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         extends AbstractDatasource<T>
@@ -65,7 +61,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
         //noinspection unchecked
         masterDs.addItemPropertyChangeListener(e -> {
-            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+            if (e.getProperty().equals(metaProperty.getName()) && !Objects.equals(e.getPrevValue(), e.getValue())) {
                 reattachListeners((Entity) e.getPrevValue(), (Entity) e.getValue());
                 fireItemChanged((T) e.getPrevValue());
             }

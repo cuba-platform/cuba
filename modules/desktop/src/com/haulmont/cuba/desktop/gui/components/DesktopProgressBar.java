@@ -21,11 +21,11 @@ import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.ValueListener;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Desktop implementation of progress bar depending on swing JProgressBar component.
@@ -92,7 +92,7 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateComponent(value);
             fireChangeListeners(value);
         }
@@ -101,7 +101,7 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }

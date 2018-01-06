@@ -18,7 +18,8 @@
 package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ObjectUtils;
+
+import java.util.Objects;
 
 public enum UiPermissionVariant implements EnumClass<Integer> {
 
@@ -62,7 +63,7 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
 
     public static UiPermissionVariant fromId(Integer id) {
         for (UiPermissionVariant variant : UiPermissionVariant.values()) {
-            if (ObjectUtils.equals(variant.getId(), id)) {
+            if (Objects.equals(variant.getId(), id)) {
                 return variant;
             }
         }

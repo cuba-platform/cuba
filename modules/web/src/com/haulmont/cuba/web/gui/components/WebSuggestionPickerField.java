@@ -22,11 +22,11 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 public class WebSuggestionPickerField extends WebSuggestionField implements SuggestionPickerField {
 
@@ -93,7 +93,7 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
                 return;
 
             updateComponentValue = true;
-            if (!ObjectUtils.equals(component.getValue(), picker.getValue())) {
+            if (!Objects.equals(component.getValue(), picker.getValue())) {
                 //noinspection unchecked
                 picker.setValueIgnoreReadOnly(component.getValue());
             }
@@ -105,7 +105,7 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
                 return;
 
             updateComponentValue = true;
-            if (!ObjectUtils.equals(component.getValue(), picker.getValue())) {
+            if (!Objects.equals(component.getValue(), picker.getValue())) {
                 component.setValueIgnoreReadOnly(picker.getValue());
             }
             updateComponentValue = false;

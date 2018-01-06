@@ -19,7 +19,8 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.upload.CubaUploadState;
 import com.vaadin.ui.Upload;
-import org.apache.commons.lang.StringUtils;
+
+import java.util.Objects;
 
 @Deprecated
 public class CubaUpload extends Upload implements UploadComponent {
@@ -46,7 +47,7 @@ public class CubaUpload extends Upload implements UploadComponent {
      */
     @Override
     public void setAccept(String accept) {
-        if (!StringUtils.equals(accept, getAccept())) {
+        if (!Objects.equals(accept, getAccept())) {
             getState().accept = accept;
         }
     }

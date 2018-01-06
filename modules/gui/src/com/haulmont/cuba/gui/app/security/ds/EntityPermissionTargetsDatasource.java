@@ -20,21 +20,18 @@ package com.haulmont.cuba.gui.app.security.ds;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
-import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<OperationPermissionTarget, String> {
@@ -112,7 +109,7 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
                     String variant = permissionTargetString.substring(delimeterIndex + 1);
                     String permissionTarget = permissionTargetString.substring(0, delimeterIndex);
 
-                    if (StringUtils.equals(permissionTarget, target.getPermissionValue())) {
+                    if (Objects.equals(permissionTarget, target.getPermissionValue())) {
                         PermissionVariant permissionVariant = getPermissionVariant(p);
                         if (EntityOp.CREATE.getId().equals(variant)) {
                             target.setCreatePermissionVariant(permissionVariant);

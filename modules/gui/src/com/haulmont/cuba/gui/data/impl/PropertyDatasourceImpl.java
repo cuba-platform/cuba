@@ -27,7 +27,6 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -63,7 +62,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         );
 
         masterDs.addItemPropertyChangeListener(e -> {
-            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+            if (e.getProperty().equals(metaProperty.getName()) && !Objects.equals(e.getPrevValue(), e.getValue())) {
                 reattachListeners((Entity) e.getPrevValue(), (Entity) e.getValue());
                 fireItemChanged((T) e.getPrevValue());
             }

@@ -33,7 +33,6 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +155,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void setQuery(String query, QueryFilter filter) {
-        if (ObjectUtils.equals(this.query, query) && ObjectUtils.equals(this.filter, filter))
+        if (Objects.equals(this.query, query) && Objects.equals(this.filter, filter))
             return;
 
         this.query = query;

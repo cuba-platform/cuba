@@ -52,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.google.common.hash.Hashing.md5;
 
@@ -250,7 +251,7 @@ public class CubaVaadinServletService extends VaadinServletService {
             String requestPath = request.getPathInfo();
 
             // redirect to base URL if we have unparsable path tail
-            if (!StringUtils.equals("/", requestPath)) {
+            if (!Objects.equals("/", requestPath)) {
                 response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
                 response.setHeader("Location", request.getContextPath());
 

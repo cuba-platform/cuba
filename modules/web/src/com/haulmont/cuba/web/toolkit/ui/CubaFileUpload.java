@@ -26,7 +26,6 @@ import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.LegacyComponent;
 import com.vaadin.util.ReflectTools;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -37,6 +36,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @WebJarResource({
@@ -152,7 +152,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
     }
 
     public void setIconAlternateText(String iconAltText) {
-        if (!ObjectUtils.equals(getIconAlternateText(), iconAltText)) {
+        if (!Objects.equals(getIconAlternateText(), iconAltText)) {
             getState().iconAltText = iconAltText;
         }
     }
@@ -210,7 +210,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
     }
 
     public void setUnableToUploadFileMessage(String message) {
-        if (!ObjectUtils.equals(getUnableToUploadFileMessage(), message)) {
+        if (!Objects.equals(getUnableToUploadFileMessage(), message)) {
             getState().unableToUploadFileMessage = message;
         }
     }
@@ -220,7 +220,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
     }
 
     public void setProgressWindowCaption(String progressWindowCaption) {
-        if (!ObjectUtils.equals(getProgressWindowCaption(), progressWindowCaption)) {
+        if (!Objects.equals(getProgressWindowCaption(), progressWindowCaption)) {
             getState().progressWindowCaption = progressWindowCaption;
         }
     }
@@ -230,7 +230,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
     }
 
     public void setCancelButtonCaption(String cancelButtonCaption) {
-        if (!ObjectUtils.equals(getCancelButtonCaption(), cancelButtonCaption)) {
+        if (!Objects.equals(getCancelButtonCaption(), cancelButtonCaption)) {
             getState().cancelButtonCaption = cancelButtonCaption;
         }
     }
@@ -247,7 +247,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
      */
     @Override
     public void setAccept(String accept) {
-        if (!StringUtils.equals(accept, getAccept())) {
+        if (!Objects.equals(accept, getAccept())) {
             getState().accept = accept;
         }
     }
@@ -304,7 +304,7 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
     }
 
     public void setDropZonePrompt(String dropZonePrompt) {
-        if (!StringUtils.equals(getDropZonePrompt(), dropZonePrompt)) {
+        if (!Objects.equals(getDropZonePrompt(), dropZonePrompt)) {
             getState().dropZonePrompt = dropZonePrompt;
         }
     }

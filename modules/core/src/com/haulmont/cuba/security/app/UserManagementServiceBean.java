@@ -27,7 +27,6 @@ import com.haulmont.cuba.security.entity.*;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -193,7 +192,7 @@ public class UserManagementServiceBean implements UserManagementService {
                 throw new IllegalStateException("Not all users found in database");
 
             for (User user : users) {
-                if (!ObjectUtils.equals(user.getGroup(), targetAccessGroup)) {
+                if (!Objects.equals(user.getGroup(), targetAccessGroup)) {
                     user.setGroup(targetAccessGroup);
                     modifiedUsers++;
                 }

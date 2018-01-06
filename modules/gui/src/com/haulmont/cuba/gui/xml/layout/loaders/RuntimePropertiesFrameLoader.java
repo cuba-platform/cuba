@@ -31,6 +31,8 @@ import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
     protected static final String DEFAULT_DESCRIPTOR =
@@ -108,7 +110,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         String fieldCaptionWidth = element.attributeValue("fieldCaptionWidth");
         context.getParams().put("fieldCaptionWidth", fieldCaptionWidth);
 
-        String screenPath = StringUtils.equals(src, DEFAULT_DESCRIPTOR) ? "runtimeProperties" : src;
+        String screenPath = Objects.equals(src, DEFAULT_DESCRIPTOR) ? "runtimeProperties" : src;
         if (element.attributeValue("id") != null) {
             screenPath = element.attributeValue("id");
         }

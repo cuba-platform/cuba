@@ -20,7 +20,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -134,7 +133,7 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
     @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
+            if (Objects.equals(action.getId(), id)) {
                 return action;
             }
         }

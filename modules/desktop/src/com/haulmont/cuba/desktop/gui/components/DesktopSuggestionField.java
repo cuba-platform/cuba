@@ -31,7 +31,6 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
 import com.haulmont.cuba.gui.components.SuggestionField;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +41,8 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -137,7 +134,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                         boolean found = false;
                         String newFilter = (String) selectedItem;
                         if (prevValue != null) {
-                            if (StringUtils.equals(getDisplayString(prevValue), newFilter)) {
+                            if (Objects.equals(getDisplayString(prevValue), newFilter)) {
                                 found = true;
                             }
                         }
@@ -287,7 +284,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected void handleSearchInput() {
         JTextField searchEditor = getComboBoxEditorField();
         String currentSearchString = StringUtils.trimToEmpty(searchEditor.getText());
-        if (!ObjectUtils.equals(currentSearchString, lastSearchString)) {
+        if (!Objects.equals(currentSearchString, lastSearchString)) {
             lastSearchString = currentSearchString;
 
             if (searchExecutor != null) {
@@ -411,13 +408,13 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                         }
 
                         if (StringUtils.isNotEmpty(inputText) && nullOption == null
-                                || !StringUtils.equals(nullOptionText, inputText)) {
+                                || !Objects.equals(nullOptionText, inputText)) {
                             comboBox.setBackground(searchEditBgColor);
                         }
                     } else {
                         String valueText = getDisplayString(prevValue);
 
-                        if (!StringUtils.equals(inputText, valueText)) {
+                        if (!Objects.equals(inputText, valueText)) {
                             comboBox.setBackground(searchEditBgColor);
                         }
                     }
@@ -494,7 +491,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             JComponent editorComponent = (JComponent) comboBox.getEditor().getEditorComponent();
 
             editorComponent.setToolTipText(description);

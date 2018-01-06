@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +47,7 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> implements TimeField {
 
@@ -274,7 +274,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public void setDescription(String description) {
-        if (!ObjectUtils.equals(this.getDescription(), description)) {
+        if (!Objects.equals(this.getDescription(), description)) {
             impl.setToolTipText(description);
             DesktopToolTipManager.getInstance().registerTooltip(impl);
 
@@ -296,7 +296,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!Objects.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
@@ -334,7 +334,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         if (updatingInstance)
             return;
 
-        if (ObjectUtils.equals(prevValue, value))
+        if (Objects.equals(prevValue, value))
             return;
 
         updatingInstance = true;
@@ -366,7 +366,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }
@@ -460,7 +460,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             if ("".equals(newValue))
                 newValue = null;
 
-            if (!ObjectUtils.equals(prevValue, newValue))
+            if (!Objects.equals(prevValue, newValue))
                 setValue(newValue);
             else
                 updateComponent(newValue);
