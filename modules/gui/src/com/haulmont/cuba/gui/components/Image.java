@@ -87,12 +87,15 @@ public interface Image extends ResourceView {
         void onClick(ClickEvent event);
     }
 
+    /**
+     * A {@link ClickEvent} is fired when the user clicks on an <code>Image</code>.
+     */
     class ClickEvent extends EventObject {
-        private final MouseEventDetails mouseEventDetails;
+        private final MouseEventDetails details;
 
-        public ClickEvent(Image source, MouseEventDetails mouseEventDetails) {
+        public ClickEvent(Image source, MouseEventDetails details) {
             super(source);
-            this.mouseEventDetails = mouseEventDetails;
+            this.details = details;
         }
 
         @Override
@@ -100,8 +103,102 @@ public interface Image extends ResourceView {
             return (Image) super.getSource();
         }
 
-        public MouseEventDetails getMouseEventDetails() {
-            return mouseEventDetails;
+        /**
+         * Returns an identifier describing which mouse button the user pushed.
+         * Compare with {@link MouseEventDetails.MouseButton#LEFT},{@link MouseEventDetails.MouseButton#MIDDLE},
+         * {@link MouseEventDetails.MouseButton#RIGHT} to find out which button it is.
+         *
+         * @return one of {@link MouseEventDetails.MouseButton#LEFT}, {@link MouseEventDetails.MouseButton#MIDDLE}, {@link MouseEventDetails.MouseButton#RIGHT}.
+         */
+        public MouseEventDetails.MouseButton getButton() {
+            return details.getButton();
+        }
+
+        /**
+         * Returns the mouse position (x coordinate) when the click took place.
+         * The position is relative to the browser client area.
+         *
+         * @return The mouse cursor x position
+         */
+        public int getClientX() {
+            return details.getClientX();
+        }
+
+        /**
+         * Returns the mouse position (y coordinate) when the click took place.
+         * The position is relative to the browser client area.
+         *
+         * @return The mouse cursor y position
+         */
+        public int getClientY() {
+            return details.getClientY();
+        }
+
+        /**
+         * Returns the relative mouse position (x coordinate) when the click
+         * took place. The position is relative to the clicked component.
+         *
+         * @return The mouse cursor x position relative to the clicked layout
+         *         component or -1 if no x coordinate available
+         */
+        public int getRelativeX() {
+            return details.getRelativeX();
+        }
+
+        /**
+         * Returns the relative mouse position (y coordinate) when the click
+         * took place. The position is relative to the clicked component.
+         *
+         * @return The mouse cursor y position relative to the clicked layout
+         *         component or -1 if no y coordinate available
+         */
+        public int getRelativeY() {
+            return details.getRelativeY();
+        }
+
+        /**
+         * Checks if the event is a double click event.
+         *
+         * @return {@code true} if the event is a double click event, {@code false} otherwise
+         */
+        public boolean isDoubleClick() {
+            return details.isDoubleClick();
+        }
+
+        /**
+         * Checks if the Alt key was down when the mouse event took place.
+         *
+         * @return {@code true} if Alt was down when the event occurred, {@code false} otherwise
+         */
+        public boolean isAltKey() {
+            return details.isAltKey();
+        }
+
+        /**
+         * Checks if the Ctrl key was down when the mouse event took place.
+         *
+         * @return {@code true} if Ctrl was pressed when the event occurred, {@code false} otherwise
+         */
+        public boolean isCtrlKey() {
+            return details.isCtrlKey();
+        }
+
+        /**
+         * Checks if the Meta key was down when the mouse event took place.
+         *
+         * @return {@code true} if Meta was pressed when the event occurred, {@code false} otherwise
+         */
+        public boolean isMetaKey() {
+            return details.isMetaKey();
+        }
+
+        /**
+         * Checks if the Shift key was down when the mouse event took place.
+         *
+         * @return {@code true} if Shift was pressed when the event occurred, {@code false} otherwise
+         */
+        public boolean isShiftKey() {
+            return details.isShiftKey();
         }
     }
 }
