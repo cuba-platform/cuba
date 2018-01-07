@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.toolkit.ui.CubaImage;
+import com.vaadin.event.MouseEvents;
 
 import java.io.InputStream;
 import java.util.function.Supplier;
@@ -50,9 +51,9 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
     protected Datasource.ItemChangeListener itemChangeListener;
     protected WeakItemChangeListener weakItemChangeListener;
 
-    public WebImage() {
-        super();
+    protected MouseEvents.ClickListener vClickListener;
 
+    public WebImage() {
         component = new CubaImage();
         component.setPrimaryStyleName(IMAGE_STYLENAME);
     }
@@ -69,12 +70,14 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null))
+        if ((datasource == null && property != null) || (datasource != null && property == null)) {
             throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
+        }
 
         if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null)))
+                (metaPropertyPath == null && property == null))) {
             return;
+        }
 
         if (this.datasource != null) {
             metaPropertyPath = null;
@@ -145,7 +148,9 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
             return imageResource;
         }
 
-        throw new GuiDevelopmentException("The Image component supports only FileDescriptor and byte[] datasource property value binding", getFrame().getId());
+        throw new GuiDevelopmentException(
+                "The Image component supports only FileDescriptor and byte[] datasource property value binding",
+                getFrame().getId());
     }
 
     @Override
@@ -160,5 +165,28 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
         this.scaleMode = scaleMode;
 
         component.setScaleMode(scaleMode.name().toLowerCase().replace("_", "-"));
+    }
+
+    @Override
+    public void addClickListener(ClickListener listener) {
+        getEventRouter().addListener(ClickListener.class, listener);
+
+        if (vClickListener == null) {
+            vClickListener = e -> {
+                ClickEvent event = new ClickEvent(WebImage.this, WebWrapperUtils.toMouseEventDetails(e));
+                getEventRouter().fireEvent(ClickListener.class, ClickListener::onClick, event);
+            };
+            component.addClickListener(vClickListener);
+        }
+    }
+
+    @Override
+    public void removeClickListener(ClickListener listener) {
+        getEventRouter().removeListener(ClickListener.class, listener);
+
+        if (!getEventRouter().hasListeners(ClickListener.class)) {
+            component.removeClickListener(vClickListener);
+            vClickListener = null;
+        }
     }
 }

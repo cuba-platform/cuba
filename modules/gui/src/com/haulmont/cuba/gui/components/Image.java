@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import java.util.EventObject;
+
 /**
  * The Image component is intended for displaying graphic content.
  * <p>
@@ -76,5 +78,30 @@ public interface Image extends ResourceView {
          * The image will have a real size.
          */
         NONE
+    }
+
+    void addClickListener(ClickListener listener);
+    void removeClickListener(ClickListener listener);
+
+    interface ClickListener {
+        void onClick(ClickEvent event);
+    }
+
+    class ClickEvent extends EventObject {
+        private final MouseEventDetails mouseEventDetails;
+
+        public ClickEvent(Image source, MouseEventDetails mouseEventDetails) {
+            super(source);
+            this.mouseEventDetails = mouseEventDetails;
+        }
+
+        @Override
+        public Image getSource() {
+            return (Image) super.getSource();
+        }
+
+        public MouseEventDetails getMouseEventDetails() {
+            return mouseEventDetails;
+        }
     }
 }
