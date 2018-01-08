@@ -61,8 +61,10 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
         if (AbstractWindow.class.isAssignableFrom(aClass)) {
             LoggerFactory.getLogger(FrameLoader.class).warn(
-                    "Frame class should not be inherited from AbstractWindow. It may cause problems with controller life cycle. " +
-                    "Frame controllers should inherit AbstractFrame.");
+                    "Frame class '{}' should not be inherited from AbstractWindow. " +
+                            "It may cause problems with controller life cycle. " +
+                            "Frame controllers should inherit AbstractFrame.",
+                    aClass.getSimpleName());
         }
 
         return ((WrappedFrame) frame).wrapBy(aClass);
