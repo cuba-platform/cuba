@@ -263,7 +263,7 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
     }
 
-    // Add ability to handle hearbeats in App
+    // Add ability to handle heartbeats in App
     protected static class CubaHeartbeatHandler extends HeartbeatHandler {
         private final Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
@@ -346,6 +346,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         @Override
         protected String getInitialUidl(VaadinRequest request, UI uI) throws IOException {
+            // CAUTION: copied from parent class
             try (StringWriter writer = new StringWriter()) {
                 writer.write("{");
 
@@ -353,6 +354,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 if (session.getConfiguration().isXsrfProtectionEnabled()) {
                     writer.write(getSecurityKeyUIDL(session));
                 }
+                writer.write(getPushIdUIDL(session));
                 new CubaUidlWriter().write(uI, writer, false);
                 writer.write("}");
 
@@ -360,14 +362,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                 log.trace("Initial UIDL: {}", initialUIDL);
                 return initialUIDL;
             }
-        }
-
-        // Copied from Vaadin
-        private static String getSecurityKeyUIDL(VaadinSession session) {
-            String secKey = session.getCsrfToken();
-
-            return "\"" + ApplicationConstants.UIDL_SECURITY_TOKEN_ID + "\":\""
-                    + secKey + "\",";
         }
     }
 }
