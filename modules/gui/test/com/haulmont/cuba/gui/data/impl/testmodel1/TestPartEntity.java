@@ -18,9 +18,9 @@
 package com.haulmont.cuba.gui.data.impl.testmodel1;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import org.apache.commons.lang.Objects;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "test$PartEntity")
 public class TestPartEntity extends BaseUuidEntity {
