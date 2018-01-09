@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.haulmont.cuba.core.global.RowLevelSecurityException;
 import com.haulmont.cuba.core.global.validation.CustomValidationException;
 import com.haulmont.cuba.core.global.validation.MethodParametersValidationException;
 import com.haulmont.cuba.core.global.validation.MethodResultValidationException;
@@ -104,6 +105,14 @@ public class RestControllerExceptionHandler {
         log.error("ValidationException in service", e);
         ErrorInfo errorInfo = new ErrorInfo("Server error", "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RowLevelSecurityException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> handleRowLevelSecurityException(RowLevelSecurityException e) {
+        log.error("RowLevelSecurityException in service", e);
+        ErrorInfo errorInfo = new ErrorInfo("Forbidden", e.getMessage());
+        return new ResponseEntity<>(errorInfo, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
