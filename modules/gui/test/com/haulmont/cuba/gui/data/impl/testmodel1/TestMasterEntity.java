@@ -19,9 +19,9 @@ package com.haulmont.cuba.gui.data.impl.testmodel1;
 
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "test$MasterEntity")
@@ -44,7 +44,7 @@ public class TestMasterEntity extends BaseUuidEntity {
     public void setMasterName(String masterName) {
         String o = this.masterName;
         this.masterName = masterName;
-        if(!ObjectUtils.equals(o, masterName))
+        if (!Objects.equals(o, masterName))
             propertyChanged("masterName", o, masterName);
     }
 
@@ -55,7 +55,7 @@ public class TestMasterEntity extends BaseUuidEntity {
     public void setDetails(Set<TestDetailEntity> details) {
         Set<TestDetailEntity> o = this.details;
         this.details = details;
-        if(!ObjectUtils.equals(o, details))
+        if (!Objects.equals(o, details))
             propertyChanged("details", o, details);
     }
 
@@ -66,7 +66,8 @@ public class TestMasterEntity extends BaseUuidEntity {
     public void setDetail(TestDetailEntity detail) {
         TestDetailEntity o = this.detail;
         this.detail = detail;
-        if(!ObjectUtils.equals(o, detail))
+
+        if (!Objects.equals(o, detail))
             propertyChanged("detail", o, detail);
     }
 }

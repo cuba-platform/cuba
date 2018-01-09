@@ -19,9 +19,9 @@ package com.haulmont.cuba.gui.data.impl.testmodel1;
 
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "test$DetailEntity")
@@ -48,7 +48,7 @@ public class TestDetailEntity extends BaseUuidEntity {
     public void setDetailName(String detailName) {
         String o = this.detailName;
         this.detailName = detailName;
-        if(!ObjectUtils.equals(o, detailName))
+        if (!Objects.equals(o, detailName))
             propertyChanged("detailName", o, detailName);
     }
 
@@ -59,7 +59,7 @@ public class TestDetailEntity extends BaseUuidEntity {
     public void setMaster(TestMasterEntity master) {
         TestMasterEntity o = this.master;
         this.master = master;
-        if(!ObjectUtils.equals(o, master))
+        if (!Objects.equals(o, master))
             propertyChanged("master", o, master);
     }
 
@@ -70,7 +70,7 @@ public class TestDetailEntity extends BaseUuidEntity {
     public void setEmbeddable(TestEmbeddableEntity embeddable) {
         TestEmbeddableEntity o = this.embeddable;
         this.embeddable = embeddable;
-        if(!ObjectUtils.equals(o, embeddable))
+        if (!Objects.equals(o, embeddable))
             propertyChanged("embeddable", o, embeddable);
     }
 
@@ -81,7 +81,7 @@ public class TestDetailEntity extends BaseUuidEntity {
     public void setParts(Set<TestPartEntity> parts) {
         Set<TestPartEntity> o = this.parts;
         this.parts = parts;
-        if(!ObjectUtils.equals(o, parts))
+        if (!Objects.equals(o, parts))
             propertyChanged("parts", o, parts);
     }
 }

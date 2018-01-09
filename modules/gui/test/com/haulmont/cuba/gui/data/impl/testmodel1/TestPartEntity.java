@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.data.impl.testmodel1;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.Objects;
 
 import javax.persistence.*;
 
@@ -39,7 +39,7 @@ public class TestPartEntity extends BaseUuidEntity {
     public void setPartName(String partName) {
         String o = this.partName;
         this.partName = partName;
-        if(!ObjectUtils.equals(o, partName))
+        if (!Objects.equals(o, partName))
             propertyChanged("partName", o, partName);
     }
 
@@ -50,7 +50,7 @@ public class TestPartEntity extends BaseUuidEntity {
     public void setDetail(TestDetailEntity detail) {
         TestDetailEntity o = this.detail;
         this.detail = detail;
-        if(!ObjectUtils.equals(o, detail))
+        if (!Objects.equals(o, detail))
             propertyChanged("detail", o, detail);
     }
 }
