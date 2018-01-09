@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * INTERNAL.
  * Interface defining methods for storing and loading entities in a persistent storage.
+ * <p>
+ * Implementations of this interface are used by {@link com.haulmont.cuba.core.global.DataManager}, do not invoke them
+ * from your application code.
  */
 public interface DataStore {
 
