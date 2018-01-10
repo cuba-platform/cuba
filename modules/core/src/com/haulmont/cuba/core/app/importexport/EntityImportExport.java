@@ -250,6 +250,11 @@ public class EntityImportExport implements EntityImportExportAPI {
             }
         }
 
+        //we shouldn't remove entities with the softDeletion = false
+        if (!commitContext.getRemoveInstances().isEmpty()) {
+            commitContext.setSoftDeletion(true);
+        }
+
         return dataManager.secure().commit(commitContext);
     }
 
@@ -344,7 +349,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         Entity srcPropertyValue = srcEntity.<Entity>getValue(importViewProperty.getName());
         Entity dstPropertyValue = dstEntity.<Entity>getValue(importViewProperty.getName());
         if (importViewProperty.getView() == null) {
-            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue);
+            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue, dstPropertyValue);
             referenceInfoList.add(referenceInfo);
         } else {
             dstPropertyValue = importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList);
@@ -603,6 +608,13 @@ public class EntityImportExport implements EntityImportExportAPI {
             Entity propertyValue = (Entity) referenceInfo.getPropertyValue();
             if (propertyValue == null) {
                 entity.setValue(propertyName, null);
+                //in case of NULL value we must delete COMPOSITION entities
+                if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
+                    Object prevPropertyValue = referenceInfo.getPrevPropertyValue();
+                    if (prevPropertyValue != null) {
+                        commitContext.addInstanceToRemove((Entity) prevPropertyValue);
+                    }
+                }
             } else {
                 Entity entityFromLoadedEntities = findEntityInCollection(loadedEntities, propertyValue);
                 if (entityFromLoadedEntities != null) {
