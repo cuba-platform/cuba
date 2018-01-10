@@ -24,11 +24,11 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
@@ -47,9 +47,7 @@ import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
-import com.haulmont.cuba.gui.components.filter.condition.FtsCondition;
+import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -513,6 +511,22 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
+    protected boolean suitableCondition(AbstractCondition condition) {
+        if (condition instanceof PropertyCondition) {
+            return datasource.getMetaClass()
+                    .getPropertyPath(condition.getName()) != null;
+        }
+
+        if (condition instanceof DynamicAttributesCondition) {
+            return DynamicAttributesUtils.getMetaPropertyPath(
+                    datasource.getMetaClass(),
+                    ((DynamicAttributesCondition) condition).getCategoryAttributeId()
+            ) != null;
+        }
+
+        return true;
+    }
+
     /**
      * Sets filter entity, creates condition editor components and applies filter if necessary
      */
@@ -522,11 +536,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         conditions = filterParser.getConditions(filter, filterEntity.getXml());
         prevConditions = conditions;
         initialConditions = conditions.toConditionsList();
-        for (AbstractCondition condition : conditions.toConditionsList()) {
-            MetaClass metaClass = datasource.getMetaClass();
-            if (metaClass.getPropertyPath(condition.getName()) == null) {
+
+        for (AbstractCondition condition : initialConditions) {
+            if (!suitableCondition(condition)) {
                 String message = String.format(getMainMessage("filter.inappropriate.filter"),
-                        filterEntity.getName(), metaClass.getName());
+                        filterEntity.getName(), datasource.getMetaClass().getName());
 
                 windowManager.showNotification(message, Frame.NotificationType.HUMANIZED);
                 setFilterEntity(adHocFilter);
