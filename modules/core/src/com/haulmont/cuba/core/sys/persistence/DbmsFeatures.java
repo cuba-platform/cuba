@@ -75,7 +75,7 @@ public interface DbmsFeatures {
     /**
      * Uses user name as schema name for Oracle database
      * for correct table lookup {@link java.sql.DatabaseMetaData#getTables}.
-     * By default it return all tables for all users in the Oracle database
+     * By default it returns all tables for all users in the Oracle database
      */
     boolean useUserForSchemaName();
 }
