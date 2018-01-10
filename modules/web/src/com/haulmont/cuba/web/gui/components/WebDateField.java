@@ -477,7 +477,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             if (metaProperty.getRange().isDatatype()
                     && metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)
                     && timeZone == null) {
-                Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+                Boolean ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(metaProperty, IgnoreUserTimeZone.class);
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
                     timeZone = userSession.getTimeZone();
                     dateField.setTimeZone(timeZone);

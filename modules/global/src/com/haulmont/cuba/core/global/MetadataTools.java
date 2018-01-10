@@ -124,7 +124,7 @@ public class MetadataTools {
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
             if (value instanceof Date && datatype.getJavaClass().equals(Date.class)) {
-                Object ignoreUserTimeZone = property.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                Boolean ignoreUserTimeZone = getMetaAnnotationValue(property, IgnoreUserTimeZone.class);
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
                     return datatypeFormatter.formatDateTime((Date) value);
                 }
@@ -359,6 +359,15 @@ public class MetadataTools {
     public Map<String, Object> getMetaAnnotationAttributes(Map<String, Object> metaAnnotations, Class metaAnnotationClass) {
         Map map = (Map) metaAnnotations.get(metaAnnotationClass.getName());
         return map != null ? map : Collections.emptyMap();
+    }
+
+    /**
+     * @return annotation value for specified metaProperty and annotation
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getMetaAnnotationValue(MetaProperty metaProperty, Class metaAnnotationClass) {
+        Map<String, Object> metaAnnotationAttributes = getMetaAnnotationAttributes(metaProperty.getAnnotations(), metaAnnotationClass);
+        return (T) metaAnnotationAttributes.get("value");
     }
 
     /**

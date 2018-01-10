@@ -100,6 +100,7 @@ public class Param {
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
     protected ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
     protected List<ParamValueChangeListener> listeners = new ArrayList<>();
@@ -596,7 +597,7 @@ public class Param {
         if (property != null) {
             TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             dateOnly = (tt == TemporalType.DATE);
-            Object ignoreUserTimeZone = property.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+            Object ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(property, IgnoreUserTimeZone.class);
             supportTimezones = !dateOnly && !Boolean.TRUE.equals(ignoreUserTimeZone);
         } else if (javaClass.equals(java.sql.Date.class)) {
             dateOnly = true;

@@ -659,7 +659,7 @@ public class ExcelExporter {
                 if (metaProperty.getRange().isDatatype()) {
                     javaClass = metaProperty.getRange().asDatatype().getJavaClass();
                 }
-                Boolean ignoreUserTimeZone = (Boolean) metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                Boolean ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(metaProperty, IgnoreUserTimeZone.class);
                 supportTimezones = timeZone != null
                         && Objects.equals(Date.class, javaClass)
                         && !Boolean.TRUE.equals(ignoreUserTimeZone);
