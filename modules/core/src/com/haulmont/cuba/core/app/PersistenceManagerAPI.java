@@ -30,25 +30,6 @@ public interface PersistenceManagerAPI {
     String NAME = "cuba_PersistenceManager";
 
     /**
-     * Whether this database table supports soft deletion.
-     * @param table table name
-     * @return      true if this database table supports soft deletion
-     */
-    boolean isSoftDeleteFor(String table);
-
-    /**
-     * @return all soft delete tables sorted in alphabetical order
-     */
-    List<String> getSoftDeleteTables();
-
-    /**
-     * Checks whether the table provided is a ManyToMany link table or a secondary table in JOINED inheritance strategy.
-     * @param table table name
-     * @return      true/false
-     */
-    boolean isSecondaryTable(String table);
-
-    /**
      * Whether to use a lazy collection datasource for this entity, based on current statistics.
      * @param entityName    entity name
      * @return              true if lazy collection datasource should be used for this entity

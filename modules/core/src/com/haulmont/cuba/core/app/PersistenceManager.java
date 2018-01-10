@@ -47,10 +47,6 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     private final Logger log = LoggerFactory.getLogger(PersistenceManager.class);
 
-    protected volatile Set<String> softDeleteTables;
-
-    protected volatile Set<String> secondaryTables;
-
     protected Map<String, EntityStatistics> statisticsCache;
 
     @Inject
@@ -67,110 +63,6 @@ public class PersistenceManager implements PersistenceManagerAPI {
     @Inject
     public void setConfiguration(Configuration configuration) {
         config = configuration.getConfig(PersistenceConfig.class);
-    }
-
-    @Override
-    public boolean isSoftDeleteFor(String table) {
-        if (softDeleteTables == null) {
-            initSoftDeleteTables();
-        }
-        return softDeleteTables.contains(table.toLowerCase());
-    }
-
-    @Override
-    public List<String> getSoftDeleteTables() {
-        if (softDeleteTables == null) {
-            initSoftDeleteTables();
-        }
-        ArrayList<String> list = new ArrayList<>(softDeleteTables);
-        Collections.sort(list);
-        return list;
-    }
-
-    @Override
-    public boolean isSecondaryTable(String table) {
-        if (secondaryTables == null) {
-            initSecondaryTables();
-        }
-        return secondaryTables.contains(table);
-    }
-
-    protected synchronized void initSoftDeleteTables() {
-        if (softDeleteTables == null) { // double checked locking
-            log.debug("Searching for soft delete tables");
-            HashSet<String> set = new HashSet<>();
-
-            DataSource datasource = persistence.getDataSource();
-            Connection conn = null;
-            try {
-                conn = datasource.getConnection();
-                DatabaseMetaData metaData = conn.getMetaData();
-
-                String schema = "oracle".equals(DbmsType.getType()) ? metaData.getUserName() : null;
-                log.trace("[initSoftDeleteTables] schema=" + schema);
-
-                ResultSet tables = metaData.getTables(null, schema, null, new String[]{"TABLE"});
-                while (tables.next()) {
-                    String table = tables.getString("TABLE_NAME");
-                    log.trace("[initSoftDeleteTables] found table " + table);
-
-                    if (table != null) {
-                        String deleteTsColumn = DbmsSpecificFactory.getDbmsFeatures().getDeleteTsColumn();
-                        ResultSet columns = metaData.getColumns(null, schema, table, deleteTsColumn);
-                        if (columns.next()) {
-                            log.trace("[initSoftDeleteTables] table " + table + " has column " + deleteTsColumn);
-                            set.add(table.toLowerCase());
-                        }
-                        columns.close();
-                    }
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } finally {
-                try {
-                    if (conn != null) conn.close();
-                } catch (SQLException ignored) {
-                }
-            }
-
-            softDeleteTables = set;
-        }
-    }
-
-    protected synchronized void initSecondaryTables() {
-        if (secondaryTables == null) { // double checked locking
-            log.debug("Searching for secondary tables");
-            HashSet<String> set = new HashSet<>();
-
-            Collection<MetaClass> metaClasses = metadata.getTools().getAllPersistentMetaClasses();
-            for (MetaClass metaClass : metaClasses) {
-                for (MetaProperty metaProperty : metaClass.getProperties()) {
-                    JoinTable joinTable = metaProperty.getAnnotatedElement().getAnnotation(JoinTable.class);
-                    if (joinTable != null) {
-                        set.add(joinTable.name());
-                    }
-                }
-
-                if (isJoinTableInheritance(metaClass)) {
-                    Table table = (Table) metaClass.getJavaClass().getAnnotation(Table.class);
-                    if (table != null) {
-                        set.add(table.name());
-                    }
-                }
-            }
-
-            secondaryTables = set;
-        }
-    }
-
-    private boolean isJoinTableInheritance(MetaClass metaClass) {
-        for (MetaClass aClass : metaClass.getAncestors()) {
-            Inheritance inheritance = (Inheritance) aClass.getJavaClass().getAnnotation(Inheritance.class);
-            if (inheritance != null && inheritance.strategy() == InheritanceType.JOINED) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

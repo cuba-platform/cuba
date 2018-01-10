@@ -43,13 +43,6 @@ public interface PersistenceManagerMBean {
     int getDefaultMaxFetchUI();
     void setDefaultMaxFetchUI(int value);
 
-    /**
-     * Show list of tables supporting soft deletion.
-     * @return  operation result
-     */
-    @ManagedOperation(description = "Show list of tables supporting soft deletion")
-    String printSoftDeleteTables();
-
     @ManagedOperation(description = "Show list of views with properties from ViewRepository")
     String printViewRepositoryDump();
 

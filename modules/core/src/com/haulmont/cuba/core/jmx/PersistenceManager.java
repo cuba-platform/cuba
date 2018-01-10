@@ -131,15 +131,6 @@ public class PersistenceManager implements PersistenceManagerMBean {
     }
 
     @Override
-    public String printSoftDeleteTables() {
-        StringBuilder sb = new StringBuilder();
-        for (String table : persistenceManager.getSoftDeleteTables()) {
-            sb.append(table).append("\n");
-        }
-        return sb.toString();
-    }
-
-    @Override
     public String printViewRepositoryDump() {
         return new ViewRepositoryInfo(metadata).dump();
     }
