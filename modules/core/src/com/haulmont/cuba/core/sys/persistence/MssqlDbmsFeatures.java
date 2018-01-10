@@ -67,4 +67,9 @@ public class MssqlDbmsFeatures implements DbmsFeatures {
     public boolean isNullsLastSorting() {
         return false;
     }
+
+    @Override
+    public boolean useUserForSchemaName() {
+        return false;
+    }
 }
