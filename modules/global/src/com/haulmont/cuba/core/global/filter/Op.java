@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
 public enum Op {
+    CONTAINS("like", "contains", false),
     EQUAL("=", "==", false),
     IN("in", "in", false),
     NOT_IN("not in", "in", false),
@@ -29,7 +30,6 @@ public enum Op {
     GREATER_OR_EQUAL(">=", ">=", false),
     LESSER("<", "<", false),
     LESSER_OR_EQUAL("<=", "<=", false),
-    CONTAINS("like", "contains", false),
     DOES_NOT_CONTAIN("not like", "contains", false),
     NOT_EMPTY("is not null", "!= null", true),
     STARTS_WITH("like", "startsWith", false),
