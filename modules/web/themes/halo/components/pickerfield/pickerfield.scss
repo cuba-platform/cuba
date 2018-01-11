@@ -32,7 +32,7 @@
     height: 100%;
 
     & .v-filterselect,
-    & [class*="input"] {
+    & input[type="text"] {
       height: $v-unit-size;
     }
   }
@@ -203,8 +203,7 @@
     font-size: $v-font-size--tiny;
 
     .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
+    input[type="text"] {
       height: $v-unit-size--tiny;
     }
 
@@ -224,8 +223,7 @@
     font-size: $v-font-size--small;
 
     .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
+    input[type="text"] {
       height: $v-unit-size--small;
     }
 
@@ -245,8 +243,7 @@
     font-size: $v-font-size--large;
 
     .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
+    input[type="text"] {
       height: $v-unit-size--large;
     }
 
@@ -266,8 +263,7 @@
     font-size: $v-font-size--huge;
 
     .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
+    input[type="text"] {
       height: $v-unit-size--huge;
     }
 
