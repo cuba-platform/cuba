@@ -73,9 +73,7 @@ public interface DbmsFeatures {
     boolean isNullsLastSorting();
 
     /**
-     * Uses user name as schema name for Oracle database
-     * for correct table lookup {@link java.sql.DatabaseMetaData#getTables}.
-     * By default it returns all tables for all users in the Oracle database
+     * @return true if user name must be used when providing schema name for obtaining database metadata
      */
-    boolean useUserForSchemaName();
+    boolean isSchemaByUser();
 }

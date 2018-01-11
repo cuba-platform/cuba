@@ -69,7 +69,7 @@ public class MssqlDbmsFeatures implements DbmsFeatures {
     }
 
     @Override
-    public boolean useUserForSchemaName() {
+    public boolean isSchemaByUser() {
         return false;
     }
 }
