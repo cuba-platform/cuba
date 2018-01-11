@@ -234,7 +234,7 @@ public class ServerRunner {
                             return;
                         }
                         try {
-                            jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
+                            jettyServer.setJettyConfUrl(file.toURI().toURL());
                         } catch (MalformedURLException e) {
                             throw new RuntimeException("Unable to create jettyConfUrl", e);
                         }
