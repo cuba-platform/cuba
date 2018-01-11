@@ -947,6 +947,8 @@ configure(uberJarModule) {
         compile(bom['commons-cli:commons-cli'])
         compile(bom['commons-io:commons-io'])
         compile(bom['org.apache.commons:commons-dbcp2'])
+        compile(bom['ch.qos.logback:logback-classic'])
+        compile(bom['org.slf4j:log4j-over-slf4j'])
     }
 }
 
