@@ -74,7 +74,7 @@ public interface SourceCodeEditor extends Field, Component.Focusable {
     /**
      * @return print margin position in symbols
      */
-    int getPrinMarginColumn();
+    int getPrintMarginColumn();
 
     void setHighlightActiveLine(boolean highlightActiveLine);
     boolean isHighlightActiveLine();

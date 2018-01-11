@@ -172,7 +172,7 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     @Override
-    public int getPrinMarginColumn() {
+    public int getPrintMarginColumn() {
         return component.getPrintMarginColumn();
     }
 

@@ -186,7 +186,7 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     }
 
     @Override
-    public int getPrinMarginColumn() {
+    public int getPrintMarginColumn() {
         return printMarginColumn;
     }
 
