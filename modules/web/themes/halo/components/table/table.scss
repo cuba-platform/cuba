@@ -239,6 +239,24 @@
     border-left: 0;
   }
 
+  .v-ch & .v-table-table .v-table-cell-content:first-child {
+    padding-left: 0px;
+  }
+
+  .v-ch & .v-table-table .v-table-cell-content.c-grouptable-group-divider {
+    width: 14px !important;
+    .v-table-cell-wrapper {
+      width: 14px !important;
+    }
+
+    &:first-child {
+      width: 15px !important;
+      .v-table-cell-wrapper {
+        width: 15px !important;
+      }
+    }
+  }
+
   .c-table-composition {
     font-size: 0;
 
