@@ -51,7 +51,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         if (GROUP_DIVIDER_COLUMN_KEY.equals(visibleColOrder[colIndex])) {
-            w = 0;
+            w = 15;
             isDefinedWidth = true;
         }
 
@@ -412,8 +412,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
 
         protected class CubaGroupTableGroupRow extends CubaGroupTableRow {
-            protected static final int GROUP_DIVIDER_WIDTH = 15;
-            protected static final int ACCEPTABLE_WIDTH_GLITCH = 5;
+            /*
+            * introduce this difference to check that width of displayed cell is nearly equal to its set width
+            * and was calculated correctly
+            */
+            protected static final int MAX_ROUNDING_DIFF = 5;
 
             protected Integer groupColIndex;
             protected String groupKey;
@@ -553,14 +556,10 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 for (int i = groupColIndex; i < cells; i++) {
                     HeaderCell headerCell = tHead.getHeaderCell(i);
 
-                    int headerWidth = headerCell.getOffsetWidth() > headerCell.getWidth() + ACCEPTABLE_WIDTH_GLITCH ?
+                    int headerWidth = headerCell.getOffsetWidth() > headerCell.getWidth() + MAX_ROUNDING_DIFF ?
                             headerCell.getWidth() : headerCell.getOffsetWidth();
 
                     totalSpannedWidth += headerWidth;
-                }
-
-                if (!isExpanded()) {
-                    totalSpannedWidth += GROUP_DIVIDER_WIDTH;
                 }
 
                 Element td = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
@@ -596,6 +595,14 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                         wrapperStyle.clearMarginRight();
                     }
                 }
+
+                if (BrowserInfo.get().isChrome()) {
+                    if (groupColIndex == groupColumns.size() - 1) {
+                        wrapperWidth -= groupColIndex * 2;
+                    }
+                    wrapperWidth++;
+                }
+
                 wrapperStyle.setPropertyPx("width", wrapperWidth);
             }
 
