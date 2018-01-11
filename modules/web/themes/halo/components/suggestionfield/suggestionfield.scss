@@ -8,6 +8,26 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
     &.modified {
       background-color: $cuba-suggestionfield-edit-color;
     }
+
+    &.tiny {
+      font-size: $v-font-size--tiny;
+      height: $v-unit-size--tiny;
+    }
+
+    &.small {
+      font-size: $v-font-size--small;
+      height: $v-unit-size--small;
+    }
+
+    &.large {
+      font-size: $v-font-size--large;
+      height: $v-unit-size--large;
+    }
+
+    &.huge {
+      font-size: $v-font-size--huge;
+      height: $v-unit-size--huge;
+    }
   }
 
   .#{$primary-stylename}-error {

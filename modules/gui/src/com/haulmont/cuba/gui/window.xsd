@@ -734,6 +734,22 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="suggestionFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="resizableDirection">
         <xs:restriction base="xs:string">
             <xs:enumeration value="HORIZONTAL"/>
@@ -1503,6 +1519,8 @@
                 <xs:all>
                     <xs:element name="query" minOccurs="0" maxOccurs="1" type="suggestionFieldQuery"/>
                 </xs:all>
+
+                <xs:attribute name="stylename" type="suggestionFieldStylename"/>
 
                 <xs:attribute name="asyncSearchDelayMs" type="xs:integer"/>
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
