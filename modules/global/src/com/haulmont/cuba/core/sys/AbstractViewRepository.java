@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Splitter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
@@ -47,6 +48,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * Base implementation of the {@link ViewRepository}. Contains methods to store {@link View} objects and deploy
@@ -120,12 +125,26 @@ public class AbstractViewRepository implements ViewRepository {
             String key = getMetaClass(viewElem) + "/" + viewName;
             if (!Boolean.parseBoolean(viewElem.attributeValue("overwrite"))) {
                 String extend = viewElem.attributeValue("extends");
-                if (!StringUtils.equals(extend, viewName) && checked.contains(key)) {
-                    log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
+                if (extend != null) {
+                    List<String> ancestors = splitExtends(extend);
+
+                    if (isAncestorsNotConstrainViewName(ancestors, viewName) && checked.contains(key)) {
+                        log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
+                    }
                 }
             }
             checked.add(key);
         }
+    }
+
+    protected List<String> splitExtends(String extend) {
+        return Splitter.on(',').omitEmptyStrings().trimResults().splitToList(extend);
+    }
+
+    protected boolean isAncestorsNotConstrainViewName(List<String> ancestors, String viewName) {
+        return !ancestors.stream().anyMatch(
+                ancestor -> ancestor.equals(viewName)
+        );
     }
 
     protected void addFile(Element commonRootElem, String fileName) {
@@ -438,9 +457,17 @@ public class AbstractViewRepository implements ViewRepository {
         View v = retrieveView(metaClass, viewName, visited);
         boolean overwrite = Boolean.parseBoolean(viewElem.attributeValue("overwrite"));
 
-        String ancestor = viewElem.attributeValue("extends");
-        if (!overwrite) {
-            overwrite = StringUtils.equals(ancestor, viewName);
+        String extended = viewElem.attributeValue("extends");
+        List<String> ancestors = null;
+
+        if (isNotBlank(extended)) {
+            ancestors = splitExtends(extended);
+        }
+
+        if (!overwrite && ancestors != null) {
+            overwrite = ancestors.stream().anyMatch(
+                    ancestor -> ancestor.equals(viewName)
+            );
         }
 
         if (v != null && !overwrite) {
@@ -450,9 +477,12 @@ public class AbstractViewRepository implements ViewRepository {
         boolean systemProperties = Boolean.valueOf(viewElem.attributeValue("systemProperties"));
 
         View.ViewParams viewParam = new View.ViewParams().entityClass(metaClass.getJavaClass()).name(viewName);
-        if (ancestor != null) {
-            View ancestorView = getAncestorView(metaClass, ancestor, visited);
-            viewParam.src(ancestorView);
+        if (isNotEmpty(ancestors)) {
+            List<View> ancestorsViews = ancestors.stream()
+                    .map(a -> getAncestorView(metaClass, a, visited))
+                    .collect(Collectors.toList());
+
+            viewParam.src(ancestorsViews);
         }
         viewParam.includeSystemProperties(systemProperties);
         View view = new View(viewParam);
