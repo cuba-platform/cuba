@@ -18,6 +18,9 @@ package com.haulmont.cuba.gui.components;
 
 import javax.annotation.Nullable;
 
+/**
+ * An interface which realizations are used to create UI components.
+ */
 public interface ComponentGenerationStrategy {
     /**
      * Defines the highest precedence for {@link org.springframework.core.Ordered} component strategies of the platform.
