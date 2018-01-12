@@ -190,12 +190,12 @@ public class ConnectionImpl extends EventRouter implements Connection {
     }
 
     protected AuthenticationDetails loginInternal(Credentials credentials) throws LoginException {
-        publishBeforeLoginEvent(credentials);
-
         Class<? extends Credentials> credentialsClass = credentials.getClass();
 
         AuthenticationDetails details = null;
         try {
+            publishBeforeLoginEvent(credentials);
+
             List<LoginProvider> providers = getProviders();
 
             for (LoginProvider provider : providers) {
