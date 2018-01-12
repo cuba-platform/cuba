@@ -238,6 +238,7 @@ public interface FileUploadField extends UploadField, Field, Component.Focusable
      *
      * @see #setShowClearButton(boolean)
      */
+    @FunctionalInterface
     interface BeforeValueClearListener {
         void beforeValueClearPerformed(BeforeValueClearEvent event);
     }
@@ -268,6 +269,7 @@ public interface FileUploadField extends UploadField, Field, Component.Focusable
      *
      * @see #setShowClearButton(boolean)
      */
+    @FunctionalInterface
     interface AfterValueClearListener {
         void afterValueClearPerformed(AfterValueClearEvent event);
     }

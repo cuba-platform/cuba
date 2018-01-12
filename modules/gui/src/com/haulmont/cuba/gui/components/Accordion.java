@@ -153,8 +153,8 @@ public interface Accordion extends Component.Container, Component.BelongToFrame,
     /**
      * Listener that will be notified when a selected tab is changed.
      */
+    @FunctionalInterface
     interface SelectedTabChangeListener {
-
         void selectedTabChanged(Accordion.SelectedTabChangeEvent event);
     }
 

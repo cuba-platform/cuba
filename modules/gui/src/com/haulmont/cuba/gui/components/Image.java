@@ -83,6 +83,7 @@ public interface Image extends ResourceView {
     void addClickListener(ClickListener listener);
     void removeClickListener(ClickListener listener);
 
+    @FunctionalInterface
     interface ClickListener {
         void onClick(ClickEvent event);
     }

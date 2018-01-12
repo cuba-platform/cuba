@@ -118,6 +118,7 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     /**
      * Interface for listening for {@link SplitPositionChangeEvent}s fired by a SplitPanel.
      */
+    @FunctionalInterface
     interface SplitPositionChangeListener {
         void onSplitPositionChanged(SplitPositionChangeEvent event);
     }

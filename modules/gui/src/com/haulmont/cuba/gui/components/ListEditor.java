@@ -142,6 +142,7 @@ public interface ListEditor extends Field, Component.Focusable {
     /**
      * Listener that will be notified when editor window is closed.
      */
+    @FunctionalInterface
     interface EditorCloseListener {
 
         /**

@@ -124,6 +124,7 @@ public interface PopupButton extends Component.ActionsHolder, Component.HasCapti
     /**
      * Popup window visibility change listener.
      */
+    @FunctionalInterface
     interface PopupVisibilityListener {
         void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
     }

@@ -466,6 +466,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * DataGrid editor pre commit listener. Works in buffered mode only.
      */
+    @FunctionalInterface
     interface EditorPreCommitListener {
         /**
          * Called before the item is updated.
@@ -507,6 +508,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * DataGrid editor post commit listener. Works in buffered mode only.
      */
+    @FunctionalInterface
     interface EditorPostCommitListener {
         /**
          * Called after the item is updated.
@@ -548,6 +550,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * DataGrid editor close listener.
      */
+    @FunctionalInterface
     interface EditorCloseListener {
         /**
          * Called when a DataGrid editor UI have been closed.
@@ -1037,6 +1040,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * Renderer listens to clicks.
      */
+    @FunctionalInterface
     interface RendererClickListener {
 
         /**
@@ -1088,6 +1092,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * Renderer has click listener.
      */
+    @FunctionalInterface
     interface HasRendererClickListener {
         /**
          * Sets new renderer click listener.
@@ -1291,6 +1296,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * An event listener for column collapsing change events in the DataGrid.
      */
+    @FunctionalInterface
     interface ColumnCollapsingChangeListener {
         /**
          * Called when a column has become hidden or unhidden.
@@ -1356,6 +1362,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * An event listener for column reorder events in the DataGrid.
      */
+    @FunctionalInterface
     interface ColumnReorderListener {
         /**
          * Called when the columns of the DataGrid have been reordered.
@@ -1397,6 +1404,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * An event listener for column resize events in the DataGrid.
      */
+    @FunctionalInterface
     interface ColumnResizeListener {
         /**
          * Called when the columns of the DataGrid have been resized.
@@ -1536,6 +1544,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * Listener for sort order change events.
      */
+    @FunctionalInterface
     interface SortListener {
         /**
          * Called when the sort order has changed.
@@ -1639,6 +1648,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * Listener for context click events.
      */
+    @FunctionalInterface
     interface ContextClickListener {
         /**
          * Called when the context click happens.

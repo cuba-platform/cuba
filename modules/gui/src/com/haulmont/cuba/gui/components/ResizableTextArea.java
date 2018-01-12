@@ -95,6 +95,7 @@ public interface ResizableTextArea extends TextArea, Component.HasSettings {
     /**
      * Listener for size change events
      */
+    @FunctionalInterface
     interface ResizeListener {
         /**
          * Called by component on size change if ResizableTextArea isResizable equals true

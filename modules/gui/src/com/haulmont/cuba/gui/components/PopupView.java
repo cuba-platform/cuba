@@ -82,6 +82,7 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
     /**
      * Popup window visibility change listener.
      */
+    @FunctionalInterface
     interface PopupVisibilityListener {
         void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
     }

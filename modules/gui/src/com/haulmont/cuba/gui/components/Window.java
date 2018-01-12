@@ -530,6 +530,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Listener to be notified when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
      */
+    @FunctionalInterface
     interface BeforeCloseWithShortcutListener {
         /**
          * Called when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
@@ -570,6 +571,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Listener to be notified when a screen is closed with one of the following approaches:
      * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
      */
+    @FunctionalInterface
     interface BeforeCloseWithCloseButtonListener {
         /**
          * Called when a screen is closed with one of the following approaches:
