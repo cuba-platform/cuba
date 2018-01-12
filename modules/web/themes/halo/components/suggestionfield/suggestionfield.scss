@@ -12,21 +12,25 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
     &.tiny {
       font-size: $v-font-size--tiny;
       height: $v-unit-size--tiny;
+      line-height: normal;
     }
 
     &.small {
       font-size: $v-font-size--small;
       height: $v-unit-size--small;
+      line-height: normal;
     }
 
     &.large {
       font-size: $v-font-size--large;
       height: $v-unit-size--large;
+      line-height: normal;
     }
 
     &.huge {
       font-size: $v-font-size--huge;
       height: $v-unit-size--huge;
+      line-height: normal;
     }
   }
 
