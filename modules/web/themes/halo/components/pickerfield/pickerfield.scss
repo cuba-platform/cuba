@@ -215,6 +215,7 @@
 
 @mixin pickerfield-size-style($font-size, $unit-size) {
   font-size: $font-size;
+  $rightPadding: ceil($unit-size/6) + ceil($v-border-radius/3);
 
   & .c-pickerfield-layout {
     input,
@@ -222,18 +223,23 @@
     & .v-filterselect input {
       height: $unit-size;
       line-height: normal;
+      padding-right: $rightPadding;
     }
 
     & .v-filterselect {
       height: $unit-size;
 
       input {
-        padding-right: $unit-size + first-number($v-border);
+        padding-right: $unit-size + $rightPadding;
       }
 
       & [class$="button"]:before {
         width: $unit-size;
       }
+    }
+
+    & .v-filterselect-c-searchselect input {
+      padding-right: $rightPadding;
     }
 
     & .ie9-input-wrap .v-filterselect [class$="button"],
