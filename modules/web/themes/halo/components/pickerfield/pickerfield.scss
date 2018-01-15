@@ -222,11 +222,14 @@
     & .v-filterselect input {
       height: $unit-size;
       line-height: normal;
-      padding-right: $unit-size + first-number($v-border);
     }
 
     & .v-filterselect {
       height: $unit-size;
+
+      input {
+        padding-right: $unit-size + first-number($v-border);
+      }
 
       & [class$="button"]:before {
         width: $unit-size;
