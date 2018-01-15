@@ -218,18 +218,15 @@
 
   & .c-pickerfield-layout {
     input,
-    & .ie9-input-wrap input {
+    & .ie9-input-wrap input,
+    & .v-filterselect input {
       height: $unit-size;
       line-height: normal;
+      padding-right: $unit-size + first-number($v-border);
     }
 
     & .v-filterselect {
       height: $unit-size;
-
-      input {
-        height: $unit-size;
-        line-height: normal;
-      }
 
       & [class$="button"]:before {
         width: $unit-size;
