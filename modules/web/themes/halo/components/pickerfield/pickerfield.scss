@@ -16,10 +16,6 @@
  */
 
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
-  .#{$primary-stylename} {
-    height: $v-unit-size;
-  }
-
   & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;
@@ -28,17 +24,14 @@
   .#{$primary-stylename}-layout {
     outline: none;
     display: table-row;
-
-    height: 100%;
-
-    & .v-filterselect,
-    & input[type="text"] {
-      height: $v-unit-size;
-    }
   }
 
   .#{$primary-stylename}-layout > * {
     display: table-cell;
+  }
+
+  .#{$primary-stylename}-layout > .v-filterselect > input {
+    height: $v-unit-size;
   }
 
   .v-textfield.#{$primary-stylename}-text {
@@ -59,7 +52,9 @@
 
   .#{$primary-stylename}-layout > .v-filterselect > input,
   .#{$primary-stylename}-layout > .c-suggestionfield,
-  .v-textfield.#{$primary-stylename}-text {
+  .#{$primary-stylename}-layout > .ie9-input-wrap > input,
+  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect,
+  .v-textfield.#{$primary-stylename}-text  {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
@@ -133,10 +128,6 @@
     .v-button-caption {
       display: none;
     }
-
-    .v-button-wrap {
-      vertical-align: middle;
-    }
   }
 
   .#{$primary-stylename}-layout > .v-button:last-child {
@@ -198,83 +189,67 @@
     text-align: center;
   }
 
+  .v-ie9 &,
+  .v-ie10 & {
+    .c-pickerfield > .c-pickerfield-layout > .c-pickerfield-button.v-button {
+      height: auto;
+    }
+  }
+
   .#{$primary-stylename}-tiny {
-    @include valo-combobox-style($unit-size: $v-unit-size--tiny, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--tiny;
-
-    .v-filterselect,
-    input[type="text"] {
-      height: $v-unit-size--tiny;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--tiny;
-      min-width: $v-unit-size--tiny;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--tiny;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--tiny, $v-unit-size--tiny);
   }
 
   .#{$primary-stylename}-small {
-    @include valo-combobox-style($unit-size: $v-unit-size--small, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--small;
-
-    .v-filterselect,
-    input[type="text"] {
-      height: $v-unit-size--small;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--small;
-      min-width: $v-unit-size--small;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--small;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--small, $v-unit-size--small);
   }
 
   .#{$primary-stylename}-large {
-    @include valo-combobox-style($unit-size: $v-unit-size--large, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--large;
-
-    .v-filterselect,
-    input[type="text"] {
-      height: $v-unit-size--large;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--large;
-      min-width: $v-unit-size--large;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--large;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--large, $v-unit-size--large);
   }
 
   .#{$primary-stylename}-huge {
-    @include valo-combobox-style($unit-size: $v-unit-size--huge, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--huge;
+    @include pickerfield-size-style($v-font-size--huge, $v-unit-size--huge);
+  }
+}
 
-    .v-filterselect,
-    input[type="text"] {
-      height: $v-unit-size--huge;
+@mixin pickerfield-size-style($font-size, $unit-size) {
+  font-size: $font-size;
+
+  & .c-pickerfield-layout {
+    input,
+    & .ie9-input-wrap input {
+      height: $unit-size;
+      line-height: normal;
     }
 
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--huge;
-      min-width: $v-unit-size--huge;
+    & .v-filterselect {
+      height: $unit-size;
+
+      input {
+        height: $unit-size;
+        line-height: normal;
+      }
+
+      & [class$="button"]:before {
+        width: $unit-size;
+      }
+    }
+
+    & .ie9-input-wrap .v-filterselect [class$="button"],
+    & .v-filterselect [class$="button"],
+    & .c-pickerfield-button.v-button {
+      width: $unit-size;
+      min-width: $unit-size;
 
       &:after,
       &:hover:after {
-        height: $v-unit-size--huge;
+        width: $unit-size;
       }
+    }
+
+    & .c-pickerfield-button.v-button:after {
+      height: $unit-size;
     }
   }
 }
