@@ -25,7 +25,11 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.haulmont.cuba.gui.components.Component.MouseEventDetails.MouseButton;
 
@@ -1009,7 +1013,63 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
      */
     Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
 
+    /**
+     * Gets the columns generator for the given column id.
+     *
+     * @param columnId the column id for which to return column generator
+     * @return the column generator for given column id
+     */
     ColumnGenerator<E, ?> getColumnGenerator(String columnId);
+
+
+    /**
+     * A callback interface for generating details for a particular row in Grid.
+     *
+     * @param <E> DataGrid data type
+     */
+    @FunctionalInterface
+    interface DetailsGenerator<E extends Entity> {
+
+        /**
+         * Returns the component which will be used as details for the given row.
+         *
+         * @param entity an entity instance represented by the current row
+         * @return the details for the given row, or {@code null} to leave the details empty.
+         */
+        @Nullable
+        Component getDetails(E entity);
+    }
+
+    /**
+     * @return the current details generator for row details or {@code null} if not set
+     */
+    @Nullable
+    DetailsGenerator<E> getDetailsGenerator();
+
+    /**
+     * Sets a new details generator for row details.
+     * <p>
+     * The currently opened row details will be re-rendered.
+     *
+     * @param detailsGenerator the details generator to set
+     */
+    void setDetailsGenerator(DetailsGenerator<E> detailsGenerator);
+
+    /**
+     * Checks whether details are visible for the given item.
+     *
+     * @param entity the item for which to check details visibility
+     * @return {@code true} if the details are visible
+     */
+    boolean isDetailsVisible(Entity entity);
+
+    /**
+     * Shows or hides the details for a specific item.
+     *
+     * @param entity  the item for which to set details visibility
+     * @param visible {@code true} to show the details, or {@code false} to hide them
+     */
+    void setDetailsVisible(Entity entity, boolean visible);
 
     /**
      * Marker interface to indicate that the implementing class can be used as a renderer.

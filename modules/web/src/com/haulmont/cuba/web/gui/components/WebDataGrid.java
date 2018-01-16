@@ -120,6 +120,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected RowDescriptionProvider<E> rowDescriptionProvider;
     protected CellDescriptionProvider<E> cellDescriptionProvider;
 
+    protected DetailsGenerator<E> detailsGenerator = null;
+
     protected Security security = AppBeans.get(Security.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
@@ -2500,6 +2502,42 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         return joinedStyle != null ? joinedStyle.toString() : null;
+    }
+
+    @Nullable
+    @Override
+    public DetailsGenerator<E> getDetailsGenerator() {
+        return detailsGenerator;
+    }
+
+    @Override
+    public void setDetailsGenerator(DetailsGenerator<E> detailsGenerator) {
+        this.detailsGenerator = detailsGenerator;
+
+        if (detailsGenerator != null) {
+            component.setDetailsGenerator(createDetailsGenerator());
+        } else {
+            component.setDetailsGenerator(Grid.DetailsGenerator.NULL);
+        }
+    }
+
+    protected Grid.DetailsGenerator createDetailsGenerator() {
+        return (Grid.DetailsGenerator) rowReference -> {
+            //noinspection unchecked
+            E item = (E) datasource.getItem(rowReference.getItemId());
+            com.haulmont.cuba.gui.components.Component component = detailsGenerator.getDetails(item);
+            return component.unwrapComposition(Component.class);
+        };
+    }
+
+    @Override
+    public boolean isDetailsVisible(Entity entity) {
+        return component.isDetailsVisible(entity.getId());
+    }
+
+    @Override
+    public void setDetailsVisible(Entity entity, boolean visible) {
+        component.setDetailsVisible(entity.getId(), visible);
     }
 
     @Override
