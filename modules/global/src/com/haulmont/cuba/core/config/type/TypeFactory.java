@@ -36,7 +36,6 @@ import java.lang.reflect.Modifier;
  * A class that gets a configuration type by retrieving a string value
  * from the configuration and then building the appropriate type from
  * that string.
- *
  */
 public abstract class TypeFactory {
     public static final String ENTITY_FACTORY_BEAN_NAME = "cuba_ConfigEntityFactory";
@@ -122,6 +121,11 @@ public abstract class TypeFactory {
 
     @Nullable
     private static TypeFactory getInferred(Class<?> returnType) {
+        // special case due to Character.valueOf(char) does not accept String
+        if (returnType == Character.class) {
+            return new CharTypeFactory();
+        }
+
         for (String methodName : FACTORY_METHOD_NAMES) {
             try {
                 Method factoryMethod = returnType.getMethod(methodName, String.class);
