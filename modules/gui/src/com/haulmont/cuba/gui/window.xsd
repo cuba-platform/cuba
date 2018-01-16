@@ -2599,6 +2599,7 @@
                 <xs:attribute name="openType" type="openType"/>
                 <xs:attribute name="for" type="xs:string" use="required"/>
                 <xs:attribute name="exclude" type="xs:string"/>
+                <xs:attribute name="includeProperties" type="xs:string"/>
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="loadDynamicAttributes" type="xs:boolean"/>
 

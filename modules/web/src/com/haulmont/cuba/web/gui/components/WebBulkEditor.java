@@ -24,13 +24,12 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BulkEditAction;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WebBulkEditor extends WebButton implements BulkEditor {
 
     protected String exclude;
+    protected List<String> includeProperties = Collections.emptyList();
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
     protected BulkEditAction bulkEditAction;
     protected ListComponent listComponent;
@@ -66,6 +65,19 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     }
 
     @Override
+    public List<String> getIncludeProperties() {
+        return includeProperties;
+    }
+
+    @Override
+    public void setIncludeProperties(List<String> includeProperties) {
+        this.includeProperties = includeProperties;
+        if (bulkEditAction != null) {
+            bulkEditAction.setIncludeProperties(includeProperties);
+        }
+    }
+
+    @Override
     public ListComponent getListComponent() {
         return listComponent;
     }
@@ -91,6 +103,10 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
 
             if (exclude != null) {
                 bulkEditAction.setExcludePropertyRegex(exclude);
+            }
+
+            if (includeProperties != null) {
+                bulkEditAction.setIncludeProperties(includeProperties);
             }
 
             if (fieldValidators != null) {

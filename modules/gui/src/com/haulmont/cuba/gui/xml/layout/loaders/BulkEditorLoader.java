@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Splitter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
@@ -27,10 +28,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
@@ -97,8 +95,21 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         }
 
         String exclude = element.attributeValue("exclude");
+        String includeProperties = element.attributeValue("includeProperties");
+
+        if (StringUtils.isNotBlank(exclude) && StringUtils.isNotBlank(includeProperties)) {
+            throw new GuiDevelopmentException("BulkEditor cannot define simultaneously exclude and includeProperties attributes",
+                    getContext().getCurrentFrameId());
+        }
+
         if (StringUtils.isNotBlank(exclude)) {
             resultComponent.setExcludePropertiesRegex(exclude.replace(" ", ""));
+        }
+
+        if (StringUtils.isNotBlank(includeProperties)) {
+            resultComponent.setIncludeProperties(
+                    Splitter.on(',').omitEmptyStrings().trimResults().splitToList(includeProperties)
+            );
         }
 
         String listComponent = element.attributeValue("for");

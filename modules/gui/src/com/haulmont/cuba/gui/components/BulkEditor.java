@@ -35,6 +35,19 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
     String getExcludePropertiesRegex();
     void setExcludePropertiesRegex(String excludeRegex);
 
+    /**
+     * @return list of entity's attributes
+     */
+    List<String> getIncludeProperties();
+
+    /**
+     * Sets entity's attributes to the bulk editor dialog.
+     * Unspecified attributes will are not shown.
+     *
+     * @param includeProperties list of entity's attributes
+     */
+    void setIncludeProperties(List<String> includeProperties);
+
     ListComponent getListComponent();
     void setListComponent(ListComponent listComponent);
 

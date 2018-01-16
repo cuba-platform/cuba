@@ -29,8 +29,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.springframework.context.annotation.Scope;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Action used in {@link BulkEditor} visual component.
@@ -47,6 +46,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
 
     protected OpenType openType = OpenType.DIALOG;
     protected String exclude;
+    protected List<String> includeProperties = Collections.emptyList();
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
     protected Boolean loadDynamicAttributes;
@@ -88,6 +88,14 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
 
     public void setExcludePropertyRegex(String exclude) {
         this.exclude = exclude;
+    }
+
+    public List<String> getIncludeProperties() {
+        return includeProperties;
+    }
+
+    public void setIncludeProperties(List<String> includeProperties) {
+        this.includeProperties = includeProperties;
     }
 
     public List<Field.Validator> getModelValidators() {
@@ -142,14 +150,15 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                     .setResizable(true);
         }
 
-        Map<String, Object> params = ParamsMap.of(
-                "metaClass", target.getDatasource().getMetaClass(),
-                "selected", target.getSelected(),
-                "exclude", exclude,
-                "fieldValidators", fieldValidators,
-                "modelValidators", modelValidators,
-                "loadDynamicAttributes", loadDynamicAttributes
-        );
+        Map<String, Object> params = ParamsMap.of()
+                .pair("metaClass", target.getDatasource().getMetaClass())
+                .pair("selected", target.getSelected())
+                .pair("exclude", exclude)
+                .pair("includeProperties", includeProperties != null ? includeProperties : Collections.EMPTY_LIST)
+                .pair("fieldValidators", fieldValidators)
+                .pair("modelValidators", modelValidators)
+                .pair("loadDynamicAttributes", loadDynamicAttributes)
+                .create();
 
         Window bulkEditor = target.getFrame().openWindow("bulkEditor", openType, params);
         bulkEditor.addCloseListener(actionId -> {

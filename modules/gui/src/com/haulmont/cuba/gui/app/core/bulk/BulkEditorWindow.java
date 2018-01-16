@@ -101,6 +101,9 @@ public class BulkEditorWindow extends AbstractWindow {
     protected String exclude;
 
     @WindowParam
+    protected List<String> includeProperties;
+
+    @WindowParam
     protected boolean loadDynamicAttributes = true;
 
     @WindowParam
@@ -463,6 +466,10 @@ public class BulkEditorWindow extends AbstractWindow {
 
         if (!isRangeClassPermitted(metaProperty)) {
             return false;
+        }
+
+        if (includeProperties != null && !includeProperties.isEmpty()) {
+            return includeProperties.contains(metaProperty.getName());
         }
 
         return !(excludeRegex != null && excludeRegex.matcher(metaProperty.getName()).matches());
