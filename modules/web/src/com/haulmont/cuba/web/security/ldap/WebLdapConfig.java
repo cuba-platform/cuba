@@ -27,10 +27,13 @@ import com.haulmont.cuba.core.config.type.Factory;
 
 import java.util.List;
 
+/**
+ * Configuration parameters interface used by LDAP login provider.
+ */
 @Source(type = SourceType.APP)
 public interface WebLdapConfig extends Config {
     /**
-     * @return true if LDAP authentication for REST API is enabled
+     * @return true if LDAP authentication for Web Client is enabled
      */
     @Property("cuba.web.ldap.enabled")
     @DefaultBoolean(false)

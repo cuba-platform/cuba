@@ -22,10 +22,13 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
+/**
+ * Configuration parameters interface used by IDP SSO login provider.
+ */
 @Source(type = SourceType.APP)
 public interface WebIdpConfig extends Config {
     /**
-     * @return whether IDP authentication for REST is enabled or not
+     * @return whether IDP authentication for Web Client is enabled or not
      */
     @Property("cuba.web.idp.enabled")
     @DefaultBoolean(false)
