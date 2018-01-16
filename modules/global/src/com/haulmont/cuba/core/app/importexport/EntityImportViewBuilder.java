@@ -29,9 +29,9 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  */
@@ -144,25 +144,61 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI {
     /**
      * Builds a EntityImportView that contains properties from all collection members.
      * If the first member contains the property A, and the second one contains a property B then a result view will contain
-     * both properties A and B.
+     * both properties A and B. Views for nested collections (2nd level compositions) are also merged.
      * @param jsonArray a JsonArray
      * @param metaClass a metaClass of entities that are in the jsonArray
      * @return an EntityImportView
      */
     protected EntityImportView buildFromJsonArray(JsonArray jsonArray, MetaClass metaClass) {
-        EntityImportView resultView = new EntityImportView(metaClass.getJavaClass());
-        for (JsonElement element : jsonArray.getAsJsonArray()) {
-            EntityImportView view = buildFromJsonObject(element.getAsJsonObject(), metaClass);
-            view.getProperties().stream()
-                    .filter(p -> resultView.getProperty(p.getName()) == null)
-                    .forEach(p -> {
-                        EntityImportViewProperty propertyCopy = new EntityImportViewProperty(p.getName());
-                        propertyCopy.setView(p.getView());
-                        propertyCopy.setReferenceImportBehaviour(p.getReferenceImportBehaviour());
-                        propertyCopy.setCollectionImportPolicy(p.getCollectionImportPolicy());
-                        resultView.addProperty(propertyCopy);
-                    });
+        List<EntityImportView> viewsForArrayElements = new ArrayList<>();
+        for (JsonElement arrayElement : jsonArray.getAsJsonArray()) {
+            EntityImportView viewForArrayElement = buildFromJsonObject(arrayElement.getAsJsonObject(), metaClass);
+            viewsForArrayElements.add(viewForArrayElement);
+        }
+        EntityImportView resultView = viewsForArrayElements.isEmpty() ?
+                new EntityImportView(metaClass.getJavaClass()) :
+                viewsForArrayElements.get(0);
+        if (viewsForArrayElements.size() > 1) {
+            for (int i = 1; i < viewsForArrayElements.size(); i++) {
+                resultView = mergeViews(resultView, viewsForArrayElements.get(i));
+            }
         }
         return resultView;
+    }
+
+    /**
+     * Recursively merges two views. The result view will contain all fields that are defined either in view1 or in
+     * view2.
+     */
+    protected EntityImportView mergeViews(@Nullable EntityImportView view1, @Nullable EntityImportView view2) {
+        if (view1 == null) return view2;
+        if (view2 == null) return view1;
+        EntityImportView mergedView = new EntityImportView(view1.getEntityClass());
+
+        for (EntityImportViewProperty p1 : view1.getProperties()) {
+                EntityImportViewProperty newProperty = new EntityImportViewProperty(p1.getName());
+                newProperty.setReferenceImportBehaviour(p1.getReferenceImportBehaviour());
+                newProperty.setCollectionImportPolicy(p1.getCollectionImportPolicy());
+                EntityImportViewProperty p2 = view2.getProperty(p1.getName());
+                if (p2 == null) {
+                    newProperty.setView(p1.getView());
+                } else {
+                    newProperty.setView(mergeViews(p1.getView(), p2.getView()));
+                }
+                mergedView.addProperty(newProperty);
+        }
+
+        //add properties that exist in p2 but not in p1
+        for (EntityImportViewProperty p2 : view2.getProperties()) {
+            if (view1.getProperty(p2.getName()) == null) {
+                EntityImportViewProperty newProperty = new EntityImportViewProperty(p2.getName());
+                newProperty.setView(p2.getView());
+                newProperty.setReferenceImportBehaviour(p2.getReferenceImportBehaviour());
+                newProperty.setCollectionImportPolicy(p2.getCollectionImportPolicy());
+                mergedView.addProperty(newProperty);
+            }
+        }
+
+        return mergedView;
     }
 }
