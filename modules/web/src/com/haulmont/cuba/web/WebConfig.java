@@ -20,7 +20,12 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.*;
+import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultDouble;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
@@ -289,6 +294,16 @@ public interface WebConfig extends Config {
     @Property("cuba.web.pushLongPolling")
     @DefaultBoolean(false)
     boolean getUsePushLongPolling();
+
+    /**
+     * Returns push timeout in milliseconds,
+     * which is used in case of using long polling transport, i.e. {@code cuba.web.pushLongPolling="true"}.
+     *
+     * @return push timeout in milliseconds
+     */
+    @Property("cuba.web.pushLongPollingSuspendTimeoutMs")
+    @DefaultInt(-1)
+    int getPushLongPollingSuspendTimeoutMs();
 
     /**
      * @return true if push is enabled

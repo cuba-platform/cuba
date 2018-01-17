@@ -184,6 +184,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
             } else if (handler instanceof ServletUIInitHandler) {
                 cubaRequestHandlers.add(new CubaServletUIInitHandler());
+            } else if (handler instanceof PushRequestHandler) {
+                cubaRequestHandlers.add(new CubaPushRequestHandler(this));
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -370,6 +372,20 @@ public class CubaVaadinServletService extends VaadinServletService {
                 log.trace("Initial UIDL: {}", initialUIDL);
                 return initialUIDL;
             }
+        }
+    }
+
+    protected static class CubaPushRequestHandler extends PushRequestHandler {
+        public CubaPushRequestHandler(VaadinServletService service) throws ServiceException {
+            super(service);
+        }
+
+        @Override
+        protected int getPushLongPollingSuspendTimeout() {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+            return webConfig.getPushLongPollingSuspendTimeoutMs();
         }
     }
 }
