@@ -84,7 +84,7 @@ public class IdpLogoutCallbackController {
             return;
         }
 
-        log.trace("Logout user session by IDP session");
+        log.trace("Logout user session by IDP session {}", idpSessionId);
 
         AppContext.withSecurityContext(new SecurityContext(systemSession), () ->
                 idpService.logoutUserSession(idpSessionId)

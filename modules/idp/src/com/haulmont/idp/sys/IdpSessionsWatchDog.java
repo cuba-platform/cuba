@@ -77,6 +77,8 @@ public class IdpSessionsWatchDog {
             );
 
             for (String idpSessionId : loggedOutIdpSessionIds) {
+                log.debug("IDP Session {} expired. Logout from service providers");
+
                 logoutCallbackInvoker.performLogoutOnServiceProviders(idpSessionId);
             }
         });
