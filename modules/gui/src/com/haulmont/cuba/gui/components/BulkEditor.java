@@ -42,7 +42,7 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
 
     /**
      * Sets entity's attributes to the bulk editor dialog.
-     * Unspecified attributes will are not shown.
+     * Unspecified attributes will not be shown.
      *
      * @param includeProperties list of entity's attributes
      */
