@@ -128,7 +128,7 @@ public class AbstractViewRepository implements ViewRepository {
                 if (extend != null) {
                     List<String> ancestors = splitExtends(extend);
 
-                    if (isAncestorsNotConstrainViewName(ancestors, viewName) && checked.contains(key)) {
+                    if (!ancestors.contains(viewName) && checked.contains(key)) {
                         log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
                     }
                 }
@@ -139,12 +139,6 @@ public class AbstractViewRepository implements ViewRepository {
 
     protected List<String> splitExtends(String extend) {
         return Splitter.on(',').omitEmptyStrings().trimResults().splitToList(extend);
-    }
-
-    protected boolean isAncestorsNotConstrainViewName(List<String> ancestors, String viewName) {
-        return !ancestors.stream().anyMatch(
-                ancestor -> ancestor.equals(viewName)
-        );
     }
 
     protected void addFile(Element commonRootElem, String fileName) {
@@ -465,9 +459,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         if (!overwrite && ancestors != null) {
-            overwrite = ancestors.stream().anyMatch(
-                    ancestor -> ancestor.equals(viewName)
-            );
+            overwrite = ancestors.contains(viewName);
         }
 
         if (v != null && !overwrite) {
