@@ -16,10 +16,6 @@
  */
 
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
-  .#{$primary-stylename} {
-    height: $v-unit-size;
-  }
-
   & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;
@@ -28,17 +24,14 @@
   .#{$primary-stylename}-layout {
     outline: none;
     display: table-row;
-
-    height: 100%;
-
-    & .v-filterselect,
-    & [class*="input"] {
-      height: $v-unit-size;
-    }
   }
 
   .#{$primary-stylename}-layout > * {
     display: table-cell;
+  }
+
+  .#{$primary-stylename}-layout > .v-filterselect > input {
+    height: 100%;
   }
 
   .v-textfield.#{$primary-stylename}-text {
@@ -57,11 +50,38 @@
     }
   }
 
+  .#{$primary-stylename}-layout {
+    & .ie9-input-wrap:first-child input,
+    & .ie9-input-wrap:first-child .v-filterselect,
+    & input:first-child,
+    & .v-filterselect:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .#{$primary-stylename}-layout {
+    & .ie9-input-wrap:only-child input,
+    & .ie9-input-wrap:only-child .v-filterselect,
+    & input:only-child,
+    & .v-filterselect:only-child {
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+    }
+  }
+
   .#{$primary-stylename}-layout > .v-filterselect > input,
-  .#{$primary-stylename}-layout > .c-suggestionfield,
-  .v-textfield.#{$primary-stylename}-text {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect > input {
+    padding-right: $v-unit-size + ceil($v-unit-size/6) + ceil($v-border-radius/3);
+
+    &.v-filterselect-input-readonly {
+      padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
+    }
+  }
+
+  .#{$primary-stylename}-layout > .v-filterselect-c-searchselect > input,
+  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect-c-searchselect > input {
+    padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
   }
 
   .v-button.#{$primary-stylename}-button {
@@ -133,10 +153,6 @@
     .v-button-caption {
       display: none;
     }
-
-    .v-button-wrap {
-      vertical-align: middle;
-    }
   }
 
   .#{$primary-stylename}-layout > .v-button:last-child {
@@ -198,87 +214,93 @@
     text-align: center;
   }
 
+  .v-ie9 &,
+  .v-ie10 & {
+    .c-pickerfield > .c-pickerfield-layout > .c-pickerfield-button.v-button {
+      height: auto;
+    }
+  }
+
+  .v-sa & .#{$primary-stylename} > .#{$primary-stylename}-layout > .ie9-input-wrap {
+    display: inline-block;
+  }
+
   .#{$primary-stylename}-tiny {
-    @include valo-combobox-style($unit-size: $v-unit-size--tiny, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--tiny;
-
-    .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
-      height: $v-unit-size--tiny;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--tiny;
-      min-width: $v-unit-size--tiny;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--tiny;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--tiny, $v-unit-size--tiny);
   }
 
   .#{$primary-stylename}-small {
-    @include valo-combobox-style($unit-size: $v-unit-size--small, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--small;
-
-    .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
-      height: $v-unit-size--small;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--small;
-      min-width: $v-unit-size--small;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--small;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--small, $v-unit-size--small);
   }
 
   .#{$primary-stylename}-large {
-    @include valo-combobox-style($unit-size: $v-unit-size--large, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--large;
-
-    .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
-      height: $v-unit-size--large;
-    }
-
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--large;
-      min-width: $v-unit-size--large;
-
-      &:after,
-      &:hover:after {
-        height: $v-unit-size--large;
-      }
-    }
+    @include pickerfield-size-style($v-font-size--large, $v-unit-size--large);
   }
 
   .#{$primary-stylename}-huge {
-    @include valo-combobox-style($unit-size: $v-unit-size--huge, $bevel: null, $shadow: null, $gradient: null, $border: null, $border-radius: null, $background-color: null, $states: normal);
-    font-size: $v-font-size--huge;
+    @include pickerfield-size-style($v-font-size--huge, $v-unit-size--huge);
+  }
+}
 
-    .v-filterselect,
-    .v-textfield,
-    [class*="input"] {
-      height: $v-unit-size--huge;
+@mixin pickerfield-size-style($font-size, $unit-size) {
+  $rightPadding: ceil($unit-size/6) + ceil($v-border-radius/3);
+
+  .v-sa & .c-pickerfield-layout > .ie9-input-wrap {
+    display: inline-block;
+  }
+
+  height: $unit-size;
+  font-size: $font-size;
+
+  & .c-pickerfield-layout {
+    height: 100%;
+
+    & .ie9-input-wrap {
+      height: 100%;
     }
 
-    .#{$primary-stylename}-button {
-      width: $v-unit-size--huge;
-      min-width: $v-unit-size--huge;
+    input,
+    & .ie9-input-wrap input,
+    & .v-filterselect input {
+      height: 100%;
+      line-height: normal;
+      padding-right: $rightPadding;
+    }
+
+    & .v-filterselect {
+      height: 100%;
+
+      input {
+        padding-right: $unit-size + $rightPadding;
+      }
+
+      .v-filterselect-input-readonly {
+        padding-right: $rightPadding;
+      }
+
+      & [class$="button"]:before {
+        width: $unit-size;
+      }
+    }
+
+    & .v-filterselect-c-searchselect input {
+      padding-right: $rightPadding;
+    }
+
+    & .ie9-input-wrap .v-filterselect [class$="button"],
+    & .v-filterselect [class$="button"],
+    & .c-pickerfield-button.v-button {
+      width: $unit-size;
+      min-width: $unit-size;
 
       &:after,
       &:hover:after {
-        height: $v-unit-size--huge;
+        width: $unit-size;
       }
+    }
+
+    & .c-pickerfield-button.v-button:after {
+      height: $unit-size;
     }
   }
 }

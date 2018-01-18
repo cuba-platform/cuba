@@ -86,8 +86,9 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         if (current != null) {
             WebBrowser browser = current.getWebBrowser();
             if (browser != null
-                    && browser.isIE()
-                    && browser.getBrowserMajorVersion() <= 9) {
+                    && (browser.isIE()
+                    && browser.getBrowserMajorVersion() <= 10
+                    || browser.isSafari())) {
                 ie9InputWrapper = new CssLayout();
                 ie9InputWrapper.setWidth(100, Unit.PERCENTAGE);
                 ie9InputWrapper.setPrimaryStyleName("ie9-input-wrap");
