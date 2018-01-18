@@ -31,7 +31,7 @@
   }
 
   .#{$primary-stylename}-layout > .v-filterselect > input {
-    height: $v-unit-size;
+    height: 100%;
   }
 
   .v-textfield.#{$primary-stylename}-text {
@@ -50,13 +50,38 @@
     }
   }
 
+  .#{$primary-stylename}-layout {
+    & .ie9-input-wrap:first-child input,
+    & .ie9-input-wrap:first-child .v-filterselect,
+    & input:first-child,
+    & .v-filterselect:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .#{$primary-stylename}-layout {
+    & .ie9-input-wrap:only-child input,
+    & .ie9-input-wrap:only-child .v-filterselect,
+    & input:only-child,
+    & .v-filterselect:only-child {
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+    }
+  }
+
   .#{$primary-stylename}-layout > .v-filterselect > input,
-  .#{$primary-stylename}-layout > .c-suggestionfield,
-  .#{$primary-stylename}-layout > .ie9-input-wrap > input,
-  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect,
-  .v-textfield.#{$primary-stylename}-text  {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect > input {
+    padding-right: $v-unit-size + ceil($v-unit-size/6) + ceil($v-border-radius/3);
+
+    &.v-filterselect-input-readonly {
+      padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
+    }
+  }
+
+  .#{$primary-stylename}-layout > .v-filterselect-c-searchselect > input,
+  .#{$primary-stylename}-layout > .ie9-input-wrap > .v-filterselect-c-searchselect > input {
+    padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
   }
 
   .v-button.#{$primary-stylename}-button {
@@ -196,6 +221,10 @@
     }
   }
 
+  .v-sa & .#{$primary-stylename} > .#{$primary-stylename}-layout > .ie9-input-wrap {
+    display: inline-block;
+  }
+
   .#{$primary-stylename}-tiny {
     @include pickerfield-size-style($v-font-size--tiny, $v-unit-size--tiny);
   }
@@ -214,23 +243,39 @@
 }
 
 @mixin pickerfield-size-style($font-size, $unit-size) {
-  font-size: $font-size;
   $rightPadding: ceil($unit-size/6) + ceil($v-border-radius/3);
 
+  .v-sa & .c-pickerfield-layout > .ie9-input-wrap {
+    display: inline-block;
+  }
+
+  height: $unit-size;
+  font-size: $font-size;
+
   & .c-pickerfield-layout {
+    height: 100%;
+
+    & .ie9-input-wrap {
+      height: 100%;
+    }
+
     input,
     & .ie9-input-wrap input,
     & .v-filterselect input {
-      height: $unit-size;
+      height: 100%;
       line-height: normal;
       padding-right: $rightPadding;
     }
 
     & .v-filterselect {
-      height: $unit-size;
+      height: 100%;
 
       input {
         padding-right: $unit-size + $rightPadding;
+      }
+
+      .v-filterselect-input-readonly {
+        padding-right: $rightPadding;
       }
 
       & [class$="button"]:before {
