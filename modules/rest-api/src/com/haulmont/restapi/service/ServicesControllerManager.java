@@ -202,6 +202,7 @@ public class ServicesControllerManager {
     }
 
     protected boolean isEntitiesCollection(Collection collection) {
+        if (collection.isEmpty()) return false;
         for (Object item : collection) {
             if (!(item instanceof Entity)) {
                 return false;
