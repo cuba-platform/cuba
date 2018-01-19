@@ -29,8 +29,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 /**
  * Class to declare a graph of objects that must be retrieved from the database.
  * <p>
@@ -51,18 +49,14 @@ public class View implements Serializable {
      * Parameters object to be used in constructors.
      */
     public static class ViewParams {
-        protected List<View> src = Collections.emptyList();
+        protected View src;
         protected Class<? extends Entity> entityClass;
         protected String name;
         protected boolean includeSystemProperties;
 
         public ViewParams src(View src) {
-            this.src = Collections.singletonList(src);
+            this.src = src;
             return this;
-        }
-
-        public void src(List<View> sources) {
-            this.src = sources;
         }
 
         public ViewParams entityClass(Class<? extends Entity> entityClass) {
@@ -146,36 +140,10 @@ public class View implements Serializable {
                 addProperty(propertyName);
             }
         }
-        List<View> sources = viewParams.src;
-
-        if (isNotEmpty(sources)) {
-            Class<? extends Entity> entityClass = sources.get(0).entityClass;
-
-            if (this.entityClass == null) {
-                this.entityClass = entityClass;
-            }
-
-            for (View view : sources) {
-                putProperties(this.properties, view.getProperties());
-            }
-        }
-    }
-
-    protected void putProperties(Map<String, ViewProperty> thisProperties, Collection<ViewProperty> sourceProperties) {
-        for (ViewProperty sourceProperty : sourceProperties) {
-            String sourcePropertyName = sourceProperty.getName();
-
-            if (thisProperties.containsKey(sourcePropertyName)) {
-                View sourcePropertyView = sourceProperty.getView();
-
-                if (sourcePropertyView != null && isNotEmpty(sourcePropertyView.getProperties())) {
-
-                    Map<String, ViewProperty> thisViewProperties = thisProperties.get(sourcePropertyName).getView().properties;
-                    putProperties(thisViewProperties, sourcePropertyView.getProperties());
-                }
-
-            } else {
-                thisProperties.put(sourceProperty.getName(), sourceProperty);
+        if (viewParams.src != null) {
+            this.properties.putAll(viewParams.src.properties);
+            if (entityClass == null) {
+                this.entityClass = viewParams.src.entityClass;
             }
         }
     }

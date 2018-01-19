@@ -30,26 +30,4 @@
         <property name="detail" view="_local"/>
     </view>
 
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="detailAndDetails" extends="withDetail, withDetails"/>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity" name="embeddable" extends="_local">
-        <property name="embeddable" view="_local"/>
-    </view>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity" name="parts" extends="_local">
-        <property name="parts" view="_local"/>
-    </view>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity" name="intersectViewOne" extends="embeddable,withParts"/>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="withDetailEmbeddable" extends="_local">
-        <property name="detail" view="embeddable"/>
-    </view>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="withDetailParts" extends="_local">
-        <property name="detail" view="parts"/>
-    </view>
-
-    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="intersectViewTwo" extends="withDetailEmbeddable,withDetailParts"/>
-
 </views>
