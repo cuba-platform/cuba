@@ -268,6 +268,8 @@ public class PersistenceTools {
                         }
                     }
                     return RefId.create(property, value);
+                } else {
+                    return RefId.create(property, null);
                 }
             }
             return RefId.createNotLoaded(property);
