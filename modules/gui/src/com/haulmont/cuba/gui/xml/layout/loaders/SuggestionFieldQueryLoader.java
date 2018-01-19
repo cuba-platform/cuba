@@ -43,6 +43,8 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
 
             String searchFormat = queryElement.attributeValue("searchStringFormat");
 
+            String view = queryElement.attributeValue("view");
+
             String escapeValueForLike = queryElement.attributeValue("escapeValueForLike");
             if (StringUtils.isNotEmpty(escapeValueForLike)) {
                 escapeValue = Boolean.valueOf(escapeValueForLike);
@@ -60,9 +62,14 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
                     }
                     searchString = applySearchFormat(searchString, searchFormat);
 
-                    return supplier.loadList(LoadContext.create(entityClass)
-                            .setQuery(LoadContext.createQuery(stringQuery)
-                                    .setParameter("searchString", searchString)));
+                    LoadContext loadContext = LoadContext.create(entityClass);
+                    if (StringUtils.isNotEmpty(view)) {
+                        loadContext.setView(view);
+                    }
+                    loadContext.setQuery(LoadContext.createQuery(stringQuery).setParameter("searchString", searchString));
+
+                    //noinspection unchecked
+                    return supplier.loadList(loadContext);
                 });
             } else {
                 throw new GuiDevelopmentException(String.format("Field 'entityClass' is empty in component %s.",
