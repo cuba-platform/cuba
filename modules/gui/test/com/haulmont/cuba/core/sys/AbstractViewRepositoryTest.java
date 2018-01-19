@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,10 +30,12 @@ import java.util.Collection;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class AbstractViewRepositoryTest extends CubaClientTestCase {
 
     private MetaClass testMasterEntity;
+    private MetaClass testDetailEntity;
 
     @Before
     public void setUp() {
@@ -40,6 +44,7 @@ public class AbstractViewRepositoryTest extends CubaClientTestCase {
         setupInfrastructure();
 
         testMasterEntity = metadata.getClassNN(TestMasterEntity.class);
+        testDetailEntity = metadata.getClassNN(TestDetailEntity.class);
     }
 
     @Test
@@ -58,5 +63,30 @@ public class AbstractViewRepositoryTest extends CubaClientTestCase {
 
         assertNotNull(metadata.getViewRepository().getView(testMasterEntity, View.LOCAL));
         assertNotNull(metadata.getViewRepository().getView(testMasterEntity, View.MINIMAL));
+    }
+
+    @Test
+    public void notIntersectPropertiesExtendedViews() {
+        View view = metadata.getViewRepository().getView(testMasterEntity, "detailAndDetails");
+        assertNotNull(view);
+        assertTrue(view.containsProperty("detail"));
+        assertTrue(view.containsProperty("details"));
+    }
+
+    @Test
+    public void intersectPropertiesExtendedViewsOneLevel() {
+        View view = metadata.getViewRepository().getView(testDetailEntity, "intersectViewOne");
+        assertTrue(view.containsProperty("embeddable"));
+        assertTrue(view.containsProperty("parts"));
+    }
+
+    @Test
+    public void intersectPropertiesExtendedViewsTwoLevel() {
+        View view = metadata.getViewRepository().getView(testMasterEntity, "intersectViewTwo");
+        assertTrue(view.containsProperty("detail"));
+
+        ViewProperty detail = view.getProperty("detail");
+        assertTrue(detail.getView().containsProperty("embeddable"));
+        assertTrue(detail.getView().containsProperty("parts"));
     }
 }
