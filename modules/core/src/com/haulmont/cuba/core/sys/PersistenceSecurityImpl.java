@@ -63,6 +63,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     @Inject
     protected AttributeSecuritySupport attributeSecuritySupport;
 
+    @Inject
+    protected EntityStates entityStates;
+
     @Override
     public boolean applyConstraints(Query query) {
         QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
@@ -210,11 +213,16 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
-    public void checkSecurityToken(Entity entity) {
+    public void checkSecurityToken(Entity entity, View view) {
         if (BaseEntityInternalAccess.getSecurityToken(entity) == null) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (metaProperty.getRange().isClass()) {
+                if (metaProperty.getRange().isClass() && metadataTools.isPersistent(metaProperty)) {
+                    if (entityStates.isDetached(entity) && !entityStates.isLoaded(entity, metaProperty.getName())) {
+                        continue;
+                    } else if (view != null && !view.containsProperty(metaProperty.getName())) {
+                        continue;
+                    }
                     List<ConstraintData> existingConstraints = getConstraints(metaProperty.getRange().asClass(),
                             constraint -> constraint.getCheckType().memory());
                     if (CollectionUtils.isNotEmpty(existingConstraints)) {
