@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.View;
 
 import java.util.Collection;
 
@@ -101,8 +101,10 @@ public interface PersistenceSecurity extends Security {
     /**
      * Validate that security token exists for specific cases.
      * For example, security constraints exists
+     * @param entity - entity to check security token
+     * @param view - view for entity
      */
-    void checkSecurityToken(Entity entity);
+    void checkSecurityToken(Entity entity, View view);
 
     /**
      * Calculate filtered data
