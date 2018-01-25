@@ -77,4 +77,14 @@
     @include opacity($v-disabled-opacity);
     pointer-events: none;
   }
+
+  .#{$primary-stylename}-empty {
+    &:after {
+      content: attr(empty-data-message);
+    }
+
+    > * {
+      display: none;
+    }
+  }
 }
