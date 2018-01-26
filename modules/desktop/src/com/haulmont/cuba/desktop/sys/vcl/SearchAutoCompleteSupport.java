@@ -1942,7 +1942,11 @@ public final class SearchAutoCompleteSupport<E> {
             // editor's Document in any way, and also unregister the ActionListeners temporarily.
             if (e.getKeyChar() == KeyEvent.VK_ENTER) {
                 doNotChangeDocument = true;
-                this.actionListeners = unregisterAllActionListeners(comboBox);
+
+                ActionListener[] listeners = unregisterAllActionListeners(comboBox);
+                if (listeners.length > 0 && this.actionListeners == null) {
+                    this.actionListeners = listeners;
+                }
             }
 
             // make sure this backspace key does not modify our comboBoxEditorComponent's Document
