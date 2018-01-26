@@ -71,12 +71,13 @@ public class DesktopToolTipManager extends MouseAdapter {
         closeTimer = new Timer(CLOSE_TIME, null);
         closeTimer.setRepeats(false);
         closeTimer.addActionListener(e -> {
-            window.hide();
-            window = null;
-            tooltipShowing = false;
-            toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
-            component.removeMouseListener(DesktopToolTipManager.this);
-
+            if (window != null) {
+                window.hide();
+                window = null;
+                tooltipShowing = false;
+                toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
+                component.removeMouseListener(DesktopToolTipManager.this);
+            }
         });
 
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
