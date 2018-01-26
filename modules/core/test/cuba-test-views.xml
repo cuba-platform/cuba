@@ -13,4 +13,17 @@
                   view="_minimal"/>
         <property name="activeVersion" view="_minimal"/>
     </view>
+
+    <view entity="test$Many2Many_FetchSame1"
+          extends="_local"
+          name="Many2Many_FetchSame1-view">
+        <property name="many2"
+                  view="_minimal">
+            <property name="many1"
+                      view="_minimal">
+                <property name="many2"
+                          view="_minimal"/>
+            </property>
+        </property>
+    </view>
 </views>

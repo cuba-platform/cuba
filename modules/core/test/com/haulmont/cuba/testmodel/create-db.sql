@@ -659,3 +659,41 @@ create index IDX_TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION_PARENT on TEST_SEVERAL
 -- end TEST_SEVERAL_FETCH_GROUPS_TARIFF_VERSION
 
 ------------------------------------------------------------------------------------------------------------------------
+create table TEST_MANY2_MANY_FETCH_SAME1 (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TEST_MANY2_MANY_FETCH_SAME1
+-- begin TEST_MANY2_MANY_FETCH_SAME2
+create table TEST_MANY2_MANY_FETCH_SAME2 (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TEST_MANY2_MANY_FETCH_SAME2
+-- begin TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK
+create table TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK (
+    MANY2_MANY__FETCH_SAME2_ID varchar(36) not null,
+    MANY2_MANY__FETCH_SAME1_ID varchar(36) not null,
+    primary key (MANY2_MANY__FETCH_SAME2_ID, MANY2_MANY__FETCH_SAME1_ID)
+)^
+
