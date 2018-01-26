@@ -96,7 +96,9 @@ public class SessionMessagesNotifier {
                 @Override
                 protected void done() {
                     try {
-                        processServerMessage(get());
+                        if (!isCancelled()) {
+                            processServerMessage(get());
+                        }
                     } catch (InterruptedException | ExecutionException ignored) {
                         // do nothing
                     } finally {
