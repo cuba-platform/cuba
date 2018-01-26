@@ -50,13 +50,21 @@
     select.pvtAttrDropdown,
     .pvtAxisContainer li span.pvtAttr {
       @include valo-nativeselect-select-style;
+      &:focus {
+        border-color: $v-focus-color;
+      }
     }
 
+    .pvtUi > tbody > tr > td:first-child,
     .pvtAxisContainer, .pvtVals,
     table.pvtTable thead tr th,
     table.pvtTable tbody tr th {
       $bg-lightness: if(color-luminance($background-color) < 10, 4%, -4%);
       background-color: scale-color($background-color, $lightness: $bg-lightness);
+    }
+
+    .pvtUi > tbody > tr:first-child > td:first-child {
+      border: 1px solid gray;
     }
 
     .pvtAxisContainer li.pvtPlaceholder,
@@ -76,6 +84,42 @@
   .#{$primary-stylename}.v-disabled {
     @include opacity($v-disabled-opacity);
     pointer-events: none;
+  }
+
+  select.pvtRenderer {
+    width: 100%;
+  }
+
+  .pvtFilterBox {
+    button {
+      @include valo-button-static-style;
+      @include valo-button-style($font-color: $v-button-font-color);
+    }
+
+    input[type="text"] {
+      @include valo-textfield-style;
+      width: $v-default-field-width;
+      box-sizing: border-box;
+    }
+
+    p > button {
+      margin: 0 $v-layout-spacing-horizontal/2 $v-layout-spacing-vertical $v-layout-spacing-horizontal/2;
+    }
+  }
+
+  select.pvtAttrDropdown {
+    margin: $v-layout-spacing-vertical $v-layout-spacing-horizontal/2 0 $v-layout-spacing-horizontal/2;
+  }
+
+  .pvtAxisContainer li {
+    padding-left: $v-layout-spacing-horizontal/2;
+    padding-right: $v-layout-spacing-horizontal/2;
+  }
+
+  .pvtUi > tbody > tr:first-child > td:first-child,
+  .pvtAxisContainer,
+  .pvtVals {
+    padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
   }
 
   .#{$primary-stylename}-empty {
