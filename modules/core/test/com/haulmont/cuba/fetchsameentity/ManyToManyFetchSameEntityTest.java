@@ -25,7 +25,6 @@ import com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
