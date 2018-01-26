@@ -21,6 +21,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -216,6 +217,30 @@ public class FetchGroupManager {
                 }
             }
 
+            //Find many-to-many fields with cycle loading same: {E}.b.a.b, where b of type {E}.
+            //If {E}.b BATCH, {E}.b.a BATCH and {E}.b.a.b BATCH then same query used simultaneously
+            //while loading {E}.b and {E}.b.a.b, so result of batch query is incorrect.
+            //Remove this fields from BATCH processing
+            for (FetchGroupField refField : refFields) {
+                if (refField.fetchMode == FetchMode.AUTO &&
+                        refField.metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY) {
+                    //find property {E}.a.b for {E}.a where b of type {E}
+                    List<FetchGroupField> selfRefs = refFields.stream()
+                            .filter(f -> isTransitiveSelfReference(refField, f))
+                            .collect(Collectors.toList());
+                    for (FetchGroupField selfRef: selfRefs) {
+                        List<FetchGroupField> secondLevelSelfRefs = refFields.stream()
+                                .filter(f -> isTransitiveSelfReference(selfRef, f))
+                                .collect(Collectors.toList());
+                        for (FetchGroupField f : secondLevelSelfRefs) {
+                            batchFields.remove(f);
+                            batchFields.remove(selfRef);
+                            batchFields.remove(refField);
+                        }
+                    }
+                }
+            }
+
             for (FetchGroupField joinField : joinFields) {
                 String attr = alias + "." + joinField.path();
                 fetchHints.put(attr, QueryHints.LEFT_FETCH);
@@ -253,6 +278,15 @@ public class FetchGroupManager {
         if (hasBatches) {
             query.setHint(QueryHints.BATCH_TYPE, "IN");
         }
+    }
+
+    private boolean isTransitiveSelfReference(FetchGroupField root, FetchGroupField current) {
+        return root != current
+                && current.fetchMode == FetchMode.AUTO
+                && current.metaPropertyPath.startsWith(root.metaPropertyPath)
+                && current.metaProperty.getRange().isClass()
+                && current.metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY
+                && Objects.equals(current.metaProperty.getRange().asClass(), root.metaClass);
     }
 
     private List<String> getMasterEntityAttributes(Set<FetchGroupField> fetchGroupFields,

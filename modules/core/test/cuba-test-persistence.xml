@@ -68,5 +68,8 @@
         <class>com.haulmont.cuba.testmodel.severalfetchgroups.SeveralFetchGroups_Tariff</class>
         <class>com.haulmont.cuba.testmodel.severalfetchgroups.SeveralFetchGroups_TariffVersion</class>
 
+        <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame1</class>
+        <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame2</class>
+
     </persistence-unit>
 </persistence>
