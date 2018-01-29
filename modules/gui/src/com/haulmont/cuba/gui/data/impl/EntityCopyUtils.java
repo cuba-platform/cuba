@@ -90,7 +90,7 @@ public class EntityCopyUtils {
                     if (cause == null)
                         cause = e;
                     // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalStateException))
+                    if (!isNotLoadedAttributeException(cause))
                         throw e;
                 }
             }
@@ -127,10 +127,16 @@ public class EntityCopyUtils {
                     if (cause == null)
                         cause = e;
                     // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalStateException))
+                    if (!isNotLoadedAttributeException(cause))
                         throw e;
                 }
             }
         }
+    }
+
+    private static boolean isNotLoadedAttributeException(Throwable e) {
+        return e instanceof IllegalStateException
+                || e instanceof org.eclipse.persistence.exceptions.ValidationException && e.getMessage() != null
+                && e.getMessage().contains("An attempt was made to traverse a relationship using indirection that had a null Session");
     }
 }
