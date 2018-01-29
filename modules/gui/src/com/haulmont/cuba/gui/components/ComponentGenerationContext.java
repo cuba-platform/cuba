@@ -24,8 +24,8 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 
 /**
- * A class that stores information that can be used to create
- * a component by the {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}.
+ * A class which stores information that can be used
+ * when creating a component by the {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}.
  */
 public class ComponentGenerationContext {
     protected MetaClass metaClass;
@@ -36,10 +36,10 @@ public class ComponentGenerationContext {
     protected Class componentClass;
 
     /**
-     * Creates an instance of MetaContext.
+     * Creates an instance of ComponentGenerationContext.
      *
-     * @param metaClass an instance of {@link MetaClass} for which a component should be created
-     * @param property  a property of meta class for which a component should be created
+     * @param metaClass the entity for which the component is created
+     * @param property  the entity attribute for which the component is created
      */
     public ComponentGenerationContext(MetaClass metaClass, String property) {
         this.metaClass = metaClass;
@@ -47,16 +47,16 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * @return an instance of {@link MetaClass} for which a component should be created
+     * @return the entity for which the component is created
      */
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     /**
-     * Sets an instance of {@link MetaClass} for which a component should be created, using fluent API method.
+     * Sets the entity for which the component is created, using fluent API method.
      *
-     * @param metaClass an instance of {@link MetaClass} for which a component should be created
+     * @param metaClass the entity for which the component is created
      * @return this object
      */
     public ComponentGenerationContext setMetaClass(MetaClass metaClass) {
@@ -65,16 +65,16 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * @return a property of meta class for which a component should be created
+     * @return the entity attribute for which the component is created
      */
     public String getProperty() {
         return property;
     }
 
     /**
-     * Sets a property of meta class for which a component should be created, using fluent API method.
+     * Sets the entity attribute for which the component is created, using fluent API method.
      *
-     * @param property a property of meta class for which a component should be created
+     * @param property the entity attribute for which the component is created
      * @return this object
      */
     public ComponentGenerationContext setProperty(String property) {
@@ -91,9 +91,9 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * Sets a datasource that can be used to create the component, using fluent API method.
+     * Sets a datasource, using fluent API method.
      *
-     * @param datasource a datasource that can be used to create the component
+     * @param datasource a datasource
      * @return this object
      */
     public ComponentGenerationContext setDatasource(Datasource datasource) {
@@ -102,7 +102,7 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * @return a datasource that can be used as optional to create the component
+     * @return a datasource that can be used to show options
      */
     @Nullable
     public CollectionDatasource getOptionsDatasource() {
@@ -110,7 +110,7 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * Sets a datasource that can be used as optional to create the component, using fluent API method.
+     * Sets a datasource that can be used to show options, using fluent API method.
      *
      * @param optionsDatasource a datasource that can be used as optional to create the component
      * @return this object
@@ -140,7 +140,7 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * @return a component class for which a component should be created
+     * @return a component class for which a component is created
      */
     @Nullable
     public Class getComponentClass() {
@@ -148,9 +148,9 @@ public class ComponentGenerationContext {
     }
 
     /**
-     * Sets a component class for which a component should be created, using fluent API method.
+     * Sets a component class for which a component is created, using fluent API method.
      *
-     * @param componentClass a component class for which a component should be created
+     * @param componentClass a component class for which a component is created
      * @return this object
      */
     public ComponentGenerationContext setComponentClass(Class componentClass) {

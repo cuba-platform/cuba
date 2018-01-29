@@ -50,10 +50,10 @@ public interface ComponentsFactory {
     /**
      * Creates a component according to the given {@link ComponentGenerationContext}.
      * <p>
-     * Trying to find {@link ComponentGenerationStrategy} realisations. If at least one strategy exists, then:
+     * Trying to find {@link ComponentGenerationStrategy} implementations. If at least one strategy exists, then:
      * <ol>
      * <li>Iterates over strategies according to the {@link org.springframework.core.Ordered} interface.</li>
-     * <li>The first not {@code null} component will be returned.</li>
+     * <li>Returns the first created not {@code null} component.</li>
      * </ol>
      *
      * @param context the {@link ComponentGenerationContext} instance
