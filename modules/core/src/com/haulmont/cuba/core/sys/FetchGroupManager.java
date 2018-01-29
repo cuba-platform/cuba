@@ -187,15 +187,18 @@ public class FetchGroupManager {
 
             QueryParser parser = QueryTransformerFactory.createParser(queryString);
 
-            for (Iterator<FetchGroupField> fieldIt = joinFields.iterator(); fieldIt.hasNext(); ) {
-                FetchGroupField joinField = fieldIt.next();
-                if (joinField.fetchMode == FetchMode.AUTO && parser.hasIsNullCondition(joinField.path())) {
-                    fieldIt.remove();
-                    for (Iterator<String> attrIt = fetchGroupAttributes.iterator(); attrIt.hasNext(); ) {
-                        String attribute = attrIt.next();
-                        if (attribute.startsWith(joinField.path() + ".")) {
-                            attrIt.remove();
-                        }
+            List<FetchGroupField> isNullFields = joinFields.stream()
+                    .filter(f -> f.fetchMode == FetchMode.AUTO && parser.hasIsNullCondition(f.path()))
+                    .collect(Collectors.toList());
+            if (!isNullFields.isEmpty()) {
+                for (Iterator<FetchGroupField> fieldIt = joinFields.iterator(); fieldIt.hasNext(); ) {
+                    FetchGroupField joinField = fieldIt.next();
+                    boolean isNullField =  isNullFields.stream()
+                            .anyMatch(f -> joinField == f || f.fetchMode == FetchMode.AUTO
+                                    && joinField.metaPropertyPath.startsWith(f.metaPropertyPath));
+                    if (isNullField) {
+                        fieldIt.remove();
+                        fetchGroupAttributes.removeIf(attr -> attr.startsWith(joinField.path() + "."));
                     }
                 }
             }
