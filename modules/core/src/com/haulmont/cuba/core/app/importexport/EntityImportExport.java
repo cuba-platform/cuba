@@ -276,18 +276,18 @@ public class EntityImportExport implements EntityImportExportAPI {
                                   CommitContext commitContext,
                                   Collection<ReferenceInfo> referenceInfoList) {
         MetaClass metaClass = srcEntity.getMetaClass();
-        boolean isNew = false;
+        boolean createOp = false;
         if (dstEntity == null) {
             dstEntity = metadata.create(metaClass);
             dstEntity.setValue("id", srcEntity.getId());
-            isNew = true;
+            createOp = true;
         }
 
         //we must specify a view here because otherwise we may get UnfetchedAttributeException during merge
         commitContext.addInstanceToCommit(dstEntity, regularView);
 
         SecurityState securityState = null;
-        if (srcEntity instanceof BaseGenericIdEntity && !isNew) {
+        if (srcEntity instanceof BaseGenericIdEntity && !createOp) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
@@ -313,19 +313,19 @@ public class EntityImportExport implements EntityImportExportAPI {
                 View regularPropertyView = regularView.getProperty(propertyName) != null ? regularView.getProperty(propertyName).getView() : null;
                 if (metadata.getTools().isEmbedded(metaProperty)) {
                     if (importViewProperty.getView() != null) {
-                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
                         dstEntity.setValue(propertyName, embeddedEntity);
                     }
                 } else {
                     switch (metaProperty.getRange().getCardinality()) {
                         case MANY_TO_MANY:
-                            importManyToManyCollectionAttribute(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                            importManyToManyCollectionAttribute(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
                             break;
                         case ONE_TO_MANY:
                             importOneToManyCollectionAttribute(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
                             break;
                         default:
-                            importReference(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                            importReference(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
                     }
                 }
             }
@@ -344,6 +344,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected void importReference(Entity srcEntity,
                                    Entity dstEntity,
+                                   boolean createOp,
                                    EntityImportViewProperty importViewProperty,
                                    View regularView,
                                    CommitContext commitContext,
@@ -351,7 +352,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         Entity srcPropertyValue = srcEntity.<Entity>getValue(importViewProperty.getName());
         Entity dstPropertyValue = dstEntity.<Entity>getValue(importViewProperty.getName());
         if (importViewProperty.getView() == null) {
-            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue, dstPropertyValue);
+            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, createOp, importViewProperty, srcPropertyValue, dstPropertyValue);
             referenceInfoList.add(referenceInfo);
         } else {
             dstPropertyValue = importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList);
@@ -429,6 +430,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected void importManyToManyCollectionAttribute(Entity srcEntity,
                                                        Entity dstEntity,
+                                                       boolean createOp,
                                                        EntityImportViewProperty importViewProperty,
                                                        View regularView,
                                                        CommitContext commitContext,
@@ -471,13 +473,14 @@ public class EntityImportExport implements EntityImportExportAPI {
         } else {
             //create ReferenceInfo objects - they will be parsed later
             Collection<Entity> existingCollectionValue = dstEntity.getValue(importViewProperty.getName());
-            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue, existingCollectionValue);
+            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, createOp, importViewProperty, srcPropertyValue, existingCollectionValue);
             referenceInfoList.add(referenceInfo);
         }
     }
 
     protected Entity importEmbeddedAttribute(Entity srcEntity,
                                              Entity dstEntity,
+                                             boolean createOp,
                                              EntityImportViewProperty importViewProperty,
                                              View regularView,
                                              CommitContext commitContext,
@@ -495,7 +498,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         SecurityState securityState = null;
-        if (srcEntity instanceof BaseGenericIdEntity) {
+        if (srcEntity instanceof BaseGenericIdEntity && !createOp) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
@@ -521,9 +524,9 @@ public class EntityImportExport implements EntityImportExportAPI {
                 if (metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY) {
                     importOneToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList);
                 } else if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY) {
-                    importManyToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList);
+                    importManyToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, false, vp, propertyRegularView, commitContext, referenceInfoList);
                 } else {
-                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList);
+                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, false, vp, propertyRegularView, commitContext, referenceInfoList);
                 }
             }
         }
@@ -596,7 +599,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             //row-level security works only for entities from RdbmsStore
             String storeName = metadata.getTools().getStoreName(entity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
-            if (dataStore instanceof RdbmsStore) {
+            if (dataStore instanceof RdbmsStore && !referenceInfo.isCreateOp()) {
                 //restore filtered data, otherwise they will be lost
                 try (Transaction tx = persistence.getTransaction()) {
                     persistenceSecurity.checkSecurityToken((BaseGenericIdEntity<?>) entity, null);
@@ -680,21 +683,17 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected class ReferenceInfo {
         protected Entity entity;
+        protected boolean createOp;
         protected EntityImportViewProperty viewProperty;
         protected Object propertyValue;
         protected Object prevPropertyValue;
 
-        public ReferenceInfo(Entity entity, EntityImportViewProperty viewProperty, Object propertyValue) {
-            this.entity = entity;
-            this.viewProperty = viewProperty;
-            this.propertyValue = propertyValue;
-        }
-
-        public ReferenceInfo(Entity entity, EntityImportViewProperty viewProperty, Object propertyValue, Object prevPropertyValue) {
+        public ReferenceInfo(Entity entity, boolean createOp, EntityImportViewProperty viewProperty, Object propertyValue, Object prevPropertyValue) {
             this.entity = entity;
             this.viewProperty = viewProperty;
             this.propertyValue = propertyValue;
             this.prevPropertyValue = prevPropertyValue;
+            this.createOp = createOp;
         }
 
         public EntityImportViewProperty getViewProperty() {
@@ -711,6 +710,10 @@ public class EntityImportExport implements EntityImportExportAPI {
 
         public Object getPropertyValue() {
             return propertyValue;
+        }
+
+        public boolean isCreateOp() {
+            return createOp;
         }
     }
 }
