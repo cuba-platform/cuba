@@ -88,14 +88,18 @@ public class CubaVaadinServletService extends VaadinServletService {
             WrappedSession wrappedSession = event.getSession().getSession();
             wrappedSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
 
-            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ? ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ?
+                    ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+
             log.debug("HttpSession {} initialized, timeout={}sec",
                     httpSession, wrappedSession.getMaxInactiveInterval());
         });
 
         addSessionDestroyListener(event -> {
             WrappedSession wrappedSession = event.getSession().getSession();
-            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ? ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ?
+                    ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+
             log.debug("HttpSession destroyed: {}", httpSession);
             App app = event.getSession().getAttribute(App.class);
             if (app != null) {
@@ -180,12 +184,15 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(new CubaHeartbeatHandler());
             } else if (handler instanceof FileUploadHandler) {
                 // add support for jquery file upload
-                cubaRequestHandlers.add(new FileUploadHandler());
+                cubaRequestHandlers.add(handler);
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
             } else if (handler instanceof ServletUIInitHandler) {
                 cubaRequestHandlers.add(new CubaServletUIInitHandler());
             } else if (handler instanceof PushRequestHandler) {
-                cubaRequestHandlers.add(new CubaPushRequestHandler(this));
+                PushHandler pushHandler = ((PushRequestHandler) handler).getPushHandler();
+                pushHandler.setLongPollingSuspendTimeout(webConfig.getPushLongPollingSuspendTimeoutMs());
+
+                cubaRequestHandlers.add(handler);
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -372,20 +379,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                 log.trace("Initial UIDL: {}", initialUIDL);
                 return initialUIDL;
             }
-        }
-    }
-
-    protected static class CubaPushRequestHandler extends PushRequestHandler {
-        public CubaPushRequestHandler(VaadinServletService service) throws ServiceException {
-            super(service);
-        }
-
-        @Override
-        protected int getPushLongPollingSuspendTimeout() {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            WebConfig webConfig = configuration.getConfig(WebConfig.class);
-
-            return webConfig.getPushLongPollingSuspendTimeoutMs();
         }
     }
 }
