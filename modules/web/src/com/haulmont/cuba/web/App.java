@@ -358,6 +358,9 @@ public abstract class App {
         if (vSession == null) {
             throw new IllegalStateException("No VaadinSession found");
         }
+        if (!vSession.hasLock()) {
+            throw new IllegalStateException("VaadinSession is not owned by the current thread");
+        }
         App app = vSession.getAttribute(App.class);
         if (app == null) {
             throw new IllegalStateException("No App is bound to the current VaadinSession");
