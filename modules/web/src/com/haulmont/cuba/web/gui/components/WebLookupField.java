@@ -194,6 +194,11 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             }
 
             if (optionsDatasource != null) {
+                if (value != null && !(value instanceof Entity)) {
+                    throw new IllegalStateException(String.format(
+                            "Attempting to set non-entity value '%s' to LookupField with optionsDatasource for attribute '%s'",
+                            value, getMetaProperty().getName()));
+                }
                 //noinspection unchecked
                 optionsDatasource.setItem((Entity) value);
             }
