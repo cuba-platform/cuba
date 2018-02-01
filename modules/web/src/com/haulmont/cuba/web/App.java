@@ -370,7 +370,9 @@ public abstract class App {
      */
     public static boolean isBound() {
         VaadinSession vSession = VaadinSession.getCurrent();
-        return vSession != null && vSession.getAttribute(App.class) != null;
+        return vSession != null
+                && vSession.hasLock()
+                && vSession.getAttribute(App.class) != null;
     }
 
     /**
