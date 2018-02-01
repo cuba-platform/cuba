@@ -81,6 +81,9 @@ public class MetadataTest {
 
         // User
         MetaClass metaClass = cont.metadata().getSession().getClassNN(User.class);
+        assertTrue(tools.isPersistent(metaClass.getPropertyNN("id")));
+        assertTrue(tools.isPersistent(metaClass, metaClass.getPropertyNN("id")));
+        assertTrue(tools.isPersistent(metaClass.getPropertyNN("createTs")));
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("login")));
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("group")));
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("userRoles")));
@@ -98,10 +101,17 @@ public class MetadataTest {
 
         // UserSessionEntity
         metaClass = cont.metadata().getSession().getClassNN(UserSessionEntity.class);
+        assertTrue(tools.isPersistent(metaClass.getPropertyNN("id"))); // see JavaDocs on isPersistent() for the reason
+        assertTrue(tools.isNotPersistent(metaClass, metaClass.getPropertyNN("id")));
+        assertTrue(tools.isNotPersistent(metadata.create(metaClass), "id"));
         assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("login")));
+        assertTrue(tools.isNotPersistent(metaClass, metaClass.getPropertyNN("login")));
 
         // TestTransientEntity
         metaClass = cont.metadata().getSession().getClassNN(TestNotPersistentEntity.class);
+        assertTrue(tools.isPersistent(metaClass.getPropertyNN("id"))); // see JavaDocs on isPersistent() for the reason
+        assertTrue(tools.isNotPersistent(metaClass, metaClass.getPropertyNN("id")));
+        assertTrue(tools.isNotPersistent(metadata.create(metaClass), "id"));
         assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("name")));
         assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("info")));
         assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("embeddedRef")));

@@ -95,6 +95,27 @@ public class MetaModelLoader {
             }
         }
 
+
+        for (Map.Entry<Class<?>, Boolean> entry : classes.entrySet()) {
+            Class<?> aClass = entry.getKey();
+            if (aClass.getName().startsWith(rootPackage)) {
+                MetaClassImpl metaClass = createClass(aClass, rootPackage);
+                if (metaClass == null) {
+                    log.warn("Class {} is not loaded into metadata", aClass.getName());
+                }
+            } else {
+                log.warn("Class {} is not under root package {} and will not be included to metadata", aClass.getName(), rootPackage);
+            }
+        }
+
+        for (Map.Entry<Class<?>, Boolean> entry : classes.entrySet()) {
+            Class<?> aClass = entry.getKey();
+            MetaClassImpl metaClass = (MetaClassImpl) session.getClass(aClass);
+            if (metaClass != null) {
+                onClassLoaded(metaClass, aClass, entry.getValue());
+            }
+        }
+
         List<RangeInitTask> tasks = new ArrayList<>();
         for (Map.Entry<Class<?>, Boolean> entry : classes.entrySet()) {
             Class<?> aClass = entry.getKey();
@@ -116,8 +137,8 @@ public class MetaModelLoader {
     }
 
     @Nullable
-    protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz, boolean persistent) {
-        MetaClassImpl metaClass = createClass(clazz, packageName, persistent);
+    protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> javaClass, boolean persistent) {
+        MetaClassImpl metaClass = (MetaClassImpl) session.getClass(javaClass);
         if (metaClass == null)
             return null;
 
@@ -128,17 +149,45 @@ public class MetaModelLoader {
             initProperties(ancestor.getJavaClass(), ((MetaClassImpl) ancestor), tasks);
         }
 
-        initProperties(clazz, metaClass, tasks);
+        initProperties(javaClass, metaClass, tasks);
 
         return new MetadataObjectInfo<>(metaClass, tasks);
     }
 
-    protected MetaClassImpl createClass(Class<?> javaClass, String packageName, boolean persistent) {
+    @Nullable
+    protected MetaClassImpl createClass(Class<?> javaClass, String packageName) {
         if (AbstractInstance.class.equals(javaClass) || Object.class.equals(javaClass)) {
             return null;
         }
 
-        javax.persistence.Entity entityAnnotation = javaClass.getAnnotation(javax.persistence.Entity.class);
+        MetaClassImpl metaClass = (MetaClassImpl) session.getClass(javaClass);
+        if (metaClass != null) {
+            return metaClass;
+
+        } else if (packageName == null || javaClass.getName().startsWith(packageName)) {
+            String name = getMetaClassName(javaClass);
+            if (name == null)
+                return null;
+
+            metaClass = createClassInModel(packageName, name);
+            metaClass.setJavaClass(javaClass);
+
+            Class<?> ancestor = javaClass.getSuperclass();
+            if (ancestor != null) {
+                MetaClass ancestorClass = createClass(ancestor, packageName);
+                if (ancestorClass != null) {
+                    metaClass.addAncestor(ancestorClass);
+                }
+            }
+
+            return metaClass;
+        } else {
+            return null;
+        }
+    }
+
+    protected String getMetaClassName(Class<?> javaClass) {
+        Entity entityAnnotation = javaClass.getAnnotation(Entity.class);
         MappedSuperclass mappedSuperclassAnnotation = javaClass.getAnnotation(MappedSuperclass.class);
 
         com.haulmont.chile.core.annotations.MetaClass metaClassAnnotation = javaClass.getAnnotation(com.haulmont.chile.core.annotations.MetaClass.class);
@@ -150,38 +199,17 @@ public class MetaModelLoader {
             return null;
         }
 
-        String className = null;
+        String name = null;
         if (entityAnnotation != null) {
-            className = entityAnnotation.name();
+            name = entityAnnotation.name();
         } else if (metaClassAnnotation != null) {
-            className = metaClassAnnotation.name();
+            name = metaClassAnnotation.name();
         }
 
-        if (StringUtils.isEmpty(className)) {
-            className = javaClass.getSimpleName();
+        if (StringUtils.isEmpty(name)) {
+            name = javaClass.getSimpleName();
         }
-
-        MetaClassImpl metaClass = (MetaClassImpl) session.getClass(javaClass);
-        if (metaClass != null) {
-            return metaClass;
-        } else if (packageName == null || javaClass.getName().startsWith(packageName)) {
-            metaClass = createClassInModel(packageName, className);
-            metaClass.setJavaClass(javaClass);
-
-            Class<?> ancestor = javaClass.getSuperclass();
-            if (ancestor != null) {
-                MetaClass ancestorClass = createClass(ancestor, packageName, persistent);
-                if (ancestorClass != null) {
-                    metaClass.addAncestor(ancestorClass);
-                }
-            }
-
-            onClassLoaded(metaClass, javaClass, persistent);
-
-            return metaClass;
-        } else {
-            return null;
-        }
+        return name;
     }
 
     protected void onClassLoaded(MetaClass metaClass, Class<?> javaClass, boolean persistent) {
@@ -500,7 +528,7 @@ public class MetaModelLoader {
 
         boolean superMandatory = (metaPropertyAnnotation != null && metaPropertyAnnotation.mandatory())
                 || (field.getAnnotation(NotNull.class) != null
-                    && isDefinedForDefaultValidationGroup(field.getAnnotation(NotNull.class)));  // @NotNull without groups
+                && isDefinedForDefaultValidationGroup(field.getAnnotation(NotNull.class)));  // @NotNull without groups
 
         return (columnAnnotation != null && !columnAnnotation.nullable())
                 || (oneToOneAnnotation != null && !oneToOneAnnotation.optional())
@@ -774,12 +802,7 @@ public class MetaModelLoader {
             return new MetadataObjectInfo<>(new EnumerationRange(new EnumerationImpl(type)));
 
         } else {
-            MetaClassImpl rangeClass = (MetaClassImpl) session.getClass(type);
-            if (rangeClass != null) {
-                return new MetadataObjectInfo<>(new ClassRange(rangeClass));
-            } else {
-                return new MetadataObjectInfo<>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
-            }
+            return new MetadataObjectInfo<>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
         }
     }
 
