@@ -17,16 +17,16 @@
 
 package com.haulmont.cuba.web.settings;
 
-import com.google.common.base.Optional;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.vaadin.server.VaadinSession;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,24 +44,24 @@ public class WebSettingsClient implements SettingsClient {
         //noinspection Guava
         Optional<String> cached = settings.get(name);
         if (cached != null) {
-            return cached.orNull();
+            return cached.orElse(null);
         }
 
         String setting = userSettingService.loadSetting(ClientType.WEB, name);
-        settings.put(name, Optional.fromNullable(setting));
+        settings.put(name, Optional.ofNullable(setting));
 
         return setting;
     }
 
     @Override
     public void setSetting(String name, @Nullable String value) {
-        getCache().put(name, Optional.fromNullable(value));
+        getCache().put(name, Optional.ofNullable(value));
         userSettingService.saveSetting(ClientType.WEB, name, value);
     }
 
     @Override
     public void deleteSettings(String name) {
-        getCache().put(name, Optional.absent());
+        getCache().put(name, Optional.empty());
         userSettingService.deleteSettings(ClientType.WEB, name);
     }
 

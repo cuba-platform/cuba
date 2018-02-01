@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.desktop.settings;
 
-import com.google.common.base.Optional;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.ApplicationSession;
@@ -29,11 +28,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * User settings provider for desktop application. Caches settings in desktop app per user session.
- *
  */
 @Component(SettingsClient.NAME)
 public class DesktopSettingsClient implements SettingsClient {
@@ -46,24 +45,24 @@ public class DesktopSettingsClient implements SettingsClient {
         Map<String, Optional<String>> settings = getCache();
         Optional<String> cached = settings.get(name);
         if (cached != null) {
-            return cached.orNull();
+            return cached.orElse(null);
         }
 
         String setting = userSettingService.loadSetting(ClientType.DESKTOP, name);
-        settings.put(name, Optional.fromNullable(setting));
+        settings.put(name, Optional.ofNullable(setting));
 
         return setting;
     }
 
     @Override
     public void setSetting(String name, @Nullable String value) {
-        getCache().put(name, Optional.fromNullable(value));
+        getCache().put(name, Optional.ofNullable(value));
         userSettingService.saveSetting(ClientType.DESKTOP, name, value);
     }
 
     @Override
     public void deleteSettings(String name) {
-        getCache().put(name, Optional.absent());
+        getCache().put(name, Optional.empty());
         userSettingService.deleteSettings(ClientType.DESKTOP, name);
     }
 

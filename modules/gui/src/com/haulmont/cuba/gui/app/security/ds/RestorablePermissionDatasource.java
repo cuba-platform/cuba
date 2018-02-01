@@ -17,18 +17,18 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
-import com.google.common.base.Predicate;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.Permission;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class RestorablePermissionDatasource extends CollectionDatasourceImpl<Permission, UUID> {
 
     public Permission findRemovedEntity(Predicate<Permission> predicate) {
         for (Object item : itemsToDelete) {
             Permission permission = (Permission) item;
-            if (predicate.apply(permission))
+            if (predicate.test(permission))
                 return permission;
         }
         return null;
