@@ -578,6 +578,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Nullable
+    protected TopLevelFrame asTopLevelFrame() {
+        java.awt.Component parent = getContainer();
+        while (parent != null) {
+            if (parent instanceof TopLevelFrame) {
+                return (TopLevelFrame) parent;
+            }
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
+
+    @Nullable
     protected JPanel asTabWindow() {
         java.awt.Component parent = getContainer();
         while (parent != null) {
@@ -636,8 +649,10 @@ public class DesktopWindow implements Window, Component.Disposable,
             } else {
                 JPanel singleWindow = asDetachedWindow();
                 if (singleWindow != null) {
-                    ((TopLevelFrame) singleWindow.getParent().getParent().getParent().getParent())
-                            .setTitle(formatTabCaption(caption, description));
+                    TopLevelFrame topLevelFrame = asTopLevelFrame();
+                    if (topLevelFrame != null) {
+                        topLevelFrame.setTitle(formatTabCaption(caption, description));
+                    }
                     windowManager.getBreadCrumbs(singleWindow).update();
                 }
             }
@@ -653,14 +668,21 @@ public class DesktopWindow implements Window, Component.Disposable,
     public void setDescription(String description) {
         this.description = description;
 
-        JPanel tabWindow = asTabWindow();
-        if (tabWindow != null) {
-            setTabCaptionAndDescription(tabWindow);
+        DialogWindow dialogWindow = asDialogWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setTitle(caption);
         } else {
-            JPanel singleWindow = asDetachedWindow();
-            if (singleWindow != null) {
-                ((TopLevelFrame) singleWindow.getParent().getParent().getParent().getParent())
-                        .setTitle(formatTabCaption(caption, description));
+            JPanel tabWindow = asTabWindow();
+            if (tabWindow != null) {
+                setTabCaptionAndDescription(tabWindow);
+            } else {
+                JPanel singleWindow = asDetachedWindow();
+                if (singleWindow != null) {
+                    TopLevelFrame topLevelFrame = asTopLevelFrame();
+                    if (topLevelFrame != null) {
+                        topLevelFrame.setTitle(formatTabCaption(caption, description));
+                    }
+                }
             }
         }
     }
