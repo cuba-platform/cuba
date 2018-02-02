@@ -697,13 +697,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
 
         protected void initField() {
-            final HorizontalLayout layout = new HorizontalLayout();
-            layout.setSpacing(true);
-            layout.setWidthUndefined();
+            if (editor == null) {
+                editor = new HorizontalLayout();
+                editor.setSpacing(true);
+                editor.setWidthUndefined();
+            }
+            editor.removeAllComponents();
 
             if (!isSimple()) {
                 lookupPickerField.setWidthAuto();
-                layout.addComponent(WebComponentsHelper.getComposition(lookupPickerField));
+                editor.addComponent(WebComponentsHelper.getComposition(lookupPickerField));
             } else {
                 lookupPickerField.setVisible(false);
             }
@@ -718,112 +721,98 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             }
 
             if (!isSimple()) {
-                wrappedButton.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        if (isEditable()) {
-                            addValueFromLookupPickerField();
-                        }
-                        wrappedButton.focus();
+                wrappedButton.addClickListener(e -> {
+                    if (isEditable()) {
+                        addValueFromLookupPickerField();
                     }
+                    wrappedButton.focus();
                 });
             } else {
-                wrappedButton.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+                wrappedButton.addClickListener(e -> {
+                    WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-                        String windowAlias;
-                        if (getLookupScreen() != null) {
-                            windowAlias = getLookupScreen();
-                        } else if (getOptionsDatasource() != null) {
-                            windowAlias = windowConfig.getBrowseScreenId(getOptionsDatasource().getMetaClass());
+                    String windowAlias;
+                    if (getLookupScreen() != null) {
+                        windowAlias = getLookupScreen();
+                    } else if (getOptionsDatasource() != null) {
+                        windowAlias = windowConfig.getBrowseScreenId(getOptionsDatasource().getMetaClass());
+                    } else {
+                        windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
+                    }
+
+                    WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("windowOpener", WebTokenList.this.getFrame().getId());
+                    if (isMultiSelect()) {
+                        WindowParams.MULTI_SELECT.set(params, true);
+                        // for backward compatibility
+                        params.put("multiSelect", "true");
+                    }
+                    if (lookupScreenParams != null) {
+                        params.putAll(lookupScreenParams);
+                    }
+
+                    WindowManager wm = App.getInstance().getWindowManager();
+                    if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
+                        if (lookupScreenDialogParams != null) {
+                            wm.getDialogParams().setWidth(lookupScreenDialogParams.getWidth());
+                            wm.getDialogParams().setHeight(lookupScreenDialogParams.getHeight());
                         } else {
-                            windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
+                            ThemeConstants theme = App.getInstance().getThemeConstants();
+                            String width = theme.get("cuba.web.WebTokenList.lookupDialog.width");
+                            String height = theme.get("cuba.web.WebTokenList.lookupDialog.height");
+
+                            wm.getDialogParams().setWidth(width);
+                            wm.getDialogParams().setHeight(height);
+                        }
+                        wm.getDialogParams().setResizable(true);
+                    }
+
+                    Window.Lookup lookup = wm.openLookup(windowInfo, items -> {
+                        if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                            lookupPickerField.getOptionsDatasource().refresh();
                         }
 
-                        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+                        if (isEditable()) {
+                            if (items == null || items.isEmpty()) return;
 
-                        Map<String, Object> params = new HashMap<>();
-                        params.put("windowOpener", WebTokenList.this.getFrame().getId());
-                        if (isMultiSelect()) {
-                            WindowParams.MULTI_SELECT.set(params, true);
-                            // for backward compatibility
-                            params.put("multiSelect", "true");
-                        }
-                        if (lookupScreenParams != null) {
-                            params.putAll(lookupScreenParams);
-                        }
+                            handleLookupInternal(items);
 
-                        WindowManager wm = App.getInstance().getWindowManager();
-                        if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
-                            if (lookupScreenDialogParams != null) {
-                                wm.getDialogParams().setWidth(lookupScreenDialogParams.getWidth());
-                                wm.getDialogParams().setHeight(lookupScreenDialogParams.getHeight());
-                            } else {
-                                ThemeConstants theme = App.getInstance().getThemeConstants();
-                                String width = theme.get("cuba.web.WebTokenList.lookupDialog.width");
-                                String height = theme.get("cuba.web.WebTokenList.lookupDialog.height");
-
-                                wm.getDialogParams().setWidth(width);
-                                wm.getDialogParams().setHeight(height);
+                            if (afterLookupSelectionHandler != null) {
+                                afterLookupSelectionHandler.onSelect(items);
                             }
-                            wm.getDialogParams().setResizable(true);
                         }
+                        wrappedButton.focus();
+                    }, lookupOpenMode, params);
 
-                        Window.Lookup lookup = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
-                            @Override
-                            public void handleLookup(Collection items) {
-                                if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                                    lookupPickerField.getOptionsDatasource().refresh();
-                                }
-
-                                if (isEditable()) {
-                                    if (items == null || items.isEmpty()) return;
-
-                                    handleLookupInternal(items);
-
-                                    if (afterLookupSelectionHandler != null) {
-                                        afterLookupSelectionHandler.onSelect(items);
-                                    }
-                                }
-                                wrappedButton.focus();
-                            }
-                        }, lookupOpenMode, params);
-
-                        if (afterLookupCloseHandler != null) {
-                            lookup.addCloseListener(actionId ->
-                                    afterLookupCloseHandler.onClose(lookup, actionId)
-                            );
-                        }
+                    if (afterLookupCloseHandler != null) {
+                        lookup.addCloseListener(actionId ->
+                                afterLookupCloseHandler.onClose(lookup, actionId)
+                        );
                     }
                 });
             }
-            layout.addComponent(wrappedButton);
+            editor.addComponent(wrappedButton);
 
             clearButton.setVisible(clearEnabled);
             clearButton.setStyleName("clear-btn");
 
             Button wrappedClearButton = (Button) WebComponentsHelper.unwrap(clearButton);
-            wrappedClearButton.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
-                        doRemove(item);
-                    }
-                    wrappedClearButton.focus();
+            wrappedClearButton.addClickListener(e -> {
+                for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
+                    doRemove(item);
                 }
+                wrappedClearButton.focus();
             });
             if (isSimple()) {
                 final HorizontalLayout clearLayout = new HorizontalLayout();
                 clearLayout.addComponent(wrappedClearButton);
-                layout.addComponent(clearLayout);
-                layout.setExpandRatio(clearLayout, 1);
+                editor.addComponent(clearLayout);
+                editor.setExpandRatio(clearLayout, 1);
             } else {
-                layout.addComponent(wrappedClearButton);
+                editor.addComponent(wrappedClearButton);
             }
-
-            editor = layout;
         }
 
         @SuppressWarnings("unchecked")
@@ -858,14 +847,14 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 removeStyleName("inline");
             }
 
-            if (editor != null) {
-                composition.removeComponent(editor);
-            }
-
             if (editable) {
                 removeStyleName("readonly");
             } else {
                 addStyleName("readonly");
+            }
+
+            if (editor != null) {
+                composition.removeComponent(editor);
             }
 
             initField();
