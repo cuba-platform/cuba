@@ -35,8 +35,9 @@ import java.net.URLConnection;
 import static org.apache.commons.io.IOUtils.copy;
 
 public class CubaWebJarsHandler implements RequestHandler {
-    protected static final String VAADIN_PREFIX = "/VAADIN/";
     protected static final String VAADIN_WEBJARS_PREFIX = "/VAADIN/webjars/";
+    protected static final String VAADIN_PREFIX = "/VAADIN/";
+    protected static final String CLASSPATH_WEBJAR_PREFIX = "/META-INF/resources/";
 
     private final Logger log = LoggerFactory.getLogger(CubaWebJarsHandler.class);
 
@@ -160,9 +161,7 @@ public class CubaWebJarsHandler implements RequestHandler {
     }
 
     protected URL getClassPathResourceUrl(String path) {
-        path = path.replace(VAADIN_PREFIX, "/");
-
-        String classpathPath = "/META-INF/resources" + path;
+        String classpathPath = path.replace(VAADIN_PREFIX, CLASSPATH_WEBJAR_PREFIX);
 
         log.trace("Load WebJar resource from classpath: {}", classpathPath);
 

@@ -25,6 +25,7 @@ import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.webjars.WebJarAssetLocator;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -33,7 +34,7 @@ import java.util.*;
 /**
  * @deprecated Use {@link CubaFileUpload}
  */
-@WebJarResource("swfobject/2.2/swfobject.js")
+@WebJarResource("swfobject:swfobject.js")
 @Deprecated
 public class CubaMultiUpload extends CubaAbstractUploadComponent implements LegacyComponent {
 
@@ -211,10 +212,13 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
     public CubaMultiUpload() {
         registerRpc(rpc);
 
-        setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY,
-                new ClassResource("/META-INF/resources/webjars/swfupload/2.2/swfupload.min.js"));
-        setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY,
-                new ClassResource("/META-INF/resources/webjars/swfupload/2.2/swfupload.swf"));
+        WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
+
+        String swfuploadJs = webJarAssetLocator.getFullPath("swfupload", "swfupload.min.js");
+        setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY, new ClassResource(swfuploadJs));
+
+        String swfuploadSwf = webJarAssetLocator.getFullPath("swfupload", "swfupload.swf");
+        setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY, new ClassResource(swfuploadSwf));
     }
 
     public Resource getButtonImage() {

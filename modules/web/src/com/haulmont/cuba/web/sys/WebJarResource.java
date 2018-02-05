@@ -24,21 +24,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * If this annotation is present on a {@link ClientConnector} class, web resources referenced to this class
- * will be served by the specified URLs from WebJars declared as compile dependencies.
+ * This annotation enables to declare web resource dependencies for the annotated {@link ClientConnector}.
  * <p>
- * Example of a WebJar URL: <code>"jquery/1.12.4/jquery.min.js"</code>
+ * To declare such dependency you should use the following template: <code>"webJarName:resource"</code>.
  * <p>
- * To override a web resource, that was previously referenced by this annotation, put new files in the following path:
- * <code>VAADIN/webjars/resourcename/version/resourcefile</code>.
+ * Example: <code>"jquery:jquery.min.js"</code>
  * <p>
- * Example: <code>VAADIN/webjars/jquery/1.12.4/jquery.min.js</code>
+ * To override web resources, that was previously referenced by this annotation, put new files in the following path:
+ * <code>VAADIN/webjars/webJarName/webJarVersion/pathToResource</code>.
  * <p>
- * One more opportunity is the managing a version of a web resource by a web-app property. To declare that version should
- * be resolved from the web-app.properties use a URL like this: <code>jquery/${webjar.jquery.customVersion}</code>
- * <p>
- * Also if you want to set the default version of a resource, you can use Elvis operator '?:'. So the combination of a
- * web-app property and the default version will be: <code>jquery/${webjar.jquery.customVersion?:1.12.4}</code>
+ * Example: <code>VAADIN/webjars/jquery-ui/1.12.1/jquery-ui.min.js</code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -47,7 +42,7 @@ public @interface WebJarResource {
     /**
      * Web resources to load before initializing the client-side connector.
      *
-     * @return an array of web resources WebJar URLs.
+     * @return an array of WebJar resource identifiers
      */
     String[] value();
 }

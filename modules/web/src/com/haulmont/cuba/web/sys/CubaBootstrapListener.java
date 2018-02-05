@@ -23,6 +23,7 @@ import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
+import org.webjars.WebJarAssetLocator;
 
 import javax.inject.Inject;
 
@@ -48,9 +49,7 @@ public class CubaBootstrapListener implements BootstrapListener {
     public void modifyBootstrapPage(BootstrapPageResponse response) {
         Element head = response.getDocument().getElementsByTag("head").get(0);
 
-        String jqueryUrl = String.format("VAADIN/webjars/%s", webConfig.getWebJarJQueryPath());
-
-        includeScript(jqueryUrl, response, head);
+        includeScript(getWebJarResource("jquery.min.js"), response, head);
 
         int customDeviceWidthForViewport = webConfig.getCustomDeviceWidthForViewport();
         if (customDeviceWidthForViewport > 0) {
@@ -60,6 +59,11 @@ public class CubaBootstrapListener implements BootstrapListener {
             includeMetaViewport("width=device-width" +
                     ", initial-scale=" + webConfig.getPageInitialScale(), response, head);
         }
+    }
+
+    protected String getWebJarResource(String resourceName) {
+        return new WebJarAssetLocator().getFullPath(resourceName)
+                .replace("META-INF/resources", "VAADIN");
     }
 
     protected void includeScript(String src, BootstrapPageResponse response, Element head) {

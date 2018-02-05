@@ -20,12 +20,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultDouble;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultInteger;
-import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
@@ -375,13 +370,6 @@ public interface WebConfig extends Config {
     @Property("cuba.web.serverErrorPageTemplate")
     @Default("/com/haulmont/cuba/web/sys/errors/server-error.html")
     String getServerErrorPageTemplate();
-
-    /**
-     * @return Path to jQuery library which is used in a project as WebJar.
-     */
-    @Property("cuba.web.webjars.jqueryPath")
-    @Default("jquery/1.12.4/jquery.min.js")
-    String getWebJarJQueryPath();
 
     /**
      * Defines which screen should be opened after login. This setting will be applied to all users.

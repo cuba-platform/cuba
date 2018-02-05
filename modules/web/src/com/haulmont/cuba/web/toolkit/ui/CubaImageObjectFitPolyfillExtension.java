@@ -21,7 +21,7 @@ import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.Extension;
 import com.vaadin.ui.UI;
 
-@WebJarResource("object-fit-images/3.2.3/dist/ofi.min.js")
+@WebJarResource("object-fit-images:ofi.min.js")
 public class CubaImageObjectFitPolyfillExtension extends AbstractExtension {
 
     public void extend(CubaImage image) {

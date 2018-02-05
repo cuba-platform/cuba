@@ -27,15 +27,22 @@ import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.webjars.WebJarAssetLocator;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CubaUidlWriter extends UidlWriter {
     protected static final String JAVASCRIPT_EXTENSION = ".js";
     protected static final String CSS_EXTENSION = ".css";
-    protected static final String VAADIN_WEBJARS_PREFIX = "VAADIN/webjars/";
+    protected static final String VAADIN_PREFIX = "VAADIN/";
+    protected static final String META_INF_PREFIX = "META-INF/resources/";
+
+    protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
+    protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
     private final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
 
@@ -66,30 +73,51 @@ public class CubaUidlWriter extends UidlWriter {
                 continue;
 
             for (String uri : webJarResource.value()) {
-                uri = processResourceUri(uri);
+                String resourceUri = processResourceUri(uri);
+                String resourcePath = getResourceActualPath(resourceUri);
 
-                if (uri.endsWith(JAVASCRIPT_EXTENSION)) {
-                    scriptDependencies.add(manager.registerDependency(uri, connector));
+                resourcePath = resourcePath.replace(META_INF_PREFIX, VAADIN_PREFIX);
+
+                if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
+                    scriptDependencies.add(manager.registerDependency(resourcePath, connector));
                 }
 
-                if (uri.endsWith(CSS_EXTENSION)) {
-                    styleDependencies.add(manager.registerDependency(uri, connector));
+                if (resourcePath.endsWith(CSS_EXTENSION)) {
+                    styleDependencies.add(manager.registerDependency(resourcePath, connector));
                 }
             }
         }
     }
 
+    protected String getResourceActualPath(String uri) {
+        Matcher matcher = OLD_WEBJAR_IDENTIFIER.matcher(uri);
+        if (matcher.matches()) {
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+        }
+
+        matcher = NEW_WEBJAR_IDENTIFIER.matcher(uri);
+        if (matcher.matches()) {
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+        }
+
+        log.error("Malformed WebJar resource path: {}", uri);
+        throw new RuntimeException("Malformed WebJar resource path: " + uri);
+    }
+
+    protected String getWebJarResourcePath(String webJar, String resource) {
+        return new WebJarAssetLocator().getFullPath(webJar, resource);
+    }
+
     protected String processResourceUri(String uri) {
         int propertyFirstIndex = uri.indexOf("${");
         if (propertyFirstIndex == -1) {
-            return VAADIN_WEBJARS_PREFIX + uri;
+            return uri;
         }
 
         int propertyLastIndex = uri.indexOf("}");
         if (propertyLastIndex == -1 || propertyLastIndex < propertyFirstIndex) {
-            String errorMessage = String.format("Malformed URL of a WebJar resource: %s", uri);
-            log.error(errorMessage);
-            throw new RuntimeException(errorMessage);
+            log.error("Malformed URL of a WebJar resource: {}", uri);
+            throw new RuntimeException("Malformed URL of a WebJar resource: " + uri);
         }
 
         String propertyName = uri.substring(propertyFirstIndex + 2, propertyLastIndex);
@@ -109,6 +137,6 @@ public class CubaUidlWriter extends UidlWriter {
             throw new RuntimeException(msg);
         }
 
-        return VAADIN_WEBJARS_PREFIX + uri.replace("${" + propertyName + "}", webJarVersion);
+        return uri.replace("${" + propertyName + "}", webJarVersion);
     }
 }
