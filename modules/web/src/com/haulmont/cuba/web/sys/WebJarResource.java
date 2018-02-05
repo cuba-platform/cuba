@@ -30,15 +30,19 @@ import java.lang.annotation.Target;
  * Example of a WebJar URL: <code>"jquery/1.12.4/jquery.min.js"</code>
  * <p>
  * To override a web resource, that was previously referenced by this annotation, put new files in the following path:
- * <code>VAADIN/webjars/resourcename/version/resourcefile</code>.
+ * <code>VAADIN/webjars/resourceName/version/resourceFile</code>.
  * <p>
  * Example: <code>VAADIN/webjars/jquery/1.12.4/jquery.min.js</code>
  * <p>
- * One more opportunity is the managing a version of a web resource by a web-app property. To declare that version should
- * be resolved from the web-app.properties use a URL like this: <code>jquery/${webjar.jquery.customVersion}</code>
+ * One more opportunity is the managing a version of a web resource by a web-app property. To declare that version
+ * should be resolved from the web-app.properties use a URL like this:
+ * <p>
+ * <code>jquery/${webjar.jquery.customVersion}/jquery.min.js</code>
  * <p>
  * Also if you want to set the default version of a resource, you can use Elvis operator '?:'. So the combination of a
- * web-app property and the default version will be: <code>jquery/${webjar.jquery.customVersion?:1.12.4}</code>
+ * web-app property and the default version will be:
+ * <p>
+ * <code>jquery/${webjar.jquery.customVersion?:1.12.4}/jquery.min.js</code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -47,7 +51,7 @@ public @interface WebJarResource {
     /**
      * Web resources to load before initializing the client-side connector.
      *
-     * @return an array of web resources WebJar URLs.
+     * @return an array of URLs of WebJar resources
      */
     String[] value();
 }
