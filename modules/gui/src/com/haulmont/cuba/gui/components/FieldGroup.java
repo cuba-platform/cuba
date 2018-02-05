@@ -396,6 +396,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         /**
          * Bind Component to this field config. Component cannot be changed if it is assigned. <br>
          * FieldConfig will apply default values for caption, description, width, required and other Field properties.
+         * <p>
+         * When used with custom="true", the datasource and the property should be set up manually.
          *
          * @param component component
          * @see FieldConfig#setComponent(Component, FieldAttachMode)
@@ -406,6 +408,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
          * Bind Component to this field config. Component cannot be changed if it is assigned. <br>
          * If {@code mode} is {@link FieldAttachMode#APPLY_DEFAULTS} then FieldConfig will apply default values for
          * caption, description, width, required and other Field properties otherwise it will not.
+         * <p>
+         * When used with custom="true", the datasource and the property should be set up manually.
          *
          * @param component component
          * @param mode field attach mode
