@@ -127,8 +127,8 @@ public class LayoutLoaderConfig {
     @Deprecated
     public static void registerLoaders(ComponentPalette... palettes) {
         for (ComponentPalette palette : palettes) {
-            Map<String, Class<? extends ComponentLoader>> loaders = palette.getLoaders();
-            for (Map.Entry<String, Class<? extends ComponentLoader>> loaderEntry : loaders.entrySet()) {
+            Map<String, Class<? extends ComponentLoader>> paletteLoaders = palette.getLoaders();
+            for (Map.Entry<String, Class<? extends ComponentLoader>> loaderEntry : paletteLoaders.entrySet()) {
                 loaders.put(loaderEntry.getKey(), loaderEntry.getValue());
             }
         }
