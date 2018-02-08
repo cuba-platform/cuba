@@ -37,11 +37,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Component(Icons.NAME)
 public class IconsImpl implements Icons {
-    protected final Pattern ICON_NAME_REGEX = Pattern.compile("[A-Z_]*");
 
     protected static final LoadingCache<String, String> iconsCache = CacheBuilder.newBuilder()
             .build(new CacheLoader<String, String>() {

@@ -18,12 +18,13 @@
 package com.haulmont.cuba.web.actions;
 
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 
 public class DoNotChangeSubstUserAction extends AbstractAction {
 
     protected DoNotChangeSubstUserAction() {
         super("doNotChangeSubstUserAction", Status.PRIMARY);
-        this.icon = "icons/cancel.png";
+        setIconFromSet(CubaIcon.CANCEL);
     }
 
     @Override

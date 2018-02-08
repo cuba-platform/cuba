@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.beans.PropertyChangeListener;
@@ -72,6 +73,10 @@ public interface Action {
      */
     String getIcon();
     void setIcon(String icon);
+    /**
+     * Set an icon from an icon set.
+     */
+    void setIconFromSet(Icons.Icon icon);
 
     /**
      * @return  whether the action is currently enabled

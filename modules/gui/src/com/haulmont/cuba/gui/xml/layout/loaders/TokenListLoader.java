@@ -101,7 +101,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
             String icon = buttonElement.attributeValue("icon");
             if (!StringUtils.isEmpty(icon)) {
-                component.setClearButtonIcon(loadResourceString(icon));
+                component.setClearButtonIcon(getIconPath(icon));
             }
         }
     }
@@ -128,7 +128,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
             String icon = buttonElement.attributeValue("icon");
             if (StringUtils.isNotEmpty(icon)) {
-                component.setAddButtonIcon(loadResourceString(icon));
+                component.setAddButtonIcon(getIconPath(icon));
             }
         }
     }
@@ -147,7 +147,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
             String icon = buttonElement.attributeValue("icon");
             if (!StringUtils.isEmpty(icon)) {
-                component.setAddButtonIcon(loadResourceString(icon));
+                component.setAddButtonIcon(getIconPath(icon));
             }
         }
     }

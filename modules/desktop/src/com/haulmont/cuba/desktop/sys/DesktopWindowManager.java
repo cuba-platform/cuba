@@ -2111,6 +2111,10 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         @Override
+        public void setIconFromSet(Icons.Icon icon) {
+        }
+
+        @Override
         public boolean isEnabled() {
             return true;
         }

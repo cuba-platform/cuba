@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
@@ -146,6 +147,13 @@ public abstract class AbstractAction implements Action {
             this.icon = icon;
             firePropertyChange(PROP_ICON, oldValue, icon);
         }
+    }
+
+    @Override
+    public void setIconFromSet(Icons.Icon icon) {
+        String iconName = AppBeans.get(Icons.class)
+                .get(icon);
+        setIcon(iconName);
     }
 
     @Override

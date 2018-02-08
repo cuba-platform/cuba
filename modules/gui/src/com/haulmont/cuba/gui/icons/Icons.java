@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.icons;
 
 import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 /**
  * A bean that resolves icon sources for icon sets defined for the project.
@@ -30,7 +31,10 @@ import javax.annotation.Nullable;
  * @see Icon
  */
 public interface Icons {
+
     String NAME = "cuba_Icons";
+
+    Pattern ICON_NAME_REGEX = Pattern.compile("[A-Z_0-9]+");
 
     /**
      * For the given {@link Icon} instance, returns the icon source that can be used to set this icon to components.
