@@ -44,7 +44,6 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -678,15 +677,41 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             super.setHeight(height);
 
             if (getHeight() > 0) {
+                composition.setHeight("100%");
                 composition.setExpandRatio(tokenContainer, 1);
-                tokenContainer.setMargin(false);
+                tokenContainer.setHeight("100%");
             } else {
+                composition.setHeightUndefined();
                 composition.setExpandRatio(tokenContainer, 0);
+                tokenContainer.setHeightUndefined();
+            }
+        }
 
-                if (simple) {
-                    tokenContainer.setMargin(false);
+        @Override
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
+
+            if (composition != null) {
+                if (getWidth() > 0) {
+                    composition.setWidth("100%");
+                    editor.setWidth("100%");
+
+                    if (!isSimple()) {
+                        lookupPickerField.setWidthFull();
+                        editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
+                    }
+
+                    tokenContainer.setWidth("100%");
                 } else {
-                    tokenContainer.setMargin(new MarginInfo(true, false, false, false));
+                    composition.setWidthUndefined();
+                    editor.setWidthUndefined();
+
+                    if (!isSimple()) {
+                        lookupPickerField.setWidthAuto();
+                        editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
+                    }
+
+                    tokenContainer.setWidthUndefined();
                 }
             }
         }
@@ -707,9 +732,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             if (!isSimple()) {
                 lookupPickerField.setWidthAuto();
                 editor.addComponent(WebComponentsHelper.getComposition(lookupPickerField));
-            } else {
-                lookupPickerField.setVisible(false);
             }
+            lookupPickerField.setVisible(!isSimple());
 
             addButton.setVisible(isSimple());
             addButton.setStyleName("add-btn");
@@ -867,16 +891,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 }
             }
 
-            if (tokenContainer.isVisible()) {
-                if (position == Position.TOP) {
-                    editor.setMargin(new MarginInfo(false, false, true, false));
-                } else {
-                    editor.setMargin(new MarginInfo(true, false, false, false));
-                }
-            } else {
-                editor.setMargin(false);
-            }
-
             tokenContainer.removeAllComponents();
 
             if (datasource != null) {
@@ -907,23 +921,38 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         itemComponents.remove(componentItem);
                     }
                 }
-
-                if (getHeight() < 0) {
-                    tokenContainer.setVisible(CollectionUtils.isNotEmpty(datasource.getItems()));
-                } else {
-                    tokenContainer.setVisible(true);
-                }
+            }
+            if (getHeight() < 0) {
+                tokenContainer.setVisible(!isEmpty());
+            } else {
+                tokenContainer.setVisible(true);
             }
 
+            updateEditorMargins();
+
             updateSizes();
+        }
+
+        protected void updateEditorMargins() {
+            if (tokenContainer.isVisible()) {
+                if (position == Position.TOP) {
+                    editor.setMargin(new MarginInfo(false, false, true, false));
+                } else {
+                    editor.setMargin(new MarginInfo(true, false, false, false));
+                }
+            } else {
+                editor.setMargin(false);
+            }
         }
 
         protected void updateSizes() {
             if (getHeight() > 0) {
                 composition.setHeight("100%");
+                composition.setExpandRatio(tokenContainer, 1);
                 tokenContainer.setHeight("100%");
             } else {
                 composition.setHeightUndefined();
+                composition.setExpandRatio(tokenContainer, 0);
                 tokenContainer.setHeightUndefined();
             }
 
