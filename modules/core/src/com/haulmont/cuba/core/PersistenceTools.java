@@ -162,6 +162,10 @@ public class PersistenceTools {
 
         if (PersistenceHelper.isNew(entity)) {
             return null;
+
+        } else if (!isDirty(entity, attribute)) {
+            return entity.getValue(attribute);
+
         } else {
             ObjectChangeSet objectChanges =
                     ((AttributeChangeListener)((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
