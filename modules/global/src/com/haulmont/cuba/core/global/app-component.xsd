@@ -48,6 +48,7 @@
         <xs:attribute type="xs:string" name="ext"/>
         <xs:attribute type="xs:string" name="skipIfExists"/>
         <xs:attribute type="xs:boolean" name="appJar"/>
+        <xs:attribute type="xs:boolean" name="library"/>
     </xs:complexType>
 
     <xs:complexType name="propertyType">
