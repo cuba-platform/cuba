@@ -23,11 +23,12 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.SideMenuBuilder;
 import com.haulmont.cuba.web.theme.HaloTheme;
 import com.haulmont.cuba.web.toolkit.ui.CubaSideMenu;
 import com.vaadin.server.ClientConnector;
+import com.vaadin.server.Resource;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -380,7 +381,9 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         public void setIcon(String icon) {
             this.icon = icon;
 
-            delegateItem.setIcon(WebComponentsHelper.getIcon(icon));
+            Resource iconResource = AppBeans.get(IconResolver.class)
+                    .getIconResource(this.icon);
+            delegateItem.setIcon(iconResource);
         }
 
         @Override

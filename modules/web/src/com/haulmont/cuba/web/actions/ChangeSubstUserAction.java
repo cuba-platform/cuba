@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.actions;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 
@@ -29,7 +30,7 @@ public class ChangeSubstUserAction extends AbstractAction {
     public ChangeSubstUserAction(User user) {
         super("changeSubstUserAction");
         this.user = user;
-        this.icon = "icons/ok.png";
+        setIconFromSet(CubaIcon.OK);
     }
 
     @Override

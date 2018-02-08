@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButtonLayout;
@@ -456,6 +457,13 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         @Override
         public void setIcon(String icon) {
             action.setIcon(icon);
+        }
+
+        @Override
+        public void setIconFromSet(Icons.Icon icon) {
+            String iconName = AppBeans.get(Icons.class)
+                    .get(icon);
+            setIcon(iconName);
         }
 
         @Override

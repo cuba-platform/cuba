@@ -22,6 +22,9 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -40,11 +43,14 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
+
 /**
  * GenericUI class holding information about the main menu structure.
  */
 @Component(MenuConfig.NAME)
 public class MenuConfig {
+
     private final Logger log = LoggerFactory.getLogger(MenuConfig.class);
 
     public static final String NAME = "cuba_MenuConfig";
@@ -58,6 +64,9 @@ public class MenuConfig {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected ThemeConstantsManager themeConstantsManager;
 
     protected volatile boolean initialized;
 
@@ -293,8 +302,36 @@ public class MenuConfig {
     protected void loadIcon(Element element, MenuItem menuItem) {
         String icon = element.attributeValue("icon");
         if (StringUtils.isNotEmpty(icon)) {
-            menuItem.setIcon(icon);
+            menuItem.setIcon(getIconPath(icon));
         }
+    }
+
+    protected String getIconPath(String icon) {
+        String iconPath = null;
+
+        if (ICON_NAME_REGEX.matcher(icon).matches()) {
+            iconPath = AppBeans.get(Icons.class)
+                    .get(icon);
+        }
+
+        if (StringUtils.isEmpty(iconPath)) {
+            String themeValue = loadThemeString(icon);
+            iconPath = loadResourceString(themeValue);
+        }
+
+        return iconPath;
+    }
+
+    protected String loadResourceString(String caption) {
+        return messages.getTools().loadString(messages.getMainMessagePack(), caption);
+    }
+
+    protected String loadThemeString(String value) {
+        if (value != null && value.startsWith(ThemeConstants.PREFIX)) {
+            value = themeConstantsManager.getConstants()
+                    .get(value.substring(ThemeConstants.PREFIX.length()));
+        }
+        return value;
     }
 
     protected void addItem(List<MenuItem> items, MenuItem menuItem, MenuItem beforeItem, boolean before) {

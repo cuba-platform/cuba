@@ -50,7 +50,7 @@ public class LinkLoader extends AbstractComponentLoader<Link> {
 
         String icon = element.attributeValue("icon");
         if (StringUtils.isNotEmpty(icon)) {
-            resultComponent.setIcon(icon);
+            resultComponent.setIcon(getIconPath(icon));
         }
 
         String rel = element.attributeValue("rel");

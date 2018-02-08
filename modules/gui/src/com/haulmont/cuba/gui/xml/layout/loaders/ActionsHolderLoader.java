@@ -88,7 +88,7 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
 
         String icon = element.attributeValue("icon");
         if (StringUtils.isNotEmpty(icon)) {
-            instance.setIcon(loadResourceString(icon));
+            instance.setIcon(getIconPath(icon));
         }
     }
 

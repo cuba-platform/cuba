@@ -53,10 +53,10 @@ import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
+
+import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
-    protected static final Pattern ICON_LITERAL_REGEX = Pattern.compile("[A-Z_]*");
 
     protected static final Map<String, Function<ClientConfig, String>> shortcutAliases =
             ImmutableMap.<String, Function<ClientConfig, String>>builder()
@@ -427,20 +427,24 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected void loadIcon(Component.HasIcon component, Element element) {
         if (element.attribute("icon") != null) {
             String icon = element.attributeValue("icon");
-
-            String iconPath = null;
-
-            if (ICON_LITERAL_REGEX.matcher(icon).matches()) {
-                iconPath = AppBeans.get(Icons.class).get(icon);
-            }
-
-            if (StringUtils.isEmpty(iconPath)) {
-                String themeValue = loadThemeString(icon);
-                iconPath = loadResourceString(themeValue);
-            }
-
-            component.setIcon(iconPath);
+            component.setIcon(getIconPath(icon));
         }
+    }
+
+    protected String getIconPath(String icon) {
+        String iconPath = null;
+
+        if (ICON_NAME_REGEX.matcher(icon).matches()) {
+            iconPath = AppBeans.get(Icons.class)
+                    .get(icon);
+        }
+
+        if (StringUtils.isEmpty(iconPath)) {
+            String themeValue = loadThemeString(icon);
+            iconPath = loadResourceString(themeValue);
+        }
+
+        return iconPath;
     }
 
     @SuppressWarnings("unchecked")
@@ -540,7 +544,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
-                    loadResourceString(loadThemeString(element.attributeValue("icon"))),
+                    getIconPath(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),
@@ -556,7 +560,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
-                    loadResourceString(loadThemeString(element.attributeValue("icon"))),
+                    getIconPath(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),
