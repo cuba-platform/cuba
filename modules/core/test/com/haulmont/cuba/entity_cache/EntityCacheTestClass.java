@@ -787,6 +787,7 @@ public class EntityCacheTestClass {
     }
 
     @Test
+    @Ignore
     public void testAccessConnectionWithCacheInvalidation() {
         appender.clearMessages();
 
