@@ -432,6 +432,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected String getIconPath(String icon) {
+        if (icon == null || icon.isEmpty()) {
+            return null;
+        }
+
         String iconPath = null;
 
         if (ICON_NAME_REGEX.matcher(icon).matches()) {
