@@ -249,7 +249,14 @@ public class AttributeSecuritySupport {
      */
     @SuppressWarnings("unchecked")
     public boolean isAttributeAccessEnabled(MetaClass entityClass) {
-        return isAttributeAccessEnabled(new SetupAttributeAccessEvent(metadata.create(entityClass)));
+        Entity entity;
+        try {
+            Class clazz = metadata.getExtendedEntities().getEffectiveClass(entityClass);
+            entity = (Entity) clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Unable to instantiate entity", e);
+        }
+        return isAttributeAccessEnabled(new SetupAttributeAccessEvent(entity));
     }
 
     /**
