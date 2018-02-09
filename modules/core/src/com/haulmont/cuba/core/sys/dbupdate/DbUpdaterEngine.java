@@ -259,7 +259,7 @@ public class DbUpdaterEngine implements DbUpdater {
                             break;
                         }
                     }
-                    if (!anInitScriptHasBeenExecuted) {
+                    if (!anInitScriptHasBeenExecuted && !initializedByOwnScript(executedScripts, dirName)) {
                         log.info("No init scripts from " + dirName + " have been executed, running init scripts for " + distinguishingSubstring(dirName));
                         try {
                             for (ScriptResource file : initScripts) {
@@ -275,6 +275,14 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         }
+    }
+
+    protected boolean initializedByOwnScript(Set<String> executedScripts, String dirName) {
+        boolean found = executedScripts.stream()
+                .anyMatch(s -> s.substring(s.lastIndexOf('/') + 1).equals("01." + dirName.substring(3) + "-create-db.sql"));
+        if (found)
+            log.debug("Found executed '01." + dirName.substring(3) + "-create-db.sql' script");
+        return found;
     }
 
     protected boolean containsIgnoringPrefix(Collection<String> strings, String s) {
