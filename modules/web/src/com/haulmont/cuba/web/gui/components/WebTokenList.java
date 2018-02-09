@@ -691,7 +691,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void setWidth(float width, Unit unit) {
             super.setWidth(width, unit);
 
-            if (composition != null) {
+            if (composition != null && tokenContainer != null) {
                 if (getWidth() > 0) {
                     composition.setWidth("100%");
                     editor.setWidth("100%");
