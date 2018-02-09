@@ -92,6 +92,8 @@ public class UserSessions implements UserSessionsAPI {
 
     protected volatile int sendTimeout = 10;
 
+    protected volatile int touchTimeout = 1;
+
     protected ClusterManagerAPI clusterManager;
 
     protected UserSession NO_USER_SESSION;
@@ -125,6 +127,7 @@ public class UserSessions implements UserSessionsAPI {
         serverConfig = configuration.getConfig(ServerConfig.class);
         setExpirationTimeoutSec(serverConfig.getUserSessionExpirationTimeoutSec());
         setSendTimeoutSec(serverConfig.getUserSessionSendTimeoutSec());
+        touchTimeout = serverConfig.getUserSessionTouchTimeoutSec();
     }
 
     @Inject
@@ -276,8 +279,10 @@ public class UserSessions implements UserSessionsAPI {
             if (touch) {
                 long now = timeSource.currentTimeMillis();
 
-                usi.lastUsedTs = now;
-                putSessionInfo(id, usi);
+                if (now > (usi.lastUsedTs + touchTimeout * 1000)) {
+                    usi.lastUsedTs = now;
+                    putSessionInfo(id, usi);
+                }
 
                 if (propagate && !usi.session.isSystem()) {
                     if (now > (usi.lastSentTs + sendTimeout * 1000)) {

@@ -95,6 +95,14 @@ public interface ServerConfig extends Config {
     void setUserSessionSendTimeoutSec(int timeout);
 
     /**
+     * {@link UserSessionsAPI} will update last used timestamp for a session only if the old value is older than
+     * the current + timeout.
+     */
+    @Property("cuba.userSessionTouchTimeoutSec")
+    @DefaultInt(1)
+    int getUserSessionTouchTimeoutSec();
+
+    /**
      * @return DB scripts directory.
      * Does not end with "/"
      */
