@@ -20,12 +20,11 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TransactionParams;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -785,6 +784,55 @@ public class EntityCacheTestClass {
         assertEquals("new position", u.getPosition());
 
         assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User,Group
+    }
+
+    @Test
+    public void testAccessConnectionWithCacheInvalidation() {
+        appender.clearMessages();
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.persistence().getEntityManager().getConnection();
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            View view = viewRepository.getView(cont.metadata().getClassNN(User.class), "user.browse");
+            cont.entityManager().find(User.class, this.user.getId(), view);
+            tx.commit();
+        }
+
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
+        appender.clearMessages();
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.persistence().getEntityManager().getConnection();
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            View view = viewRepository.getView(cont.metadata().getClassNN(User.class), "user.browse");
+            cont.entityManager().find(User.class, this.user.getId(), view);
+            tx.commit();
+        }
+
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
+        appender.clearMessages();
+
+
+        try (Transaction tx = cont.persistence().createTransaction(new TransactionParams().setReadOnly(true))) {
+
+            try (Transaction tx1 = cont.persistence().getTransaction()) {
+                cont.persistence().getEntityManager().getConnection();
+                tx1.commit();
+            }
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            View view = viewRepository.getView(cont.metadata().getClassNN(User.class), "user.browse");
+
+            Query query = cont.entityManager().createQuery("select u from sec$User u where u.id = :id")
+                    .setParameter("id", user.getId());
+            query.setView(View.copy(view).setLoadPartialEntities(true));
+            ((QueryImpl) query).setSingleResultExpected(true);
+            User userL = (User) query.getSingleResult();
+            //User userL = cont.entityManager().find(User.class, user.getId(), view);
+            assertNotNull(userL);
+
+            tx.commit();
+        }
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
     }
 
     private void loadUserAlone() {
