@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
@@ -89,6 +90,8 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
 
     @Override
     public void setMode(Mode mode) {
+        Preconditions.checkNotNullArgument(mode, "Mode of SourceCodeEditor cannot be null");
+
         this.mode = mode;
 
         switch (mode) {

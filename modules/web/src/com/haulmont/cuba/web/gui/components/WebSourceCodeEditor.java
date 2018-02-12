@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
@@ -74,6 +75,10 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
 
     @Override
     public void setMode(Mode mode) {
+        Preconditions.checkNotNullArgument(mode, "Mode of SourceCodeEditor cannot be null");
+
+        this.mode = mode;
+
         AceMode editorMode;
         switch (mode) {
             case Groovy:
