@@ -37,6 +37,8 @@ public class DesktopToolTipManager extends MouseAdapter {
 
     protected static final int CLOSE_TIME = 500;
     protected static final int SHOW_TIME = 1000;
+    protected static final int DEFAULT_HORIZONTAL_INDENTATION = 15;
+    protected static final int DEFAULT_VERTICAL_INDENTATION = 15;
 
     protected boolean tooltipShowing = false;
 
@@ -185,25 +187,6 @@ public class DesktopToolTipManager extends MouseAdapter {
             return;
         }
 
-        Point mouseLocation = pointerInfo.getLocation();
-        Point location = new Point();
-
-        GraphicsConfiguration gc;
-        gc = field.getGraphicsConfiguration();
-        Rectangle sBounds = gc.getBounds();
-        Insets screenInsets = Toolkit.getDefaultToolkit()
-                .getScreenInsets(gc);
-
-        sBounds.x += screenInsets.left;
-        sBounds.y += screenInsets.top;
-        sBounds.width -= (screenInsets.left + screenInsets.right);
-        sBounds.height -= (screenInsets.top + screenInsets.bottom);
-
-        location.x = mouseLocation.x + 15;
-        location.y = mouseLocation.y + 15;
-        int x = location.x;
-        int y = location.y;
-
         if (toolTipWindow != null) {
             hideTooltip();
         }
@@ -212,8 +195,14 @@ public class DesktopToolTipManager extends MouseAdapter {
 
         final JToolTip toolTip = new CubaToolTip();
         toolTip.setTipText(text);
-        final Popup tooltipContainer = PopupFactory.getSharedInstance().getPopup(field, toolTip, x, y);
+
+        // Location to display tooltip
+        Point location = getToolTipLocation(pointerInfo, toolTip.getTipText());
+
+        final Popup tooltipContainer = PopupFactory.getSharedInstance()
+                .getPopup(field, toolTip, location.x, location.y);
         tooltipContainer.show();
+
         window = tooltipContainer;
         toolTipWindow = toolTip;
 
@@ -224,17 +213,68 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
+    protected int getMaxTooltipWidth() {
+        UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
+        int maxTooltipWidth = lafDefaults.getInt("Tooltip.maxWidth");
+        if (maxTooltipWidth == 0) {
+            maxTooltipWidth = DesktopComponentsHelper.TOOLTIP_WIDTH;
+        }
+        return maxTooltipWidth;
+    }
+
+    protected Point getToolTipLocation(PointerInfo pointerInfo, String text) {
+        Point mouseLocation = pointerInfo.getLocation();
+        Rectangle bounds = getDeviceBounds(pointerInfo.getDevice());
+
+        // Location on the current screen (suitable if there is more than one screen)
+        Point currentScreenMouseLocation = getCurrentScreenMouseLocation(mouseLocation, bounds);
+
+        // Location to display tooltip
+        Point location = new Point(mouseLocation);
+
+        Dimension dimension = DesktopComponentsHelper.measureHtmlText(text);
+
+        location.x += getIndentation(bounds.width, dimension.width,
+                currentScreenMouseLocation.x, DEFAULT_HORIZONTAL_INDENTATION);
+        location.y += getIndentation(bounds.height, dimension.height,
+                currentScreenMouseLocation.y, DEFAULT_VERTICAL_INDENTATION);
+
+        return location;
+    }
+
+    protected int getIndentation(int screenSize, int textSize, int mouseLocation, int defaultIndentation) {
+        if ((mouseLocation + textSize) > screenSize) {
+            return -1 * (textSize + defaultIndentation);
+        } else {
+            return defaultIndentation;
+        }
+    }
+
+    protected Rectangle getDeviceBounds(GraphicsDevice device) {
+        GraphicsConfiguration gc = device.getDefaultConfiguration();
+        return gc.getBounds();
+    }
+
+    protected Point getCurrentScreenMouseLocation(Point mouseLocation, Rectangle bounds) {
+        Point point = new Point(mouseLocation);
+        // Subtract the x/y position of the device
+        point.x -= bounds.x;
+        point.y -= bounds.y;
+        // Clip negative values...
+        if (point.x < 0) {
+            point.x *= -1;
+        }
+        if (point.y < 0) {
+            point.y *= -1;
+        }
+        return point;
+    }
+
     protected class CubaToolTip extends JToolTip {
         @Override
         public void setTipText(String tipText) {
-            UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
-            int maxTooltipWidth = lafDefaults.getInt("Tooltip.maxWidth");
-            if (maxTooltipWidth == 0) {
-                maxTooltipWidth = DesktopComponentsHelper.TOOLTIP_WIDTH;
-            }
-
-            FontMetrics fontMetrics = StyleContext.getDefaultStyleContext().getFontMetrics(getFont());
-            int actualWidth = SwingUtilities.computeStringWidth(fontMetrics, tipText);
+            int maxTooltipWidth = getMaxTooltipWidth();
+            int actualWidth = getActualTextWidth(tipText, getFont());
 
             if (actualWidth < maxTooltipWidth) {
                 tipText = "<html>" + tipText + "</html>";
@@ -243,6 +283,11 @@ public class DesktopToolTipManager extends MouseAdapter {
             }
 
             super.setTipText(tipText);
+        }
+
+        protected int getActualTextWidth(String tipText, Font font) {
+            FontMetrics fontMetrics = StyleContext.getDefaultStyleContext().getFontMetrics(font);
+            return SwingUtilities.computeStringWidth(fontMetrics, tipText);
         }
     }
 
