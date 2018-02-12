@@ -21,27 +21,36 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
+
 /**
- * Please notice that {@code DesktopExternalUIComponentsSource} registers only window loaders.
+ * Class registers external components that are supplied in separate jars or defined in 'cuba-ui-component.xml'
+ * descriptor of 'desktop' module.
  */
-@Component(ExternalUIComponentsSource.NAME)
+@org.springframework.stereotype.Component(ExternalUIComponentsSource.NAME)
 public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSource {
     private static final String DESKTOP_COMPONENTS_CONFIG_XML_PROP = "cuba.desktop.componentsConfig";
 
@@ -80,13 +89,19 @@ public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSo
 
     protected void init() {
         try {
-            _registerWindowLoaders();
+            // register component from app components
+            _registerAppComponents();
+            //register components from external component jars
+            _registerComponents("META-INF/cuba-ui-component.xml");
+            //register components from desktop modules
+            _registerComponents("cuba-ui-component.xml");
+
         } catch (Exception e) {
             log.error("Error on custom UI components registration", e);
         }
     }
 
-    protected void _registerWindowLoaders() {
+    protected void _registerAppComponents() {
         String configName = AppContext.getProperty(DESKTOP_COMPONENTS_CONFIG_XML_PROP);
         StrTokenizer tokenizer = new StrTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
@@ -95,10 +110,8 @@ public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSo
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
-                    Element rootElement = Dom4j.readDocument(stream)
-                            .getRootElement();
-                    _loadWindowLoaders(rootElement);
-                } catch (IOException e) {
+                    _registerComponent(stream);
+                } catch (ClassNotFoundException | IOException e) {
                     throw new RuntimeException(e);
                 } finally {
                     IOUtils.closeQuietly(stream);
@@ -107,6 +120,57 @@ public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSo
                 log.warn("Resource {} not found, ignore it", location);
             }
         }
+    }
+
+    protected void _registerComponents(String componentDescriptorPath) throws IOException, ClassNotFoundException {
+        ClassLoader classLoader = App.class.getClassLoader();
+        Enumeration<URL> resources = classLoader.getResources(componentDescriptorPath);
+        while (resources.hasMoreElements()) {
+            URL url = resources.nextElement();
+            try (InputStream is = url.openStream()) {
+                _registerComponent(is);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void _registerComponent(InputStream is) throws ClassNotFoundException {
+        ClassLoader classLoader = App.class.getClassLoader();
+
+        Element rootElement = Dom4j.readDocument(is).getRootElement();
+        List<Element> components = rootElement.elements("component");
+        for (Element component : components) {
+            String name = trimToEmpty(component.elementText("name"));
+            String componentClassName = trimToEmpty(component.elementText("class"));
+
+            String componentLoaderClassName = trimToEmpty(component.elementText("componentLoader"));
+            String tag = trimToEmpty(component.elementText("tag"));
+            if (StringUtils.isEmpty(tag)) {
+                tag = name;
+            }
+
+            Class<?> componentLoaderClass = classLoader.loadClass(componentLoaderClassName);
+            Class<?> componentClass = classLoader.loadClass(componentClassName);
+
+            if (Component.class.isAssignableFrom(componentClass)) {
+                log.trace("Register component {} class {}", name, componentClass.getCanonicalName());
+
+                DesktopComponentsFactory.registerComponent(name, (Class<? extends Component>) componentClass);
+            } else {
+                log.warn("Component {} is not a subclass of com.haulmont.cuba.gui.components.Component", componentClassName);
+            }
+
+            if (ComponentLoader.class.isAssignableFrom(componentLoaderClass)) {
+                log.trace("Register tag {} loader {}", tag, componentLoaderClass.getCanonicalName());
+
+                LayoutLoaderConfig.registerLoader(tag, (Class<? extends ComponentLoader>) componentLoaderClass);
+            } else {
+                log.warn("Component loader {} is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader",
+                        componentLoaderClassName);
+            }
+        }
+
+        _loadWindowLoaders(rootElement);
     }
 
     @SuppressWarnings("unchecked")
