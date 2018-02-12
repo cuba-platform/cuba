@@ -72,6 +72,9 @@ public class AttributeSecuritySupport {
     @Inject
     protected CubaApplicationEventMulticaster applicationEventMulticaster;
 
+    @Inject
+    protected List<SetupAttributeAccessHandler> handlers;
+
     /**
      * Removes restricted attributes from a view.
      *
@@ -217,10 +220,23 @@ public class AttributeSecuritySupport {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Entity> void setupAttributeAccess(T entity) {
         if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
             SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
-            events.publish(event);
+            boolean handled = false;
+            if (config.getUseSpringApplicationEventsToSetupAttributeAccess()) {
+                events.publish(event);
+            } else if (handlers != null) {
+                for (SetupAttributeAccessHandler handler : handlers) {
+                    MetaClass metaClass = metadata.getExtendedEntities()
+                            .getOriginalOrThisMetaClass(entity.getMetaClass());
+                    if (handler.supports(metaClass.getJavaClass())) {
+                        handled = true;
+                        handler.setupAccess(event);
+                    }
+                }
+            }
             if (event.getReadonlyAttributes() != null) {
                 Set<String> attributes = event.getReadonlyAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
@@ -236,7 +252,7 @@ public class AttributeSecuritySupport {
                 SecurityState state = getOrCreateSecurityState(entity);
                 addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
-            if (isAttributeAccessEnabled(event)) {
+            if (hasOldAttributeAccessListeners(event) || handled) {
                 securityTokenManager.writeSecurityToken(entity);
             }
         }
@@ -245,26 +261,38 @@ public class AttributeSecuritySupport {
     /**
      * Checks if attribute access enabled for the current entity type.
      * It's based on the existence of an event listener for SetupAttributeAccessEvent.
-     * @param entityClass - entity metaClass
+     * @param metaClass - entity metaClass
      */
     @SuppressWarnings("unchecked")
-    public boolean isAttributeAccessEnabled(MetaClass entityClass) {
-        Entity entity;
-        try {
-            Class clazz = metadata.getExtendedEntities().getEffectiveClass(entityClass);
-            entity = (Entity) clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Unable to instantiate entity", e);
+    public boolean isAttributeAccessEnabled(MetaClass metaClass) {
+        if (config.getUseSpringApplicationEventsToSetupAttributeAccess()) {
+            Entity entity;
+            try {
+                Class clazz = metadata.getExtendedEntities().getEffectiveClass(metaClass);
+                entity = (Entity) clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("Unable to instantiate entity", e);
+            }
+            return hasOldAttributeAccessListeners(new SetupAttributeAccessEvent(entity));
+        } else if (handlers != null) {
+            metaClass = metadata.getExtendedEntities()
+                    .getOriginalOrThisMetaClass(metaClass);
+            for (SetupAttributeAccessHandler handler : handlers) {
+                if (handler.supports(metaClass.getJavaClass())) {
+                    return true;
+                }
+            }
         }
-        return isAttributeAccessEnabled(new SetupAttributeAccessEvent(entity));
+        return false;
     }
 
     /**
-     * Checks if attribute access enabled for the current entity type.
+     * Checks if attribute access with old listeners based on spring events
+     * enabled for the current entity type.
      * It's based on the existence of an event listener for SetupAttributeAccessEvent.
      * @param event - SetupAttributeAccessEvent
      */
-    public boolean isAttributeAccessEnabled(SetupAttributeAccessEvent event) {
+    protected boolean hasOldAttributeAccessListeners(SetupAttributeAccessEvent event) {
         Collection listeners = applicationEventMulticaster.getListeners(event, event.getResolvableType());
         return listeners != null && !listeners.isEmpty();
     }
@@ -400,7 +428,7 @@ public class AttributeSecuritySupport {
     }
 
     protected class AttributeAccessVisitor implements EntityAttributeVisitor {
-        protected Set<Entity> visited = new HashSet<>();
+        protected Set<Entity> visited;
 
         public AttributeAccessVisitor(Set<Entity> visited) {
             this.visited = visited;

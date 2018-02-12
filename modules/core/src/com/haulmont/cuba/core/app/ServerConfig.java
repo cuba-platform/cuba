@@ -216,6 +216,15 @@ public interface ServerConfig extends Config {
     boolean getDataManagerChecksSecurityOnMiddleware();
 
     /**
+     * Indicates that Spring application events should be used to setup attribute access
+     * (true - old behavior, false - new recommended behavior)
+     */
+    @Property("cuba.useSpringApplicationEventsToSetupAttributeAccess")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getUseSpringApplicationEventsToSetupAttributeAccess();
+
+    /**
      * Whether the brute-force protection on user login is enabled.
      */
     @Property("cuba.bruteForceProtection.enabled")
