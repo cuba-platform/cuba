@@ -279,7 +279,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
     protected boolean initializedByOwnScript(Set<String> executedScripts, String dirName) {
         boolean found = executedScripts.stream()
-                .anyMatch(s -> s.substring(s.lastIndexOf('/') + 1).equals("01." + dirName.substring(3) + "-create-db.sql"));
+                .anyMatch(s -> s.substring(s.lastIndexOf('/') + 1).equalsIgnoreCase("01." + dirName.substring(3) + "-create-db.sql"));
         if (found)
             log.debug("Found executed '01." + dirName.substring(3) + "-create-db.sql' script");
         return found;
