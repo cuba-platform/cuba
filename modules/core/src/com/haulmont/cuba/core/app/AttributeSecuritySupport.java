@@ -72,9 +72,6 @@ public class AttributeSecuritySupport {
     @Inject
     protected CubaApplicationEventMulticaster applicationEventMulticaster;
 
-    @Inject
-    protected List<SetupAttributeAccessHandler> handlers;
-
     /**
      * Removes restricted attributes from a view.
      *
@@ -227,13 +224,16 @@ public class AttributeSecuritySupport {
             boolean handled = false;
             if (config.getUseSpringApplicationEventsToSetupAttributeAccess()) {
                 events.publish(event);
-            } else if (handlers != null) {
-                for (SetupAttributeAccessHandler handler : handlers) {
-                    MetaClass metaClass = metadata.getExtendedEntities()
-                            .getOriginalOrThisMetaClass(entity.getMetaClass());
-                    if (handler.supports(metaClass.getJavaClass())) {
-                        handled = true;
-                        handler.setupAccess(event);
+            } else {
+                Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
+                if (handlers != null) {
+                    for (SetupAttributeAccessHandler handler : handlers.values()) {
+                        MetaClass metaClass = metadata.getExtendedEntities()
+                                .getOriginalOrThisMetaClass(entity.getMetaClass());
+                        if (handler.supports(metaClass.getJavaClass())) {
+                            handled = true;
+                            handler.setupAccess(event);
+                        }
                     }
                 }
             }
@@ -274,12 +274,15 @@ public class AttributeSecuritySupport {
                 throw new RuntimeException("Unable to instantiate entity", e);
             }
             return hasOldAttributeAccessListeners(new SetupAttributeAccessEvent(entity));
-        } else if (handlers != null) {
-            metaClass = metadata.getExtendedEntities()
-                    .getOriginalOrThisMetaClass(metaClass);
-            for (SetupAttributeAccessHandler handler : handlers) {
-                if (handler.supports(metaClass.getJavaClass())) {
-                    return true;
+        } else {
+            Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
+            if (handlers != null) {
+                metaClass = metadata.getExtendedEntities()
+                        .getOriginalOrThisMetaClass(metaClass);
+                for (SetupAttributeAccessHandler handler : handlers.values()) {
+                    if (handler.supports(metaClass.getJavaClass())) {
+                        return true;
+                    }
                 }
             }
         }
