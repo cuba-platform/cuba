@@ -149,24 +149,42 @@ public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSo
                 tag = name;
             }
 
-            Class<?> componentLoaderClass = classLoader.loadClass(componentLoaderClassName);
-            Class<?> componentClass = classLoader.loadClass(componentClassName);
-
-            if (Component.class.isAssignableFrom(componentClass)) {
-                log.trace("Register component {} class {}", name, componentClass.getCanonicalName());
-
-                DesktopComponentsFactory.registerComponent(name, (Class<? extends Component>) componentClass);
-            } else {
-                log.warn("Component {} is not a subclass of com.haulmont.cuba.gui.components.Component", componentClassName);
+            if (StringUtils.isEmpty(name) && StringUtils.isEmpty(tag)) {
+                log.warn("You have to provide name or tag for custom component");
+                // skip this <component> element
+                continue;
             }
 
-            if (ComponentLoader.class.isAssignableFrom(componentLoaderClass)) {
-                log.trace("Register tag {} loader {}", tag, componentLoaderClass.getCanonicalName());
+            if (StringUtils.isEmpty(componentLoaderClassName) && StringUtils.isEmpty(componentClassName)) {
+                log.warn("You have to provide at least <class> or <componentLoader> for custom component {} / <{}>",
+                        name, tag);
+                // skip this <component> element
+                continue;
+            }
 
-                LayoutLoaderConfig.registerLoader(tag, (Class<? extends ComponentLoader>) componentLoaderClass);
-            } else {
-                log.warn("Component loader {} is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader",
-                        componentLoaderClassName);
+            if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(componentClassName)) {
+                Class<?> componentClass = classLoader.loadClass(componentClassName);
+
+                if (Component.class.isAssignableFrom(componentClass)) {
+                    log.trace("Register component {} class {}", name, componentClass.getCanonicalName());
+
+                    DesktopComponentsFactory.registerComponent(name, (Class<? extends Component>) componentClass);
+                } else {
+                    log.warn("Component {} is not a subclass of com.haulmont.cuba.gui.components.Component", componentClassName);
+                }
+            }
+
+            if (StringUtils.isNotEmpty(tag) && StringUtils.isNotEmpty(componentLoaderClassName)) {
+                Class<?> componentLoaderClass = classLoader.loadClass(componentLoaderClassName);
+
+                if (ComponentLoader.class.isAssignableFrom(componentLoaderClass)) {
+                    log.trace("Register tag {} loader {}", tag, componentLoaderClass.getCanonicalName());
+
+                    LayoutLoaderConfig.registerLoader(tag, (Class<? extends ComponentLoader>) componentLoaderClass);
+                } else {
+                    log.warn("Component loader {} is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader",
+                            componentLoaderClassName);
+                }
             }
         }
 

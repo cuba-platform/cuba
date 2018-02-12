@@ -26,6 +26,28 @@
                 <xs:element name="component">
                     <xs:complexType>
                         <xs:all>
+                            <!-- ComponentsFactory create component NAME-CLASS -->
+
+                            <xs:element name="name" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element name="class" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- ComponentsFactory XML loaders TAG-LOADER_CLASS -->
+
                             <xs:element name="tag" minOccurs="0">
                                 <xs:complexType>
                                     <xs:simpleContent>
@@ -35,25 +57,7 @@
                                 </xs:complexType>
                             </xs:element>
 
-                            <xs:element name="name">
-                                <xs:complexType>
-                                    <xs:simpleContent>
-                                        <xs:extension base="xs:string">
-                                        </xs:extension>
-                                    </xs:simpleContent>
-                                </xs:complexType>
-                            </xs:element>
-
-                            <xs:element name="class">
-                                <xs:complexType>
-                                    <xs:simpleContent>
-                                        <xs:extension base="xs:string">
-                                        </xs:extension>
-                                    </xs:simpleContent>
-                                </xs:complexType>
-                            </xs:element>
-
-                            <xs:element name="componentLoader">
+                            <xs:element name="componentLoader" minOccurs="0">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
