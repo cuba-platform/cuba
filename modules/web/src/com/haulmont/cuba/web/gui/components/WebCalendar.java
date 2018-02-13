@@ -507,7 +507,8 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public Map<DayOfWeek, String> getDayNames() {
-        List<String> days = Arrays.asList(component.getDayNamesShort());
+        List<String> days = Arrays.asList(component.getDayNamesShort().clone());
+        Collections.rotate(days, -component.getFirstDayOfWeek());
 
         return days.stream().collect(Collectors.toMap(
                 (String d) -> DayOfWeek.of(days.indexOf(d) + 1),
@@ -523,11 +524,13 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
             throw new IllegalArgumentException("Day names map doesn't contain all required values");
         }
 
-        String[] days = Arrays.stream(DayOfWeek.values())
+        List<String> daysList = Arrays.stream(DayOfWeek.values())
                 .map(dayNames::get)
-                .toArray(String[]::new);
+                .collect(Collectors.toList());
+        Collections.rotate(daysList, component.getFirstDayOfWeek());
 
-        component.setDayNamesShort(days);
+        String[] days = new String[7];
+        component.setDayNamesShort(daysList.toArray(days));
     }
 
     @Override
