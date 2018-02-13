@@ -1076,7 +1076,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         FilterEntity globalDefaultFilter = filters.stream()
-                .filter(FilterEntity::getGlobalDefault)
+                .filter(filterEntity -> Boolean.TRUE.equals(filterEntity.getGlobalDefault()))
                 .findAny()
                 .orElse(null);
         return globalDefaultFilter;
