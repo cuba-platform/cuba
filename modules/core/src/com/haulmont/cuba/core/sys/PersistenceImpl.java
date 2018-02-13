@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.eclipse.persistence.internal.helper.CubaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -50,6 +52,8 @@ public class PersistenceImpl implements Persistence {
 
     public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
     public static final String RUN_AFTER_COMPLETION_ATTR = "cuba.runAfterCompletion";
+
+    private Logger log = LoggerFactory.getLogger(PersistenceImpl.class);
 
     protected volatile boolean softDeletion = true;
 
@@ -243,6 +247,7 @@ public class PersistenceImpl implements Persistence {
      * Register synchronizations with a just started transaction.
      */
     public void registerSynchronizations(String store) {
+        log.trace("registerSynchronizations for store '{}'", store);
         TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
         support.getInstanceContainerResourceHolder(store);
     }

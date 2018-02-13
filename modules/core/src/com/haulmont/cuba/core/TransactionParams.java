@@ -56,4 +56,12 @@ public class TransactionParams {
         this.readOnly = readOnly;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionParams{" +
+                "timeout=" + timeout +
+                ", readOnly=" + readOnly +
+                '}';
+    }
 }

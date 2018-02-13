@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionParams;
 import com.haulmont.cuba.core.global.Stores;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -35,11 +37,15 @@ public class TransactionImpl implements Transaction {
     private TransactionStatus ts;
     private boolean committed;
 
+    private Logger log = LoggerFactory.getLogger(TransactionImpl.class);
+
     public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join,
                            @Nullable TransactionParams params, String storeName) {
         this.tm = transactionManager;
         this.persistence = persistence;
         this.storeName = storeName;
+
+        log.trace("Creating transaction: store='{}' join={} params={}", storeName, join, params);
 
         td = new DefaultTransactionDefinition();
         if (join)
