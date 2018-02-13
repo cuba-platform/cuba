@@ -1769,7 +1769,8 @@ public class WebWindowManager extends WindowManager {
         return !window.getId().equals(defaultScreenId);
     }
 
-    public void openDefaultWindow() {
+    @Override
+    public void openDefaultScreen() {
         String defaultScreenId = webConfig.getDefaultScreenId();
 
         if (webConfig.getUserCanChooseDefaultScreen()) {

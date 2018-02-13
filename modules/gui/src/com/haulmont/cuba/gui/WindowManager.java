@@ -1265,6 +1265,13 @@ public abstract class WindowManager {
         }
     }
 
+    /**
+     * Opens default screen. Implemented only for the web module.
+     * <p>
+     * Default screen can be defined with the {@code cuba.web.defaultScreenId} application property.
+     */
+    public abstract void openDefaultScreen();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
