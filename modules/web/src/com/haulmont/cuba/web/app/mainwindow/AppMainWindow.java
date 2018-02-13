@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
@@ -95,12 +94,5 @@ public class AppMainWindow extends AbstractMainWindow {
 
             expand(workArea);
         }
-    }
-
-    @Override
-    public void ready() {
-        super.ready();
-
-        App.getInstance().getWindowManager().openDefaultWindow();
     }
 }

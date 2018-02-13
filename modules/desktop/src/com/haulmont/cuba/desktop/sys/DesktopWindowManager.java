@@ -2053,6 +2053,11 @@ public class DesktopWindowManager extends WindowManager {
         return false;
     }
 
+    // just stub
+    @Override
+    public void openDefaultScreen() {
+    }
+
     protected class DesktopNotificationAction implements Action {
         private Type type;
 

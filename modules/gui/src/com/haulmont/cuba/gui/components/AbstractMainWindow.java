@@ -107,4 +107,11 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
             userIndicator.refreshUserSubstitutions();
         }
     }
+
+    @Override
+    public void ready() {
+        super.ready();
+
+        getWindowManager().openDefaultScreen();
+    }
 }
