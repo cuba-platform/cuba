@@ -47,4 +47,8 @@ public class CubaCalendar extends Calendar {
     public void setMonthNamesShort(String[] monthNamesShort) {
         this.monthNamesShort = monthNamesShort;
     }
+
+    public int getFirstDayOfWeek() {
+        return currentCalendar.getFirstDayOfWeek();
+    }
 }
