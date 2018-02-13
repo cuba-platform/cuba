@@ -330,7 +330,7 @@ public class FilterEditor extends AbstractWindow {
         filterEntity.setIsDefault(defaultCb.getValue());
         filterEntity.setApplyDefault(applyDefaultCb.getValue());
 
-        boolean globalDefaultShouldBeChecked = !filterEntity.getGlobalDefault() && globalDefaultCb.getValue();
+        boolean globalDefaultShouldBeChecked = !Boolean.TRUE.equals(filterEntity.getGlobalDefault()) && globalDefaultCb.getValue();
         filterEntity.setGlobalDefault(globalDefaultCb.getValue());
 
         if (globalDefaultShouldBeChecked) {
