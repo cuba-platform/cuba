@@ -246,7 +246,6 @@ configure(sharedLibModule) {
 
 configure(globalModule) {
     dependencies {
-        compile(bom['commons-logging:commons-logging'])
         compile(bom['org.codehaus.groovy:groovy-all'])
 
         compile(bom['commons-lang:commons-lang'])
