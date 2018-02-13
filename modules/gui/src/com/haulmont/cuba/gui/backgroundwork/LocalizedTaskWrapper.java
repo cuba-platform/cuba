@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,18 +121,10 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     protected void showExecutionError(Exception ex) {
         Frame ownerFrame = wrappedTask.getOwnerFrame();
         if (ownerFrame != null) {
-            String localizedMessage = ex.getLocalizedMessage();
-
-            Messages messages = AppBeans.get(Messages.NAME);
-            if (StringUtils.isNotBlank(localizedMessage)) {
-                ownerFrame.showNotification(
-                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
-                        localizedMessage, NotificationType.WARNING);
-            } else {
-                ownerFrame.showNotification(
-                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
-                        NotificationType.WARNING);
-            }
+            window.getWindowManager().showExceptionDialog(
+                    ex,
+                    AppBeans.get(Messages.class).getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
+                    ex.getLocalizedMessage());
         }
     }
 }
