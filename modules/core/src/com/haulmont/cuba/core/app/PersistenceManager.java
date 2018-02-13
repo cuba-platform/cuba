@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component(PersistenceManagerAPI.NAME)
 public class PersistenceManager implements PersistenceManagerAPI {
 
-    private final Logger log = LoggerFactory.getLogger(PersistenceManager.class);
+    private static final Logger log = LoggerFactory.getLogger(PersistenceManager.class);
 
     protected Map<String, EntityStatistics> statisticsCache;
 

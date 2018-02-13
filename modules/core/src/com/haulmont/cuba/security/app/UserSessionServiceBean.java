@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public class UserSessionServiceBean implements UserSessionService {
     public static final String MESSAGE_ATTR_PREFIX = "message-";
 
-    private final Logger log = LoggerFactory.getLogger(UserSessionServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSessionServiceBean.class);
 
     @Inject
     private UserSessionManager userSessionManager;

@@ -53,7 +53,7 @@ public class PortalConnection implements Connection {
 
     protected volatile PortalSession session;
 
-    protected Logger log = LoggerFactory.getLogger(Connection.class);
+    private static final Logger log = LoggerFactory.getLogger(Connection.class);
 
     @Inject
     protected Configuration configuration;

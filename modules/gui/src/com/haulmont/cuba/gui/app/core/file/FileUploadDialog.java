@@ -35,7 +35,7 @@ import java.util.UUID;
  */
 public class FileUploadDialog extends AbstractWindow {
 
-    private final Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
 
     @Inject
     protected FileUploadField fileUpload;

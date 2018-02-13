@@ -50,7 +50,7 @@ public class Emailer implements EmailerAPI {
 
     protected static final String BODY_FILE_EXTENSION = "txt";
 
-    private Logger log = LoggerFactory.getLogger(Emailer.class);
+    private static final Logger log = LoggerFactory.getLogger(Emailer.class);
 
     protected EmailerConfig config;
 
@@ -676,7 +676,7 @@ public class Emailer implements EmailerAPI {
     protected static class EmailSendTask implements Runnable {
 
         private SendingMessage sendingMessage;
-        private Logger log = LoggerFactory.getLogger(EmailSendTask.class);
+        private static final Logger log = LoggerFactory.getLogger(EmailSendTask.class);
 
         public EmailSendTask(SendingMessage message) {
             sendingMessage = message;

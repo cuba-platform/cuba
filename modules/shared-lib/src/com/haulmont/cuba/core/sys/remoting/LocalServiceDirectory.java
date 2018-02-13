@@ -37,7 +37,7 @@ public class LocalServiceDirectory {
 
     private static CountDownLatch latch = new CountDownLatch(1);
 
-    private static Logger log = LoggerFactory.getLogger(LocalServiceDirectory.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalServiceDirectory.class);
 
     public static void registerInvoker(String name, LocalServiceInvoker invoker) {
         log.debug("Registering service {}", name);

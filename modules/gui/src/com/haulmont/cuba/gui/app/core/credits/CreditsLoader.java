@@ -31,7 +31,7 @@ import java.util.*;
 
 public class CreditsLoader {
 
-    private final Logger log = LoggerFactory.getLogger(CreditsLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(CreditsLoader.class);
 
     private List<CreditsItem> items = new ArrayList<>();
 

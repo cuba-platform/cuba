@@ -55,7 +55,7 @@ import java.util.*;
 @RestController
 public class LdapAuthController implements InitializingBean {
 
-    private final Logger log = LoggerFactory.getLogger(LdapAuthController.class);
+    private static final Logger log = LoggerFactory.getLogger(LdapAuthController.class);
 
     protected LdapTemplate defaultLdapTemplate;
     protected LdapContextSource defaultLdapContextSource;

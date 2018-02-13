@@ -43,7 +43,7 @@ public class ScreensHelper {
 
     private static final Map<String, Object> EMPTY_MAP = new HashMap<>();
 
-    private final Logger log = LoggerFactory.getLogger(ScreensHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(ScreensHelper.class);
 
     @Inject
     protected WindowConfig windowConfig;

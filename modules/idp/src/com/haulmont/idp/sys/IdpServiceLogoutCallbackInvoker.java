@@ -45,7 +45,7 @@ import java.util.concurrent.Executors;
 @Component("cuba_IdpServiceLogoutCallbackInvoker")
 public class IdpServiceLogoutCallbackInvoker {
 
-    private final Logger log = LoggerFactory.getLogger(IdpServiceLogoutCallbackInvoker.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpServiceLogoutCallbackInvoker.class);
 
     @Inject
     protected IdpConfig idpConfig;

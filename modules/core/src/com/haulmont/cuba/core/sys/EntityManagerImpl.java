@@ -53,7 +53,7 @@ public class EntityManagerImpl implements EntityManager {
 
     protected boolean softDeletion = true;
 
-    private Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
 
     protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession) {
         this.delegate = jpaEntityManager;

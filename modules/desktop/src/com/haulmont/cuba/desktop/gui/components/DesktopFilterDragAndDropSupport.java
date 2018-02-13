@@ -44,7 +44,7 @@ import java.util.Objects;
 @Component
 public class DesktopFilterDragAndDropSupport {
 
-    private Logger log = LoggerFactory.getLogger(DesktopFilterDragAndDropSupport.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopFilterDragAndDropSupport.class);
 
     public void initDragAndDrop(Tree tree, ConditionsTree conditions) {
         JTree dTree = (JTree) DesktopComponentsHelper.unwrap(tree);

@@ -34,7 +34,7 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
 
     public static final String NAME = "cuba_MiddlewareStatisticsAccumulator";
 
-    protected Logger log = LoggerFactory.getLogger(MiddlewareStatisticsAccumulator.class);
+    private static final Logger log = LoggerFactory.getLogger(MiddlewareStatisticsAccumulator.class);
 
     protected AtomicLong startedTransactionsCount = new AtomicLong();
     protected AtomicLong committedTransactionsCount = new AtomicLong();

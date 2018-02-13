@@ -34,7 +34,7 @@ public class LoggingHandlerExceptionResolver implements HandlerExceptionResolver
 
     protected int EXCEPTION_RESOLVER_ORDER = 1000;
 
-    protected Logger log = LoggerFactory.getLogger(LoggingHandlerExceptionResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(LoggingHandlerExceptionResolver.class);
 
     protected List<Class<? extends Exception>> excludedExceptions = new ArrayList<>();
 

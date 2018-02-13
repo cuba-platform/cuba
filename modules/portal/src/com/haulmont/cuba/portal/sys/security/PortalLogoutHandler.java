@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class PortalLogoutHandler extends SimpleUrlLogoutSuccessHandler {
 
-    private final Logger log = LoggerFactory.getLogger(PortalLogoutHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(PortalLogoutHandler.class);
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,

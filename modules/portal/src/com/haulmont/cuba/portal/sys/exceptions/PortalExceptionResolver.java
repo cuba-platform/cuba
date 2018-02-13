@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSession;
 
 public class PortalExceptionResolver implements HandlerExceptionResolver {
 
-    private Logger log = LoggerFactory.getLogger(PortalExceptionResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(PortalExceptionResolver.class);
 
     private String noUserSessionUrl;
 

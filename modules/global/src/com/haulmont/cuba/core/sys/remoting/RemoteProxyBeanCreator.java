@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
-    private Logger log = LoggerFactory.getLogger(RemoteProxyBeanCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoteProxyBeanCreator.class);
 
     protected Map<String, String> services;
 

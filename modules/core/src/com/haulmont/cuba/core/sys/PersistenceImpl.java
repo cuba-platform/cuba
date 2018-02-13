@@ -53,7 +53,7 @@ public class PersistenceImpl implements Persistence {
     public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
     public static final String RUN_AFTER_COMPLETION_ATTR = "cuba.runAfterCompletion";
 
-    private Logger log = LoggerFactory.getLogger(PersistenceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PersistenceImpl.class);
 
     protected volatile boolean softDeletion = true;
 

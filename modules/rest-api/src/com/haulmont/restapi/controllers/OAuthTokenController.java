@@ -39,7 +39,7 @@ import java.security.Principal;
 @RestController("cuba_OAuthTokenController")
 public class OAuthTokenController {
 
-    private final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);
 
     @Inject
     protected OAuthTokenRevoker oAuthTokenRevoker;

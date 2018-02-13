@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 
 public class AppPropertiesTest {
 
-    private Logger log = LoggerFactory.getLogger(AppPropertiesTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AppPropertiesTest.class);
 
     AppProperties appProperties;
 

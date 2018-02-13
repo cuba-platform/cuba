@@ -42,7 +42,7 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private DesktopResources resources;
 
-    private Logger log = LoggerFactory.getLogger(DesktopThemeImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopThemeImpl.class);
 
     /**
      * we can control margin & spacing sizes with help of {@link net.miginfocom.layout.PlatformDefaults} class.

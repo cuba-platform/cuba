@@ -56,7 +56,7 @@ public class ConfigStorage implements ConfigStorageAPI {
     protected Lock readLock = lock.readLock();
     protected Lock writeLock = lock.writeLock();
 
-    private Logger log = LoggerFactory.getLogger(ConfigStorage.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigStorage.class);
 
     private static class InvalidateCacheMsg implements Serializable {
         private static final long serialVersionUID = -3116358584797500962L;

@@ -55,7 +55,7 @@ import java.util.*;
  * This dialog can be used by exception handlers to show an information about error.
  */
 public class ExceptionDialog extends CubaWindow {
-    private final Logger log = LoggerFactory.getLogger(ExceptionDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionDialog.class);
 
     protected VerticalLayout mainLayout;
 

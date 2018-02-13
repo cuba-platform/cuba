@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTreeBuilderAPI {
 
-    private final Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
 
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Collections.singletonList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";

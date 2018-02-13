@@ -53,7 +53,7 @@ public class MessageTools {
 
     public static final String NAME = "cuba_MessageTools";
 
-    private final Logger log = LoggerFactory.getLogger(MessageTools.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageTools.class);
 
     protected volatile Boolean useLocaleLanguageOnly;
 

@@ -57,7 +57,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
     private String defaultAppPropertiesConfig;
     private String[] args;
 
-    private Logger log = LoggerFactory.getLogger(DesktopAppContextLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopAppContextLoader.class);
 
     public DesktopAppContextLoader(String defaultAppComponents, String defaultAppPropertiesConfig, String[] args) {
         this.defaultAppComponents = defaultAppComponents;

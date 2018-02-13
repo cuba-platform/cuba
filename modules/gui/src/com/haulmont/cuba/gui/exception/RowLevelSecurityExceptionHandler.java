@@ -35,7 +35,7 @@ import java.util.Locale;
 @Component("cuba_RowLevelSecurityExceptionHandler")
 public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHandler {
 
-    private final Logger log = LoggerFactory.getLogger(RowLevelSecurityExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(RowLevelSecurityExceptionHandler.class);
 
     protected RowLevelSecurityExceptionHandler() {
         super("com.haulmont.cuba.core.global.RowLevelSecurityException");

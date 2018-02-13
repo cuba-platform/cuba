@@ -35,7 +35,7 @@ import java.util.Properties;
 
 public class MainWindowProperties {
 
-    private final Logger log = LoggerFactory.getLogger(MainWindowProperties.class);
+    private static final Logger log = LoggerFactory.getLogger(MainWindowProperties.class);
 
     private JFrame frame;
 

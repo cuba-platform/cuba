@@ -45,7 +45,7 @@ import java.util.Objects;
 @RequestMapping("/idpc")
 public class IdpLogoutCallbackController {
 
-    private final Logger log = LoggerFactory.getLogger(IdpLogoutCallbackController.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpLogoutCallbackController.class);
 
     @Inject
     protected WebIdpConfig webIdpConfig;

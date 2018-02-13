@@ -72,7 +72,7 @@ public class IdpAuthController implements InitializingBean {
 
     public static final String IDP_SESSION_ID_TOKEN_ATTRIBUTE = "idp_session_id";
 
-    private final Logger log = LoggerFactory.getLogger(IdpAuthController.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpAuthController.class);
 
     @Inject
     protected Configuration configuration;

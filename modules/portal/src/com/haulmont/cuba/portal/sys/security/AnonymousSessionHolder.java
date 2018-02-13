@@ -43,7 +43,7 @@ import java.util.Objects;
 @Component("cuba_PortalAnonymousSessionHolder")
 public class AnonymousSessionHolder {
 
-    private final Logger log = LoggerFactory.getLogger(AnonymousSessionHolder.class);
+    private static final Logger log = LoggerFactory.getLogger(AnonymousSessionHolder.class);
 
     @Inject
     protected GlobalConfig globalConfig;

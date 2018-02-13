@@ -51,7 +51,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(FileLoader.NAME)
 public class FileLoaderClientImpl implements FileLoader {
 
-    private final Logger log = LoggerFactory.getLogger(FileLoaderClientImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(FileLoaderClientImpl.class);
 
     @Resource(name = ServerSelector.NAME)
     protected ServerSelector serverSelector;

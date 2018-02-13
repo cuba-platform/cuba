@@ -47,7 +47,7 @@ public class RestAuthUtils {
     @Inject
     protected MessageTools messageTools;
 
-    protected Logger log = LoggerFactory.getLogger(RestAuthUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(RestAuthUtils.class);
 
     /**
      * Method extracts locale information from the Accept-Language header. If no such header is specified or the

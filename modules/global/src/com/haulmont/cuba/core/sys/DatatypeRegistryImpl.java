@@ -32,7 +32,7 @@ import java.util.Set;
 @Component(DatatypeRegistry.NAME)
 public class DatatypeRegistryImpl implements DatatypeRegistry {
 
-    private Logger log = LoggerFactory.getLogger(DatatypeRegistryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DatatypeRegistryImpl.class);
 
     protected Map<Class<?>, Datatype> datatypeByClass = new HashMap<>();
     protected Map<String, Datatype> datatypeById = new HashMap<>();

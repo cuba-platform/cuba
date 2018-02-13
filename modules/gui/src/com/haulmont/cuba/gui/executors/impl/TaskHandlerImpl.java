@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
-    private Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     private UIAccessor uiAccessor;
     private final TaskExecutor<T, V> taskExecutor;

@@ -53,7 +53,7 @@ public class IdpController {
     public static final String CUBA_IDP_COOKIE_NAME = "IDP_SESSION_ID";
     public static final String CUBA_IDP_TICKET_PARAMETER = "idp_ticket";
 
-    private final Logger log = LoggerFactory.getLogger(IdpController.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpController.class);
 
     @Inject
     protected GlobalConfig globalConfig;

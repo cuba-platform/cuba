@@ -48,7 +48,7 @@ import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AU
 @Component("cuba_LdapLoginProvider")
 public class LdapLoginProvider implements LoginProvider, Ordered {
 
-    private final Logger log = LoggerFactory.getLogger(LdapLoginProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(LdapLoginProvider.class);
 
     @Inject
     protected AuthenticationService authenticationService;

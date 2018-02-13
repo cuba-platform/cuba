@@ -52,7 +52,7 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
 
     protected static final String GRANT_TYPE = "external";
 
-    private final Logger log = LoggerFactory.getLogger(ExternalOAuthTokenGranter.class);
+    private static final Logger log = LoggerFactory.getLogger(ExternalOAuthTokenGranter.class);
 
     protected ClientDetailsService clientDetailsService;
     protected OAuth2RequestFactory requestFactory;

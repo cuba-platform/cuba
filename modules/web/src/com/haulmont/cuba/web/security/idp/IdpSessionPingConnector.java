@@ -42,7 +42,7 @@ import java.util.Arrays;
 @Component("cuba_IdpSessionPingConnector")
 public class IdpSessionPingConnector {
 
-    private final Logger log = LoggerFactory.getLogger(IdpSessionPingConnector.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpSessionPingConnector.class);
 
     @Inject
     protected WebIdpConfig webIdpConfig;

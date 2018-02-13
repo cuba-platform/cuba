@@ -64,7 +64,7 @@ import static com.haulmont.restapi.idp.IdpAuthController.IDP_SESSION_ID_TOKEN_AT
 @Component("cuba_IdpAuthLifecycleManager")
 public class IdpAuthLifecycleManager implements InitializingBean {
 
-    private final Logger log = LoggerFactory.getLogger(IdpAuthLifecycleManager.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpAuthLifecycleManager.class);
 
     @Inject
     protected Configuration configuration;

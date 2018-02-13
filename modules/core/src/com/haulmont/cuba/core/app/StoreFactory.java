@@ -32,7 +32,7 @@ import java.util.Map;
 @Component(StoreFactory.NAME)
 public class StoreFactory {
 
-    private Logger log = LoggerFactory.getLogger(StoreFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(StoreFactory.class);
 
     public static final String NAME = "cuba_StoreFactory";
 

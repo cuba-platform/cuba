@@ -55,7 +55,7 @@ public class StandardCacheLoader implements CacheLoader {
     @Inject
     private Configuration configuration;
 
-    private static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
+    private static final Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
     private String viewName;
     private String queryPath;

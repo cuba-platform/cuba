@@ -42,7 +42,7 @@ public class StatisticsAccumulator {
 
     protected final long startTime = System.currentTimeMillis();
 
-    private Logger log = LoggerFactory.getLogger(StatisticsAccumulator.class);
+    private static final Logger log = LoggerFactory.getLogger(StatisticsAccumulator.class);
 
     public void gatherParameters() {
         try {

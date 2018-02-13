@@ -54,7 +54,7 @@ import java.util.*;
  */
 public class ClientProxyTokenStore implements TokenStore {
 
-    private final Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
+    private static final Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
 
     @Inject
     protected ServerTokenStore serverTokenStore;

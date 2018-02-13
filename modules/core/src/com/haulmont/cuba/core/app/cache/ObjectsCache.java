@@ -47,7 +47,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Deprecated
 public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
-    private final Logger log = LoggerFactory.getLogger(ObjectsCache.class);
+    private static final Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
     protected String name;
     protected CacheSet cacheSet;

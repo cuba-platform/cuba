@@ -39,7 +39,7 @@ public class OrmBehaviorTest {
 
     private UUID userId, groupId;
 
-    private Logger log = LoggerFactory.getLogger(OrmBehaviorTest.class);
+    private static final Logger log = LoggerFactory.getLogger(OrmBehaviorTest.class);
 
     @After
     public void tearDown() throws Exception {

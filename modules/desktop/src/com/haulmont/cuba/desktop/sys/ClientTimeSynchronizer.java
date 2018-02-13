@@ -46,7 +46,7 @@ public class ClientTimeSynchronizer {
 
     protected static final int TIMEOUT_SEC = 60;
 
-    private Logger log = LoggerFactory.getLogger(ClientTimeSynchronizer.class);
+    private static final Logger log = LoggerFactory.getLogger(ClientTimeSynchronizer.class);
 
     @Inject
     protected ServerInfoService serverInfoService;

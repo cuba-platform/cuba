@@ -40,7 +40,7 @@ import java.io.IOException;
  */
 public class CubaAnonymousAuthenticationFilter implements Filter {
 
-    private final Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
 
     @Inject
     protected GlobalConfig globalConfig;

@@ -38,7 +38,7 @@ import java.util.*;
 @Component(DataManager.NAME)
 public class DataManagerBean implements DataManager {
 
-    private Logger log = LoggerFactory.getLogger(DataManagerBean.class);
+    private static final Logger log = LoggerFactory.getLogger(DataManagerBean.class);
 
     @Inject
     protected Metadata metadata;

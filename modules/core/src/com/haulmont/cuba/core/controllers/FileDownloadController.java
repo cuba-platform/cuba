@@ -52,7 +52,7 @@ import java.util.UUID;
 @Controller
 public class FileDownloadController {
 
-    private final Logger log = LoggerFactory.getLogger(FileDownloadController.class);
+    private static final Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     private UserSessionsAPI userSessions;

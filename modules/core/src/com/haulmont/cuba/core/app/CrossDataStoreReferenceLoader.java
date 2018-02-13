@@ -42,7 +42,7 @@ public class CrossDataStoreReferenceLoader {
 
     public static final String NAME = "cuba_CrossDataStoreReferenceLoader";
 
-    private Logger log = LoggerFactory.getLogger(CrossDataStoreReferenceLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(CrossDataStoreReferenceLoader.class);
 
     @Inject
     private Metadata metadata;

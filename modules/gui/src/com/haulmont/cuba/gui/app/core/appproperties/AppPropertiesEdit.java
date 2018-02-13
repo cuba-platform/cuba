@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public class AppPropertiesEdit extends AbstractWindow {
 
-    private Logger log = LoggerFactory.getLogger(AppPropertiesEdit.class);
+    private static final Logger log = LoggerFactory.getLogger(AppPropertiesEdit.class);
 
     @WindowParam
     private AppPropertyEntity item;

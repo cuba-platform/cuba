@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component(Runner.NAME)
 public class RunnerBean implements Runner {
 
-    private final Logger log = LoggerFactory.getLogger(RunnerBean.class);
+    private static final Logger log = LoggerFactory.getLogger(RunnerBean.class);
 
     protected ExecutorService executorService;
 

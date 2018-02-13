@@ -24,7 +24,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public class AuthenticationInterceptor {
 
-    private final Logger log = LoggerFactory.getLogger(AuthenticationInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
     private Authentication authentication;
 

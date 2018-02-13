@@ -105,7 +105,7 @@ public class BuildInfo {
         }
     }
 
-    private static Logger log = LoggerFactory.getLogger(BuildInfo.class);
+    private static final Logger log = LoggerFactory.getLogger(BuildInfo.class);
 
     @Inject
     protected Metadata metadata;

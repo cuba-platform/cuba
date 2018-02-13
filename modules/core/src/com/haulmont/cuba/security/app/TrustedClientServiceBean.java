@@ -38,7 +38,7 @@ import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 @Component(TrustedClientService.NAME)
 public class TrustedClientServiceBean implements TrustedClientService {
 
-    private final Logger log = LoggerFactory.getLogger(TrustedClientServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(TrustedClientServiceBean.class);
 
     protected static final String MSG_PACK = "com.haulmont.cuba.security";
 

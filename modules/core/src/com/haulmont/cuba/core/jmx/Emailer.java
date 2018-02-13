@@ -49,7 +49,7 @@ public class Emailer implements EmailerMBean {
 
     protected EmailerConfig config;
 
-    protected Logger log = LoggerFactory.getLogger(Emailer.class);
+    private static final Logger log = LoggerFactory.getLogger(Emailer.class);
 
     @Inject
     public void setConfiguration(Configuration configuration) {

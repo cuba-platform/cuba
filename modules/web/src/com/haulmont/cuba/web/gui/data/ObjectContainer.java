@@ -32,7 +32,7 @@ import java.util.*;
 
 public class ObjectContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
 
-    private final Logger log = LoggerFactory.getLogger(ObjectContainer.class);
+    private static final Logger log = LoggerFactory.getLogger(ObjectContainer.class);
 
     // lazily initialized listeners list
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;

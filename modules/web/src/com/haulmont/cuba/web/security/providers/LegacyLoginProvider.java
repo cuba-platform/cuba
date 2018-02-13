@@ -43,7 +43,7 @@ import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AU
 @Component("cuba_LegacyLoginProvider")
 public class LegacyLoginProvider implements LoginProvider, Ordered {
 
-    private final Logger log = LoggerFactory.getLogger(LegacyLoginProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(LegacyLoginProvider.class);
 
     @Inject
     protected AuthenticationService authenticationService;

@@ -39,7 +39,7 @@ import java.util.List;
 @Component(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {
 
-    private final Logger log = LoggerFactory.getLogger(DbBasedCoordinator.class);
+    private static final Logger log = LoggerFactory.getLogger(DbBasedCoordinator.class);
 
     protected static class ContextImpl implements Context {
 

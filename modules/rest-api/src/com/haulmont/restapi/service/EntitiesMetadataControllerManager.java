@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Component("cuba_EntitiesMetadataControllerManager")
 public class EntitiesMetadataControllerManager {
 
-    protected Logger log = LoggerFactory.getLogger(EntitiesMetadataControllerManager.class);
+    private static final Logger log = LoggerFactory.getLogger(EntitiesMetadataControllerManager.class);
 
     @Inject
     protected Metadata metadata;

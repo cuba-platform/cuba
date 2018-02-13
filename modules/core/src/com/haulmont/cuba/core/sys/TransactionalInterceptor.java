@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 
 public class TransactionalInterceptor {
 
-    private Logger log = LoggerFactory.getLogger(TransactionalInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionalInterceptor.class);
 
     private Persistence persistence;
 

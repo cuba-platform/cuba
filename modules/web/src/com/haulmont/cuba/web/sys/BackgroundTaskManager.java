@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 
 public class BackgroundTaskManager {
-    private static Logger log = LoggerFactory.getLogger(BackgroundTaskManager.class);
+    private static final Logger log = LoggerFactory.getLogger(BackgroundTaskManager.class);
 
     private transient Set<Future> taskSet;
 

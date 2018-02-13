@@ -46,7 +46,7 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
 
     private ServerSelector serverSelector;
 
-    private Logger log = LoggerFactory.getLogger(ClusteredHttpInvokerRequestExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(ClusteredHttpInvokerRequestExecutor.class);
 
     public ClusteredHttpInvokerRequestExecutor(ServerSelector serverSelector) {
         this.serverSelector = serverSelector;

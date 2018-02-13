@@ -72,7 +72,7 @@ public class ServicesControllerManager {
     @Inject
     protected Metadata metadata;
 
-    protected Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
     @Nullable
     public ServiceCallResult invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap, String modelVersion) {

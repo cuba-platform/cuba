@@ -41,7 +41,7 @@ import java.util.UUID;
 @Controller
 public class FileUploadController {
 
-    private Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     @Inject
     private UserSessionsAPI userSessions;

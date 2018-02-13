@@ -37,7 +37,7 @@ import java.util.Map;
 @Service(ExceptionReportService.NAME)
 public class ExceptionReportServiceBean implements ExceptionReportService {
 
-    private final Logger log = LoggerFactory.getLogger(ExceptionReportServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionReportServiceBean.class);
 
     @Inject
     protected ServerConfig serverConfig;

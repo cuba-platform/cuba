@@ -37,7 +37,7 @@ public class TransactionImpl implements Transaction {
     private TransactionStatus ts;
     private boolean committed;
 
-    private Logger log = LoggerFactory.getLogger(TransactionImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionImpl.class);
 
     public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join,
                            @Nullable TransactionParams params, String storeName) {

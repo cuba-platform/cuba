@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
-    private Logger log = LoggerFactory.getLogger(RemoteServicesBeanCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoteServicesBeanCreator.class);
 
     private ApplicationContext context;
 

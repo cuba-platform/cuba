@@ -48,7 +48,7 @@ public class ViewSerialization implements ViewSerializationAPI {
     @Inject
     protected Metadata metadata;
 
-    protected Logger log = LoggerFactory.getLogger(ViewSerialization.class);
+    private static final Logger log = LoggerFactory.getLogger(ViewSerialization.class);
 
     @Override
     public View fromJson(String json) {

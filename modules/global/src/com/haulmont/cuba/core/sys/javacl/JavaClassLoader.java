@@ -49,7 +49,7 @@ public class JavaClassLoader extends URLClassLoader {
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String JAR_EXT = ".jar";
 
-    private static Logger log = LoggerFactory.getLogger(JavaClassLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(JavaClassLoader.class);
 
     protected final String cubaClassPath;
     protected final String classPath;

@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
-    private final Logger log = LoggerFactory.getLogger(EntityLog.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityLog.class);
 
     @Inject
     protected TimeSource timeSource;

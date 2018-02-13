@@ -27,7 +27,7 @@ import java.util.List;
 
 public class IntegerListTypeFactory extends TypeFactory {
 
-    private Logger log = LoggerFactory.getLogger(IntegerListTypeFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(IntegerListTypeFactory.class);
 
     @Override
     public Object build(String string) {

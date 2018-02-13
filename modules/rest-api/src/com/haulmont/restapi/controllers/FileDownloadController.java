@@ -44,7 +44,7 @@ import java.util.UUID;
 @RequestMapping("/v2/files")
 public class FileDownloadController {
 
-    private final Logger log = LoggerFactory.getLogger(FileDownloadController.class);
+    private static final Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     // Using injection by name here, because an application project can define several instances
     // of ServerSelector type to work with different middleware blocks

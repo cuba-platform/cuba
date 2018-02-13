@@ -43,7 +43,7 @@ public class EntityFetcher {
 
     public static final String NAME = "cuba_EntityFetcher";
 
-    private Logger log = LoggerFactory.getLogger(EntityFetcher.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityFetcher.class);
 
     @Inject
     protected Metadata metadata;

@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  */
 public abstract class StickySessionServerSelector implements ServerSelector {
 
-    private Logger log = LoggerFactory.getLogger(StickySessionServerSelector.class);
+    private static final Logger log = LoggerFactory.getLogger(StickySessionServerSelector.class);
 
     protected String servletPath = "remoting";
 

@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class FreeMarkerView extends org.springframework.web.servlet.view.freemarker.FreeMarkerView {
 
-    private final Logger log = LoggerFactory.getLogger(FreeMarkerView.class);
+    private static final Logger log = LoggerFactory.getLogger(FreeMarkerView.class);
 
     @Inject
     protected Messages messages;

@@ -71,7 +71,7 @@ public class MetadataBuildSupport {
         }
     }
 
-    private Logger log = LoggerFactory.getLogger(MetadataBuildSupport.class);
+    private static final Logger log = LoggerFactory.getLogger(MetadataBuildSupport.class);
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
     public static final String METADATA_CONFIG = "cuba.metadataConfig";

@@ -33,7 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service(ScreenProfilerService.NAME)
 public class ScreenProfilerServiceBean implements ScreenProfilerService {
 
-    protected final Logger log = LoggerFactory.getLogger(ScreenProfilerService.class);
+    private static final Logger log = LoggerFactory.getLogger(ScreenProfilerService.class);
 
     @Inject
     protected Metadata metadata;

@@ -47,7 +47,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageAPI {
 
-    private final Logger log = LoggerFactory.getLogger(FileStorage.class);
+    private static final Logger log = LoggerFactory.getLogger(FileStorage.class);
 
     @Inject
     protected UserSessionSource userSessionSource;

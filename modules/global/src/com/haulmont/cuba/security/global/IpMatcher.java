@@ -30,7 +30,7 @@ public class IpMatcher {
     private static final Set<String> whiteListedIPs = ImmutableSet.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     private List<String[]> masks = new ArrayList<>();
 
-    private final Logger log = LoggerFactory.getLogger(IpMatcher.class);
+    private static final Logger log = LoggerFactory.getLogger(IpMatcher.class);
 
     public IpMatcher(String source) {
         String[] parts = source.split("[,;]");

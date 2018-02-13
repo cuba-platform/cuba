@@ -71,7 +71,7 @@ public class MetaModelLoader {
 
     protected Session session;
 
-    private Logger log = LoggerFactory.getLogger(MetaModelLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(MetaModelLoader.class);
 
     public MetaModelLoader(Session session) {
         this.session = session;

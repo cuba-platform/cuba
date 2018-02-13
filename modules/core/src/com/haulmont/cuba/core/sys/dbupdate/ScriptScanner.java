@@ -45,7 +45,7 @@ public class ScriptScanner {
     protected String dbmsType;
     protected String dbmsVersion;
 
-    private Logger log = LoggerFactory.getLogger(ScriptScanner.class);
+    private static final Logger log = LoggerFactory.getLogger(ScriptScanner.class);
 
     public ScriptScanner(String dbScriptsDirectory, String dbmsType, String dbmsVersion) {
         this.dbScriptsDirectory = dbScriptsDirectory.replace('\\', '/');

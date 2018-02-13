@@ -36,7 +36,7 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
 
-    private static Logger log = LoggerFactory.getLogger(AppContextLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(AppContextLoader.class);
 
     public static void createPersistenceXml(String storeName) {
         String configPropertyName = AppContextLoader.PERSISTENCE_CONFIG;

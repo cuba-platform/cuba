@@ -46,7 +46,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener, Ordered {
     public static final String CUBA_RELEASE_NUMBER_PATH = "/com/haulmont/cuba/core/global/release.number";
     public static final String CUBA_RELEASE_TIMESTAMP_PATH = "/com/haulmont/cuba/core/global/release.timestamp";
 
-    protected Logger log = LoggerFactory.getLogger(ServerInfo.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerInfo.class);
 
     protected String releaseNumber = "?";
     protected String releaseTimestamp = "?";

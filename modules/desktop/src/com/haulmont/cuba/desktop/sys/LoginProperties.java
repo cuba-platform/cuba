@@ -33,7 +33,7 @@ import java.util.Properties;
 
 public class LoginProperties {
 
-    private Logger log = LoggerFactory.getLogger(LoginProperties.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginProperties.class);
 
     protected Properties properties = new Properties();
 

@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class StaticServerSelector extends StickySessionServerSelector {
 
-    private Logger log = LoggerFactory.getLogger(StaticServerSelector.class);
+    private static final Logger log = LoggerFactory.getLogger(StaticServerSelector.class);
 
     private String baseUrl;
 

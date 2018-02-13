@@ -49,7 +49,7 @@ import static java.lang.String.format;
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
 
-    protected Logger log = LoggerFactory.getLogger(DynamicAttributesManager.class);
+    private static final Logger log = LoggerFactory.getLogger(DynamicAttributesManager.class);
 
     @Inject
     protected Metadata metadata;

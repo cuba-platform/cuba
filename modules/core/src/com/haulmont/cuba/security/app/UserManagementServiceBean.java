@@ -44,7 +44,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Service(UserManagementService.NAME)
 public class UserManagementServiceBean implements UserManagementService {
 
-    private final Logger log = LoggerFactory.getLogger(UserManagementServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(UserManagementServiceBean.class);
 
     protected static final String GROUP_COPY_VIEW = "group.copy";
 

@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
-    private final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     protected BackgroundTask<T, V> wrappedTask;
     protected Window window;

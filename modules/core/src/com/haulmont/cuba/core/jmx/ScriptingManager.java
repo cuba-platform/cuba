@@ -30,7 +30,7 @@ import javax.inject.Inject;
 @Component("cuba_ScriptingManagerMBean")
 public class ScriptingManager implements ScriptingManagerMBean {
 
-    private final Logger log = LoggerFactory.getLogger(ScriptingManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ScriptingManager.class);
 
     @Inject
     protected Configuration configuration;

@@ -30,7 +30,7 @@ import java.util.Map;
 public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
     private Map<String, String> aliases = new HashMap<>();
-    private Logger log = LoggerFactory.getLogger(DomainAliasesResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(DomainAliasesResolver.class);
 
     @Inject
     public DefaultDomainAliasesResolver(Configuration configuration) {

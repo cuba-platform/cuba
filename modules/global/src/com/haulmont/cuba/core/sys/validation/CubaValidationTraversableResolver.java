@@ -28,7 +28,7 @@ import java.lang.annotation.ElementType;
 
 public class CubaValidationTraversableResolver extends DefaultTraversableResolver {
 
-    private final Logger log = LoggerFactory.getLogger(CubaValidationTraversableResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaValidationTraversableResolver.class);
 
     protected Metadata metadata;
     protected EntityStates entityStates;

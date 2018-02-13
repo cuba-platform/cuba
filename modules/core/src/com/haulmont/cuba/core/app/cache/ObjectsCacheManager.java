@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component(ObjectsCacheManagerAPI.NAME)
 public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
 
-    private final Logger log = LoggerFactory.getLogger(ObjectsCacheManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ObjectsCacheManager.class);
 
     protected ConcurrentMap<String, ObjectsCacheInstance> instances = new ConcurrentHashMap<>();
 

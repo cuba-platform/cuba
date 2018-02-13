@@ -77,7 +77,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Inject
     protected TimeSource timeSource;
 
-    protected Logger log = LoggerFactory.getLogger(ServerTokenStoreImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerTokenStoreImpl.class);
 
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 

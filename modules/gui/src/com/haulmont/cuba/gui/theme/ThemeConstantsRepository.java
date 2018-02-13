@@ -40,7 +40,7 @@ public class ThemeConstantsRepository {
 
     public static final String NAME = "cuba_ThemeConstantsRepository";
 
-    private final Logger log = LoggerFactory.getLogger(ThemeConstantsRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(ThemeConstantsRepository.class);
 
     @Inject
     protected Resources resources;

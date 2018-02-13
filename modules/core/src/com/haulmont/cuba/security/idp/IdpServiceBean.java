@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Service(IdpService.NAME)
 public class IdpServiceBean implements IdpService {
 
-    private final Logger log = LoggerFactory.getLogger(IdpServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpServiceBean.class);
 
     @Inject
     protected GlobalConfig globalConfig;

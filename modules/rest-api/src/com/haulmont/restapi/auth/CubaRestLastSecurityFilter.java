@@ -48,7 +48,7 @@ import java.util.UUID;
  */
 public class CubaRestLastSecurityFilter implements Filter {
 
-    private final Logger log = LoggerFactory.getLogger(CubaRestLastSecurityFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaRestLastSecurityFilter.class);
 
     @Inject
     protected Configuration configuration;

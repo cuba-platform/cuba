@@ -48,7 +48,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component(BackgroundWorker.NAME)
 public class DesktopBackgroundWorker implements BackgroundWorker {
 
-    private Logger log = LoggerFactory.getLogger(DesktopBackgroundWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopBackgroundWorker.class);
 
     private WatchDog watchDog;
 

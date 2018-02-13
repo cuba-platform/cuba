@@ -34,7 +34,7 @@ import java.util.Set;
 @Component("cuba_ServiceCallValidationExceptionHandler")
 public class ServiceCallValidationExceptionHandler extends AbstractGenericExceptionHandler {
 
-    private final Logger log = LoggerFactory.getLogger(ServiceCallValidationExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceCallValidationExceptionHandler.class);
 
     @Inject
     protected Messages messages;

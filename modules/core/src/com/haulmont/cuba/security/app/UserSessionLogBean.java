@@ -60,7 +60,7 @@ public class UserSessionLogBean implements UserSessionLog {
     @Inject
     protected Authentication authentication;
 
-    private Logger log = LoggerFactory.getLogger(UserSessionLogBean.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSessionLogBean.class);
 
     @Override
     @Nullable

@@ -105,7 +105,7 @@ public class EntityListenerManager {
         }
     }
 
-    private Logger log = LoggerFactory.getLogger(EntityListenerManager.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityListenerManager.class);
 
     @Inject
     protected Persistence persistence;

@@ -28,7 +28,7 @@ import javax.inject.Inject;
 @Component("cuba_ClusterManagerMBean")
 public class ClusterManager implements ClusterManagerMBean {
 
-    private final Logger log = LoggerFactory.getLogger(ClusterManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
     @Inject
     protected ClusterManagerAPI clusterManager;

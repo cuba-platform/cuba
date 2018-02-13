@@ -37,7 +37,7 @@ import java.util.*;
 
 public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParameter, UUID> {
 
-    private Logger log = LoggerFactory.getLogger(StatisticsDatasource.class);
+    private static final Logger log = LoggerFactory.getLogger(StatisticsDatasource.class);
 
     protected JmxInstance node;
 

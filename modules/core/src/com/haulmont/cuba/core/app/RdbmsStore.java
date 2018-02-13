@@ -57,7 +57,7 @@ public class RdbmsStore implements DataStore {
 
     public static final String NAME = "cuba_RdbmsStore";
 
-    private Logger log = LoggerFactory.getLogger(RdbmsStore.class);
+    private static final Logger log = LoggerFactory.getLogger(RdbmsStore.class);
 
     @Inject
     protected Metadata metadata;

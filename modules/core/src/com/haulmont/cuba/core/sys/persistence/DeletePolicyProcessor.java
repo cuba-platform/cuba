@@ -43,7 +43,7 @@ public class DeletePolicyProcessor {
 
     public static final String NAME = "cuba_DeletePolicyProcessor";
 
-    private final Logger log = LoggerFactory.getLogger(DeletePolicyProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(DeletePolicyProcessor.class);
 
     protected Entity entity;
     protected MetaClass metaClass;

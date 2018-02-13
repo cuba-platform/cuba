@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  * Sets {@link SecurityContext} with system session for IDP controllers to perform service calls to the middleware.
  */
 public class IdpSecurityContextInterceptor extends HandlerInterceptorAdapter {
-    private final Logger log = LoggerFactory.getLogger(IdpSecurityContextInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpSecurityContextInterceptor.class);
 
     @Inject
     protected IdpConfig idpConfig;

@@ -44,7 +44,7 @@ import java.util.UUID;
  */
 public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
-    private final Logger log = LoggerFactory.getLogger(CubaRemoteInvocationExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaRemoteInvocationExecutor.class);
 
     protected volatile ServerSelector serverSelector;
 

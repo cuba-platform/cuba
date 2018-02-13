@@ -53,7 +53,7 @@ import static com.haulmont.cuba.web.security.idp.IdpSessionPrincipal.IDP_SESSION
 @Component("cuba_IdpLoginLifecycleManager")
 public class IdpLoginLifecycleManager {
 
-    private final Logger log = LoggerFactory.getLogger(IdpLoginLifecycleManager.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpLoginLifecycleManager.class);
 
     @Inject
     protected WebIdpConfig webIdpConfig;

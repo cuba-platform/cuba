@@ -46,7 +46,7 @@ import java.util.Map;
 @Component(Folders.NAME)
 public class FoldersBean implements Folders {
 
-    private static Logger log = LoggerFactory.getLogger(FoldersBean.class);
+    private static final Logger log = LoggerFactory.getLogger(FoldersBean.class);
 
     @Inject
     protected Messages messages;

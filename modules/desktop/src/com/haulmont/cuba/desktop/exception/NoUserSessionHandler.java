@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
-    private static Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
 
     private boolean fired;
 

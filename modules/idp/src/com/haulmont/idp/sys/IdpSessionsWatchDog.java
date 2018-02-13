@@ -37,7 +37,7 @@ import java.util.List;
 @Component("cuba_IdpSessionsWatchDog")
 public class IdpSessionsWatchDog {
 
-    private final Logger log = LoggerFactory.getLogger(IdpSessionsWatchDog.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpSessionsWatchDog.class);
 
     @Inject
     protected TrustedClientService trustedClientService;

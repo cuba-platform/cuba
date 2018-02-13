@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class LoginDialog extends JDialog {
 
-    private final Logger log = LoggerFactory.getLogger(LoginDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginDialog.class);
     private final DesktopConfig desktopConfig;
 
     protected Connection connection;

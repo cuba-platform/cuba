@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * <br> Checks {@link UserSession} validity and wraps exceptions into {@link RemoteException}.
  */
 public class ServiceInterceptor {
-    private final Logger log = LoggerFactory.getLogger(ServiceInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceInterceptor.class);
 
     private UserSessionsAPI userSessions;
 

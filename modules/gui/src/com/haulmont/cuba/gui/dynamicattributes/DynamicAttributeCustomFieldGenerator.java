@@ -41,7 +41,7 @@ import java.util.Collection;
  */
 public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFieldGenerator {
 
-    private final Logger log = LoggerFactory.getLogger(DynamicAttributeCustomFieldGenerator.class);
+    private static final Logger log = LoggerFactory.getLogger(DynamicAttributeCustomFieldGenerator.class);
 
     @Override
     public Component generateField(Datasource datasource, String propertyId) {

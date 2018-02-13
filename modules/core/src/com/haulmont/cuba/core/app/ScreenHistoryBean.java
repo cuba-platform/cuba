@@ -30,7 +30,7 @@ import java.util.UUID;
 @Component(ScreenHistory.NAME)
 public class ScreenHistoryBean implements ScreenHistory {
 
-    private Logger log = LoggerFactory.getLogger(ScreenHistoryBean.class);
+    private static final Logger log = LoggerFactory.getLogger(ScreenHistoryBean.class);
 
     private static final int DELETE_BATCH = 10;
 

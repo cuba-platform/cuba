@@ -59,7 +59,7 @@ public class Authentication {
 
     public static final String NAME = "cuba_Authentication";
 
-    private final Logger log = LoggerFactory.getLogger(Authentication.class);
+    private static final Logger log = LoggerFactory.getLogger(Authentication.class);
 
     @Inject
     protected AuthenticationManager authenticationManager;

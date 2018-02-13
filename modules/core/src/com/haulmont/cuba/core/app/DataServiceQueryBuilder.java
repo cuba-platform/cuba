@@ -45,7 +45,7 @@ public class DataServiceQueryBuilder {
 
     public static final String NAME = "cuba_DataServiceQueryBuilder";
 
-    private final Logger log = LoggerFactory.getLogger(DataServiceQueryBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(DataServiceQueryBuilder.class);
 
     protected String queryString;
     protected Map<String, Object> queryParams;

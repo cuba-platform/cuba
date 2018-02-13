@@ -38,7 +38,7 @@ public abstract class AbstractAppContextLoader {
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
 
-    private Logger log = LoggerFactory.getLogger(AbstractAppContextLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractAppContextLoader.class);
 
     protected abstract String getBlock();
 

@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentMap;
 @Component(SchedulingAPI.NAME)
 public class Scheduling implements SchedulingAPI {
 
-    private final Logger log = LoggerFactory.getLogger(Scheduling.class);
+    private static final Logger log = LoggerFactory.getLogger(Scheduling.class);
 
     @Inject
     protected Configuration configuration;

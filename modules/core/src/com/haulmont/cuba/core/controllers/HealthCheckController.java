@@ -38,7 +38,7 @@ import java.io.IOException;
 @Controller
 public class HealthCheckController {
 
-    private Logger log = LoggerFactory.getLogger(HealthCheckController.class);
+    private static final Logger log = LoggerFactory.getLogger(HealthCheckController.class);
 
     @Inject
     protected GlobalConfig config;

@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice("com.haulmont.idp.controllers")
 @Component("cuba_IdpControllerExceptionHandler")
 public class IdpControllerExceptionHandler {
-    private final Logger log = LoggerFactory.getLogger(IdpControllerExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpControllerExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     @ResponseBody

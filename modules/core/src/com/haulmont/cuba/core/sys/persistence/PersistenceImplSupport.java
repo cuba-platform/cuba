@@ -93,7 +93,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
     protected List<AfterCompleteTransactionListener> afterCompleteTxListeners;
 
-    private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
 
     private Logger implicitFlushLog = LoggerFactory.getLogger("com.haulmont.cuba.IMPLICIT_FLUSH");
 

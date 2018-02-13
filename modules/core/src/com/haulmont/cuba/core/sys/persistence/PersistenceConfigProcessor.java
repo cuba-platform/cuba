@@ -46,7 +46,7 @@ public class PersistenceConfigProcessor {
     private String outFileName;
     private String storeName;
 
-    private Logger log = LoggerFactory.getLogger(PersistenceConfigProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(PersistenceConfigProcessor.class);
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;

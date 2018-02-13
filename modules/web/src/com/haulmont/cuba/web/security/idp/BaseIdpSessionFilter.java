@@ -58,7 +58,7 @@ import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 import static com.haulmont.cuba.web.security.idp.IdpSessionPrincipal.*;
 
 public abstract class BaseIdpSessionFilter implements Filter {
-    private final Logger log = LoggerFactory.getLogger(BaseIdpSessionFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseIdpSessionFilter.class);
 
     protected Lock sessionCheckLock = new ReentrantLock();
 

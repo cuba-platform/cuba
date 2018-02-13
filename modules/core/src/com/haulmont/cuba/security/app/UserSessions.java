@@ -84,7 +84,7 @@ public class UserSessions implements UserSessionsAPI {
         }
     }
 
-    private Logger log = LoggerFactory.getLogger(UserSessions.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSessions.class);
 
     protected Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<>();
 

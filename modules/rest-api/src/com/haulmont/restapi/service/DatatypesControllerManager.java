@@ -33,7 +33,7 @@ import java.util.Map;
 @Component("cuba_DatatypesControllerManager")
 public class DatatypesControllerManager {
 
-    protected Logger log = LoggerFactory.getLogger(DatatypesControllerManager.class);
+    private static final Logger log = LoggerFactory.getLogger(DatatypesControllerManager.class);
 
     @Inject
     protected DatatypeRegistry datatypes;

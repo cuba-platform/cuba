@@ -57,7 +57,7 @@ public class RestJsonTransformations {
 
     protected final String CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME = "cuba.rest.jsonTransformationConfig";
 
-    protected Logger log = LoggerFactory.getLogger(RestJsonTransformations.class);
+    private static final Logger log = LoggerFactory.getLogger(RestJsonTransformations.class);
 
     protected volatile boolean initialized;
 

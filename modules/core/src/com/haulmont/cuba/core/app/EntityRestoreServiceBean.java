@@ -40,7 +40,7 @@ import java.util.*;
 @Service(EntityRestoreService.NAME)
 public class EntityRestoreServiceBean implements EntityRestoreService {
 
-    private Logger log = LoggerFactory.getLogger(EntityRestoreServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityRestoreServiceBean.class);
 
     @Inject
     protected Persistence persistence;

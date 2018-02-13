@@ -26,7 +26,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class MBeanInterceptor {
 
-    private Logger log = LoggerFactory.getLogger(MBeanInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(MBeanInterceptor.class);
 
     @SuppressWarnings("UnusedDeclaration")
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {

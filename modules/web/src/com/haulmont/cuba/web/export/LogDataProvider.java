@@ -41,7 +41,7 @@ import java.io.InputStream;
  */
 public class LogDataProvider implements ExportDataProvider {
 
-    private final Logger log = LoggerFactory.getLogger(LogDataProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(LogDataProvider.class);
 
     protected InputStream inputStream;
 

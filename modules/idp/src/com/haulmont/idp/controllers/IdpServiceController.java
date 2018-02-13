@@ -38,7 +38,7 @@ import java.util.Objects;
 @RestController("cuba_IdpServiceController")
 @RequestMapping(value = "service", produces = "application/json; charset=UTF-8")
 public class IdpServiceController {
-    private final Logger log = LoggerFactory.getLogger(IdpServiceController.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpServiceController.class);
 
     @Inject
     protected IdpService idpService;

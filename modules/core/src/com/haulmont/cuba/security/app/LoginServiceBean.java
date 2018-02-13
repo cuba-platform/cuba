@@ -42,7 +42,7 @@ import java.util.UUID;
 @Component(LoginService.NAME)
 public class LoginServiceBean implements LoginService {
 
-    private final Logger log = LoggerFactory.getLogger(LoginServiceBean.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginServiceBean.class);
 
     @Inject
     protected AuthenticationService authenticationService;

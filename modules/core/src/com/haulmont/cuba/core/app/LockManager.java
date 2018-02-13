@@ -73,7 +73,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         }
     }
 
-    private Logger log = LoggerFactory.getLogger(LockManager.class);
+    private static final Logger log = LoggerFactory.getLogger(LockManager.class);
 
     private volatile Map<String, LockDescriptor> config;
 

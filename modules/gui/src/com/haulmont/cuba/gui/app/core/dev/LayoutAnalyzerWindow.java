@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LayoutAnalyzerWindow extends AbstractWindow {
-    private final Logger log = LoggerFactory.getLogger(LayoutAnalyzerWindow.class);
+    private static final Logger log = LoggerFactory.getLogger(LayoutAnalyzerWindow.class);
 
     @Inject
     protected ThemeConstants themeConstants;

@@ -53,7 +53,7 @@ import java.util.*;
 @Controller
 public class DataServiceController {
 
-    private Logger log = LoggerFactory.getLogger(DataServiceController.class);
+    private static final Logger log = LoggerFactory.getLogger(DataServiceController.class);
 
     @Inject
     protected ConversionFactory conversionFactory;

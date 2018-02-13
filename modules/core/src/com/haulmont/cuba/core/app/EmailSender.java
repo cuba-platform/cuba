@@ -47,7 +47,7 @@ import java.nio.charset.StandardCharsets;
 @Component(EmailSenderAPI.NAME)
 public class EmailSender implements EmailSenderAPI {
 
-    private Logger log = LoggerFactory.getLogger(EmailSender.class);
+    private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
 
     protected JavaMailSender mailSender;
 

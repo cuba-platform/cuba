@@ -50,7 +50,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
 
-    private final Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 
     @Inject
     protected WatchDog watchDog;

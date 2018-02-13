@@ -27,7 +27,7 @@ import java.util.Map;
 @SuppressWarnings("UnusedDeclaration")
 public class OracleDbmsFeatures implements DbmsFeatures {
 
-    private static Logger log = LoggerFactory.getLogger(OracleDbmsFeatures.class);
+    private static final Logger log = LoggerFactory.getLogger(OracleDbmsFeatures.class);
 
     @Override
     public Map<String, String> getJpaParameters() {

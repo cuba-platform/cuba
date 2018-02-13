@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 public class FilterEditor extends AbstractWindow {
 
-    private final Logger log = LoggerFactory.getLogger(FilterEditor.class);
+    private static final Logger log = LoggerFactory.getLogger(FilterEditor.class);
 
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
 

@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.LongAdder;
 @Component(ClusterManagerAPI.NAME)
 public class ClusterManager implements ClusterManagerAPI {
 
-    private final Logger log = LoggerFactory.getLogger(ClusterManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
     protected Map<String, ClusterListener> listeners = new HashMap<>();
 

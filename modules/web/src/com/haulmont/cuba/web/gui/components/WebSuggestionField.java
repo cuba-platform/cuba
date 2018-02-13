@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> implements SuggestionField, Component.Wrapper {
 
-    private final Logger log = LoggerFactory.getLogger(WebSuggestionField.class);
+    private static final Logger log = LoggerFactory.getLogger(WebSuggestionField.class);
 
     protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
     protected UserSession userSession = AppBeans.get(UserSession.class);

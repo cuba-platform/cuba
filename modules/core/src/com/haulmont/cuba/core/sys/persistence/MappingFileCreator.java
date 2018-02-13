@@ -44,7 +44,7 @@ import java.util.*;
 */
 class MappingFileCreator {
 
-    private final Logger log = LoggerFactory.getLogger(MappingFileCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(MappingFileCreator.class);
 
     private static final String XMLNS = "http://xmlns.jcp.org/xml/ns/persistence/orm";
     private static final String SCHEMA_LOCATION = XMLNS + " http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd";

@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class FileEditor extends AbstractEditor<FileDescriptor> {
 
-    private final Logger log = LoggerFactory.getLogger(FileEditor.class);
+    private static final Logger log = LoggerFactory.getLogger(FileEditor.class);
 
     @Inject
     protected Datasource<FileDescriptor> fileDs;

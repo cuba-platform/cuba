@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Component(IdpSessionStore.NAME)
 public class IdpSessionStoreBean implements IdpSessionStore {
-    private final Logger log = LoggerFactory.getLogger(IdpSessionStoreBean.class);
+    private static final Logger log = LoggerFactory.getLogger(IdpSessionStoreBean.class);
 
     @GuardedBy("lock")
     protected Map<String, IdpSessionRecord> sessions = new HashMap<>();

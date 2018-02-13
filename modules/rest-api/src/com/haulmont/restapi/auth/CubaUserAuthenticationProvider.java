@@ -56,7 +56,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
 
     protected static final String SESSION_ID_DETAILS_ATTRIBUTE = "sessionId";
 
-    private final Logger log = LoggerFactory.getLogger(CubaUserAuthenticationProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaUserAuthenticationProvider.class);
 
     @Inject
     protected AuthenticationService authenticationService;

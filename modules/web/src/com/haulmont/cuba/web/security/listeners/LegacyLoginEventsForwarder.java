@@ -52,7 +52,7 @@ public class LegacyLoginEventsForwarder {
     public static final String EXTERNAL_PRINCIPAL_ATTRIBUTE = "EXTERNAL_PRINCIPAL";
     public static final String LOGIN_ON_START_ATTRIBUTE = "LOGIN_ON_START";
 
-    private final Logger log = LoggerFactory.getLogger(LegacyLoginEventsForwarder.class);
+    private static final Logger log = LoggerFactory.getLogger(LegacyLoginEventsForwarder.class);
 
     @Inject
     protected CubaAuthProvider authProvider;

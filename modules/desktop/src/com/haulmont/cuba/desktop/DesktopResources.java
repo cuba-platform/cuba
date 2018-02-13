@@ -34,7 +34,7 @@ import java.util.List;
 public class DesktopResources {
     protected static final String CLASSPATH_PREFIX = "classpath:";
 
-    private Logger log = LoggerFactory.getLogger(DesktopResources.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopResources.class);
 
     protected List<String> roots;
 

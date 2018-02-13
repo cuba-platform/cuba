@@ -62,7 +62,7 @@ import java.util.UUID;
 @Controller
 public class RestFileDownloadController {
 
-    private static Logger log = LoggerFactory.getLogger(RestFileDownloadController.class);
+    private static final Logger log = LoggerFactory.getLogger(RestFileDownloadController.class);
 
     @Inject
     protected DataService dataService;

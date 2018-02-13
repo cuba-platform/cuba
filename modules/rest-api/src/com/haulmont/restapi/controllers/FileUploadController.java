@@ -52,7 +52,7 @@ import java.util.Collections;
 @RequestMapping(path = "/v2/files")
 public class FileUploadController {
 
-    private final Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     // Using injection by name here, because an application project can define several instances
     // of ServerSelector type to work with different middleware blocks

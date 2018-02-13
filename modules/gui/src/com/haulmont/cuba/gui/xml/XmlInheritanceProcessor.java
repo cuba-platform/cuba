@@ -39,7 +39,7 @@ import java.util.*;
  */
 public class XmlInheritanceProcessor {
 
-    private static Logger log = LoggerFactory.getLogger(XmlInheritanceProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(XmlInheritanceProcessor.class);
 
     private Document document;
     private Namespace extNs;

@@ -49,7 +49,7 @@ public class MessagesClientImpl extends AbstractMessages {
 
     protected ClientConfig clientConfig;
 
-    private Logger log = LoggerFactory.getLogger(MessagesClientImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MessagesClientImpl.class);
 
     @Inject
     @Override

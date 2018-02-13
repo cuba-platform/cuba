@@ -37,7 +37,7 @@ import java.util.*;
  */
 public abstract class AbstractBeansMetadata {
 
-    private final Logger log = LoggerFactory.getLogger(AbstractBeansMetadata.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractBeansMetadata.class);
 
     protected List<String> beansToIgnore = Arrays.asList("cubaDataSource", "entityManagerFactory", "hibernateSessionFactory",
             "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",

@@ -54,7 +54,7 @@ import static org.apache.commons.lang.StringUtils.trimToEmpty;
 public class DesktopExternalUIComponentsSource implements ExternalUIComponentsSource {
     private static final String DESKTOP_COMPONENTS_CONFIG_XML_PROP = "cuba.desktop.componentsConfig";
 
-    private final Logger log = LoggerFactory.getLogger(DesktopExternalUIComponentsSource.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopExternalUIComponentsSource.class);
 
     protected static final String WINDOW_LOADER_EL = "windowLoader";
     protected static final String FRAME_LOADER_EL = "frameLoader";

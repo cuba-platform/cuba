@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
-    private Logger log = LoggerFactory.getLogger(PortalRemoteProxyBeanCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(PortalRemoteProxyBeanCreator.class);
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

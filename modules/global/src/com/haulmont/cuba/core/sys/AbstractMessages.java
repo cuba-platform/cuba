@@ -58,7 +58,7 @@ public abstract class AbstractMessages implements Messages {
     public static final String BUNDLE_NAME = "messages";
     public static final String EXT = ".properties";
 
-    private Logger log = LoggerFactory.getLogger(AbstractMessages.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractMessages.class);
 
     @Inject
     protected MessageTools messageTools;

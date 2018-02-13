@@ -34,7 +34,7 @@ public class IconResolverImpl implements IconResolver {
     protected static final String THEME_PREFIX = "theme://";
     protected static final String[] PROPERTY_PREFIXES = {"icons.", "cuba.web."};
 
-    private final Logger log = LoggerFactory.getLogger(IconResolverImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(IconResolverImpl.class);
 
     @Inject
     protected Icons icons;

@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class PresentationEditor extends CubaWindow {
 
-    protected Logger log = LoggerFactory.getLogger(PresentationEditor.class);
+    private static final Logger log = LoggerFactory.getLogger(PresentationEditor.class);
 
     protected Presentation presentation;
 

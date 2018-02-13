@@ -42,7 +42,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DynamicAttributesCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_DynamicAttributesCacheStrategy";
 
-    private final Logger log = LoggerFactory.getLogger(DynamicAttributesCacheStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(DynamicAttributesCacheStrategy.class);
 
     @Inject
     protected ClientCacheManager clientCacheManager;

@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @Component("cuba_RestServicesConfiguration")
 public class RestServicesConfiguration {
 
-    protected Logger log = LoggerFactory.getLogger(RestServicesConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(RestServicesConfiguration.class);
 
     public static final String CUBA_REST_SERVICES_CONFIG_PROP_NAME = "cuba.rest.servicesConfig";
 

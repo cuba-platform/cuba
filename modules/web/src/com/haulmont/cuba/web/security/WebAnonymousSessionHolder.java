@@ -29,7 +29,7 @@ import javax.inject.Inject;
 
 @Component("cuba_WebAnonymousSessionHolder")
 public class WebAnonymousSessionHolder {
-    private final Logger log = LoggerFactory.getLogger(WebAnonymousSessionHolder.class);
+    private static final Logger log = LoggerFactory.getLogger(WebAnonymousSessionHolder.class);
 
     protected volatile boolean initialized;
     protected volatile UserSession session;

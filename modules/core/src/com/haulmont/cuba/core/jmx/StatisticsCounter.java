@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 @Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
-    private Logger log = LoggerFactory.getLogger(StatisticsCounter.class);
+    private static final Logger log = LoggerFactory.getLogger(StatisticsCounter.class);
 
     protected final Pattern DS_MBEAN_PATTERN;
 

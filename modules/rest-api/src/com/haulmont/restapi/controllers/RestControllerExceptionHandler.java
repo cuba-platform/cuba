@@ -39,7 +39,7 @@ import java.util.*;
 @ControllerAdvice("com.haulmont.restapi.controllers")
 public class RestControllerExceptionHandler {
 
-    private final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
 
     protected static final Class[] serializableInvalidValueTypes = new Class[]{
             String.class, Date.class, Number.class, Enum.class, UUID.class
