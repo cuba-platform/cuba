@@ -571,6 +571,8 @@ configure(webModule) {
         compile(bom['org.springframework.ldap:spring-ldap-core']) {
             exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
         }
+        // use the same spring-tx as core
+        compile(bom['org.springframework:spring-tx'])
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
