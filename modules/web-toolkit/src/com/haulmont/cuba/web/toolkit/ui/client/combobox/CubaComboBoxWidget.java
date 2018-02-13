@@ -179,4 +179,10 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
             setPromptingOn();
         }
     }
+
+    @Override
+    protected boolean isDoSelectedItemActionOnBlur() {
+        return super.isDoSelectedItemActionOnBlur()
+                && suggestionPopup.isAttached();
+    }
 }
