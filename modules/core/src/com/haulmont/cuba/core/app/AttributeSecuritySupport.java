@@ -266,7 +266,7 @@ public class AttributeSecuritySupport {
                 }
             }
         }
-        return true;
+        return false;
     }
 
     protected void checkRequiredAttributes(Entity entity) {
