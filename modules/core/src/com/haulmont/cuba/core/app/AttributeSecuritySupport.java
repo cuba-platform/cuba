@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.app.events.SetupAttributeAccessEvent;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.CubaApplicationEventMulticaster;
 import com.haulmont.cuba.core.sys.SecurityTokenManager;
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -68,9 +67,6 @@ public class AttributeSecuritySupport {
 
     @Inject
     protected EntityStates entityStates;
-
-    @Inject
-    protected CubaApplicationEventMulticaster applicationEventMulticaster;
 
     /**
      * Removes restricted attributes from a view.
@@ -217,10 +213,21 @@ public class AttributeSecuritySupport {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Entity> void setupAttributeAccess(T entity) {
         if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
             SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
-            events.publish(event);
+            boolean handled = false;
+            Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
+            if (handlers != null) {
+                for (SetupAttributeAccessHandler handler : handlers.values()) {
+                    MetaClass metaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(entity.getMetaClass());
+                    if (handler.supports(metaClass.getJavaClass())) {
+                        handled = true;
+                        handler.setupAccess(event);
+                    }
+                }
+            }
             if (event.getReadonlyAttributes() != null) {
                 Set<String> attributes = event.getReadonlyAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
@@ -236,7 +243,7 @@ public class AttributeSecuritySupport {
                 SecurityState state = getOrCreateSecurityState(entity);
                 addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
-            if (isAttributeAccessEnabled(event)) {
+            if (handled) {
                 securityTokenManager.writeSecurityToken(entity);
             }
         }
@@ -244,29 +251,22 @@ public class AttributeSecuritySupport {
 
     /**
      * Checks if attribute access enabled for the current entity type.
-     * It's based on the existence of an event listener for SetupAttributeAccessEvent.
-     * @param entityClass - entity metaClass
+     * It's based on the existence of SetupAttributeAccessHandler for the metaClass.
+     *
+     * @param metaClass - entity metaClass
      */
     @SuppressWarnings("unchecked")
-    public boolean isAttributeAccessEnabled(MetaClass entityClass) {
-        Entity entity;
-        try {
-            Class clazz = metadata.getExtendedEntities().getEffectiveClass(entityClass);
-            entity = (Entity) clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Unable to instantiate entity", e);
+    public boolean isAttributeAccessEnabled(MetaClass metaClass) {
+        Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
+        if (handlers != null) {
+            metaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+            for (SetupAttributeAccessHandler handler : handlers.values()) {
+                if (handler.supports(metaClass.getJavaClass())) {
+                    return true;
+                }
+            }
         }
-        return isAttributeAccessEnabled(new SetupAttributeAccessEvent(entity));
-    }
-
-    /**
-     * Checks if attribute access enabled for the current entity type.
-     * It's based on the existence of an event listener for SetupAttributeAccessEvent.
-     * @param event - SetupAttributeAccessEvent
-     */
-    public boolean isAttributeAccessEnabled(SetupAttributeAccessEvent event) {
-        Collection listeners = applicationEventMulticaster.getListeners(event, event.getResolvableType());
-        return listeners != null && !listeners.isEmpty();
+        return true;
     }
 
     protected void checkRequiredAttributes(Entity entity) {
@@ -400,7 +400,7 @@ public class AttributeSecuritySupport {
     }
 
     protected class AttributeAccessVisitor implements EntityAttributeVisitor {
-        protected Set<Entity> visited = new HashSet<>();
+        protected Set<Entity> visited;
 
         public AttributeAccessVisitor(Set<Entity> visited) {
             this.visited = visited;
