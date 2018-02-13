@@ -304,6 +304,13 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         protected Collection<Entity> getSavedInstances() {
             return savedInstances;
         }
+
+        @Override
+        public String toString() {
+            return "ContainerResourceHolder@" + Integer.toHexString(hashCode()) + "{" +
+                    "storeName='" + storeName + '\'' +
+                    '}';
+        }
     }
 
     protected class ContainerResourceSynchronization

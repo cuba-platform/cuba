@@ -22,12 +22,16 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.Stores;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 
 public class TransactionalInterceptor {
+
+    private Logger log = LoggerFactory.getLogger(TransactionalInterceptor.class);
 
     private Persistence persistence;
 
@@ -43,6 +47,8 @@ public class TransactionalInterceptor {
             throw new IllegalStateException("Cannot determine data store of the current transaction");
 
         String storeName = Strings.isNullOrEmpty(transactional.value()) ? Stores.MAIN : transactional.value();
+
+        log.trace("Entering transactional method, store='{}'", storeName);
 
         ((PersistenceImpl) persistence).registerSynchronizations(storeName);
 
