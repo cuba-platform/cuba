@@ -20,15 +20,12 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -37,7 +34,6 @@ import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -51,13 +47,12 @@ import java.util.List;
 import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
  * Universal frame for editing dynamic attributes
  * of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
  */
-public class RuntimePropertiesFrame extends AbstractWindow {
+public class RuntimePropertiesFrame extends AbstractFrame {
 
     public static final String NAME = "runtimeProperties";
     public static final String DEFAULT_FIELD_WIDTH = "100%";
