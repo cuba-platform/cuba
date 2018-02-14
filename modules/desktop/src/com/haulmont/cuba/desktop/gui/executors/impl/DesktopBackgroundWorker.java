@@ -126,7 +126,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final V doInBackground() throws Exception {
-            Thread.currentThread().setName(String.format("BackgroundTaskThread-%s",
+            Thread.currentThread().setName(String.format("BackgroundTask-%s",
                     System.identityHashCode(Thread.currentThread())));
             try {
                 if (!Thread.currentThread().isInterrupted()) {
