@@ -417,6 +417,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         groupTableContainer.groupBy(properties);
         if (rerender) {
             resetPageBuffer();
+            setCurrentPageFirstItemIndex(0, false);
             refreshRenderedCells();
             markAsDirty();
         }
