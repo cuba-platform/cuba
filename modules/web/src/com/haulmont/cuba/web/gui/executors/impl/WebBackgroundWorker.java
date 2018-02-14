@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.event.BackgroundTaskUnhandledExceptionEvent;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -87,7 +88,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(),
                 new ThreadFactoryBuilder()
-                        .setNameFormat("BackgroundTaskThread-%d")
+                        .setNameFormat("BackgroundTask-%d")
                         .build()
         );
     }
@@ -152,7 +153,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private volatile boolean doneHandled = false;
 
         private SecurityContext securityContext;
-        private UUID userId;
+        private String userLogin;
 
         private Map<String, Object> params;
         private TaskHandlerImpl<T, V> taskHandler;
@@ -167,7 +168,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             // copy security context
             this.securityContext = new SecurityContext(AppContext.getSecurityContextNN().getSession());
-            this.userId = userSessionSource.getUserSession().getId();
+
+            UserSession userSession = userSessionSource.getUserSession();
+            this.userLogin = userSession.getUser().getLogin();
 
             this.future = new FutureTask<V>(this) {
                 @Override
@@ -181,9 +184,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final V call() throws Exception {
-            Thread.currentThread().setName(String.format("BackgroundTaskThread-%s-%s",
-                    System.identityHashCode(Thread.currentThread()), userId));
-
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
             try {
@@ -248,9 +248,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 return;
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("Done task. User: " + userId);
-            }
+            log.debug("Done task. User: {}", userLogin);
 
             // do not allow to cancel task from done listeners and exception handler
             isClosed = true;
@@ -302,17 +300,17 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 return false;
             }
 
-            log.debug("Cancel task. User: {}", userId);
+            log.debug("Cancel task. User: {}", userLogin);
 
             boolean isCanceledNow = future.cancel(true);
             if (isCanceledNow) {
-                log.trace("Task was cancelled. User: {}", userId);
+                log.trace("Task was cancelled. User: {}", userLogin);
             } else {
-                log.trace("Cancellation of task isn't processed. User: {}", userId);
+                log.trace("Cancellation of task isn't processed. User: {}", userLogin);
             }
 
             if (!doneHandled) {
-                log.trace("Done was not handled. Return 'true' as canceled status. User: {}", userId);
+                log.trace("Done was not handled. Return 'true' as canceled status. User: {}", userLogin);
 
                 this.isClosed = true;
                 return true;
