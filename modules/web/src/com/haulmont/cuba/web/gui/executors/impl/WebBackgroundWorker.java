@@ -42,6 +42,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -52,6 +54,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class WebBackgroundWorker implements BackgroundWorker {
 
     private final Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
+
+    private static final String THREAD_NAME_PREFIX = "BackgroundTask-";
+    private static final Pattern THREAD_NAME_PATTERN = Pattern.compile("BackgroundTask-([0-9]+)");
 
     @Inject
     protected WatchDog watchDog;
@@ -88,7 +93,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(),
                 new ThreadFactoryBuilder()
-                        .setNameFormat("BackgroundTask-%d")
+                        .setNameFormat(THREAD_NAME_PREFIX + "%d")
                         .build()
         );
     }
@@ -184,6 +189,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final V call() throws Exception {
+            String threadName = Thread.currentThread().getName();
+            Matcher matcher = THREAD_NAME_PATTERN.matcher(threadName);
+            if (matcher.find()) {
+                Thread.currentThread().setName(THREAD_NAME_PREFIX + matcher.group(1) + "-" + userLogin);
+            }
+
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
             try {
