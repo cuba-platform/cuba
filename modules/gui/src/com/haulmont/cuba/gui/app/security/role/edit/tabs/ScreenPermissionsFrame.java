@@ -212,8 +212,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
                     screenPermissionsDs.removeItem(permission);
                 }
             }
-            // trigger generated column update
-            screenPermissionsTreeDs.updateItem(target);
         }
+        // trigger generated column update
+        screenPermissionsTree.repaint();
     }
 }
