@@ -1334,7 +1334,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public boolean isMultiSelect() {
-        return SelectionMode.MULTI.equals(selectionMode);
+        return SelectionMode.MULTI.equals(selectionMode)
+                || SelectionMode.MULTI_CHECK.equals(selectionMode);
     }
 
     @SuppressWarnings("unchecked")
