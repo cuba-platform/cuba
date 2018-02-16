@@ -291,7 +291,7 @@ configure(globalModule) {
         compile(bom['org.hibernate:hibernate-validator'])
         compile(bom['org.glassfish.web:javax.el'])
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
@@ -373,13 +373,13 @@ configure(coreModule) {
 
         compile(bom['org.jsoup:jsoup']) // simplify version management for fts
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
 
         jdbc(bom['org.postgresql:postgresql'])
         jdbc(bom['org.hsqldb:hsqldb'])
 
         testCompile(bom['org.apache.commons:commons-dbcp2'])
-        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
+        testRuntime(bom['javax.servlet:javax.servlet-api'])
         testRuntime(bom['org.hsqldb:hsqldb'])
     	testRuntime(bom['org.postgresql:postgresql'])
     }
@@ -607,13 +607,13 @@ configure(webModule) {
 
         compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
 
         themes(bom['com.vaadin:vaadin-themes'])
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)
-        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
+        testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
     task enhance(type: CubaEnhancing)
@@ -719,7 +719,7 @@ configure(webToolkitModule) {
         compile(bom['com.google.gwt:gwt-elemental'])
         compile(bom['com.google.gwt:gwt-dev'])
 
-        runtime(bom['org.apache.tomcat:tomcat-servlet-api'])
+        runtime(bom['javax.servlet:javax.servlet-api'])
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
@@ -808,7 +808,7 @@ configure(desktopModule) {
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)
-        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
+        testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
     // disable building of *.tar and *.zip artifacts by default assemble task
@@ -844,7 +844,7 @@ configure(restApiModule) {
             exclude(group: 'org.springframework.security')
         }
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -872,7 +872,7 @@ configure(portalModule) {
         compile(bom['org.thymeleaf:thymeleaf-spring4'])
         compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity4'])
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -903,7 +903,7 @@ configure(idpModule) {
 
         testCompile(clientModule.sourceSets.test.output)
 
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
     }
 
     task webArchive(type: Zip) {
@@ -959,7 +959,7 @@ configure(frontModule) {
     dependencies {
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        provided(bom['javax.servlet:javax.servlet-api'])
     }
 }
 
