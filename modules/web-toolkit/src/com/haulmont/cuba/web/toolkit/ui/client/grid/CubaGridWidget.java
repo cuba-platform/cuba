@@ -25,24 +25,11 @@ import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyDownEvent;
 import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyPressEvent;
 import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyUpEvent;
 import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.renderers.Renderer;
 import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
-import com.vaadin.client.widget.grid.events.BodyClickHandler;
-import com.vaadin.client.widget.grid.events.BodyDoubleClickHandler;
-import com.vaadin.client.widget.grid.events.BodyKeyDownHandler;
-import com.vaadin.client.widget.grid.events.BodyKeyPressHandler;
-import com.vaadin.client.widget.grid.events.BodyKeyUpHandler;
-import com.vaadin.client.widget.grid.events.FooterClickHandler;
-import com.vaadin.client.widget.grid.events.FooterDoubleClickHandler;
-import com.vaadin.client.widget.grid.events.FooterKeyDownHandler;
-import com.vaadin.client.widget.grid.events.FooterKeyPressHandler;
-import com.vaadin.client.widget.grid.events.FooterKeyUpHandler;
-import com.vaadin.client.widget.grid.events.HeaderClickHandler;
-import com.vaadin.client.widget.grid.events.HeaderDoubleClickHandler;
-import com.vaadin.client.widget.grid.events.HeaderKeyDownHandler;
-import com.vaadin.client.widget.grid.events.HeaderKeyPressHandler;
-import com.vaadin.client.widget.grid.events.HeaderKeyUpHandler;
+import com.vaadin.client.widget.grid.events.*;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
@@ -244,6 +231,25 @@ public class CubaGridWidget extends Grid<JsonObject> {
             }
 
             return super.getCustomHtmlAttributes(column);
+        }
+    }
+
+    @Override
+    protected SelectionColumn createSelectionColumn(Renderer<Boolean> selectColumnRenderer) {
+        return new CubaSelectionColumn(selectColumnRenderer);
+    }
+
+    protected class CubaSelectionColumn extends SelectionColumn {
+
+        public CubaSelectionColumn(Renderer<Boolean> selectColumnRenderer) {
+            super(selectColumnRenderer);
+        }
+
+        @Override
+        protected HeaderClickHandler createHeaderClickHandler() {
+            return event -> {
+                // do nothing, as we want trigger select/deselect all only by clicking on the checkbox
+            };
         }
     }
 }
