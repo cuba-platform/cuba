@@ -508,7 +508,9 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     @Override
     public Map<DayOfWeek, String> getDayNames() {
         List<String> days = Arrays.asList(component.getDayNamesShort().clone());
-        Collections.rotate(days, -component.getFirstDayOfWeek());
+
+        int shift = Math.abs(component.getFirstDayOfWeek() - java.util.Calendar.MONDAY) + 1;
+        Collections.rotate(days, -shift);
 
         return days.stream().collect(Collectors.toMap(
                 (String d) -> DayOfWeek.of(days.indexOf(d) + 1),
@@ -527,7 +529,9 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
         List<String> daysList = Arrays.stream(DayOfWeek.values())
                 .map(dayNames::get)
                 .collect(Collectors.toList());
-        Collections.rotate(daysList, component.getFirstDayOfWeek());
+
+        int shift = Math.abs(component.getFirstDayOfWeek() - java.util.Calendar.MONDAY) + 1;
+        Collections.rotate(daysList, shift);
 
         String[] days = new String[7];
         component.setDayNamesShort(daysList.toArray(days));
