@@ -32,6 +32,7 @@ import com.vaadin.ui.Component;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
 
@@ -221,6 +222,16 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
         pickerField.setContextHelpTextHtmlEnabled(enabled);
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        return pickerField.getContextHelpIconClickHandler();
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        pickerField.setContextHelpIconClickHandler(handler);
     }
 
     @Override
