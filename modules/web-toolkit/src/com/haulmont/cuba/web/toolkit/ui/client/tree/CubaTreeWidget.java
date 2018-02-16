@@ -272,4 +272,18 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
     protected boolean isAllowSingleSelectToggle() {
         return BrowserInfo.get().isTouchDevice()&& Tools.isUseSimpleMultiselectForTouchDevice();
     }
+
+    @Override
+    protected boolean handleKeyNavigation(int keycode, boolean ctrl, boolean shift) {
+        if (focusedNode == null) {
+            TreeNode rootNode = getFirstRootNode();
+
+            if (rootNode == null) {
+                return false;
+            }
+
+            setFocusedNode(rootNode);
+        }
+        return super.handleKeyNavigation(keycode, ctrl, shift);
+    }
 }
