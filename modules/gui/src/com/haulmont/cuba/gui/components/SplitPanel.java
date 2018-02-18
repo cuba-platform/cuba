@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 
 public interface SplitPanel extends Component.Container, Component.BelongToFrame, Component.HasIcon,
@@ -25,6 +26,14 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
 
     int ORIENTATION_VERTICAL = 0;
     int ORIENTATION_HORIZONTAL = 1;
+
+    /**
+     * Specifies SplitPanel docking direction.
+     */
+    enum DockMode {
+        LEFT,
+        RIGHT
+    }
 
     int getOrientation();
     void setOrientation(int orientation);
@@ -66,8 +75,46 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
      */
     void setMaxSplitPosition(int pos, int unit);
 
+    /**
+     * Sets whether users are able to change the separator position or not.
+     *
+     * @param locked locked
+     */
     void setLocked(boolean locked);
+
+    /**
+     * @return whether users are able to change the separator position or not.
+     */
     boolean isLocked();
+
+    /**
+     * Enables or disables SplitPanel dock button.
+     * <p>
+     * Notice that docking is available only for horizontally oriented SplitPanel.
+     *
+     * @param dockable dockable
+     */
+    void setDockable(boolean dockable);
+
+    /**
+     * @return whether dock button is enabled or not
+     */
+    boolean isDockable();
+
+    /**
+     * Sets docking direction.
+     * <p>
+     * Notice that docking is available only for horizontally oriented SplitPanel.
+     *
+     * @param dockMode one of {@link DockMode} options
+     */
+    void setDockMode(DockMode dockMode);
+
+    /**
+     * @return docking direction or null in case of vertically oriented SplitPanel
+     */
+    @Nullable
+    DockMode getDockMode();
 
     /**
      * @deprecated Use {@link #addSplitPositionChangeListener}

@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
+import com.haulmont.cuba.web.toolkit.ui.client.split.SplitPanelDockMode;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractSplitPanel;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -348,5 +349,39 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             default:
                 return Unit.PIXELS;
         }
+    }
+
+    @Override
+    public void setDockable(boolean dockable) {
+        if (orientation == SplitPanel.ORIENTATION_VERTICAL) {
+            throw new IllegalStateException("Docking is not available for the vertically oriented SplitPanel.");
+        }
+        ((CubaHorizontalSplitPanel) component).setDockable(dockable);
+    }
+
+    @Override
+    public boolean isDockable() {
+        if (orientation == SplitPanel.ORIENTATION_VERTICAL) {
+            return false;
+        }
+        return ((CubaHorizontalSplitPanel) component).isDockable();
+    }
+
+    @Override
+    public void setDockMode(DockMode dockMode) {
+        if (orientation == SplitPanel.ORIENTATION_VERTICAL) {
+            throw new IllegalStateException("Docking is not available for the vertically oriented SplitPanel.");
+        }
+        SplitPanelDockMode mode = SplitPanelDockMode.valueOf(dockMode.name());
+        ((CubaHorizontalSplitPanel) component).setDockMode(mode);
+    }
+
+    @Override
+    public DockMode getDockMode() {
+        if (orientation == SplitPanel.ORIENTATION_VERTICAL) {
+            return null;
+        }
+        SplitPanelDockMode mode = ((CubaHorizontalSplitPanel) component).getDockMode();
+        return DockMode.valueOf(mode.name());
     }
 }

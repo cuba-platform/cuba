@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
@@ -58,6 +59,102 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         loadSettingsEnabled(resultComponent, element);
 
+        loadSplitPosition(resultComponent, element);
+        loadMaxSplitPosition(resultComponent, element);
+        loadMinSplitPosition(resultComponent, element);
+
+        loadLocked(resultComponent, element);
+
+        loadDockable(resultComponent, element);
+        loadDockMode(resultComponent, element);
+
+        loadHeight(resultComponent, element, Component.AUTO_SIZE);
+        loadWidth(resultComponent, element, Component.AUTO_SIZE);
+        loadAlign(resultComponent, element);
+
+        loadSubComponents();
+    }
+
+    protected void loadDockable(SplitPanel resultComponent, Element element) {
+        String dockable = element.attributeValue("dockable");
+
+        if (dockable == null || dockable.isEmpty()) {
+            return;
+        }
+
+        boolean bDockable = Boolean.parseBoolean(dockable);
+        if (bDockable && resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
+            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel",
+                    context.getFullFrameId());
+        }
+
+        resultComponent.setDockable(bDockable);
+    }
+
+    protected void loadDockMode(SplitPanel resultComponent, Element element) {
+        String dockMode = element.attributeValue("dockMode");
+
+        if (dockMode == null || dockMode.isEmpty()) {
+            return;
+        }
+
+        if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
+            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel",
+                    context.getFullFrameId());
+        }
+
+        SplitPanel.DockMode mode = SplitPanel.DockMode.valueOf(dockMode);
+        resultComponent.setDockMode(mode);
+    }
+
+    protected void loadLocked(SplitPanel resultComponent, Element element) {
+        String locked = element.attributeValue("locked");
+        if (!StringUtils.isEmpty(locked)) {
+            resultComponent.setLocked(Boolean.parseBoolean(locked));
+        }
+    }
+
+    protected void loadMinSplitPosition(SplitPanel resultComponent, Element element) {
+        String minSplitPosition = element.attributeValue("minSplitPosition");
+        if (!StringUtils.isEmpty(minSplitPosition)) {
+            int position;
+            int unit;
+
+            if (minSplitPosition.endsWith("px")) {
+                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("px")));
+                unit = Component.UNITS_PIXELS;
+            } else if (minSplitPosition.endsWith("%")) {
+                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%")));
+                unit = Component.UNITS_PERCENTAGE;
+            } else {
+                throw new GuiDevelopmentException("Unit of minSplitPosition is not set", context.getFullFrameId());
+            }
+
+            resultComponent.setMinSplitPosition(position, unit);
+        }
+    }
+
+    protected void loadMaxSplitPosition(SplitPanel resultComponent, Element element) {
+        String maxSplitPosition = element.attributeValue("maxSplitPosition");
+        if (!StringUtils.isEmpty(maxSplitPosition)) {
+            int position;
+            int unit;
+
+            if (maxSplitPosition.endsWith("px")) {
+                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px")));
+                unit = Component.UNITS_PIXELS;
+            } else if (maxSplitPosition.endsWith("%")) {
+                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("%")));
+                unit = Component.UNITS_PERCENTAGE;
+            } else {
+                throw new GuiDevelopmentException("Unit of maxSplitPosition is not set", context.getFullFrameId());
+            }
+
+            resultComponent.setMaxSplitPosition(position, unit);
+        }
+    }
+
+    protected void loadSplitPosition(SplitPanel resultComponent, Element element) {
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
             boolean reversePosition = false;
@@ -82,52 +179,5 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
             resultComponent.setSplitPosition(position, unit, reversePosition);
         }
-
-        String maxSplitPosition = element.attributeValue("maxSplitPosition");
-        if (!StringUtils.isEmpty(maxSplitPosition)) {
-            int position;
-            int unit;
-
-            if (maxSplitPosition.endsWith("px")) {
-                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px")));
-                unit = Component.UNITS_PIXELS;
-            } else if (maxSplitPosition.endsWith("%")) {
-                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("%")));
-                unit = Component.UNITS_PERCENTAGE;
-            } else {
-                throw new GuiDevelopmentException("Unit of maxSplitPosition is not set", context.getFullFrameId());
-            }
-
-            resultComponent.setMaxSplitPosition(position, unit);
-        }
-
-        String minSplitPosition = element.attributeValue("minSplitPosition");
-        if (!StringUtils.isEmpty(minSplitPosition)) {
-            int position;
-            int unit;
-
-            if (minSplitPosition.endsWith("px")) {
-                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("px")));
-                unit = Component.UNITS_PIXELS;
-            } else if (minSplitPosition.endsWith("%")) {
-                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%")));
-                unit = Component.UNITS_PERCENTAGE;
-            } else {
-                throw new GuiDevelopmentException("Unit of minSplitPosition is not set", context.getFullFrameId());
-            }
-
-            resultComponent.setMinSplitPosition(position, unit);
-        }
-
-        String locked = element.attributeValue("locked");
-        if (!StringUtils.isEmpty(locked)) {
-            resultComponent.setLocked(Boolean.parseBoolean(locked));
-        }
-
-        loadHeight(resultComponent, element, Component.AUTO_SIZE);
-        loadWidth(resultComponent, element, Component.AUTO_SIZE);
-        loadAlign(resultComponent, element);
-
-        loadSubComponents();
     }
 }

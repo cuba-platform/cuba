@@ -43,6 +43,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected boolean settingsEnabled = true;
     protected boolean locked = false;
+    // stub
+    protected boolean dockable = false;
+    // stub
+    private DockMode dockMode = null;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -375,5 +379,42 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     @Override
     public void setDescription(String description) {
         impl.setToolTipText(description);
+    }
+
+    // stub
+    @Override
+    public void setDockable(boolean dockable) {
+        if (impl.getOrientation() == JSplitPane.VERTICAL_SPLIT) {
+            throw new IllegalStateException("Docking is not available for the vertically oriented SplitPanel.");
+        }
+        this.dockable = dockable;
+    }
+
+    // stub
+    @Override
+    public boolean isDockable() {
+        if (impl.getOrientation() == JSplitPane.VERTICAL_SPLIT) {
+            return false;
+        }
+        return dockable;
+    }
+
+    // stub
+    @Override
+    public void setDockMode(DockMode dockMode) {
+        if (impl.getOrientation() == JSplitPane.VERTICAL_SPLIT) {
+            throw new IllegalStateException("Docking is not available for the vertically oriented SplitPanel.");
+        }
+        this.dockMode = dockMode;
+    }
+
+    // stub
+    @Nullable
+    @Override
+    public DockMode getDockMode() {
+        if (impl.getOrientation() == JSplitPane.VERTICAL_SPLIT) {
+            return null;
+        }
+        return dockMode;
     }
 }

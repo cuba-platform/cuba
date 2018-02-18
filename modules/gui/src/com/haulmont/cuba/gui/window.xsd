@@ -28,6 +28,13 @@
 
     <!-- Enums -->
 
+    <xs:simpleType name="splitPanelDockMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="filterMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="NO"/>
@@ -2401,6 +2408,8 @@
                 <xs:attribute name="reversePosition" type="xs:boolean"/>
                 <xs:attribute name="locked" type="xs:boolean"/>
                 <xs:attribute name="settingsEnabled" type="xs:boolean"/>
+                <xs:attribute name="dockable" type="xs:boolean"/>
+                <xs:attribute name="dockMode" type="splitPanelDockMode"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
