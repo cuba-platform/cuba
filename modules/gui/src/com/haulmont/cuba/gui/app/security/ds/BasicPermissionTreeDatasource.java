@@ -45,7 +45,8 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
         if (permissionDs == null)
             return new Tree<>();
 
-        if (permissionsTree == null) {
+        Boolean filtering = (Boolean) params.get("filtering");
+        if (filtering == null || filtering) {
             Tree<BasicPermissionTarget> permissions = getPermissions();
 
             List<Node<BasicPermissionTarget>> nodes = permissions.getRootNodes();

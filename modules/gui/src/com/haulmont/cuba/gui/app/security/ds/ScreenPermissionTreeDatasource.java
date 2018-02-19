@@ -21,12 +21,13 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasource {
@@ -34,6 +35,7 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+    protected Predicate<BasicPermissionTarget> screenFilter;
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
@@ -53,7 +55,14 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
         Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
         rootNode.getChildren().stream()
                 .filter(child -> session.isScreenPermitted(child.getData().getPermissionValue()))
+                .filter(child -> !child.getChildren().isEmpty()
+                        || screenFilter == null
+                        || screenFilter.test(child.getData()))
                 .forEach(child -> filteredRootNode.addChild(filterNode(session, child)));
         return filteredRootNode;
+    }
+
+    public void setFilter(Predicate<BasicPermissionTarget> filter) {
+        this.screenFilter = filter;
     }
 }

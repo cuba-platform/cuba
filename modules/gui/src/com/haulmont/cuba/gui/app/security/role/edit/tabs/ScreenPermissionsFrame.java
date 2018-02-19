@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.ds.ScreenPermissionTreeDatasource;
@@ -74,7 +75,10 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     protected Companion companion;
 
     @Inject
-    private GroupBoxLayout screensEditPane;
+    protected GroupBoxLayout screensEditPane;
+
+    @Inject
+    protected TextField screenFilter;
 
     protected boolean itemChanging = false;
 
@@ -121,6 +125,9 @@ public class ScreenPermissionsFrame extends AbstractFrame {
                 updateCheckBoxes(e.getItem());
             }
         });
+
+        screenPermissionsTreeDs.setFilter(new ScreenNameFilter<>(screenFilter));
+        screenFilter.addEnterPressListener(e -> applyFilter());
 
         allowCheckBox.addValueChangeListener(e -> {
             if (!itemChanging) {
@@ -215,5 +222,9 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         }
         // trigger generated column update
         screenPermissionsTree.repaint();
+    }
+
+    public void applyFilter() {
+        screenPermissionsTreeDs.refresh(ParamsMap.of("filtering", true));
     }
 }
