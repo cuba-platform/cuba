@@ -205,7 +205,7 @@ public class UserBrowser extends AbstractLookup {
 
             changePasswordDialog.addCloseListener(actionId -> {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
-                    usersDs.updateItem(dataSupplier.reload(selectedUser, "user.browse"));
+                    usersDs.updateItem(dataSupplier.reload(selectedUser, usersDs.getView()));
                 }
                 usersTable.requestFocus();
             });
