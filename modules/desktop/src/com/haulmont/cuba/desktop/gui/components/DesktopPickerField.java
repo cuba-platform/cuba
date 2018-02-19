@@ -396,7 +396,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     protected void setEditableToComponent(boolean editable) {
         for (Action action : actionsOrder) {
             if (action instanceof StandardAction) {
-                ((StandardAction) action).setEditable(isEditable());
+                ((StandardAction) action).setEditable(editable);
             }
         }
         if (!editable && impl.getEditor() instanceof JTextComponent) {
