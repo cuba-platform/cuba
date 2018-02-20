@@ -64,4 +64,18 @@
   .v-disabled.#{$primary-stylename}-focus.#{$primary-stylename}-empty-caption > input {
     outline: none;
   }
+
+  .c-context-help-button {
+    display: inline-block;
+
+    color: transparent;
+    background: transparent no-repeat top right;
+    background-image: url(../caption/sprites/question.png); /** sprite-ref: components; */
+    width: 16px;
+    height: 16px;
+  }
+
+  .c-context-help-button:hover {
+    cursor: pointer;
+  }
 }
