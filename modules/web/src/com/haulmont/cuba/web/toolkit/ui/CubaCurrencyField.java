@@ -66,7 +66,7 @@ public class CubaCurrencyField extends CustomField {
     }
 
     protected void initTextField() {
-        textField.setSizeFull();
+        textField.setWidth("100%");
 
         textField.addStyleName(CURRENCYFIELD_TEXT_STYLENAME);
 
@@ -112,7 +112,8 @@ public class CubaCurrencyField extends CustomField {
         Page current = Page.getCurrent();
         if (current != null) {
             WebBrowser browser = current.getWebBrowser();
-            return browser != null && browser.isIE() && browser.getBrowserMajorVersion() <= 10;
+            return browser != null &&
+                    (browser.isIE() && browser.getBrowserMajorVersion() <= 10 || browser.isSafari());
         } else {
             return false;
         }

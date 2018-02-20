@@ -18,49 +18,39 @@
 @mixin halo-cuba-currencyfield($primary-stylename: c-currencyfield) {
   .#{$primary-stylename} {
     display: inline-table;
-
     height: $v-unit-size;
     width: $v-default-field-width;
 
     &.huge {
-      .#{$primary-stylename}-text {
-        @include valo-textfield-style($unit-size: $v-unit-size--huge, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
-        font-size: $v-font-size--huge;
-      }
+      @include currencyfield-size-style($v-unit-size--huge, $v-font-size--huge);
     }
 
     &.large {
-      .#{$primary-stylename}-text {
-        @include valo-textfield-style($unit-size: $v-unit-size--large, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
-        font-size: $v-font-size--large;
-      }
+      @include currencyfield-size-style($v-unit-size--large, $v-font-size--large);
     }
 
     &.small {
-      .#{$primary-stylename}-text {
-        @include valo-textfield-style($unit-size: $v-unit-size--small, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
-        font-size: $v-font-size--small;
-      }
+      @include currencyfield-size-style($v-unit-size--small, $v-font-size--small);
     }
 
     &.tiny {
-      .#{$primary-stylename}-text {
-        @include valo-textfield-style($unit-size: $v-unit-size--tiny, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
-        font-size: $v-font-size--tiny;
+      @include currencyfield-size-style($v-unit-size--tiny, $v-font-size--tiny);
+    }
+
+    & > .c-currencyfield-layout {
+      & > .c-currencyfield-text,
+      & > .ie9-input-wrap > .c-currencyfield-text {
+        height: 100%;
       }
     }
   }
 
   .#{$primary-stylename}-layout {
+    display: table-row;
+    white-space: nowrap;
+
     & > .v-caption {
       display: none;
-    }
-
-    white-space: nowrap;
-    display: table-row;
-
-    & > * {
-      display: table-cell;
     }
 
     &.currency-visible {
@@ -90,6 +80,19 @@
         }
       }
     }
+
+    & > * {
+      display: table-cell;
+    }
+  }
+
+  .#{$primary-stylename}-text {
+    text-align: right;
+
+    &.v-readonly,
+    &.v-disabled {
+      @include valo-textfield-readonly-style;
+    }
   }
 
   .#{$primary-stylename}-currency {
@@ -115,12 +118,20 @@
     }
   }
 
-  .#{$primary-stylename}-text {
-    text-align: right;
+  .v-sa & .#{$primary-stylename} > .#{$primary-stylename}-layout > .ie9-input-wrap {
+    display: inline-block;
+  }
+}
 
-    &.v-readonly,
-    &.v-disabled {
-      @include valo-textfield-readonly-style;
-    }
+@mixin currencyfield-size-style($c-unit-size, $font-size) {
+  height: $c-unit-size;
+
+  .c-currencyfield-text {
+    @include valo-textfield-style($unit-size: $c-unit-size, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
+    font-size: $font-size;
+  }
+
+  .c-currencyfield-currency {
+    font-size: $font-size;
   }
 }
