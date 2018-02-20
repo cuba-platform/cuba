@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -31,7 +32,31 @@ public interface GroupTable<E extends Entity> extends Table<E> {
     @Override
     GroupDatasource getDatasource();
 
+    /**
+     * Performs grouping by the given {@code properties}.
+     *
+     * @param properties an array of {@link MetaPropertyPath}
+     */
     void groupBy(Object[] properties);
+
+    /**
+     * Performs grouping by the given ids of table columns.
+     *
+     * @param columnIds column ids
+     */
+    void groupByColumns(String... columnIds);
+
+    /**
+     * Resets grouping by the given ids of table columns.
+     *
+     * @param columnIds column ids
+     */
+    void ungroupByColumns(String... columnIds);
+
+    /**
+     * Resets grouping at all.
+     */
+    void ungroup();
 
     boolean getColumnGroupAllowed(String columnId);
     void setColumnGroupAllowed(String columnId, boolean allowed);

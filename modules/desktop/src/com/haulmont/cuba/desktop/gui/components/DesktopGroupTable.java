@@ -41,6 +41,21 @@ public class DesktopGroupTable<E extends Entity>
     public void groupBy(Object[] properties) {
     }
 
+    // stub
+    @Override
+    public void groupByColumns(String... columnIds) {
+    }
+
+    // stub
+    @Override
+    public void ungroupByColumns(String... columnIds) {
+    }
+
+    // stub
+    @Override
+    public void ungroup() {
+    }
+
     @Override
     public boolean getColumnGroupAllowed(String columnId) {
         return false;
