@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -39,6 +40,7 @@ import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.vaadin.data.Item;
 import com.vaadin.server.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -189,6 +191,72 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     @Override
     public void groupBy(Object[] properties) {
         component.groupBy(properties);
+    }
+
+    protected Object[] getNewColumnOrder(Object[] newGroupProperties) {
+        //noinspection unchecked
+        List<Object> allProps = new ArrayList<>(containerDatasource.getContainerPropertyIds());
+        List<Object> newGroupProps = Arrays.asList(newGroupProperties);
+
+        allProps.removeAll(newGroupProps);
+        allProps.addAll(0, newGroupProps);
+
+        return allProps.toArray();
+    }
+
+    protected List<Object> collectPropertiesByColumns(String... columnIds) {
+        List<Object> properties = new ArrayList<>();
+
+        for (String columnId : columnIds) {
+            Column column = getColumn(columnId);
+
+            if (column == null) {
+                throw new IllegalArgumentException("There is no column with the given id: " + columnId);
+            }
+
+            properties.add(column.getId());
+        }
+
+        return properties;
+    }
+
+    protected void validateProperties(Object[] properties) {
+        for (Object property : properties) {
+            if (!(property instanceof MetaPropertyPath)) {
+                throw new IllegalArgumentException("Only MetaPropertyPaths are supported by the \"groupBy\" method.");
+            }
+        }
+    }
+
+    protected void groupByInternal(Object[] properties) {
+        Preconditions.checkNotNullArgument(properties);
+        validateProperties(properties);
+
+        component.groupBy(properties);
+        component.setColumnOrder(getNewColumnOrder(properties));
+    }
+
+    @Override
+    public void groupByColumns(String... columnIds) {
+        Preconditions.checkNotNullArgument(columnIds);
+
+        groupByInternal(collectPropertiesByColumns(columnIds).toArray());
+    }
+
+    @Override
+    public void ungroupByColumns(String... columnIds) {
+        Preconditions.checkNotNullArgument(columnIds);
+
+        Object[] remainingGroups = CollectionUtils
+                .removeAll(component.getGroupProperties(), collectPropertiesByColumns(columnIds))
+                .toArray();
+
+        groupByInternal(remainingGroups);
+    }
+
+    @Override
+    public void ungroup() {
+        groupByInternal(new Object[]{});
     }
 
     @Override

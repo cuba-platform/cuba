@@ -29,6 +29,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.ui.Table;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nullable;
@@ -45,6 +46,31 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected boolean fixedGrouping = false;
 
     protected boolean requestColumnReorderingAllowed = true;
+
+    /**
+     * Attention: this method is copied from the parent class: {@link Table#setColumnOrder(java.lang.Object[])}.
+     */
+    public void setColumnOrder(Object[] columnOrder) {
+        if (columnOrder == null || !isColumnReorderingAllowed()) {
+            return;
+        }
+        final LinkedList<Object> newOrder = new LinkedList<>();
+        for (Object aColumnOrder : columnOrder) {
+            if (aColumnOrder != null && visibleColumns.contains(aColumnOrder)) {
+                visibleColumns.remove(aColumnOrder);
+                newOrder.add(aColumnOrder);
+            }
+        }
+        for (final Object columnId : visibleColumns) {
+            if (!newOrder.contains(columnId)) {
+                newOrder.add(columnId);
+            }
+        }
+        visibleColumns = newOrder;
+
+        // Assure visual refresh
+        refreshRowCache();
+    }
 
     @Override
     public void setContainerDataSource(Container newDataSource) {
