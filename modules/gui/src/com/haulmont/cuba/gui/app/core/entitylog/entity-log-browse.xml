@@ -101,8 +101,17 @@
                 </grid>
 
                 <split id="split1" orientation="horizontal" pos="70" width="100%">
-                    <vbox id="entityLogTableBox" width="100%" height="100%" margin="false,true,true,true" spacing="true">
-                        <table id="entityLogTable" width="100%" height="100%">
+                    <vbox id="entityLogTableBox"
+                          expand="entityLogTable"
+                          margin="false,true,true,true"
+                          spacing="true"
+                          height="100%"
+                          width="100%">
+                        <filter applyTo="entityLogTable"
+                                datasource="entityLogDs">
+                            <properties include=".*"/>
+                        </filter>
+                        <table id="entityLogTable" width="100%">
                             <buttonsPanel id="logTablePanel">
                                 <button visible="false"/>
                             </buttonsPanel>
