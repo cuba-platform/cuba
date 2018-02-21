@@ -16,11 +16,14 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
@@ -35,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 public class WindowBreadCrumbs extends CssLayout {
+
     protected static final String BREADCRUMBS_VISIBLE_WRAP_STYLE = "c-breadcrumbs-visible";
     protected static final String C_HEADLINE_CONTAINER = "c-headline-container";
 
@@ -105,6 +109,12 @@ public class WindowBreadCrumbs extends CssLayout {
 
         addComponent(logoLayout);
         addComponent(enclosingLayout);
+
+        boolean controlsVisible = AppBeans.get(Configuration.class)
+                .getConfig(WebConfig.class)
+                .getShowBreadCrumbs();
+
+        enclosingLayout.setVisible(controlsVisible);
 
         if (closeBtn != null) {
             addComponent(closeBtn);
