@@ -20,6 +20,8 @@ package com.haulmont.cuba.gui.components.filter.condition;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -45,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @MetaClass(name = "sec$DynamicAttributesCondition")
 @SystemLevel
@@ -250,7 +253,16 @@ public class DynamicAttributesCondition extends AbstractCondition {
             if (!isBlank(propertyCaption)) {
                 return propertyCaption + "." + locCaption;
             }
+        } else if (isNotBlank(caption)) {
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            return messageTools.loadString(messagesPack, caption);
         }
+
+        MetaPropertyPath mpp = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), getCategoryAttributeId());
+        if (mpp != null) {
+            return DynamicAttributesUtils.getCategoryAttribute(mpp.getMetaProperty()).getLocaleName();
+        }
+
         return super.getLocCaption();
     }
 }

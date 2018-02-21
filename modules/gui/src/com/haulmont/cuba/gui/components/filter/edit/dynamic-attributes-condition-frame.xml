@@ -56,6 +56,13 @@
                                  required="true"/>
                 </row>
                 <row>
+                    <label align="MIDDLE_LEFT"
+                           id="captionLabel"
+                           value="mainMsg://filter.dynamicAttributesConditionFrame.caption"/>
+                    <textField id="caption"
+                               width="theme://cuba.gui.conditionFrame.textField.width"/>
+                </row>
+                <row>
                     <label value="mainMsg://filter.dynamicAttributesConditionFrame.operation" align="MIDDLE_LEFT"/>
                     <lookupField id="operationLookup"
                                  width="100%"

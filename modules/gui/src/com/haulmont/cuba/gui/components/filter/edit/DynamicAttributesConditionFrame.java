@@ -33,6 +33,7 @@ import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
@@ -61,6 +62,9 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
+    @Inject
+    protected TextField caption;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -88,6 +92,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     public void setCondition(DynamicAttributesCondition condition) {
         super.setCondition(condition);
         fillCategorySelect();
+        caption.setValue(condition.getCaption());
     }
 
     protected String checkCondition() {
@@ -202,6 +207,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
         condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.<CategoryAttribute>getValue().getIsCollection()));
         condition.setLocCaption(attribute.getLocaleName());
+        condition.setCaption(caption.getValue());
 
         return true;
     }
