@@ -223,7 +223,9 @@ public class DatePickerDocument extends PlainDocument {
                             } else result.setCharAt(i + shift, text.charAt(i));
                         } else result.setCharAt(i + shift, text.charAt(i));
                     } else {
-                        result.setCharAt(i + shift, text.charAt(i));
+                        if (result.length() > i + shift) {
+                            result.setCharAt(i + shift, text.charAt(i));
+                        }
                     }
                 } else {
                     if (result.length() == 1) {
