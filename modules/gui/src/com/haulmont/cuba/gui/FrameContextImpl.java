@@ -79,10 +79,10 @@ public class FrameContextImpl implements FrameContext {
             component = frame.getComponent(ValuePathHelper.format(path));
         }
 
-        if (component == null || component == frame
-                || ((component instanceof Component.Wrapper) && ((Component.Wrapper) component).getComponent() == frame))
+        if (component == null || component instanceof Frame
+                || ((component instanceof Component.Wrapper) && ((Component.Wrapper) component).getComponent() instanceof Frame))
         {
-            // if component not found or found the frame itself, try to search in parent frame
+            // if component not found or found a frame, try to search in the parent frame
             if (frame.getFrame() != null && frame.getFrame() != frame)
                 return frame.getFrame().getContext().getValue(property);
             else
