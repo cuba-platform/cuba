@@ -39,15 +39,33 @@ public interface WebLdapConfig extends Config {
     @DefaultBoolean(false)
     boolean getLdapEnabled();
 
+    /**
+     * @return the urls of the LDAP servers
+     */
     @Property("cuba.web.ldap.urls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getLdapUrls();
 
+    /**
+     * @return the base LDAP suffix from which all operations should origin.
+     * If a base suffix is set, you will not have to (and, indeed, must not) specify the full distinguished names in any
+     * operations performed. For instance: dc=example,dc=com
+     */
     @Property("cuba.web.ldap.base")
     String getLdapBase();
 
+    /**
+     * @return user that is used to connect to LDAP server.
+     * For instance: cn=System User,ou=Employees,dc=mycompany,dc=com
+     */
     @Property("cuba.web.ldap.user")
     String getLdapUser();
+
+    /**
+     * @return password that is used to connect to LDAP server
+     */
+    @Property("cuba.web.ldap.password")
+    String getLdapPassword();
 
     /**
      * @return Field of LDAP object for user login matching.
@@ -55,7 +73,4 @@ public interface WebLdapConfig extends Config {
     @Property("cuba.web.ldap.userLoginField")
     @DefaultString("sAMAccountName")
     String getLdapUserLoginField();
-
-    @Property("cuba.web.ldap.password")
-    String getLdapPassword();
 }
