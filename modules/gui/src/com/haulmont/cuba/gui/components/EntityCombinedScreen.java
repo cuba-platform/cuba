@@ -26,6 +26,11 @@ public class EntityCombinedScreen extends AbstractLookup {
     protected boolean creating;
 
     /**
+     * Indicates that the screen is in editing mode.
+     */
+    protected boolean editing;
+
+    /**
      * Indicates that edited entity is pessimistically locked.
      */
     protected boolean justLocked;
@@ -259,6 +264,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      * @param creating indicates that a new instance is being created
      */
     protected void enableEditControls(boolean creating) {
+        this.editing = true;
         this.creating = creating;
         initEditComponents(true);
         getFieldGroup().requestFocus();
@@ -268,6 +274,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      * Disables edit controls.
      */
     protected void disableEditControls() {
+        this.editing = false;
         initEditComponents(false);
         getTable().requestFocus();
     }
@@ -301,6 +308,9 @@ public class EntityCombinedScreen extends AbstractLookup {
      */
     @SuppressWarnings("unchecked")
     public void save() {
+        if (!editing)
+            return;
+
         FieldGroup fieldGroup = getFieldGroup();
         List<Validatable> components = new ArrayList<>();
         for (Component component: fieldGroup.getComponents()) {
