@@ -27,6 +27,9 @@ import com.haulmont.cuba.core.config.type.Factory;
 
 import java.util.List;
 
+/**
+ * Configuration parameters interface used by LDAP auth controller.
+ */
 @Source(type = SourceType.APP)
 public interface RestLdapConfig extends Config {
     /**
@@ -52,7 +55,8 @@ public interface RestLdapConfig extends Config {
     String getLdapBase();
 
     /**
-     * @return user that is used to connect to LDAP server
+     * @return user that is used to connect to LDAP server.
+     * For instance: cn=System User,ou=Employees,dc=mycompany,dc=com
      */
     @Property("cuba.rest.ldap.user")
     String getLdapUser();

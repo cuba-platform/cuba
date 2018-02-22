@@ -43,6 +43,11 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 
+/**
+ * Login provider that uses LDAP as authentication service.
+ *
+ * @see WebLdapConfig
+ */
 @ConditionalOnAppProperty(property = "cuba.web.ldap.enabled", value = "true")
 @ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "false", defaultValue = "false")
 @Component("cuba_LdapLoginProvider")
