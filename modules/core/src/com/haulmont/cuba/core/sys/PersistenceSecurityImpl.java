@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 import static java.lang.String.format;
 
@@ -65,6 +66,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Inject
     protected EntityStates entityStates;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Override
     public boolean applyConstraints(Query query) {
@@ -213,30 +217,47 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
-    public void checkSecurityToken(Entity entity, View view) {
+    public void assertToken(Entity entity) {
         if (BaseEntityInternalAccess.getSecurityToken(entity) == null) {
-            MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (metaProperty.getRange().isClass() && metadataTools.isPersistent(metaProperty)) {
-                    if (entityStates.isDetached(entity) && !entityStates.isLoaded(entity, metaProperty.getName())) {
-                        continue;
-                    } else if (view != null && !view.containsProperty(metaProperty.getName())) {
-                        continue;
-                    }
-                    List<ConstraintData> existingConstraints = getConstraints(metaProperty.getRange().asClass(),
-                            constraint -> constraint.getCheckType().memory());
-                    if (CollectionUtils.isNotEmpty(existingConstraints)) {
-                        throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                                "even though there are active constraints for the related entities.", entity),
-                                entity.getMetaClass().getName());
-                    }
+            assertSecurityConstraints(entity, (e, metaProperty) -> entityStates.isDetached(entity)
+                    && !entityStates.isLoaded(entity, metaProperty.getName()));
+            assertTokenForAttributeAccess(entity);
+        }
+    }
+
+    @Override
+    public void assertTokenForREST(Entity entity, View view) {
+        if (BaseEntityInternalAccess.getSecurityToken(entity) == null) {
+            assertSecurityConstraints(entity,
+                    (e, metaProperty) -> view != null && !view.containsProperty(metaProperty.getName()));
+            assertTokenForAttributeAccess(entity);
+        }
+    }
+
+    protected void assertSecurityConstraints(Entity entity, BiPredicate<Entity, MetaProperty> predicate) {
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (metaProperty.getRange().isClass() && metadataTools.isPersistent(metaProperty)) {
+                if (predicate.test(entity, metaProperty)) {
+                    continue;
+                }
+                if (hasInMemoryConstraints(metaProperty.getRange().asClass(), ConstraintOperationType.READ,
+                        ConstraintOperationType.ALL)) {
+                    throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
+                            "even though there are active READ/ALL constraints for the property: %s", entity,
+                            metaProperty.getName()),
+                            entity.getMetaClass().getName());
                 }
             }
-            if (attributeSecuritySupport.isAttributeAccessEnabled(metaClass)) {
-                throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                        "even though there are active attribute access for the entity.", entity),
-                        entity.getMetaClass().getName());
-            }
+        }
+    }
+
+    protected void assertTokenForAttributeAccess(Entity entity) {
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        if (attributeSecuritySupport.isAttributeAccessEnabled(metaClass)) {
+            throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
+                    "even though there are active attribute access for the entity.", entity),
+                    entity.getMetaClass().getName());
         }
     }
 

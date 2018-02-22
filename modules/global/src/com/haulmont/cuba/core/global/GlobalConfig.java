@@ -234,4 +234,12 @@ public interface GlobalConfig extends Config {
     @Property("cuba.enableIdGenerationForEntitiesInAdditionalDataStores")
     @DefaultBoolean(true)
     boolean getEnableIdGenerationForEntitiesInAdditionalDataStores();
+
+    /**
+     * @return true if REST doesn't check security token for entities with security constraints
+     */
+    @Property("cuba.rest.useSecurityTokenForClient")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getRestUseSecurityTokenForClient();
 }

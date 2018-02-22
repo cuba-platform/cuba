@@ -348,7 +348,7 @@ public class RdbmsStore implements DataStore {
             for (Entity entity : context.getCommitInstances()) {
                 if (!PersistenceHelper.isNew(entity)) {
                     if (isAuthorizationRequired()) {
-                        security.checkSecurityToken(entity, null);
+                        security.assertToken(entity);
                     }
                     security.restoreSecurityStateAndFilteredData(entity);
                     attributeSecurity.beforeMerge(entity);
@@ -377,7 +377,7 @@ public class RdbmsStore implements DataStore {
             // remove
             for (Entity entity : context.getRemoveInstances()) {
                 if (isAuthorizationRequired()) {
-                    security.checkSecurityToken(entity, null);
+                    security.assertToken(entity);
                 }
                 security.restoreSecurityStateAndFilteredData(entity);
 

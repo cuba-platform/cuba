@@ -66,10 +66,7 @@ public class SecurityTokenManager {
                 String[] filteredAttributes = new String[entries.size()];
                 int i = 0;
                 for (Map.Entry<String, Collection<Object>> entry : entries) {
-                    MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(entry.getKey());
-                    if (metadata.getTools().isOwningSide(metaProperty)) {
-                        jsonObject.put(entry.getKey(), entry.getValue());
-                    }
+                    jsonObject.put(entry.getKey(), entry.getValue());
                     filteredAttributes[i++] = entry.getKey();
                 }
                 setFilteredAttributes(securityState, filteredAttributes);

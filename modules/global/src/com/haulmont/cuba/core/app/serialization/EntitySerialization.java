@@ -65,6 +65,9 @@ public class EntitySerialization implements EntitySerializationAPI {
     @Inject
     protected DynamicAttributes dynamicAttributes;
 
+    @Inject
+    protected GlobalConfig globalConfig;
+
     protected ThreadLocal<EntitySerializationContext> context =
             ThreadLocal.withInitial(EntitySerializationContext::new);
 
@@ -228,12 +231,14 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeFields(entity, jsonObject, view, cyclicReferences);
             }
 
-            if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
-                SecurityState securityState = getSecurityState(entity);
-                if (securityState != null) {
-                    byte[] securityToken = getSecurityToken(securityState);
-                    if (securityToken != null) {
-                        jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+            if (globalConfig.getRestUseSecurityTokenForClient()) {
+                if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
+                    SecurityState securityState = getSecurityState(entity);
+                    if (securityState != null) {
+                        byte[] securityToken = getSecurityToken(securityState);
+                        if (securityToken != null) {
+                            jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                        }
                     }
                 }
             }
@@ -456,7 +461,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
 
-            if (entity instanceof BaseGenericIdEntity) {
+            if (globalConfig.getRestUseSecurityTokenForClient() && entity instanceof BaseGenericIdEntity) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
@@ -567,7 +572,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             Entity entity = metadata.create(metaClass);
             clearFields(entity);
             readFields(jsonObject, entity);
-            if (entity instanceof EmbeddableEntity) {
+            if (globalConfig.getRestUseSecurityTokenForClient() && entity instanceof EmbeddableEntity) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());

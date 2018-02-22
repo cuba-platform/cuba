@@ -102,9 +102,17 @@ public interface PersistenceSecurity extends Security {
      * Validate that security token exists for specific cases.
      * For example, security constraints exists
      * @param entity - entity to check security token
+     */
+    void assertToken(Entity entity);
+
+
+    /**
+     * Validate that security token for REST exists for specific cases.
+     * For example, security constraints exists
+     * @param entity - entity to check security token
      * @param view - view for entity
      */
-    void checkSecurityToken(Entity entity, View view);
+    void assertTokenForREST(Entity entity, View view);
 
     /**
      * Calculate filtered data
