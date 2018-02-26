@@ -33,7 +33,7 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
     boolean isPopupVisible();
 
     /**
-     * Set value for the label of component.
+     * Set value for the label of component. Value of the label can contain HTML.
      *
      * @param minimizedValue label text.
      */
