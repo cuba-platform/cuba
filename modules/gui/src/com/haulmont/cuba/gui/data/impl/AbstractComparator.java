@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.Metadata;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 
 public abstract class AbstractComparator<T> implements Comparator<T> {
 
@@ -67,12 +68,10 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
                         break;
                 }
             }
-        } else if (o1 == null) {
-            if (o2 != null) {
-                c = nullsLast;
-            } else {
-                c = 0;
-            }
+        } else if (Objects.equals(o1, o2)) {
+            c = 0;
+        } else if (o1 == null && o2 != null) {
+            c = nullsLast;
         } else {
             c = -nullsLast;
         }
