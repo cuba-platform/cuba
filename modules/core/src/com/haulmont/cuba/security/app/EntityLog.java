@@ -113,7 +113,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private void computeChanges(EntityLogItem itemToSave, List<EntityLogItem> sameEntityList) {
+    protected void computeChanges(EntityLogItem itemToSave, List<EntityLogItem> sameEntityList) {
         Set<String> allAttributes = sameEntityList.stream()
                 .flatMap(entityLogItem -> entityLogItem.getAttributes().stream().map(EntityLogAttr::getName))
                 .collect(Collectors.toSet());
@@ -158,19 +158,19 @@ public class EntityLog implements EntityLogAPI {
         itemToSave.setChanges(getChanges(properties));
     }
 
-    private void setAttributeOldValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+    protected void setAttributeOldValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
         EntityLogAttr attr = getAttrToSave(entityLogAttr, itemToSave);
         attr.setOldValue(entityLogAttr.getOldValue());
         attr.setOldValueId(entityLogAttr.getOldValueId());
     }
 
-    private void setAttributeNewValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+    protected void setAttributeNewValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
         EntityLogAttr attr = getAttrToSave(entityLogAttr, itemToSave);
         attr.setValue(entityLogAttr.getValue());
         attr.setValueId(entityLogAttr.getValueId());
     }
 
-    private EntityLogAttr getAttrToSave(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+    protected EntityLogAttr getAttrToSave(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
         EntityLogAttr attr = itemToSave.getAttributes().stream()
                 .filter(a -> a.getName().equals(entityLogAttr.getName()))
                 .findFirst()
@@ -183,7 +183,7 @@ public class EntityLog implements EntityLogAPI {
         return attr;
     }
 
-    private void saveItem(EntityLogItem item) {
+    protected void saveItem(EntityLogItem item) {
         String storeName = metadataTools.getStoreName(metadata.getClassNN(item.getEntity()));
         if (Stores.isMain(storeName)) {
             EntityManager em = persistence.getEntityManager();
@@ -433,7 +433,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private void enqueueItem(EntityLogItem item) {
+    protected void enqueueItem(EntityLogItem item) {
         EntityManagerContext context = persistence.getEntityManagerContext();
         List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
         if (items == null) {
