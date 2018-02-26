@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.FontDialog;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
@@ -2063,7 +2064,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                     && action.isVisible()) {
                 menuItem = new JMenuItem(action.getCaption());
                 if (action.getIcon() != null) {
-                    menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+                    menuItem.setIcon(AppBeans.get(IconResolver.class).getIconResource(action.getIcon()));
                 }
                 if (action.getShortcutCombination() != null) {
                     menuItem.setAccelerator(convertKeyCombination(action.getShortcutCombination()));

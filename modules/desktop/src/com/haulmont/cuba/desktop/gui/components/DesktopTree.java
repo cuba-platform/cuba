@@ -20,8 +20,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
@@ -655,7 +655,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                     && action.isVisible()) {
                 menuItem = new JMenuItem(action.getCaption());
                 if (action.getIcon() != null) {
-                    menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+                    menuItem.setIcon(AppBeans.get(IconResolver.class).getIconResource(action.getIcon()));
                 }
                 if (action.getShortcutCombination() != null) {
                     menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcutCombination()));
