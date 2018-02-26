@@ -63,31 +63,31 @@ public class ExcelExporter {
 
     protected HSSFFont boldFont;
 
-    private HSSFFont stdFont;
+    protected HSSFFont stdFont;
 
     protected HSSFSheet sheet;
 
-    private HSSFCellStyle timeFormatCellStyle;
+    protected HSSFCellStyle timeFormatCellStyle;
 
-    private HSSFCellStyle dateFormatCellStyle;
+    protected HSSFCellStyle dateFormatCellStyle;
 
-    private HSSFCellStyle dateTimeFormatCellStyle;
+    protected HSSFCellStyle dateTimeFormatCellStyle;
 
-    private HSSFCellStyle integerFormatCellStyle;
+    protected HSSFCellStyle integerFormatCellStyle;
 
-    private HSSFCellStyle doubleFormatCellStyle;
+    protected HSSFCellStyle doubleFormatCellStyle;
 
     protected ExcelAutoColumnSizer[] sizers;
 
-    private final String trueStr;
+    protected String trueStr;
 
-    private final String falseStr;
+    protected String falseStr;
 
-    private final Messages messages;
+    protected final Messages messages;
 
-    private final UserSessionSource userSessionSource;
+    protected final UserSessionSource userSessionSource;
 
-    private final MetadataTools metadataTools;
+    protected final MetadataTools metadataTools;
 
     public enum ExportMode {
         SELECTED_ROWS,
@@ -99,8 +99,8 @@ public class ExcelExporter {
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
         metadataTools = AppBeans.get(MetadataTools.NAME);
 
-        trueStr = messages.getMessage(getClass(), "excelExporter.true");
-        falseStr = messages.getMessage(getClass(), "excelExporter.false");
+        trueStr = messages.getMessage(ExcelExporter.class, "excelExporter.true");
+        falseStr = messages.getMessage(ExcelExporter.class, "excelExporter.false");
     }
 
     public void exportTable(Table table, ExportDisplay display) {
@@ -119,7 +119,7 @@ public class ExcelExporter {
     protected void createFonts() {
         stdFont = wb.createFont();
         boldFont = wb.createFont();
-        boldFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        boldFont.setBold(true);
     }
 
     protected void createAutoColumnSizers(int count) {
@@ -171,7 +171,7 @@ public class ExcelExporter {
         float maxHeight = sheet.getDefaultRowHeightInPoints();
 
         CellStyle headerCellStyle = wb.createCellStyle();
-        headerCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         for (Table.Column column : columns) {
             String caption = column.getCaption();
 
@@ -245,11 +245,10 @@ public class ExcelExporter {
         try {
             wb.write(out);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write document", e);
         }
         if (fileName == null) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            fileName = messageTools.getEntityCaption(datasource.getMetaClass());
+            fileName = messages.getTools().getEntityCaption(datasource.getMetaClass());
         }
 
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
@@ -356,11 +355,10 @@ public class ExcelExporter {
         try {
             wb.write(out);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write document", e);
         }
         if (fileName == null) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            fileName = messageTools.getEntityCaption(datasource.getMetaClass());
+            fileName = messages.getTools().getEntityCaption(datasource.getMetaClass());
         }
 
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
