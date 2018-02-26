@@ -190,7 +190,8 @@ public class DbUpdaterEngine implements DbUpdater {
     protected void doInit() {
         log.info("Initializing database");
 
-        createChangelogTable();
+        if (!changelogTableExists)
+            createChangelogTable();
 
         List<ScriptResource> initFiles = getInitScripts();
         try {
