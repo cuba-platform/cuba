@@ -79,18 +79,15 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
             return null;
         }
 
-        String login = loginPasswordCredentials.getLogin();
-        String password = loginPasswordCredentials.getPassword();
+        if (!authenticateInLdap(loginPasswordCredentials)) {
+            Locale locale = loginPasswordCredentials.getLocale();
+            if (locale == null) {
+                locale = messages.getTools().getDefaultLocale();
+            }
 
-        Locale locale = loginPasswordCredentials.getLocale();
-        if (locale == null) {
-            locale = messages.getTools().getDefaultLocale();
-        }
-
-        if (!ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password)) {
             throw new LoginException(
                     messages.formatMessage(LdapLoginProvider.class, "LoginException.InvalidLoginOrPassword",
-                            locale, login)
+                            locale, loginPasswordCredentials.getLogin())
             );
         }
 
@@ -111,8 +108,7 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
         Map<String, Serializable> targetSessionAttributes;
         if (sessionAttributes != null
                 && !sessionAttributes.isEmpty()) {
-            targetSessionAttributes = new HashMap<>();
-            targetSessionAttributes.putAll(sessionAttributes);
+            targetSessionAttributes = new HashMap<>(sessionAttributes);
             targetSessionAttributes.put(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
         } else {
             targetSessionAttributes = ImmutableMap.of(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
@@ -120,7 +116,19 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
 
         tcCredentials.setSessionAttributes(targetSessionAttributes);
 
-        return authenticationService.login(tcCredentials);
+        return loginMiddleware(tcCredentials);
+    }
+
+    protected AuthenticationDetails loginMiddleware(Credentials credentials) throws LoginException {
+        return authenticationService.login(credentials);
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    protected boolean authenticateInLdap(LoginPasswordCredentials credentials) throws LoginException {
+        String login = credentials.getLogin();
+        String password = credentials.getPassword();
+
+        return !ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password);
     }
 
     @Override

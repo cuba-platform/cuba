@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,7 +71,7 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
 
         Locale userLocale = getUserLocale(rememberMe, user);
 
-        UserSession session = userSessionManager.createSession(user, userLocale, false);
+        UserSession session = createSession(rememberMe, user, userLocale);
 
         setClientSessionParams(rememberMe, session);
 
@@ -81,6 +80,12 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
         checkUserAccess(rememberMe, authenticationDetails);
 
         return authenticationDetails;
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    protected UserSession createSession(@SuppressWarnings("unused") RememberMeCredentials credentials,
+                                        User user, Locale userLocale) throws LoginException {
+        return userSessionManager.createSession(user, userLocale, false);
     }
 
     protected void checkUserCredentials(Credentials credentials) throws LoginException {

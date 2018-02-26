@@ -21,9 +21,9 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.auth.AnonymousUserCredentials;
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.SimpleAuthenticationDetails;
-import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -67,10 +67,16 @@ public class AnonymousAuthenticationProvider extends AbstractAuthenticationProvi
 
         UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
 
-        UserSession session = userSessionManager.createSession(anonymousSessionId, user, userLocale, true);
+        UserSession session = createSession(anonymous, user, userLocale, anonymousSessionId);
         session.setClientInfo("System anonymous session");
 
         return new SimpleAuthenticationDetails(session);
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    protected UserSession createSession(@SuppressWarnings("unused") AnonymousUserCredentials credentials, User user,
+                                        Locale userLocale, UUID anonymousSessionId) throws LoginException {
+        return userSessionManager.createSession(anonymousSessionId, user, userLocale, true);
     }
 
     @Override

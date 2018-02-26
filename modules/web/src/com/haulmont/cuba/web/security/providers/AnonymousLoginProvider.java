@@ -38,6 +38,7 @@ public class AnonymousLoginProvider implements LoginProvider, Ordered {
     @Inject
     protected WebAnonymousSessionHolder anonymousSessionHolder;
 
+    @SuppressWarnings("RedundantThrows")
     @Nullable
     @Override
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
