@@ -46,6 +46,10 @@ public class LoginPasswordLoginProvider implements LoginProvider, Ordered {
             loginPasswordCredentials.setPassword(hashedPassword);
         }
 
+        return loginMiddleware(loginPasswordCredentials);
+    }
+
+    protected AuthenticationDetails loginMiddleware(LoginPasswordCredentials credentials) throws LoginException {
         return authenticationService.login(credentials);
     }
 

@@ -81,7 +81,7 @@ public class TrustedClientAuthenticationProvider extends AbstractAuthenticationP
 
         Locale userLocale = getUserLocale(trustedClient, user);
 
-        UserSession session = userSessionManager.createSession(user, userLocale, false);
+        UserSession session = createSession(trustedClient, user, userLocale);
 
         setClientSessionParams(trustedClient, session);
 
@@ -90,6 +90,12 @@ public class TrustedClientAuthenticationProvider extends AbstractAuthenticationP
         checkUserAccess(trustedClient, authenticationDetails);
 
         return authenticationDetails;
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    protected UserSession createSession(@SuppressWarnings("unused") TrustedClientCredentials credentials,
+                                        User user, Locale userLocale) throws LoginException {
+        return userSessionManager.createSession(user, userLocale, false);
     }
 
     protected void checkUserAccess(Credentials loginAndPassword, AuthenticationDetails authenticationDetails)

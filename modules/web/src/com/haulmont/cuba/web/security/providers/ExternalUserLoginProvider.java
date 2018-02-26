@@ -84,7 +84,11 @@ public class ExternalUserLoginProvider implements LoginProvider, Ordered {
 
         tcCredentials.setSessionAttributes(targetSessionAttributes);
 
-        return authenticationService.login(tcCredentials);
+        return loginMiddleware(tcCredentials);
+    }
+
+    protected AuthenticationDetails loginMiddleware(TrustedClientCredentials credentials) throws LoginException {
+        return authenticationService.login(credentials);
     }
 
     @Override

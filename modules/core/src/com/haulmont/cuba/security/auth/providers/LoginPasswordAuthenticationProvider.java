@@ -69,7 +69,7 @@ public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationP
 
         Locale userLocale = getUserLocale(loginAndPassword, user);
 
-        UserSession session = userSessionManager.createSession(user, userLocale, false);
+        UserSession session = createSession(loginAndPassword, user, userLocale);
 
         setClientSessionParams(loginAndPassword, session);
 
@@ -78,6 +78,12 @@ public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationP
         checkUserAccess(loginAndPassword, authenticationDetails);
 
         return authenticationDetails;
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    protected UserSession createSession(@SuppressWarnings("unused") LoginPasswordCredentials credentials,
+                                        User user, Locale userLocale) throws LoginException {
+        return userSessionManager.createSession(user, userLocale, false);
     }
 
     protected void checkUserCredentials(Credentials credentials) throws LoginException {
