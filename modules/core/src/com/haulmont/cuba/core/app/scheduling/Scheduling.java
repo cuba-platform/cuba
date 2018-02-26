@@ -360,8 +360,11 @@ public class Scheduling implements SchedulingAPI {
             return false;
         }
         if (task.getStartDelay() != null) {
-            if ((schedulingStartTime + task.getStartDelay() * 1000) < now) {
-                log.trace(task + ": delayed");
+            long startTimeMillis = schedulingStartTime + task.getStartDelay() * 1000;
+            if (startTimeMillis > now) {
+                if (log.isTraceEnabled()) {
+                    log.trace(task + ": delayed until {} due to startDelay={}", new Date(startTimeMillis), task.getStartDelay());
+                }
                 return false;
             }
         }

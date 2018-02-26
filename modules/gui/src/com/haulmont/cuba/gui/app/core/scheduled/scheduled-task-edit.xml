@@ -123,6 +123,12 @@
                                    width="${smallFieldWidth}"/>
                     </row>
                     <row>
+                        <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDelay"
+                               align="MIDDLE_LEFT"/>
+                        <textField id="startDelayField" datasource="taskDs" property="startDelay"
+                                   width="${smallFieldWidth}"/>
+                    </row>
+                    <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"
                                align="MIDDLE_LEFT"/>
                         <textArea id="permittedServersField" datasource="taskDs" property="permittedServers"
