@@ -25,13 +25,18 @@ import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.haulmont.cuba.web.gui.icons.IconProvider.LOWEST_PLATFORM_PRECEDENCE;
+
 @Component
+@Order(LOWEST_PLATFORM_PRECEDENCE - 150)
 public class FontAwesomeIconProvider implements IconProvider {
+
     private static final Logger log = LoggerFactory.getLogger(FontAwesomeIconProvider.class);
 
     protected static final String[] FONT_AWESOME_PREFIXES = {"font-icon:", "font-awesome-icon:"};

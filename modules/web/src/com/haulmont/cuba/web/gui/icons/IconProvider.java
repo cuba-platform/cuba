@@ -26,6 +26,19 @@ import com.vaadin.server.Resource;
  * to use your custom icon set.
  */
 public interface IconProvider {
+
+    /**
+     * Defines the highest precedence for {@link org.springframework.core.Ordered} or
+     * {@link org.springframework.core.annotation.Order} icon providers.
+     */
+    int HIGHEST_PLATFORM_PRECEDENCE = 100;
+
+    /**
+     * Defines the lowest precedence for {@link org.springframework.core.Ordered} or
+     * {@link org.springframework.core.annotation.Order} icon providers.
+     */
+    int LOWEST_PLATFORM_PRECEDENCE = 1000;
+
     /**
      * @return an instance of {@link Resource} by the given {@code iconPath}.
      */
@@ -33,7 +46,7 @@ public interface IconProvider {
 
     /**
      * @return true if icon provider can return an instance of {@link Resource} by the given {@code iconPath}
-     *         or false otherwise
+     * or false otherwise
      */
     boolean canProvide(String iconPath);
 }
