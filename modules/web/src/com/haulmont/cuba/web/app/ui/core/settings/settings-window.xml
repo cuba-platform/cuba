@@ -24,37 +24,37 @@
     <dsContext/>
 
     <layout expand="buttons">
-        <groupBox>
-            <grid spacing="true" width="100%">
+        <groupBox id="groupBox">
+            <grid id="grid" spacing="true" width="100%">
                 <columns>
                     <column flex="0"/>
                     <column flex="1"/>
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://mainWindowMode" align="MIDDLE_LEFT"/>
+                        <label id="mainWindowLabel" value="msg://mainWindowMode" align="MIDDLE_LEFT"/>
                         <optionsGroup id="modeOptions"/>
                     </row>
                     <row>
-                        <label value="msg://mainWindowTheme" align="MIDDLE_LEFT"/>
+                        <label id="visualThemeLabel" value="msg://mainWindowTheme" align="MIDDLE_LEFT"/>
                         <lookupField id="appThemeField" required="true"
                                      width="theme://cuba.web.settings-window.appThemeField.width"
                                      requiredMessage="msg://mainWindowThemeMsg"/>
                     </row>
                     <row>
-                        <label value="msg://mainWindowLang" align="MIDDLE_LEFT"/>
+                        <label id="languageLabel" value="msg://mainWindowLang" align="MIDDLE_LEFT"/>
                         <lookupField id="appLangField" width="theme://cuba.web.settings-window.appLocaleField.width"/>
                     </row>
                     <row>
-                        <label value="msg://com.haulmont.cuba.security.entity/User.timeZone" align="MIDDLE_LEFT"/>
-                        <hbox spacing="true" width="100%" expand="timeZoneAutoField">
+                        <label id="timeZoneLabel" value="msg://com.haulmont.cuba.security.entity/User.timeZone" align="MIDDLE_LEFT"/>
+                        <hbox id="timeZoneBox" spacing="true" width="100%" expand="timeZoneAutoField">
                             <lookupField id="timeZoneLookup"
                                          width="theme://cuba.web.settings-window.timeZoneField.width"/>
                             <checkBox id="timeZoneAutoField" align="MIDDLE_LEFT"/>
                         </hbox>
                     </row>
                     <row>
-                        <label value="msg://defaultScreen" align="MIDDLE_LEFT"/>
+                        <label id="defaultScreenLabel" value="msg://defaultScreen" align="MIDDLE_LEFT"/>
                         <lookupField id="defaultScreenField"
                                      description="msg://defaultScreenDescription"
                                      newOptionAllowed="false"
