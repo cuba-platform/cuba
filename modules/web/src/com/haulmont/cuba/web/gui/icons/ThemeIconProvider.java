@@ -19,11 +19,14 @@ package com.haulmont.cuba.web.gui.icons;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import static com.haulmont.cuba.web.gui.icons.IconProvider.LOWEST_PLATFORM_PRECEDENCE;
+
 @Component
+@Order(LOWEST_PLATFORM_PRECEDENCE - 100)
 public class ThemeIconProvider implements IconProvider {
-    protected static final String[] THEME_PREFIXES = {"icons/", "app/", "components/", "../"};
 
     @Override
     public Resource getIconResource(String iconPath) {
@@ -36,12 +39,6 @@ public class ThemeIconProvider implements IconProvider {
 
     @Override
     public boolean canProvide(String iconPath) {
-        for (String prefix : THEME_PREFIXES) {
-            if (iconPath.startsWith(prefix)) {
-                return true;
-            }
-        }
-
-        return false;
+        return iconPath != null && !iconPath.isEmpty();
     }
 }
