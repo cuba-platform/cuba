@@ -48,6 +48,11 @@ tokens {
     BY = 'BY';
     SET = 'SET';
     AS = 'AS';
+    CASE = 'CASE';
+    WHEN = 'WHEN';
+    THEN = 'THEN';
+    ELSE = 'ELSE';
+    END = 'END';
 }
 
 
@@ -450,16 +455,16 @@ case_expression
     | coalesce_expression
     | nullif_expression;
 general_case_expression
-    : 'CASE' when_clause (when_clause)* 'ELSE' scalar_expression 'END';
+    : CASE when_clause (when_clause)* ELSE scalar_expression END;
 when_clause
-    : 'WHEN' conditional_expression 'THEN' scalar_expression;
+    : WHEN conditional_expression THEN scalar_expression;
 simple_case_expression
-    : 'CASE' case_operand simple_when_clause (simple_when_clause)* 'ELSE' scalar_expression 'END';
+    : CASE case_operand simple_when_clause (simple_when_clause)* ELSE scalar_expression END;
 case_operand
     : path_expression
     | type_discriminator;
 simple_when_clause
-    : 'WHEN' scalar_expression 'THEN' scalar_expression;
+    : WHEN scalar_expression THEN scalar_expression;
 coalesce_expression
     : 'COALESCE('scalar_expression (',' scalar_expression)+')';
 nullif_expression
@@ -500,7 +505,9 @@ boolean_literal
 
 //todo eude the following is just a workaround for entity fields equal to keywords. We need to get rid of it somehow.
 field
-    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | 'AS' | 'MEMBER' | date_part;
+    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | 'AS' | 'MEMBER'
+    | 'CASE' | 'WHEN' |  'THEN' | 'ELSE' | 'END'
+    | date_part;
 
 identification_variable
     : WORD | 'GROUP';
