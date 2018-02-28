@@ -308,7 +308,7 @@ public class QueryTransformerAstBasedTest {
 //        DomainModel model = new DomainModel(playerEntity, teamEntity);
 //
 //        assertTransformsToSame(model, "select p.owner from (select t from Team t where t.name in (select a.name from Player a)) p");
-//        // 'as' опускается
+//        // 'as' skipped
 //        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "select p.owner from (select t.owner from Team as t where t.name = '1') p", "AsdfAsdfAsdf");
 //        String result = transformerAstBased.getResult();
 //        assertEquals("select p.owner from (select t.owner from Team t where t.name = '1') p", result);
@@ -391,6 +391,16 @@ public class QueryTransformerAstBasedTest {
         DomainModel model = new DomainModel(playerEntity, team);
         assertTransformsToSame(model, "select p from Team t join t.players p " +
                 "group by p.level having p.level > 0 order by p.level");
+    }
+
+    @Test
+    public void getResult_noChangesMade_withCase() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname");
+
+        DomainModel model = new DomainModel(playerEntity);
+
+        assertTransformsToSame(model, "select case when p.nickname is null then p.name else p.nickname end from Player p");
     }
 
     private void assertTransformsToSame(DomainModel model, String query) throws RecognitionException {

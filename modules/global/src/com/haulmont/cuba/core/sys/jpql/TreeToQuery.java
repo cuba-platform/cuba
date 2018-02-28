@@ -63,7 +63,12 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.LEFT ||
                 node.getType() == JPA2Lexer.OUTER ||
                 node.getType() == JPA2Lexer.INNER ||
-                node.getType() == JPA2Lexer.FETCH
+                node.getType() == JPA2Lexer.FETCH ||
+                node.getType() == JPA2Lexer.CASE ||
+                node.getType() == JPA2Lexer.WHEN ||
+                node.getType() == JPA2Lexer.THEN ||
+                node.getType() == JPA2Lexer.ELSE ||
+                node.getType() == JPA2Lexer.END
                 ) {
             sb.appendSpace();
         }
@@ -124,6 +129,8 @@ public class TreeToQuery implements TreeVisitorAction {
 
         if (node.getType() == JPA2Lexer.DISTINCT ||
                 node.getType() == JPA2Lexer.FETCH ||
+                node.getType() == JPA2Lexer.THEN ||
+                node.getType() == JPA2Lexer.ELSE ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS) {
             sb.appendSpace();
         }
