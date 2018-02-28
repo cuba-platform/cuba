@@ -16,10 +16,7 @@
 
 package com.haulmont.cuba.security.auth;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManager;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -208,8 +205,9 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
     protected User loadSubstitutedUser(User substitutedUser, UserSession currentSession, EntityManager em) {
         TypedQuery<User> query = em.createQuery(
-                "select s.substitutedUser from sec$User u join u.substitutions s " +
-                        "where u.id = ?1 and s.substitutedUser.id = ?2",
+                "select su from sec$User su where " +
+                        "su.id in (select s.substitutedUser.id from sec$User u join u.substitutions s " +
+                        "where u.id = ?1 and s.substitutedUser.id = ?2)",
                 User.class
         );
         query.setParameter(1, currentSession.getUser());
