@@ -397,6 +397,16 @@ public class QueryTransformerAstBasedTest {
                 "group by p.level having p.level > 0 order by p.level");
     }
 
+    @Test
+    public void getResult_noChangesMade_withCase() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname");
+
+        DomainModel model = new DomainModel(playerEntity);
+
+        assertTransformsToSame(model, "select case when p.nickname is null then p.name else p.nickname end from Player p");
+    }
+
     private void assertTransformsToSame(DomainModel model, String query) throws RecognitionException {
         QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, query);
         String result = transformerAstBased.getResult();
