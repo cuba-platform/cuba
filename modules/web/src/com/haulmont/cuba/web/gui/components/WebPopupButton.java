@@ -361,7 +361,9 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
         @Override
         public void actionPerform(Component component) {
-            WebPopupButton.this.component.setPopupVisible(false);
+            if (isAutoClose()) {
+                WebPopupButton.this.component.setPopupVisible(false);
+            }
 
             action.actionPerform(component);
         }
