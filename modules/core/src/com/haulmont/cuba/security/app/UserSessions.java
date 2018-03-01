@@ -392,21 +392,18 @@ public class UserSessions implements UserSessionsAPI {
         log.trace("Processing eviction");
         long now = timeSource.currentTimeMillis();
 
-        List<UserSessionInfo> infoList = getSessionInfoStream()
+        getSessionInfoStream()
                 .filter(info -> !info.session.isSystem() && now > (info.lastUsedTs + expirationTimeout * 1000))
-                .collect(Collectors.toList());
+                .forEach(usi -> {
+                    log.debug("Removing session due to timeout: {}", usi);
 
-        for (Iterator<UserSessionInfo> it = infoList.iterator(); it.hasNext();) {
-            UserSessionInfo usi = it.next();
-            log.debug("Removing session due to timeout: {}", usi);
+                    userSessionLog.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
 
-            userSessionLog.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
+                    removeSessionInfo(usi.session.getId());
 
-            it.remove();
-
-            usi.lastUsedTs = 0;
-            clusterManager.send(usi);
-        }
+                    usi.lastUsedTs = 0;
+                    clusterManager.send(usi);
+                });
     }
 
     protected UserSessionInfo getSessionInfo(UUID id) {
