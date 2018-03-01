@@ -118,11 +118,12 @@
       padding: 1px 6px;
       cursor: pointer;
       height: 18px;
+      line-height: 15px;
       white-space: nowrap;
 
       .v-icon {
         margin-right: 3px;
-        vertical-align: middle;
+        vertical-align: initial;
       }
 
       span {
