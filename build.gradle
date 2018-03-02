@@ -98,7 +98,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     // code quality
     apply(plugin: 'findbugs')
     apply(plugin: 'pmd')
-    apply(plugin: 'jacoco')
 
     dependencies {
         testCompile(bom['org.jmockit:jmockit'])
@@ -212,6 +211,11 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     check {
         dependsOn += ['pmdReport']
     }
+}
+
+// Jacoco
+configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
+    apply(plugin: 'jacoco')
 
     jacoco {
         toolVersion = "0.8.0"
