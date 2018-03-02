@@ -93,9 +93,12 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     apply(plugin: 'groovy')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    // code quality
     apply(plugin: 'findbugs')
     apply(plugin: 'pmd')
-    apply(plugin: 'cuba')
+    apply(plugin: 'jacoco')
 
     dependencies {
         testCompile(bom['org.jmockit:jmockit'])
@@ -196,7 +199,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         source project.fileTree("src")
     }
 
-
     task pmdReport(dependsOn: pmdMain, group: 'verification', description:
             'Generates a HTML report after executing PMD checks.') {
         doLast {
@@ -209,6 +211,22 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     check {
         dependsOn += ['pmdReport']
+    }
+
+    jacoco {
+        toolVersion = "0.8.0"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        afterEvaluate {
+            // without enhanced-classes output
+            classDirectories = files(new File(project.buildDir, 'classes/java/main'))
+        }
     }
 }
 
@@ -972,5 +990,57 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba
             }
         }
         start.execute()
+    }
+}
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.0"
+}
+
+task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
+    description = 'Generates an aggregate report from all subprojects'
+
+    def jacocoProjects = subprojects.findAll { prj ->
+        return prj.project.extensions.findByName('jacoco') != null
+    }
+
+    dependsOn(jacocoProjects.jacocoTestReport)
+
+    additionalSourceDirs = generateSourceFiles(jacocoProjects)
+    sourceDirectories = generateSourceFiles(jacocoProjects)
+    classDirectories = generateClassDirs(jacocoProjects)
+    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
+
+    reports {
+        html {
+            enabled true
+            destination new File(rootProject.buildDir, 'reports/jacoco/project')
+        }
+        xml {
+            enabled true
+            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
+        }
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+def generateSourceFiles(Collection projects) {
+    def dirs = projects.collect { prj -> new File(prj.projectDir, 'src') }
+
+    return rootProject.files(dirs)
+}
+
+def generateClassDirs(Collection projects) {
+    def trees = projects.collect { prj ->
+        return prj.fileTree(dir: new File(prj.buildDir, 'classes/java/main'))
+    }
+
+    return trees.inject(files().asFileTree) { sum, current ->
+        sum += current
     }
 }
