@@ -841,15 +841,10 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs(Window window) {
-        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(getConfiguredWorkArea(createWorkAreaContext(window)));
+        WebAppWorkArea appWorkArea = getConfiguredWorkArea(createWorkAreaContext(window));
+        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(appWorkArea);
 
-        String usAppWindowMode = userSettingService.loadSetting(ClientType.WEB, "appWindowMode");
-        String appWindowMode = webConfig.getAppWindowMode();
-
-        boolean singleMode = Mode.SINGLE.name().equals(usAppWindowMode)
-                || (Mode.SINGLE.name().equals(appWindowMode) && (usAppWindowMode == null || Mode.SINGLE.name().equals(usAppWindowMode)));
-
-        boolean showBreadCrumbs = webConfig.getShowBreadCrumbs() || singleMode;
+        boolean showBreadCrumbs = webConfig.getShowBreadCrumbs() || Mode.SINGLE == appWorkArea.getMode();
         windowBreadCrumbs.setVisible(showBreadCrumbs);
 
         stacks.put(windowBreadCrumbs, new Stack<>());
