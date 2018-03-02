@@ -232,6 +232,14 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
             classDirectories = files(new File(project.buildDir, 'classes/java/main'))
         }
     }
+
+    if (rootProject.hasProperty('jacocoTeamcity')) {
+        jacocoTestReport.doLast {
+            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
+                    "includes='com.haulmont.cuba.*' " +
+                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
+        }
+    }
 }
 
 // configure web toolkit module
