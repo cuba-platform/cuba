@@ -25,10 +25,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -171,6 +168,7 @@ public class AppPropertiesLocator {
             entity.setDefaultValue(getDefaultValue(method));
             entity.setCurrentValue(getCurrentValue(method, entry.getValue()));
             entity.setOverridden(StringUtils.isNotEmpty(AppContext.getProperty(name)));
+            entity.setSecret(method.getAnnotation(Secret.class) != null);
             if (!entity.getOverridden()) {
                 assignLastUpdated(entity, dbContent);
             }

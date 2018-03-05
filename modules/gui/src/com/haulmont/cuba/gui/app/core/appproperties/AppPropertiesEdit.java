@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
+import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
@@ -76,7 +77,7 @@ public class AppPropertiesEdit extends AbstractWindow {
         fieldGroup.addCustomField("currentValue", (datasource, propertyId) -> {
             if (item.getOverridden()) {
                 TextField textField = componentsFactory.createComponent(TextField.class);
-                textField.setValue(item.getCurrentValue());
+                textField.setValue(item.getDisplayedCurrentValue());
                 textField.setEditable(false);
                 return textField;
             }
@@ -87,21 +88,30 @@ public class AppPropertiesEdit extends AbstractWindow {
                 if (datatype instanceof BooleanDatatype) {
                     return createLookupField(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString()), item.getCurrentValue());
                 } else {
-                    TextField textField = componentsFactory.createComponent(TextField.class);
-                    textField.setValue(item.getCurrentValue());
+                    if (Boolean.TRUE.equals(item.getSecret())) {
+                        PasswordField passwordField = componentsFactory.createComponent(PasswordField.class);
+                        passwordField.setValue(item.getCurrentValue());
+                        passwordField.addValueChangeListener(e -> {
+                            appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
+                        });
+                        return passwordField;
+                    } else {
+                        TextField textField = componentsFactory.createComponent(TextField.class);
+                        textField.setValue(item.getCurrentValue());
 
-                    try {
-                        datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
-                        textField.setDatatype(datatype);
-                    } catch (ParseException e) {
-                        // do not assign datatype then
-                        log.trace("Localized parsing by datatype cannot be used for value {}", item.getCurrentValue());
+                        try {
+                            datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
+                            textField.setDatatype(datatype);
+                        } catch (ParseException e) {
+                            // do not assign datatype then
+                            log.trace("Localized parsing by datatype cannot be used for value {}", item.getCurrentValue());
+                        }
+
+                        textField.addValueChangeListener(e -> {
+                            appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
+                        });
+                        return textField;
                     }
-
-                    textField.addValueChangeListener(e -> {
-                        appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
-                    });
-                    return textField;
                 }
             }
         });

@@ -17,11 +17,18 @@
 
 package com.haulmont.cuba.core.config;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.NumberDatatype;
+import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 import java.util.Date;
 
@@ -60,6 +67,9 @@ public class AppPropertyEntity extends BaseUuidEntity implements Updatable, Comp
 
     @MetaProperty
     private String enumValues;
+
+    @MetaProperty
+    private Boolean secret = false;
 
     @Override
     public Date getUpdateTs() {
@@ -145,8 +155,48 @@ public class AppPropertyEntity extends BaseUuidEntity implements Updatable, Comp
         this.enumValues = enumValues;
     }
 
+    public Boolean getSecret() {
+        return secret;
+    }
+
+    public void setSecret(Boolean secret) {
+        this.secret = secret;
+    }
+
     @Override
     public int compareTo(AppPropertyEntity o) {
         return name.compareTo(o.name);
+    }
+
+    /**
+     * Method returns the current value that should be displayed in the UI. The method takes into account the {@link #secret}
+     * property value and displays a value placeholder if it should not be visible
+     */
+    @MetaProperty
+    public String getDisplayedCurrentValue() {
+        if (Boolean.TRUE.equals(secret) && isDatatypeMayBeHidden()) {
+            return AppBeans.get(Messages.class).getMessage(AppPropertyEntity.class, "AppPropertyEntity.valueIsSecret");
+        } else {
+            return currentValue;
+        }
+    }
+
+    /**
+     * Method returns the default value that should be displayed in the UI. The method takes into account the {@link #secret}
+     * property value and displays a value placeholder if it should not be visible
+     */
+    @MetaProperty
+    public String getDisplayedDefaultValue() {
+        if (Boolean.TRUE.equals(secret) && isDatatypeMayBeHidden()) {
+            return AppBeans.get(Messages.class).getMessage(AppPropertyEntity.class, "AppPropertyEntity.valueIsSecret");
+        } else {
+            return defaultValue;
+        }
+    }
+
+    protected boolean isDatatypeMayBeHidden() {
+        if (Strings.isNullOrEmpty(dataTypeName)) return false;
+        Datatype datatype = Datatypes.get(dataTypeName);
+        return datatype instanceof StringDatatype || datatype instanceof NumberDatatype;
     }
 }

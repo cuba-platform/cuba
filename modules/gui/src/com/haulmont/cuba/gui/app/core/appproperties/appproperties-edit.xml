@@ -38,7 +38,7 @@
         <fieldGroup id="fieldGroup" datasource="appPropertyDs" width="100%">
             <column width="100%">
                 <field id="name" editable="false" caption="msg://name"/>
-                <field id="defaultValue" editable="false" caption="msg://defaultValue"/>
+                <field id="displayedDefaultValue" editable="false" caption="msg://defaultValue"/>
                 <field id="currentValue" caption="msg://currentValue" custom="true"/>
             </column>
         </fieldGroup>
