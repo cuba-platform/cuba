@@ -938,7 +938,14 @@ public class EntityInspectorEditor extends AbstractWindow {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    String viewName = metaProperty.getRange().getCardinality().isMany() ? View.LOCAL : View.MINIMAL;
+                    String viewName;
+                    if (metadata.getTools().isEmbedded(metaProperty)) {
+                        viewName = View.BASE;
+                    } else if (metaProperty.getRange().getCardinality().isMany()){
+                        viewName = View.LOCAL;
+                    } else {
+                        viewName = View.MINIMAL;
+                    }
                     View propView = viewRepository.getView(metaProperty.getRange().asClass(), viewName);
                     view.addProperty(metaProperty.getName(),
                             new View(propView, metaProperty.getRange().asClass().getName() + ".entity-inspector-view", true));
