@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -55,21 +54,26 @@ public class SideMenuBuilder {
     protected MenuConfig menuConfig;
 
     @Inject
-    private MessageTools messageTools;
+    protected MessageTools messageTools;
 
     public SideMenuBuilder() {
     }
 
     public void build(SideMenu menu) {
+        build(menu, menuConfig.getRootItems());
+    }
+
+    protected void build(SideMenu menu, List<MenuItem> rootItems) {
         Window window = ComponentsHelper.getWindowImplementation(menu);
 
         if (window == null) {
             throw new IllegalStateException("SideMenu is not belong to Window");
         }
 
-        List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
-            if (menuItem.isPermitted(session)) {
+            // AppMenu does not support separators
+            if (menuItem.isPermitted(session)
+                    && !menuItem.isSeparator()) {
                 createMenuBarItem(window, menu, menuItem);
             }
         }
@@ -90,21 +94,18 @@ public class SideMenuBuilder {
         if (!item.hasChildren())
             return;
 
-        boolean done;
-        do {
-            done = true;
-            if (item.hasChildren()) {
-                List<SideMenu.MenuItem> children = new ArrayList<>(item.getChildren());
-                for (int i = 0; i < children.size(); i++) {
-                    SideMenu.MenuItem child = children.get(i);
-                    removeExtraSeparators(child);
-                    if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
-                        item.removeChildItem(child);
-                        done = false;
-                    }
+        // SideMenu does not support separator elements
+        if (item.hasChildren()) {
+            SideMenu.MenuItem[] menuItems =
+                    item.getChildren().toArray(new SideMenu.MenuItem[item.getChildren().size()]);
+
+            for (SideMenu.MenuItem child : menuItems) {
+                removeExtraSeparators(child);
+                if (isMenuItemEmpty(child)) {
+                    item.removeChildItem(child);
                 }
             }
-        } while (!done);
+        }
     }
 
     protected void createMenuBarItem(Window webWindow, SideMenu menu, MenuItem item) {
@@ -169,6 +170,10 @@ public class SideMenuBuilder {
         if (!item.getChildren().isEmpty() || item.isMenu())     //check item is menu
             return null;
 
+        return createMenuCommandExecutor(item);
+    }
+
+    protected Consumer<SideMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
         MenuCommand command = new MenuCommand(item);
 
         return event ->
