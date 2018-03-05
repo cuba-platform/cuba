@@ -119,12 +119,12 @@ public class MenuConfig {
                     Element rootElement = Dom4j.readDocument(stream).getRootElement();
                     loadMenuItems(rootElement, null);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to read menu config", e);
                 } finally {
                     IOUtils.closeQuietly(stream);
                 }
             } else {
-                log.warn("Resource " + location + " not found, ignore it");
+                log.warn("Resource {} not found, ignore it", location);
             }
         }
     }

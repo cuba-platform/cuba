@@ -62,6 +62,10 @@ public class MenuBuilder {
     }
 
     public void build(AppMenu appMenu) {
+        build(appMenu, menuConfig.getRootItems());
+    }
+
+    protected void build(AppMenu appMenu, List<MenuItem> rootItems) {
         this.appMenu = appMenu;
 
         Window window = ComponentsHelper.getWindowImplementation(appMenu);
@@ -69,20 +73,24 @@ public class MenuBuilder {
             throw new IllegalStateException("AppMenu is not belong to Window");
         }
 
-        List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
-            if (menuItem.isPermitted(session)) {
+            // AppMenu does not load top-level separators
+            if (menuItem.isPermitted(session)
+                    && !menuItem.isSeparator()) {
                 createMenuBarItem(window, menuItem);
             }
         }
+
         removeExtraSeparators();
     }
 
     protected void removeExtraSeparators() {
         for (AppMenu.MenuItem item : new ArrayList<>(appMenu.getMenuItems())) {
             removeExtraSeparators(item);
-            if (isMenuItemEmpty(item))
+
+            if (isMenuItemEmpty(item)) {
                 appMenu.removeMenuItem(item);
+            }
         }
     }
 
@@ -94,13 +102,22 @@ public class MenuBuilder {
         do {
             done = true;
             if (item.hasChildren()) {
-                List<AppMenu.MenuItem> children = new ArrayList<>(item.getChildren());
-                for (int i = 0; i < children.size(); i++) {
-                    AppMenu.MenuItem child = children.get(i);
+                AppMenu.MenuItem[] children =
+                        item.getChildren().toArray(new AppMenu.MenuItem[item.getChildren().size()]);
+
+                for (int i = 0; i < children.length; i++) {
+                    AppMenu.MenuItem child = children[i];
+
                     removeExtraSeparators(child);
-                    if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
+
+                    if (isMenuItemEmpty(child)) {
                         item.removeChildItem(child);
                         done = false;
+                    } else if (child.isSeparator()) {
+                        if (i == 0 || i == children.length - 1 || children[i + 1].isSeparator()) {
+                            item.removeChildItem(child);
+                            done = false;
+                        }
                     }
                 }
             }
@@ -170,6 +187,10 @@ public class MenuBuilder {
         if (CollectionUtils.isNotEmpty(item.getChildren()) || item.isMenu())     //check item is menu
             return null;
 
+        return createMenuCommandExecutor(item);
+    }
+
+    protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
         MenuCommand menuCommand = new MenuCommand(item);
 
         return menuItem ->
@@ -177,7 +198,9 @@ public class MenuBuilder {
     }
 
     protected boolean isMenuItemEmpty(AppMenu.MenuItem menuItem) {
-        return !menuItem.hasChildren() && menuItem.getCommand() == null;
+        return menuItem.getCommand() == null
+                && !menuItem.isSeparator()
+                && !menuItem.hasChildren();
     }
 
     protected void assignShortcut(Window webWindow, AppMenu.MenuItem menuItem, MenuItem item) {

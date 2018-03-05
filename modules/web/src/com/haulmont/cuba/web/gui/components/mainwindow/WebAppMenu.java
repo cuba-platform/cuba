@@ -304,9 +304,13 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         public void setIcon(String icon) {
             this.icon = icon;
 
-            Resource iconResource = AppBeans.get(IconResolver.class)
-                    .getIconResource(this.icon);
-            delegateItem.setIcon(iconResource);
+            if (icon != null) {
+                Resource iconResource = AppBeans.get(IconResolver.class)
+                        .getIconResource(this.icon);
+                delegateItem.setIcon(iconResource);
+            } else {
+                delegateItem.setIcon(null);
+            }
         }
 
         @Override
