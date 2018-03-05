@@ -89,9 +89,10 @@ public class QueryCacheManager {
         List<T> resultList = null;
         QueryResult queryResult = queryCache.get(queryKey);
         if (queryResult != null) {
-            EntityManager em = persistence.getEntityManager();
-            resultList = new ArrayList<>(queryResult.getResult().size());
             MetaClass metaClass = metadata.getClassNN(queryResult.getType());
+            String storeName = metadata.getTools().getStoreName(metaClass);
+            EntityManager em = persistence.getEntityManager(storeName);
+            resultList = new ArrayList<>(queryResult.getResult().size());
             if (!metadata.getTools().isCacheable(metaClass)) {
                 log.warn("Using cacheable query without entity cache for {}", queryResult.getType());
             }
