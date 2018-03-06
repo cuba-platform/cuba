@@ -20,8 +20,9 @@ import com.haulmont.cuba.security.entity.PermissionType;
 
 /**
  * Exception that is raised on attempt to violate a security constraint.
- *
- *
+ * <p>
+ * You can throw this exception in application code if you want a standard notification about "access denied"
+ * to be shown to the user and the event to be logged.
  */
 @SupportedByClient
 @Logging(Logging.Type.BRIEF)
@@ -33,6 +34,13 @@ public class AccessDeniedException extends RuntimeException
 
     private String target;
 
+    /**
+     * Constructor.
+     *
+     * @param type      permission type
+     * @param target    permission target object, e.g. a screen id or entity operation name. When throwing the exception
+     *                  in application code, can be any string suitable to describe the situation in the log.
+     */
     public AccessDeniedException(PermissionType type, String target) {
         super(type.toString() + " " + target);
         this.type = type;
