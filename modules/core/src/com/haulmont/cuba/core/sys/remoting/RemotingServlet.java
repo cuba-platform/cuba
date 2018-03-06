@@ -112,35 +112,7 @@ public class RemotingServlet extends DispatcherServlet {
 
     @Override
     protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (!checkCompleted) {
-            // Check correctness of some configuration parameters and log the warning if necesary
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            GlobalConfig config = configuration.getConfig(GlobalConfig.class);
-            StringBuilder sb = new StringBuilder();
-            if (!request.getServerName().equals(config.getWebHostName())) {
-                sb.append("***** cuba.webHostName=").append(config.getWebHostName())
-                        .append(", actual=").append(request.getServerName()).append("\n");
-            }
-            if (request.getServerPort() != Integer.parseInt(config.getWebPort())) {
-                sb.append("***** cuba.webPort=").append(config.getWebPort())
-                        .append(", actual=").append(request.getServerPort()).append("\n");
-            }
-            String contextPath = request.getContextPath();
-            if (contextPath.startsWith("/"))
-                contextPath = contextPath.substring(1);
-            if (!contextPath.equals(config.getWebContextName())) {
-                sb.append("***** cuba.webContextName=").append(config.getWebContextName())
-                        .append(", actual=").append(contextPath).append("\n");
-            }
-            if (sb.length() > 0) {
-                sb.insert(0, "\n*****\n");
-                sb.append("*****");
-                log.warn(" Invalid configuration parameters that may cause problems:" +
-                                sb.toString()
-                );
-            }
-            checkCompleted = true;
-        }
+        checkConfiguration(request);
 
         RemoteClientInfo remoteClientInfo = new RemoteClientInfo();
         remoteClientInfo.setAddress(request.getRemoteAddr());
@@ -152,6 +124,41 @@ public class RemotingServlet extends DispatcherServlet {
             super.doService(request, response);
         } finally {
             RemoteClientInfo.clear();
+        }
+    }
+
+    /**
+     * Check correctness of some configuration parameters and log the warning if necessary.
+     */
+    protected void checkConfiguration(HttpServletRequest request) {
+        if (!checkCompleted) {
+            GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+            if (config.getLogIncorrectWebAppPropertiesEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                if (!request.getServerName().equals(config.getWebHostName())) {
+                    sb.append("***** cuba.webHostName=").append(config.getWebHostName())
+                            .append(", actual=").append(request.getServerName()).append("\n");
+                }
+                if (request.getServerPort() != Integer.parseInt(config.getWebPort())) {
+                    sb.append("***** cuba.webPort=").append(config.getWebPort())
+                            .append(", actual=").append(request.getServerPort()).append("\n");
+                }
+                String contextPath = request.getContextPath();
+                if (contextPath.startsWith("/"))
+                    contextPath = contextPath.substring(1);
+                if (!contextPath.equals(config.getWebContextName())) {
+                    sb.append("***** cuba.webContextName=").append(config.getWebContextName())
+                            .append(", actual=").append(contextPath).append("\n");
+                }
+                if (sb.length() > 0) {
+                    sb.insert(0, "\n*****\n");
+                    sb.append("*****");
+                    log.warn(" Invalid configuration parameters that may cause problems:" +
+                            sb.toString()
+                    );
+                }
+            }
+            checkCompleted = true;
         }
     }
 

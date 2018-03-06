@@ -218,4 +218,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.enableSessionParamsInQueryFilter")
     @DefaultBoolean(true)
     boolean getEnableSessionParamsInQueryFilter();
+
+    /**
+     * @return whether to log incorrect web app properties in RemotingServlet
+     */
+    @Property("cuba.logIncorrectWebAppPropertiesEnabled")
+    @DefaultBoolean(true)
+    boolean getLogIncorrectWebAppPropertiesEnabled();
 }
