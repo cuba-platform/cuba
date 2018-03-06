@@ -56,9 +56,12 @@ public final class InstanceUtils {
      *     [car.field].driver.name
      * </pre>
      * @param path value path as string
-     * @return value path as array
+     * @return value path as array or empty array if the input is null
      */
-    public static String[] parseValuePath(String path) {
+    public static String[] parseValuePath(@Nullable String path) {
+        if (path == null)
+            return new String[0];
+
         List<String> elements = new ArrayList<>(4);
 
         int bracketCount = 0;
@@ -94,9 +97,12 @@ public final class InstanceUtils {
      * Converts an array of identifiers to a dot-separated string, enclosing identifiers, containing dots, in square
      * brackets.
      * @param path value path as array
-     * @return value path as string
+     * @return value path as string or empty string if the input is null
      */
     public static String formatValuePath(String[] path) {
+        if (path == null)
+            return "";
+
         StringBuilder buffer = new StringBuilder();
         int i = 1;
         for (String s : path) {
@@ -130,6 +136,9 @@ public final class InstanceUtils {
      * @return              attribute value
      */
     public static <T> T getValueEx(Instance instance, String[] properties) {
+        if (properties == null)
+            return null;
+
         Object currentValue = null;
         Instance currentInstance = instance;
         for (String property : properties) {
