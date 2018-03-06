@@ -42,6 +42,7 @@
 
     <!-- Entities -->
     <permission target="sec$Filter:read" value="1" type="20"/>
+    <permission target="sys$KeyValueEntity:read" value="1" type="20"/>
 
     <!-- Specific -->
     <permission target="cuba.gui.loginToClient" value="1" type="40"/>
