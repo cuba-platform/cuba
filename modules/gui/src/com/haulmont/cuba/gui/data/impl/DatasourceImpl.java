@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -90,10 +91,9 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
 
         if (getCommitMode() == CommitMode.DATASTORE) {
             final DataSupplier supplier = getDataSupplier();
-            item = supplier.commit(item, getView());
+            Entity committedItem = supplier.commit(item, getView());
 
-            clearCommitLists();
-            modified = false;
+            committed(Collections.singleton(committedItem));
 
         } else if (getCommitMode() == CommitMode.PARENT) {
             if (parentDs == null) {
