@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.testmodel.sales.Customer
 import com.haulmont.cuba.testmodel.sales.Order
 import com.haulmont.cuba.testmodel.sales.OrderLine
+import com.haulmont.cuba.testmodel.sales.Status
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -179,4 +180,51 @@ class GetOldValueTest extends Specification {
         oldValue == [orderLine1]
     }
 
+    def "test enum attribute"() {
+        def customer
+        def oldValue
+        def oldEnumValue
+
+        when:
+
+        persistence.runInTransaction { em ->
+            customer = persistence.getEntityManager().find(Customer, customer1.id)
+            customer.setStatus(Status.OK)
+
+            oldValue = persistenceTools.getOldValue(customer, 'status')
+            oldEnumValue = persistenceTools.getOldEnumValue(customer, 'status')
+        }
+
+        then:
+
+        oldValue == null
+        oldEnumValue == null
+
+        when:
+
+        persistence.runInTransaction { em ->
+            customer = persistence.getEntityManager().find(Customer, customer1.id)
+            customer.setStatus(Status.NOT_OK)
+
+            oldValue = persistenceTools.getOldValue(customer, 'status')
+            oldEnumValue = persistenceTools.getOldEnumValue(customer, 'status')
+        }
+
+        then:
+
+        oldValue == 'O'
+        oldEnumValue == Status.OK
+
+        when: "using getOldEnumValue for non-enum attribute"
+
+        persistence.runInTransaction { em ->
+            customer = persistence.getEntityManager().find(Customer, customer1.id)
+
+            oldEnumValue = persistenceTools.getOldEnumValue(customer, 'name')
+        }
+
+        then: "return null"
+
+        oldEnumValue == null
+    }
 }

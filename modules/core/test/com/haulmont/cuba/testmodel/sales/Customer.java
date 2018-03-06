@@ -17,6 +17,7 @@
 package com.haulmont.cuba.testmodel.sales;
 
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.datatypes.impl.EnumUtils;
 import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.Column;
@@ -31,11 +32,22 @@ public class Customer extends StandardEntity {
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "STATUS")
+    private String status;
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Status getStatus() {
+        return EnumUtils.fromId(Status.class, status, null);
+    }
+
+    public void setStatus(Status status) {
+        this.status = status.getId();
     }
 }

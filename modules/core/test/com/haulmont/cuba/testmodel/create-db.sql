@@ -281,6 +281,7 @@ create table TEST_CUSTOMER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     NAME varchar(255),
+    STATUS varchar(5),
     primary key (ID)
 )^
 

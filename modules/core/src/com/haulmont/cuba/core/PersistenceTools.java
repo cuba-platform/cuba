@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
@@ -41,8 +42,6 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -145,10 +144,14 @@ public class PersistenceTools {
 
     /**
      * Returns an old value of an attribute changed in the current transaction. The entity must be in the Managed state.
+     * <p>
+     * For enum attributes returns enum id.
+     *
      * @param entity    entity instance
      * @param attribute attribute name
      * @return  an old value stored in the database. For a new entity returns null.
      * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
+     * @see #getOldEnumValue(Entity, String)
      */
     @Nullable
     public Object getOldValue(Entity entity, String attribute) {
@@ -177,6 +180,35 @@ public class PersistenceTools {
         }
         return null;
     }
+
+    /**
+     * Returns an old value of an enum attribute changed in the current transaction. The entity must be in the Managed state.
+     * <p>
+     * Unlike {@link #getOldValue(Entity, String)}, returns enum value and not its id.
+     *
+     * @param entity    entity instance
+     * @param attribute attribute name
+     * @return  an old value stored in the database. For a new entity returns null.
+     * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
+     */
+    @Nullable
+    public EnumClass getOldEnumValue(Entity entity, String attribute) {
+        Object value = getOldValue(entity, attribute);
+        if (value == null)
+            return null;
+
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        MetaProperty metaProperty = metaClass.getPropertyNN(attribute);
+        if (metaProperty.getRange().isEnum()) {
+            for (Object o : metaProperty.getRange().asEnumeration().getValues()) {
+                EnumClass enumValue = (EnumClass) o;
+                if (value.equals(enumValue.getId()))
+                    return enumValue;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Checks if the property is loaded from DB.
