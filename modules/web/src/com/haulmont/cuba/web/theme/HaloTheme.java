@@ -300,6 +300,11 @@ public class HaloTheme {
     public static final String ACCORDION_BORDERLESS = "borderless";
 
     /**
+     * Remove bottom and side borders of the GroupBox (only the top line will remain).
+     */
+    public static final String GROUPBOX_LIGHT = "light";
+
+    /**
      * Remove borders and the background color of the GroupBox. Can be combined with any other GroupBox style.
      * <p>
      * Notice that you should enable flag "showAsPanel".
