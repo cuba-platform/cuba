@@ -17,16 +17,16 @@
 package com.haulmont.cuba.gui.export;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Frame;
 
 import javax.annotation.Nullable;
 
 /**
  * Generic interface to show data exported from the system.
- *
- * <br> Use client-specific implementation obtained by
- * {@link com.haulmont.cuba.gui.AppConfig#createExportDisplay(Frame)} or by
- * injection into a screen controller.
+ * <br>
+ * Use client-specific implementation obtained by {@link AppConfig#createExportDisplay(Frame)} or by injection into a
+ * screen controller.
  */
 public interface ExportDisplay {
 
@@ -63,6 +63,18 @@ public interface ExportDisplay {
      * @param fileDescriptor file descriptor
      */
     void show(FileDescriptor fileDescriptor);
+
+    /**
+     * @return true if export display should open a new window with the file content
+     */
+    boolean isShowNewWindow();
+
+    /**
+     * Sets explicit new window option.
+     *
+     * @param showNewWindow true if export display opens new window, false otherwise
+     */
+    void setShowNewWindow(boolean showNewWindow);
 
     /** INTERNAL. Don't call from application code. */
     void setFrame(Frame frame);

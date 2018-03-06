@@ -142,6 +142,19 @@ public class WebExportDisplay implements ExportDisplay {
     }
 
     @Override
+    public boolean isShowNewWindow() {
+        return newWindow;
+    }
+
+    @Override
+    public void setShowNewWindow(boolean showNewWindow) {
+        this.newWindow = showNewWindow;
+
+        // newWindow is set explicitly
+        this.useViewList = false;
+    }
+
+    @Override
     public void show(FileDescriptor fileDescriptor) {
         ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());
         show(fileDescriptor, format);
@@ -151,14 +164,19 @@ public class WebExportDisplay implements ExportDisplay {
         show(new ByteArrayDataProvider(content), resourceName, format);
     }
 
+    /**
+     * @deprecated Use {@link #isShowNewWindow()}
+     */
+    @Deprecated
     public boolean isNewWindow() {
-        return newWindow;
+        return isShowNewWindow();
     }
 
+    /**
+     * @deprecated Use {@link #setShowNewWindow(boolean)}
+     */
+    @Deprecated
     public void setNewWindow(boolean newWindow) {
-        this.newWindow = newWindow;
-
-        // newWindow is set explicitly
-        this.useViewList = false;
+        this.setShowNewWindow(newWindow);
     }
 }

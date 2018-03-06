@@ -185,6 +185,16 @@ public class DesktopExportDisplay implements ExportDisplay {
         this.frame = frame;
     }
 
+    @Override
+    public boolean isShowNewWindow() {
+        return true;
+    }
+
+    @Override
+    public void setShowNewWindow(boolean showNewWindow) {
+        // ignored
+    }
+
     protected boolean saveFile(ExportDataProvider dataProvider, File destinationFile) {
         try {
             if (!destinationFile.exists()) {
