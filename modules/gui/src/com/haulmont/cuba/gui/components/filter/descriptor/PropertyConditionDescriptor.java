@@ -35,6 +35,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -75,13 +76,11 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
 
     @Override
     public Class getJavaClass() {
-        MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
-        if (propertyPath != null) {
-            MetaProperty metaProperty = propertyPath.getMetaProperty();
-            if (metaProperty != null)
-                return metaProperty.getJavaType();
+        MetaProperty metaProperty = getMetaProperty();
+        if (metaProperty != null) {
+            return metaProperty.getJavaType();
         }
-        throw new IllegalStateException("Unable to find property '" + name + "' in entity " + datasourceMetaClass);
+        throw new IllegalStateException(String.format("Unable to find property '%s' in entity %s", name, datasourceMetaClass));
     }
 
     @Override
@@ -97,7 +96,7 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
     @Override
     public AbstractCondition createCondition() {
         PropertyCondition propertyCondition = new PropertyCondition(this, entityAlias);
-        EnumSet<Op> ops = AppBeans.get(OpManager.class).availableOps(propertyCondition.getJavaClass());
+        EnumSet<Op> ops = AppBeans.get(OpManager.class).availableOps(getMetaProperty());
         propertyCondition.setOperator(ops.iterator().next());
         return propertyCondition;
     }
@@ -115,8 +114,8 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
 
     @Nullable
     public MetaProperty getMetaProperty() {
-        MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
-        if (propertyPath == null) return null;
-        return propertyPath.getMetaProperty();
+        return Optional.ofNullable(datasourceMetaClass.getPropertyPath(name))
+                .map(MetaPropertyPath::getMetaProperty)
+                .orElse(null);
     }
 }

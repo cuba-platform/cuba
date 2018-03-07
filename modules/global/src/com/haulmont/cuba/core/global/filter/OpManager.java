@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.filter.Op;
 
 import java.util.EnumSet;
@@ -26,4 +28,6 @@ public interface OpManager {
     EnumSet<Op> availableOps(Class javaClass);
 
     EnumSet<Op> availableOpsForCollectionDynamicAttribute();
+
+    EnumSet<Op> availableOps(MetaProperty metaProperty);
 }

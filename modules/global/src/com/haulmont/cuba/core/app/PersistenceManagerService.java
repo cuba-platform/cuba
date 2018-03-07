@@ -52,4 +52,10 @@ public interface PersistenceManagerService {
      * @return default sort order of null values used by the current DBMS
      */
     boolean isNullsLastSorting();
+
+    /**
+     * @param storeName - data store name
+     * @return true if the DBMS supports equals conditions in the filter and sort for LOB columns
+     */
+    boolean supportsLobSortingAndFiltering(String storeName);
 }

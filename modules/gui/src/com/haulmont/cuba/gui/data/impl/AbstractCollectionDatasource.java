@@ -20,6 +20,8 @@ package com.haulmont.cuba.gui.data.impl;
 import com.google.common.base.Joiner;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.ParameterInfo;
@@ -630,7 +632,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             }
         }
 
-        if (sortProperties != null) {
+        if (sortProperties != null && sortProperties.length != 0) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString());
             transformer.replaceOrderBy(!asc, sortProperties);
             String jpqlQuery = transformer.getResult();
@@ -641,19 +643,32 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Nullable
     protected String[] getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
         String[] sortProperties = null;
-        if (!propertyPath.getMetaProperty().getRange().isClass()) {
-            // a scalar persistent attribute
-            sortProperties = new String[1];
-            sortProperties[0] = propertyPath.toString();
-        } else {
+        MetaProperty metaProperty = propertyPath.getMetaProperty();
+        Range range = metaProperty.getRange();
 
+        PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerClient.NAME);
+        if (!range.isClass()) {
+            // a scalar persistent attribute
+            String storeName = metadata.getTools().getStoreName(metaProperty.getDomain());
+            if (!metadata.getTools().isLob(metaProperty)
+                    || persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
+                sortProperties = new String[1];
+                sortProperties[0] = propertyPath.toString();
+            }
+        } else {
             // a reference attribute
-            MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
-            if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
-                Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
+            if (!range.getCardinality().isMany()) {
+                Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(range.asClass());
                 if (!properties.isEmpty()) {
                     sortProperties = properties.stream()
-                            .filter(metaProperty -> metadata.getTools().isPersistent(metaProperty))
+                            .filter(prop -> {
+                                if (metadata.getTools().isPersistent(prop)) {
+                                    String storeName = metadata.getTools().getStoreName(prop.getDomain());
+                                    return !metadata.getTools().isLob(prop) ||
+                                            persistenceManagerService.supportsLobSortingAndFiltering(storeName);
+                                }
+                                return true;
+                            })
                             .map(MetadataObject::getName)
                             .map(propName -> propertyPath.toString().concat(".").concat(propName))
                             .toArray(String[]::new);

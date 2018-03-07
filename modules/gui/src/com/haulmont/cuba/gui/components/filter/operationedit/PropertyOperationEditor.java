@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.OpManager;
@@ -23,7 +25,11 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Operation editor for PropertyCondition. Displays popupButton component for selecting an operation.
@@ -43,7 +49,10 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
         OpManager opManager = AppBeans.get(OpManager.class);
-        for (Op op : opManager.availableOps(condition.getJavaClass())) {
+        MetaProperty metaProperty = Optional.ofNullable(condition.getDatasource().getMetaClass().getPropertyPath(condition.getName()))
+                .map(MetaPropertyPath::getMetaProperty)
+                .orElse(null);
+        for (Op op : opManager.availableOps(metaProperty)) {
             OperatorChangeAction operatorChangeAction = new OperatorChangeAction(op);
             popupButton.addAction(operatorChangeAction);
         }

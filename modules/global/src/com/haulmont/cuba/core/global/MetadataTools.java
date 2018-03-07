@@ -346,6 +346,16 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given property is a LOB.
+     * @see Lob
+     */
+    public boolean isLob(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        return metaProperty.getAnnotatedElement() != null
+                && metaProperty.getAnnotatedElement().isAnnotationPresent(Lob.class);
+    }
+
+    /**
      * Determine whether the given property is on the owning side of an association.
      */
     public boolean isOwningSide(MetaProperty metaProperty) {

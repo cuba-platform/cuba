@@ -77,4 +77,9 @@ public class OracleDbmsFeatures implements DbmsFeatures {
     public boolean isSchemaByUser() {
         return true;
     }
+
+    @Override
+    public boolean supportsLobSortingAndFiltering() {
+        return false;
+    }
 }

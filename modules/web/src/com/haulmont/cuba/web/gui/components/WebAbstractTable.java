@@ -25,6 +25,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
@@ -234,6 +236,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
                 final Formatter collectionFormatter = new CollectionFormatter();
                 column.setFormatter(collectionFormatter);
+            }
+        }
+
+        if (columnId instanceof MetaPropertyPath) {
+            PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerClient.NAME);
+            MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
+            String storeName = metadataTools.getStoreName(metaProperty.getDomain());
+            if (metadataTools.isLob(metaProperty) && !persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
+                component.setColumnSortable(columnId, false);
             }
         }
     }
