@@ -633,7 +633,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected boolean getItemClickable(Folder folder) {
         return folder instanceof AbstractSearchFolder
-                        && !StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
+                && !StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
     }
 
     protected boolean isItemExpandable(Folder folder) {
@@ -682,12 +682,14 @@ public class CubaFoldersPane extends VerticalLayout {
                 if (getItemClickable(folder)) {
                     openFolder((AbstractSearchFolder) event.getItemId());
                 } else if (isItemExpandable(folder)) {
-                    Component tree = event.getComponent();
-                    if (tree instanceof Tree) {
-                        if (((Tree) tree).isExpanded(folder))
-                            ((Tree) tree).collapseItem(folder);
-                        else
-                            ((Tree) tree).expandItem(folder);
+                    Component component = event.getComponent();
+                    if (component instanceof Tree) {
+                        Tree tree = (Tree) component;
+                        if (tree.isExpanded(folder)) {
+                            tree.collapseItem(folder);
+                        } else {
+                            tree.expandItem(folder);
+                        }
                     }
                 }
             }

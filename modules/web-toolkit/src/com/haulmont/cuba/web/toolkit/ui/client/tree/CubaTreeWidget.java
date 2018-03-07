@@ -78,7 +78,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
     @Override
     protected void applySelectionCommand(final Scheduler.ScheduledCommand command) {
         if (!doubleClickMode || doubleClickHandling) {
-        super.applySelectionCommand(command);
+            super.applySelectionCommand(command);
         } else {
             Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
 
@@ -176,8 +176,8 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
         @Override
         protected boolean isNeedToSendDoubleClick(int eventType, boolean sendClickEventNow) {
-            if (eventType != Event.ONDBLCLICK || !doubleClickMode) {
-                return super.isNeedToSendDoubleClick(eventType, sendClickEventNow);
+            if (!doubleClickMode) {
+                return eventType != Event.ONDBLCLICK;
             } else {
                 return doubleClickHandling;
             }
@@ -270,7 +270,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
     @Override
     protected boolean isAllowSingleSelectToggle() {
-        return BrowserInfo.get().isTouchDevice()&& Tools.isUseSimpleMultiselectForTouchDevice();
+        return BrowserInfo.get().isTouchDevice() && Tools.isUseSimpleMultiselectForTouchDevice();
     }
 
     @Override
