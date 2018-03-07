@@ -30,6 +30,9 @@
 
     <context:component-scan base-package="com.haulmont.cuba">
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.sys\.AppFront*"/>
+        <!--exclude dispatcher-->
+        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.controllers\..*"/>
+        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.restapi\..*"/>
     </context:component-scan>
 
     <!-- Various beans with non-standard configuration -->
