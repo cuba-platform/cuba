@@ -613,10 +613,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkNotNullArgument(item, "item is null");
         if (doNotModify)
             return;
-        // Never modify not new objects linked as ManyToMany. CollectionPropertyDatasource should only handle adding
-        // and removing of ManyToMany items.
-        if (!PersistenceHelper.isNew(item) && metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class) != null)
-            return;
         super.modified(item);
     }
 
