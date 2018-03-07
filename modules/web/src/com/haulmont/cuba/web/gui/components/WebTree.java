@@ -30,10 +30,11 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaTree;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Tree;
+import com.haulmont.cuba.web.widgets.CubaTree;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.Tree;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
@@ -41,7 +42,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> implements LookupComponent.LookupSelectionChangeNotifier {
+public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
+        implements LookupComponent.LookupSelectionChangeNotifier {
 
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -53,7 +55,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
     public WebTree() {
         component = new CubaTree();
         component.setMultiSelect(false);
-        component.setImmediate(true);
         component.setBeforePaintListener(() -> {
             Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
             if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {

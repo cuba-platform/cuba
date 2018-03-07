@@ -26,9 +26,9 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
-import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.data.TableContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaTable;
+import com.haulmont.cuba.web.widgets.data.AggregationContainer;
+import com.haulmont.cuba.web.widgets.data.TableContainer;
+import com.haulmont.cuba.web.widgets.CubaTable;
 import com.vaadin.server.Resource;
 
 import java.util.*;

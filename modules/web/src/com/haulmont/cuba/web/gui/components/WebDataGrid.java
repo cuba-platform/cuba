@@ -28,9 +28,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -38,32 +36,36 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.components.converters.FormatterBasedConverter;
+import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
+import com.haulmont.cuba.web.gui.components.converters.StringToObjectConverter;
+import com.haulmont.cuba.web.gui.components.converters.YesNoIconConverter;
 import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
+import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.data.DataGridContainer;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
-import com.haulmont.cuba.web.toolkit.ui.*;
-import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToObjectConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.YesNoIconConverter;
-import com.vaadin.addon.contextmenu.GridContextMenu.GridContextMenuOpenListener;
-import com.vaadin.addon.contextmenu.Menu;
-import com.vaadin.addon.contextmenu.MenuItem;
-import com.vaadin.data.Item;
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.contextmenu.Menu;
+import com.vaadin.contextmenu.MenuItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.Grid;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -130,7 +132,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected Grid.ColumnVisibilityChangeListener columnCollapsingChangeListener;
     protected Grid.ColumnResizeListener columnResizeListener;
-    protected com.vaadin.event.SortEvent.SortListener sortListener;
+    protected com.vaadin.v7.event.SortEvent.SortListener sortListener;
     protected com.vaadin.event.ContextClickEvent.ContextClickListener contextClickListener;
     protected CubaGrid.EditorCloseListener editorCloseListener;
     protected CubaGrid.BeforeEditorOpenListener beforeEditorOpenListener;
@@ -200,7 +202,20 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         };
 
-        component = new CubaGrid(createEditorFieldFactory());
+        component = new CubaGrid(createEditorFieldFactory()) {
+            @Override
+            protected boolean isEditingPermitted(Object id) {
+                CollectionDatasource collectionDatasource = WebDataGrid.this.datasource;
+
+                if (collectionDatasource != null) {
+                    //noinspection unchecked
+                    Entity entity = collectionDatasource.getItem(id);
+                    return security.isEntityOpPermitted(collectionDatasource.getMetaClass(), EntityOp.UPDATE) &&
+                            (entity != null && security.isPermitted(entity, ConstraintOperationType.UPDATE));
+                }
+                return true;
+            }
+        };
         initComponent(component);
 
         initContextMenu();
@@ -212,7 +227,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected void initComponent(CubaGrid component) {
         setSelectionMode(SelectionMode.SINGLE);
-        component.setImmediate(true);
 
         component.setColumnReorderingAllowed(true);
 
@@ -387,7 +401,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected void initContextMenu() {
         contextMenu = new CubaGridContextMenu(component);
 
-        contextMenu.addGridBodyContextMenuListener((GridContextMenuOpenListener) event -> {
+        contextMenu.addGridBodyContextMenuListener(event -> {
             if (!component.getSelectedRows().contains(event.getItemId())) {
                 // In multi select model setSelected adds item to selected set,
                 // but, in case of context click, we want to have single selected item,
@@ -583,8 +597,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         };
     }
 
-    protected com.vaadin.data.Container.Indexed getContainerDataSource() {
-        com.vaadin.data.Container.Indexed containerDataSource = component.getContainerDataSource();
+    protected com.vaadin.v7.data.Container.Indexed getContainerDataSource() {
+        com.vaadin.v7.data.Container.Indexed containerDataSource = component.getContainerDataSource();
         return (containerDataSource instanceof GeneratedPropertyContainer)
                 ? ((GeneratedPropertyContainer) containerDataSource).getWrappedContainer()
                 : containerDataSource;
@@ -652,8 +666,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected void setDefaultRenderer(Grid.Column gridColumn, @Nullable MetaProperty metaProperty, Class type) {
         gridColumn.setRenderer(type == Boolean.class && metaProperty != null
-                ? new com.vaadin.ui.renderers.HtmlRenderer()
-                : new com.vaadin.ui.renderers.TextRenderer());
+                ? new com.vaadin.v7.ui.renderers.HtmlRenderer()
+                : new com.vaadin.v7.ui.renderers.TextRenderer());
     }
 
     protected void setDefaultConverter(Grid.Column gridColumn, @Nullable MetaProperty metaProperty, Class type) {
@@ -770,8 +784,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         assignAutoDebugId();
-
-        component.setCollectionDatasource(datasource);
     }
 
     protected void addInitialColumns(CollectionDatasource datasource) {
@@ -1105,7 +1117,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         @Nullable
         @Override
-        public com.vaadin.ui.Field<?> createField(Object itemId, Object propertyId) {
+        public com.vaadin.v7.ui.Field<?> createField(Object itemId, Object propertyId) {
             Column column = dataGrid.getColumnByPropertyId(propertyId);
             if (column != null && !column.isEditable()) {
                 return null;
@@ -1206,7 +1218,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public void commit() throws SourceException, Validator.InvalidValueException {
+        public void commit() throws com.vaadin.v7.data.Buffered.SourceException, Validator.InvalidValueException {
             validate();
             ((Buffered) columnComponent).commit();
         }
@@ -1221,7 +1233,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public void discard() throws SourceException {
+        public void discard() throws com.vaadin.v7.data.Buffered.SourceException {
             ((Buffered) columnComponent).discard();
         }
 
@@ -1283,7 +1295,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Nullable
-    protected ColumnResizeMode convertToDataGridColumnResizeMode(com.vaadin.shared.ui.grid.ColumnResizeMode mode) {
+    protected ColumnResizeMode convertToDataGridColumnResizeMode(com.vaadin.v7.shared.ui.grid.ColumnResizeMode mode) {
         switch (mode) {
             case ANIMATED:
                 return ColumnResizeMode.ANIMATED;
@@ -1299,12 +1311,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Nullable
-    protected com.vaadin.shared.ui.grid.ColumnResizeMode convertToGridColumnResizeMode(ColumnResizeMode mode) {
+    protected com.vaadin.v7.shared.ui.grid.ColumnResizeMode convertToGridColumnResizeMode(ColumnResizeMode mode) {
         switch (mode) {
             case ANIMATED:
-                return com.vaadin.shared.ui.grid.ColumnResizeMode.ANIMATED;
+                return com.vaadin.v7.shared.ui.grid.ColumnResizeMode.ANIMATED;
             case SIMPLE:
-                return com.vaadin.shared.ui.grid.ColumnResizeMode.SIMPLE;
+                return com.vaadin.v7.shared.ui.grid.ColumnResizeMode.SIMPLE;
         }
         return null;
     }
@@ -1429,7 +1441,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         return convertToDataGridSortOrder(component.getSortOrder());
     }
 
-    protected List<SortOrder> convertToDataGridSortOrder(List<com.vaadin.data.sort.SortOrder> gridSortOrder) {
+    protected List<SortOrder> convertToDataGridSortOrder(List<com.vaadin.v7.data.sort.SortOrder> gridSortOrder) {
         if (CollectionUtils.isEmpty(gridSortOrder)) {
             return Collections.emptyList();
         }
@@ -1615,17 +1627,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Nullable
-    protected com.vaadin.shared.ui.grid.ScrollDestination convertToGridScrollDestination(
+    protected com.vaadin.v7.shared.ui.grid.ScrollDestination convertToGridScrollDestination(
             ScrollDestination destination) {
         switch (destination) {
             case ANY:
-                return com.vaadin.shared.ui.grid.ScrollDestination.ANY;
+                return com.vaadin.v7.shared.ui.grid.ScrollDestination.ANY;
             case START:
-                return com.vaadin.shared.ui.grid.ScrollDestination.START;
+                return com.vaadin.v7.shared.ui.grid.ScrollDestination.START;
             case MIDDLE:
-                return com.vaadin.shared.ui.grid.ScrollDestination.MIDDLE;
+                return com.vaadin.v7.shared.ui.grid.ScrollDestination.MIDDLE;
             case END:
-                return com.vaadin.shared.ui.grid.ScrollDestination.END;
+                return com.vaadin.v7.shared.ui.grid.ScrollDestination.END;
         }
         return null;
     }
@@ -1900,8 +1912,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
                     String sortDirection = columnsElem.attributeValue("sortDirection");
                     if (StringUtils.isNotEmpty(sortDirection)) {
-                        List<com.vaadin.data.sort.SortOrder> sortOrders = Collections.singletonList(
-                                new com.vaadin.data.sort.SortOrder(sortProperty,
+                        List<com.vaadin.v7.data.sort.SortOrder> sortOrders = Collections.singletonList(
+                                new com.vaadin.v7.data.sort.SortOrder(sortProperty,
                                         com.vaadin.shared.data.sort.SortDirection.valueOf(sortDirection)));
                         component.setSortOrder(sortOrders);
                     }
@@ -1935,9 +1947,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             colElem.addAttribute("collapsed", Boolean.toString(column.isCollapsed()));
         }
 
-        List<com.vaadin.data.sort.SortOrder> sortOrders = component.getSortOrder();
+        List<com.vaadin.v7.data.sort.SortOrder> sortOrders = component.getSortOrder();
         if (!sortOrders.isEmpty()) {
-            com.vaadin.data.sort.SortOrder sortOrder = sortOrders.get(0);
+            com.vaadin.v7.data.sort.SortOrder sortOrder = sortOrders.get(0);
             columnsElem.addAttribute("sortProperty", sortOrder.getPropertyId().toString());
             columnsElem.addAttribute("sortDirection", sortOrder.getDirection().toString());
         }
@@ -2230,7 +2242,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         getEventRouter().addListener(SortListener.class, listener);
 
         if (sortListener == null) {
-            sortListener = (com.vaadin.event.SortEvent.SortListener) e -> {
+            sortListener = (com.vaadin.v7.event.SortEvent.SortListener) e -> {
                 if (e.isUserOriginated()) {
                     List<SortOrder> sortOrders = convertToDataGridSortOrder(e.getSortOrder());
 
@@ -2642,7 +2654,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     public static abstract class AbstractRenderer<T> implements RendererWrapper<T> {
-        protected com.vaadin.ui.renderers.Renderer<T> renderer;
+        protected com.vaadin.v7.ui.renderers.Renderer<T> renderer;
         protected WebDataGrid dataGrid;
         protected String nullRepresentation;
 
@@ -2654,16 +2666,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public com.vaadin.ui.renderers.Renderer<T> getImplementation() {
+        public com.vaadin.v7.ui.renderers.Renderer<T> getImplementation() {
             if (renderer == null) {
                 renderer = createImplementation();
             }
             return renderer;
         }
 
-        protected abstract com.vaadin.ui.renderers.Renderer<T> createImplementation();
+        protected abstract com.vaadin.v7.ui.renderers.Renderer<T> createImplementation();
 
-        public com.vaadin.data.util.converter.Converter<? extends T, ?> getConverter() {
+        public com.vaadin.v7.data.util.converter.Converter<? extends T, ?> getConverter() {
             // Some renderers need specific converter to be set at the same time
             // (see com.vaadin.ui.Grid.Column.setRenderer(Renderer<T>, Converter<? extends T,?>)).
             // Default `null` means do not use any converters
@@ -3023,7 +3035,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             this.formatter = formatter;
             if (gridColumn != null) {
                 if (formatter != null) {
-                    com.vaadin.data.util.converter.Converter converter = gridColumn.getConverter();
+                    com.vaadin.v7.data.util.converter.Converter converter = gridColumn.getConverter();
                     if (converter instanceof FormatterBasedConverter) {
                         ((FormatterBasedConverter) converter).setFormatter(formatter);
                     } else {
@@ -3100,8 +3112,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         }
 
-        protected com.vaadin.data.util.converter.Converter<?, ?> createConverterWrapper(final Converter converter) {
-            return new com.vaadin.data.util.converter.Converter<Object, Object>() {
+        protected com.vaadin.v7.data.util.converter.Converter<?, ?> createConverterWrapper(final Converter converter) {
+            return new com.vaadin.v7.data.util.converter.Converter<Object, Object>() {
                 @SuppressWarnings("unchecked")
                 @Override
                 public Object convertToModel(Object value, Class<?> targetType, Locale locale)

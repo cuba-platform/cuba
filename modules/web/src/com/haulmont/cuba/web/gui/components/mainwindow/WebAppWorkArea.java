@@ -24,11 +24,15 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.UserSettingsTools;
+import com.haulmont.cuba.web.gui.MainTabSheetMode;
+import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.ui.Component;
@@ -209,8 +213,22 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             cubaTabSheet.setDropHandler(new TabSheetReorderingDropHandler());
             Action.Handler actionHandler = createTabSheetActionHandler(cubaTabSheet);
             cubaTabSheet.addActionHandler(actionHandler);
+
+            cubaTabSheet.setCloseOthersHandler(container -> {
+                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                windowManager.closeAllTabbedWindowsExcept(container);
+            });
+            cubaTabSheet.setCloseAllTabsHandler(container -> {
+                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                windowManager.closeAllTabbedWindows();
+            });
         } else {
             CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
+
+            ManagedMainTabSheetMode tabSheetMode = AppBeans.get(Configuration.class)
+                    .getConfig(WebConfig.class)
+                    .getManagedMainTabSheetMode();
+            cubaManagedTabSheet.setMode(CubaManagedTabSheet.Mode.valueOf(tabSheetMode.name()));
 
             tabbedContainer = cubaManagedTabSheet;
 
@@ -218,6 +236,15 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             cubaManagedTabSheet.setDropHandler(new TabSheetReorderingDropHandler());
             Action.Handler actionHandler = createTabSheetActionHandler(cubaManagedTabSheet);
             cubaManagedTabSheet.addActionHandler(actionHandler);
+
+            cubaManagedTabSheet.setCloseOthersHandler(container -> {
+                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                windowManager.closeAllTabbedWindowsExcept(container);
+            });
+            cubaManagedTabSheet.setCloseAllTabsHandler(container -> {
+                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                windowManager.closeAllTabbedWindows();
+            });
         }
 
         tabbedContainer.setHeight("100%");

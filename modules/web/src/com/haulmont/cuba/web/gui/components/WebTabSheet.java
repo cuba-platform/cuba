@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.widgets.CubaTabSheet;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;

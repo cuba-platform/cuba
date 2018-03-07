@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.v7.ui.renderers.ButtonRenderer;
 
 /**
  * A Renderer that displays a button with a textual caption. The value of the

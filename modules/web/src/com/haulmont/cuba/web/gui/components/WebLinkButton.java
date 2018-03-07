@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.LinkButton;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
 public class WebLinkButton extends WebButton implements LinkButton {

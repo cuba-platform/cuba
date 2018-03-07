@@ -16,29 +16,20 @@
 
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.web.ScreenProfiler;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.communication.UidlWriter;
-import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
-import java.io.IOException;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CubaUidlWriter extends UidlWriter {
-
     private static final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
 
     protected static final String JAVASCRIPT_EXTENSION = ".js";
@@ -47,29 +38,7 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
-    protected final ServletContext servletContext;
-
-    public CubaUidlWriter(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
-
-    @Override
-    protected void writePerformanceData(UI ui, Writer writer) throws IOException {
-        super.writePerformanceData(ui, writer);
-
-        if (!ui.getSession().getService().getDeploymentConfiguration().isProductionMode()) {
-            ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
-
-            String profilerMarker = profiler.getCurrentProfilerMarker(ui);
-            if (profilerMarker != null) {
-                profiler.setCurrentProfilerMarker(ui, null);
-                long lastRequestTimestamp = ui.getSession().getLastRequestTimestamp();
-                writer.write(String.format(", \"profilerMarker\": \"%s\", \"profilerEventTs\": \"%s\", \"profilerServerTime\": %s",
-                        profilerMarker, lastRequestTimestamp, System.currentTimeMillis() - lastRequestTimestamp));
-            }
-        }
-    }
-
+    /*
     @SuppressWarnings("deprecation")
     @Override
     protected void handleAdditionalDependencies(List<Class<? extends ClientConnector>> newConnectorTypes,
@@ -81,11 +50,11 @@ public class CubaUidlWriter extends UidlWriter {
             if (webJarResource == null)
                 continue;
 
-            String overridePath = webJarResource.overridePath();
-
             for (String uri : webJarResource.value()) {
                 String resourceUri = processResourceUri(uri);
-                String resourcePath = getResourceActualPath(resourceUri, overridePath);
+                String resourcePath = getResourceActualPath(resourceUri);
+
+                resourcePath = resourcePath.replace(META_INF_PREFIX, VAADIN_PREFIX);
 
                 if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
                     scriptDependencies.add(manager.registerDependency(resourcePath, connector));
@@ -97,23 +66,24 @@ public class CubaUidlWriter extends UidlWriter {
             }
         }
     }
+*/
 
-    protected String getResourceActualPath(String uri, String overridePath) {
+    protected String getResourceActualPath(String uri) {
         Matcher matcher = OLD_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
         }
 
         matcher = NEW_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
         }
 
         log.error("Malformed WebJar resource path: {}", uri);
         throw new RuntimeException("Malformed WebJar resource path: " + uri);
     }
 
-    protected String getWebJarResourcePath(String webJar, String resource, String overridePath) {
+    protected String getWebJarResourcePath(String webJar, String resource) {
         String staticResourcePath = getWebJarStaticResourcePath(overridePath, resource);
         if (staticResourcePath != null && !staticResourcePath.isEmpty()) {
             return staticResourcePath;

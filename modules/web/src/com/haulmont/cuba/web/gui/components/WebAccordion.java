@@ -35,7 +35,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.CubaAccordion;
+import com.haulmont.cuba.web.widgets.CubaAccordion;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;

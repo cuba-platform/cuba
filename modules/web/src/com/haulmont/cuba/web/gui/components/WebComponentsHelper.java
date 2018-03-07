@@ -30,21 +30,21 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.*;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
-import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.Table;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.lang.reflect.Field;
 
 public class WebComponentsHelper {
 

@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
+import com.vaadin.v7.ui.CustomField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 

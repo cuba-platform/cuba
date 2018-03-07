@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
+import com.haulmont.cuba.web.widgets.CubaRowsCount;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -54,6 +54,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     public WebRowsCount() {
         component = new CubaRowsCount();
         component.setStyleName(TABLE_ROWS_COUNT_STYLENAME);
+
+        component.getFirstButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-first.png"));
+        component.getPrevButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-prev.png"));
+        component.getNextButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-next.png"));
+        component.getLastButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-last.png"));
     }
 
     @Override
@@ -121,7 +126,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
         refreshDatasource(ds);
         if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
             vTable.setCurrentPageFirstItemIndex(0);
         }
     }
@@ -144,7 +149,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             ds.setMaxResults(maxResults);
         }
         if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
             vTable.setCurrentPageFirstItemIndex(0);
         }
     }
@@ -158,7 +163,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         ds.setFirstResult(0);
         refreshDatasource(ds);
         if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
             vTable.setCurrentPageFirstItemIndex(0);
         }
     }
@@ -177,7 +182,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         refreshDatasource(ds);
 
         if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
             vTable.setCurrentPageFirstItemIndex(0);
         }
     }

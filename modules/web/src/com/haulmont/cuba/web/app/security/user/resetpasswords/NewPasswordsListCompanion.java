@@ -20,7 +20,7 @@ package com.haulmont.cuba.web.app.security.user.resetpasswords;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.NewPasswordsList;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
+import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 
 public class NewPasswordsListCompanion implements NewPasswordsList.Companion {
     @Override

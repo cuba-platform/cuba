@@ -19,9 +19,9 @@ package com.haulmont.cuba.web.gui.data;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 import com.vaadin.ui.UI;
 import org.apache.commons.collections4.IterableUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class ObjectContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
+public class ObjectContainer implements com.vaadin.v7.data.Container, Container.ItemSetChangeNotifier {
 
     private static final Logger log = LoggerFactory.getLogger(ObjectContainer.class);
 

@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.CubaTree;
+import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
@@ -386,13 +386,13 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         }
     }
 
-    protected class StyleGeneratorAdapter implements com.vaadin.ui.Tree.ItemStyleGenerator {
+    protected class StyleGeneratorAdapter implements com.vaadin.v7.ui.Tree.ItemStyleGenerator {
         protected boolean exceptionHandled = false;
 
         public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
 
         @Override
-        public String getStyle(com.vaadin.ui.Tree source, Object itemId) {
+        public String getStyle(com.vaadin.v7.ui.Tree source, Object itemId) {
             try {
                 String style = null;
 

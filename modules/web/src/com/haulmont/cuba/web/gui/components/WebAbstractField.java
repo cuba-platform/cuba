@@ -53,7 +53,7 @@ import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
+public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
         extends WebAbstractComponent<T> implements Field {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
@@ -468,7 +468,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
             this.contextHelpIconClickHandler = handler;
 
             if (handler == null) {
-                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
+//                todo vaadin8
+//                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
                 contextHelpIconClickListener = null;
             } else {
                 if (contextHelpIconClickListener == null) {

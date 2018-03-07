@@ -36,11 +36,11 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
-import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
-import com.vaadin.data.Item;
+import com.haulmont.cuba.web.widgets.CubaGroupTable;
+import com.haulmont.cuba.web.widgets.data.AggregationContainer;
+import com.haulmont.cuba.web.widgets.data.GroupTableContainer;
 import com.vaadin.server.Resource;
+import com.vaadin.v7.data.Item;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -78,6 +78,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             }
 
             @Override
+            protected boolean isNonGeneratedProperty(Object id) {
+                return (id instanceof MetaPropertyPath);
+            }
+
+            @Override
             protected boolean changeVariables(Map<String, Object> variables) {
                 boolean b = super.changeVariables(variables);
                 b = handleSpecificVariables(variables) || b;
@@ -87,6 +92,31 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             @Override
             public void groupBy(Object[] properties) {
                 groupBy(properties, rerender);
+            }
+
+            @Override
+            protected LinkedHashSet<Object> getItemIdsInRange(Object startItemId, final int length) {
+                Set<Object> rootIds = super.getItemIdsInRange(startItemId, length);
+                LinkedHashSet<Object> ids = new LinkedHashSet<>();
+                for (Object itemId: rootIds) {
+                    if (itemId instanceof GroupInfo) {
+                        if (!isExpanded(itemId)) {
+                            Collection<?> itemIds = getGroupItemIds(itemId);
+                            ids.addAll(itemIds);
+                            expand(itemId, true);
+                        }
+
+                        List<GroupInfo> children = (List<GroupInfo>) getChildren(itemId);
+                        for (GroupInfo groupInfo : children) {
+                            if (!isExpanded(groupInfo)) {
+                                expand(groupInfo, true);
+                            }
+                        }
+                    } else {
+                        ids.add(itemId);
+                    }
+                }
+                return ids;
             }
         };
     }
@@ -100,7 +130,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     protected StyleGeneratorAdapter createStyleGenerator() {
         return new StyleGeneratorAdapter(){
             @Override
-            public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
+            public String getStyle(com.vaadin.v7.ui.Table source, Object itemId, Object propertyId) {
                 if (!component.getGroupProperties().contains(propertyId)) {
                     return super.getStyle(source, itemId, propertyId);
                 }

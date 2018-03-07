@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 /**
  * A renderer for presenting HTML content.

@@ -25,11 +25,10 @@ import com.haulmont.cuba.gui.components.ProgressBar;
  * Note that indeterminate bar implemented here just like as determinate, but with fixed 0.0 value
  * <br>
  */
-public class WebProgressBar extends WebAbstractField<com.vaadin.ui.ProgressBar> implements ProgressBar {
+public class WebProgressBar extends WebAbstractField<com.vaadin.v7.ui.ProgressBar> implements ProgressBar {
 
     public WebProgressBar() {
-        component = new com.vaadin.ui.ProgressBar();
-        component.setImmediate(true);
+        component = new com.vaadin.v7.ui.ProgressBar();
         component.setInvalidCommitted(true);
         component.setIndeterminate(false);
 

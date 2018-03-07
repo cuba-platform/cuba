@@ -34,14 +34,12 @@ import com.haulmont.cuba.web.events.UIRefreshEvent;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.toolkit.ui.*;
-import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
+import com.haulmont.cuba.web.sys.ScreenClientProfilerAgent;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
-import com.vaadin.server.ErrorHandler;
-import com.vaadin.server.Extension;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.WrappedSession;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -60,7 +58,8 @@ import java.util.*;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Push(transport = Transport.WEBSOCKET_XHR)
 @PreserveOnRefresh
-public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.HistoryBackHandler {
+public class AppUI extends CubaUI
+        implements ErrorHandler, EnhancedUI, CubaHistoryControl.HistoryBackHandler {
 
     public static final String NAME = "cuba_AppUI";
 
@@ -428,13 +427,6 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         super.detach();
     }
 
-    /**
-     * INTERNAL.
-     */
-    public void discardAccumulatedEvents() {
-        getRpcProxy(AppUIClientRpc.class).discardAccumulatedEvents();
-    }
-
     public String getProfilerMarker() {
         return profilerMarker;
     }
@@ -561,5 +553,10 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     public UiEventsMulticaster getUiEventsMulticaster() {
         return uiEventsMulticaster;
+    }
+
+    @Override
+    public Resource createVersionedResource(String value) {
+        return new VersionedThemeResource(value);
     }
 }

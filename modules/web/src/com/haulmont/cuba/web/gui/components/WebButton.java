@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyChangeListener;

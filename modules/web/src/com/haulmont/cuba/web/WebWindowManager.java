@@ -56,25 +56,21 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -745,7 +741,8 @@ public class WebWindowManager extends WindowManager {
         );
 
         Map<com.vaadin.event.Action, Runnable> actions = singletonMap(exitAction, () -> {
-            if (openType.getOpenMode() != OpenMode.DIALOG || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
+            if (openType.getOpenMode() != OpenMode.DIALOG
+                    || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
                 if (isCloseWithShortcutPrevented(window)) {
                     return;
                 }
@@ -1235,7 +1232,7 @@ public class WebWindowManager extends WindowManager {
         }
         vWindow.setContent(layout);
 
-        Label messageLab = new CubaLabel();
+        CubaLabel messageLab = new CubaLabel();
         messageLab.setValue(message);
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(ContentMode.HTML);
@@ -1334,7 +1331,7 @@ public class WebWindowManager extends WindowManager {
         }
         window.setClosable(false);
 
-        Label messageLab = new CubaLabel();
+        CubaLabel messageLab = new CubaLabel();
         messageLab.setValue(message);
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(ContentMode.HTML);
@@ -1427,6 +1424,7 @@ public class WebWindowManager extends WindowManager {
 
             if (ui.isTestMode()) {
                 button.setCubaId("optionDialog_" + action.getId());
+
                 button.setId(ui.getTestIdManager().getTestId("optionDialog_" + action.getId()));
             }
 

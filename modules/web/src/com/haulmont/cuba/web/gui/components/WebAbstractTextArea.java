@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.ui.TextArea;
 
 public abstract class WebAbstractTextArea<T extends TextArea>
         extends WebAbstractTextField<T>

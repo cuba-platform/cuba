@@ -27,9 +27,10 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.vaadin.data.Property;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.ComboBox;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -77,18 +78,15 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
             }
         });
 
-        picker.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (updateComponentValue)
-                    return;
+        picker.addValueChangeListener(event -> {
+            if (updateComponentValue)
+                return;
 
-                updateComponentValue = true;
-                if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
-                    selectComponent.setValueIgnoreReadOnly(picker.getValue());
-                }
-                updateComponentValue = false;
+            updateComponentValue = true;
+            if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
+                selectComponent.setValueIgnoreReadOnly(picker.getValue());
             }
+            updateComponentValue = false;
         });
     }
 

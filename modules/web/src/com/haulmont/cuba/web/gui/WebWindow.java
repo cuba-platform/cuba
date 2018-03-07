@@ -43,14 +43,11 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
-import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
+import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -623,7 +620,8 @@ public class WebWindow implements Window, Component.Wrapper,
                 }
             } else {
                 if (child instanceof com.vaadin.ui.Component.Focusable
-                        && !child.isReadOnly()
+//                        vaadin8 implement
+//                        && !child.isReadOnly()
                         && WebComponentsHelper.isComponentVisible(child)
                         && WebComponentsHelper.isComponentEnabled(child)
                         && !(child instanceof Button)) {
@@ -1704,8 +1702,8 @@ public class WebWindow implements Window, Component.Wrapper,
             ((EditorWindowDelegate) delegate).setParentDs(parentDs);
         }
 
-        protected Collection<com.vaadin.ui.Field> getFields() {
-            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
+        protected Collection<com.vaadin.v7.ui.Field> getFields() {
+            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.v7.ui.Field.class);
         }
 
         protected MetaClass getMetaClass() {

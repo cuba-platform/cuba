@@ -28,8 +28,7 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.toolkit.ui.CubaCurrencyField;
-import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
+import com.haulmont.cuba.web.widgets.CubaTextField;
 
 import java.util.Map;
 
@@ -41,8 +40,8 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
 
         this.component = new CubaCurrencyField(textField.unwrap(CubaTextField.class));
 
-        com.haulmont.cuba.web.toolkit.ui.CurrencyLabelPosition currencyLabelPosition =
-                com.haulmont.cuba.web.toolkit.ui.CurrencyLabelPosition.valueOf(CurrencyLabelPosition.RIGHT.name());
+        com.haulmont.cuba.web.widgets.CurrencyLabelPosition currencyLabelPosition =
+                com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(CurrencyLabelPosition.RIGHT.name());
         this.component.setCurrencyLabelPosition(currencyLabelPosition);
     }
 
@@ -70,8 +69,8 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     public void setCurrencyLabelPosition(CurrencyLabelPosition currencyLabelPosition) {
         Preconditions.checkNotNullArgument(currencyLabelPosition);
 
-        com.haulmont.cuba.web.toolkit.ui.CurrencyLabelPosition wAlign =
-                com.haulmont.cuba.web.toolkit.ui.CurrencyLabelPosition.valueOf(currencyLabelPosition.name());
+        com.haulmont.cuba.web.widgets.CurrencyLabelPosition wAlign =
+                com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(currencyLabelPosition.name());
 
         component.setCurrencyLabelPosition(wAlign);
     }

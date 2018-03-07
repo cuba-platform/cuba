@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.gui.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.collections4.CollectionUtils;

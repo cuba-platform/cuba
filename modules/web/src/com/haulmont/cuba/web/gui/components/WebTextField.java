@@ -20,8 +20,8 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
-import com.vaadin.event.FieldEvents;
+import com.haulmont.cuba.web.widgets.CubaTextField;
+import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
@@ -64,8 +64,8 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
 
     @Override
     public void setCaseConversion(CaseConversion caseConversion) {
-        com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
-                com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
+        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
         component.setCaseConversion(widgetCaseConversion);
     }
 

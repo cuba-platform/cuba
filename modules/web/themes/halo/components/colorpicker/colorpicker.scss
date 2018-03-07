@@ -59,7 +59,8 @@
     @include valo-textfield-error-style;
 
     &:focus:after {
-      @include valo-error-focus-style;
+      //vaadin8
+      //@include valo-error-focus-style;
 
       border-color: $v-error-indicator-color !important;
       $bg: scale-color($v-error-indicator-color, $lightness: 98%);

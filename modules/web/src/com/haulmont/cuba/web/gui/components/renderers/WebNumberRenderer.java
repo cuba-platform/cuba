@@ -20,8 +20,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.ui.renderers.NumberRenderer;
-import com.vaadin.ui.renderers.Renderer;
+import com.vaadin.v7.ui.renderers.NumberRenderer;
+import com.vaadin.v7.ui.renderers.Renderer;
 
 import java.text.NumberFormat;
 import java.util.Locale;

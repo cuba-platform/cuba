@@ -20,7 +20,7 @@ package com.haulmont.cuba.web.app.core.entitylog;
 import com.haulmont.cuba.gui.app.core.entitylog.EntityLogBrowser;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaTable;
+import com.haulmont.cuba.web.widgets.CubaTable;
 
 public class EntityLogBrowserCompanion implements EntityLogBrowser.Companion {
     @Override

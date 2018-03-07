@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.app.core.entityinspector;
 import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
+import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 
 public class EntityInspectorBrowseCompanion implements EntityInspectorBrowse.Companion {
 

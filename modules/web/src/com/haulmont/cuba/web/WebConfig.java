@@ -24,10 +24,10 @@ import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
-import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
-import com.haulmont.cuba.web.toolkit.ui.MainTabSheetModeFactory;
-import com.haulmont.cuba.web.toolkit.ui.ManagedMainTabSheetMode;
-import com.haulmont.cuba.web.toolkit.ui.ManagedMainTabSheetModeFactory;
+import com.haulmont.cuba.web.gui.MainTabSheetMode;
+import com.haulmont.cuba.web.gui.MainTabSheetModeFactory;
+import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
+import com.haulmont.cuba.web.gui.ManagedMainTabSheetModeFactory;
 
 import java.util.List;
 
@@ -334,7 +334,7 @@ public interface WebConfig extends Config {
      * @return GWT widgetset class
      */
     @Property("cuba.web.widgetSet")
-    @Default("com.haulmont.cuba.web.toolkit.ui.WidgetSet")
+    @Default("com.haulmont.cuba.web.widgets.WidgetSet")
     String getWidgetSet();
 
     /**
@@ -360,8 +360,8 @@ public interface WebConfig extends Config {
     String getPageInitialScale();
 
     /**
-     * Sets whether default {@link com.haulmont.cuba.web.toolkit.ui.CubaTabSheet} or
-     * {@link com.haulmont.cuba.web.toolkit.ui.CubaManagedTabSheet} will be used in AppWorkArea.
+     * Sets whether default {@link com.haulmont.cuba.web.widgets.CubaTabSheet} or
+     * {@link com.haulmont.cuba.web.widgets.CubaManagedTabSheet} will be used in AppWorkArea.
      *
      * @return one of {@link MainTabSheetMode} values
      */

@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components.renderers;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
-import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.v7.ui.renderers.ClickableRenderer;
 
 public abstract class WebAbstractClickableRenderer<T> extends WebDataGrid.AbstractRenderer<T>
         implements DataGrid.HasRendererClickListener {

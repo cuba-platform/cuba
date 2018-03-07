@@ -18,9 +18,9 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EnumerationContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
+public class EnumerationContainer implements com.vaadin.v7.data.Container, Container.ItemSetChangeNotifier {
 
     protected List<Enum> values;
     // lazily initialized listeners list

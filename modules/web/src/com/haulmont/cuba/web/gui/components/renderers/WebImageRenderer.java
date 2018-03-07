@@ -17,8 +17,8 @@
 package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.toolkit.ui.renderers.CubaImageRenderer;
-import com.vaadin.ui.renderers.Renderer;
+import com.haulmont.cuba.web.widgets.renderers.CubaImageRenderer;
+import com.vaadin.v7.ui.renderers.Renderer;
 
 /**
  * A renderer for presenting images. The value of the corresponding property

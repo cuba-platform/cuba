@@ -77,6 +77,7 @@ def guiModule = project(':cuba-gui')
 def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
 def restApiModule = project(':cuba-rest-api')
+def webWidgetsModule = project(':cuba-web-widgets')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def idpModule = project(':cuba-idp')
@@ -246,7 +247,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 //}
 
 // configure web toolkit module
-configure(webToolkitModule) {
+configure([webWidgetsModule, webToolkitModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -575,6 +576,51 @@ configure(guiModule) {
     }
 }
 
+configure(webWidgetsModule) {
+    dependencies {
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+
+        compile(bom['com.google.code.findbugs:jsr305'])
+        compile(bom['org.apache.commons:commons-collections4'])
+        compile(bom['commons-lang:commons-lang'])
+        compile(bom['com.google.guava:guava'])
+        compile(bom['org.slf4j:slf4j-api'])
+
+        /* Vaadin */
+        compile(bom['com.vaadin:vaadin-server']) {
+            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
+        }
+        compile(bom['com.vaadin:vaadin-compatibility-server']) {
+            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
+        }
+
+        /* Vaadin addons */
+        compile(bom['org.vaadin.addons:popupbutton']) {
+            exclude(group: 'com.vaadin', module: 'vaadin-client')
+            exclude(group: 'com.vaadin', module: 'vaadin-server')
+        }
+        compile(bom['org.vaadin.addons:aceeditor'])
+        compile(bom['org.vaadin.addons:dragdroplayouts'])
+        compile(bom['com.vaadin:vaadin-context-menu'])
+
+        /* WebJar dependencies */
+        compile(bom['org.webjars:webjars-locator'])
+        compile(bom['org.webjars:jquery'])
+        compile(bom['org.webjars:jquery-ui'])
+        compile(bom['org.webjars.bower:jquery-file-upload'])
+        compile(bom['org.webjars:swfobject'])
+        compile(bom['org.webjars:swfupload'])
+        compile(bom['org.webjars.npm:object-fit-images'])
+    }
+
+    jar {
+        with copySpec {
+            from sourceSets.main.allJava
+            include "com/haulmont/cuba/web/widgets/client/**"
+        }
+    }
+}
+
 configure(webModule) {
     configurations {
         themes
@@ -585,9 +631,11 @@ configure(webModule) {
         compile(guiModule)
         compile(restApiModule)
         compile(idpModule)
+        compile(webWidgetsModule)
 
         compile(bom['org.springframework.ldap:spring-ldap-core']) {
-            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+            // removed because it defines its own Log4j LogFactory via JDK services mechanism
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j')
         }
         // use the same spring-tx as core
         compile(bom['org.springframework:spring-tx'])
@@ -595,12 +643,11 @@ configure(webModule) {
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
 
-        compile(bom['com.vaadin:vaadin-push']) {
-            exclude(group: 'com.vaadin.external.atmosphere', module: 'atmosphere-runtime')
-        }
-        compile(bom['com.vaadin.external.atmosphere:atmosphere-runtime'])
-        compile(bom['com.vaadin:vaadin-shared'])
+        compile(bom['com.vaadin:vaadin-push'])
         compile(bom['com.vaadin:vaadin-server']) {
+            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
+        }
+        compile(bom['com.vaadin:vaadin-compatibility-server']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
 
@@ -613,9 +660,7 @@ configure(webModule) {
         }
         compile(bom['org.vaadin.addons:aceeditor'])
         compile(bom['org.vaadin.addons:dragdroplayouts'])
-        compile(bom['com.vaadin.addon:vaadin-context-menu']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
-        }
+        compile(bom['com.vaadin:vaadin-context-menu'])
 
         /* WebJar dependencies */
         compile(bom['org.webjars:webjars-locator-core'])
@@ -643,21 +688,13 @@ configure(webModule) {
         }
     }
 
-    jar {
-        with copySpec {
-            from sourceSets.main.allJava
-            include "com/haulmont/cuba/web/toolkit/ui/client/**"
-        }
-    }
-
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['halo', 'havana']
+        themes = ['halo'
+                  /* vaadin8 , 'havana'*/]
 //        compress = true
 //        sprites = true
 //        cleanup = true
     }
-
-    assemble.dependsOn buildScssThemes
 
     task deployThemes(type: CubaDeployThemeTask, dependsOn: buildScssThemes) {
     }
@@ -733,26 +770,20 @@ configure(webModuleThemesModule) {
 
 configure(webToolkitModule) {
     dependencies {
-        compile(webModule)
-        compile(bom['com.vaadin:vaadin-client']) {
-            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-elemental')
-        }
-        compile(bom['com.vaadin:vaadin-client-compiler']) {
-            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-elemental')
-            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-dev')
-        }
-        compile(bom['com.google.gwt:gwt-elemental'])
-        compile(bom['com.google.gwt:gwt-dev'])
+        compile(webWidgetsModule)
+        compile(bom['com.vaadin:vaadin-client'])
+        compile(bom['com.vaadin:vaadin-client-compiler'])
+        compile(bom['com.vaadin:vaadin-compatibility-client'])
 
         runtime(bom['javax.servlet:javax.servlet-api'])
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
-        widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
+        widgetSetClass = 'com.haulmont.cuba.web.widgets.WidgetSet'
         // Strict
         strict = true
         // Debug flags:
-        printCompilerClassPath = false
+        printCompilerClassPath = true
         logLevel = 'INFO'
         // Parallel thread count
         workers = 2
@@ -764,20 +795,20 @@ configure(webToolkitModule) {
         draft = false
 
         // Compiler JVM
-        xmx = '-Xmx512m'
+        xmx = '-Xmx768m'
         xss = '-Xss8m'
         xxMPS = '-XX:MaxPermSize=256m'
     }
 
     task buildDebugWidgetSet(type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$project.buildDir/web-debug/VAADIN/widgetsets"
-        widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
+        widgetSetClass = 'com.haulmont.cuba.web.widgets.WidgetSet'
         // Performance and widgetset size:
         style = 'PRETTY'
     }
 
     task debugWidgetSet(type: CubaWidgetSetDebug) {
-        widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
+        widgetSetClass = 'com.haulmont.cuba.web.widgets.WidgetSet'
     }
 
     jar {

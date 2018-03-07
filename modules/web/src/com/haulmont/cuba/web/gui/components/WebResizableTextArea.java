@@ -21,9 +21,9 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
-import com.vaadin.event.FieldEvents;
+import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
+import com.haulmont.cuba.web.widgets.CubaTextArea;
+import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
@@ -262,8 +262,8 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
 
     @Override
     public void setCaseConversion(CaseConversion caseConversion) {
-        com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
-                com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
+        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
         component.setCaseConversion(widgetCaseConversion);
     }
 

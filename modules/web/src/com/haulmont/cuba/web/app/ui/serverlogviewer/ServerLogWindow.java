@@ -39,7 +39,7 @@ import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
-import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
+import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.event.ShortcutListener;

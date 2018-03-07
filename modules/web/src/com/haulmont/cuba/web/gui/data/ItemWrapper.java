@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 
 import java.util.*;
 

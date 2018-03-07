@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseLis
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.web.toolkit.ui.CubaCssActionsLayout;
+import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.vaadin.shared.ui.MarginInfo;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;

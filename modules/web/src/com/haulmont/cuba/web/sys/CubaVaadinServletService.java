@@ -26,7 +26,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.sys.events.WebSessionDestroyedEvent;
 import com.haulmont.cuba.web.sys.events.WebSessionInitializedEvent;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
+import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
 import com.vaadin.ui.Component;
@@ -162,10 +162,12 @@ public class CubaVaadinServletService extends VaadinServletService
         return webConfig.getAppWindowTheme();
     }
 
+/*  vaadin8 implement
     @Override
     public String getApplicationVersion() {
         return webResourceTimestamp;
     }
+*/
 
     @Override
     protected List<RequestHandler> createRequestHandlers() throws ServiceException {
@@ -178,12 +180,15 @@ public class CubaVaadinServletService extends VaadinServletService
         for (RequestHandler handler : requestHandlers) {
             if (handler instanceof UidlRequestHandler) {
                 // replace UidlRequestHandler with CubaUidlRequestHandler
+                cubaRequestHandlers.add(new UidlRequestHandler());
+                /* vaadin8 reimplement
                 cubaRequestHandlers.add(new UidlRequestHandler() {
                     @Override
                     protected UidlWriter createUidlWriter() {
                         return new CubaUidlWriter(servletContext);
                     }
                 });
+                */
             } else if (handler instanceof PublishedFileHandler) {
                 // replace PublishedFileHandler with CubaPublishedFileHandler
                 // for support resources from VAADIN directory

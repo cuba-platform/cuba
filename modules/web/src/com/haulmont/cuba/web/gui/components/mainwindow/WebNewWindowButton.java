@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;

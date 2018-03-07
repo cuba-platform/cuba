@@ -22,16 +22,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CalendarEventWrapper implements com.vaadin.ui.components.calendar.event.CalendarEvent, com.vaadin.ui.components.calendar.event.CalendarEvent.EventChangeNotifier {
+public class CalendarEventWrapper implements com.vaadin.v7.ui.components.calendar.event.CalendarEvent,
+        com.vaadin.v7.ui.components.calendar.event.CalendarEvent.EventChangeNotifier {
     protected CalendarEvent calendarEvent;
     protected List<EventChangeListener> eventChangeListeners;
 
     public CalendarEventWrapper(CalendarEvent calendarEvent) {
         this.calendarEvent = calendarEvent;
 
-        calendarEvent.addEventChangeListener((CalendarEvent.EventChangeListener) eventChangeEvent ->
-                fireItemChanged()
-        );
+        calendarEvent.addEventChangeListener(eventChangeEvent -> fireItemChanged());
     }
 
     protected void fireItemChanged() {

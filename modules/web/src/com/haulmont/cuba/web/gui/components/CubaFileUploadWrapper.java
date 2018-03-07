@@ -20,14 +20,17 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
+import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.v7.ui.*;
 import org.apache.commons.lang.StringUtils;
 
-import static com.vaadin.ui.themes.BaseTheme.BUTTON_LINK;
+import static com.vaadin.v7.ui.themes.BaseTheme.BUTTON_LINK;
 
 public class CubaFileUploadWrapper extends CustomField {
     protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
@@ -303,7 +306,7 @@ public class CubaFileUploadWrapper extends CustomField {
         ErrorMessage superError = super.getErrorMessage();
         if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
+                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
                 return new CompositeErrorMessage(superError, error);
             }

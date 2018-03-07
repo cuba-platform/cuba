@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.inject.Inject;
@@ -73,7 +73,7 @@ public class OperationResultWindow extends AbstractWindow {
             Label traceLabel = componentsFactory.createComponent(Label.class);
             traceLabel.setValue(getExceptionMessage(exception));
 
-            com.vaadin.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.ui.Label.class);
+            com.vaadin.v7.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.v7.ui.Label.class);
             vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.exception"));
@@ -82,7 +82,7 @@ public class OperationResultWindow extends AbstractWindow {
             Label valueHolder = componentsFactory.createComponent(Label.class);
             valueHolder.setValue(AttributeHelper.convertToString(result));
 
-            com.vaadin.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.ui.Label.class);
+            com.vaadin.v7.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.v7.ui.Label.class);
             vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.result"));

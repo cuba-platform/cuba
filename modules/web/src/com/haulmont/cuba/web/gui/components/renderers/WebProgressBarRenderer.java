@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.haulmont.cuba.web.toolkit.ui.renderers.CubaProgressBarRenderer;
+import com.haulmont.cuba.web.widgets.renderers.CubaProgressBarRenderer;
 
 /**
  * A renderer that represents a double values as a graphical progress bar.

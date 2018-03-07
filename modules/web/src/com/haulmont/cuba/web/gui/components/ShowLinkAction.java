@@ -38,11 +38,8 @@ public class ShowLinkAction extends BaseAction {
 
         this.ds = ds;
         this.handler = handler;
-    }
 
-    @Override
-    public String getCaption() {
-        return messages.getMainMessage("table.showLinkAction");
+        setCaption(messages.getMainMessage("table.showLinkAction"));
     }
 
     @Override
@@ -58,7 +55,7 @@ public class ShowLinkAction extends BaseAction {
         );
     }
 
-    private String compileLink(CollectionDatasource ds) {
+    protected String compileLink(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(messages.getMainMessage("table.showLinkAction.link")).append("<br/>");

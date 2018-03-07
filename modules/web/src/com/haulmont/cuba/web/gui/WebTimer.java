@@ -16,19 +16,46 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.compatibility.TimerListenerWrapper;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
+
+    private static final Logger log = LoggerFactory.getLogger(CubaTimer.class);
 
     protected CubaTimer timerImpl;
 
     public WebTimer() {
         component = new Label();
         timerImpl = new CubaTimer();
+        timerImpl.setExceptionHandler(e -> {
+            int reIdx = ExceptionUtils.indexOfType(e, RemoteException.class);
+            if (reIdx > -1) {
+                RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(e).get(reIdx);
+                for (RemoteException.Cause cause : re.getCauses()) {
+                    //noinspection ThrowableResultOfMethodCallIgnored
+                    if (cause.getThrowable() instanceof NoUserSessionException) {
+                        log.warn("NoUserSessionException in timer {}, timer will be stopped",
+                                timerImpl.getLoggingTimerId());
+                        stop();
+                        break;
+                    }
+                }
+            } else if (ExceptionUtils.indexOfThrowable(e, NoUserSessionException.class) > -1) {
+                log.warn("NoUserSessionException in timer {}, timer will be stopped", timerImpl.getLoggingTimerId());
+                stop();
+            }
+
+            throw new RuntimeException("Exception in timer", e);
+        });
     }
 
     @Override

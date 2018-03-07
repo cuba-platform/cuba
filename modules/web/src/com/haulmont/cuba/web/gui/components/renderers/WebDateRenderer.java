@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

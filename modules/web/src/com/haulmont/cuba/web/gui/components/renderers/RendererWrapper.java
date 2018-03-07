@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.DataGrid;
 
 public interface RendererWrapper<T> extends DataGrid.Renderer {
 
-    com.vaadin.ui.renderers.Renderer<T> getImplementation();
+    com.vaadin.v7.ui.renderers.Renderer<T> getImplementation();
 
     void resetImplementation();
 }

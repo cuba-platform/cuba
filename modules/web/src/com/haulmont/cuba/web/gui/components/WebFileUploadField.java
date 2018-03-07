@@ -28,10 +28,10 @@ import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWra
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
-import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
-import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
+import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
+import com.haulmont.cuba.web.widgets.CubaFileUpload;
+import com.haulmont.cuba.web.widgets.CubaUpload;
+import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Button;
@@ -191,8 +191,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
             }
             return outputStream;
         });
-        // Set single click upload functional
-        impl.setImmediate(true);
 
         impl.addStartedListener(event -> {
             if (event.getContentLength() > getActualFileSizeLimit()) {

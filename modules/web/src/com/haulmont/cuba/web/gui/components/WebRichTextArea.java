@@ -19,8 +19,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.RichTextArea;
-import com.haulmont.cuba.web.toolkit.ui.CubaRichTextArea;
-import com.haulmont.cuba.web.toolkit.ui.client.richtextarea.CubaRichTextAreaState;
+import com.haulmont.cuba.web.widgets.CubaRichTextArea;
+import com.haulmont.cuba.web.widgets.client.richtextarea.CubaRichTextAreaState;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +33,6 @@ public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implemen
         component = new CubaRichTextArea();
         attachListener(component);
 
-        component.setImmediate(true);
         component.setNullRepresentation("");
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);

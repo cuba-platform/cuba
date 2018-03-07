@@ -24,13 +24,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskWrapper;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
@@ -42,18 +43,20 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import com.haulmont.cuba.web.toolkit.ui.CubaTree;
+import com.haulmont.cuba.web.widgets.CubaTimer;
+import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.ui.Tree;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -279,24 +282,18 @@ public class CubaFoldersPane extends VerticalLayout {
                 tree.collapseItem(folder);
             }
         }
-        tree.addExpandListener(new Tree.ExpandListener() {
-            @Override
-            public void nodeExpand(Tree.ExpandEvent event) {
-                if (event.getItemId() instanceof AbstractSearchFolder) {
-                    UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                    String str = userSettingService.loadSetting(foldersCollapse);
-                    userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
-                }
+        tree.addExpandListener(event -> {
+            if (event.getItemId() instanceof AbstractSearchFolder) {
+                UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
+                String str = userSettingService.loadSetting(foldersCollapse);
+                userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
             }
         });
-        tree.addCollapseListener(new Tree.CollapseListener() {
-            @Override
-            public void nodeCollapse(Tree.CollapseEvent event) {
-                if (event.getItemId() instanceof AbstractSearchFolder) {
-                    UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                    String str = userSettingService.loadSetting(foldersCollapse);
-                    userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
-                }
+        tree.addCollapseListener(event -> {
+            if (event.getItemId() instanceof AbstractSearchFolder) {
+                UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
+                String str = userSettingService.loadSetting(foldersCollapse);
+                userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
             }
         });
     }
@@ -420,7 +417,8 @@ public class CubaFoldersPane extends VerticalLayout {
             if (reloadedFolders != null) {
                 childFolder = reloadedFolders.get(reloadedFolders.indexOf(childFolder));
             }
-            sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript()) && childFolder.getQuantity() != null ? childFolder.getQuantity() : 0;
+            sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript())
+                    && childFolder.getQuantity() != null ? childFolder.getQuantity() : 0;
             if (childFolder.getItemStyle() != null)
                 childFoldersStyleSet.add(childFolder.getItemStyle());
         }
@@ -475,25 +473,19 @@ public class CubaFoldersPane extends VerticalLayout {
                 }
             }
         });
-        appFoldersTree.addExpandListener(new Tree.ExpandListener() {
-            @Override
-            public void nodeExpand(Tree.ExpandEvent event) {
-                AppFolder folder = (AppFolder) event.getItemId();
-                if (StringUtils.isBlank(folder.getQuantityScript())) {
-                    folder.setQuantity(null);
-                    folder.setItemStyle(null);
-                    setFolderTreeItemCaption(appFoldersTree, folder);
-                }
+        appFoldersTree.addExpandListener(event -> {
+            AppFolder folder = (AppFolder) event.getItemId();
+            if (StringUtils.isBlank(folder.getQuantityScript())) {
+                folder.setQuantity(null);
+                folder.setItemStyle(null);
+                setFolderTreeItemCaption(appFoldersTree, folder);
             }
         });
-        appFoldersTree.addCollapseListener(new Tree.CollapseListener() {
-            @Override
-            public void nodeCollapse(Tree.CollapseEvent event) {
-                AppFolder folder = (AppFolder) event.getItemId();
-                if (StringUtils.isBlank(folder.getQuantityScript())) {
-                    reloadSingleParentFolder(folder, null);
-                    setFolderTreeItemCaption(appFoldersTree, folder);
-                }
+        appFoldersTree.addCollapseListener(event -> {
+            AppFolder folder = (AppFolder) event.getItemId();
+            if (StringUtils.isBlank(folder.getQuantityScript())) {
+                reloadSingleParentFolder(folder, null);
+                setFolderTreeItemCaption(appFoldersTree, folder);
             }
         });
 
@@ -515,8 +507,8 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new CubaTree();
-        searchFoldersTree.setCubaId("searchFoldersTree");
         searchFoldersTree.setSelectable(true);
+        searchFoldersLabel.setCubaId("searchFoldersTree");
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
         searchFoldersTree.addShortcutListener(new ShortcutListener("applySearchFolder", ShortcutAction.KeyCode.ENTER, (int[]) null) {
             @Override
@@ -662,10 +654,7 @@ public class CubaFoldersPane extends VerticalLayout {
                     style = "c-nonclickable-folder";
                 // handle custom styles
                 if (StringUtils.isNotBlank(folder.getItemStyle())) {
-                    if (style.equals(""))
-                        style = folder.getItemStyle();
-                    else
-                        style += " " + folder.getItemStyle();
+                    style += " " + folder.getItemStyle();
                 }
 
                 return style;
@@ -853,12 +842,9 @@ public class CubaFoldersPane extends VerticalLayout {
             newFolder.setTabName("");
             newFolder.setParent(folder);
             final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, true, newFolder, null,
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            saveFolder(newFolder);
-                            refreshFolders();
-                        }
+                    () -> {
+                        saveFolder(newFolder);
+                        refreshFolders();
                     });
             AppUI.getCurrent().addWindow(window);
         }
@@ -955,8 +941,9 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-            final FileUploadDialog dialog = (FileUploadDialog) App.getInstance().getWindowManager().
-                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
+            WebWindowManager wm = App.getInstance().getWindowManager();
+            WindowInfo windowInfo = windowConfig.getWindowInfo("fileUploadDialog");
+            FileUploadDialog dialog = (FileUploadDialog) wm.openWindow(windowInfo, OpenType.DIALOG);
 
             dialog.addCloseListener(actionId -> {
                 if (COMMIT_ACTION_ID.equals(actionId)) {

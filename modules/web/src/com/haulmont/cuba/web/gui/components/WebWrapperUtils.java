@@ -20,15 +20,15 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
-import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
+import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.grid.GridStaticCellType;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractTextField;
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
+import com.vaadin.v7.shared.ui.grid.GridStaticCellType;
+import com.vaadin.v7.ui.AbstractSelect;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.vaadin.v7.ui.AbstractTextField.TextChangeEventMode;
 
 /**
  * Convenient class for methods that converts values from Vaadin to CUBA instances and vice versa.
@@ -71,7 +71,7 @@ public final class WebWrapperUtils {
         }
     }
 
-    public static com.vaadin.shared.ui.combobox.FilteringMode toVaadinFilterMode(FilterMode filterMode) {
+    public static FilteringMode toVaadinFilterMode(FilterMode filterMode) {
         if (filterMode == null) {
             return null;
         }
@@ -88,7 +88,7 @@ public final class WebWrapperUtils {
         }
     }
 
-    public static FilterMode toFilterMode(com.vaadin.shared.ui.combobox.FilteringMode filterMode) {
+    public static FilterMode toFilterMode(FilteringMode filterMode) {
         if (filterMode == null) {
             return null;
         }
@@ -134,7 +134,7 @@ public final class WebWrapperUtils {
         }
     }
 
-    public static TextInputField.TextChangeEventMode toTextChangeEventMode(AbstractTextField.TextChangeEventMode mode) {
+    public static TextInputField.TextChangeEventMode toTextChangeEventMode(TextChangeEventMode mode) {
         if (mode == null) {
             return null;
         }
@@ -151,21 +151,21 @@ public final class WebWrapperUtils {
         }
     }
 
-    public static AbstractTextField.TextChangeEventMode toVaadinTextChangeEventMode(TextInputField.TextChangeEventMode mode) {
+    public static TextChangeEventMode toVaadinTextChangeEventMode(TextInputField.TextChangeEventMode mode) {
         if (mode == null) {
             return null;
         }
 
-        AbstractTextField.TextChangeEventMode vMode;
+        TextChangeEventMode vMode;
         switch (mode) {
             case EAGER:
-                vMode = AbstractTextField.TextChangeEventMode.EAGER;
+                vMode = TextChangeEventMode.EAGER;
                 break;
             case LAZY:
-                vMode = AbstractTextField.TextChangeEventMode.LAZY;
+                vMode = TextChangeEventMode.LAZY;
                 break;
             case TIMEOUT:
-                vMode = AbstractTextField.TextChangeEventMode.TIMEOUT;
+                vMode = TextChangeEventMode.TIMEOUT;
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported TextChangeEventMode");

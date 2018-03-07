@@ -25,8 +25,8 @@ import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource.State;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
-import com.vaadin.data.Property;
+import com.haulmont.cuba.web.widgets.CubaSearchSelect;
+import com.vaadin.v7.data.Property;
 import com.vaadin.server.ErrorMessage;
 import org.apache.commons.lang.StringUtils;
 

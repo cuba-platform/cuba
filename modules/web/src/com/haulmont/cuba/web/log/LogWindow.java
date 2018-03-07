@@ -23,9 +23,9 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.toolkit.ui.CubaButton;
-import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.haulmont.cuba.web.widgets.CubaButton;
+import com.haulmont.cuba.web.widgets.CubaWindow;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +53,7 @@ public class LogWindow extends CubaWindow {
         initUI();
     }
 
-    private void initUI() {
+    protected void initUI() {
         ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
         String closeShortcut = clientConfig.getCloseShortcut();
@@ -115,7 +115,7 @@ public class LogWindow extends CubaWindow {
         layout.setExpandRatio(scrollablePanel, 1.0f);
     }
 
-    private String writeLog() {
+    protected String writeLog() {
         StringBuilder sb = new StringBuilder();
         List<LogItem> items = App.getInstance().getAppLog().getItems();
         for (LogItem item : items) {

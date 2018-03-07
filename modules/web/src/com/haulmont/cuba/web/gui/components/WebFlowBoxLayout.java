@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
+import com.haulmont.cuba.web.widgets.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
 import org.apache.commons.lang.StringUtils;
 

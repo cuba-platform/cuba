@@ -31,17 +31,17 @@ import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrap
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.haulmont.cuba.web.widgets.CubaLabel;
+import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
+import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
+import com.haulmont.cuba.web.gui.components.converters.StringToEnumConverter;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
+public class WebLabel extends WebAbstractComponent<com.vaadin.v7.ui.Label> implements Label {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;

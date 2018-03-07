@@ -24,14 +24,14 @@ import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaTree;
-import com.vaadin.data.Item;
-import com.vaadin.event.DataBoundTransferable;
+import com.haulmont.cuba.web.widgets.CubaTree;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.event.DataBoundTransferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.And;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
@@ -43,11 +43,11 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
 
     @Override
     public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree, Consumer<UserGroupChangedEvent> userGroupChangedHandler) {
-        com.vaadin.ui.Table vTable = usersTable.unwrap(com.vaadin.ui.Table.class);
-        vTable.setDragMode(com.vaadin.ui.Table.TableDragMode.MULTIROW);
+        com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
+        vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
 
         CubaTree vTree = groupsTree.unwrap(CubaTree.class);
-        vTree.setDragMode(com.vaadin.ui.Tree.TreeDragMode.NODE);
+        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
         vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent dropEvent) {
@@ -59,7 +59,7 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                 Component sourceComponent = transferable.getSourceComponent();
 
                 List<User> users = null;
-                if (sourceComponent instanceof com.vaadin.ui.Table) {
+                if (sourceComponent instanceof com.vaadin.v7.ui.Table) {
                     users = new ArrayList<>(usersTable.getSelected());
                 }
 

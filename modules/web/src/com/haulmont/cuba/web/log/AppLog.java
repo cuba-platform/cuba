@@ -21,25 +21,26 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.web.WebConfig;
-import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.v7.data.Validator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 
 public class AppLog {
 
     private static final Logger log = LoggerFactory.getLogger(AppLog.class);
 
-    private transient LinkedList<LogItem> items = new LinkedList<>();
+    private transient Deque<LogItem> items = new ArrayDeque<>();
 
     private static final int CAPACITY = AppBeans.get(Configuration.class)
             .getConfig(WebConfig.class).getAppLogMaxItemsCount();

@@ -19,8 +19,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ColorPicker;
-import com.haulmont.cuba.web.toolkit.ui.CubaColorPickerWrapper;
-import com.haulmont.cuba.web.toolkit.ui.converters.ColorStringConverter;
+import com.haulmont.cuba.web.widgets.CubaColorPickerWrapper;
+import com.haulmont.cuba.web.gui.components.converters.ColorStringConverter;
 
 public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper> implements ColorPicker {
 

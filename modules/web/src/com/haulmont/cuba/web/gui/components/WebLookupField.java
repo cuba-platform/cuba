@@ -34,12 +34,13 @@ import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.gui.data.UnsubscribableDsWrapper;
+import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ import java.util.*;
 
 import static com.vaadin.event.ShortcutAction.KeyCode;
 import static com.vaadin.event.ShortcutAction.ModifierKey;
-import static com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import static com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 
 public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implements LookupField {
 
@@ -72,7 +73,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         createComponent();
 
         attachListener(component);
-        component.setImmediate(true);
+
         component.setItemCaptionMode(ItemCaptionMode.ITEM);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
@@ -253,6 +254,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             }
 
             // Used for captionProperty of null entity
+            @SuppressWarnings("unchecked")
             @Override
             public <T> T getValue(String s) {
                 return (T) getInstanceName();
@@ -284,7 +286,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             return;
 
         if (this.optionsDatasource != null) {
-            com.vaadin.data.Container container = component.getContainerDataSource();
+            com.vaadin.v7.data.Container container = component.getContainerDataSource();
             if (container instanceof UnsubscribableDsWrapper) {
                 UnsubscribableDsWrapper wrapper = (UnsubscribableDsWrapper) container;
                 wrapper.unsubscribe();
@@ -934,6 +936,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         }
     }
 
+    // vaadin8 replace with Consumer<ErrorMessage>
     protected interface ComponentErrorHandler {
         boolean handleError(ErrorMessage message);
     }

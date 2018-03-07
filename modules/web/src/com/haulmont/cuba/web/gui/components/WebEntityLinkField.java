@@ -44,9 +44,9 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaButtonField;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter;
+import com.haulmont.cuba.web.widgets.CubaButtonField;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;

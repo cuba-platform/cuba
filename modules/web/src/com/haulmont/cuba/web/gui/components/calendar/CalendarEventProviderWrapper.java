@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components.calendar;
 
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import com.vaadin.v7.ui.components.calendar.event.CalendarEvent;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,8 +25,8 @@ import java.util.List;
 
 public class CalendarEventProviderWrapper
         implements
-            com.vaadin.ui.components.calendar.event.CalendarEditableEventProvider,
-            com.vaadin.ui.components.calendar.event.CalendarEventProvider.EventSetChangeNotifier {
+            com.vaadin.v7.ui.components.calendar.event.CalendarEditableEventProvider,
+            com.vaadin.v7.ui.components.calendar.event.CalendarEventProvider.EventSetChangeNotifier {
 
     protected CalendarEventProvider calendarEventProvider;
     protected List<CalendarEvent> itemsCache = new ArrayList<>();

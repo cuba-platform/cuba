@@ -40,7 +40,6 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebSuggestionPickerField() {
-        component.setImmediate(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
 

@@ -28,8 +28,8 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
-import com.vaadin.data.util.converter.Converter;
+import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.UserError;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
         component = new CubaMaskedTextField();
         component.setMaskedMode(true);
-        component.setImmediate(true);
         component.setTimeMask(true);
         setShowSeconds(timeFormat.contains("ss"));
 
@@ -66,7 +65,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         component.addValidator(value -> {
             if (!(!(value instanceof String) || checkStringValue((String) value))) {
                 component.markAsDirty();
-                throw new com.vaadin.data.Validator.InvalidValueException("Unable to parse value: " + value);
+                throw new com.vaadin.v7.data.Validator.InvalidValueException("Unable to parse value: " + value);
             }
         });
         attachListener(component);

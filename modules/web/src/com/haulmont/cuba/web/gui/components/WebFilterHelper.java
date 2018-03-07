@@ -35,7 +35,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
-import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
+import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -43,8 +43,8 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
@@ -100,8 +100,8 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        final com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
-        vTree.setDragMode(com.vaadin.ui.Tree.TreeDragMode.NODE);
+        com.vaadin.v7.ui.Tree vTree = tree.unwrap(com.vaadin.v7.ui.Tree.class);
+        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
         vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent event) {
@@ -110,7 +110,8 @@ public class WebFilterHelper implements FilterHelper {
                 if (t.getSourceComponent() != vTree)
                     return;
 
-                com.vaadin.ui.Tree.TreeTargetDetails target = (com.vaadin.ui.Tree.TreeTargetDetails) event.getTargetDetails();
+                com.vaadin.v7.ui.Tree.TreeTargetDetails target = (com.vaadin.v7.ui.Tree.TreeTargetDetails) event
+                        .getTargetDetails();
 
                 VerticalDropLocation location = target.getDropLocation();
                 Object sourceItemId = t.getData("itemId");
@@ -247,7 +248,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initTableFtsTooltips(Table table, final Map<Object, String> tooltips) {
-        com.vaadin.ui.Table vTable = table.unwrap(com.vaadin.ui.Table.class);
+        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
         vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
             if (tooltips.keySet().contains(itemId)) {
                 return tooltips.get(itemId);
@@ -258,7 +259,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void removeTableFtsTooltips(Table table) {
-        com.vaadin.ui.Table vTable = table.unwrap(com.vaadin.ui.Table.class);
+        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
         vTable.setItemDescriptionGenerator(null);
     }
 

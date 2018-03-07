@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
+import com.haulmont.cuba.web.widgets.CubaFileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;

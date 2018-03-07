@@ -20,15 +20,15 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
-import com.vaadin.addon.contextmenu.ContextMenu;
-import com.vaadin.addon.contextmenu.MenuItem;
+import com.vaadin.contextmenu.ContextMenu;
+import com.vaadin.contextmenu.MenuItem;
 import com.vaadin.ui.AbstractComponent;
 
 import javax.inject.Inject;
@@ -52,9 +52,9 @@ public class WebLayoutAnalyzerContextMenuProvider implements LayoutAnalyzerConte
                 List<LayoutTip> tipsList = analyzer.analyze(window);
 
                 if (tipsList.isEmpty()) {
-                    window.showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
+                    window.showNotification("No layout problems found", NotificationType.HUMANIZED);
                 } else {
-                    window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG,
+                    window.openWindow("layoutAnalyzer", OpenType.DIALOG,
                             ParamsMap.of("tipsList", tipsList)
                     );
                 }

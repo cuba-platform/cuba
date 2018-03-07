@@ -21,7 +21,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.vaadin.data.Container;
+import com.vaadin.v7.data.Container;
 
 import java.util.Collection;
 

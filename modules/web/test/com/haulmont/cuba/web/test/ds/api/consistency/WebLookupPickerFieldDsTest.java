@@ -20,7 +20,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ds.api.consistency.LookupPickerFieldDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.data.util.converter.DefaultConverterFactory;
+import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.Expectations;

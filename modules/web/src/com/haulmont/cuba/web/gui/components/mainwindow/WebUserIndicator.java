@@ -33,10 +33,10 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.vaadin.data.Property;
-import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.ui.Field;
+import com.haulmont.cuba.web.widgets.CubaComboBox;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 
@@ -90,7 +90,6 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             userComboBox.setFilteringMode(FilteringMode.CONTAINS);
 
             userComboBox.setNullSelectionAllowed(false);
-            userComboBox.setImmediate(true);
             if (ui.isTestMode()) {
                 userComboBox.setCubaId("substitutedUserSelect");
                 userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));

@@ -23,14 +23,15 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.AbstractSelect;
+import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public abstract class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> extends WebAbstractOptionsField<T> {
+public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.AbstractSelect> extends
+        WebAbstractOptionsField<T> {
 
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
@@ -130,7 +131,6 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSel
     }
 
     protected void initDefaults(AbstractSelect component){
-        component.setImmediate(true);
         component.setInvalidCommitted(true);
         component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
         component.setConverter(new ObjectToObjectConverter());

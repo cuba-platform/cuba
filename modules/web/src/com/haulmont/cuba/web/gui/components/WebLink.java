@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Link;
-import com.haulmont.cuba.web.toolkit.ui.CubaLink;
+import com.haulmont.cuba.web.widgets.CubaLink;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 

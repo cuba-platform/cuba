@@ -19,16 +19,17 @@ package com.haulmont.cuba.web.gui.components.renderers;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
-import com.haulmont.cuba.web.toolkit.ui.renderers.componentrenderer.ComponentRenderer;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.renderers.Renderer;
+import com.haulmont.cuba.web.widgets.renderers.componentrenderer.ComponentRenderer;
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.renderers.Renderer;
 
 import java.util.Locale;
 
 /**
  * A renderer for UI components.
  */
-public class WebComponentRenderer extends WebDataGrid.AbstractRenderer<com.vaadin.ui.Component> implements DataGrid.ComponentRenderer {
+public class WebComponentRenderer extends WebDataGrid.AbstractRenderer<com.vaadin.ui.Component>
+        implements DataGrid.ComponentRenderer {
 
     @Override
     protected Renderer<com.vaadin.ui.Component> createImplementation() {

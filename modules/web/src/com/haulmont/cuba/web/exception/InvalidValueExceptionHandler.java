@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.App;
-import com.vaadin.data.Validator;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;

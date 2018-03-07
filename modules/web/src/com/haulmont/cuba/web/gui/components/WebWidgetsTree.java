@@ -25,8 +25,8 @@ import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
-import com.vaadin.ui.Tree;
+import com.haulmont.cuba.web.widgets.CubaWidgetsTree;
+import com.vaadin.v7.ui.Tree;
 
 public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidgetsTree, E> implements WidgetsTree<E> {
 
@@ -35,7 +35,6 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
     public WebWidgetsTree() {
         component = new CubaWidgetsTree();
         component.setSelectable(false);
-        component.setImmediate(true);
         component.setBeforePaintListener(() -> {
             Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
             if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {

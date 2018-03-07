@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
+import com.haulmont.cuba.web.widgets.CubaGridLayout;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;

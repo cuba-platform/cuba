@@ -27,8 +27,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrapper;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaCalendar;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents;
+import com.haulmont.cuba.web.widgets.CubaCalendar;
+import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.DayOfWeek;
@@ -150,15 +150,15 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     @Override
     public void setTimeFormat(TimeFormat format) {
         if (format == TimeFormat.FORMAT_12H) {
-            component.setTimeFormat(com.vaadin.ui.Calendar.TimeFormat.Format12H);
+            component.setTimeFormat(com.vaadin.v7.ui.Calendar.TimeFormat.Format12H);
         } else {
-            component.setTimeFormat(com.vaadin.ui.Calendar.TimeFormat.Format24H);
+            component.setTimeFormat(com.vaadin.v7.ui.Calendar.TimeFormat.Format24H);
         }
     }
 
     @Override
     public TimeFormat getTimeFormat() {
-        if (component.getTimeFormat() == com.vaadin.ui.Calendar.TimeFormat.Format12H) {
+        if (component.getTimeFormat() == com.vaadin.v7.ui.Calendar.TimeFormat.Format12H) {
             return TimeFormat.FORMAT_12H;
         } else {
             return TimeFormat.FORMAT_24H;
@@ -234,16 +234,13 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addDateClickListener(CalendarDateClickListener listener) {
         getEventRouter().addListener(CalendarDateClickListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.DateClickHandler() {
-            @Override
-            public void dateClick(CalendarComponentEvents.DateClickEvent event) {
-                CalendarDateClickEvent calendarDateClickEvent =
-                        new CalendarDateClickEvent(WebCalendar.this, event.getDate());
-                getEventRouter().fireEvent(
-                        CalendarDateClickListener.class,
-                        CalendarDateClickListener::dateClick,
-                        calendarDateClickEvent);
-            }
+        component.setHandler((CalendarComponentEvents.DateClickHandler) event -> {
+            CalendarDateClickEvent calendarDateClickEvent =
+                    new CalendarDateClickEvent(WebCalendar.this, event.getDate());
+            getEventRouter().fireEvent(
+                    CalendarDateClickListener.class,
+                    CalendarDateClickListener::dateClick,
+                    calendarDateClickEvent);
         });
     }
 
@@ -260,28 +257,25 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addEventClickListener(CalendarEventClickListener listener) {
         getEventRouter().addListener(CalendarEventClickListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.EventClickHandler() {
-            @Override
-            public void eventClick(CalendarComponentEvents.EventClick event) {
-                com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                if (calendarEvent instanceof CalendarEventWrapper) {
-                    CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
-                    Entity entity = null;
-                    if (calendarEventWrapper instanceof EntityCalendarEvent) {
-                        entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                                .getCalendarEvent())
-                                .getEntity();
-                    }
-
-                    CalendarEventClickEvent calendarEventClickEvent = new CalendarEventClickEvent(
-                            WebCalendar.this,
-                            calendarEventWrapper,
-                            entity);
-                    getEventRouter().fireEvent(
-                            CalendarEventClickListener.class,
-                            CalendarEventClickListener::eventClick,
-                            calendarEventClickEvent);
+        component.setHandler((CalendarComponentEvents.EventClickHandler) event -> {
+            com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+            if (calendarEvent instanceof CalendarEventWrapper) {
+                CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+                Entity entity = null;
+                if (calendarEventWrapper instanceof EntityCalendarEvent) {
+                    entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
+                            .getCalendarEvent())
+                            .getEntity();
                 }
+
+                CalendarEventClickEvent calendarEventClickEvent = new CalendarEventClickEvent(
+                        WebCalendar.this,
+                        calendarEventWrapper,
+                        entity);
+                getEventRouter().fireEvent(
+                        CalendarEventClickListener.class,
+                        CalendarEventClickListener::eventClick,
+                        calendarEventClickEvent);
             }
         });
     }
@@ -299,30 +293,27 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addEventResizeListener(CalendarEventResizeListener listener) {
         getEventRouter().addListener(CalendarEventResizeListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.EventResizeHandler() {
-            @Override
-            public void eventResize(CalendarComponentEvents.EventResize event) {
-                com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                if (calendarEvent instanceof CalendarEventWrapper) {
-                    CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
-                    Entity entity = null;
-                    if (calendarEventWrapper instanceof EntityCalendarEvent) {
-                        entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                                .getCalendarEvent())
-                                .getEntity();
-                    }
-
-                    CalendarEventResizeEvent calendarEventResizeEvent = new CalendarEventResizeEvent(
-                            WebCalendar.this,
-                            ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
-                            event.getNewStart(),
-                            event.getNewEnd(),
-                            entity);
-                    getEventRouter().fireEvent(
-                            CalendarEventResizeListener.class,
-                            CalendarEventResizeListener::eventResize,
-                            calendarEventResizeEvent);
+        component.setHandler((CalendarComponentEvents.EventResizeHandler) event -> {
+            com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+            if (calendarEvent instanceof CalendarEventWrapper) {
+                CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+                Entity entity = null;
+                if (calendarEventWrapper instanceof EntityCalendarEvent) {
+                    entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
+                            .getCalendarEvent())
+                            .getEntity();
                 }
+
+                CalendarEventResizeEvent calendarEventResizeEvent = new CalendarEventResizeEvent(
+                        WebCalendar.this,
+                        ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
+                        event.getNewStart(),
+                        event.getNewEnd(),
+                        entity);
+                getEventRouter().fireEvent(
+                        CalendarEventResizeListener.class,
+                        CalendarEventResizeListener::eventResize,
+                        calendarEventResizeEvent);
             }
         });
     }
@@ -340,21 +331,18 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addEventMoveListener(CalendarEventMoveListener listener) {
         getEventRouter().addListener(CalendarEventMoveListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.EventMoveHandler() {
-            @Override
-            public void eventMove(CalendarComponentEvents.MoveEvent event) {
-                com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+        component.setHandler((CalendarComponentEvents.EventMoveHandler) event -> {
+            com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+            CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
 
-                CalendarEventMoveEvent calendarEventMoveEvent = new CalendarEventMoveEvent(
-                        WebCalendar.this,
-                        calendarEventWrapper,
-                        event.getNewStart());
-                getEventRouter().fireEvent(
-                        CalendarEventMoveListener.class,
-                        CalendarEventMoveListener::eventMove,
-                        calendarEventMoveEvent);
-            }
+            CalendarEventMoveEvent calendarEventMoveEvent = new CalendarEventMoveEvent(
+                    WebCalendar.this,
+                    calendarEventWrapper,
+                    event.getNewStart());
+            getEventRouter().fireEvent(
+                    CalendarEventMoveListener.class,
+                    CalendarEventMoveListener::eventMove,
+                    calendarEventMoveEvent);
         });
     }
 
@@ -371,18 +359,15 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addWeekClickListener(CalendarWeekClickListener listener) {
         getEventRouter().addListener(CalendarWeekClickListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.WeekClickHandler() {
-            @Override
-            public void weekClick(CalendarComponentEvents.WeekClick event) {
-                CalendarWeekClickEvent calendarWeekClickEvent = new CalendarWeekClickEvent(
-                        WebCalendar.this,
-                        event.getWeek(),
-                        event.getYear());
-                getEventRouter().fireEvent(
-                        CalendarWeekClickListener.class,
-                        CalendarWeekClickListener::weekClick,
-                        calendarWeekClickEvent);
-            }
+        component.setHandler((CalendarComponentEvents.WeekClickHandler) event -> {
+            CalendarWeekClickEvent calendarWeekClickEvent = new CalendarWeekClickEvent(
+                    WebCalendar.this,
+                    event.getWeek(),
+                    event.getYear());
+            getEventRouter().fireEvent(
+                    CalendarWeekClickListener.class,
+                    CalendarWeekClickListener::weekClick,
+                    calendarWeekClickEvent);
         });
     }
 
@@ -399,16 +384,13 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addForwardClickListener(CalendarForwardClickListener listener) {
         getEventRouter().addListener(CalendarForwardClickListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.ForwardHandler() {
-            @Override
-            public void forward(CalendarComponentEvents.ForwardEvent event) {
-                CalendarForwardClickEvent calendarForwardClickEvent =
-                        new CalendarForwardClickEvent(WebCalendar.this);
-                getEventRouter().fireEvent(
-                        CalendarForwardClickListener.class,
-                        CalendarForwardClickListener::forwardClick,
-                        calendarForwardClickEvent);
-            }
+        component.setHandler((CalendarComponentEvents.ForwardHandler) event -> {
+            CalendarForwardClickEvent calendarForwardClickEvent =
+                    new CalendarForwardClickEvent(WebCalendar.this);
+            getEventRouter().fireEvent(
+                    CalendarForwardClickListener.class,
+                    CalendarForwardClickListener::forwardClick,
+                    calendarForwardClickEvent);
         });
     }
 
@@ -425,16 +407,13 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addBackwardClickListener(CalendarBackwardClickListener listener) {
         getEventRouter().addListener(CalendarBackwardClickListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.BackwardHandler() {
-            @Override
-            public void backward(CalendarComponentEvents.BackwardEvent event) {
-                CalendarBackwardClickEvent calendarBackwardClickEvent =
-                        new CalendarBackwardClickEvent(WebCalendar.this);
-                getEventRouter().fireEvent(
-                        CalendarBackwardClickListener.class,
-                        CalendarBackwardClickListener::backwardClick,
-                        calendarBackwardClickEvent);
-            }
+        component.setHandler((CalendarComponentEvents.BackwardHandler) event -> {
+            CalendarBackwardClickEvent calendarBackwardClickEvent =
+                    new CalendarBackwardClickEvent(WebCalendar.this);
+            getEventRouter().fireEvent(
+                    CalendarBackwardClickListener.class,
+                    CalendarBackwardClickListener::backwardClick,
+                    calendarBackwardClickEvent);
         });
     }
 
@@ -451,18 +430,15 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public void addRangeSelectListener(CalendarRangeSelectListener listener) {
         getEventRouter().addListener(CalendarRangeSelectListener.class, listener);
 
-        component.setHandler(new CalendarComponentEvents.RangeSelectHandler() {
-            @Override
-            public void rangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
-                CalendarRangeSelectEvent calendarRangeSelectEvent = new CalendarRangeSelectEvent(
-                        WebCalendar.this,
-                        event.getStart(),
-                        event.getEnd());
-                getEventRouter().fireEvent(
-                        CalendarRangeSelectListener.class,
-                        CalendarRangeSelectListener::rangeSelect,
-                        calendarRangeSelectEvent);
-            }
+        component.setHandler((CalendarComponentEvents.RangeSelectHandler) event -> {
+            CalendarRangeSelectEvent calendarRangeSelectEvent = new CalendarRangeSelectEvent(
+                    WebCalendar.this,
+                    event.getStart(),
+                    event.getEnd());
+            getEventRouter().fireEvent(
+                    CalendarRangeSelectListener.class,
+                    CalendarRangeSelectListener::rangeSelect,
+                    calendarRangeSelectEvent);
         });
     }
 

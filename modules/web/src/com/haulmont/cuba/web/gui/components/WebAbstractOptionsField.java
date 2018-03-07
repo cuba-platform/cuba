@@ -31,14 +31,14 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
-import com.vaadin.data.Property;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect;
 
 import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
+public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect>
         extends WebAbstractField<T>
         implements OptionsField {
 
@@ -179,7 +179,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         }
     }
 
-    protected void setComponentContainerDs(com.vaadin.data.Container newDataSource) {
+    protected void setComponentContainerDs(com.vaadin.v7.data.Container newDataSource) {
         component.setContainerDataSource(newDataSource);
     }
 
@@ -300,7 +300,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             return;
 
         if (this.optionsDatasource != null) {
-            com.vaadin.data.Container containerDataSource = component.getContainerDataSource();
+            com.vaadin.v7.data.Container containerDataSource = component.getContainerDataSource();
             if (containerDataSource instanceof CollectionDsWrapper) {
                 CollectionDsWrapper wrapper = (CollectionDsWrapper) containerDataSource;
                 wrapper.unsubscribe();

@@ -31,9 +31,9 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.toolkit.ui.CubaButton;
-import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
-import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
+import com.haulmont.cuba.web.widgets.CubaButton;
+import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
+import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.window.WindowMode;
@@ -201,7 +201,8 @@ public class ExceptionDialog extends CubaWindow {
 
         stackTraceTextArea = new TextArea();
         stackTraceTextArea.setSizeFull();
-        stackTraceTextArea.setWordwrap(false);
+//        vaadin8 implement
+//        stackTraceTextArea.setWordwrap(false);
         stackTraceTextArea.setValue(stackTrace);
         stackTraceTextArea.setStyleName(cubaLogContentClass);
         stackTraceTextArea.addStyleName(cubaCopyLogContentClass);
@@ -391,8 +392,8 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     protected void forceLogout() {
-        App app = AppUI.getCurrent().getApp();
-        final WebWindowManager wm = app.getWindowManager();
+        App app = ((AppUI) getUI()).getApp();
+        WebWindowManager wm = app.getWindowManager();
         try {
             Connection connection = wm.getApp().getConnection();
             if (connection.isConnected()) {
@@ -404,7 +405,7 @@ public class ExceptionDialog extends CubaWindow {
             // always restart UI
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
 
-            Page.getCurrent().open(url, "_self");
+            getUI().getPage().open(url, "_self");
         }
     }
 

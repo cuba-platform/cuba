@@ -26,11 +26,12 @@ import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.gui.components.presentations.actions.PresentationActionsBuilder;
-import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
-import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.AbstractProperty;
+import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
+import com.haulmont.cuba.web.widgets.CubaMenuBar;
 import com.vaadin.ui.*;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.AbstractProperty;
+import com.vaadin.v7.ui.CheckBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -39,9 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 public class TablePresentations extends VerticalLayout {
 
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
+
     protected static final String CURRENT_MENUITEM_STYLENAME = "c-table-prefs-menuitem-current";
     protected static final String DEFAULT_MENUITEM_STYLENAME = "c-table-prefs-menuitem-default";
     protected static final String TABLE_PREFS_STYLENAME = "c-table-prefs";
@@ -185,24 +189,23 @@ public class TablePresentations extends VerticalLayout {
 
         Label titleLabel = new Label(messages.getMainMessage("PresentationsPopup.title"));
         titleLabel.setStyleName("c-table-prefs-title");
-        titleLabel.setWidth("-1px");
+        titleLabel.setWidthUndefined();
         addComponent(titleLabel);
         setComponentAlignment(titleLabel, Alignment.MIDDLE_CENTER);
 
         menuBar = new CubaMenuBar();
         menuBar.setStyleName("c-table-prefs-list");
         menuBar.setWidth("100%");
-        menuBar.setHeight("-1px");
+        menuBar.setHeightUndefined();
         menuBar.setVertical(true);
         addComponent(menuBar);
 
         button = new WebPopupButton();
         button.setCaption(messages.getMainMessage("PresentationsPopup.actions"));
-        addComponent(button.<Component>getComponent());
-        setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
+        addComponent(button.getComponent());
+        setComponentAlignment(button.getComponent(), Alignment.MIDDLE_CENTER);
 
         textSelectionCheckBox = new CheckBox();
-        textSelectionCheckBox.setImmediate(true);
         textSelectionCheckBox.setInvalidCommitted(true);
         textSelectionCheckBox.setCaption(messages.getMainMessage("PresentationsPopup.textSelection"));
         addComponent(textSelectionCheckBox);
@@ -244,13 +247,8 @@ public class TablePresentations extends VerticalLayout {
 
         for (final Object presId : p.getPresentationIds()) {
             final MenuBar.MenuItem item = menuBar.addItem(
-                    StringUtils.defaultString(p.getCaption(presId)),
-                    new com.vaadin.ui.MenuBar.Command() {
-                        @Override
-                        public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                            table.applyPresentation(presId);
-                        }
-                    }
+                    defaultString(p.getCaption(presId)),
+                    selectedItem -> table.applyPresentation(presId)
             );
             final Presentation current = p.getCurrent();
             if (current != null && presId.equals(current.getId())) {

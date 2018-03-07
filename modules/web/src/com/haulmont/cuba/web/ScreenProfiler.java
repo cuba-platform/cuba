@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.entity.ScreenProfilerEvent;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidProvider;
-import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenProfilerClientEvent;
+import com.haulmont.cuba.web.widgets.client.profiler.ScreenProfilerClientEvent;
 import com.vaadin.ui.UI;
 import org.springframework.stereotype.Component;
 

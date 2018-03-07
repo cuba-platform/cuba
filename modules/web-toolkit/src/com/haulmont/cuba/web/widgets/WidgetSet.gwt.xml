@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+<module>
+    <!-- Inherit DefaultWidgetSet -->
+    <inherits name="com.vaadin.v7.Vaadin7WidgetSet"/>
+
+    <!-- Add-ons -->
+    <inherits name="org.vaadin.aceeditor.AceEditorWidgetSet"/>
+    <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
+    <inherits name="fi.jasoft.dragdroplayouts.DragDropLayoutsWidgetSet"/>
+    <inherits name="com.vaadin.contextmenu.WidgetSet"/>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.tooltip.CubaTooltip">
+        <when-type-is class="com.vaadin.client.VTooltip"/>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.appui.CubaUIConnector">
+        <when-type-is class="com.vaadin.client.ui.ui.UIConnector"/>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.notification.CubaNotification">
+        <when-type-is class="com.vaadin.client.ui.VNotification"/>
+    </replace-with>
+
+    <!-- Text selection enable functions deferred binding -->
+
+    <define-property name="ie11orHigher" values="no,yes"/>
+    <property-provider name="ie11orHigher"><![CDATA[
+      {
+        var ua = $wnd.navigator.userAgent;
+        if (ua.indexOf('MSIE') == -1 && ua.indexOf('Trident') != -1) { return 'yes'; }
+        return 'no';
+      }
+    ]]></property-provider>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.sys.ToolsImplIE">
+        <when-type-is class="com.haulmont.cuba.web.widgets.client.sys.ToolsImpl"/>
+        <any>
+            <when-property-is name="ie11orHigher" value="yes"/>
+        </any>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.sys.ToolsImplMozilla">
+        <when-type-is class="com.haulmont.cuba.web.widgets.client.sys.ToolsImpl"/>
+        <all>
+            <when-property-is name="user.agent" value="gecko1_8"/>
+            <when-property-is name="ie11orHigher" value="no"/>
+        </all>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.sys.ToolsImplWebkit">
+        <when-type-is class="com.haulmont.cuba.web.widgets.client.sys.ToolsImpl"/>
+        <any>
+            <when-property-is name="user.agent" value="safari"/>
+        </any>
+    </replace-with>
+
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+</module>

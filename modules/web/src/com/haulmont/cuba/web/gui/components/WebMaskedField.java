@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
-import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
+import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 

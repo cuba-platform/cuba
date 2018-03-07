@@ -20,8 +20,8 @@ package com.haulmont.cuba.web.gui.data;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
 
 import java.util.Collection;
 import java.util.LinkedList;

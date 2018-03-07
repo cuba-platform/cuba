@@ -30,9 +30,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
-import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
+import com.haulmont.cuba.web.widgets.CubaFieldGroup;
+import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
 import com.vaadin.server.Sizeable;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +56,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     protected Map<String, FieldConfig> fields = new HashMap<>();
     protected List<List<FieldConfig>> columnFieldMapping = new ArrayList<>();
+
+    protected boolean editable;
+
     {
         columnFieldMapping.add(new ArrayList<>());
     }
@@ -79,7 +81,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         AppUI ui = AppUI.getCurrent();
         if (ui != null && id != null) {
             for (final FieldConfig fc : fields.values()) {
-                com.vaadin.ui.Field field = ((FieldConfigImpl) fc).getComposition();
+                com.vaadin.v7.ui.Field field = ((FieldConfigImpl) fc).getComposition();
                 if (field != null) {
                     field.setId(ui.getTestIdManager().getTestId(id + "_" + fc.getId()));
                 }
@@ -93,7 +95,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
         if (id != null && AppUI.getCurrent().isTestMode()) {
             for (FieldConfig fc : fields.values()) {
-                com.vaadin.ui.Field field = ((FieldConfigImpl) fc).getComposition();
+                com.vaadin.v7.ui.Field field = ((FieldConfigImpl) fc).getComposition();
                 if (field != null) {
                     field.setCubaId(fc.getId());
                 }
@@ -292,7 +294,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
     }
 
     protected void managedFieldComponentAssigned(FieldConfigImpl fci, FieldAttachMode mode) {
-        com.vaadin.ui.Field fieldImpl = getFieldImplementation(fci.getComponentNN());
+        com.vaadin.v7.ui.Field fieldImpl = getFieldImplementation(fci.getComponentNN());
         fci.setComposition(fieldImpl);
 
         assignTypicalAttributes(fci.getComponentNN());
@@ -361,7 +363,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                 }
             }
         } else {
-            com.vaadin.ui.Field composition = fci.getCompositionNN();
+            com.vaadin.v7.ui.Field composition = fci.getCompositionNN();
             if (fci.getTargetCaption() != null) {
                 composition.setCaption(fci.getTargetCaption());
             }
@@ -459,10 +461,10 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         fc.setComponent(fieldComponent);
     }
 
-    protected com.vaadin.ui.Field getFieldImplementation(Component c) {
+    protected com.vaadin.v7.ui.Field getFieldImplementation(Component c) {
         com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
-        if (composition instanceof com.vaadin.ui.Field) {
-            return (com.vaadin.ui.Field) composition;
+        if (composition instanceof com.vaadin.v7.ui.Field) {
+            return (com.vaadin.v7.ui.Field) composition;
         } else {
             return new CubaFieldWrapper(c);
         }
@@ -519,7 +521,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                 fci.assignComponent(fieldComponent);
                 fci.setAttachMode(generatedField.getAttachMode());
 
-                com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
+                com.vaadin.v7.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
                 fci.setComposition(fieldImpl);
 
                 assignTypicalAttributes(fieldComponent);
@@ -546,7 +548,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
     }
 
-    protected void assignDebugId(FieldConfig fc, com.vaadin.ui.Field composition) {
+    protected void assignDebugId(FieldConfig fc, com.vaadin.v7.ui.Field composition) {
         AppUI ui = AppUI.getCurrent();
         if (ui != null) {
             if (ui.isTestMode()) {
@@ -556,6 +558,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                         TestIdManager testIdManager = ui.getTestIdManager();
                         composition.setId(testIdManager.getTestId(debugId + "_" + fc.getId()));
                     }
+
                     composition.setCubaId(fc.getId());
                 }
             }
@@ -616,13 +619,13 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     @Override
     public boolean isEditable() {
-        return !component.isReadOnly();
+        return this.editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
         if (editable != isEditable()) {
-            component.setReadOnly(!editable);
+            this.editable = editable;
 
             EditableChangeEvent event = new EditableChangeEvent(this);
             getEventRouter().fireEvent(EditableChangeListener.class, EditableChangeListener::editableChanged, event);
@@ -810,7 +813,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         protected int column;
 
         protected Component component;
-        protected com.vaadin.ui.Field composition;
+        protected com.vaadin.v7.ui.Field composition;
 
         protected boolean managed = false;
 
@@ -1245,7 +1248,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                 return ((Field) component).getContextHelpText();
             }
             if (composition != null && isWrapped()) {
-                return composition.getContextHelpText();
+//                // vaadin8 rework
+//                return composition.getContextHelpText();
+                return null;
             }
             return targetContextHelpText;
         }
@@ -1255,7 +1260,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             if (component instanceof Field) {
                 ((Field) component).setContextHelpText(contextHelpText);
             } else if (composition != null && isWrapped()) {
-                composition.setContextHelpText(contextHelpText);
+                // vaadin8 rework
+//                composition.setContextHelpText(contextHelpText);
             } else {
                 this.targetContextHelpText = contextHelpText;
             }
@@ -1267,7 +1273,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                 return ((Field) component).isContextHelpTextHtmlEnabled();
             }
             if (composition != null && isWrapped()) {
-                return composition.isContextHelpTextHtmlEnabled();
+                return false;
+                // vaadin8 rework
+//                return composition.isContextHelpTextHtmlEnabled();
             }
             return BooleanUtils.isTrue(targetContextHelpTextHtmlEnabled);
         }
@@ -1281,7 +1289,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             } else if (composition != null && isWrapped()) {
                 checkNotNullArgument(enabled, "Unable to reset contextHelpTextHtmlEnabled " +
                         "flag for the bound FieldConfig");
-                composition.setContextHelpTextHtmlEnabled(enabled);
+
+                // vaadin8 rework
+//                composition.setContextHelpTextHtmlEnabled(enabled);
             } else {
                 this.targetContextHelpTextHtmlEnabled = enabled;
             }
@@ -1340,18 +1350,18 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         @Nullable
-        public com.vaadin.ui.Field getComposition() {
+        public com.vaadin.v7.ui.Field getComposition() {
             return composition;
         }
 
-        public com.vaadin.ui.Field getCompositionNN() {
+        public com.vaadin.v7.ui.Field getCompositionNN() {
             if (composition == null) {
                 throw new IllegalStateException("FieldConfig is not bound to a Component");
             }
             return composition;
         }
 
-        public void setComposition(com.vaadin.ui.Field composition) {
+        public void setComposition(com.vaadin.v7.ui.Field composition) {
             checkState(this.composition == null, "Unable to change composition for bound FieldConfig");
 
             this.composition = composition;

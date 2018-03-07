@@ -32,11 +32,11 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
+import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
+import com.haulmont.cuba.web.widgets.CubaAbstractUploadComponent;
+import com.haulmont.cuba.web.widgets.CubaFileUpload;
+import com.haulmont.cuba.web.widgets.CubaMultiUpload;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.haulmont.cuba.web.toolkit.ui.CubaAbstractUploadComponent;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
-import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Component;
@@ -49,7 +49,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbstractUploadComponent> implements FileMultiUploadField {
+public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbstractUploadComponent>
+        implements FileMultiUploadField {
 
     protected final Map<UUID, String> files = new LinkedHashMap<>();
 

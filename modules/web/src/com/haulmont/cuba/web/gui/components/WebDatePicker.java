@@ -33,8 +33,8 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
-import com.vaadin.ui.InlineDateField;
+import com.haulmont.cuba.web.widgets.CubaDatePicker;
+import com.vaadin.v7.ui.InlineDateField;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
@@ -58,7 +58,6 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     public WebDatePicker() {
         this.component = new CubaDatePicker();
         attachListener(component);
-        component.setImmediate(true);
         component.setInvalidCommitted(true);
 
         Messages messages = AppBeans.get(Messages.NAME);
@@ -85,19 +84,19 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         Preconditions.checkNotNullArgument(resolution);
 
         this.resolution = resolution;
-        com.vaadin.shared.ui.datefield.Resolution vResolution;
+        com.vaadin.v7.shared.ui.datefield.Resolution vResolution;
         switch (resolution) {
             case MONTH:
-                vResolution = com.vaadin.shared.ui.datefield.Resolution.MONTH;
+                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.MONTH;
                 break;
             case YEAR:
-                vResolution = com.vaadin.shared.ui.datefield.Resolution.YEAR;
+                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.YEAR;
                 break;
             case DAY:
-                vResolution = com.vaadin.shared.ui.datefield.Resolution.DAY;
+                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.DAY;
                 break;
             default:
-                vResolution = com.vaadin.shared.ui.datefield.Resolution.DAY;
+                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.DAY;
                 break;
         }
 

@@ -99,7 +99,7 @@
         <property name="cuba.windowConfig" value="cuba-web-screens.xml"/>
         <property name="cuba.menuConfig" value="cuba-web-menu.xml"/>
         <property name="cuba.permissionConfig" value="cuba-web-permissions.xml"/>
-        <property name="cuba.web.widgetSet" value="com.haulmont.cuba.web.toolkit.ui.WidgetSet"/>
+        <property name="cuba.web.widgetSet" value="com.haulmont.cuba.web.widgets.WidgetSet"/>
         <property name="cuba.web.componentsConfig" value=""/>
         <property name="cuba.themeConfig" value="havana-theme.properties halo-theme.properties"/>
 
