@@ -21,7 +21,6 @@ import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.SilentException;
@@ -48,7 +47,6 @@ import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -56,7 +54,10 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
+import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -109,8 +110,6 @@ public class WebWindowManager extends WindowManager {
     @Inject
     protected ClientConfig clientConfig;
     @Inject
-    protected ScreenProfiler screenProfiler;
-    @Inject
     protected Icons icons;
     @Inject
     protected UuidSource uuidSource;
@@ -147,35 +146,6 @@ public class WebWindowManager extends WindowManager {
     @Override
     public Collection<Window> getOpenWindows() {
         return new ArrayList<>(windowOpenMode.keySet());
-    }
-
-    @Override
-    public Window openWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        Window window = super.openWindow(windowInfo, openType, params);
-        if (window != null) {
-            screenProfiler.initProfilerMarkerForWindow(windowInfo.getId());
-        }
-        return window;
-    }
-
-    @Override
-    public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType, Map<String, Object> params) {
-        Window.Lookup window = super.openLookup(windowInfo, handler, openType, params);
-        if (window != null) {
-            screenProfiler.initProfilerMarkerForWindow(windowInfo.getId());
-        }
-        return window;
-    }
-
-    @Override
-    public Window.Editor openEditor(WindowInfo windowInfo, Entity item,
-                                    OpenType openType, Map<String, Object> params,
-                                    Datasource parentDs) {
-        Window.Editor window = super.openEditor(windowInfo, item, openType, params, parentDs);
-        if (window != null) {
-            screenProfiler.initProfilerMarkerForWindow(windowInfo.getId());
-        }
-        return window;
     }
 
     @Override

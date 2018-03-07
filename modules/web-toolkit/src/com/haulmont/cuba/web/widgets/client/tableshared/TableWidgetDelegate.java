@@ -72,7 +72,6 @@ public class TableWidgetDelegate {
     public boolean customPopupAutoClose = false;
     public int lastClickClientX;
     public int lastClickClientY;
-    public String profilerMarker;
 
     public String tableSortResetLabel;
     public String tableSortAscendingLabel;

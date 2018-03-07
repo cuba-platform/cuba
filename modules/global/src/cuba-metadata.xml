@@ -72,7 +72,6 @@
         <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
         <class>com.haulmont.cuba.core.config.AppPropertyEntity</class>
-        <class>com.haulmont.cuba.core.entity.ScreenProfilerEvent</class>
         <class>com.haulmont.cuba.core.entity.CategoryAttributeEnumValue</class>
     </metadata-model>
 

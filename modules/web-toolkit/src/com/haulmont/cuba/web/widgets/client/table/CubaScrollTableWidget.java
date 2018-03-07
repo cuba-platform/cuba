@@ -33,7 +33,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.widgets.client.image.CubaImageWidget;
-import com.haulmont.cuba.web.widgets.client.profiler.ScreenClientProfiler;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
 import com.vaadin.client.*;
@@ -812,12 +811,6 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
                 return super.hasContextMenuActions();
             }
-        }
-
-        @Override
-        public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
-            _delegate.profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
-            super.renderInitialRows(rowData, firstIndex, rows);
         }
 
         public LinkedList<Widget> getRenderedRows() {

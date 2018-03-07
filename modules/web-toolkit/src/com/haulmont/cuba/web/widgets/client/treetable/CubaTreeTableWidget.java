@@ -33,10 +33,12 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.widgets.client.image.CubaImageWidget;
-import com.haulmont.cuba.web.widgets.client.profiler.ScreenClientProfiler;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
-import com.vaadin.client.*;
+import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VEmbedded;
 import com.vaadin.v7.client.ui.VLabel;
@@ -50,9 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.haulmont.cuba.web.widgets.client.Tools.isAnyModifierKeyPressed;
-import static com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate.CUBA_TABLE_CLICKABLE_CELL_STYLE;
-import static com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate.CUBA_TABLE_CLICKABLE_TEXT_STYLE;
-import static com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate.WIDGET_CELL_CLASSNAME;
+import static com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate.*;
 
 public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
@@ -768,12 +768,6 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
                 return super.hasContextMenuActions();
             }
-        }
-
-        @Override
-        public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
-            _delegate.profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
-            super.renderInitialRows(rowData, firstIndex, rows);
         }
 
         public List<Widget> getRenderedRows() {
