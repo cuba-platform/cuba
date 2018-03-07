@@ -25,7 +25,6 @@ import java.util.Map;
  * and version.
  *
  * @see com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory
- *
  */
 public interface DbmsFeatures {
 
@@ -71,4 +70,9 @@ public interface DbmsFeatures {
      * @return default sort order of null values
      */
     boolean isNullsLastSorting();
+
+    /**
+     * @return true if the DBMS supports equals conditions in the filter and sort for LOB columns
+     */
+    boolean supportsLobSortingAndFiltering();
 }

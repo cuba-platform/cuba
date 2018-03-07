@@ -66,4 +66,9 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
     public boolean isNullsLastSorting() {
         return false;
     }
+
+    @Override
+    public boolean supportsLobSortingAndFiltering() {
+        return true;
+    }
 }

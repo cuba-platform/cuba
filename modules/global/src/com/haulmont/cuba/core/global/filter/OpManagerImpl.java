@@ -16,9 +16,14 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 
+import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -27,6 +32,9 @@ import static com.haulmont.cuba.core.global.filter.Op.*;
 
 @Component(OpManager.NAME)
 public class OpManagerImpl implements OpManager {
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {
@@ -54,5 +62,15 @@ public class OpManagerImpl implements OpManager {
     @Override
     public EnumSet<Op> availableOpsForCollectionDynamicAttribute() {
         return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY);
+    }
+
+    @Override
+    public EnumSet<Op> availableOps(MetaProperty metaProperty) {
+        Class javaClass = metaProperty.getJavaType();
+        if (String.class.equals(javaClass) && metadataTools.isLob(metaProperty)) {
+            return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
+        } else {
+            return availableOps(javaClass);
+        }
     }
 }
