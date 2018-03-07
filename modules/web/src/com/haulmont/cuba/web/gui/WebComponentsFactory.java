@@ -23,6 +23,8 @@ import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -34,6 +36,9 @@ public class WebComponentsFactory implements ComponentsFactory {
 
     @Inject
     protected List<ComponentGenerationStrategy> componentGenerationStrategies;
+
+    @Inject
+    protected ApplicationContext applicationContext;
 
     private static Map<String, Class<? extends Component>> classes = new ConcurrentHashMap<>();
 
@@ -158,9 +163,17 @@ public class WebComponentsFactory implements ComponentsFactory {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
         try {
-            return componentClass.newInstance();
+            Component instance = componentClass.newInstance();
+            autowireContext(instance);
+            return instance;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error creating the '" + name + "' component instance", e);
+        }
+    }
+
+    protected void autowireContext(Component instance) {
+        if (instance instanceof ApplicationContextAware) {
+            ((ApplicationContextAware) instance).setApplicationContext(applicationContext);
         }
     }
 
