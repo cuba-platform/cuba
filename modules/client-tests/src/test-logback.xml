@@ -48,8 +48,6 @@
 
     <logger name="eclipselink.sql" level="DEBUG"/>
 
-    <logger name="org.springframework" level="WARN"/>
-
     <logger name="org.activiti" level="INFO"/>
 
     <logger name="freemarker" level="INFO"/>

@@ -508,7 +508,7 @@ public class CubaFoldersPane extends VerticalLayout {
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new CubaTree();
         searchFoldersTree.setSelectable(true);
-        searchFoldersLabel.setCubaId("searchFoldersTree");
+        searchFoldersTree.setCubaId("searchFoldersTree");
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
         searchFoldersTree.addShortcutListener(new ShortcutListener("applySearchFolder", ShortcutAction.KeyCode.ENTER, (int[]) null) {
             @Override

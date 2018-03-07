@@ -28,12 +28,14 @@ import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.PropertyBoundComponent;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -44,8 +46,8 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C>
-        implements Field, DesktopComponent.HasContextHelpClickHandler {
+public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C> implements Field,
+        DesktopComponent.HasContextHelpClickHandler, PropertyBoundComponent {
 
     protected List<ValueChangeListener> listeners = new ArrayList<>();
 
@@ -357,5 +359,15 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
         if (contextHelpIconClickHandler != null) {
             contextHelpIconClickHandler.accept(event);
         }
+    }
+
+    @Override
+    public InstanceContainer getEntityContainer() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setContainer(InstanceContainer container, String property) {
+        throw new UnsupportedOperationException();
     }
 }

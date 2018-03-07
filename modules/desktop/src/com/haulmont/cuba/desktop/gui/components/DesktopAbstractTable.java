@@ -45,6 +45,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
@@ -804,6 +805,11 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
         if (!canBeSorted(datasource))
             setSortable(false);
+    }
+
+    @Override
+    public void setContainer(CollectionContainer container) {
+        throw new UnsupportedOperationException();
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {

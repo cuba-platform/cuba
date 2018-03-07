@@ -1,0 +1,14 @@
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.web.tmp.DcScreen1"
+        caption="Screen 1"
+        messagesPack="com.haulmont.cuba.web.tmp">
+
+    <dsContext/>
+
+    <layout expand="spacer" spacing="true">
+        <textField id="textField1"/>
+        <textField id="textField2"/>
+        <button caption="Change" invoke="changeName"/>
+        <label id="spacer"/>
+    </layout>
+</window>

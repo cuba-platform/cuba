@@ -76,4 +76,11 @@
 
     <screen id="loginWindow"
             template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"/>
+
+    <screen id="dcScreen1"
+            template="/com/haulmont/cuba/web/tmp/dc-screen-1.xml"/>
+    <screen id="dcScreen2"
+            template="/com/haulmont/cuba/web/tmp/dc-screen-2.xml"/>
+    <screen id="dcScreen3"
+            template="/com/haulmont/cuba/web/tmp/dc-screen-3.xml"/>
 </screen-config>
