@@ -24,13 +24,14 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheServic
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -59,35 +60,33 @@ public class CategoryBrowser extends AbstractLookup {
     @Inject
     protected ClientCacheManager clientCacheManager;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     @Override
     public void init(Map<String, Object> params) {
-        categoriesDs = (CollectionDatasource) getDsContext().get("categoriesDs");
         categoryTable.addAction(new CreateAction());
         categoryTable.addAction(new EditAction());
         categoryTable.addAction(new RemoveAction(categoryTable));
-        categoryTable.addAction(new AbstractAction("applyChanges") {
-            @Override
-            public void actionPerform(Component component) {
-                dynamicAttributesCacheService.loadCache();
-                clientCacheManager.refreshCached(DynamicAttributesCacheStrategy.NAME);
-                permissionConfig.clearConfigCache();
-                showNotification(getMessage("notification.changesApplied"), NotificationType.HUMANIZED);
-            }
-        });
+        categoryTable.addAction(new BaseAction("applyChanges")
+                .withCaption(getMessage("categoryTable.applyChanges"))
+                .withHandler(actionPerformedEvent -> {
+                    dynamicAttributesCacheService.loadCache();
+                    clientCacheManager.refreshCached(DynamicAttributesCacheStrategy.NAME);
+                    permissionConfig.clearConfigCache();
+
+                    showNotification(getMessage("notification.changesApplied"));
+                }));
 
         categoryTable.removeGeneratedColumn("entityType");
 
-        categoryTable.addGeneratedColumn("entityType", new Table.ColumnGenerator<Category>() {
-            @Override
-            public Component generateCell(Category entity) {
-                Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.class);
-                MetaClass meta = metadata.getSession().getClassNN(entity.getEntityType());
-                dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
-                return dataTypeLabel;
-            }
+        categoryTable.addGeneratedColumn("entityType", entity -> {
+            Label dataTypeLabel = componentsFactory.createComponent(Label.class);
+            MetaClass meta = metadata.getSession().getClassNN(entity.getEntityType());
+            dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
+            return dataTypeLabel;
         });
     }
-
 
     protected class CreateAction extends AbstractAction {
 
@@ -103,7 +102,7 @@ public class CategoryBrowser extends AbstractLookup {
         @Override
         public void actionPerform(Component component) {
             Category category = metadata.create(Category.class);
-            Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
+            Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
             editor.addCloseListener(actionId -> {
                 categoriesDs.refresh();
                 categoryTable.requestFocus();
@@ -127,7 +126,7 @@ public class CategoryBrowser extends AbstractLookup {
             Set<Category> selected = categoryTable.getSelected();
             if (!selected.isEmpty()) {
                 Category category = selected.iterator().next();
-                Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
+                Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
                 editor.addCloseListener(actionId -> {
                     categoriesDs.refresh();
                     categoryTable.requestFocus();
