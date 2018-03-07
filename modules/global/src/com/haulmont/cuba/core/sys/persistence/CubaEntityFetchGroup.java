@@ -19,6 +19,10 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.EntityStates;
+import com.haulmont.cuba.core.global.View;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -38,12 +42,18 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
 
     protected FetchGroup wrappedFetchGroup;
 
+    protected static ThreadLocal<Boolean> accessLocalUnfetched = new ThreadLocal<>();
+
     public CubaEntityFetchGroup(FetchGroup fetchGroup) {
         wrappedFetchGroup = fetchGroup;
     }
 
     public CubaEntityFetchGroup(Collection<String> attributeNames) {
         wrappedFetchGroup = new EntityFetchGroup(attributeNames);
+    }
+
+    public static void setAccessLocalUnfetched(boolean value) {
+        accessLocalUnfetched.set(value);
     }
 
     @Override
@@ -58,7 +68,16 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
             }
         }
 
+        if (cannotAccessUnfetched(entity))
+            return "Cannot get unfetched attribute [" + attributeName + "] from object " + entity;
+
         return wrappedFetchGroup.onUnfetchedAttribute(entity, attributeName);
+    }
+
+    protected boolean cannotAccessUnfetched(FetchGroupTracker entity) {
+        return Boolean.FALSE.equals(accessLocalUnfetched.get())
+                && entity instanceof Entity
+                && !AppBeans.get(EntityStates.class).isLoadedWithView((Entity) entity, View.LOCAL);
     }
 
     @Override

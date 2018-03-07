@@ -364,7 +364,12 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                         typeNames.add(entity.getMetaClass().getName());
                     }
 
-                    entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStoreName());
+                    CubaEntityFetchGroup.setAccessLocalUnfetched(false);
+                    try {
+                        entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStoreName());
+                    } finally {
+                        CubaEntityFetchGroup.setAccessLocalUnfetched(true);
+                    }
                 }
             }
 

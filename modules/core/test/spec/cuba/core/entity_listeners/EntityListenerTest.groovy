@@ -19,6 +19,8 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.global.ViewRepository
+import com.haulmont.cuba.core.listener.TestUserDetachListener
 import com.haulmont.cuba.core.listener.TestUserEntityListener
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager
 import com.haulmont.cuba.security.entity.Group
@@ -32,7 +34,13 @@ import spock.lang.Specification
 class EntityListenerTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE;
+    public TestContainer cont = TestContainer.Common.INSTANCE
+
+    private dataManager
+
+    void setup() {
+        dataManager = AppBeans.get(DataManager)
+    }
 
     def "PL-9350 onBeforeInsert listener fires twice if em.flush() is used"() {
 
@@ -78,8 +86,6 @@ class EntityListenerTest extends Specification {
             em.persist(user)
         }
 
-        def dataManager = AppBeans.get(DataManager.class)
-
         def view = new View(User).addProperty('name')
         def loadContext = LoadContext.create(User).setId(user.id).setView(view)
 
@@ -102,6 +108,65 @@ class EntityListenerTest extends Specification {
 
         cleanup:
 
+        cont.deleteRecord(user)
+    }
+
+    def "accessing not loaded attributes in BeforeDetach"() {
+
+        def user = cont.metadata().create(User)
+        user.setLogin("User-$user.id")
+        user.setName('test user')
+
+        def group = cont.persistence().callInTransaction { em -> em.find(Group, TestSupport.COMPANY_GROUP_ID) }
+        user.setGroup(group)
+
+        cont.persistence().runInTransaction() { em ->
+            em.persist(user)
+        }
+
+        EntityListenerManager entityListenerManager = AppBeans.get(EntityListenerManager);
+        entityListenerManager.addListener(User, TestUserDetachListener)
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "loading entity with view"
+
+        def view = new View(User)
+                .addProperty('name')
+                .addProperty('group', new View(Group)
+                    .addProperty('name'))
+        dataManager.load(LoadContext.create(User).setId(user.id).setView(view))
+
+        then: "throw exception on access unfetched attribute in DetachListener"
+
+        def exception = thrown(IllegalStateException)
+        println(exception)
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "loading entity with local view"
+
+        view = AppBeans.get(ViewRepository).getView(User, View.LOCAL)
+
+        def loadedUser = dataManager.load(LoadContext.create(User).setId(user.id).setView(view))
+
+        then: "can fetch reference attributes in DetachListener"
+
+        loadedUser.group == group
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "loading entity without view"
+
+        loadedUser = cont.persistence().callInTransaction { em -> em.find(User, user.id) }
+
+        then: "can fetch reference attributes in DetachListener"
+
+        loadedUser.group == group
+
+        cleanup:
+
+        entityListenerManager.removeListener(User, TestUserDetachListener)
         cont.deleteRecord(user)
     }
 }
