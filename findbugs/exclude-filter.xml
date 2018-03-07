@@ -31,4 +31,8 @@
     <Match>
         <Bug pattern="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"/>
     </Match>
+
+    <Match>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
 </FindBugsFilter>
