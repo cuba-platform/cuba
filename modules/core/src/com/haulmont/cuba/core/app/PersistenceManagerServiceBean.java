@@ -67,4 +67,9 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     public boolean isNullsLastSorting() {
         return DbmsSpecificFactory.getDbmsFeatures().isNullsLastSorting();
     }
+
+    @Override
+    public boolean supportsLobSortingAndFiltering(String storeName) {
+        return DbmsSpecificFactory.getDbmsFeatures(storeName).supportsLobSortingAndFiltering();
+    }
 }

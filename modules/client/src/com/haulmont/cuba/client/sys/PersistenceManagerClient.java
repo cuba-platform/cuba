@@ -18,8 +18,8 @@
 package com.haulmont.cuba.client.sys;
 
 import com.haulmont.cuba.core.app.PersistenceManagerService;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Caches the PersistenceManager information for the whole life time of the client application.
  * The web-client's <code>Caching</code> MBean contains a method to clear this cache.
  * </p>
- *
  */
 @Component(PersistenceManagerClient.NAME)
 public class PersistenceManagerClient implements PersistenceManagerService {
@@ -44,7 +43,12 @@ public class PersistenceManagerClient implements PersistenceManagerService {
         Integer maxFetchUI;
     }
 
+    protected static class DbmsCacheEntry {
+        boolean supportsLobSortingAndFiltering;
+    }
+
     protected Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
+    protected Map<String, DbmsCacheEntry> dbmsCache = new ConcurrentHashMap<>();
 
     protected volatile String dbmsType;
     protected volatile String dbmsVersion;
@@ -125,6 +129,15 @@ public class PersistenceManagerClient implements PersistenceManagerService {
         if (defaultNullSorting == null)
             defaultNullSorting = service.isNullsLastSorting();
         return defaultNullSorting;
+    }
+
+    @Override
+    public boolean supportsLobSortingAndFiltering(String storeName) {
+        return dbmsCache.computeIfAbsent(storeName, s -> {
+            DbmsCacheEntry cacheEntry = new DbmsCacheEntry();
+            cacheEntry.supportsLobSortingAndFiltering = service.supportsLobSortingAndFiltering(s);
+            return cacheEntry;
+        }).supportsLobSortingAndFiltering;
     }
 
     public void clearCache() {

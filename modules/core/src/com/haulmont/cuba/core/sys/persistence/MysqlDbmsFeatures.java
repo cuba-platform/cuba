@@ -71,4 +71,9 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
     public boolean isSchemaByUser() {
         return false;
     }
+
+    @Override
+    public boolean supportsLobSortingAndFiltering() {
+        return true;
+    }
 }
