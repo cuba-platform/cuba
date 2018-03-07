@@ -593,6 +593,7 @@ configure(webWidgetsModule) {
         compile(bom['com.vaadin:vaadin-compatibility-server']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
+        compile(bom['com.vaadin:vaadin-push'])
 
         /* Vaadin addons */
         compile(bom['org.vaadin.addons:popupbutton']) {
@@ -608,8 +609,6 @@ configure(webWidgetsModule) {
         compile(bom['org.webjars:jquery'])
         compile(bom['org.webjars:jquery-ui'])
         compile(bom['org.webjars.bower:jquery-file-upload'])
-        compile(bom['org.webjars:swfobject'])
-        compile(bom['org.webjars:swfupload'])
         compile(bom['org.webjars.npm:object-fit-images'])
     }
 
@@ -640,36 +639,10 @@ configure(webModule) {
         // use the same spring-tx as core
         compile(bom['org.springframework:spring-tx'])
 
-        compile(bom['org.springframework:spring-webmvc'])
-        compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
-
-        compile(bom['com.vaadin:vaadin-push'])
-        compile(bom['com.vaadin:vaadin-server']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
-        }
-        compile(bom['com.vaadin:vaadin-compatibility-server']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
-        }
-
         compile(bom['org.jsoup:jsoup']) // use the same version as core
 
-        /* Vaadin addons */
-        compile(bom['org.vaadin.addons:popupbutton']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-client')
-            exclude(group: 'com.vaadin', module: 'vaadin-server')
-        }
-        compile(bom['org.vaadin.addons:aceeditor'])
-        compile(bom['org.vaadin.addons:dragdroplayouts'])
-        compile(bom['com.vaadin:vaadin-context-menu'])
-
-        /* WebJar dependencies */
-        compile(bom['org.webjars:webjars-locator-core'])
-        compile(bom['org.webjars:jquery'])
-        compile(bom['org.webjars:jquery-ui'])
-        compile(bom['org.webjars.bower:jquery-file-upload'])
-        compile(bom['org.webjars:swfobject'])
-        compile(bom['org.webjars:swfupload'])
-        compile(bom['org.webjars.npm:object-fit-images'])
+        compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
 
         compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
@@ -1038,6 +1011,10 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba
     }
 }
 
+zipProject {
+    excludeFromZip = ['out']
+}
+
 //apply plugin: 'jacoco'
 //
 //jacoco {
@@ -1088,10 +1065,6 @@ def generateClassDirs(Collection projects) {
     return trees.inject(files().asFileTree) { sum, current ->
         sum += current
     }
-}
-
-zipProject {
-    excludeFromZip = ['out']
 }
 
 task aggregateJavadoc(type: Javadoc,
