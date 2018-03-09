@@ -43,6 +43,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
@@ -3558,7 +3559,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         public void setIcon(String icon) {
             if (showIconsForPopupMenuActions) {
                 if (!StringUtils.isEmpty(icon)) {
-                    menuItem.setIcon(WebComponentsHelper.getIcon(icon));
+                    menuItem.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
                 } else {
                     menuItem.setIcon(null);
                 }

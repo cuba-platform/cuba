@@ -61,6 +61,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.ShortcutAction;
@@ -121,6 +122,8 @@ public class WebWindowManager extends WindowManager {
     protected UserSettingService userSettingService;
     @Inject
     protected WindowConfig windowConfig;
+    @Inject
+    protected IconResolver iconResolver;
 
     protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Pair<Window, Integer>>> stacks = new HashMap<>();
@@ -568,7 +571,7 @@ public class WebWindowManager extends WindowManager {
                 tabSheet.setTabDescription(tabId, null);
             }
 
-            tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(window.getIcon()));
+            tabSheet.setTabIcon(tabId, iconResolver.getIconResource(window.getIcon()));
             tabSheet.setTabClosable(tabId, true);
             tabSheet.setTabCloseHandler(layout, (targetTabSheet, tabContent) -> {
                 //noinspection SuspiciousMethodCalls
@@ -689,7 +692,7 @@ public class WebWindowManager extends WindowManager {
                 tabSheet.setTabDescription(tabId, null);
             }
 
-            tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(window.getIcon()));
+            tabSheet.setTabIcon(tabId, iconResolver.getIconResource(window.getIcon()));
 
             ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(window.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
@@ -851,7 +854,7 @@ public class WebWindowManager extends WindowManager {
         CubaWindow dialogWindow = new CubaWindow(window.getCaption());
 
         if (window.getIcon() != null) {
-            dialogWindow.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
+            dialogWindow.setIcon(iconResolver.getIconResource(window.getIcon()));
         }
 
         dialogWindow.setErrorHandler(ui);
@@ -1110,7 +1113,7 @@ public class WebWindowManager extends WindowManager {
                             tabSheet.setTabDescription(tabId, null);
                         }
 
-                        tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(currentWindow.getIcon()));
+                        tabSheet.setTabIcon(tabId, iconResolver.getIconResource(currentWindow.getIcon()));
 
                         ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(currentWindow.getContentSwitchMode().name());
                         tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
@@ -1239,7 +1242,7 @@ public class WebWindowManager extends WindowManager {
         Button button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());
-        button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
+        button.setIcon(iconResolver.getIconResource(action.getIcon()));
         button.addStyleName(WebButton.ICON_STYLE);
         button.addClickListener(event ->
                 vWindow.close()
@@ -1397,7 +1400,7 @@ public class WebWindowManager extends WindowManager {
             });
 
             if (StringUtils.isNotEmpty(action.getIcon())) {
-                button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
+                button.setIcon(iconResolver.getIconResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
 

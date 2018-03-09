@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
@@ -247,7 +248,7 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     public void setUploadButtonIcon(String icon) {
-        uploadButton.setIcon(WebComponentsHelper.getIcon(icon));
+        uploadButton.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
     }
 
     public String getUploadButtonIcon() {
@@ -274,7 +275,7 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     public void setClearButtonIcon(String icon) {
-        clearButton.setIcon(WebComponentsHelper.getIcon(icon));
+        clearButton.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
     }
 
     public String getClearButtonIcon() {

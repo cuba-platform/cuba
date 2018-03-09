@@ -16,7 +16,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui.renderers;
 
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ResourceReference;
@@ -28,6 +29,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class CubaImageRenderer extends ClickableRenderer<String> {
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public CubaImageRenderer() {
         super(String.class, null);
@@ -58,10 +61,7 @@ public class CubaImageRenderer extends ClickableRenderer<String> {
                     throw new RuntimeException("Unable to parse url for value", e);
                 }
             } else {
-                if (value.startsWith("theme://")) {
-                    value = value.substring("theme://".length());
-                }
-                resource = new VersionedThemeResource(value);
+                resource = iconResolver.getIconResource(value);
             }
         }
 

@@ -18,10 +18,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
@@ -53,6 +55,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected com.vaadin.ui.CssLayout componentComposition;
     protected Action enterPressAction;
     protected IconProvider<? super E> iconProvider;
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     @Override
     public HierarchicalDatasource getDatasource() {
@@ -97,18 +101,6 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-
-        getComposition().setIcon(WebComponentsHelper.getIcon(icon));
     }
 
     @Override
@@ -445,14 +437,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                     }
 
                     String resourceUrl = WebAbstractTree.this.iconProvider.getItemIcon(item);
-                    if (StringUtils.isBlank(resourceUrl)) {
-                        return null;
-                    }
-                    // noinspection ConstantConditions
-                    if (!resourceUrl.contains(":")) {
-                        resourceUrl = "theme:" + resourceUrl;
-                    }
-                    return WebComponentsHelper.getResource(resourceUrl);
+                    return iconResolver.getIconResource(resourceUrl);
                 });
             }
         }

@@ -17,8 +17,9 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
@@ -33,9 +35,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsField {
 
@@ -68,9 +67,9 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
 
         searchBtn = new CubaButton();
         searchBtn.setStyleName("c-ftsfield-button");
-        searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
-        searchBtn.addClickListener(
-                (Button.ClickListener) event -> openSearchWindow()
+        searchBtn.setIcon(AppBeans.get(IconResolver.class).getIconResource("app/images/fts-button.png"));
+        searchBtn.addClickListener(event ->
+                openSearchWindow()
         );
 
         component.addComponent(searchField);
@@ -86,10 +85,9 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
             return;
         }
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("searchTerm", searchTerm);
-
-        getFrame().openWindow("ftsSearch", WindowManager.OpenType.NEW_TAB, params);
+        getFrame().openWindow("ftsSearch", OpenType.NEW_TAB,
+                ParamsMap.of("searchTerm", searchTerm)
+        );
     }
 
     @Override
@@ -108,6 +106,7 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
 
     protected void adjustWidth() {
         if (getWidth() < 0) {
+            // todo rework - use CSS class
             ThemeConstants theme = App.getInstance().getThemeConstants();
             searchField.setWidth(theme.get("cuba.web.AppWindow.searchField.width"));
         } else {
@@ -117,7 +116,7 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
 
     protected void adjustHeight() {
         if (getHeight() < 0) {
-            searchField.setHeight(-1, Sizeable.Unit.PIXELS);
+            searchField.setHeightUndefined();
         } else {
             searchField.setHeight(100, Sizeable.Unit.PERCENTAGE);
         }

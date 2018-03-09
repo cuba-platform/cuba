@@ -18,10 +18,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaTwinColSelect;
 import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.vaadin.data.Property;
@@ -33,7 +35,9 @@ import java.util.*;
 
 public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> implements TwinColumn {
 
-    private StyleProvider styleProvider;
+    protected StyleProvider styleProvider;
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public WebTwinColumn() {
         component = new CubaTwinColSelect() {
@@ -58,10 +62,10 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
                     @SuppressWarnings({"unchecked"})
-                    final Entity item = optionsDatasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item, isSelected(itemId));
+                    Entity item = optionsDatasource.getItem(itemId);
+                    String resURL = styleProvider.getItemIcon(item, isSelected(itemId));
 
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
+                    return iconResolver.getIconResource(resURL);
                 } else {
                     return null;
                 }
@@ -186,12 +190,9 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         if (styleProvider != null) {
-            component.setStyleGenerator(new CubaTwinColSelect.OptionStyleGenerator() {
-                @Override
-                public String generateStyle(AbstractSelect source, Object itemId, boolean selected) {
-                    final Entity item = optionsDatasource.getItem(itemId);
-                    return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));
-                }
+            component.setStyleGenerator((source, itemId, selected) -> {
+                final Entity item = optionsDatasource.getItem(itemId);
+                return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));
             });
         } else {
             component.setStyleGenerator(null);
