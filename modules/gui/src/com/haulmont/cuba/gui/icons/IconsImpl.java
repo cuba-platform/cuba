@@ -41,43 +41,50 @@ import java.util.List;
 @Component(Icons.NAME)
 public class IconsImpl implements Icons {
 
-    protected static final LoadingCache<String, String> iconsCache = CacheBuilder.newBuilder()
-            .build(new CacheLoader<String, String>() {
-                @Override
-                public String load(@Nonnull String key) throws Exception {
-                    return resolveIcon(key);
-                }
-            });
-
     @Inject
     private Logger log;
 
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
-    protected static final List<Class<? extends Icon>> iconSets = new ArrayList<>();
+    protected LoadingCache<String, String> iconsCache = CacheBuilder.newBuilder()
+            .build(new CacheLoader<String, String>() {
+                @Override
+                public String load(@Nonnull String key) {
+                    return resolveIcon(key);
+                }
+            });
+
+    protected List<Class<? extends Icon>> iconSets = new ArrayList<>();
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
     public void init() {
         String iconSetsProp = AppContext.getProperty("cuba.iconsConfig");
-        if (StringUtils.isEmpty(iconSetsProp))
+        if (StringUtils.isEmpty(iconSetsProp)) {
             return;
+        }
 
-        for (String iconSetFqn : Splitter.on(' ').omitEmptyStrings().trimResults().split(iconSetsProp)) {
+        Iterable<String> iconSetsClasses = Splitter.on(' ')
+                .omitEmptyStrings()
+                .trimResults()
+                .split(iconSetsProp);
+
+        for (String iconSetFqn : iconSetsClasses) {
+            Class<?> iconSetClass;
             try {
-                Class<?> iconSetClass = ReflectionHelper.loadClass(iconSetFqn);
-
-                if (!Icon.class.isAssignableFrom(iconSetClass)) {
-                    log.warn(iconSetClass + " is does not implement Icon");
-                    continue;
-                }
-
-                //noinspection unchecked
-                iconSets.add((Class<? extends Icon>) iconSetClass);
+                iconSetClass = ReflectionHelper.loadClass(iconSetFqn);
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(String.format("Unable to load icon set class: %s", iconSetFqn), e);
+                throw new RuntimeException("Unable to load icon set class: " + iconSetFqn, e);
             }
+
+            if (!Icon.class.isAssignableFrom(iconSetClass)) {
+                log.warn("Class {} does not implement Icon", iconSetClass);
+                continue;
+            }
+
+            //noinspection unchecked
+            iconSets.add((Class<? extends Icon>) iconSetClass);
         }
     }
 
@@ -119,7 +126,7 @@ public class IconsImpl implements Icons {
         return themeIcon;
     }
 
-    protected static String resolveIcon(String iconName) {
+    protected String resolveIcon(String iconName) {
         String iconSource = null;
 
         for (Class<? extends Icon> iconSet : iconSets) {
