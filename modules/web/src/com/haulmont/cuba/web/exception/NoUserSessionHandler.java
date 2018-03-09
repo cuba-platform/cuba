@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.server.Page;
@@ -118,7 +118,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
 
         String iconName = AppBeans.get(Icons.class).get(Type.OK.getIconKey());
-        reloginBtn.setIcon(WebComponentsHelper.getIcon(iconName));
+        reloginBtn.setIcon(AppBeans.get(IconResolver.class).getIconResource(iconName));
 
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setClickShortcut(reloginBtn, clientConfig.getCommitShortcut());

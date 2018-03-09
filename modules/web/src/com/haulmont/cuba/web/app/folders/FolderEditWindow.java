@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -33,7 +33,7 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
@@ -41,9 +41,6 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -69,6 +66,8 @@ public class FolderEditWindow extends CubaWindow {
     protected UserSessionSource userSessionSource;
     protected ClientConfig clientConfig;
     protected TextField selectedPresentationField;
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         this.folder = folder;
@@ -172,21 +171,18 @@ public class FolderEditWindow extends CubaWindow {
         layout.addComponent(buttonsLayout);
 
         okBtn = new CubaButton(getMessage("actions.Ok"));
-        okBtn.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
+        okBtn.setIcon(iconResolver.getIconResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         cancelBtn = new CubaButton(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
+        cancelBtn.setIcon(iconResolver.getIconResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
-        cancelBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
-        });
+        cancelBtn.addClickListener(event ->
+                close()
+        );
         buttonsLayout.addComponent(cancelBtn);
 
         if (AppUI.getCurrent().isTestMode()) {
@@ -212,12 +208,9 @@ public class FolderEditWindow extends CubaWindow {
     }
 
     protected void initButtonOkListener() {
-        okBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                commit();
-            }
-        });
+        okBtn.addClickListener(event ->
+                commit()
+        );
     }
 
     protected void commit() {
@@ -288,7 +281,7 @@ public class FolderEditWindow extends CubaWindow {
         }
     }
 
-    private void fillPresentations(Presentations presentations) {
+    protected void fillPresentations(Presentations presentations) {
         presentation.removeAllItems();
 
         final Collection<Object> availablePresentationIds = presentations.getPresentationIds();

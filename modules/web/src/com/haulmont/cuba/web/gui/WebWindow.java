@@ -47,6 +47,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
@@ -1394,12 +1395,12 @@ public class WebWindow implements Window, Component.Wrapper,
         if (component.isAttached()) {
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
-                dialogWindow.setIcon(WebComponentsHelper.getIcon(icon));
+                dialogWindow.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
             }
 
             TabSheet.Tab tabWindow = asTabWindow();
             if (tabWindow != null) {
-                tabWindow.setIcon(WebComponentsHelper.getIcon(icon));
+                tabWindow.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
             }
         }
     }
@@ -1789,6 +1790,7 @@ public class WebWindow implements Window, Component.Wrapper,
         public Lookup() {
             addAction(new SelectAction(this));
 
+            // todo use BaseAction instead
             addAction(new AbstractAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID) {
                 @Override
                 public void actionPerform(Component component) {

@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -88,7 +88,7 @@ public class WindowBreadCrumbs extends CssLayout {
                     window.close(Window.CLOSE_ACTION_ID);
                 }
             });
-            closeBtn.setIcon(WebComponentsHelper.getIcon("icons/close.png"));
+            closeBtn.setIcon(AppBeans.get(IconResolver.class).getIconResource("icons/close.png"));
             closeBtn.setStyleName("c-closetab-button");
         }
 

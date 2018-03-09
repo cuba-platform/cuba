@@ -58,6 +58,7 @@ import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
@@ -146,6 +147,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected CollectionDsWrapper containerDatasource;
 
     protected boolean ignoreUnfetchedAttributes = false;
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public WebAbstractTable() {
         Configuration configuration = AppBeans.get(Configuration.NAME);
@@ -1341,14 +1344,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             return null;
         }
         String resourceUrl = iconProvider.getItemIcon(item);
-        if (StringUtils.isBlank(resourceUrl)) {
-            return null;
-        }
-        // noinspection ConstantConditions
-        if (!resourceUrl.contains(":")) {
-            resourceUrl = "theme:" + resourceUrl;
-        }
-        return WebComponentsHelper.getResource(resourceUrl);
+        return iconResolver.getIconResource(resourceUrl);
     }
 
     @Override

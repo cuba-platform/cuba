@@ -446,6 +446,10 @@ public class WebComponentsHelper {
         button.setClickShortcut(closeCode, closeModifiers);
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconResolver} instead.
+     */
+    @Deprecated
     @Nullable
     public static Resource getIcon(String iconName) {
         if (StringUtils.isEmpty(iconName)) {
@@ -516,6 +520,10 @@ public class WebComponentsHelper {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconProvider} beans instead.
+     */
+    @Deprecated
     public static void registerFontIcon(String name, Class<? extends FontIcon> font) {
         fontIcons.put(name, font);
     }

@@ -34,6 +34,7 @@ import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.gui.data.UnsubscribableDsWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -62,6 +63,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     protected boolean nullOptionVisible = true;
     protected OptionIconProvider optionIconProvider;
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public WebLookupField() {
         createComponent();
@@ -434,11 +437,12 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
                         // noinspection unchecked
                         resourceId = optionIconProvider.getItemIcon(typedItem);
                     } catch (Exception e) {
-                        LoggerFactory.getLogger(WebLookupField.class).warn("Error invoking OptionIconProvider getItemIcon method", e);
+                        LoggerFactory.getLogger(WebLookupField.class)
+                                .warn("Error invoking OptionIconProvider getItemIcon method", e);
                         return null;
                     }
 
-                    return WebComponentsHelper.getIcon(resourceId);
+                    return iconResolver.getIconResource(resourceId);
                 });
             }
         }

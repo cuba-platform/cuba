@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaAbstractUploadComponent;
@@ -388,7 +389,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbst
 
         if (component instanceof CubaFileUpload) {
             if (!StringUtils.isEmpty(icon)) {
-                component.setIcon(WebComponentsHelper.getIcon(icon));
+                component.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
             } else {
                 component.setIcon(null);
             }

@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
@@ -46,6 +45,8 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
     protected Map<MenuBar.MenuItem, MenuItem> viewModelMap = new HashMap<>();
 
     public static final String MENU_STYLENAME = "c-main-menu";
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public WebAppMenu() {
         component = new CubaMenuBar();
@@ -100,7 +101,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         checkItemIdDuplicate(id);
 
         MenuItem menuItem = new MenuItemImpl(this, id);
-        MenuBar.MenuItem delegateItem = component.createMenuItem(caption, WebComponentsHelper.getIcon(icon), null);
+        MenuBar.MenuItem delegateItem = component.createMenuItem(caption, iconResolver.getIconResource(icon), null);
         if (command != null) {
             delegateItem.setCommand(selectedItem ->
                     command.accept(menuItem));

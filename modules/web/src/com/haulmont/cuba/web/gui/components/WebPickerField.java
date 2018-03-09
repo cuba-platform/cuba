@@ -130,6 +130,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
             Class fieldClass = getMetaClass().getJavaClass();
             Class<?> valueClass = value.getClass();
+            //noinspection unchecked
             if (!fieldClass.isAssignableFrom(valueClass)) {
                 throw new IllegalArgumentException(
                         String.format("Could not set value with class %s to field with class %s",
@@ -456,7 +457,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return super.isModified();
     }
 
-
     protected class PickerButton extends WebButton {
         public PickerButton() {
         }
@@ -464,15 +464,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         @Override
         protected void beforeActionPerformed() {
             WebPickerField.this.requestFocus();
-        }
-
-        @Override
-        public void setIcon(String icon) {
-            if (StringUtils.isNotBlank(icon)) {
-                component.setIcon(WebComponentsHelper.getIcon(icon));
-            } else {
-                component.setIcon(null);
-            }
         }
     }
 
