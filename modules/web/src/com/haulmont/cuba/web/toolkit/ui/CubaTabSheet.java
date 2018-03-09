@@ -328,12 +328,12 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public void setTabCaption(String tabId, String caption) {
-            tabSheet.tabIds.get(tabId).setCaption(caption);
+            getTabNN(tabId).setCaption(caption);
         }
 
         @Override
         public void setTabDescription(String tabId, String description) {
-            tabSheet.tabIds.get(tabId).setDescription(description);
+            getTabNN(tabId).setDescription(description);
         }
 
         @Override
@@ -353,17 +353,25 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public Component getTabComponent(String tabId) {
-            return tabSheet.tabIds.get(tabId).getComponent();
+            return getTabNN(tabId).getComponent();
         }
 
         @Override
         public void setTabIcon(String tabId, Resource icon) {
-            tabSheet.tabIds.get(tabId).setIcon(icon);
+            getTabNN(tabId).setIcon(icon);
         }
 
         @Override
         public void setTabClosable(String tabId, boolean closable) {
-            tabSheet.tabIds.get(tabId).setClosable(closable);
+            getTabNN(tabId).setClosable(closable);
+        }
+
+        protected Tab getTabNN(String tabId) {
+            Tab tab = tabSheet.tabIds.get(tabId);
+            if (tab == null) {
+                throw new IllegalStateException("TabSheet does not contain tab with id: " + tabId);
+            }
+            return tab;
         }
 
         // just stub
@@ -373,7 +381,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public void setSelectedTab(String tabId) {
-            tabSheet.setSelectedTab(tabSheet.tabIds.get(tabId));
+            tabSheet.setSelectedTab(getTabNN(tabId));
         }
 
         @Override
@@ -422,12 +430,12 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public void setTabTestId(String tabId, String testId) {
-            tabSheet.setTestId(tabSheet.tabIds.get(tabId), testId);
+            tabSheet.setTestId(getTabNN(tabId), testId);
         }
 
         @Override
         public void setTabCubaId(String tabId, String id) {
-            tabSheet.setCubaId(tabSheet.tabIds.get(tabId), id);
+            tabSheet.setCubaId(getTabNN(tabId), id);
         }
 
         @Override
@@ -438,7 +446,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public int getTabPosition(String tabId) {
-            return tabSheet.getTabPosition(tabSheet.tabIds.get(tabId));
+            return tabSheet.getTabPosition(getTabNN(tabId));
         }
 
         @Override

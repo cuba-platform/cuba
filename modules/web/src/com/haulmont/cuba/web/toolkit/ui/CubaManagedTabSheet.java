@@ -582,41 +582,45 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setTabCaption(String tabId, String caption) {
-            getTabById(tabId).setCaption(caption);
+            getTabNN(tabId).setCaption(caption);
         }
 
-        protected Tab getTabById(String tabId) {
-            return tabSheet.tabIds.get(tabId);
+        protected Tab getTabNN(String tabId) {
+            Tab tab = tabSheet.tabIds.get(tabId);
+            if (tab == null) {
+                throw new IllegalStateException("TabSheet does not contain tab with id: " + tabId);
+            }
+            return tab;
         }
 
         @Override
         public void setTabDescription(String tabId, String description) {
-            getTabById(tabId).setDescription(description);
+            getTabNN(tabId).setDescription(description);
         }
 
         @Override
         public Component getTabComponent(String tabId) {
-            return getTabById(tabId).getComponent();
+            return getTabNN(tabId).getComponent();
         }
 
         @Override
         public void setTabIcon(String tabId, Resource icon) {
-            getTabById(tabId).setIcon(icon);
+            getTabNN(tabId).setIcon(icon);
         }
 
         @Override
         public void setTabClosable(String tabId, boolean closable) {
-            getTabById(tabId).setClosable(closable);
+            getTabNN(tabId).setClosable(closable);
         }
 
         @Override
         public void setContentSwitchMode(String tabId, ContentSwitchMode contentSwitchMode) {
-            ((TabImpl) getTabById(tabId)).setContentSwitchMode(contentSwitchMode);
+            ((TabImpl) getTabNN(tabId)).setContentSwitchMode(contentSwitchMode);
         }
 
         @Override
         public void setSelectedTab(String tabId) {
-            tabSheet.setSelectedTab(getTabById(tabId));
+            tabSheet.setSelectedTab(getTabNN(tabId));
         }
 
         @Override
@@ -681,13 +685,13 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setTabTestId(String tabId, String testId) {
-            TabImpl tabImpl = (TabImpl) getTabById(tabId);
+            TabImpl tabImpl = (TabImpl) getTabNN(tabId);
             tabSheet.tabbedHeader.setTestId(tabImpl.getTabbarTab(), testId);
         }
 
         @Override
         public void setTabCubaId(String tabId, String id) {
-            Tab tab = getTabById(tabId);
+            Tab tab = getTabNN(tabId);
             tabSheet.tabbedHeader.setCubaId(((TabImpl) tab).getTabbarTab(), id);
         }
 
@@ -702,7 +706,7 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public int getTabPosition(String tabId) {
-            Tab tab = getTabById(tabId);
+            Tab tab = getTabNN(tabId);
             return tabSheet.tabbedHeader.getTabPosition(((TabImpl) tab).getTabbarTab());
         }
 
