@@ -336,6 +336,8 @@ public class EntityCacheTestClass {
 
         loadUser();
         assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("FROM SEC_USER")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("FROM SEC_GROUP")).count());
         appender.clearMessages();
 
         loadUser();
@@ -351,7 +353,7 @@ public class EntityCacheTestClass {
         }
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // inserting new entities does not affect existing in cache
+        assertEquals(0, appender.filterMessages(m -> m.contains("FROM SEC_USER")).count()); // inserting new entities does not affect existing in cache
 
         cont.deleteRecord(newUser);
     }
@@ -504,7 +506,7 @@ public class EntityCacheTestClass {
         User u = loadUserWithRoles();
         assertEquals(0, u.getUserRoles().size());
 
-        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, UserRoles
+        assertEquals(3, appender.filterMessages(m -> m.contains("> SELECT")).count()); // Default Roles, User, UserRoles
     }
 
     @Test
