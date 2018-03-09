@@ -46,8 +46,6 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
     public static final String MENU_STYLENAME = "c-main-menu";
 
-    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
-
     public WebAppMenu() {
         component = new CubaMenuBar();
         component.addStyleName(MENU_STYLENAME);
@@ -101,7 +99,13 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         checkItemIdDuplicate(id);
 
         MenuItem menuItem = new MenuItemImpl(this, id);
-        MenuBar.MenuItem delegateItem = component.createMenuItem(caption, iconResolver.getIconResource(icon), null);
+
+        Resource iconResource = null;
+        if (icon != null) {
+            iconResource = AppBeans.get(IconResolver.class).getIconResource(icon);
+        }
+
+        MenuBar.MenuItem delegateItem = component.createMenuItem(caption, iconResource, null);
         if (command != null) {
             delegateItem.setCommand(selectedItem ->
                     command.accept(menuItem));

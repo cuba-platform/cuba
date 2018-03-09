@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.sys
 
-import com.haulmont.cuba.core.global.DevelopmentException
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu
 import com.haulmont.cuba.gui.config.MenuItem
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppMenu
