@@ -19,16 +19,21 @@ package com.haulmont.cuba.security.listener;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceTools;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.events.UserInvalidationEvent;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("cuba_UserEntityListener")
 public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User>,
@@ -40,9 +45,33 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
     @Inject
     protected PersistenceTools persistenceTools;
 
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void onBeforeInsert(User entity, EntityManager entityManager) {
+        addDefaultRoles(entity, entityManager);
         updateLoginLowerCase(entity);
+    }
+
+    protected void addDefaultRoles(User user, EntityManager entityManager) {
+        List<Role> defaultRoles = entityManager.createQuery(
+                "select r from sec$Role r where r.defaultRole = true", Role.class)
+                .getResultList();
+
+        if (user.getUserRoles() == null)
+            user.setUserRoles(new ArrayList<>());
+
+        for (Role defaultRole : defaultRoles) {
+            if (user.getUserRoles().stream().noneMatch(userRole -> userRole.getRole().equals(defaultRole))) {
+                UserRole userRole = metadata.create(UserRole.class);
+                userRole.setUser(user);
+                userRole.setRole(defaultRole);
+
+                entityManager.persist(userRole);
+                user.getUserRoles().add(userRole);
+            }
+        }
     }
 
     @Override
