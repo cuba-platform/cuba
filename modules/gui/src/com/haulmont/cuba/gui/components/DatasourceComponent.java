@@ -22,15 +22,21 @@ import com.haulmont.chile.core.model.MetaProperty;
 
 /**
  * A component that represents data from one property of a datasource.
+ * vaadin8
  */
-public interface DatasourceComponent extends Component, Component.HasValue {
+@Deprecated
+public interface DatasourceComponent<T> extends Component, Component.HasValue<T> {
 
     /**
+     * vaadin8
+     *
      * @return datasource instance
      */
+    @Deprecated
     Datasource getDatasource();
 
     /**
+     * vaadin8
      * @deprecated Use {@link #getMetaPropertyPath()}
      * @return datasource property
      */
@@ -38,12 +44,18 @@ public interface DatasourceComponent extends Component, Component.HasValue {
     MetaProperty getMetaProperty();
 
     /**
+     * vaadin8
+     *
      * @return datasource property path
      */
+    @Deprecated
     MetaPropertyPath getMetaPropertyPath();
 
     /**
      * Set datasource and its property.
+     *
+     * vaadin8
      */
+    @Deprecated
     void setDatasource(Datasource datasource, String property);
 }

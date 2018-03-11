@@ -21,20 +21,25 @@ import java.util.Collection;
 /**
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
  */
-public interface Field extends DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
-                               Component.BelongToFrame, Component.Validatable, Component.HasIcon,
-                               Component.HasContextHelp {
+public interface Field<T> extends DatasourceComponent<T>, Component.HasValueBinding<T>, Component.HasCaption,
+        Component.HasValue<T>, Component.Editable, Component.BelongToFrame, Component.Validatable, Component.HasIcon,
+        Component.HasContextHelp {
+
     /**
      * @return whether the field must contain a non-null value
      */
     boolean isRequired();
     void setRequired(boolean required);
 
+    String getRequiredMessage();
     /**
      * A message that will be displayed to user if the field is required but has null value
      */
     void setRequiredMessage(String msg);
-    String getRequiredMessage();
+
+    /*
+     * vaadin8 move to HasValidators *
+     */
 
     /**
      * Add {@link Validator} instance.

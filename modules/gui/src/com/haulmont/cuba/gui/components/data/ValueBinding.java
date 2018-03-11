@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.data;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.components.Component.HasValue;
+import com.haulmont.cuba.gui.components.Component.ValueSource;
 
-/**
- * vaadin8 rework !
- */
-public interface PropertyBoundComponent {
-    // todo remove
-    InstanceContainer getEntityContainer();
+public interface ValueBinding<T> {
+    Class<T> getType();
 
-    // todo remove
-    MetaPropertyPath getMetaPropertyPath();
+    ValueSource<T> getSource();
+    HasValue<T> getComponent();
 
-    // todo remove ? TO_BE_DISCUSSED
-    void setContainer(InstanceContainer container, String property);
+    void unbind();
 }

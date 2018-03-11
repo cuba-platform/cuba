@@ -99,7 +99,10 @@ public interface InstanceContainer<T extends Entity> {
         void itemPropertyChanged(ItemPropertyChangeEvent<T> e);
     }
 
+    // todo provide registration
     void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
+
+    // todo remove
     void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
 
     /**
@@ -150,7 +153,10 @@ public interface InstanceContainer<T extends Entity> {
         void itemChanged(ItemChangeEvent<T> e);
     }
 
+    // todo provide registration
     void addItemChangeListener(ItemChangeListener<T> listener);
+
+    // todo remove
     void removeItemChangeListener(ItemChangeListener<T> listener);
 
 }

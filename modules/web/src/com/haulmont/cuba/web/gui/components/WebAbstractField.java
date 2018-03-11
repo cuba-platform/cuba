@@ -90,6 +90,8 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
+        // todo replace completely
+
         if ((datasource == null && property != null) || (datasource != null && property == null))
             throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
@@ -145,6 +147,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
         }
     }
 
+    // todo remove
     protected void initRequired(MetaPropertyPath metaPropertyPath) {
         MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
 
@@ -161,6 +164,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
         }
     }
 
+    // todo remove
     protected void initBeanValidator() {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
@@ -178,6 +182,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
         }
     }
 
+    // todo remove
     protected void disableBeanValidator() {
         if (validators != null) {
             for (Validator validator : validators.toArray(new Validator[validators.size()])) {
@@ -188,11 +193,13 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField>
         }
     }
 
+    // todo remove
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
         metaPropertyPath = getResolvedMetaPropertyPath(metaClass, property);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 
+    // todo remove
     protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
         MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                 .resolveMetaPropertyPath(metaClass, property);

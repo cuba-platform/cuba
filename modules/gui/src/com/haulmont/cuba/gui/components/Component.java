@@ -16,6 +16,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -45,6 +48,8 @@ public interface Component {
         BOTTOM_CENTER
     }
 
+    // vaadin8 convert to enumeration
+    // todo see com.vaadin.server.Sizeable.Unit
     int UNITS_PIXELS = 0;
     int UNITS_PERCENTAGE = 8;
 
@@ -586,23 +591,111 @@ public interface Component {
     }
 
     /**
+     * vaadin8
+     */
+    interface ValueChangeNotifier {
+        void addValueChangeListener(ValueChangeListener listener);
+        void removeValueChangeListener(ValueChangeListener listener);
+    }
+
+    /**
      * Object having a value.
      */
-    interface HasValue extends Editable, BelongToFrame {
-        <T> T getValue();
-
-        void setValue(Object value);
+    interface HasValue<T> extends ValueChangeNotifier {
+        T getValue();
+        void setValue(T value);
 
         /**
+         * vaadin8 for removal
+         *
          * @deprecated Use {@link #addValueChangeListener(ValueChangeListener)}
          */
         @Deprecated
         void addListener(ValueListener listener);
         @Deprecated
         void removeListener(ValueListener listener);
+    }
 
-        void addValueChangeListener(ValueChangeListener listener);
-        void removeValueChangeListener(ValueChangeListener listener);
+    /**
+     * vaadin8 document
+     *
+     * @param <T>
+     */
+    interface ValueSource<T> extends Component.ValueChangeNotifier {
+        T getValue();
+        void setValue(T value);
+
+        boolean isReadOnly();
+
+        Class<T> getType();
+    }
+
+    // todo status change listener
+    enum ValueSourceStatus {
+        ACTIVE,
+        INACTIVE
+    }
+
+    /**
+     * vaadin8 document
+     *
+     * @param <T>
+     */
+    interface EntityValueSource<E extends Entity, T> extends ValueSource<T> {
+        MetaClass getMetaClass();
+        MetaPropertyPath getMetaPropertyPath();
+
+        // todo return registration
+        // todo do not provide removeXXX method
+        void addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener);
+    }
+
+    /**
+     * vaadin8 document
+     *
+     * @param <E>
+     */
+    class InstanceChangeEvent<E extends Entity> extends EventObject {
+        private final E prevItem;
+        private final E item;
+
+        public InstanceChangeEvent(EntityValueSource<E, ?> source, E prevItem, E item) {
+            super(source);
+            this.prevItem = prevItem;
+            this.item = item;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public EntityValueSource<E, ?> getSource() {
+            return (EntityValueSource<E, ?>) super.getSource();
+        }
+
+        /**
+         * @return current item
+         */
+        @Nullable
+        public E getItem() {
+            return item;
+        }
+
+        /**
+         * @return previous selected item
+         */
+        @Nullable
+        public E getPrevItem() {
+            return prevItem;
+        }
+    }
+
+    /**
+     * vaadin8 document
+     *
+     * @param <T>
+     */
+    interface HasValueBinding<T> {
+        void setValueSource(ValueSource<T> valueSource);
+        ValueSource<T> getValueSource();
     }
 
     /**
@@ -1049,6 +1142,9 @@ public interface Component {
         MarginInfo getOuterMargin();
     }
 
+    /**
+     * todo JavaDoc
+     */
     interface HasInputPrompt {
         /**
          * @return current input prompt.

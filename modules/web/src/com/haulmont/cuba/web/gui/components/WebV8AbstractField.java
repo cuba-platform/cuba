@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.vaadin.data.Binder;
 import com.vaadin.v7.data.Property;
 import org.apache.commons.lang.StringUtils;
 
@@ -49,8 +48,8 @@ import java.util.function.Consumer;
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 // vaadin8 ??? Custom binding bridge for the new UI components ?
-public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField>
-        extends WebAbstractComponent<T> implements Field {
+public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, V>
+        extends WebAbstractComponent<T> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
@@ -227,16 +226,15 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField>
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <V> V getValue() {
-        //noinspection unchecked
+    public V getValue() {
         return (V) component.getValue();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void setValue(Object value) {
-        // vaadin8 set Value ignoring read-only
-//        component.setValueIgnoreReadOnly(value);
+    public void setValue(V value) {
         component.setValue(value);
     }
 
