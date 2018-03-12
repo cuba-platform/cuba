@@ -386,6 +386,13 @@ public class Jpa2GrammarTest {
 
     @Test
     @Ignore
+    public void testReservedWords() throws RecognitionException {
+        testQuery("SELECT e FROM app$Customer goodCustomer WHERE e.order < 4");
+        testQuery("SELECT e FROM app$Customer goodCustomer WHERE e.object < 4");
+    }
+
+    @Test
+    @Ignore
     public void testSubQueries() throws RecognitionException {
         testQuery("SELECT goodCustomer FROM app$Customer goodCustomer WHERE goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed)/2.0 FROM app$Customer c)");
         testQuery("SELECT c FROM app$Customer c WHERE (SELECT AVG(o.price) FROM c.orders o) > 100");
