@@ -128,7 +128,7 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
         String login = credentials.getLogin();
         String password = credentials.getPassword();
 
-        return !ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password);
+        return ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password);
     }
 
     @Override
