@@ -114,8 +114,7 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
 
     @Nullable
     public MetaProperty getMetaProperty() {
-        return Optional.ofNullable(datasourceMetaClass.getPropertyPath(name))
-                .map(MetaPropertyPath::getMetaProperty)
-                .orElse(null);
+        MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
+        return propertyPath != null ? propertyPath.getMetaProperty() : null;
     }
 }

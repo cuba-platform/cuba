@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -49,9 +50,9 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
         OpManager opManager = AppBeans.get(OpManager.class);
-        MetaProperty metaProperty = Optional.ofNullable(condition.getDatasource().getMetaClass().getPropertyPath(condition.getName()))
-                .map(MetaPropertyPath::getMetaProperty)
-                .orElse(null);
+        MetaClass metaClass = condition.getDatasource().getMetaClass();
+        MetaPropertyPath propertyPath = metaClass.getPropertyPath(condition.getName());
+        MetaProperty metaProperty = propertyPath != null ? propertyPath.getMetaProperty() : null;
         for (Op op : opManager.availableOps(metaProperty)) {
             OperatorChangeAction operatorChangeAction = new OperatorChangeAction(op);
             popupButton.addAction(operatorChangeAction);
