@@ -35,4 +35,8 @@
     <Match>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
+
+    <Match>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
+    </Match>
 </FindBugsFilter>
