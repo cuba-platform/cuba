@@ -27,9 +27,7 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class TypedNativeQueryTest {
 
@@ -160,6 +158,19 @@ public class TypedNativeQueryTest {
             } catch (UnsupportedOperationException e) {
                 // ok
             }
+        }
+    }
+
+    @Test
+    public void testEclipseLinkInabilityToMapToString() {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            javax.persistence.Query query = em.getDelegate().createNativeQuery("select LOGIN from SEC_USER where ID = ?", String.class);
+            query.setParameter(1, TestSupport.ADMIN_USER_ID.toString());
+            query.getResultList();
+            fail();
+        } catch (javax.persistence.PersistenceException e) {
+            // ok
         }
     }
 }

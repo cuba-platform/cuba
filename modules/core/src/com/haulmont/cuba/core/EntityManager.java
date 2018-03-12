@@ -185,7 +185,7 @@ public interface EntityManager {
      * @param resultClass expected result class
      * @return the new query instance
      */
-    <T> TypedQuery<T> createNativeQuery(String sqlString, Class<T> resultClass);
+    <T extends Entity> TypedQuery<T> createNativeQuery(String sqlString, Class<T> resultClass);
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.

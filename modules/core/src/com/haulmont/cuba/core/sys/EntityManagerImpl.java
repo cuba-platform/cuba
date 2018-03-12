@@ -250,7 +250,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
-    public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
+    public <T extends Entity> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
         TypedQuery<T> query = createQueryInstance(true, resultClass);
         query.setQueryString(sql);
         return query;
