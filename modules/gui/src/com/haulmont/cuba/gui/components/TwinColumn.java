@@ -61,6 +61,11 @@ public interface TwinColumn extends OptionsField {
 
     interface StyleProvider {
         String getStyleName(Entity item, Object property, boolean selected);
+
+        /**
+         * @deprecated Will be removed in 7.0
+         */
+        @Deprecated
         String getItemIcon(Entity item, boolean selected);
     }
 }
