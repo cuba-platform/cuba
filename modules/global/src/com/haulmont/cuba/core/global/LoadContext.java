@@ -20,6 +20,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.*;
@@ -289,6 +290,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
         private static final long serialVersionUID = 3819951144050635838L;
 
         private Map<String, Object> parameters = new HashMap<>();
+        private String[] noConversionParams;
         private String queryString;
         private int firstResult;
         private int maxResults;
@@ -324,6 +326,25 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
          */
         public Query setParameter(String name, Object value) {
             parameters.put(name, value);
+            return this;
+        }
+
+        /**
+         * Set value for a query parameter.
+         * @param name  parameter name
+         * @param value parameter value
+         * @param implicitConversions whether to do parameter value conversions, e.g. convert an entity to its ID
+         * @return  this query instance for chaining
+         */
+        public Query setParameter(String name, Object value, boolean implicitConversions) {
+            parameters.put(name, value);
+            if (!implicitConversions) {
+                // this is a rare case, so let's save some memory by using an array instead of a list
+                if (noConversionParams == null)
+                    noConversionParams = new String[0];
+                noConversionParams = new String[noConversionParams.length + 1];
+                noConversionParams[noConversionParams.length - 1] = name;
+            }
             return this;
         }
 
@@ -398,6 +419,11 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
 
         public boolean isCacheable() {
             return cacheable;
+        }
+
+        @Nullable
+        public String[] getNoConversionParams() {
+            return noConversionParams;
         }
 
         /**

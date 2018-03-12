@@ -49,6 +49,7 @@ public class DataServiceQueryBuilder {
 
     protected String queryString;
     protected Map<String, Object> queryParams;
+    protected String[] noConversionParams;
     protected String entityName;
     protected boolean singleResult;
 
@@ -58,13 +59,14 @@ public class DataServiceQueryBuilder {
     @Inject
     private PersistenceSecurity security;
 
-    public void init(String queryString, Map<String, Object> queryParams,
+    public void init(String queryString, Map<String, Object> queryParams, String[] noConversionParams,
                      Object id, String entityName)
     {
         this.entityName = entityName;
         if (!StringUtils.isBlank(queryString)) {
             this.queryString = queryString;
             this.queryParams = queryParams;
+            this.noConversionParams = noConversionParams;
         } else {
             MetaClass metaClass = metadata.getClassNN(entityName);
             String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
@@ -126,30 +128,38 @@ public class DataServiceQueryBuilder {
             if (paramNames.contains(name)) {
                 Object value = entry.getValue();
 
-                if (value instanceof Entity) {
-                    value = ((Entity) value).getId();
+                boolean convert = noConversionParams == null
+                        || Arrays.stream(noConversionParams).noneMatch(s -> s.equals(name));
+                if (convert) {
+                    if (value instanceof Entity) {
+                        value = ((Entity) value).getId();
 
-                } else if (value instanceof EnumClass) {
-                    value = ((EnumClass) value).getId();
+                    } else if (value instanceof EnumClass) {
+                        value = ((EnumClass) value).getId();
 
-                } else if (value instanceof Collection) {
-                    List<Object> list = new ArrayList<>(((Collection) value).size());
-                    for (Object item : (Collection) value) {
-                        if (item instanceof Entity)
-                            list.add(((Entity) item).getId());
-                        else if (item instanceof EnumClass)
-                            list.add(((EnumClass) item).getId());
-                        else
-                            list.add(item);
+                    } else if (value instanceof Collection) {
+                        List<Object> list = new ArrayList<>(((Collection) value).size());
+                        for (Object item : (Collection) value) {
+                            if (item instanceof Entity)
+                                list.add(((Entity) item).getId());
+                            else if (item instanceof EnumClass)
+                                list.add(((EnumClass) item).getId());
+                            else
+                                list.add(item);
+                        }
+                        value = list;
                     }
-                    value = list;
                 }
 
                 if (value instanceof TemporalValue) {
                     TemporalValue temporalValue = (TemporalValue) value;
                     query.setParameter(name, temporalValue.date, temporalValue.type);
                 } else {
-                    query.setParameter(name, value);
+                    if (!convert) {
+                        query.setParameter(name, value, false);
+                    } else {
+                        query.setParameter(name, value);
+                    }
                 }
             } else
                 throw new DevelopmentException("Parameter '" + name + "' is not used in the query");
