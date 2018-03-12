@@ -385,7 +385,6 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
     public void testReservedWords() throws RecognitionException {
         testQuery("SELECT e FROM app$Customer goodCustomer WHERE e.order < 4");
         testQuery("SELECT e FROM app$Customer goodCustomer WHERE e.object < 4");
