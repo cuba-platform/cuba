@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -110,7 +111,7 @@ public class WebExportDisplay implements ExportDisplay {
             resource.setMIMEType(FileTypesHelper.getMIMEType(resourceName));
         }
 
-        if (showNewWindow) {
+        if (showNewWindow && isBrowserSupportsPopups()) {
             fileDownloader.viewDocument(resource);
         } else {
             fileDownloader.downloadFile(resource);
@@ -178,5 +179,9 @@ public class WebExportDisplay implements ExportDisplay {
     @Deprecated
     public void setNewWindow(boolean newWindow) {
         this.setShowNewWindow(newWindow);
+    }
+
+    public boolean isBrowserSupportsPopups() {
+        return !Page.getCurrent().getWebBrowser().isSafari();
     }
 }
