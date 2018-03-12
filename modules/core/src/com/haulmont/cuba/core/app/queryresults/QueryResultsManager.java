@@ -195,13 +195,15 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Override
     public void delete(int queryKey) {
+        DbTypeConverter converter = persistence.getDbTypeConverter();
         UUID userSessionId = userSessionSource.getUserSession().getId();
+        String userSessionIdStr = converter.getSqlObject(userSessionId).toString();
         long start = System.currentTimeMillis();
         String logMsg = "Delete query results for " + userSessionId + " / " + queryKey;
         log.debug(logMsg);
 
         String sql = "delete from SYS_QUERY_RESULT where SESSION_ID = '"
-                + userSessionId + "' and QUERY_KEY = " + queryKey;
+                + userSessionIdStr + "' and QUERY_KEY = " + queryKey;
 
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
@@ -216,8 +218,11 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
     public void deleteForCurrentSession() {
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
+            DbTypeConverter converter = persistence.getDbTypeConverter();
+            UUID userSessionId = userSessionSource.getUserSession().getId();
+            String userSessionIdStr = converter.getSqlObject(userSessionId).toString();
             runner.update("delete from SYS_QUERY_RESULT where SESSION_ID = '"
-                    + userSessionSource.getUserSession().getId() + "'");
+                    + userSessionIdStr + "'");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -233,11 +238,14 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
 
         StringBuilder sb = new StringBuilder("delete from SYS_QUERY_RESULT");
         Collection<UserSession> userSessionEntities = userSessions.getUserSessionsStream().collect(Collectors.toList());
+        DbTypeConverter converter = persistence.getDbTypeConverter();
         if (!userSessionEntities.isEmpty()) {
             sb.append(" where SESSION_ID not in (");
             for (Iterator<UserSession> it = userSessionEntities.iterator(); it.hasNext(); ) {
                 UserSession userSession = it.next();
-                sb.append("'").append(userSession.getId()).append("'");
+                UUID userSessionId = userSession.getId();
+                String userSessionIdStr = converter.getSqlObject(userSessionId).toString();
+                sb.append("'").append(userSessionIdStr).append("'");
                 if (it.hasNext())
                     sb.append(",");
             }
