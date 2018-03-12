@@ -68,7 +68,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
             if (matcher.groupCount() == 1) {
                 constraintName = matcher.group(1);
             } else {
-                for (int i = 1; i > matcher.groupCount(); i++) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
                     if (StringUtils.isNotBlank(matcher.group(i))) {
                         constraintName = matcher.group(i);
                         break;

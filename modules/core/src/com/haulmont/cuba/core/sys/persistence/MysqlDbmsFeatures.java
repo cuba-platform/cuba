@@ -59,7 +59,7 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
 
     @Override
     public String getUniqueConstraintViolationPattern() {
-        return "Duplicate entry '(.+)' for key '(.+)'";
+        return "Duplicate entry '.+' for key '(.+)'";
     }
 
     @Override
