@@ -1056,3 +1056,31 @@ def generateClassDirs(Collection projects) {
         sum += current
     }
 }
+
+
+task aggregateJavadoc(type: Javadoc,
+        description: 'Generate javadocs from all child projects as if it was a single project',
+        group: 'Documentation') {
+
+    destinationDir = file("$buildDir/docs/javadoc")
+    title = "${project.name.toUpperCase()} $cubaVersion API"
+
+    options.encoding = 'UTF-8'
+    options.addStringOption("sourcepath", "")
+    options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PUBLIC
+
+    exclude 'com/haulmont/cuba/core/app/cache/**'
+    exclude 'com/haulmont/cuba/core/sys/jpql/antlr2/**'
+    exclude 'com/haulmont/cuba/core/sys/utils/**'
+    exclude 'com/haulmont/cuba/desktop/sys/vcl/**'
+    exclude 'com/haulmont/cuba/restapi/**'
+    exclude 'com/haulmont/cuba/web/toolkit/**'
+    exclude 'org/eclipse/**'
+
+    subprojects.each { proj ->
+        def javadocTask = proj.tasks.getByPath('javadoc')
+
+        source += javadocTask.source
+        classpath += javadocTask.classpath
+    }
+}
