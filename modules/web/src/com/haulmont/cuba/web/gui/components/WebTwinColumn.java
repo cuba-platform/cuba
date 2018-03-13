@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -77,6 +78,15 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         component.setMultiSelect(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+    }
+
+    @Override
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        super.setOptionsDatasource(datasource);
+
+        if (datasource != null) {
+            collectionDsListenersWrapper.bind(datasource);
+        }
     }
 
     @Override

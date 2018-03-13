@@ -36,6 +36,10 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSel
     public void setOptionsDatasource(CollectionDatasource datasource) {
         super.setOptionsDatasource(datasource);
 
+        if (datasource != null) {
+            collectionDsListenersWrapper.bind(datasource);
+        }
+
         assignAutoDebugId();
     }
 
