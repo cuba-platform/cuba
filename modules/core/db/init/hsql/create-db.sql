@@ -31,7 +31,7 @@ create table SYS_CONFIG (
     UPDATED_BY varchar(50),
     --
     NAME varchar(255),
-    VALUE longvarchar,
+    VALUE_ longvarchar,
     --
     primary key (ID),
     constraint IDX_SYS_CONFIG_UNIQ_NAME unique (NAME)
@@ -288,7 +288,7 @@ create table SEC_PERMISSION (
     --
     PERMISSION_TYPE integer,
     TARGET varchar(100),
-    VALUE integer,
+    VALUE_ integer,
     ROLE_ID varchar(36),
     --
     primary key (ID),
@@ -376,7 +376,7 @@ create table SEC_USER_SETTING (
     USER_ID varchar(36),
     CLIENT_TYPE char(1),
     NAME varchar(255),
-    VALUE longvarchar,
+    VALUE_ longvarchar,
     --
     primary key (ID),
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),

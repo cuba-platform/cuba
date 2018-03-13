@@ -47,7 +47,7 @@ public class AppPropertiesExport extends AbstractWindow {
 
         StringBuilder sb = new StringBuilder();
         for (AppPropertyEntity entity : exported) {
-            sb.append("insert into SYS_CONFIG (ID, CREATE_TS, CREATED_BY, VERSION, NAME, VALUE)\n");
+            sb.append("insert into SYS_CONFIG (ID, CREATE_TS, CREATED_BY, VERSION, NAME, VALUE_)\n");
             sb.append("values ('").append(entity.getId())
                     .append("', current_timestamp, '")
                     .append(uss.getUserSession().getUser().getLogin())

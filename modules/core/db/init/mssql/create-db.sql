@@ -24,7 +24,7 @@ create table SYS_CONFIG (
     UPDATED_BY varchar(50),
     --
     NAME varchar(255),
-    VALUE varchar(max),
+    VALUE_ varchar(max),
     --
     primary key nonclustered (ID)
 )^
@@ -283,7 +283,7 @@ create table SEC_PERMISSION (
     --
     PERMISSION_TYPE integer,
     TARGET varchar(100),
-    VALUE integer,
+    VALUE_ integer,
     ROLE_ID uniqueidentifier,
     --
     primary key nonclustered (ID),
@@ -378,7 +378,7 @@ create table SEC_USER_SETTING (
     USER_ID uniqueidentifier,
     CLIENT_TYPE char(1),
     NAME varchar(255),
-    VALUE varchar(max),
+    VALUE_ varchar(max),
     --
     primary key nonclustered (ID),
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),

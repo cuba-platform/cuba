@@ -113,7 +113,7 @@ create table SYS_CONFIG (
     UPDATE_TS timestamp,
     UPDATED_BY varchar2(50),
     NAME varchar2(255),
-    VALUE clob,
+    VALUE_ clob,
     primary key(ID)
 )^
 create unique index IDX_SYS_CONFIG_UNIQ_NAME on SYS_CONFIG(NAME)^
@@ -510,7 +510,7 @@ create table SEC_PERMISSION (
     DELETED_BY varchar2(50),
     PERMISSION_TYPE integer,
     TARGET varchar2(100),
-    VALUE integer,
+    VALUE_ integer,
     ROLE_ID varchar2(32),
     primary key(ID)
 )^
@@ -644,7 +644,7 @@ create table SEC_USER_SETTING (
     USER_ID varchar2(32),
     CLIENT_TYPE char(1),
     NAME varchar2(255),
-    VALUE clob,
+    VALUE_ clob,
     primary key(ID)
 )^
 create unique index SEC_USER_SETTING_UNIQ on SEC_USER_SETTING(USER_ID, NAME, CLIENT_TYPE)^

@@ -44,7 +44,7 @@ public class Permission extends StandardEntity {
     /**
      * May be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others
      */
-    @Column(name = "VALUE")
+    @Column(name = "VALUE_")
     private Integer value;
 
     @ManyToOne(fetch = FetchType.LAZY)

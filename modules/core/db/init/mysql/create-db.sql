@@ -23,7 +23,7 @@ create table SYS_CONFIG (
     UPDATED_BY varchar(50),
     --
     NAME varchar(190),
-    VALUE text,
+    VALUE_ text,
     --
     primary key (ID)
 )^
@@ -305,7 +305,7 @@ create table SEC_PERMISSION (
     --
     PERMISSION_TYPE integer,
     TARGET varchar(100),
-    VALUE integer,
+    VALUE_ integer,
     ROLE_ID varchar(32),
     --
     primary key (ID),
@@ -408,7 +408,7 @@ create table SEC_USER_SETTING (
     USER_ID varchar(32),
     CLIENT_TYPE char(1),
     NAME varchar(190),
-    VALUE text,
+    VALUE_ text,
     --
     primary key (ID),
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),

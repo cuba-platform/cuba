@@ -120,7 +120,7 @@ public class ConfigStorage implements ConfigStorageAPI {
                     // Don't use transactions here because of loop possibility from EntityLog
                     QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
                     try {
-                        cache = queryRunner.query("select NAME, VALUE from SYS_CONFIG",
+                        cache = queryRunner.query("select NAME, VALUE_ from SYS_CONFIG",
                                 new ResultSetHandler<Map<String, String>>() {
                                     @Override
                                     public Map<String, String> handle(ResultSet rs) throws SQLException {
