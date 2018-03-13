@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -34,10 +36,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
+public class WebSearchPickerField extends WebSearchField implements SearchPickerField, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
     protected boolean updateComponentValue = false;
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebSearchPickerField() {
         final ComboBox selectComponent = component;
@@ -299,5 +303,10 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     @Override
     public boolean isRequired() {
         return pickerField.isRequired();
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }

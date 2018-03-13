@@ -20,6 +20,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -34,11 +36,13 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
+public class WebLookupPickerField extends WebLookupField implements LookupPickerField, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
     protected boolean updateComponentValue = false;
     protected boolean refreshOptionsOnLookupClose = false;
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebLookupPickerField() {
     }
@@ -328,5 +332,10 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     @Override
     public boolean isRefreshOptionsOnLookupClose() {
         return refreshOptionsOnLookupClose;
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }

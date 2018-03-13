@@ -19,6 +19,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -29,9 +31,11 @@ import javax.swing.*;
 import java.util.Collection;
 import java.util.Collections;
 
-public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SuggestionPickerField {
+public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SuggestionPickerField, SecuredActionsHolder {
 
     protected DesktopPickerField pickerField;
+
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public DesktopSuggestionPickerField() {
         pickerField = new DesktopPickerField(new Picker());
@@ -188,6 +192,11 @@ public class DesktopSuggestionPickerField extends DesktopSuggestionField impleme
     public boolean isModified() {
         // do nothing
         return false;
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {

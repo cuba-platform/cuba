@@ -18,6 +18,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -29,11 +31,13 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebSuggestionPickerField extends WebSuggestionField implements SuggestionPickerField {
+public class WebSuggestionPickerField extends WebSuggestionField implements SuggestionPickerField, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
 
     protected boolean updateComponentValue = false;
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebSuggestionPickerField() {
         component.setImmediate(true);
@@ -304,5 +308,10 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
         super.removeStyleName(styleName);
 
         component.removePopupStyleName(styleName);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }
