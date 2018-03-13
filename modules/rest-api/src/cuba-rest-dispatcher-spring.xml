@@ -121,6 +121,10 @@
         <constructor-arg name="requestFactory" ref="oauthAuthorizationRequestManager"/>
     </bean>
 
+    <!-- Required for HTTP request access from ClientProxyTokenStore
+         in case it is called from OAuth2AuthenticationProcessingFilter -->
+    <bean id="requestContextFilter" class="org.springframework.web.filter.RequestContextFilter"/>
+
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices"/>
 
     <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
@@ -177,6 +181,7 @@
         <csrf disabled="true"/>
         <cors configuration-source-ref="cuba_RestCorsSource"/>
 
+        <custom-filter ref="requestContextFilter" before="FIRST"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_RestLastSecurityFilter" position="LAST"/>

@@ -89,7 +89,7 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
             credentials.setClientType(ClientType.REST_API);
 
             ServletRequestAttributes attributes =
-                    (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
                 credentials.setIpAddress(request.getRemoteAddr());

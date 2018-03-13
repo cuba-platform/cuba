@@ -167,32 +167,36 @@ public class ClientProxyTokenStore implements TokenStore {
             Map<String, String> userAuthenticationDetails =
                     (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
+
+            Locale locale = sessionInfo != null ?
+                    sessionInfo.getLocale() : null;
+
+            TrustedClientCredentials credentials = new TrustedClientCredentials(username,
+                    restApiConfig.getTrustedClientPassword(), locale);
+            credentials.setClientType(ClientType.REST_API);
+            
+            ServletRequestAttributes attributes =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                credentials.setIpAddress(request.getRemoteAddr());
+                credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+            } else {
+                credentials.setClientInfo(makeClientInfo(""));
+            }
+
+            //if locale was not determined then use the user locale
+            if (locale == null) {
+                credentials.setOverrideLocale(false);
+            }
+
             try {
-                ServletRequestAttributes attributes =
-                        (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-                Locale locale = sessionInfo != null ?
-                        sessionInfo.getLocale() :
-                        null;
-                TrustedClientCredentials credentials = new TrustedClientCredentials(username,
-                        restApiConfig.getTrustedClientPassword(), locale);
-                credentials.setClientType(ClientType.REST_API);
-                if (attributes != null) {
-                    HttpServletRequest request = attributes.getRequest();
-                    credentials.setIpAddress(request.getRemoteAddr());
-                    credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
-                } else {
-                    credentials.setClientInfo(makeClientInfo(""));
-                }
-
-                //if locale was not determined then use the user locale
-                if (locale == null) {
-                    credentials.setOverrideLocale(false);
-                }
-
                 session = authenticationService.login(credentials).getSession();
             } catch (LoginException e) {
-                throw new OAuth2Exception("Cannot login to the middleware");
+                throw new OAuth2Exception("Cannot login to the middleware", e);
             }
+
+            log.debug("New session created for token '{}' since the original session has been expired", tokenValue);
         }
 
         if (session != null) {
