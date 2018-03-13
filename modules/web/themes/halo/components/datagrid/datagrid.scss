@@ -282,4 +282,12 @@
     margin-left: 0;
     margin-right: 0;
   }
+
+  .#{$primary-stylename}-sidebar.v-contextmenu .#{$primary-stylename}-sidebar-button:after {
+    content: "\f013";
+  }
+
+  .#{$primary-stylename}-sidebar.v-contextmenu.open .#{$primary-stylename}-sidebar-button:after {
+    content: "\f013";
+  }
 }
