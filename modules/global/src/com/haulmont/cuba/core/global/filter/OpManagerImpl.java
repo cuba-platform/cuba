@@ -16,10 +16,12 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.Entity;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,9 @@ public class OpManagerImpl implements OpManager {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {
@@ -68,9 +73,12 @@ public class OpManagerImpl implements OpManager {
     public EnumSet<Op> availableOps(MetaProperty metaProperty) {
         Class javaClass = metaProperty.getJavaType();
         if (String.class.equals(javaClass) && metadataTools.isLob(metaProperty)) {
-            return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
-        } else {
-            return availableOps(javaClass);
+            String storeName = metadata.getTools().getStoreName(metaProperty.getDomain());
+            PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerService.class);
+            if (!persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
+                return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
+            }
         }
+        return availableOps(javaClass);
     }
 }
