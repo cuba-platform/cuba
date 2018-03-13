@@ -19,9 +19,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.SearchPickerField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -29,9 +28,11 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 
-public class DesktopSearchPickerField extends DesktopSearchField implements SearchPickerField {
+public class DesktopSearchPickerField extends DesktopSearchField implements SearchPickerField, SecuredActionsHolder {
 
     protected DesktopPickerField pickerField;
+
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public DesktopSearchPickerField() {
         pickerField = new DesktopPickerField(new Picker());
@@ -152,6 +153,11 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
         super.updateEnabled();
 
         pickerField.setParentEnabled(isEnabledWithParent());
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {

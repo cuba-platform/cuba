@@ -19,6 +19,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -28,10 +30,12 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 
-public class DesktopLookupPickerField extends DesktopLookupField implements LookupPickerField {
+public class DesktopLookupPickerField extends DesktopLookupField implements LookupPickerField, SecuredActionsHolder {
 
     protected DesktopPickerField pickerField;
     protected boolean isRefreshOptionsOnLookupClose = false;
+
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public DesktopLookupPickerField() {
         pickerField = new DesktopPickerField(new Picker());
@@ -162,6 +166,11 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
     @Override
     public void setRefreshOptionsOnLookupClose(boolean refresh) {
         isRefreshOptionsOnLookupClose = refresh;
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
