@@ -108,7 +108,7 @@ public class UserManagementServiceBean implements UserManagementService {
         checkNotNullArgument(accessGroupId, "Null access group id");
         checkUpdatePermission(Group.class);
 
-        Group clone = null;
+        Group clone;
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -137,7 +137,7 @@ public class UserManagementServiceBean implements UserManagementService {
         checkNotNullArgument(roleId, "Null access role id");
         checkUpdatePermission(Role.class);
 
-        Role clone = null;
+        Role clone;
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -344,14 +344,14 @@ public class UserManagementServiceBean implements UserManagementService {
         checkUpdatePermission(Group.class);
         checkUpdatePermission(Constraint.class);
 
-        Set<String> attributes = new HashSet<>();
+        Set<String> attributes;
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query query = em.createQuery("select a.name from sec$SessionAttribute a where a.group.id = ?1");
             query.setParameter(1, groupId);
             //noinspection unchecked
-            attributes.addAll(query.getResultList());
+            attributes = new HashSet<>(query.getResultList());
 
             query = em.createQuery("select a.name from sec$GroupHierarchy h join h.parent.sessionAttributes a where h.group.id = ?1");
             query.setParameter(1, groupId);
@@ -469,7 +469,7 @@ public class UserManagementServiceBean implements UserManagementService {
             else {
                 String templateString = getLocalizedTemplateContent(resetPasswordBodyTemplate, locale);
                 if (templateString == null) {
-                    log.warn("Reset passwords: Not found email body template for locale: '{}'", locale);
+                    log.debug("Reset passwords: Not found email body template for locale: '{}'", locale);
                     bodyTemplate = bodyDefaultTemplate;
                 } else {
                     bodyTemplate = getTemplate(templateEngine, templateString);
@@ -487,7 +487,7 @@ public class UserManagementServiceBean implements UserManagementService {
             else {
                 String templateString = getLocalizedTemplateContent(resetPasswordSubjectTemplate, locale);
                 if (templateString == null) {
-                    log.warn("Reset passwords: Not found email subject template for locale '{}'", locale);
+                    log.debug("Reset passwords: Not found email subject template for locale '{}'", locale);
                     subjectTemplate = subjectDefaultTemplate;
                 } else {
                     subjectTemplate = getTemplate(templateEngine, templateString);
