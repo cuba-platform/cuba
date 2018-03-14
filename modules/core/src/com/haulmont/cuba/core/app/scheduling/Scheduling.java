@@ -123,7 +123,7 @@ public class Scheduling implements SchedulingAPI {
 
     @Override
     public boolean setRunning(ScheduledTask task, boolean running) {
-        log.trace(task + ": mark running=" + running);
+        log.trace("{}: mark running={}", task, running);
         if (running) {
             task.setCurrentStartTimestamp(timeSource.currentTimeMillis());
             Long prev = runningTasks.putIfAbsent(task, task.getCurrentStartTimestamp());
@@ -346,7 +346,7 @@ public class Scheduling implements SchedulingAPI {
             task.setLastStartServer(server);
             runner.runTask(task, now, getUserSession(task));
         } else
-            log.trace(task + "\n not finished");
+            log.trace("{}\n not finished", task);
     }
 
     protected void runTask(ScheduledTask task, long time) throws LoginException {
@@ -356,7 +356,7 @@ public class Scheduling implements SchedulingAPI {
 
     protected boolean checkFirst(ScheduledTask task, Integer serverPriority, long now) {
         if (serverPriority == null) {
-            log.trace(task + ": not in permitted hosts or not a master");
+            log.trace("{}: not in permitted hosts or not a master", task);
             return false;
         }
         if (task.getStartDelay() != null) {
@@ -369,7 +369,7 @@ public class Scheduling implements SchedulingAPI {
             }
         }
         if (task.getStartDate() != null && task.getStartDate().getTime() > now) {
-            log.trace(task + ": startDate is in the future");
+            log.trace(": startDate is in the future", task);
             return false;
         }
         return true;

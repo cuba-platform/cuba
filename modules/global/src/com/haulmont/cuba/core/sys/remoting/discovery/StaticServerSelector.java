@@ -63,6 +63,6 @@ public class StaticServerSelector extends StickySessionServerSelector {
 
     protected void initSelectorId() {
         id = DigestUtils.md5Hex(baseUrl);
-        log.trace("Selector id for '" + baseUrl + "' is '" + id + "'");
+        log.trace("Selector id for '{}' is '{}'", baseUrl, id);
     }
 }

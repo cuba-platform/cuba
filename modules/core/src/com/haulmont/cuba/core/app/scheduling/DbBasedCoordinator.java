@@ -101,7 +101,7 @@ public class DbBasedCoordinator implements Coordinator {
             return result;
         }
         Date date = (Date) list.get(0);
-        log.trace(task + ": finished at " + date.getTime());
+        log.trace("{} : finished at {}", task, date.getTime());
         return true;
     }
 

@@ -21,13 +21,12 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.*;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -35,7 +34,6 @@ import java.util.*;
 
 /**
  * Provides inheritance of screen XML descriptors.
- *
  */
 public class XmlInheritanceProcessor {
 

@@ -85,7 +85,7 @@ public class MessagesClientImpl extends AbstractMessages {
             List list = ExceptionUtils.getThrowableList(e);
             for (Object throwable : list) {
                 if (throwable instanceof SocketException) {
-                    log.trace("searchRemotely: " + throwable);
+                    log.trace("searchRemotely: {}", throwable);
                     return null; // silently ignore network errors
                 }
             }

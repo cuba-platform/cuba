@@ -63,7 +63,7 @@ public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
             timeoutSec = defaultTimeout;
 
         if (timeoutSec != 0) {
-            log.trace("Applying query timeout " + timeoutSec + "sec");
+            log.trace("Applying query timeout {} sec", timeoutSec);
             if (entityManager instanceof JpaEntityManager) {
                 UnitOfWork unitOfWork = ((JpaEntityManager) entityManager).getUnitOfWork();
                 if (unitOfWork != null) {

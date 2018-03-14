@@ -195,7 +195,7 @@ public class MetaModelLoader {
 
         if ((entityAnnotation == null && mappedSuperclassAnnotation == null) &&
                 (embeddableAnnotation == null) && (metaClassAnnotation == null)) {
-            log.trace(String.format("Class '%s' isn't annotated as metadata entity, ignore it", javaClass.getName()));
+            log.trace("Class '{}' isn't annotated as metadata entity, ignore it", javaClass.getName());
             return null;
         }
 

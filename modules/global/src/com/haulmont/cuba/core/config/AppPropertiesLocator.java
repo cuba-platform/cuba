@@ -83,7 +83,7 @@ public class AppPropertiesLocator {
         Set<Class> configInterfaces = findConfigInterfaces();
         List<AppPropertyEntity> propertyInfos = findDatabaseStoredProperties(configInterfaces);
 
-        log.trace("Done in " + (System.currentTimeMillis() - start) + "ms");
+        log.trace("Done in {} ms", (System.currentTimeMillis() - start));
         return propertyInfos;
     }
 

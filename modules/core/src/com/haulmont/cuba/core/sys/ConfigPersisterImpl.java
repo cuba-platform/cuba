@@ -29,7 +29,7 @@ public class ConfigPersisterImpl implements ConfigPersister {
 
     @Override
     public String getProperty(SourceType sourceType, String name) {
-        log.trace("Getting property '" + name + "', source=" + sourceType.name());
+        log.trace("Getting property '{}', source={}", name, sourceType.name());
         String value;
         switch (sourceType) {
             case SYSTEM:

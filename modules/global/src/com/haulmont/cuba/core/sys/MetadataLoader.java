@@ -253,7 +253,7 @@ public class MetadataLoader {
                 return (String) nameField.get(null);
             }
         } catch (Exception e) {
-            log.trace("Cannot get NAME static field value: " + e);
+            log.trace("Cannot get NAME static field value: {}", e);
         }
         throw new IllegalStateException("Cannot guess id for datatype " + datatype);
     }

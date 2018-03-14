@@ -51,7 +51,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * <code>Messages</code> implementation common for all tiers.
- *
  */
 public abstract class AbstractMessages implements Messages {
 
@@ -409,7 +408,7 @@ public abstract class AbstractMessages implements Messages {
             if (msg != null)
                 return msg;
 
-            log.trace("searchFiles: " + cacheKey);
+            log.trace("searchFiles: {}", cacheKey);
 
             String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
             while (packPath != null && !packPath.equals(confDir)) {
@@ -441,7 +440,7 @@ public abstract class AbstractMessages implements Messages {
             if (msg != null)
                 return msg;
 
-            log.trace("searchClasspath: " + cacheKey);
+            log.trace("searchClasspath: {}", cacheKey);
 
             String packPath = "/" + pack.replaceAll("\\.", "/");
             while (packPath != null) {

@@ -122,7 +122,7 @@ public class FilterParserImpl implements FilterParser {
             }
             xml = Dom4j.writeDocument(document, true);
         }
-        log.trace("toXML: " + xml);
+        log.trace("toXML: {}", xml);
         return xml;
     }
 

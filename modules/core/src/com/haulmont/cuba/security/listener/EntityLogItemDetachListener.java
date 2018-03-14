@@ -54,7 +54,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
     }
 
     protected void fillAttributesFromChangesField(EntityLogItem item) {
-        log.trace("fillAttributesFromChangesField for " + item);
+        log.trace("fillAttributesFromChangesField for {}", item);
         List<EntityLogAttr> attributes = new ArrayList<>();
 
         StringReader reader = new StringReader(item.getChanges());
@@ -79,10 +79,10 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
                 attributes.add(attr);
             }
         } catch (Exception e) {
-            log.error("Unable to fill EntityLog attributes for " + item, e);
+            log.error("Unable to fill EntityLog attributes for {}", item, e);
         }
 
-        Collections.sort(attributes, (o1, o2) -> Ordering.natural().compare(o1.getName(), o2.getName()));
+        attributes.sort((o1, o2) -> Ordering.natural().compare(o1.getName(), o2.getName()));
 
         item.setAttributes(new LinkedHashSet<>(attributes));
     }

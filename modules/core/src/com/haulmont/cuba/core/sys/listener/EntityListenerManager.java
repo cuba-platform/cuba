@@ -328,7 +328,7 @@ public class EntityListenerManager {
     }
 
     protected List<?> findListener(Class<? extends Entity> entityClass, EntityListenerType type) {
-        log.trace("get listener " + type + " for class " + entityClass.getName());
+        log.trace("get listener {} for class {}", type, entityClass.getName());
         List<String> names = getDeclaredListeners(entityClass);
         if (names.isEmpty()) {
             log.trace("no annotations, exiting");
@@ -339,28 +339,30 @@ public class EntityListenerManager {
         for (String name : names) {
             if (AppBeans.containsBean(name)) {
                 Object bean = AppBeans.get(name);
-                log.trace("listener bean found: " + bean);
+                log.trace("listener bean found: {}", bean);
                 List<Class> interfaces = ClassUtils.getAllInterfaces(bean.getClass());
                 for (Class intf : interfaces) {
                     if (intf.equals(type.getListenerInterface())) {
-                        log.trace("listener implements " + type.getListenerInterface());
+                        log.trace("listener implements {}", type.getListenerInterface());
                         result.add(bean);
                     }
                 }
             } else {
                 try {
                     Class aClass = Thread.currentThread().getContextClassLoader().loadClass(name);
-                    log.trace("listener class found: " + aClass);
+                    log.trace("listener class found: {}", aClass);
                     List<Class> interfaces = ClassUtils.getAllInterfaces(aClass);
                     for (Class intf : interfaces) {
                         if (intf.equals(type.getListenerInterface())) {
-                            log.trace("listener implements " + type.getListenerInterface());
+                            log.trace("listener implements {}", type.getListenerInterface());
                             result.add(aClass.newInstance());
                         }
                     }
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Unable to create entity listener " + name + " for " + entityClass.getName()
-                            + " because there is no bean or class with such name");
+                    throw new RuntimeException(String.format(
+                            "Unable to create entity listener %s for %s because there is no bean or class with such name",
+                            name, entityClass.getName()));
+
                 } catch (IllegalAccessException | InstantiationException e) {
                     throw new RuntimeException("Unable to instantiate an Entity Listener", e);
                 }
