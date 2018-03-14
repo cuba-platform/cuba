@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.sys.CubaEnhanced;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -27,12 +26,7 @@ import java.util.UUID;
 @Entity(name = "sys$QueryResult")
 @Table(name = "SYS_QUERY_RESULT")
 @SystemLevel
-public class QueryResult implements CubaEnhanced { // Marker interface added here to avoid CUBA-specific enhancing
-
-    @javax.persistence.Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+public class QueryResult extends BaseIdentityIdEntity {
 
     @Column(name = "SESSION_ID")
     private UUID sessionId;
@@ -51,14 +45,6 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
 
     @Column(name = "LONG_ENTITY_ID")
     protected Long longEntityId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getSessionId() {
         return sessionId;
