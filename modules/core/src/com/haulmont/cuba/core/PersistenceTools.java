@@ -144,14 +144,16 @@ public class PersistenceTools {
 
     /**
      * Returns an old value of an attribute changed in the current transaction. The entity must be in the Managed state.
-     * <p>
-     * For enum attributes returns enum id.
+     * For enum attributes returns enum id. <br>
+     * You can check if the value has been changed using {@link #isDirty(Entity, String...)} method.
      *
      * @param entity    entity instance
      * @param attribute attribute name
-     * @return  an old value stored in the database. For a new entity returns null.
+     * @return an old value stored in the database. For a new entity returns null.
      * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
      * @see #getOldEnumValue(Entity, String)
+     * @see #isDirty(Entity, String...)
+     * @see #getDirtyFields(Entity)
      */
     @Nullable
     public Object getOldValue(Entity entity, String attribute) {
