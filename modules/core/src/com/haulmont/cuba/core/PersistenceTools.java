@@ -41,8 +41,6 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -145,10 +143,14 @@ public class PersistenceTools {
 
     /**
      * Returns an old value of an attribute changed in the current transaction. The entity must be in the Managed state.
+     * You can check if the value has been changed using {@link #isDirty(Entity, String...)} method.
+     *
      * @param entity    entity instance
      * @param attribute attribute name
-     * @return  an old value stored in the database. For a new entity returns null.
+     * @return an old value stored in the database. For a new entity returns null.
      * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
+     * @see #isDirty(Entity, String...)
+     * @see #getDirtyFields(Entity)
      */
     @Nullable
     public Object getOldValue(Entity entity, String attribute) {
