@@ -23,7 +23,6 @@ import com.vaadin.util.FileTypeResolver;
 
 /**
  * Web resource with versioning support
- *
  */
 public class VersionedThemeResource extends ThemeResource {
 
@@ -38,7 +37,14 @@ public class VersionedThemeResource extends ThemeResource {
 
     @Override
     public String getResourceId() {
-        return super.getResourceId() + "?v=" + App.getInstance().getWebResourceTimestamp();
+        String resourceId = super.getResourceId();
+
+        if (resourceId.contains("?")) {
+            // do not change the URL
+            return resourceId;
+        }
+
+        return resourceId + "?v=" + App.getInstance().getWebResourceTimestamp();
     }
 
     @Override
