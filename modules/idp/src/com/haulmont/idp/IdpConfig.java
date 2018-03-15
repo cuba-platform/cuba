@@ -46,12 +46,23 @@ public interface IdpConfig extends Config {
 
     /**
      * @return all permitted service URLs separated by comma. <br>
-     *         IDP is allowed to send redirects only on these URLs. <br>
+     *         IDP is allowed to send redirects only on these URLs, or URLs, that match regexps from cuba.idp.serviceProviderUrlsMasks<br>
      *         First URL is used as default if user opened IDP login form directly.
      */
     @Property("cuba.idp.serviceProviderUrls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getServiceProviderUrls();
+
+    /**
+     * @return java regexp masks for permitted service URLs separated by comma. <br>
+     *         Should be carefully chosen to not to allow redirecting to untrusted URLs. <br>
+     *         For example, http://your-domain.com.* unsafe mask, as would allow redirecting to http://your-domain.com.org,
+     *         that might be owned by malefactor.
+     *         For this case, safe mask would be http://your-domain.com/.*
+     */
+    @Property("cuba.idp.serviceProviderUrlMasks")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getServiceProviderUrlMasks();
 
     /**
      * @return all URLs that need to be notified on session logout or expiration separated by comma. <br>

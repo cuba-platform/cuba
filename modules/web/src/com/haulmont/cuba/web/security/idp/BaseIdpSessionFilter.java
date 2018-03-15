@@ -33,6 +33,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
@@ -174,7 +176,7 @@ public abstract class BaseIdpSessionFilter implements Filter {
                 if (idpSession == null) {
                     log.warn("Used old IDP ticket {}, send redirect", idpTicket);
                     // used old ticket, send redirect
-                    httpResponse.sendRedirect(getIdpRedirectUrl());
+                    httpResponse.sendRedirect(getIdpRedirectUrl(httpRequest));
                     return;
                 }
 
@@ -186,15 +188,23 @@ public abstract class BaseIdpSessionFilter implements Filter {
 
                 log.debug("IDP session {} obtained, redirect to application", idpSession);
 
-                // redirect to application without parameters
-                httpResponse.sendRedirect(httpRequest.getRequestURL().toString());
+                String redirectUrl;
+                try {
+                    redirectUrl = getRedirectUrlWithoutIdpTicket(httpRequest);
+                } catch (URISyntaxException e) {
+                    log.error("Unable to compose redirect URL", e);
+                    httpResponse.setStatus(500);
+                    return;
+                }
+
+                httpResponse.sendRedirect(redirectUrl);
                 return;
             }
 
             if (session.getAttribute(IDP_SESSION_ATTRIBUTE) == null) {
                 if ("GET".equals(httpRequest.getMethod())
                         && !StringUtils.startsWith(httpRequest.getRequestURI(), httpRequest.getContextPath() + "/PUSH")) {
-                    httpResponse.sendRedirect(getIdpRedirectUrl());
+                    httpResponse.sendRedirect(getIdpRedirectUrl(httpRequest));
                 }
                 return;
             }
@@ -275,14 +285,39 @@ public abstract class BaseIdpSessionFilter implements Filter {
         return idpRedirectUrl;
     }
 
-    protected String getIdpRedirectUrl() {
+    protected String getIdpRedirectUrl(HttpServletRequest request) {
         String idpBaseURL = webIdpConfig.getIdpBaseURL();
         if (!idpBaseURL.endsWith("/")) {
             idpBaseURL += "/";
         }
+
         String idpRedirectUrl = idpBaseURL + "?sp=" +
-                URLEncodeUtils.encodeUtf8(getWebAppUrl());
+                URLEncodeUtils.encodeUtf8(getRequestURL(request));
 
         return idpRedirectUrl;
+    }
+
+    protected String getRequestURL(HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+
+        if (queryString == null) {
+            return requestURL.toString();
+        } else {
+            return requestURL.append('?').append(queryString).toString();
+        }
+    }
+
+    protected String getRedirectUrlWithoutIdpTicket(HttpServletRequest httpRequest) throws URISyntaxException {
+        URIBuilder uriBuilder = new URIBuilder(httpRequest.getRequestURL().toString());
+        String queryString = httpRequest.getQueryString();
+        if (!Strings.isNullOrEmpty(queryString)) {
+            Arrays.stream(URLEncodeUtils.decodeUtf8(queryString).split("&"))
+                    .map(s -> s.split("="))
+                    .filter(kvPair -> !kvPair[0].equals(IDP_TICKET_REQUEST_PARAM))
+                    .forEach(kvPair -> uriBuilder.setParameter(kvPair[0], kvPair[1]));
+
+        }
+        return uriBuilder.build().toString();
     }
 }

@@ -36,14 +36,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * IDP login form endpoint.
@@ -73,13 +77,23 @@ public class IdpController {
     @Inject
     protected IdpServiceLogoutCallbackInvoker logoutCallbackInvoker;
 
+    protected List<Pattern> serviceProviderUrlMasks;
+
+    @PostConstruct
+    private void init() {
+        serviceProviderUrlMasks = idpConfig.getServiceProviderUrlMasks()
+                .stream()
+                .map(Pattern::compile)
+                .collect(Collectors.toList());
+    }
+
     @GetMapping(value = "/")
     public String checkIdpSession(@RequestParam(value = "sp", defaultValue = "") String serviceProviderUrl,
                                   @RequestParam(value = "response_type", defaultValue = "server-ticket") String responseType,
                                   @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
                                   HttpServletResponse response) {
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
-                && !idpConfig.getServiceProviderUrls().contains(serviceProviderUrl)) {
+                && !isValidRedirectURL(serviceProviderUrl)) {
             log.warn("Incorrect serviceProviderUrl {} passed, will be used default", serviceProviderUrl);
             serviceProviderUrl = null;
         }
@@ -150,7 +164,7 @@ public class IdpController {
                          @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
                          HttpServletResponse response) {
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
-                && !idpConfig.getServiceProviderUrls().contains(serviceProviderUrl)) {
+                && !isValidRedirectURL(serviceProviderUrl)) {
             log.warn("Incorrect serviceProviderUrl {} passed, will be used default", serviceProviderUrl);
             serviceProviderUrl = null;
         }
@@ -209,7 +223,7 @@ public class IdpController {
         String serviceProviderUrl = auth.getServiceProviderUrl();
 
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
-                && !idpConfig.getServiceProviderUrls().contains(serviceProviderUrl)) {
+                && !isValidRedirectURL(serviceProviderUrl)) {
             log.warn("Incorrect serviceProviderUrl {} passed, will be used default", serviceProviderUrl);
             serviceProviderUrl = null;
         }
@@ -305,4 +319,15 @@ public class IdpController {
 
         return localesInfo;
     }
+
+    protected boolean isValidRedirectURL(String redirectUrl) {
+        if (idpConfig.getServiceProviderUrls().contains(redirectUrl)) {
+            return true;
+        }
+
+        return serviceProviderUrlMasks
+                .stream()
+                .anyMatch(pattern -> pattern.matcher(redirectUrl).matches());
+    }
+
 }
