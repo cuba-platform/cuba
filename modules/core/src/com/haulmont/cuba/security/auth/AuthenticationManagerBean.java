@@ -16,7 +16,10 @@
 
 package com.haulmont.cuba.security.auth;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.ClusterManager;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -86,7 +89,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
         SecurityContext previousSecurityContext = AppContext.getSecurityContext();
         AppContext.setSecurityContext(new SecurityContext(serverSession));
 
-        try (Transaction tx = persistence.getTransaction()) {
+        try (Transaction tx = persistence.createTransaction()) {
             AuthenticationDetails authenticationDetails = authenticateInternal(credentials);
 
             tx.commit();
@@ -109,7 +112,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
         AuthenticationDetails authenticationDetails = null;
         try {
-            try (Transaction tx = persistence.getTransaction()) {
+            try (Transaction tx = persistence.createTransaction()) {
                 publishBeforeLoginEvent(credentials);
 
                 authenticationDetails = authenticateInternal(credentials);
