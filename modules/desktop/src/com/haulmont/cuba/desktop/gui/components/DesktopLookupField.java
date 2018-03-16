@@ -85,6 +85,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     // just stub
     protected OptionIconProvider optionIconProvider;
+    // just stub
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -761,6 +763,18 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     public boolean isModified() {
         // do nothing
         return false;
+    }
+
+    // just stub
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+    }
+
+    // just stub
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 
     protected class NullOption extends EntityWrapper {

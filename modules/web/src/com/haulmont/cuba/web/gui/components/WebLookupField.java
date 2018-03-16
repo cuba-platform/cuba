@@ -65,6 +65,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     protected OptionIconProvider optionIconProvider;
 
     protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public WebLookupField() {
         createComponent();
@@ -503,6 +504,23 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public boolean isModified() {
         return super.isModified();
+    }
+
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+
+        if (optionsStyleProvider != null) {
+            component.setItemStyleGenerator((comboBox, item) ->
+                    optionsStyleProvider.getItemStyleName(this, item));
+        } else {
+            component.setItemStyleGenerator(null);
+        }
+    }
+
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 
     protected interface LookupFieldDsWrapper {

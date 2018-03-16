@@ -17,7 +17,11 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface LookupField extends OptionsField, Component.HasInputPrompt, Component.Buffered, LookupComponent, Component.Focusable {
+public interface LookupField extends OptionsField, LookupComponent,
+        Component.HasInputPrompt,
+        Component.Buffered,
+        Component.Focusable,
+        Component.HasOptionsStyleProvider {
 
     String NAME = "lookupField";
 

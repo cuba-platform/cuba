@@ -97,6 +97,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     // just stub
     protected OptionIconProvider optionIconProvider;
+    // just stub
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public DesktopSearchField() {
         composition = new JPanel();
@@ -744,6 +746,18 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     public boolean isModified() {
         // do nothing
         return false;
+    }
+
+    // just stub
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+    }
+
+    // just stub
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 
     protected class NullOption extends EntityWrapper {
