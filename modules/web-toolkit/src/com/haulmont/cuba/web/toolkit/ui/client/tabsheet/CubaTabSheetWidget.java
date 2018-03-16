@@ -18,10 +18,12 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.DragEndEvent;
+import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -40,26 +42,38 @@ public class CubaTabSheetWidget extends VDDTabSheet {
     protected CubaTabBar tabBar;
 
     protected HandlerRegistration dragEndHandler;
+    protected HandlerRegistration dropHandler;
 
     public CubaTabSheetWidget() {
-        dragEndHandler = RootPanel.get().addBitlessDomHandler(event -> {
-            Element target = WidgetUtil.getElementUnderMouse(event.getNativeEvent());
-            if (target == null) {
-                VDragAndDropManager.get().interruptDrag();
-                return;
-            }
+        RootPanel rootPanel = RootPanel.get();
 
-            Node targetParent = DOM.asOld(target).getParentNode();
-            if (!getElement().isOrHasChild(targetParent)) {
-                VDragAndDropManager.get().interruptDrag();
-            }
-        }, DragEndEvent.getType());
+        dragEndHandler = rootPanel.addBitlessDomHandler(event ->
+                        handleBadDD(event.getNativeEvent()),
+                        DragEndEvent.getType());
+
+        dropHandler = rootPanel.addBitlessDomHandler(event ->
+                        handleBadDD(event.getNativeEvent()),
+                        DropEvent.getType());
+    }
+
+    protected void handleBadDD(NativeEvent event) {
+        Element target = WidgetUtil.getElementUnderMouse(event);
+        if (target == null) {
+            VDragAndDropManager.get().interruptDrag();
+            return;
+        }
+
+        Node targetParent = DOM.asOld(target).getParentNode();
+        if (!getElement().isOrHasChild(targetParent)) {
+            VDragAndDropManager.get().interruptDrag();
+        }
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
         dragEndHandler.removeHandler();
+        dropHandler.removeHandler();
     }
 
     @Override
@@ -187,9 +201,9 @@ public class CubaTabSheetWidget extends VDDTabSheet {
         boolean loaded = super.loadTabSheet(tabIndex);
         if (loaded) {
             /*
-            * We have to set zero opacity in case of chart inside of tab
-            * because "visibility" property doesn't work for SVG elements
-            * */
+             * We have to set zero opacity in case of chart inside of tab
+             * because "visibility" property doesn't work for SVG elements
+             */
             currentlyDisplayedWidget.getElement().getStyle().setOpacity(0);
         }
         return loaded;
