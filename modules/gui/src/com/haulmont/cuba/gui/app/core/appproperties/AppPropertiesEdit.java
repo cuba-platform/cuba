@@ -31,11 +31,11 @@ import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -69,9 +69,14 @@ public class AppPropertiesEdit extends AbstractWindow {
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Named("fieldGroup.displayedDefaultValue")
+    protected TextField displayedDefaultValueField;
+
     @Override
     public void init(Map<String, Object> params) {
         cannotEditValueLabel.setVisible(item.getOverridden());
+
+        Datatype datatype = Datatypes.get(item.getDataTypeName());
 
         fieldGroup.addCustomField("currentValue", (datasource, propertyId) -> {
             if (item.getOverridden()) {
@@ -83,7 +88,6 @@ public class AppPropertiesEdit extends AbstractWindow {
             if (item.getEnumValues() != null) {
                 return createLookupField(Arrays.asList(item.getEnumValues().split(",")), item.getCurrentValue());
             } else {
-                Datatype datatype = Datatypes.get(item.getDataTypeName());
                 if (datatype instanceof BooleanDatatype) {
                     return createLookupField(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString()), item.getCurrentValue());
                 } else {
@@ -105,6 +109,21 @@ public class AppPropertiesEdit extends AbstractWindow {
                 }
             }
         });
+
+        final Formatter<String> defaultValueFormatter = (value) -> {
+            if (datatype instanceof BooleanDatatype) {
+                return value;
+            }
+
+            try {
+                Object parsedDefaultValue = datatype.parse(value);
+                return datatype.format(parsedDefaultValue, userSessionSource.getLocale());
+            } catch (ParseException e) {
+                log.trace("Localized parsing by datatype cannot be used for value {}", value, e);
+            }
+            return value;
+        };
+        displayedDefaultValueField.setFormatter(defaultValueFormatter);
 
         appPropertyDs.setItem(metadata.getTools().copy(item));
     }
