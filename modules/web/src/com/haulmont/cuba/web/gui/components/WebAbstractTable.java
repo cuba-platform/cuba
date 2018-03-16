@@ -244,8 +244,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         if (columnId instanceof MetaPropertyPath) {
             PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerClient.NAME);
-            MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
-            String storeName = metadataTools.getStoreName(metaProperty.getDomain());
+            MetaPropertyPath propertyPath = (MetaPropertyPath) columnId;
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+            MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
+            String storeName = metadataTools.getStoreName(propertyMetaClass);
             if (metadataTools.isLob(metaProperty) && !persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
                 component.setColumnSortable(columnId, false);
             }

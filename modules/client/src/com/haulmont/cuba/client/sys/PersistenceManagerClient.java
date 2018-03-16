@@ -133,7 +133,7 @@ public class PersistenceManagerClient implements PersistenceManagerService {
 
     @Override
     public boolean supportsLobSortingAndFiltering(String storeName) {
-        return dbmsCache.computeIfAbsent(storeName, s -> {
+        return storeName == null || dbmsCache.computeIfAbsent(storeName, s -> {
             DbmsCacheEntry cacheEntry = new DbmsCacheEntry();
             cacheEntry.supportsLobSortingAndFiltering = service.supportsLobSortingAndFiltering(s);
             return cacheEntry;

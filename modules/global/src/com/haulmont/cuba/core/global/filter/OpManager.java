@@ -29,5 +29,5 @@ public interface OpManager {
 
     EnumSet<Op> availableOpsForCollectionDynamicAttribute();
 
-    EnumSet<Op> availableOps(MetaProperty metaProperty);
+    EnumSet<Op> availableOps(MetaClass metaClass, MetaProperty metaProperty);
 }

@@ -18,13 +18,14 @@
 package com.haulmont.cuba.gui.components.filter.descriptor;
 
 import com.google.common.base.Strings;
-import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -38,7 +39,7 @@ import java.util.EnumSet;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-@MetaClass(name = "sec$PropertyConditionDescriptor")
+@com.haulmont.chile.core.annotations.MetaClass(name = "sec$PropertyConditionDescriptor")
 @SystemLevel
 public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
     protected String entityParamWhere;
@@ -94,8 +95,16 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
 
     @Override
     public AbstractCondition createCondition() {
+        OpManager opManager = AppBeans.get(OpManager.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
         PropertyCondition propertyCondition = new PropertyCondition(this, entityAlias);
-        EnumSet<Op> ops = AppBeans.get(OpManager.class).availableOps(getMetaProperty());
+        MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
+        if (propertyPath == null) {
+            throw new IllegalStateException(String.format("Unable to find property '%s' in entity %s", name, datasourceMetaClass));
+        }
+        MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
+        EnumSet<Op> ops = opManager.availableOps(propertyMetaClass, propertyPath.getMetaProperty());
         propertyCondition.setOperator(ops.iterator().next());
         return propertyCondition;
     }

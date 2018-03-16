@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.Entity;
@@ -70,10 +71,10 @@ public class OpManagerImpl implements OpManager {
     }
 
     @Override
-    public EnumSet<Op> availableOps(MetaProperty metaProperty) {
+    public EnumSet<Op> availableOps(MetaClass metaClass, MetaProperty metaProperty) {
         Class javaClass = metaProperty.getJavaType();
         if (String.class.equals(javaClass) && metadataTools.isLob(metaProperty)) {
-            String storeName = metadata.getTools().getStoreName(metaProperty.getDomain());
+            String storeName = metadata.getTools().getStoreName(metaClass);
             PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerService.class);
             if (!persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
                 return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
