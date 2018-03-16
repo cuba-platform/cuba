@@ -17,12 +17,20 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.DragEndEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ComputedStyle;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VTabsheet;
+import com.vaadin.client.ui.dd.VDragAndDropManager;
 import com.vaadin.shared.ui.tabsheet.TabState;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
@@ -30,6 +38,29 @@ public class CubaTabSheetWidget extends VDDTabSheet {
 
     protected TabContextMenuHandler tabContextMenuHandler;
     protected CubaTabBar tabBar;
+
+    protected HandlerRegistration dragEndHandler;
+
+    public CubaTabSheetWidget() {
+        dragEndHandler = RootPanel.get().addBitlessDomHandler(event -> {
+            Element target = WidgetUtil.getElementUnderMouse(event.getNativeEvent());
+            if (target == null) {
+                VDragAndDropManager.get().interruptDrag();
+                return;
+            }
+
+            Node targetParent = DOM.asOld(target).getParentNode();
+            if (!getElement().isOrHasChild(targetParent)) {
+                VDragAndDropManager.get().interruptDrag();
+            }
+        }, DragEndEvent.getType());
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        dragEndHandler.removeHandler();
+    }
 
     @Override
     protected void onTabContextMenu(final int tabIndex, ContextMenuEvent event) {
