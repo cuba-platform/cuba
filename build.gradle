@@ -979,7 +979,7 @@ task aggregateJavadoc(type: Javadoc,
         group: 'Documentation') {
 
     destinationDir = file("$buildDir/docs/javadoc")
-    title = "${project.name.toUpperCase()} $cubaVersion API"
+    title = "${project.name.toUpperCase()} ${cubaVersion.replace('-SNAPSHOT','')} API"
 
     options.encoding = 'UTF-8'
     options.addStringOption("sourcepath", "")
