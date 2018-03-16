@@ -17,20 +17,17 @@
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * Operation editor for PropertyCondition. Displays popupButton component for selecting an operation.
@@ -46,14 +43,20 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
 
     @Override
     protected Component createComponent() {
+        OpManager opManager = AppBeans.get(OpManager.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
         componentsFactory = AppBeans.get(ComponentsFactory.class);
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
-        OpManager opManager = AppBeans.get(OpManager.class);
         MetaClass metaClass = condition.getDatasource().getMetaClass();
         MetaPropertyPath propertyPath = metaClass.getPropertyPath(condition.getName());
-        MetaProperty metaProperty = propertyPath != null ? propertyPath.getMetaProperty() : null;
-        for (Op op : opManager.availableOps(metaProperty)) {
+        if (propertyPath == null) {
+            throw new IllegalStateException(String.format("Unable to find property '%s' in entity %s",
+                    condition.getName(), metaClass));
+        }
+        MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
+        for (Op op : opManager.availableOps(propertyMetaClass, propertyPath.getMetaProperty())) {
             OperatorChangeAction operatorChangeAction = new OperatorChangeAction(op);
             popupButton.addAction(operatorChangeAction);
         }

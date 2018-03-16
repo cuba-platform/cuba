@@ -649,7 +649,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerClient.NAME);
         if (!range.isClass()) {
             // a scalar persistent attribute
-            String storeName = metadata.getTools().getStoreName(metaProperty.getDomain());
+            MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(propertyPath);
+            String storeName = metadata.getTools().getStoreName(propertyMetaClass);
             if (!metadata.getTools().isLob(metaProperty)
                     || persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
                 sortProperties = new String[1];
@@ -663,7 +664,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     sortProperties = properties.stream()
                             .filter(prop -> {
                                 if (metadata.getTools().isPersistent(prop)) {
-                                    String storeName = metadata.getTools().getStoreName(prop.getDomain());
+                                    String storeName = metadata.getTools().getStoreName(range.asClass());
                                     return !metadata.getTools().isLob(prop) ||
                                             persistenceManagerService.supportsLobSortingAndFiltering(storeName);
                                 }
