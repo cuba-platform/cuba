@@ -45,4 +45,11 @@ public @interface WebJarResource {
      * @return an array of WebJar resource identifiers
      */
     String[] value();
+
+    /**
+     * A path that will be used while resolving resource from a file system.
+     *
+     * @return override path
+     */
+    String overridePath() default "";
 }

@@ -29,24 +29,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webjars.WebJarAssetLocator;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CubaUidlWriter extends UidlWriter {
+
+    private static final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
+
     protected static final String JAVASCRIPT_EXTENSION = ".js";
     protected static final String CSS_EXTENSION = ".css";
     protected static final String VAADIN_PREFIX = "VAADIN/";
+    protected static final String VAADIN_WEBJARS_PREFIX = "/" + VAADIN_PREFIX + "webjars/";
     protected static final String META_INF_PREFIX = "META-INF/resources/";
 
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
-    private final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
-
     protected ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
+
+    protected WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
+
+    protected final ServletContext servletContext;
+
+    public CubaUidlWriter(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     @Override
     protected void writePerformanceData(UI ui, Writer writer) throws IOException {
@@ -72,11 +85,11 @@ public class CubaUidlWriter extends UidlWriter {
             if (webJarResource == null)
                 continue;
 
+            String overridePath = webJarResource.overridePath();
+
             for (String uri : webJarResource.value()) {
                 String resourceUri = processResourceUri(uri);
-                String resourcePath = getResourceActualPath(resourceUri);
-
-                resourcePath = resourcePath.replace(META_INF_PREFIX, VAADIN_PREFIX);
+                String resourcePath = getResourceActualPath(resourceUri, overridePath);
 
                 if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
                     scriptDependencies.add(manager.registerDependency(resourcePath, connector));
@@ -89,23 +102,51 @@ public class CubaUidlWriter extends UidlWriter {
         }
     }
 
-    protected String getResourceActualPath(String uri) {
+    protected String getResourceActualPath(String uri, String overridePath) {
         Matcher matcher = OLD_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
         }
 
         matcher = NEW_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
         }
 
         log.error("Malformed WebJar resource path: {}", uri);
         throw new RuntimeException("Malformed WebJar resource path: " + uri);
     }
 
-    protected String getWebJarResourcePath(String webJar, String resource) {
-        return new WebJarAssetLocator().getFullPath(webJar, resource);
+    protected String getWebJarResourcePath(String webJar, String resource, String overridePath) {
+        String staticResourcePath = getWebJarStaticResourcePath(overridePath, resource);
+        if (staticResourcePath != null && !staticResourcePath.isEmpty()) {
+            return staticResourcePath;
+        }
+
+        return webJarAssetLocator.getFullPath(webJar, resource)
+                .replace(META_INF_PREFIX, VAADIN_PREFIX);
+    }
+
+    protected String getWebJarStaticResourcePath(String overridePath, String resource) {
+        if (overridePath == null || overridePath.isEmpty()) {
+            return null;
+        }
+
+        if (!overridePath.endsWith("/")) {
+            overridePath += "/";
+        }
+
+        String resourcePath = overridePath + resource;
+        String path = VAADIN_WEBJARS_PREFIX + resourcePath;
+
+        URL resourceUrl = null;
+        try {
+            resourceUrl = servletContext.getResource(path);
+        } catch (MalformedURLException e) {
+            log.warn("Malformed path of static version of WebJar resource: {}", resourcePath, e);
+        }
+
+        return resourceUrl != null ? path.substring(1) : null;
     }
 
     protected String processResourceUri(String uri) {

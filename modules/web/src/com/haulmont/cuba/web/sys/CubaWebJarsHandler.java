@@ -24,6 +24,7 @@ import com.vaadin.server.VaadinSession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.webjars.WebJarAssetLocator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,7 @@ import java.net.URLConnection;
 import static org.apache.commons.io.IOUtils.copy;
 
 public class CubaWebJarsHandler implements RequestHandler {
+
     protected static final String VAADIN_WEBJARS_PREFIX = "/VAADIN/webjars/";
     protected static final String VAADIN_PREFIX = "/VAADIN/";
     protected static final String CLASSPATH_WEBJAR_PREFIX = "/META-INF/resources/";
@@ -43,8 +45,11 @@ public class CubaWebJarsHandler implements RequestHandler {
 
     protected ServletContext servletContext;
 
+    protected WebJarAssetLocator webJarAssetLocator;
+
     public CubaWebJarsHandler(ServletContext servletContext) {
         this.servletContext = servletContext;
+        this.webJarAssetLocator = new WebJarAssetLocator();
     }
 
     @Override

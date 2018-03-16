@@ -163,13 +163,15 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         List<RequestHandler> cubaRequestHandlers = new ArrayList<>();
 
+        final ServletContext servletContext = getServlet().getServletContext();
+
         for (RequestHandler handler : requestHandlers) {
             if (handler instanceof UidlRequestHandler) {
                 // replace UidlRequestHandler with CubaUidlRequestHandler
                 cubaRequestHandlers.add(new UidlRequestHandler() {
                     @Override
                     protected UidlWriter createUidlWriter() {
-                        return new CubaUidlWriter();
+                        return new CubaUidlWriter(servletContext);
                     }
                 });
             } else if (handler instanceof PublishedFileHandler) {
@@ -187,7 +189,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(handler);
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
             } else if (handler instanceof ServletUIInitHandler) {
-                cubaRequestHandlers.add(new CubaServletUIInitHandler());
+                cubaRequestHandlers.add(new CubaServletUIInitHandler(servletContext));
             } else if (handler instanceof PushRequestHandler) {
                 PushHandler pushHandler = ((PushRequestHandler) handler).getPushHandler();
                 pushHandler.setLongPollingSuspendTimeout(webConfig.getPushLongPollingSuspendTimeoutMs());
@@ -198,7 +200,7 @@ public class CubaVaadinServletService extends VaadinServletService {
             }
         }
 
-        cubaRequestHandlers.add(new CubaWebJarsHandler(getServlet().getServletContext()));
+        cubaRequestHandlers.add(new CubaWebJarsHandler(servletContext));
 
         return cubaRequestHandlers;
     }
@@ -359,7 +361,14 @@ public class CubaVaadinServletService extends VaadinServletService {
      * that use web resources from WebJars
      */
     protected static class CubaServletUIInitHandler extends ServletUIInitHandler {
-        private final Logger log = LoggerFactory.getLogger(CubaServletUIInitHandler.class);
+
+        private static final Logger log = LoggerFactory.getLogger(CubaServletUIInitHandler.class);
+
+        protected final ServletContext servletContext;
+
+        public CubaServletUIInitHandler(ServletContext servletContext) {
+            this.servletContext = servletContext;
+        }
 
         @Override
         protected String getInitialUidl(VaadinRequest request, UI uI) throws IOException {
@@ -372,7 +381,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                     writer.write(getSecurityKeyUIDL(session));
                 }
                 writer.write(getPushIdUIDL(session));
-                new CubaUidlWriter().write(uI, writer, false);
+                new CubaUidlWriter(servletContext).write(uI, writer, false);
                 writer.write("}");
 
                 String initialUIDL = writer.toString();
