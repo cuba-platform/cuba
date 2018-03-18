@@ -271,7 +271,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
                     throw e;
                 } catch (RuntimeException re) {
-                    log.error("Exception is thrown by authentication provider", re);
+                    // do not log exception with error level twice, should be handled in the invocation code
+                    log.debug("Exception is thrown by authentication provider", re);
 
                     InternalAuthenticationException ie =
                             new InternalAuthenticationException("Exception is thrown by authentication provider");
