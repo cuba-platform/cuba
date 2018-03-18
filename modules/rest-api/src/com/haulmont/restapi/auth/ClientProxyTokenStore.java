@@ -82,7 +82,7 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public OAuth2Authentication readAuthentication(OAuth2AccessToken token) {
-        return  readAuthentication(token.getValue());
+        return readAuthentication(token.getValue());
     }
 
     @Override
@@ -168,13 +168,17 @@ public class ClientProxyTokenStore implements TokenStore {
                     (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
 
+            if (Strings.isNullOrEmpty(username)) {
+                throw new IllegalStateException("Empty username extracted from user authentication details");
+            }
+
             Locale locale = sessionInfo != null ?
                     sessionInfo.getLocale() : null;
 
             TrustedClientCredentials credentials = new TrustedClientCredentials(username,
                     restApiConfig.getTrustedClientPassword(), locale);
             credentials.setClientType(ClientType.REST_API);
-            
+
             ServletRequestAttributes attributes =
                     (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
