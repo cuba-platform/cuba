@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.auth.providers;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PasswordEncryption;
@@ -49,14 +50,19 @@ public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationP
 
     @Override
     public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
-        checkUserCredentials(credentials);
-
         LoginPasswordCredentials loginAndPassword = (LoginPasswordCredentials) credentials;
 
         String login = loginAndPassword.getLogin();
 
         Locale credentialsLocale = loginAndPassword.getLocale() == null ?
                 messages.getTools().getDefaultLocale() : loginAndPassword.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            // empty login is not valid
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        checkUserCredentials(credentials);
 
         User user = loadUser(login);
         if (user == null) {

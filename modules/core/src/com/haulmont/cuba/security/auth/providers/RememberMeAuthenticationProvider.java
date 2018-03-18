@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.auth.providers;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.TypedQuery;
@@ -50,14 +51,19 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
 
     @Override
     public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
-        checkUserCredentials(credentials);
-
         RememberMeCredentials rememberMe = (RememberMeCredentials) credentials;
 
         String login = rememberMe.getLogin();
 
         Locale credentialsLocale = rememberMe.getLocale() == null ?
                 messages.getTools().getDefaultLocale() : rememberMe.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            // empty login is not valid
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        checkUserCredentials(credentials);
 
         User user = loadUser(login);
         if (user == null) {

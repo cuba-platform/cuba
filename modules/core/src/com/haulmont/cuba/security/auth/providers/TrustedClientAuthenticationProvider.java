@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.auth.providers;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.auth.*;
@@ -58,6 +59,10 @@ public class TrustedClientAuthenticationProvider extends AbstractAuthenticationP
 
         Locale credentialsLocale = trustedClient.getLocale() == null ?
                 messages.getTools().getDefaultLocale() : trustedClient.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
 
         User user = loadUser(login);
         if (user == null) {

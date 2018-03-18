@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.ldap;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
@@ -129,6 +130,11 @@ public class LdapAuthController implements InitializingBean {
 
     protected OAuth2AccessTokenResult authenticate(String username, String password, Locale locale,
                                                    String ipAddress, Map<String, String> parameters) {
+        if (Strings.isNullOrEmpty(username)) {
+            log.info("REST API authentication failed with empty login: {}", username, ipAddress);
+            throw new BadCredentialsException("Bad credentials");
+        }
+
         if (!ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(username), password)) {
             log.info("REST API authentication failed: {} {}", username, ipAddress);
             throw new BadCredentialsException("Bad credentials");
