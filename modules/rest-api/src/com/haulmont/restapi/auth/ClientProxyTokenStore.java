@@ -220,10 +220,6 @@ public class ClientProxyTokenStore implements TokenStore {
         return serverInfo;
     }
 
-    protected Locale getDefaultLocale() {
-        return globalConfig.getAvailableLocales().values().iterator().next();
-    }
-
     protected OAuth2AccessToken deserializeAccessToken(byte[] token) {
         return SerializationUtils.deserialize(token);
     }
