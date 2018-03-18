@@ -50,6 +50,9 @@ import static com.haulmont.restapi.auth.CubaUserAuthenticationProvider.SESSION_I
 
 public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements OAuthTokenIssuer {
 
+    protected static final String USERNAME_DETAILS_ATTRIBUTE = "username";
+    protected static final String GRANT_TYPE_DETAILS_ATTRIBUTE = "grant_type";
+
     protected static final String GRANT_TYPE = "external";
 
     private static final Logger log = LoggerFactory.getLogger(ExternalOAuthTokenGranter.class);
@@ -151,6 +154,8 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
             details = new HashMap<>();
         }
         details.put(SESSION_ID_DETAILS_ATTRIBUTE, sessionId);
+        details.put(USERNAME_DETAILS_ATTRIBUTE, externalPrincipal);
+        details.put(GRANT_TYPE_DETAILS_ATTRIBUTE, GRANT_TYPE);
         authentication.setDetails(details);
 
         return new OAuth2Authentication(storedOAuth2Request, authentication);

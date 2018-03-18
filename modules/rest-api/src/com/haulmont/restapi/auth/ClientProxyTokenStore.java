@@ -82,7 +82,7 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public OAuth2Authentication readAuthentication(OAuth2AccessToken token) {
-        return  readAuthentication(token.getValue());
+        return readAuthentication(token.getValue());
     }
 
     @Override
@@ -167,6 +167,10 @@ public class ClientProxyTokenStore implements TokenStore {
             Map<String, String> userAuthenticationDetails =
                     (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
+
+            if (Strings.isNullOrEmpty(username)) {
+                throw new IllegalStateException("Empty username extracted from user authentication details");
+            }
 
             Locale locale = sessionInfo != null ?
                     sessionInfo.getLocale() : null;
