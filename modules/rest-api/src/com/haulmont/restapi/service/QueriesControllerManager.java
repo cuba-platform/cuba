@@ -26,11 +26,9 @@ import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
@@ -75,6 +73,9 @@ public class QueriesControllerManager {
     @Inject
     protected RestParseUtils restParseUtils;
 
+    @Inject
+    protected UserSessionSource userSessionSource;
+
     public String executeQueryGet(String entityName,
                                   String queryName,
                                   @Nullable Integer limit,
@@ -100,7 +101,15 @@ public class QueriesControllerManager {
         return _executeQuery(entityName, queryName, limit, offset, viewName, returnNulls, dynamicAttributes, version, paramsMap);
     }
 
-    protected String _executeQuery(String entityName, String queryName, @Nullable Integer limit, @Nullable Integer offset, @Nullable String viewName, @Nullable Boolean returnNulls, @Nullable Boolean dynamicAttributes, @Nullable String version, Map<String, String> params) {
+    protected String _executeQuery(String entityName,
+                                   String queryName,
+                                   @Nullable Integer limit,
+                                   @Nullable Integer offset,
+                                   @Nullable String viewName,
+                                   @Nullable Boolean returnNulls,
+                                   @Nullable Boolean dynamicAttributes,
+                                   @Nullable String version,
+                                   Map<String, String> params) {
         LoadContext<Entity> ctx;
         entityName = restControllerUtils.transformEntityNameIfRequired(entityName, version, JsonTransformationDirection.FROM_VERSION);
         try {
@@ -200,6 +209,13 @@ public class QueriesControllerManager {
             Class<?> clazz = ClassUtils.forName(paramInfo.getType(), getClass().getClassLoader());
             Object objectParamValue = toObject(clazz, requestParamValue);
             query.setParameter(paramName, objectParamValue);
+        }
+
+        if (queryInfo.getJpql().contains(":session$userId")) {
+            query.setParameter("session$userId", userSessionSource.currentOrSubstitutedUserId());
+        }
+        if (queryInfo.getJpql().contains(":session$userLogin")) {
+            query.setParameter("session$userLogin", userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
         }
 
         ctx.setQuery(query);
