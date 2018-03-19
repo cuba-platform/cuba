@@ -102,4 +102,14 @@ public class AppPropertiesTest {
 
         Assert.assertArrayEquals(new String[] {"1.xml", "2.xml"}, locations);
     }
+
+    @Test
+    public void testSystemPropertyOverride() {
+        System.setProperty("prop1", "system_value");
+        try {
+            assertEquals("system_value", appProperties.getProperty("prop1"));
+        } finally {
+            System.setProperty("prop1", "");
+        }
+    }
 }
