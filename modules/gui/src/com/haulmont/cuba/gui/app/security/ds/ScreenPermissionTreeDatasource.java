@@ -25,41 +25,49 @@ import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.security.global.UserSession;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasource {
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
     protected Predicate<BasicPermissionTarget> screenFilter;
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
         Tree<BasicPermissionTarget> allPermissions = permissionConfig.getScreens(userSessionSource.getLocale());
-        return filterPermitted(allPermissions);
+        return new Tree<>(collectSuitableNodes(allPermissions.getRootNodes()));
     }
 
-    private Tree<BasicPermissionTarget> filterPermitted(Tree<BasicPermissionTarget> permissions) {
-        UserSession session = uss.getUserSession();
-        List<Node<BasicPermissionTarget>> newRootNodes = permissions.getRootNodes().stream()
-                .map(root -> filterNode(session, root))
-                .collect(Collectors.toCollection(LinkedList::new));
-        return new Tree<>(newRootNodes);
+    protected List<Node<BasicPermissionTarget>> collectSuitableNodes(List<Node<BasicPermissionTarget>> nodes) {
+        List<Node<BasicPermissionTarget>> suitableNodes = new ArrayList<>();
+
+        for (Node<BasicPermissionTarget> node : nodes) {
+            if (node.getChildren().isEmpty() && suitableNode(node)) {
+                suitableNodes.add(node);
+            } else {
+                List<Node<BasicPermissionTarget>> suitableChildren = collectSuitableNodes(node.getChildren());
+                if (permittedNode(node) && !suitableChildren.isEmpty()) {
+                    Node<BasicPermissionTarget> filteredNode = new Node<>(node.getData());
+                    filteredNode.setChildren(suitableChildren);
+                    suitableNodes.add(filteredNode);
+                }
+            }
+        }
+
+        return suitableNodes;
     }
 
-    private Node<BasicPermissionTarget> filterNode(UserSession session, Node<BasicPermissionTarget> rootNode) {
-        Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
-        rootNode.getChildren().stream()
-                .filter(child -> session.isScreenPermitted(child.getData().getPermissionValue()))
-                .filter(child -> !child.getChildren().isEmpty()
-                        || screenFilter == null
-                        || screenFilter.test(child.getData()))
-                .forEach(child -> filteredRootNode.addChild(filterNode(session, child)));
-        return filteredRootNode;
+    protected boolean permittedNode(Node<BasicPermissionTarget> node) {
+        return userSession.isScreenPermitted(node.getData().getPermissionValue());
+    }
+
+    protected boolean suitableNode(Node<BasicPermissionTarget> node) {
+        return permittedNode(node) &&
+                (screenFilter == null || screenFilter.test(node.getData()));
     }
 
     public void setFilter(Predicate<BasicPermissionTarget> filter) {
