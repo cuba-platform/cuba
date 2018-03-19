@@ -69,8 +69,8 @@
 
         <treeTable id="mbeans" editable="false" width="100%">
             <buttonsPanel>
-                <button action="mbeans.refresh" icon="theme://actions.Refresh.icon"/>
-                <button action="mbeans.inspect" icon="theme://actions.Edit.icon"/>
+                <button action="mbeans.refresh" icon="REFRESH_ACTION"/>
+                <button action="mbeans.inspect" icon="EDIT_ACTION"/>
             </buttonsPanel>
             <rowsCount/>
             <actions>
