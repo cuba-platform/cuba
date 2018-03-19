@@ -44,8 +44,8 @@
                         <action id="unlock" invoke="unlock" trackSelection="true" caption="msg://unlock"/>
                     </actions>
                     <buttonsPanel>
-                        <button action="locks.refresh" icon="theme://actions.Refresh.icon"/>
-                        <button action="locks.unlock" icon="theme://actions.Unlock.icon"/>
+                        <button action="locks.refresh" icon="REFRESH_ACTION"/>
+                        <button action="locks.unlock" icon="UNLOCK_ACTION"/>
                     </buttonsPanel>
                     <rowsCount/>
                     <columns>

@@ -50,7 +50,7 @@
             </buttonsPanel>
             <actions>
                 <action id="editValue" invoke="editValue" enable="false"
-                        caption="mainMsg://actions.Edit" icon="theme://actions.Edit.icon"/>
+                        caption="mainMsg://actions.Edit" icon="EDIT_ACTION"/>
                 <action id="refresh"/>
             </actions>
             <columns>
