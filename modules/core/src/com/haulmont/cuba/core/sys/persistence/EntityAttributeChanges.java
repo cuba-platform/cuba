@@ -16,13 +16,14 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.sessions.changesets.AggregateChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * INTERNAL. Accumulates changes in entity attributes.
@@ -30,17 +31,46 @@ import java.util.stream.Collectors;
 public class EntityAttributeChanges {
 
     private Set<Change> changes = new HashSet<>();
+    private Map<String, EntityAttributeChanges> embeddedChanges = new HashMap<>();
 
     public void addChanges(ObjectChangeSet changeSet) {
         if (changeSet == null)
             return;
         for (ChangeRecord changeRecord : changeSet.getChanges()) {
             changes.add(new Change(changeRecord.getAttribute(), changeRecord.getOldValue()));
+            if (changeRecord instanceof AggregateChangeRecord) {
+                embeddedChanges.computeIfAbsent(changeRecord.getAttribute(), s -> {
+                    EntityAttributeChanges embeddedChanges = new EntityAttributeChanges();
+                    embeddedChanges.addChanges(((AggregateChangeRecord) changeRecord).getChangedObject());
+                    return embeddedChanges;
+                });
+            }
         }
     }
 
-    public Set<String> getAttributes() {
+    /**
+     * @return changed attributes names for current entity
+     */
+    public Set<String> getOwnAttributes() {
         return changes.stream().map(change -> change.name).collect(Collectors.toSet());
+    }
+
+    /**
+     * @return changed attributes names for current entity and all embedded entities
+     */
+    public Set<String> getAttributes() {
+        Set<String> attributes = new HashSet<>();
+        for (Change change : changes) {
+            EntityAttributeChanges nestedChanges = embeddedChanges.get(change.name);
+            if (nestedChanges == null) {
+                attributes.add(change.name);
+            } else {
+                for (String attribute : nestedChanges.getAttributes()) {
+                    attributes.add(String.format("%s.%s", change.name, attribute));
+                }
+            }
+        }
+        return attributes;
     }
 
     @Nullable
@@ -48,6 +78,23 @@ public class EntityAttributeChanges {
         for (Change change : changes) {
             if (change.name.equals(attributeName))
                 return change.oldValue;
+        }
+        return null;
+    }
+
+    @Nullable
+    public Object getOldValueEx(String attributePath) {
+        String[] properties = attributePath.split("[.]");
+        if (properties.length == 1) {
+            for (Change change : changes) {
+                if (change.name.equals(attributePath))
+                    return change.oldValue;
+            }
+        } else {
+            EntityAttributeChanges nestedChanges = embeddedChanges.get(properties[0]);
+            if (nestedChanges != null) {
+               return nestedChanges.getOldValueEx(attributePath.substring(attributePath.indexOf(".") + 1));
+            }
         }
         return null;
     }

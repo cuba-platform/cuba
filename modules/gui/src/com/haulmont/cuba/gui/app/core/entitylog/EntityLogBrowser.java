@@ -281,8 +281,8 @@ public class EntityLogBrowser extends AbstractWindow {
         TreeMap<String, Object> options = new TreeMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
-                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-                String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+                String originalName = originalMetaClass.getName();
                 Class javaClass = metaClass.getJavaClass();
                 if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(javaClass)) {
                     continue;
@@ -328,7 +328,17 @@ public class EntityLogBrowser extends AbstractWindow {
                 enabledAttr = item.getAttributes();
             for (MetaProperty property : metaProperties) {
                 if (allowLogProperty(property, null)) {
-                    addAttribute(enabledAttr, property, editable);
+                    if (metadata.getTools().isEmbedded(property)) {
+                        MetaClass embeddedMetaClass = property.getRange().asClass();
+                        for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
+                            if (allowLogProperty(embeddedProperty, null)) {
+                                addAttribute(enabledAttr,
+                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), editable);
+                            }
+                        }
+                    } else {
+                        addAttribute(enabledAttr, property.getName(), editable);
+                    }
                 }
             }
             Collection<CategoryAttribute> attributes = dynamicAttributes.getAttributesForMetaClass(metaClass);
@@ -337,20 +347,20 @@ public class EntityLogBrowser extends AbstractWindow {
                     MetaPropertyPath propertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, categoryAttribute);
                     MetaProperty property = propertyPath.getMetaProperty();
                     if (allowLogProperty(property, categoryAttribute)) {
-                        addAttribute(enabledAttr, property, editable);
+                        addAttribute(enabledAttr, property.getName(), editable);
                     }
                 }
             }
         }
     }
 
-    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, MetaProperty property, boolean editable) {
+    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, boolean editable) {
         CheckBox checkBox = factory.createComponent(CheckBox.class);
-        if (enabledAttributes != null && isEntityHaveAttribute(property.getName(), enabledAttributes)) {
+        if (enabledAttributes != null && isEntityHaveAttribute(name, enabledAttributes)) {
             checkBox.setValue(true);
         }
-        checkBox.setId(property.getName());
-        checkBox.setCaption(property.getName());
+        checkBox.setId(name);
+        checkBox.setCaption(name);
         checkBox.setEditable(editable);
         checkBox.addValueChangeListener(e -> checkAllCheckboxes());
 
@@ -445,10 +455,10 @@ public class EntityLogBrowser extends AbstractWindow {
                 attributesBoxScroll.remove(c);
     }
 
-    public boolean isEntityHaveAttribute(String metaPropertyName, Set<LoggedAttribute> enabledAttr) {
-        if ((enabledAttr != null) && !systemAttrsList.contains(metaPropertyName)) {
+    public boolean isEntityHaveAttribute(String propertyName, Set<LoggedAttribute> enabledAttr) {
+        if (enabledAttr != null && !systemAttrsList.contains(propertyName)) {
             for (LoggedAttribute logAttr : enabledAttr)
-                if (logAttr.getName().equals(metaPropertyName))
+                if (logAttr.getName().equals(propertyName))
                     return true;
         }
         return false;

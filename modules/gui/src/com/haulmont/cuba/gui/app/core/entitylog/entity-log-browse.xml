@@ -133,7 +133,7 @@
                     <vbox id="entityLogAttrTableBox" width="100%" height="100%" margin="true" spacing="true">
                         <table id="entityLogAttrTable" width="100%" height="100%">
                             <columns>
-                                <column id="name" caption="msg://attribute"/>
+                                <column id="displayName" caption="msg://attribute"/>
                                 <column id="value" caption="msg://newValue"/>
                                 <column id="oldValue" caption="msg://oldValue"/>
                             </columns>

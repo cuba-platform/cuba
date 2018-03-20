@@ -18,10 +18,7 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
@@ -33,6 +30,9 @@ import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,11 +40,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
@@ -145,7 +147,7 @@ public class EntityLog implements EntityLogAPI {
                 properties.setProperty(attr.getName() + EntityLogAttr.OLD_VALUE_ID_SUFFIX, attr.getOldValueId());
             }
             if (attr.getMessagesPack() != null) {
-                properties.setProperty(attr.getName() + EntityLogAttr.MP_SUFFIX, attr.getMessagesPack() );
+                properties.setProperty(attr.getName() + EntityLogAttr.MP_SUFFIX, attr.getMessagesPack());
             }
         }
 
@@ -264,7 +266,6 @@ public class EntityLog implements EntityLogAPI {
             TypedQuery<LoggedEntity> q = em.createQuery(
                     "select e from sec$LoggedEntity e where e.auto = true or e.manual = true",
                     LoggedEntity.class);
-//            q.setView(null);
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
                 if (loggedEntity.getName() == null) {
@@ -293,7 +294,7 @@ public class EntityLog implements EntityLogAPI {
         MetaClass metaClass;
         if (entity instanceof CategoryAttributeValue) {
             CategoryAttribute categoryAttribute = ((CategoryAttributeValue) entity).getCategoryAttribute();
-            Preconditions.checkNotNullArgument(categoryAttribute,"Category attribute is null");
+            Preconditions.checkNotNullArgument(categoryAttribute, "Category attribute is null");
             metaClass = metadata.getClassNN(categoryAttribute.getCategoryEntityType());
         } else {
             metaClass = metadata.getSession().getClassNN(entity.getClass());
@@ -363,10 +364,10 @@ public class EntityLog implements EntityLogAPI {
         // filter attributes that do not exists in entity anymore
         return attributes.stream()
                 .filter(attributeName -> {
-                    if (DynamicAttributesUtils.isDynamicAttribute(attributeName)){
+                    if (DynamicAttributesUtils.isDynamicAttribute(attributeName)) {
                         return DynamicAttributesUtils.getMetaPropertyPath(metaClass, attributeName) != null;
                     } else {
-                        return metaClass.getProperty(attributeName) != null;
+                        return metaClass.getPropertyPath(attributeName) != null;
                     }
                 })
                 .collect(Collectors.toSet());
@@ -397,12 +398,8 @@ public class EntityLog implements EntityLogAPI {
         Date ts = timeSource.currentTimestamp();
         EntityManager em = persistence.getEntityManager();
 
-        Set<String> dirty;
-        if (changes == null) {
-            dirty = persistence.getTools().getDirtyFields(entity);
-        } else {
-            dirty = changes.getAttributes();
-        }
+        Set<String> dirty = changes == null ?
+                persistence.getTools().getDirtyFields(entity) : changes.getOwnAttributes();
         boolean registerDeleteOp = dirty.contains("deleteTs") && entity.isDeleted();
         boolean hasChanges = dirty.stream().anyMatch(s -> s.endsWith("Value"));
         if (hasChanges) {
@@ -492,17 +489,11 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void internalRegisterModify(Entity entity, @Nullable EntityAttributeChanges changes, MetaClass metaClass,
-                                          String storeName, Set<String> attributes) throws IOException {
+                                          String storeName, Set<String> attributes) {
         Date ts = timeSource.currentTimestamp();
         EntityManager em = persistence.getEntityManager();
 
-        Set<String> dirty;
-        if (changes == null) {
-            dirty = persistence.getTools().getDirtyFields(entity);
-        } else {
-            dirty = changes.getAttributes();
-        }
-
+        Set<String> dirty = calculateDirtyFields(entity, changes);
         Set<EntityLogAttr> entityLogAttrs;
         EntityLogItem.Type type;
         if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
@@ -511,13 +502,16 @@ public class EntityLog implements EntityLogAPI {
         } else {
             type = EntityLogItem.Type.MODIFY;
             Set<String> dirtyAttributes = new HashSet<>();
-            for (String attr : attributes) {
-                if (dirty.contains(attr)) {
-                    dirtyAttributes.add(attr);
+            for (String attributePath : attributes) {
+                MetaPropertyPath propertyPath = metaClass.getPropertyPath(attributePath);
+                Preconditions.checkNotNullArgument(propertyPath,
+                        "Property path %s isn't exists for type %s", attributePath, metaClass.getName());
+                if (dirty.contains(attributePath)) {
+                    dirtyAttributes.add(attributePath);
                 } else if (!Stores.getAdditional().isEmpty()) {
-                    String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
-                    if (idAttr != null && dirty.contains(idAttr)) {
-                        dirtyAttributes.add(attr);
+                    String idAttributePath = getIdAttributePath(propertyPath, storeName);
+                    if (idAttributePath != null && dirty.contains(idAttributePath)) {
+                        dirtyAttributes.add(attributePath);
                     }
                 }
             }
@@ -528,7 +522,7 @@ public class EntityLog implements EntityLogAPI {
             item.setEventTs(ts);
             item.setUser(findUser(em));
             item.setType(type);
-            item.setEntity(metaClass.getName());
+            item.setEntity(metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName());
             item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
             item.setAttributes(entityLogAttrs);
 
@@ -537,7 +531,7 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected Set<EntityLogAttr> createLogAttributes(Entity entity, Set<String> attributes,
-                                                   @Nullable EntityAttributeChanges changes) {
+                                                     @Nullable EntityAttributeChanges changes) {
         Set<EntityLogAttr> result = new HashSet<>();
         for (String name : attributes) {
             if (DynamicAttributesUtils.isDynamicAttribute(name)) {
@@ -546,7 +540,7 @@ public class EntityLog implements EntityLogAPI {
             EntityLogAttr attr = metadata.create(EntityLogAttr.class);
             attr.setName(name);
 
-            String value = stringify(entity.getValue(name));
+            String value = stringify(entity.getValueEx(name));
             attr.setValue(value);
 
             Object valueId = getValueId(value);
@@ -554,7 +548,7 @@ public class EntityLog implements EntityLogAPI {
                 attr.setValueId(valueId.toString());
 
             if (changes != null) {
-                Object oldValue = changes.getOldValue(name);
+                Object oldValue = changes.getOldValueEx(name);
                 attr.setOldValue(stringify(oldValue));
                 Object oldValueId = getValueId(oldValue);
                 if (oldValueId != null) {
@@ -562,11 +556,13 @@ public class EntityLog implements EntityLogAPI {
                 }
             }
 
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            String mp = messageTools.inferMessagePack(name, entity);
-            if (mp != null)
-                attr.setMessagesPack(mp);
-
+            if (entity.getMetaClass().getProperty(name) != null) {
+                //skip embedded properties
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                String mp = messageTools.inferMessagePack(name, entity);
+                if (mp != null)
+                    attr.setMessagesPack(mp);
+            }
             result.add(attr);
         }
         return result;
@@ -748,6 +744,34 @@ public class EntityLog implements EntityLogAPI {
         if (fieldName != null) {
             return changes != null ? changes.getOldValue(fieldName) :
                     persistenceTools.getOldValue(attributeValue, fieldName);
+        }
+        return null;
+    }
+
+    protected Set<String> calculateDirtyFields(Entity entity, EntityAttributeChanges changes) {
+        if (changes == null) {
+            if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+                return Collections.emptySet();
+            PropertyChangeListener propertyChangeListener = ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
+            if (propertyChangeListener == null)
+                throw new IllegalStateException("Entity '" + entity + "' is a ChangeTracker but has no PropertyChangeListener");
+            changes = new EntityAttributeChanges();
+            ObjectChangeSet objectChanges = ((AttributeChangeListener) propertyChangeListener).getObjectChangeSet();
+            if (objectChanges != null) {
+                changes.addChanges(objectChanges);
+            }
+        }
+        return changes.getAttributes();
+    }
+
+    protected String getIdAttributePath(MetaPropertyPath propertyPath, String storeName) {
+        String idAttribute = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, propertyPath.getMetaProperty());
+        if (idAttribute != null) {
+            List<String> parts = Stream.of(propertyPath.getMetaProperties())
+                    .map(MetaProperty::getName)
+                    .collect(Collectors.toList());
+            parts.set(parts.size() - 1, idAttribute);
+            return String.join(".", parts);
         }
         return null;
     }

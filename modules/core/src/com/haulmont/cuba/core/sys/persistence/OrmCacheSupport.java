@@ -57,7 +57,7 @@ public class OrmCacheSupport {
             // the inverse property is a collection
             if (metadata.getTools().isCacheable(property.getRange().asClass())) {
                 if (changes != null) {
-                    for (String attributeName : changes.getAttributes()) {
+                    for (String attributeName : changes.getOwnAttributes()) {
                         if (property.getName().equals(attributeName)) {
                             evictEntity(changes.getOldValue(attributeName));
                             break;
