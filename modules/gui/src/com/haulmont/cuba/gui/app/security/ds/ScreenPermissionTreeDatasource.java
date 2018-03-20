@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.config.PermissionConfig;
-import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+    protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
     protected Predicate<BasicPermissionTarget> screenFilter;
 
     @Override
