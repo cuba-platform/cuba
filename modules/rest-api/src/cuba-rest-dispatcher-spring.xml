@@ -181,11 +181,22 @@
         <csrf disabled="true"/>
         <cors configuration-source-ref="cuba_RestCorsSource"/>
 
-        <custom-filter ref="requestContextFilter" before="FIRST"/>
+        <custom-filter ref="firstRestEndpointFilter" before="FIRST"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_RestLastSecurityFilter" position="LAST"/>
     </security:http>
+
+    <bean id="firstRestEndpointFilter" class="org.springframework.web.filter.CompositeFilter">
+        <property name="filters">
+            <list>
+                <ref bean="cuba_RestExceptionLoggingFilter"/>
+                <ref bean="requestContextFilter"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.restapi.sys.RestExceptionLoggingFilter"/>
 
     <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.restapi.auth.CubaAnonymousAuthenticationFilter"/>
 
