@@ -186,6 +186,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected EditAction editAction;
     protected MakeDefaultAction makeDefaultAction;
     protected RemoveAction removeAction;
+    protected ClearValuesAction clearValuesAction;
     protected PinAppliedAction pinAppliedAction;
     protected SaveAsFolderAction saveAsAppFolderAction;
     protected SaveAsFolderAction saveAsSearchFolderAction;
@@ -691,6 +692,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         pinAppliedAction = new PinAppliedAction();
         saveAsAppFolderAction = new SaveAsFolderAction(true);
         saveAsSearchFolderAction = new SaveAsFolderAction(false);
+        clearValuesAction = new ClearValuesAction();
         filterActionsCreated = true;
     }
 
@@ -2374,6 +2376,25 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
+    /**
+     * Action clears values of all visible filter conditions
+     */
+    protected class ClearValuesAction extends AbstractAction {
+
+        protected ClearValuesAction() {
+            super("filter.clearValues");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            for (AbstractCondition condition : conditions.toConditionsList()) {
+                if (!Boolean.TRUE.equals(condition.getHidden()) && condition.getParam() != null) {
+                    condition.getParam().setValue(null);
+                }
+            }
+        }
+    }
+
     protected void removeFilterEntity() {
         CommitContext ctx = new CommitContext(Collections.emptyList(), Collections.singletonList(filterEntity));
         dataService.commit(ctx);
@@ -2579,6 +2600,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             filterActions.put("save_search_folder", saveAsSearchFolderAction);
             filterActions.put("save_app_folder", saveAsAppFolderAction);
             filterActions.put("make_default", makeDefaultAction);
+            filterActions.put("clear_values", clearValuesAction);
         }
 
         protected void parseLayoutDescription(String layoutDescription) {
