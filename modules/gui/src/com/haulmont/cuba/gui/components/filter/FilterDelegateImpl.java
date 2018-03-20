@@ -322,9 +322,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         createFilterActions();
 
         createMaxResultsLayout();
-        createFtsSwitch();
-        ftsSwitch.setAlignment(Alignment.MIDDLE_RIGHT);
-        filterHelper.setInternalDebugId(ftsSwitch, "ftsSwitch");
+        if (isFtsModeEnabled()) {
+            createFtsSwitch();
+            ftsSwitch.setAlignment(Alignment.MIDDLE_RIGHT);
+            filterHelper.setInternalDebugId(ftsSwitch, "ftsSwitch");
+        }
 
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
         ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
@@ -401,7 +403,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public void switchFilterMode(FilterMode filterMode) {
-        if (filterMode == FilterMode.FTS_MODE && !isFtsModeEnabled()) {
+        if (filterMode == FilterMode.FTS_MODE && !isFtsModeEnabled() && !isEntityAvailableForFts()) {
             log.warn("Unable to switch to the FTS filter mode. FTS mode is not supported for the {} entity",
                     datasource.getMetaClass().getName());
             return;
@@ -421,6 +423,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             addConditionBtn.setVisible(editable && userCanEditFilers());
             setFilterActionsEnabled();
             initFilterSelectComponents();
+            if (ftsSwitch != null && !isEntityAvailableForFts()) {
+                controlsLayout.remove(ftsSwitch);
+            }
         }
         if (paramEditComponentToFocus != null)
             requestFocusToParamEditComponent();
@@ -1329,7 +1334,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             initMaxResults();
         }
 
-        if (!isFtsModeEnabled()) {
+        if (ftsSwitch != null && !isEntityAvailableForFts()) {
             controlsLayout.remove(ftsSwitch);
         }
     }
@@ -1383,9 +1388,12 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected boolean isFtsModeEnabled() {
-        return FtsConfigHelper.getEnabled()
+        return FtsConfigHelper.getEnabled();
+    }
+
+    protected boolean isEntityAvailableForFts() {
+        return datasource != null
                 && ftsFilterHelper != null
-                && datasource != null
                 && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName())
                 && Stores.isMain(metadata.getTools().getStoreName(datasource.getMetaClass()));
     }
@@ -1976,7 +1984,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setModeSwitchVisible(boolean modeSwitchVisible) {
         this.modeSwitchVisible = modeSwitchVisible;
-        ftsSwitch.setVisible(modeSwitchVisible && isFtsModeEnabled());
+        if (ftsSwitch != null) {
+            ftsSwitch.setVisible(modeSwitchVisible && isFtsModeEnabled() && isEntityAvailableForFts());
+        }
     }
 
     @Override
