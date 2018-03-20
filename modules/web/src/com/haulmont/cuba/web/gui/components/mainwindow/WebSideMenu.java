@@ -191,7 +191,17 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         if (ui == null || !ui.isTestMode())
             return;
 
+        assignCubaIdInternal(menuItem);
+    }
+
+    protected void assignCubaIdInternal(MenuItem menuItem) {
         ((MenuItemImpl) menuItem).setCubaId(menuItem.getId());
+
+        if (menuItem.hasChildren()) {
+            for (MenuItem item : menuItem.getChildren()) {
+                assignCubaIdInternal(item);
+            }
+        }
     }
 
     @Override
