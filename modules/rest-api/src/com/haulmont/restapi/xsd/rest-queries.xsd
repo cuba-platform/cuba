@@ -37,6 +37,7 @@
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="entity" type="xs:string" use="required"/>
         <xs:attribute name="view" type="xs:string" use="required"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="paramsType">

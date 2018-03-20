@@ -218,6 +218,7 @@ public class QueriesControllerManager {
             query.setParameter("session$userLogin", userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
         }
 
+        query.setCacheable(queryInfo.isCacheable());
         ctx.setQuery(query);
         ctx.setView(queryInfo.getViewName());
         return ctx;
