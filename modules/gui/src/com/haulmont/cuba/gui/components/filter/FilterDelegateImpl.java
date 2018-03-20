@@ -1701,6 +1701,17 @@ public class FilterDelegateImpl implements FilterDelegate {
             Boolean expanded = Boolean.valueOf(groupBoxExpandedEl.getText());
             groupBoxLayout.setExpanded(expanded);
         }
+
+        Element maxResultsEl = element.element("maxResults");
+        if (maxResultsEl != null && isMaxResultsLayoutVisible()) {
+            try {
+                Integer maxResultsFromSettings = Integer.valueOf(maxResultsEl.getText());
+                datasource.setMaxResults(maxResultsFromSettings);
+                initMaxResults();
+            } catch (NumberFormatException ex) {
+                log.error("Error on parsing maxResults setting value", ex);
+            }
+        }
     }
 
     @Override
@@ -1756,6 +1767,23 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (!Objects.equals(oldGroupBoxExpandedValue, newGroupBoxExpandedValue)) {
             groupBoxExpandedEl.setText(newGroupBoxExpandedValue.toString());
             changed = true;
+        }
+
+        if (isMaxResultsLayoutVisible()) {
+            Element maxResultsEl = element.element("maxResults");
+            if (maxResultsEl == null)
+                maxResultsEl = element.addElement("maxResults");
+            try {
+                Integer oldMaxResultsValue = !Strings.isNullOrEmpty(maxResultsEl.getText()) ?
+                        Integer.valueOf(maxResultsEl.getText()) : null;
+                Integer newMaxResultsValue = maxResultsField.getValue();
+                if (!Objects.equals(oldMaxResultsValue, newMaxResultsValue)) {
+                    maxResultsEl.setText(newMaxResultsValue.toString());
+                    changed = true;
+                }
+            } catch (NumberFormatException ex) {
+                log.error("Error on parsing maxResults setting value", ex);
+            }
         }
 
         return changed;
