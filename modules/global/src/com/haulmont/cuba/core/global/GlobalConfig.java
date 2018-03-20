@@ -190,13 +190,6 @@ public interface GlobalConfig extends Config {
     UUID getAnonymousSessionId();
 
     /**
-     * @return anonymous access to REST API is allowed
-     */
-    @Property("cuba.rest.anonymousEnabled")
-    @DefaultBoolean(false)
-    boolean getRestAnonymousEnabled();
-
-    /**
      * @return response of the HTTP GET request on the health check URL
      */
     @Property("cuba.healthCheckResponse")

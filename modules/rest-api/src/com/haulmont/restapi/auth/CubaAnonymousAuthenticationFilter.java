@@ -16,7 +16,6 @@
 
 package com.haulmont.restapi.auth;
 
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.TrustedClientService;
@@ -34,16 +33,13 @@ import java.io.IOException;
 
 /**
  * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and
- * if {@link GlobalConfig#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the
+ * if {@link RestApiConfig#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the
  * {@link SecurityContext} and the request will be authenticated. This filter must be invoked after the
  * {@link org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter}
  */
 public class CubaAnonymousAuthenticationFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
-
-    @Inject
-    protected GlobalConfig globalConfig;
 
     @Inject
     protected RestApiConfig restApiConfig;
@@ -59,7 +55,7 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (globalConfig.getRestAnonymousEnabled()) {
+        if (restApiConfig.getRestAnonymousEnabled()) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserSession anonymousSession;
                 try {

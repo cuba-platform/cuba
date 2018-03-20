@@ -51,4 +51,11 @@ public interface RestApiConfig extends Config {
     @Property("cuba.rest.standardAuthenticationUsers")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getStandardAuthenticationUsers();
+
+    /**
+     * @return anonymous access to REST API is allowed
+     */
+    @Property("cuba.rest.anonymousEnabled")
+    @DefaultBoolean(false)
+    boolean getRestAnonymousEnabled();
 }
