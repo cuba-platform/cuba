@@ -55,7 +55,7 @@ public class ConfigSetter extends ConfigAccessorMethod {
      * filed value.
      */
     @Override
-    public Object invoke(ConfigHandler handler, Object[] args) {
+    public Object invoke(ConfigHandler handler, Object[] args, Object proxy) {
         setProperty(handler.getPersister(), args[0]);
         return null;
     }
@@ -90,6 +90,7 @@ public class ConfigSetter extends ConfigAccessorMethod {
             Class returnType = method.getReturnType();
             Class[] parameterTypes = method.getParameterTypes();
             return ConfigUtil.SET_RE.matcher(methodName).matches() &&
+                    !method.isDefault() &&
                     Void.TYPE.equals(returnType) &&
                     (parameterTypes.length == 1);
         }

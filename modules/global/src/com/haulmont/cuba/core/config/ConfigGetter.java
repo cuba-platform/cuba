@@ -60,7 +60,7 @@ public class ConfigGetter extends ConfigAccessorMethod {
      * run-time default value was specified.
      */
     @Override
-    public Object invoke(ConfigHandler handler, Object[] args) {
+    public Object invoke(ConfigHandler handler, Object[] args, Object proxy) {
         ConfigPersister configuration = handler.getPersister();
         String str;
         if ((args == null) || (args.length == 0)) {
@@ -134,6 +134,7 @@ public class ConfigGetter extends ConfigAccessorMethod {
             Class returnType = method.getReturnType();
             Class[] parameterTypes = method.getParameterTypes();
             return ConfigUtil.GET_RE.matcher(methodName).matches() &&
+                    !method.isDefault() &&
                     !Void.TYPE.equals(returnType) &&
                     (Boolean.TYPE.equals(returnType) || methodName.startsWith("get")) &&
                     ((parameterTypes.length == 0) ||

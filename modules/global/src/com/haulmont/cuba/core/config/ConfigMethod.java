@@ -36,9 +36,10 @@ public abstract class ConfigMethod {
      *
      * @param handler The handler.
      * @param args    The method arguments.
+     * @param proxy   The dynamic proxy created for the configuration interface.
      * @return The method result.
      */
-    public abstract Object invoke(ConfigHandler handler, Object[] args);
+    public abstract Object invoke(ConfigHandler handler, Object[] args, Object proxy);
 
     /**
      * Interface describing a configuration method factory.

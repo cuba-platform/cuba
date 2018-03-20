@@ -45,7 +45,7 @@ public class ConfigMethods {
      * Supported configuration method factories.
      */
     private static final ConfigMethod.Factory[] CONFIG_METHOD_FACTORIES = {
-            ConfigGetter.FACTORY, ConfigSetter.FACTORY
+            ConfigGetter.FACTORY, ConfigSetter.FACTORY, ConfigDefaultMethod.FACTORY
     };
 
     /**
