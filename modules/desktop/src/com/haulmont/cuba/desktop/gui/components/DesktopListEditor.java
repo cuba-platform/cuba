@@ -44,7 +44,7 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
 
     @Override
     public void setValue(Object newValue) {
-        if (!(newValue instanceof List)) {
+        if (newValue != null && !(newValue instanceof List)) {
             throw new IllegalArgumentException("Value type must be List");
         }
         delegate.setValue((List) newValue);
