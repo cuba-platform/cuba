@@ -2198,6 +2198,8 @@
         <xs:attribute name="mask" type="xs:string"/>
         <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
 
+        <xs:attribute name="inputPrompt" type="resourceString"/>
+
         <!-- Show entity reference as clickable link -->
         <xs:attribute name="link" type="xs:boolean"/>
         <xs:attribute name="linkScreen" type="xs:string"/>

@@ -467,6 +467,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             field.setTabIndex(Integer.parseInt(tabIndex));
         }
 
+        loadInputPrompt(field, element);
+
         if (customElements.size() == 1) {
             // load nested component defined as inline
             Element customFieldElement = customElements.get(0);

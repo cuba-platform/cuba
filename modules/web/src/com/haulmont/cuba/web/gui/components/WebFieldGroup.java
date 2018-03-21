@@ -321,6 +321,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
                 // we check empty for description since Vaadin components have "" description by default
                 cubaField.setDescription(fci.getTargetDescription());
             }
+            if (cubaField instanceof HasInputPrompt && fci.getTargetInputPrompt() != null) {
+                ((HasInputPrompt) cubaField).setInputPrompt(fci.getTargetInputPrompt());
+            }
             if (fci.getTargetRequired() != null) {
                 cubaField.setRequired(fci.getTargetRequired());
             }
@@ -826,6 +829,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         protected String targetDescription;
         protected String targetContextHelpText;
         protected Boolean targetContextHelpTextHtmlEnabled;
+        protected String targetInputPrompt;
         protected Formatter targetFormatter;
         protected boolean isTargetCustom;
 
@@ -1219,6 +1223,23 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         @Override
+        public String getInputPrompt() {
+            if (component instanceof HasInputPrompt) {
+                return ((HasInputPrompt) component).getInputPrompt();
+            }
+            return targetInputPrompt;
+        }
+
+        @Override
+        public void setInputPrompt(String inputPrompt) {
+            if (component instanceof HasInputPrompt) {
+                ((HasInputPrompt) component).setInputPrompt(inputPrompt);
+            } else {
+                this.targetInputPrompt = inputPrompt;
+            }
+        }
+
+        @Override
         public String getContextHelpText() {
             if (component instanceof Field) {
                 return ((Field) component).getContextHelpText();
@@ -1481,6 +1502,14 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
         public void setTargetDescription(String targetDescription) {
             this.targetDescription = targetDescription;
+        }
+
+        public String getTargetInputPrompt() {
+            return targetInputPrompt;
+        }
+
+        public void setTargetInputPrompt(String targetInputPrompt) {
+            this.targetInputPrompt = targetInputPrompt;
         }
 
         public Formatter getTargetFormatter() {

@@ -521,6 +521,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             if (fci.getTargetDescription() != null) {
                 cubaField.setDescription(fci.getTargetDescription());
             }
+            if (cubaField instanceof HasInputPrompt && fci.getTargetInputPrompt() != null) {
+                ((HasInputPrompt) cubaField).setInputPrompt(fci.getTargetInputPrompt());
+            }
             if (fci.getTargetRequired() != null) {
                 cubaField.setRequired(fci.getTargetRequired());
             }
@@ -1103,6 +1106,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         protected String targetDescription;
         protected String targetContextHelpText;
         protected Boolean targetContextHelpTextHtmlEnabled;
+        protected String targetInputPrompt;
         protected Formatter targetFormatter;
         protected boolean isTargetCustom;
 
@@ -1533,6 +1537,23 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         }
 
         @Override
+        public String getInputPrompt() {
+            if (component instanceof HasInputPrompt) {
+                return ((HasInputPrompt) component).getInputPrompt();
+            }
+            return targetInputPrompt;
+        }
+
+        @Override
+        public void setInputPrompt(String inputPrompt) {
+            if (component instanceof HasInputPrompt) {
+                ((HasInputPrompt) component).setInputPrompt(inputPrompt);
+            } else {
+                this.targetInputPrompt = inputPrompt;
+            }
+        }
+
+        @Override
         public Formatter getFormatter() {
             if (component instanceof HasFormatter) {
                 return ((HasFormatter) component).getFormatter();
@@ -1731,6 +1752,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
         public void setTargetDescription(String targetDescription) {
             this.targetDescription = targetDescription;
+        }
+
+        public String getTargetInputPrompt() {
+            return targetInputPrompt;
+        }
+
+        public void setTargetInputPrompt(String targetInputPrompt) {
+            this.targetInputPrompt = targetInputPrompt;
         }
 
         public Formatter getTargetFormatter() {
