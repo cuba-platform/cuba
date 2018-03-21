@@ -18,6 +18,7 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.DatatypeRegistryImpl;
 import com.haulmont.cuba.core.sys.MetadataImpl;
 import com.haulmont.cuba.core.sys.MetadataLoader;
@@ -29,7 +30,7 @@ public class TestMetadataClient extends MetadataImpl {
 
     protected Map<String, List<String>> packages;
 
-    public TestMetadataClient(Map<String, List<String>> packages, TestViewRepositoryClient viewRepository) {
+    public TestMetadataClient(Map<String, List<String>> packages, TestViewRepositoryClient viewRepository, GlobalConfig globalConfig) {
         this.packages = packages;
 
         this.viewRepository = viewRepository;
@@ -38,6 +39,8 @@ public class TestMetadataClient extends MetadataImpl {
         extendedEntities = new ExtendedEntities(this);
         tools = new TestMetadataTools(this);
         datatypeRegistry = new DatatypeRegistryImpl();
+
+        config = globalConfig;
     }
 
     @Override
