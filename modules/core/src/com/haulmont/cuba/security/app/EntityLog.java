@@ -17,7 +17,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -540,7 +540,7 @@ public class EntityLog implements EntityLogAPI {
             EntityLogAttr attr = metadata.create(EntityLogAttr.class);
             attr.setName(name);
 
-            String value = stringify(entity.getValueEx(name));
+            String value = stringify(entity.getValueEx(name), entity.getMetaClass().getProperty(name));
             attr.setValue(value);
 
             Object valueId = getValueId(value);
@@ -549,7 +549,7 @@ public class EntityLog implements EntityLogAPI {
 
             if (changes != null) {
                 Object oldValue = changes.getOldValueEx(name);
-                attr.setOldValue(stringify(oldValue));
+                attr.setOldValue(stringify(oldValue, entity.getMetaClass().getProperty(name)));
                 Object oldValueId = getValueId(oldValue);
                 if (oldValueId != null) {
                     attr.setOldValueId(oldValueId.toString());
@@ -573,8 +573,10 @@ public class EntityLog implements EntityLogAPI {
         EntityLogAttr attr = metadata.create(EntityLogAttr.class);
         attr.setName(DynamicAttributesUtils.encodeAttributeCode(entity.getCode()));
 
+        MetaProperty valueMetaProperty = entity.getMetaClass().getProperty(getCategoryAttributeValueName(entity));
+
         Object value = entity.getValue();
-        attr.setValue(stringify(value));
+        attr.setValue(stringify(value, valueMetaProperty));
 
         Object valueId = getValueId(value);
         if (valueId != null)
@@ -582,7 +584,7 @@ public class EntityLog implements EntityLogAPI {
 
         if (changes != null || registerDeleteOp) {
             Object oldValue = getOldCategoryAttributeValue(entity, changes);
-            attr.setOldValue(stringify(oldValue));
+            attr.setOldValue(stringify(oldValue, valueMetaProperty));
             Object oldValueId = getValueId(oldValue);
             if (oldValueId != null) {
                 attr.setOldValueId(oldValueId.toString());
@@ -697,18 +699,19 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    protected String stringify(Object value) {
+    protected String stringify(Object value, MetaProperty metaProperty) {
         if (value == null)
             return "";
         else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
-            return Datatypes.getNN(value.getClass()).format(value);
+            Datatype datatype = metaProperty.getRange().asDatatype();
+            return datatype.format(value);
         } else if (value instanceof Iterable) {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (Object obj : (Iterable) value) {
-                sb.append(stringify(obj)).append(",");
+                sb.append(stringify(obj, metaProperty)).append(",");
             }
             if (sb.length() > 1)
                 sb.deleteCharAt(sb.length() - 1);
@@ -774,6 +777,31 @@ public class EntityLog implements EntityLogAPI {
             return String.join(".", parts);
         }
         return null;
+    }
+
+    protected String getCategoryAttributeValueName(CategoryAttributeValue attributeValue) {
+        CategoryAttribute categoryAttribute = attributeValue.getCategoryAttribute();
+        String fieldName = null;
+        switch (categoryAttribute.getDataType()) {
+            case DATE:
+                fieldName = "dateValue";
+                break;
+            case ENUMERATION:
+            case STRING:
+                fieldName = "stringValue";
+                break;
+            case INTEGER:
+                fieldName = "intValue";
+                break;
+            case DOUBLE:
+                fieldName = "doubleValue";
+                break;
+            case BOOLEAN:
+                fieldName = "booleanValue";
+                break;
+        }
+
+        return fieldName;
     }
 
     protected void logError(Entity entity, Exception e) {
