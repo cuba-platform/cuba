@@ -227,4 +227,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.logIncorrectWebAppPropertiesEnabled")
     @DefaultBoolean(true)
     boolean getLogIncorrectWebAppPropertiesEnabled();
+
+    /**
+     * @return whether to generate identifiers for entities located in additional data stores
+     */
+    @Property("cuba.enableIdGenerationForEntitiesInAdditionalDataStores")
+    @DefaultBoolean(true)
+    boolean getEnableIdGenerationForEntitiesInAdditionalDataStores();
 }

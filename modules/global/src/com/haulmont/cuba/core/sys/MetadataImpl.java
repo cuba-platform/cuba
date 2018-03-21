@@ -72,6 +72,9 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected ApplicationContext applicationContext;
 
+    @Inject
+    protected GlobalConfig config;
+
     protected List<String> rootPackages = new ArrayList<>();
 
     @EventListener(AppContextInitializedEvent.class)
@@ -147,11 +150,17 @@ public class MetadataImpl implements Metadata {
             Entity key = create(primaryKeyProperty.getRange().asClass());
             ((BaseGenericIdEntity) entity).setId(key);
 
-        } else if (tools.isPersistent(metaClass)) {
-            if (entity instanceof BaseLongIdEntity) {
-                ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(getEntityNameForIdGeneration(metaClass)));
-            } else if (entity instanceof BaseIntegerIdEntity) {
-                ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(getEntityNameForIdGeneration(metaClass)));
+        } else {
+            if (!config.getEnableIdGenerationForEntitiesInAdditionalDataStores()
+                    && !Stores.MAIN.equals(tools.getStoreName(metaClass))) {
+                return;
+            }
+            if (tools.isPersistent(metaClass)) {
+                if (entity instanceof BaseLongIdEntity) {
+                    ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(getEntityNameForIdGeneration(metaClass)));
+                } else if (entity instanceof BaseIntegerIdEntity) {
+                    ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(getEntityNameForIdGeneration(metaClass)));
+                }
             }
         }
     }
