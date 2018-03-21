@@ -162,7 +162,7 @@ public class CubaClientTestCase {
             }
         };
         viewRepository = new TestViewRepositoryClient(viewConfig);
-        metadata = new TestMetadataClient(entityPackages, viewRepository);
+        metadata = new TestMetadataClient(entityPackages, viewRepository, globalConfig);
         userSessionSource = new TestUserSessionSource();
         uuidSource = new TestUuidSource();
 
