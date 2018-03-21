@@ -823,7 +823,20 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasIcon">
-        <xs:attribute name="icon" type="xs:string"/>
+        <xs:attribute name="icon" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    <![CDATA[
+                        Allows to set an icon for the component.
+
+                        Available prefixes:
+                        1. "theme:" - an icon will be served from the current theme directory
+                        2. "file:" - an icon will be served from the file system
+                        3. "classpath:" - an icon will be served from classpath
+                    ]]>
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasWidthProp">

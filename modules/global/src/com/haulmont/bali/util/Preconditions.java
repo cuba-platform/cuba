@@ -29,6 +29,55 @@ public final class Preconditions {
     }
 
     /**
+     * Ensures that a string passed as a parameter to the calling method is not empty.
+     *
+     * @param value string value
+     * @throws IllegalArgumentException if {@code value} is empty
+     */
+    public static void checkNotEmptyString(String value) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("An empty string passed as parameter");
+        }
+    }
+
+    /**
+     * Ensures that a string passed as a parameter to the calling method is not empty.
+     *
+     * @param value        string value
+     * @param errorMessage the exception message to use if the check fails; will be converted to a string using
+     *                     {@link String#valueOf(Object)}
+     * @throws IllegalArgumentException if {@code value} is empty
+     */
+    public static void checkNotEmptyString(String value, @Nullable String errorMessage) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException(String.valueOf(errorMessage));
+        }
+    }
+
+    /**
+     * Ensures that a string passed as a parameter to the calling method is not empty.
+     *
+     * @param value                string value
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     *                             The message is formed by replacing each {@code %s} placeholder in the template with
+     *                             an argument. These are matched by position - the first {@code %s} gets
+     *                             {@code errorMessageArgs[0]}, etc.
+     *                             <p>
+     *                             Unmatched arguments will be appended to the formatted message in square
+     *                             braces. Unmatched placeholders will be left as-is.
+     * @param errorMessageArgs     the arguments to be substituted into the message template.
+     *                             Arguments are converted to strings using
+     *                             {@link String#valueOf(Object)}.
+     * @throws IllegalArgumentException if {@code value} is empty
+     */
+    public static void checkNotEmptyString(String value, @Nullable String errorMessageTemplate,
+                                           @Nullable Object... errorMessageArgs) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException(formatExceptionArgs(errorMessageTemplate, errorMessageArgs));
+        }
+    }
+
+    /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
      * @param reference an object reference

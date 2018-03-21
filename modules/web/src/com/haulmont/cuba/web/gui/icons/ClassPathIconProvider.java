@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.icons;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.Resource;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -25,21 +25,21 @@ import org.springframework.stereotype.Component;
 import static com.haulmont.cuba.web.gui.icons.IconProvider.LOWEST_PLATFORM_PRECEDENCE;
 
 @Component
-@Order(LOWEST_PLATFORM_PRECEDENCE - 20)
-public class ThemeIconProvider implements IconProvider {
+@Order(LOWEST_PLATFORM_PRECEDENCE - 50)
+public class ClassPathIconProvider implements IconProvider {
 
-    protected static final String THEME_PREFIX = "theme:";
+    protected static final String CLASSPATH_PREFIX = "classpath:";
 
     @Override
     public Resource getIconResource(String iconPath) {
         Preconditions.checkNotEmptyString(iconPath, "Icon path should not be empty");
 
-        String icon = iconPath.substring(THEME_PREFIX.length());
-        return new VersionedThemeResource(icon);
+        String icon = iconPath.substring(CLASSPATH_PREFIX.length());
+        return new ClassResource(icon);
     }
 
     @Override
     public boolean canProvide(String iconPath) {
-        return iconPath != null && !iconPath.isEmpty() && iconPath.startsWith(THEME_PREFIX);
+        return iconPath != null && !iconPath.isEmpty() && iconPath.startsWith(CLASSPATH_PREFIX);
     }
 }

@@ -19,10 +19,10 @@ package com.haulmont.cuba.web.gui.icons;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import static com.haulmont.cuba.web.gui.icons.IconProvider.LOWEST_PLATFORM_PRECEDENCE;
 
 @Component
-@Order(LOWEST_PLATFORM_PRECEDENCE - 150)
+@Order(LOWEST_PLATFORM_PRECEDENCE - 40)
 public class FontAwesomeIconProvider implements IconProvider {
 
     private static final Logger log = LoggerFactory.getLogger(FontAwesomeIconProvider.class);
@@ -68,9 +68,7 @@ public class FontAwesomeIconProvider implements IconProvider {
 
     @Override
     public Resource getIconResource(String iconPath) {
-        if (StringUtils.isEmpty(iconPath)) {
-            return null;
-        }
+        Preconditions.checkNotEmptyString(iconPath, "Icon path should not be empty");
 
         String iconName = iconPath.contains(":") ? iconPath.split(":")[1] : iconPath;
 
@@ -79,7 +77,7 @@ public class FontAwesomeIconProvider implements IconProvider {
 
     @Override
     public boolean canProvide(String iconPath) {
-        if (StringUtils.isEmpty(iconPath) || !webConfig.getUseFontIcons()) {
+        if (iconPath == null || iconPath.isEmpty() || !webConfig.getUseFontIcons()) {
             return false;
         }
 
