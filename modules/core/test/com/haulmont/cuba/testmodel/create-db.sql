@@ -716,3 +716,37 @@ create table TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK (
     primary key (MANY2_MANY__FETCH_SAME2_ID, MANY2_MANY__FETCH_SAME1_ID)
 )^
 
+------------------------------------------------------------------------------------------------------------------------
+create table TEST_DELETE_POLICY_ONE_TO_ONE_FIRST (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    FIRST_FLD varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_DELETE_POLICY_ONE_TO_ONE_SECOND (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    SECOND_FLD varchar(255),
+    FIRST_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_DELETE_POLICY_ONE_TO_ONE_SECOND add constraint FK_TEST_DELETE_POLICY_ONE_TO_ONE_SECOND_FIRST foreign key (FIRST_ID) references TEST_DELETE_POLICY_ONE_TO_ONE_FIRST(ID)^
+create index IDX_TEST_DELETE_POLICY_ONE_TO_ONE_SECOND_FIRST on TEST_DELETE_POLICY_ONE_TO_ONE_SECOND (FIRST_ID)^

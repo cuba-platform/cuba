@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
@@ -170,7 +171,14 @@ public class DeletePolicyProcessor {
                     if (property.getRange().getCardinality().isMany()) {
                         throw new UnsupportedOperationException("Unable to unlink nested collection items");
                     } else {
-                        setReferenceNull(entity, property);
+                        if (metadata.getTools().isOwningSide(property)) {
+                            setReferenceNull(entity, property);
+                        } else {
+                            Entity value = getReference(entity, property);
+                            if (value != null && property.getInverse() != null) {
+                                setReferenceNull(value, property.getInverse());
+                            }
+                        }
                     }
                     break;
             }
@@ -208,39 +216,47 @@ public class DeletePolicyProcessor {
     }
 
     protected void setReferenceNull(Entity entity, MetaProperty property) {
-        if (PersistenceHelper.isLoaded(entity, property.getName())) {
-            entity.setValue(property.getName(), null);
-        } else {
-            List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
-            if (list == null) {
-                list = new ArrayList<>();
-                persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
+        Range range = property.getRange();
+        if (metadata.getTools().isOwningSide(property) && !range.getCardinality().isMany()) {
+            if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                entity.setValue(property.getName(), null);
+            } else {
+                hardSetReferenceNull(entity, property);
             }
-            list.add(() -> {
-                MetadataTools metadataTools = metadata.getTools();
-                MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
-                while (!entityMetaClass.equals(property.getDomain())) {
-                    MetaClass ancestor = entityMetaClass.getAncestor();
-                    if (ancestor == null)
-                        throw new IllegalStateException("Cannot determine a persistent entity for property " + property);
-                    if (metadataTools.isPersistent(ancestor)) {
-                        entityMetaClass = ancestor;
-                    } else {
-                        break;
-                    }
-                }
-                String sql = "update " + metadataTools.getDatabaseTable(entityMetaClass)
-                        + " set " + metadataTools.getDatabaseColumn(property) + " = null where "
-                        + metadataTools.getPrimaryKeyName(entityMetaClass) + " = ?";
-                QueryRunner queryRunner = new QueryRunner();
-                try {
-                    log.debug("Set reference to null: " + sql + ", bind: [" + entity.getId() + "]");
-                    queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
-                } catch (SQLException e) {
-                    throw new RuntimeException("Error processing deletion of " + entity, e);
-                }
-            });
         }
+    }
+
+    protected void hardSetReferenceNull(Entity entity, MetaProperty property) {
+        List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
+        if (list == null) {
+            list = new ArrayList<>();
+            persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
+        }
+        list.add(() -> {
+            MetadataTools metadataTools = metadata.getTools();
+            MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
+            while (!entityMetaClass.equals(property.getDomain())) {
+                MetaClass ancestor = entityMetaClass.getAncestor();
+                if (ancestor == null)
+                    throw new IllegalStateException("Cannot determine a persistent entity for property " + property);
+                if (metadataTools.isPersistent(ancestor)) {
+                    entityMetaClass = ancestor;
+                } else {
+                    break;
+                }
+            }
+            String sql = String.format("update %s set %s = null where %s = ?",
+                    metadataTools.getDatabaseTable(entityMetaClass),
+                    metadataTools.getDatabaseColumn(property),
+                    metadataTools.getPrimaryKeyName(entityMetaClass));
+            try {
+                log.debug("Set reference to null: {}, bind: [{}]", sql, entity.getId());
+                QueryRunner queryRunner = new QueryRunner();
+                queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
+            } catch (SQLException e) {
+                throw new RuntimeException("Error processing deletion of " + entity, e);
+            }
+        });
     }
 
     protected Entity getReference(Entity entity, MetaProperty property) {
@@ -268,7 +284,7 @@ public class DeletePolicyProcessor {
     protected boolean isCollectionEmpty(MetaProperty property) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
-            log.warn("Inverse property not found for property " + property);
+            log.warn("Inverse property not found for property {}", property);
             Collection<Entity> value = entity.getValue(property.getName());
             return value == null || value.isEmpty();
         }
@@ -290,7 +306,7 @@ public class DeletePolicyProcessor {
     protected Collection<Entity> getCollection(MetaProperty property) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
-            log.warn("Inverse property not found for property " + property);
+            log.warn("Inverse property not found for property {}", property);
             Collection<Entity> value = entity.getValue(property.getName());
             return value == null ? Collections.EMPTY_LIST : value;
         }
@@ -360,11 +376,7 @@ public class DeletePolicyProcessor {
                 if (property.getRange().getCardinality().isMany()) {
                     Collection collection = e.getValue(property.getName());
                     if (collection != null) {
-                        for (Iterator it = collection.iterator(); it.hasNext(); ) {
-                            if (entity.equals(it.next())) {
-                                it.remove();
-                            }
-                        }
+                        collection.removeIf(o -> entity.equals(o));
                     }
                 } else {
                     setReferenceNull(e, property);
