@@ -42,7 +42,7 @@ import java.util.function.BiConsumer;
 import static com.haulmont.cuba.web.toolkit.ui.ContentSwitchMode.HIDE;
 import static com.haulmont.cuba.web.toolkit.ui.ContentSwitchMode.UNLOAD;
 
-public class CubaManagedTabSheet extends CssLayout
+public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         implements Component.Focusable, FieldEvents.FocusNotifier, FieldEvents.BlurNotifier, HasTabSheetBehaviour {
 
     private static final long serialVersionUID = 1425920612516520121L;
