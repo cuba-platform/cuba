@@ -93,6 +93,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
             if (configuration.getConfig(GlobalConfig.class).getPerformanceTestMode()) {
                 System.setProperty(getPackageName() + ".disable-xsrf-protection", "true");
+                System.setProperty(getPackageName() + ".syncIdCheck", "false");
             }
 
             super.init(servletConfig);
