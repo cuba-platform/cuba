@@ -24,11 +24,12 @@ import java.util.stream.Collectors;
 
 public class MetaClassInfo {
     public String entityName;
+    public String ancestor;
     public List<MetaPropertyInfo> properties = new ArrayList<>();
 
     public MetaClassInfo(MetaClass metaClass) {
         this.entityName = metaClass.getName();
-
+        this.ancestor = metaClass.getAncestor() != null ? metaClass.getAncestor().getName() : null;
         properties.addAll(metaClass.getProperties().stream()
                 .map(MetaPropertyInfo::new)
                 .collect(Collectors.toList()));

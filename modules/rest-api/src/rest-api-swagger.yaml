@@ -284,6 +284,9 @@ definitions:
       entityName:
         type: string
         example: ref$Driver
+      ancestor:
+        type: string
+        example: sys$StandardEntity
       properties:
         type: array
         items:
