@@ -76,8 +76,8 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     }
 
     @Override
-    public boolean apply(boolean isNewWindow) {
-        return delegate.apply(isNewWindow);
+    public boolean apply(boolean notifyInvalidConditions) {
+        return delegate.apply(notifyInvalidConditions);
     }
 
     @Override

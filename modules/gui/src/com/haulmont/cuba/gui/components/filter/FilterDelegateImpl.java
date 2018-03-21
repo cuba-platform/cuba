@@ -1442,7 +1442,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public boolean apply(boolean isNewWindow) {
+    public boolean apply(boolean notifyInvalidConditions) {
         if (beforeFilterAppliedHandler != null) {
             if (!beforeFilterAppliedHandler.beforeFilterApplied()) return false;
         }
@@ -1450,7 +1450,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (filterEntity != null && conditions.getRoots().size() > 0) {
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
-                    if (!isNewWindow) {
+                    if (!notifyInvalidConditions) {
                         windowManager.showNotification(messages.getMainMessage("filter.emptyConditions"),
                                 Frame.NotificationType.HUMANIZED);
                     }
@@ -1468,7 +1468,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterEntity != null) {
             boolean haveRequiredConditions = haveFilledRequiredConditions();
             if (!haveRequiredConditions) {
-                if (!isNewWindow) {
+                if (!notifyInvalidConditions) {
                     windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
                             Frame.NotificationType.HUMANIZED);
                 }

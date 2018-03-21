@@ -59,7 +59,7 @@ public interface FilterDelegate {
 
     CollectionDatasource getDatasource();
 
-    boolean apply(boolean isNewWindow);
+    boolean apply(boolean notifyInvalidConditions);
 
     String getCaption();
 
