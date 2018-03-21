@@ -218,4 +218,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.enableSessionParamsInQueryFilter")
     @DefaultBoolean(true)
     boolean getEnableSessionParamsInQueryFilter();
+
+    /**
+     * @return whether to generate identifiers for entities located in additional data stores
+     */
+    @Property("cuba.enableIdGenerationForEntitiesInAdditionalDataStores")
+    @DefaultBoolean(true)
+    boolean getEnableIdGenerationForEntitiesInAdditionalDataStores();
 }
