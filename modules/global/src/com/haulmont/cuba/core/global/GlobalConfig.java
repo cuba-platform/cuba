@@ -122,6 +122,15 @@ public interface GlobalConfig extends Config {
     boolean getTestMode();
 
     /**
+     * Performance testing mode indication.
+     *
+     * @return true if in test mode
+     */
+    @Property("cuba.performanceTestMode")
+    @DefaultBoolean(false)
+    boolean getPerformanceTestMode();
+
+    /**
      * Supported locales. List of locales is shown on user login.
      * @return map of labels to locales
      */

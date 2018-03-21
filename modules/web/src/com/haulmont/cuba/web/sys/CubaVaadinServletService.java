@@ -66,6 +66,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     protected final String webResourceTimestamp;
 
     protected boolean testMode;
+    protected boolean performanceTestMode;
 
     public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
@@ -75,6 +76,7 @@ public class CubaVaadinServletService extends VaadinServletService {
         webConfig = configuration.getConfig(WebConfig.class);
         webAuthConfig = configuration.getConfig(WebAuthConfig.class);
         testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
+        performanceTestMode = configuration.getConfig(GlobalConfig.class).getPerformanceTestMode();
 
         ServletContext sc = servlet.getServletContext();
         String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
@@ -296,7 +298,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     @Override
     protected VaadinSession createVaadinSession(VaadinRequest request) throws ServiceException {
-        if (testMode) {
+        if (performanceTestMode) {
             return new TestVaadinSession(this);
         } else {
             return super.createVaadinSession(request);

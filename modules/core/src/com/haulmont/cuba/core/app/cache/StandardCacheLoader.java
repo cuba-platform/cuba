@@ -125,7 +125,7 @@ public class StandardCacheLoader implements CacheLoader {
 
     @Override
     public void updateData(CacheSet cacheSet, Map<String, Object> params) throws CacheException {
-        if (configuration.getConfig(GlobalConfig.class).getTestMode())
+        if (configuration.getConfig(GlobalConfig.class).getPerformanceTestMode())
             return;
 
         Collection<Object> items = cacheSet.getItems();
@@ -162,7 +162,7 @@ public class StandardCacheLoader implements CacheLoader {
     }
 
     protected int getMaxQueryResults() {
-        return configuration.getConfig(GlobalConfig.class).getTestMode() ?
+        return configuration.getConfig(GlobalConfig.class).getPerformanceTestMode() ?
                 500 : configuration.getConfig(PersistenceConfig.class).getDefaultMaxFetchUI();
     }
 }

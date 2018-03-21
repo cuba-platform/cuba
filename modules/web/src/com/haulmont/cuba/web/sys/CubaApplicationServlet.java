@@ -91,7 +91,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
             resources = AppBeans.get(Resources.class);
 
-            if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
+            if (configuration.getConfig(GlobalConfig.class).getPerformanceTestMode()) {
                 System.setProperty(getPackageName() + ".disable-xsrf-protection", "true");
             }
 
