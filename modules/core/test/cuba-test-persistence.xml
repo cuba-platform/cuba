@@ -75,5 +75,8 @@
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToOne_First</class>
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToOne_Second</class>
 
+        <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_Root</class>
+        <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_ManyToMany_First</class>
+        <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToMany_First</class>
     </persistence-unit>
 </persistence>

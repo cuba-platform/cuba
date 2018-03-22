@@ -750,3 +750,60 @@ create table TEST_DELETE_POLICY_ONE_TO_ONE_SECOND (
 
 alter table TEST_DELETE_POLICY_ONE_TO_ONE_SECOND add constraint FK_TEST_DELETE_POLICY_ONE_TO_ONE_SECOND_FIRST foreign key (FIRST_ID) references TEST_DELETE_POLICY_ONE_TO_ONE_FIRST(ID)^
 create index IDX_TEST_DELETE_POLICY_ONE_TO_ONE_SECOND_FIRST on TEST_DELETE_POLICY_ONE_TO_ONE_SECOND (FIRST_ID)^
+
+create table TEST_DELETE_POLICY_ROOT (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    ROOT_FLD varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_DELETE_POLICY_MANY_TO_MANY_FIRST (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    FIRST_FLD varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_DELETE_POLICY_ONE_TO_MANY_FIRST (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    FIRST_FLD varchar(255),
+    ROOT_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+create table TEST_DELETE_POLICY_ROOT_DELETE_POLICY_MANY_TO_MANY_FIRST_LINK (
+    DELETE_POLICY__ROOT_ID varchar(36) not null,
+    DELETE_POLICY__MANY_TO_MANY__FIRST_ID varchar(36) not null,
+    primary key (DELETE_POLICY__ROOT_ID, DELETE_POLICY__MANY_TO_MANY__FIRST_ID)
+)^
+
+alter table TEST_DELETE_POLICY_ONE_TO_MANY_FIRST add constraint FK_TEST_DELETE_POLICY_ONE_TO_MANY_FIRST_ROOT foreign key (ROOT_ID) references TEST_DELETE_POLICY_ROOT(ID)^
+create index IDX_TEST_DELETE_POLICY_ONE_TO_MANY_FIRST_ROOT on TEST_DELETE_POLICY_ONE_TO_MANY_FIRST (ROOT_ID)^
+alter table TEST_DELETE_POLICY_ROOT_DELETE_POLICY_MANY_TO_MANY_FIRST_LINK add constraint FK_DELPOLROODELPOLMANTOMANFIR_DELETE_POLICY__ROOT foreign key (DELETE_POLICY__ROOT_ID) references TEST_DELETE_POLICY_ROOT(ID)^
+alter table TEST_DELETE_POLICY_ROOT_DELETE_POLICY_MANY_TO_MANY_FIRST_LINK add constraint FK_DELPOLROODELPOLMANTOMANFIR_DELETE_POLICY__MANY_TO_MANY__FIRST foreign key (DELETE_POLICY__MANY_TO_MANY__FIRST_ID) references TEST_DELETE_POLICY_MANY_TO_MANY_FIRST(ID)^

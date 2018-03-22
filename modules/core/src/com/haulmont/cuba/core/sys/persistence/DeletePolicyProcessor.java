@@ -169,7 +169,19 @@ public class DeletePolicyProcessor {
                     break;
                 case UNLINK:
                     if (property.getRange().getCardinality().isMany()) {
-                        throw new UnsupportedOperationException("Unable to unlink nested collection items");
+                        if (metadata.getTools().isOwningSide(property)) {
+                            Collection<Entity> value = entity.getValue(property.getName());
+                            if (value != null) {
+                                value.clear();
+                            }
+                        } else if (property.getInverse() != null) {
+                            Collection<Entity> value = getCollection(property);
+                            if (value != null) {
+                                value.forEach(e -> setReferenceNull(e, property.getInverse()));
+                            }
+                        } else {
+                            throw new UnsupportedOperationException("Unable to unlink nested collection items");
+                        }
                     } else {
                         if (metadata.getTools().isOwningSide(property)) {
                             setReferenceNull(entity, property);
@@ -200,14 +212,14 @@ public class DeletePolicyProcessor {
                     String updateMasterSql = "update " + metadataTools.getDatabaseTable(metaClass)
                             + " set " + column + " = null where "
                             + metadataTools.getPrimaryKeyName(metaClass) + " = ?";
-                    log.debug("Hard delete unfetched reference: " + updateMasterSql + ", bind: [" + entity.getId() + "]");
+                    log.debug("Hard delete un-fetched reference: {}, bind: [{}]", updateMasterSql, entity.getId());
                     queryRunner.update(entityManager.getConnection(), updateMasterSql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
                 }
 
                 MetaClass refMetaClass = property.getRange().asClass();
                 String deleteRefSql = "delete from " + metadataTools.getDatabaseTable(refMetaClass) + " where "
                         + metadataTools.getPrimaryKeyName(refMetaClass) + " = ?";
-                log.debug("Hard delete unfetched reference: " + deleteRefSql + ", bind: [" + reference.getId() + "]");
+                log.debug("Hard delete un-fetched reference: {}, bind: [{}]", deleteRefSql, reference.getId());
                 queryRunner.update(entityManager.getConnection(), deleteRefSql, persistence.getDbTypeConverter().getSqlObject(reference.getId()));
             } catch (SQLException e) {
                 throw new RuntimeException("Error processing deletion of " + entity, e);
