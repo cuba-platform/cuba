@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.NodeIdentifier;
+import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
 import org.slf4j.Logger;
@@ -109,7 +110,7 @@ public class JmxControlBean implements JmxControlAPI {
         String remoteNodeName = withConnection(instance, new JmxAction<String>() {
             @Override
             public String perform(JmxInstance jmx, MBeanServerConnection connection) throws IOException {
-                ObjectName nodeIdentifierBeanInfo = getObjectName(connection, JmxNodeIdentifierMBean.class);
+                ObjectName nodeIdentifierBeanInfo = getObjectName(connection, JmxNodeIdentifier.class);
 
                 if (nodeIdentifierBeanInfo != null) {
                     JmxNodeIdentifierMBean identifier =
