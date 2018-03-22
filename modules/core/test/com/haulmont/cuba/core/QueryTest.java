@@ -606,6 +606,8 @@ public class QueryTest {
             try {
                 em.setSoftDeletion(false);
                 em.createQuery("delete from sys$FileDescriptor f").executeUpdate();
+            } catch (javax.persistence.PersistenceException e) {
+                //It's OK integrity constraint violation
             } finally {
                 em.setSoftDeletion(true);
             }
@@ -613,6 +615,8 @@ public class QueryTest {
             try {
                 AppContext.setProperty("cuba.enableDeleteStatementInSoftDeleteMode", "true");
                 em.createQuery("delete from sys$FileDescriptor f").executeUpdate();
+            } catch (javax.persistence.PersistenceException e) {
+                //It's OK integrity constraint violation
             } finally {
                 AppContext.setProperty("cuba.enableDeleteStatementInSoftDeleteMode", "false");
             }
