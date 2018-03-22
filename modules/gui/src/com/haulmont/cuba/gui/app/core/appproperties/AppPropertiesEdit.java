@@ -69,8 +69,8 @@ public class AppPropertiesEdit extends AbstractWindow {
     @Inject
     private UserSessionSource userSessionSource;
 
-    @Named("fieldGroup.displayedDefaultValue")
-    protected TextField displayedDefaultValueField;
+    @Named("fieldGroup.defaultValue")
+    protected TextField defaultValue;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -123,7 +123,7 @@ public class AppPropertiesEdit extends AbstractWindow {
             }
             return value;
         };
-        displayedDefaultValueField.setFormatter(defaultValueFormatter);
+        defaultValue.setFormatter(defaultValueFormatter);
 
         appPropertyDs.setItem(metadata.getTools().copy(item));
     }
