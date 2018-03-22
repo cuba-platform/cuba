@@ -23,6 +23,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.contracts.Ids;
@@ -380,10 +381,19 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public int executeUpdate() {
         JpaQuery<T> jpaQuery = getQuery();
+        DatabaseQuery databaseQuery = jpaQuery.getDatabaseQuery();
+        Class referenceClass = databaseQuery.getReferenceClass();
+        boolean isDeleteQuery = databaseQuery.isDeleteObjectQuery() || databaseQuery.isDeleteAllQuery();
+        boolean enableDeleteInSoftDeleteMode =
+                Boolean.parseBoolean(AppContext.getProperty("cuba.enableDeleteStatementInSoftDeleteMode"));
+        if (!enableDeleteInSoftDeleteMode && entityManager.isSoftDeletion() && isDeleteQuery) {
+            if (SoftDelete.class.isAssignableFrom(referenceClass)) {
+                throw new UnsupportedOperationException("Delete queries are not supported with enabled soft deletion");
+            }
+        }
         // In some cache configurations (in particular, when shared cache is on, but for some entities cache is set to ISOLATED),
         // EclipseLink does not evict updated entities from cache automatically.
         Cache cache = jpaQuery.getEntityManager().getEntityManagerFactory().getCache();
-        Class referenceClass = jpaQuery.getDatabaseQuery().getReferenceClass();
         if (referenceClass != null) {
             cache.evict(referenceClass);
             queryCacheMgr.invalidate(referenceClass, true);

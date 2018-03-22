@@ -293,4 +293,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.useEntityDataStoreForIdSequence")
     @DefaultBoolean(false)
     boolean getUseEntityDataStoreForIdSequence();
+
+    /**
+     * @return if true, system allows to execute JPQL DELETE statement with enabled soft deletion.
+     * Otherwise(by default) system throws an exception when JPQL DELETE statement with enabled soft deletion is executed
+     */
+    @Property("cuba.enableDeleteStatementInSoftDeleteMode")
+    @DefaultBoolean(false)
+    boolean getEnableDeleteStatementInSoftDeleteMode();
 }

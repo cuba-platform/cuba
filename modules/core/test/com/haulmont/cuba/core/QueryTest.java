@@ -18,6 +18,7 @@ package com.haulmont.cuba.core;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
@@ -585,6 +586,36 @@ public class QueryTest {
             EntityManager em = cont.persistence().getEntityManager();
             em.createQuery("select ur.role, count(ur.id) from sec$UserRole ur group by ur.role")
                     .getResultList();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Test
+    public void testDeleteQueryWithSoftDeleteTrue() {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            try {
+                em.createQuery("delete from sys$FileDescriptor f").executeUpdate();
+            } catch (UnsupportedOperationException e) {
+                //It's OK
+            }
+
+            try {
+                em.setSoftDeletion(false);
+                em.createQuery("delete from sys$FileDescriptor f").executeUpdate();
+            } finally {
+                em.setSoftDeletion(true);
+            }
+
+            try {
+                AppContext.setProperty("cuba.enableDeleteStatementInSoftDeleteMode", "true");
+                em.createQuery("delete from sys$FileDescriptor f").executeUpdate();
+            } finally {
+                AppContext.setProperty("cuba.enableDeleteStatementInSoftDeleteMode", "false");
+            }
             tx.commit();
         } finally {
             tx.end();
