@@ -19,7 +19,6 @@ package com.haulmont.cuba.core;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.RoleType;
@@ -620,9 +619,12 @@ public class QueryTest {
             } finally {
                 AppContext.setProperty("cuba.enableDeleteStatementInSoftDeleteMode", "false");
             }
-            tx.commit();
         } finally {
-            tx.end();
+            try {
+                tx.end();
+            } catch (Exception e) {
+                //Do nothing
+            }
         }
     }
 }
