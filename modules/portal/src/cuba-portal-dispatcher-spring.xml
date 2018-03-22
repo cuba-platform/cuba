@@ -52,9 +52,12 @@
         <property name="viewClass" value="com.haulmont.cuba.portal.springframework.view.FreeMarkerView"/>
     </bean>
 
+    <bean id="thymeleafMessageSource"
+          class="com.haulmont.cuba.portal.sys.ThymeleafMessageSource"/>
+
     <bean id="thymeleafTemplateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
         <property name="prefix" value="${cuba.portal.templateLoaderPath}"/>
-        <property name="order" value="2" />
+        <property name="order" value="2"/>
         <property name="suffix" value=".html"/>
         <property name="templateMode" value="HTML"/>
         <property name="characterEncoding" value="UTF-8"/>
@@ -62,7 +65,10 @@
 
     <bean id="thymeleafTemplateEngine"
           class="org.thymeleaf.spring4.SpringTemplateEngine">
-        <property name="templateResolver" ref="thymeleafTemplateResolver"/>
+        <property name="templateResolver"
+                  ref="thymeleafTemplateResolver"/>
+        <property name="templateEngineMessageSource"
+                  ref="thymeleafMessageSource"/>
         <property name="additionalDialects">
             <set>
                 <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect"/>
