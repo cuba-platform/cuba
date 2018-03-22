@@ -24,6 +24,9 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
+/**
+ * Configuration interface for the old REST API v1
+ */
 @Source(type = SourceType.APP)
 public interface RestConfig extends Config {
 
