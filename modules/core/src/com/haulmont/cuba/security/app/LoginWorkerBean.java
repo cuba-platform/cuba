@@ -180,7 +180,7 @@ public class LoginWorkerBean implements LoginWorker {
         if (clientInfo != null && credentials.getClientInfo() == null) {
             credentials.setClientInfo((String) clientInfo);
         }
-        Object ipAddress = params.get(SessionParams.IP_ADDERSS.getId());
+        Object ipAddress = params.get(SessionParams.IP_ADDRESS.getId());
         if (ipAddress != null && credentials.getIpAddress() == null) {
             credentials.setIpAddress((String) ipAddress);
         }

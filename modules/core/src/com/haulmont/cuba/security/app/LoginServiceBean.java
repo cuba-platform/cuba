@@ -174,7 +174,7 @@ public class LoginServiceBean implements LoginService {
         if (clientInfo != null) {
             credentials.setClientInfo((String) clientInfo);
         }
-        Object ipAddress = params.get(SessionParams.IP_ADDERSS.getId());
+        Object ipAddress = params.get(SessionParams.IP_ADDRESS.getId());
         if (ipAddress != null) {
             credentials.setIpAddress((String) ipAddress);
         }

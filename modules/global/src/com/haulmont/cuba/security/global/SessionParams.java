@@ -20,7 +20,7 @@ package com.haulmont.cuba.security.global;
  * List of parameters that could be passed in map when user session is being created
  */
 public enum SessionParams {
-    IP_ADDERSS("ipAddress"),
+    IP_ADDRESS("ipAddress"),
     CLIENT_INFO("clientInfo"),
     CLIENT_TYPE("clientType"),
     HOST_NAME("hostName");

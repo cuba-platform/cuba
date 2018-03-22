@@ -119,7 +119,7 @@ public class Connection {
         return ParamsMap.of(
                 ClientType.class.getName(), ClientType.DESKTOP.name(),
                 SessionParams.HOST_NAME.getId(), address.map(InetAddress::getHostName).orElse(null),
-                SessionParams.IP_ADDERSS.getId(), address.map(InetAddress::getHostAddress).orElse(null),
+                SessionParams.IP_ADDRESS.getId(), address.map(InetAddress::getHostAddress).orElse(null),
                 SessionParams.CLIENT_INFO.getId(), makeClientInfo()
         );
     }

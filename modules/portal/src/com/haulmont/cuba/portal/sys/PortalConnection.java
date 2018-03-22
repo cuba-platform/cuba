@@ -113,7 +113,7 @@ public class PortalConnection implements Connection {
                 globalConfig.getWebContextName() + ") ";
         return ParamsMap.of(
                 ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
-                SessionParams.IP_ADDERSS.getId(), ipAddress,
+                SessionParams.IP_ADDRESS.getId(), ipAddress,
                 SessionParams.CLIENT_INFO.getId(), serverInfo + clientInfo
         );
     }
