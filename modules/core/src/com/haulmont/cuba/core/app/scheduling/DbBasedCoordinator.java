@@ -92,8 +92,9 @@ public class DbBasedCoordinator implements Coordinator {
         query.setParameter(2, task.getLastStartTime());
         List list = query.getResultList();
         if (list.isEmpty() || list.get(0) == null) {
-            // Execution finish was not registered by some reason, so using timeout value or just return false
-            boolean result = task.getTimeout() != null && task.getLastStart() + task.getTimeout() <= now;
+            // Execution finish was not registered for some reason, so using timeout value or just return false
+            boolean result = task.getTimeout() != null
+                    && (task.getLastStart() + task.getTimeout() * 1000) <= now;
             if (result)
                 log.trace(task + ": considered finished because of timeout");
             else
