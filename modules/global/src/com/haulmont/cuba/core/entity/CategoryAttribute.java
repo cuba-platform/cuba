@@ -175,13 +175,11 @@ public class CategoryAttribute extends StandardEntity {
     }
 
     public PropertyType getDataType() {
-        if (dataType == null) return null;
-
-        return PropertyType.valueOf(dataType);
+        return PropertyType.fromId(dataType);
     }
 
     public void setDataType(PropertyType dataType) {
-        this.dataType = dataType != null ? dataType.name() : null;
+        this.dataType = dataType != null ? dataType.getId() : null;
     }
 
     public Boolean getIsEntity() {
@@ -238,7 +236,7 @@ public class CategoryAttribute extends StandardEntity {
 
     public Object getDefaultValue() {
         if (dataType != null) {
-            switch (PropertyType.valueOf(dataType)) {
+            switch (PropertyType.fromId(dataType)) {
                 case INTEGER: return defaultInt;
                 case DOUBLE: return defaultDouble;
                 case BOOLEAN: return defaultBoolean;

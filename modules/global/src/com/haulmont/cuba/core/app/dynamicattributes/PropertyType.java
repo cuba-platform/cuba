@@ -17,6 +17,24 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-public enum PropertyType {
-    STRING, INTEGER, DOUBLE, DATE, BOOLEAN, ENTITY, ENUMERATION
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.datatypes.impl.EnumUtils;
+
+public enum PropertyType implements EnumClass<String> {
+    STRING,
+    INTEGER,
+    DOUBLE,
+    DATE,
+    BOOLEAN,
+    ENTITY,
+    ENUMERATION;
+
+    @Override
+    public String getId() {
+        return name();
+    }
+
+    public static PropertyType fromId(String id) {
+        return EnumUtils.fromIdSafe(PropertyType.class, id, null);
+    }
 }
