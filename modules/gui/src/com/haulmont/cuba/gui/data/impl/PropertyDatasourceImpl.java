@@ -192,6 +192,18 @@ public class PropertyDatasourceImpl<T extends Entity>
                         }
                     }
                 }
+            } else {
+                Entity item = null;
+                if (!itemsToCreate.isEmpty()) {
+                    item = itemsToCreate.iterator().next();
+                } else if (!itemsToUpdate.isEmpty()) {
+                    item = itemsToUpdate.iterator().next();
+                } else if (!itemsToDelete.isEmpty()) {
+                    item = itemsToDelete.iterator().next();
+                }
+                if (item != null) {
+                    parentDs.setItem(item);
+                }
             }
             clearCommitLists();
             modified = false;
