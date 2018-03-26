@@ -338,7 +338,6 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
     public void testNewObjectInSelect() throws RecognitionException {
         testQuery("SELECT NEW com.acme.example.CustomerDetails(c.id, c.status, o.count) FROM app$Customer c JOIN c.orders o WHERE o.count > 100");
     }

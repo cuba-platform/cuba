@@ -627,4 +627,20 @@ public class QueryTest {
             }
         }
     }
+
+    @Test
+    public void testNewObjectInJPQL() {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            UserDTO dto = (UserDTO) em.createQuery("select new com.haulmont.cuba.core.UserDTO(u.login) from sec$User u where u.id = :id")
+                    .setParameter("id", userId)
+                    .getFirstResult();
+            assertNotNull(dto);
+            assertEquals("testLogin", dto.login);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }

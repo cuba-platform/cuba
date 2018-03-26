@@ -494,7 +494,7 @@ literal
     : WORD;
 
 constructor_name
-    : WORD;
+    : WORD ('.'  WORD)*;
 
 enum_literal
     : WORD;
