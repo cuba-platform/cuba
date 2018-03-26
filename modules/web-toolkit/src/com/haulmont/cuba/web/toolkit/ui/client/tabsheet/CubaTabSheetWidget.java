@@ -23,6 +23,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.DragEndEvent;
+import com.google.gwt.event.dom.client.DragLeaveEvent;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
@@ -33,6 +34,7 @@ import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.client.ui.dd.VDragAndDropManager;
+import com.vaadin.client.ui.dd.VDragEvent;
 import com.vaadin.shared.ui.tabsheet.TabState;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
@@ -43,6 +45,7 @@ public class CubaTabSheetWidget extends VDDTabSheet {
 
     protected HandlerRegistration dragEndHandler;
     protected HandlerRegistration dropHandler;
+    protected HandlerRegistration dragLeaveHandler;
 
     public CubaTabSheetWidget() {
         RootPanel rootPanel = RootPanel.get();
@@ -54,6 +57,13 @@ public class CubaTabSheetWidget extends VDDTabSheet {
         dropHandler = rootPanel.addBitlessDomHandler(event ->
                         handleBadDD(event.getNativeEvent()),
                         DropEvent.getType());
+
+        dragLeaveHandler = rootPanel.addBitlessDomHandler(event -> {
+            Element element = event.getRelativeElement();
+            if (element == null || element == rootPanel.getElement()) {
+                VDragAndDropManager.get().interruptDrag();
+            }
+        }, DragLeaveEvent.getType());
     }
 
     protected void handleBadDD(NativeEvent event) {
@@ -70,10 +80,19 @@ public class CubaTabSheetWidget extends VDDTabSheet {
     }
 
     @Override
+    protected void updateDragDetails(VDragEvent event) {
+        if (event == null) {
+            return;
+        }
+        super.updateDragDetails(event);
+    }
+
+    @Override
     protected void onUnload() {
         super.onUnload();
         dragEndHandler.removeHandler();
         dropHandler.removeHandler();
+        dragLeaveHandler.removeHandler();
     }
 
     @Override
