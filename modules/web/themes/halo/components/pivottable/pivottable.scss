@@ -64,7 +64,7 @@
     }
 
     .pvtUi > tbody > tr:first-child > td:first-child {
-      border: 1px solid gray;
+      border: 1px solid $border-color;
     }
 
     .pvtAxisContainer li.pvtPlaceholder,
@@ -76,7 +76,9 @@
 
     table.pvtTable thead tr th,
     table.pvtTable tbody tr th,
-    table.pvtTable tbody tr td {
+    table.pvtTable tbody tr td,
+    .pvtAxisContainer,
+    .pvtVals {
       border-color: $border-color;
     }
 
@@ -85,6 +87,21 @@
     }
 
     .pvtFilterBox {
+      @include box-shadow( valo-bevel-and-shadow($bevel: null, $shadow: $v-overlay-shadow));
+
+      border-radius: $v-border-radius;
+      border-color: transparent;
+
+      padding-top: $v-layout-spacing-vertical;
+
+      p {
+        margin-top: $v-layout-spacing-vertical;
+      }
+
+      .pvtCheckContainer {
+        margin-top: $v-layout-spacing-vertical;
+      }
+
       button {
         @include valo-button-static-style;
         @include valo-button-style($font-color: $v-button-font-color);
@@ -92,12 +109,12 @@
 
       input[type="text"] {
         @include valo-textfield-style;
-        width: $v-default-field-width;
         box-sizing: border-box;
+        margin-bottom: $v-layout-spacing-vertical;
       }
 
       p > button {
-        margin: 0 $v-layout-spacing-horizontal/2 $v-layout-spacing-vertical $v-layout-spacing-horizontal/2;
+        margin: 0 $v-layout-spacing-horizontal/2;
       }
     }
 
@@ -118,6 +135,12 @@
     .pvtAxisContainer,
     .pvtVals {
       padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
+    }
+
+    .pvtRowOrder,
+    .pvtColOrder {
+      text-decoration: none;
+      color: valo-font-color($v-background-color);
     }
   }
 
