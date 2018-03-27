@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 
+// todo move to package
 @org.springframework.stereotype.Component(DataGridEditorFieldFactory.NAME)
 public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactory {
 

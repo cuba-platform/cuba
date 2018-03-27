@@ -113,7 +113,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         protected CheckBox denyChecker;
 
-        protected Label operationLabel;
+        protected Label<String> operationLabel;
 
         protected String metaProperty;
 

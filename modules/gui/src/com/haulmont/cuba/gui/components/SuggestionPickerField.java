@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface SuggestionPickerField extends SuggestionField, PickerField {
+import com.haulmont.cuba.core.entity.Entity;
+
+public interface SuggestionPickerField<V extends Entity> extends SuggestionField<V>, PickerField<V> {
 
     String NAME = "suggestionPickerField";
 }

@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.components.Component.Editable;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Frame;
@@ -42,7 +43,7 @@ public class AttributeAccessSupport {
     public static final String NAME = "cuba_AttributeAccessSupport";
 
     @Inject
-    private AttributeAccessUpdater attributeAccessUpdater;
+    protected AttributeAccessUpdater attributeAccessUpdater;
 
     @Inject
     protected Security security;
@@ -94,7 +95,10 @@ public class AttributeAccessSupport {
 
         if (reset) {
             component.setVisible(security.isEntityAttrReadPermitted(datasource.getMetaClass(), propertyPath.toString()));
-            component.setEditable(security.isEntityAttrUpdatePermitted(datasource.getMetaClass(), propertyPath.toString()));
+
+            if (component instanceof Editable) {
+                ((Editable) component).setEditable(security.isEntityAttrUpdatePermitted(datasource.getMetaClass(), propertyPath.toString()));
+            }
             if (component instanceof Field) {
                 ((Field) component).setRequired(propertyPath.getMetaProperty().isMandatory());
             }
@@ -105,10 +109,12 @@ public class AttributeAccessSupport {
             component.setVisible(false);
         }
         if (componentState.readOnly) {
-            component.setEditable(false);
+            if (component instanceof Editable) {
+                ((Editable) component).setEditable(false);
+            }
         }
         if (component instanceof Field) {
-            if (componentState.required && component.isEditable() && component.isVisible()) {
+            if (componentState.required && ((Field) component).isEditable() && component.isVisible()) {
                 ((Field) component).setRequired(true);
             }
         }

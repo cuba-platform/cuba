@@ -60,7 +60,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             component.setCubaId(getAlternativeDebugId());
         }
 
-        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent);
 

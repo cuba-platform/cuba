@@ -51,10 +51,10 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected Datasource<Role> roleDs;
 
     @Inject
-    protected LookupField screenFilter;
+    protected LookupField<String> screenFilter;
 
     @Inject
-    protected TextField componentTextField;
+    protected TextField<String> componentTextField;
 
     @Inject
     protected RestorablePermissionDatasource uiPermissionsDs;

@@ -19,39 +19,18 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.AbstractSelect> extends
-        WebAbstractOptionsField<T> {
+public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.AbstractSelect, V> extends
+        WebAbstractOptionsField<T, V> {
 
-    @Override
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        super.setOptionsDatasource(datasource);
-
-        if (datasource != null) {
-            collectionDsListenersWrapper.bind(datasource);
-        }
-
-        assignAutoDebugId();
-    }
-
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        super.setDatasource(datasource, property);
-
-        assignAutoDebugId();
-    }
-
-    protected <V> V getValueFromKey(Object key) {
+    protected V getValueFromKey(Object key) {
         if (key instanceof Collection) {
             final Set<Object> set = new LinkedHashSet<>();
             for (Object o : (Collection) key) {
@@ -83,12 +62,11 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.Abstract
     }
 
     @Override
-    public void setValue(Object value) {
-        // TODO (abramov) need to be changed
+    public void setValue(V value) {
         super.setValue(getKeyFromValue(value));
     }
 
-    protected Object getKeyFromValue(Object value) {
+    protected V getKeyFromValue(Object value) {
         Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
@@ -105,7 +83,7 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.Abstract
             v = getKey(value);
         }
 
-        return v;
+        return (V) v;
     }
 
     protected Object getKey(Object o) {
@@ -138,24 +116,13 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.Abstract
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public <V> V getValue() {
+    public V getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
             return getValueFromKey(key);
         } else {
             return wrapAsCollection(super.getValue());
         }
-    }
-
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
-
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new CollectionPropertyWrapper(item, propertyPath);
-            }
-        };
     }
 
     public static class CollectionPropertyWrapper extends PropertyWrapper {
@@ -194,25 +161,5 @@ public abstract class WebAbstractOptionsBase<T extends com.vaadin.v7.ui.Abstract
         public Class getType() {
             return Object.class;
         }
-    }
-
-    @Override
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
-            return getClass().getSimpleName() + datasource.getId() + "_" + metaPropertyPath.toString();
-        }
-        if (optionsDatasource != null && StringUtils.isNotEmpty(optionsDatasource.getId())) {
-            return getClass().getSimpleName() + optionsDatasource.getId();
-        }
-
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public void setRequired(boolean required){
-        super.setRequired(required);
     }
 }

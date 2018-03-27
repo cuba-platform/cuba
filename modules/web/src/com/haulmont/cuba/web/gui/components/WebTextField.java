@@ -25,7 +25,7 @@ import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
-public class WebTextField extends WebAbstractTextField<CubaTextField> implements TextField {
+public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> implements TextField<V> {
 
     protected Datatype datatype;
     protected Formatter formatter;
@@ -91,8 +91,8 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
 
     @Override
     protected Datatype getActualDatatype() {
-        if (metaProperty != null) {
-            return metaProperty.getRange().isDatatype() ? metaProperty.getRange().asDatatype() : null;
+        if (getMetaProperty() != null) {
+            return getMetaProperty().getRange().isDatatype() ? getMetaProperty().getRange().asDatatype() : null;
         } else if (datatype != null) {
             return datatype;
         } else {

@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.EventObject;
 
-public interface TextInputField extends Field, Component.Buffered, Component.Focusable, PropertyBoundComponent {
+public interface TextInputField<V> extends Field<V>, Component.Buffered, Component.Focusable, PropertyBoundComponent {
 
     /**
      * Defines case conversion for text input fields,
@@ -31,17 +31,17 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         UPPER
     }
 
-    interface TrimSupported extends TextInputField {
+    interface TrimSupported {
         boolean isTrimming();
         void setTrimming(boolean trimming);
     }
 
-    interface MaxLengthLimited extends TextInputField {
+    interface MaxLengthLimited {
         int getMaxLength();
         void setMaxLength(int value);
     }
 
-    interface CursorPositionSupported extends TextInputField {
+    interface CursorPositionSupported {
         /**
          * Sets the cursor position in the field.
          *
@@ -50,7 +50,7 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         void setCursorPosition(int position);
     }
 
-    interface CaseConversionSupported extends TextInputField {
+    interface CaseConversionSupported {
         /**
          * @return conversion mode or null if automatic conversion is disabled
          */
@@ -61,12 +61,12 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         void setCaseConversion(CaseConversion caseConversion);
     }
 
-    interface TextSelectionSupported extends TextInputField {
+    interface TextSelectionSupported {
         void selectAll();
         void setSelectionRange(int pos, int length);
     }
 
-    interface TextChangeNotifier extends TextInputField {
+    interface TextChangeNotifier {
         void addTextChangeListener(TextChangeListener listener);
         void removeTextChangeListener(TextChangeListener listener);
 
@@ -168,7 +168,7 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         LAZY
     }
 
-    interface EnterPressNotifier extends TextInputField {
+    interface EnterPressNotifier {
         void addEnterPressListener(EnterPressListener listener);
         void removeEnterPressListener(EnterPressListener listener);
     }

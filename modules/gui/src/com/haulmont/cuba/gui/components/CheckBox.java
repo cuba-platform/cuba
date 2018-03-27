@@ -16,12 +16,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface CheckBox extends Field, Component.Buffered, Component.Focusable {
+public interface CheckBox extends Field<Boolean>, Component.Buffered, Component.Focusable {
     String NAME = "checkBox";
-
-    @SuppressWarnings("unchecked")
-    @Override
-    Boolean getValue();
 
     /**
      * @return true if value is equal to {@link Boolean#TRUE}

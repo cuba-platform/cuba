@@ -782,8 +782,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         if (!canBeSorted(datasource)) {
             setSortable(false);
         }
-
-        assignAutoDebugId();
     }
 
     protected void addInitialColumns(CollectionDatasource datasource) {
@@ -1668,19 +1666,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         if (id != null) {
             componentComposition.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_composition"));
-        }
-    }
-
-    @Override
-    public void assignAutoDebugId() {
-        super.assignAutoDebugId();
-
-        if (buttonsPanel != null) {
-            for (com.haulmont.cuba.gui.components.Component subComponent : buttonsPanel.getComponents()) {
-                if (subComponent instanceof WebAbstractComponent) {
-                    ((WebAbstractComponent) subComponent).assignAutoDebugId();
-                }
-            }
         }
     }
 

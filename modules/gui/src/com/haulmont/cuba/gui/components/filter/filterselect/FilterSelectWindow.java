@@ -47,13 +47,13 @@ public class FilterSelectWindow extends AbstractWindow {
     protected ThemeConstantsManager themeConstantsManager;
 
     @Inject
-    protected Table filterEntitiesTable;
+    protected Table<FilterEntity> filterEntitiesTable;
 
     @Inject
     protected ComponentsFactory componentsFactory;
 
     @Inject
-    protected TextField nameFilterField;
+    protected TextField<String> nameFilterField;
 
     protected List<FilterEntity> filterEntities;
 
@@ -68,20 +68,17 @@ public class FilterSelectWindow extends AbstractWindow {
                 .setWidth(theme.get("cuba.gui.filterSelect.dialog.width"))
                 .setResizable(true);
 
-        filterEntitiesTable.addGeneratedColumn("name", new Table.ColumnGenerator<FilterEntity>() {
-            @Override
-            public Component generateCell(FilterEntity entity) {
-                Label label = componentsFactory.createComponent(Label.class);
-                String caption;
-                if (Strings.isNullOrEmpty(entity.getCode())) {
-                    caption = InstanceUtils.getInstanceName(entity);
-                } else {
-                    caption = messages.getMainMessage(entity.getCode());
-                }
-                label.setValue(caption);
-                captionsMap.put(entity, caption);
-                return label;
+        filterEntitiesTable.addGeneratedColumn("name", entity -> {
+            Label<String> label = componentsFactory.createComponent(Label.class);
+            String caption;
+            if (Strings.isNullOrEmpty(entity.getCode())) {
+                caption = InstanceUtils.getInstanceName(entity);
+            } else {
+                caption = messages.getMainMessage(entity.getCode());
             }
+            label.setValue(caption);
+            captionsMap.put(entity, caption);
+            return label;
         });
 
         filterEntities = (List<FilterEntity>) params.get("filterEntities");

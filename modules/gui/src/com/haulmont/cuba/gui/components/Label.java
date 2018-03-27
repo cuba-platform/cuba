@@ -16,8 +16,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Label
-        extends DatasourceComponent, Component.HasFormatter, Component.HasCaption, Component.HasIcon {
+public interface Label<V>
+        extends DatasourceComponent<V>, Component.HasFormatter, Component.HasCaption, Component.HasIcon {
 
     String NAME = "label";
 

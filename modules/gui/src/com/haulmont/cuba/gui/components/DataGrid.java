@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.haulmont.cuba.gui.components.Component.MouseEventDetails.MouseButton;
+import static com.haulmont.cuba.gui.components.MouseEventDetails.*;
 
 public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.HasButtonsPanel, Component.HasCaption,
                                                     Component.HasIcon, Component.HasRowsCount, Component.HasSettings,

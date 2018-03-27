@@ -48,13 +48,13 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     protected Metadata metadata;
 
     @Inject
-    protected LookupField categoryLookup;
+    protected LookupField<Category> categoryLookup;
 
     @Inject
-    protected LookupField attributeLookup;
+    protected LookupField<CategoryAttribute> attributeLookup;
 
     @Inject
-    protected LookupField operationLookup;
+    protected LookupField<Op> operationLookup;
 
     @Inject
     protected Label categoryLabel;
@@ -63,7 +63,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Inject
-    protected TextField caption;
+    protected TextField<String> caption;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -203,9 +203,9 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         param.setDefaultValue(defaultValue);
 
         condition.setParam(param);
-        condition.setCategoryId(categoryLookup.<Category>getValue().getId());
-        condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
-        condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.<CategoryAttribute>getValue().getIsCollection()));
+        condition.setCategoryId(categoryLookup.getValue().getId());
+        condition.setCategoryAttributeId(attributeLookup.getValue().getId());
+        condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.getValue().getIsCollection()));
         condition.setLocCaption(attribute.getLocaleName());
         condition.setCaption(caption.getValue());
 

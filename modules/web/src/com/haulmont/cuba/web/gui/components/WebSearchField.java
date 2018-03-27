@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class WebSearchField extends WebLookupField implements SearchField {
+public class WebSearchField<V> extends WebLookupField<V> implements SearchField<V> {
 
     protected static final String SEARCHSELECT_STYLENAME = "c-searchselect";
 

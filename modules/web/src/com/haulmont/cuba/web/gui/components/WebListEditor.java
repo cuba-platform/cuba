@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.function.Supplier;
 
-public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor> implements ListEditor {
+public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEditor, List<V>> implements ListEditor<V> {
 
     protected static final String LISTEDITOR_STYLENAME = "c-listeditor";
 
@@ -150,25 +150,22 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     }
 
     @Override
-    public void setValue(Object newValue) {
-        if (newValue != null && !(newValue instanceof List)) {
-            throw new IllegalArgumentException("Value type must be List");
-        }
-
+    public void setValue(List<V> newValue) {
         super.setValue(newValue);
-        delegate.setValue((List) newValue);
+        delegate.setValue(newValue);
 
-        Object oldValue = prevValue;
+        Object oldValue = internalValue;
         if (!Objects.equals(oldValue, newValue)) {
-            prevValue = newValue;
+            internalValue = newValue;
 
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, newValue);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List getValue() {
+    public List<V> getValue() {
         return delegate.getValue();
     }
 

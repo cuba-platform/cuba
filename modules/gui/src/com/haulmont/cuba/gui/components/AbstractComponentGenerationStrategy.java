@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
+// todo move to package
 public abstract class AbstractComponentGenerationStrategy implements ComponentGenerationStrategy {
 
     protected Messages messages;

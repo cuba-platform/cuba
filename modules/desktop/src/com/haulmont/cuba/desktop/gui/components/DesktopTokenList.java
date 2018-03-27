@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -645,18 +646,10 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        // todo
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        // todo
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         LoggerFactory.getLogger(DesktopTokenList.class).warn("addValueChangeListener not implemented for TokenList");
+        // todo
+        return () -> {};
     }
 
     @Override

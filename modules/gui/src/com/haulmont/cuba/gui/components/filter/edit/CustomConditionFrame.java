@@ -24,9 +24,7 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.core.sys.jpql.DomainModelWithCaptionsBuilder;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
-import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
@@ -52,19 +50,19 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected static final String WHERE = " where ";
 
     @Inject
-    protected LookupField typeSelect;
+    protected LookupField<ParamType> typeSelect;
 
     @Inject
-    protected LookupField entitySelect;
+    protected LookupField<Object> entitySelect;
 
     @Inject
     protected CheckBox inExprCb;
 
     @Inject
-    protected TextField nameField;
+    protected TextField<String> nameField;
 
     @Inject
-    protected TextField entityParamViewField;
+    protected TextField<String> entityParamViewField;
 
     @Inject
     protected SourceCodeEditor joinField;
@@ -257,7 +255,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 selectedItem = metadata.getClass(javaClass);
             }
             entitySelect.setOptionsMap(items);
-            entitySelect.setValue(selectedItem);
+            entitySelect.setValue((MetaClass) selectedItem);
 
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
             if (param != null && Param.Type.ENUM.equals(param.getType())) {
@@ -432,12 +430,12 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
             case UUID:
                 return UUID.class;
             case ENTITY:
-                MetaClass entity = entitySelect.getValue();
+                MetaClass entity = (MetaClass) entitySelect.getValue();
                 if (entity == null)
                     return null;
                 return entity.getJavaClass();
             case ENUM:
-                Class enumClass = entitySelect.getValue();
+                Class enumClass = (Class) entitySelect.getValue();
                 if (enumClass == null)
                     return null;
                 return enumClass;
@@ -484,7 +482,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     protected List<Suggestion> requestHintParamWhere(SourceCodeEditor sender, String text, int senderCursorPosition) {
         String whereStr = entityParamWhereField.getValue();
-        MetaClass metaClass = entitySelect.getValue();
+        MetaClass metaClass = (MetaClass) entitySelect.getValue();
         if (metaClass == null) {
             return new ArrayList<>();
         }

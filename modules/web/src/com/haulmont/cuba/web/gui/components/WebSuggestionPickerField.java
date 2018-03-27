@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
@@ -31,7 +32,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebSuggestionPickerField extends WebSuggestionField implements SuggestionPickerField, SecuredActionsHolder {
+public class WebSuggestionPickerField<V extends Entity> extends WebSuggestionField<V> implements
+        SuggestionPickerField<V>, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
 

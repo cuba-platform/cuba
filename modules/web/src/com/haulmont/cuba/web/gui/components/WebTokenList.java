@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -52,7 +53,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> implements TokenList {
+public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList, V> implements TokenList<V> {
 
     protected CollectionDatasource datasource;
 
@@ -76,7 +77,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     protected WebButton clearButton;
 
-    protected WebLookupPickerField lookupPickerField;
+    protected WebLookupPickerField<Entity> lookupPickerField;
 
     protected String lookupScreen;
     protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
@@ -255,12 +256,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getValue() {
+    public V getValue() {
         if (datasource != null) {
             List<Object> items = new ArrayList(datasource.getItems());
-            return (T) items;
+            return (V) items;
         } else
-            return (T) Collections.emptyList();
+            return (V) Collections.emptyList();
     }
 
     @Override
@@ -269,8 +270,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         LoggerFactory.getLogger(WebTokenList.class).warn("addValueChangeListener not implemented for TokenList");
+
+        // todo
+        return () -> {};
     }
 
     @Override

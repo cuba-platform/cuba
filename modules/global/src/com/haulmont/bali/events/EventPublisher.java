@@ -101,7 +101,7 @@ public class EventPublisher {
      * @param <T>       type of event
      * @return true if there are one or more listeners for type T
      */
-    public <T> boolean hasListeners(Class<T> eventType) {
+    public <T> boolean hasSubscriptions(Class<T> eventType) {
         if (eventType == null) {
             throw new IllegalArgumentException("eventType cannot be null");
         }

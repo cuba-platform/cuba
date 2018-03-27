@@ -23,9 +23,9 @@ import java.util.function.Predicate;
 
 public class ScreenNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
-    protected final TextField screenFilter;
+    protected final TextField<String> screenFilter;
 
-    public ScreenNameFilter(TextField screenFilter) {
+    public ScreenNameFilter(TextField<String> screenFilter) {
         this.screenFilter = screenFilter;
     }
 

@@ -27,6 +27,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 
+// todo move to package
 public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();

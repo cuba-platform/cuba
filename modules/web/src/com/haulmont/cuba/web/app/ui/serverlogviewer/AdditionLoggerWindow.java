@@ -28,12 +28,10 @@ import javax.inject.Inject;
 import java.util.Map;
 
 public class AdditionLoggerWindow extends AbstractWindow {
-
     @Inject
-    protected TextField loggerNameField;
-
+    protected TextField<String> loggerNameField;
     @Inject
-    protected OptionsField logLevelField;
+    protected OptionsField<Level> logLevelField;
 
     protected Level selectedLevel;
 
@@ -45,7 +43,7 @@ public class AdditionLoggerWindow extends AbstractWindow {
     }
 
     public void addLogger() {
-        if (StringUtils.isNotBlank(loggerNameField.<String>getValue())) {
+        if (StringUtils.isNotBlank(loggerNameField.getValue())) {
             if (logLevelField.getValue() != null) {
                 this.selectedLoggerName = loggerNameField.getValue();
                 this.selectedLevel = logLevelField.getValue();

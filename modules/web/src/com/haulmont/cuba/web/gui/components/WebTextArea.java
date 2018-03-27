@@ -21,7 +21,8 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.vaadin.v7.event.FieldEvents;
 
-public class WebTextArea extends WebAbstractTextArea<CubaTextArea> implements com.haulmont.cuba.gui.components.TextArea {
+public class WebTextArea<V> extends WebAbstractTextArea<CubaTextArea, V>
+        implements com.haulmont.cuba.gui.components.TextArea<V> {
 
     protected Datatype datatype;
     protected FieldEvents.TextChangeListener textChangeListener;

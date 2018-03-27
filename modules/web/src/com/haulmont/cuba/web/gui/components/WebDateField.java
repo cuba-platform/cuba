@@ -45,7 +45,7 @@ import javax.validation.constraints.Past;
 import java.sql.Time;
 import java.util.*;
 
-public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> implements DateField {
+public class WebDateField<V extends Date> extends WebAbstractField<CubaDateFieldWrapper, V> implements DateField<V> {
 
     protected Resolution resolution;
 
@@ -198,11 +198,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         updatingInstance = true;
         try {
-            dateField.setValue((Date) prevValue);
-            if (prevValue == null) {
+            dateField.setValue((Date) internalValue);
+            if (internalValue == null) {
                 timeField.setValue(null);
             } else {
-                timeField.setValue(extractTime((Date) prevValue));
+                timeField.setValue(extractTime((Date) internalValue));
             }
         } finally {
             updatingInstance = false;
@@ -299,12 +299,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @SuppressWarnings("unchecked")
     @Override
-    public Date getValue() {
-        return constructDate();
+    public V getValue() {
+        return (V) constructDate();
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(V value) {
         setValueToFields((Date) value);
         updateInstance();
     }
@@ -317,11 +317,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         updatingInstance = true;
         try {
-            if (datasource != null && metaPropertyPath != null) {
+            if (getDatasource() != null && getMetaPropertyPath() != null) {
                 Date value = constructDate();
 
-                if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                if (getDatasource().getItem() != null) {
+                    InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
                     setModified(false);
                 }
             }
@@ -335,8 +335,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void discard() {
-        if (datasource != null && datasource.getItem() != null) {
-            Date value = getEntityValue(datasource.getItem());
+        if (getDatasource() != null && getDatasource().getItem() != null) {
+            Date value = getEntityValue(getDatasource().getItem());
             setValueToFields(value);
             fireValueChanged(value);
         }
@@ -411,12 +411,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         updatingInstance = true;
         try {
-            if (datasource != null && metaPropertyPath != null) {
+            if (getDatasource() != null && getMetaPropertyPath() != null) {
                 Date value = constructDate();
 
                 if (!isBuffered()) {
-                    if (datasource.getItem() != null) {
-                        InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                    if (getDatasource().getItem() != null) {
+                        InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
                         setModified(false);
                     }
                 } else {
@@ -431,7 +431,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         fireValueChanged(newValue);
     }
 
-    @Override
+    // todo vaadin8
+    /*@Override
     public void setDatasource(Datasource datasource, String property) {
         if ((datasource == null && property != null) || (datasource != null && property == null))
             throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
@@ -527,7 +528,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             initBeanValidator();
             setDateRangeByProperty(metaProperty);
         }
-    }
+    }*/
 
     protected void initDateFormat(MetaProperty metaProperty) {
         TemporalType tt = null;
@@ -578,14 +579,14 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+        return InstanceUtils.getValueEx(item, getMetaPropertyPath().getPath());
     }
 
     protected void fireValueChanged(Object value) {
-        Object oldValue = prevValue;
+        Object oldValue = internalValue;
 
         if (!Objects.equals(oldValue, value)) {
-            prevValue = value;
+            internalValue = (V) value;
 
             if (hasValidationError()) {
                 setValidationError(null);
@@ -622,8 +623,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         Date resultDate = dateCalendar.getTime();
 
-        if (metaProperty != null) {
-            Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+        if (getMetaProperty() != null) {
+            Class javaClass = getMetaProperty().getRange().asDatatype().getJavaClass();
             if (javaClass.equals(java.sql.Date.class)) {
                 return new java.sql.Date(resultDate.getTime());
             } else if (javaClass.equals(Time.class)) {

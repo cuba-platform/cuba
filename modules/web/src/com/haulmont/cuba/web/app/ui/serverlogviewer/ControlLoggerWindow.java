@@ -34,7 +34,7 @@ import java.util.Map;
 public class ControlLoggerWindow extends AbstractWindow {
 
     @Inject
-    protected TextField newLoggerTextField;
+    protected TextField<String> newLoggerTextField;
 
     @Inject
     protected GridLayout loggersGrid;

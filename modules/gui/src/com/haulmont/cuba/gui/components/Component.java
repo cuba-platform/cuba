@@ -16,10 +16,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -33,6 +32,8 @@ import java.util.function.Consumer;
 
 /**
  * Root of the GenericUI components hierarchy.
+ *
+ * todo extract non-abstract interfaces
  */
 public interface Component {
 
@@ -49,8 +50,10 @@ public interface Component {
     }
 
     // vaadin8 convert to enumeration
-    // todo see com.vaadin.server.Sizeable.Unit
+    // todo use com.haulmont.cuba.gui.components.SizeUnit
+    @Deprecated
     int UNITS_PIXELS = 0;
+    @Deprecated
     int UNITS_PERCENTAGE = 8;
 
     String AUTO_SIZE = "-1px";
@@ -122,6 +125,7 @@ public interface Component {
     float getHeight();
 
     /** Height units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE} */
+    @Deprecated
     int getHeightUnits();
 
     /** Set component height in {@link #getHeightUnits()} */
@@ -141,6 +145,7 @@ public interface Component {
     float getWidth();
 
     /** Width units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE} */
+    @Deprecated
     int getWidthUnits();
 
     /** Set component width in {@link #getWidthUnits()} */
@@ -541,6 +546,8 @@ public interface Component {
 
     /**
      * Describes value change event.
+     *
+     * todo V parameter
      */
     class ValueChangeEvent {
         private final Component.HasValue component;
@@ -594,7 +601,7 @@ public interface Component {
      * vaadin8
      */
     interface ValueChangeNotifier {
-        void addValueChangeListener(ValueChangeListener listener);
+        Subscription addValueChangeListener(ValueChangeListener listener);
         void removeValueChangeListener(ValueChangeListener listener);
     }
 
@@ -611,91 +618,14 @@ public interface Component {
          * @deprecated Use {@link #addValueChangeListener(ValueChangeListener)}
          */
         @Deprecated
-        void addListener(ValueListener listener);
+        default void addListener(ValueListener listener) {
+            addValueChangeListener(new ComponentValueListenerWrapper(listener));
+        }
+
         @Deprecated
-        void removeListener(ValueListener listener);
-    }
-
-    /**
-     * vaadin8 document
-     *
-     * @param <T>
-     */
-    interface ValueSource<T> extends Component.ValueChangeNotifier {
-        T getValue();
-        void setValue(T value);
-
-        boolean isReadOnly();
-
-        Class<T> getType();
-    }
-
-    // todo status change listener
-    enum ValueSourceStatus {
-        ACTIVE,
-        INACTIVE
-    }
-
-    /**
-     * vaadin8 document
-     *
-     * @param <T>
-     */
-    interface EntityValueSource<E extends Entity, T> extends ValueSource<T> {
-        MetaClass getMetaClass();
-        MetaPropertyPath getMetaPropertyPath();
-
-        // todo return registration
-        // todo do not provide removeXXX method
-        void addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener);
-    }
-
-    /**
-     * vaadin8 document
-     *
-     * @param <E>
-     */
-    class InstanceChangeEvent<E extends Entity> extends EventObject {
-        private final E prevItem;
-        private final E item;
-
-        public InstanceChangeEvent(EntityValueSource<E, ?> source, E prevItem, E item) {
-            super(source);
-            this.prevItem = prevItem;
-            this.item = item;
+        default void removeListener(ValueListener listener) {
+            removeValueChangeListener(new ComponentValueListenerWrapper(listener));
         }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public EntityValueSource<E, ?> getSource() {
-            return (EntityValueSource<E, ?>) super.getSource();
-        }
-
-        /**
-         * @return current item
-         */
-        @Nullable
-        public E getItem() {
-            return item;
-        }
-
-        /**
-         * @return previous selected item
-         */
-        @Nullable
-        public E getPrevItem() {
-            return prevItem;
-        }
-    }
-
-    /**
-     * vaadin8 document
-     *
-     * @param <T>
-     */
-    interface HasValueBinding<T> {
-        void setValueSource(ValueSource<T> valueSource);
-        ValueSource<T> getValueSource();
     }
 
     /**
@@ -1201,114 +1131,5 @@ public interface Component {
     interface OptionsStyleProvider {
 
         String getItemStyleName(Component component, Object item);
-    }
-
-    /**
-     * Class to store mouse event details.
-     */
-    class MouseEventDetails {
-
-        /**
-         * Constants for mouse buttons.
-         */
-        public enum MouseButton {
-            LEFT,
-            RIGHT,
-            MIDDLE
-        }
-
-        protected MouseButton button;
-        protected int clientX;
-        protected int clientY;
-        protected boolean altKey;
-        protected boolean ctrlKey;
-        protected boolean metaKey;
-        protected boolean shiftKey;
-        protected boolean doubleClick;
-        protected int relativeX = -1;
-        protected int relativeY = -1;
-
-        public MouseEventDetails() {
-        }
-
-        public MouseButton getButton() {
-            return button;
-        }
-
-        public void setButton(MouseButton button) {
-            this.button = button;
-        }
-
-        public int getClientX() {
-            return clientX;
-        }
-
-        public void setClientX(int clientX) {
-            this.clientX = clientX;
-        }
-
-        public int getClientY() {
-            return clientY;
-        }
-
-        public void setClientY(int clientY) {
-            this.clientY = clientY;
-        }
-
-        public boolean isAltKey() {
-            return altKey;
-        }
-
-        public void setAltKey(boolean altKey) {
-            this.altKey = altKey;
-        }
-
-        public boolean isCtrlKey() {
-            return ctrlKey;
-        }
-
-        public void setCtrlKey(boolean ctrlKey) {
-            this.ctrlKey = ctrlKey;
-        }
-
-        public boolean isMetaKey() {
-            return metaKey;
-        }
-
-        public void setMetaKey(boolean metaKey) {
-            this.metaKey = metaKey;
-        }
-
-        public boolean isShiftKey() {
-            return shiftKey;
-        }
-
-        public void setShiftKey(boolean shiftKey) {
-            this.shiftKey = shiftKey;
-        }
-
-        public boolean isDoubleClick() {
-            return doubleClick;
-        }
-
-        public void setDoubleClick(boolean doubleClick) {
-            this.doubleClick = doubleClick;
-        }
-
-        public int getRelativeX() {
-            return relativeX;
-        }
-
-        public void setRelativeX(int relativeX) {
-            this.relativeX = relativeX;
-        }
-
-        public int getRelativeY() {
-            return relativeY;
-        }
-
-        public void setRelativeY(int relativeY) {
-            this.relativeY = relativeY;
-        }
     }
 }

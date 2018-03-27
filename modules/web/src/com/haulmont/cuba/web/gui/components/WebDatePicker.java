@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -29,8 +28,6 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
@@ -43,17 +40,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
-public class WebDatePicker extends WebAbstractField<InlineDateField> implements DatePicker {
+public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateField, V> implements DatePicker<V> {
 
     protected Resolution resolution = Resolution.DAY;
 
     protected boolean updatingInstance;
-
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
-    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
-
-    protected Datasource.ItemChangeListener itemChangeListener;
-    protected WeakItemChangeListener weakItemChangeListener;
 
     public WebDatePicker() {
         this.component = new CubaDatePicker();
@@ -132,12 +123,13 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
 
         updatingInstance = true;
         try {
-            component.setValue((Date) prevValue);
+            component.setValue(internalValue);
         } finally {
             updatingInstance = false;
         }
     }
 
+/*  todo
     @Override
     public void setDatasource(Datasource datasource, String property) {
         if ((datasource == null && property != null) || (datasource != null && property == null))
@@ -229,7 +221,7 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
             initBeanValidator();
             setDateRangeByProperty(metaProperty);
         }
-    }
+    }*/
 
     protected void setDateRangeByProperty(MetaProperty metaProperty) {
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -268,8 +260,8 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
             return null;
         }
 
-        if (metaProperty != null) {
-            Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+        if (getMetaProperty() != null) {
+            Class javaClass = getMetaProperty().getRange().asDatatype().getJavaClass();
             if (javaClass.equals(java.sql.Date.class)) {
                 return new java.sql.Date(datePickerDate.getTime());
             } else {
@@ -281,14 +273,14 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     }
 
     protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+        return InstanceUtils.getValueEx(item, getMetaPropertyPath().getPath());
     }
 
     protected void fireValueChanged(Object value) {
-        Object oldValue = prevValue;
+        Object oldValue = internalValue;
 
         if (!Objects.equals(oldValue, value)) {
-            prevValue = value;
+            internalValue = (V) value;
 
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
@@ -326,13 +318,13 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
 
     @SuppressWarnings("unchecked")
     @Override
-    public Date getValue() {
-        return constructDate();
+    public V getValue() {
+        return (V) constructDate();
     }
 
     @Override
-    public void setValue(Object value) {
-        setValueToFields((Date) value);
+    public void setValue(V value) {
+        setValueToFields(value);
         updateInstance();
     }
 
@@ -343,11 +335,11 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
 
         updatingInstance = true;
         try {
-            if (datasource != null && metaPropertyPath != null) {
+            if (getDatasource() != null && getMetaPropertyPath() != null) {
                 Date value = constructDate();
 
-                if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                if (getDatasource().getItem() != null) {
+                    InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
                 }
             }
         } finally {

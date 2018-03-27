@@ -64,10 +64,10 @@ public class ServerLogWindow extends AbstractWindow {
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
 
     @Inject
-    protected Label localJmxField;
+    protected Label<String> localJmxField;
 
     @Inject
-    protected LookupPickerField jmxConnectionField;
+    protected LookupPickerField<JmxInstance> jmxConnectionField;
 
     @Inject
     protected JmxRemoteLoggingAPI jmxRemoteLoggingAPI;
@@ -76,19 +76,19 @@ public class ServerLogWindow extends AbstractWindow {
     protected JmxControlAPI jmxControlAPI;
 
     @Inject
-    protected LookupField logFileNameField;
+    protected LookupField<String> logFileNameField;
 
     @Inject
-    protected LookupField loggerLevelField;
+    protected LookupField<Level> loggerLevelField;
 
     @Inject
-    protected LookupField loggerNameField;
+    protected LookupField<String> loggerNameField;
 
     @Inject
-    protected LookupField appenderNameField;
+    protected LookupField<String> appenderNameField;
 
     @Inject
-    protected LookupField appenderLevelField;
+    protected LookupField<Level> appenderLevelField;
 
     @Inject
     protected CheckBox autoRefreshCheck;
@@ -122,7 +122,6 @@ public class ServerLogWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
-        localJmxField.setEditable(false);
 
         localJmxInstance = jmxControlAPI.getLocalInstance();
 

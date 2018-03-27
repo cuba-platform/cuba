@@ -17,11 +17,12 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 /**
  * SearchPickerField adds to PickerField the ability to search an entity.
- *
  */
-public interface SearchPickerField extends SearchField, PickerField {
+public interface SearchPickerField<V extends Entity> extends SearchField<V>, PickerField<V> {
 
     String NAME = "searchPickerField";
 }

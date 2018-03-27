@@ -128,7 +128,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
             AttributePermissionVariant permissionVariant = item.getPermissionVariant(attributeName);
 
             attributeLabel = componentsFactory.createComponent(Label.class);
-            attributeLabel.setFrame(getFrame());
             attributeLabel.setValue(attributeName);
 
             modifyCheckBox = componentsFactory.createComponent(CheckBox.class);
@@ -463,11 +462,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected void compileDefaultControls(GridLayout editGrid) {
         Label emptyLabel = componentsFactory.createComponent(Label.class);
-        emptyLabel.setFrame(getFrame());
         editGrid.add(emptyLabel, 0, 0);
 
         Label modifyLabel = componentsFactory.createComponent(Label.class);
-        modifyLabel.setFrame(getFrame());
         modifyLabel.setValue(getMessage("checkbox.modify"));
         modifyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         modifyLabel.setStyleName("centered");
@@ -480,7 +477,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.add(modifyBox, 1, 0);
 
         Label readOnlyLabel = componentsFactory.createComponent(Label.class);
-        readOnlyLabel.setFrame(getFrame());
         readOnlyLabel.setValue(getMessage("checkbox.readOnly"));
         readOnlyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         readOnlyLabel.setStyleName("centered");
@@ -493,7 +489,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.add(readOnlyBox, 2, 0);
 
         Label hideLabel = componentsFactory.createComponent(Label.class);
-        hideLabel.setFrame(getFrame());
         hideLabel.setValue(getMessage("checkbox.hide"));
         hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
         hideLabel.setStyleName("centered");
@@ -522,7 +517,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
         emptyLabel = componentsFactory.createComponent(Label.class);
-        emptyLabel.setFrame(getFrame());
         emptyLabel.setValue(getMessage("allEntities"));
         editGrid.add(emptyLabel, 0, 1);
 

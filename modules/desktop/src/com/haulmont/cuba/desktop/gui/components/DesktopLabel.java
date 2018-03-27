@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements Label {
+public class DesktopLabel<V> extends DesktopAbstractComponent<JLabel> implements Label<V> {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -136,15 +137,6 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     @Override
-    public boolean isEditable() {
-        return false;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-    }
-
-    @Override
     public Formatter getFormatter() {
         return valueFormatter.getFormatter();
     }
@@ -156,8 +148,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     @Override
-    public <T> T getValue() {
-        return (T) prevValue;
+    public V getValue() {
+        return (V) prevValue;
     }
 
     @Override
@@ -235,20 +227,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         if (!valueChangeListeners.contains(listener)) {
             valueChangeListeners.add(listener);
         }
+        return () -> {};
     }
 
     @Override

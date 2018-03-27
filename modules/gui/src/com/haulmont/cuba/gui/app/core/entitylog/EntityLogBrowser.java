@@ -125,7 +125,7 @@ public class EntityLogBrowser extends AbstractWindow {
     protected DateField tillDateField;
 
     @Inject
-    protected PickerField instancePicker;
+    protected PickerField<Entity> instancePicker;
 
     @Inject
     protected LookupField userField;
@@ -179,10 +179,10 @@ public class EntityLogBrowser extends AbstractWindow {
 
         addAction(new SaveAction());
         addAction(new CancelAction());
-        Label label1 = factory.createComponent(Label.class);
+        Label<String> label1 = factory.createComponent(Label.class);
         label1.setValue(messages.getMessage(getClass(), "show"));
         label1.setAlignment(Alignment.MIDDLE_LEFT);
-        Label label2 = factory.createComponent(Label.class);
+        Label<String> label2 = factory.createComponent(Label.class);
         label2.setValue(messages.getMessage(getClass(), "rows"));
         label2.setAlignment(Alignment.MIDDLE_LEFT);
         ButtonsPanel panel = entityLogTable.getButtonsPanel();

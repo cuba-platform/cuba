@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implements RichTextArea {
+public class WebRichTextArea extends WebAbstractField<CubaRichTextArea, String> implements RichTextArea {
 
     public WebRichTextArea() {
         component = new CubaRichTextArea();

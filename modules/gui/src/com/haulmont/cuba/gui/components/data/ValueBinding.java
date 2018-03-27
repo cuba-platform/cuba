@@ -17,13 +17,20 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.cuba.gui.components.Component.HasValue;
-import com.haulmont.cuba.gui.components.Component.ValueSource;
 
-public interface ValueBinding<T> {
-    Class<T> getType();
+/**
+ * vaadin8 todo JavaDoc
+ * vaadin8 subclasses for EntityValueBinding
+ *
+ * @param <V> todo
+ */
+public interface ValueBinding<V> {
+    Class<V> getType();
 
-    ValueSource<T> getSource();
-    HasValue<T> getComponent();
+    ValueSource<V> getSource();
+    HasValue<V> getComponent();
 
     void unbind();
+
+    // todo buffering support
 }

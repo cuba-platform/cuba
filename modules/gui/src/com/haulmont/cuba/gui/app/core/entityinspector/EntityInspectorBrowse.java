@@ -97,7 +97,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Configuration configuration;
 
     @Inject
-    protected LookupField entitiesLookup;
+    protected LookupField<MetaClass> entitiesLookup;
 
     @Inject
     protected CheckBox removedRecords;

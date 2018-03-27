@@ -114,8 +114,6 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);
-
-                assignAutoDebugId();
             }
         }
     }

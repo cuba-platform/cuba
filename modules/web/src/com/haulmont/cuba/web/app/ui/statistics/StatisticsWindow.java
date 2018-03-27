@@ -47,10 +47,10 @@ public class StatisticsWindow extends AbstractWindow {
     protected JmxControlAPI jmxControlAPI;
 
     @Inject
-    protected Label localNodeLab;
+    protected Label<String> localNodeLab;
 
     @Inject
-    protected LookupPickerField jmxConnectionField;
+    protected LookupPickerField<JmxInstance> jmxConnectionField;
 
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
@@ -118,7 +118,6 @@ public class StatisticsWindow extends AbstractWindow {
                 }));
 
         localNodeLab.setValue(jmxControlAPI.getLocalNodeName());
-        localNodeLab.setEditable(false);
     }
 
     @SuppressWarnings("unused")
@@ -142,6 +141,6 @@ public class StatisticsWindow extends AbstractWindow {
 
     public void onMonitorThreads() {
         openWindow("threadsMonitoringWindow", OpenType.NEW_TAB,
-                ParamsMap.of("node", jmxConnectionField.<JmxInstance>getValue()));
+                ParamsMap.of("node", jmxConnectionField.getValue()));
     }
 }

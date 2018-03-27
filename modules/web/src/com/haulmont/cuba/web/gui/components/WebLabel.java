@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
@@ -30,18 +31,18 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.gui.components.converters.StringToEnumConverter;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-public class WebLabel extends WebAbstractComponent<com.vaadin.v7.ui.Label> implements Label {
+public class WebLabel<V> extends WebAbstractComponent<com.vaadin.v7.ui.Label> implements Label<V> {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -162,8 +163,8 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.v7.ui.Label> imple
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
-        return (T) component.getValue();
+    public V getValue() {
+        return (V) component.getValue();
     }
 
     @Override
@@ -179,27 +180,10 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.v7.ui.Label> imple
     }
 
     @Override
-    public boolean isEditable() {
-        return false;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-    }
-
-    @Override
-    public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         getEventRouter().addListener(ValueChangeListener.class, listener);
+        // todo
+        return () -> {};
     }
 
     @Override

@@ -61,7 +61,7 @@ public class FilterEditor extends AbstractWindow {
     protected GridLayout filterPropertiesGrid;
 
     @Inject
-    protected TextField filterName;
+    protected TextField<String> filterName;
 
     @Inject
     protected Label filterNameLabel;

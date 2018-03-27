@@ -54,7 +54,6 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
@@ -1531,12 +1530,11 @@ public class WebWindowManager extends WindowManager {
                     }
                     if (componentFrame == null) {
                         log.warn("Frame for component {} is not assigned", component.getClass());
-                    } else {
+                    } /*else { todo
                         if (component instanceof WebAbstractComponent) {
                             WebAbstractComponent webComponent = (WebAbstractComponent) component;
-                            webComponent.assignAutoDebugId();
                         }
-                    }
+                    }*/
                 }
             });
         }

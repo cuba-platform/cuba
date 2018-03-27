@@ -34,7 +34,7 @@ import com.vaadin.v7.ui.AbstractSelect;
 
 import java.util.*;
 
-public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> implements TwinColumn {
+public class WebTwinColumn<V> extends WebAbstractOptionsField<CubaTwinColSelect, V> implements TwinColumn<V> {
 
     protected StyleProvider styleProvider;
 
@@ -153,7 +153,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
     }
 
     @Override
-    public <T> T getValue() {
+    public V getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
             return getValueFromKey(key);
@@ -163,8 +163,8 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
     }
 
     @Override
-    public void setValue(Object value) {
-        super.setValue(getKeyFromValue(value));
+    public void setValue(V value) {
+        super.setValue((V) getKeyFromValue(value));
     }
 
     @Override
@@ -191,8 +191,6 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
         component.setConverter(new ObjectToObjectConverter());
-
-        assignAutoDebugId();
     }
 
     @Override

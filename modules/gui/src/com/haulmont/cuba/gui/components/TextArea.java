@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 
-public interface TextArea extends TextInputField,
+public interface TextArea<V> extends TextInputField<V>,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,
                                   TextInputField.TrimSupported,

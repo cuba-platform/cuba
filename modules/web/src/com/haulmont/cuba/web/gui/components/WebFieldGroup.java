@@ -494,8 +494,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         this.datasource = datasource;
-
-        assignAutoDebugId();
     }
 
     @Override

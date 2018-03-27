@@ -19,9 +19,9 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.vaadin.v7.ui.TextArea;
 
-public abstract class WebAbstractTextArea<T extends TextArea>
-        extends WebAbstractTextField<T>
-        implements com.haulmont.cuba.gui.components.TextArea {
+public abstract class WebAbstractTextArea<T extends TextArea, V>
+        extends WebAbstractTextField<T, V>
+        implements com.haulmont.cuba.gui.components.TextArea<V> {
 
     protected boolean trimming = true;
 

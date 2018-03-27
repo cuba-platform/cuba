@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -29,8 +28,8 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.UserError;
+import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField {
+public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> implements TimeField {
 
     protected boolean showSeconds;
 
@@ -192,15 +191,14 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     }
 
     @Override
-    public void setValue(Object value) {
-        Preconditions.checkArgument(value == null || value instanceof Date, "Value must be an instance of Date");
+    public void setValue(Date value) {
         if (value != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(this.timeFormat);
             sdf.setLenient(false);
 
-            super.setValue(sdf.format(value));
+            component.setValue(sdf.format(value));
         } else {
-            super.setValue(null);
+            component.setValue(null);
         }
     }
 

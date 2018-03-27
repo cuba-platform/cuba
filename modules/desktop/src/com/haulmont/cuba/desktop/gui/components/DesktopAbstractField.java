@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -72,16 +73,6 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
 
-    @Override
-    public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
     protected void fireValueChanged(Object prevValue, Object value) {
         for (ValueChangeListener listener : new ArrayList<>(listeners)) {
             listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
@@ -89,10 +80,12 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     }
 
     @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
+        // todo
+        return () -> {};
     }
 
     @Override

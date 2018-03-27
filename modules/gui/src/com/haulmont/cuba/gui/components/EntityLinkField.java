@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public interface EntityLinkField extends Field, Component.Focusable {
+public interface EntityLinkField<V> extends Field<V>, Component.Focusable {
 
     String NAME = "entityLinkField";
 

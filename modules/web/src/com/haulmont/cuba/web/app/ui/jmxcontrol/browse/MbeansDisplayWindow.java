@@ -51,13 +51,13 @@ public class MbeansDisplayWindow extends AbstractWindow {
     protected TextField objectNameField;
 
     @Inject
-    protected Label localJmxField;
+    protected Label<String> localJmxField;
 
     @Resource(name = "mbeans")
     protected TreeTable<ManagedBeanInfo> mbeansTable;
 
     @Inject
-    protected LookupPickerField jmxConnectionField;
+    protected LookupPickerField<JmxInstance> jmxConnectionField;
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
@@ -145,7 +145,6 @@ public class MbeansDisplayWindow extends AbstractWindow {
         mbeanDs.refresh();
 
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
-        localJmxField.setEditable(false);
 
         mbeansTable.setStyleProvider((entity, property) -> {
             if (entity != null && entity.getObjectName() == null) {

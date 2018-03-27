@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface ResizableTextArea extends TextArea, Component.HasSettings {
+import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
+
+public interface ResizableTextArea<V> extends TextArea<V>, Component.HasSettings {
     String NAME = TextArea.NAME;
 
     /**
@@ -45,9 +47,14 @@ public interface ResizableTextArea extends TextArea, Component.HasSettings {
     ResizeDirection getResizableDirection();
 
     @Deprecated
-    void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener);
+    default void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
+        addResizeListener(new ResizeListenerWrapper(resizeListener));
+    }
+
     @Deprecated
-    void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener);
+    default void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
+        removeResizeListener(new ResizeListenerWrapper(resizeListener));
+    }
 
     class ResizeEvent {
         private final ResizableTextArea component;

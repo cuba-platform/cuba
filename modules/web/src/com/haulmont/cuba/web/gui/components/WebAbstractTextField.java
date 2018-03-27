@@ -25,6 +25,8 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
+import com.haulmont.cuba.gui.components.data.SupportsImplicitValueConversion;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
@@ -42,11 +44,11 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class WebAbstractTextField<T extends AbstractTextField>
+public abstract class WebAbstractTextField<T extends AbstractTextField, V>
         extends
-            WebAbstractField<T>
+            WebAbstractField<T, V>
         implements
-            TextInputField {
+            TextInputField<V>, SupportsImplicitValueConversion {
 
     protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
 
@@ -66,8 +68,9 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     protected abstract T createTextFieldImpl();
 
     @Override
-    public <V> V getValue() {
-        String value = super.getValue();
+    public V getValue() {
+        String value = component.getValue();
+
         if (isTrimming()) {
             value = StringUtils.trim(value);
         }
@@ -88,8 +91,10 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     }
 
     @Override
-    public void setValue(Object value) {
-        if (!(value instanceof String)) {
+    public void setValue(V value) {
+        if (value instanceof String) {
+            component.setValue((String) value);
+        } else {
             String formattedValue;
 
             Datatype<String> stringDatatype = Datatypes.getNN(String.class);
@@ -102,16 +107,14 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                 formattedValue = metadataTools.format(value);
             }
 
-            super.setValue(formattedValue);
-        } else {
-            super.setValue(value);
+            component.setValue(formattedValue);
         }
     }
 
     @Nullable
     protected Datatype getActualDatatype() {
-        if (metaProperty != null) {
-            return metaProperty.getRange().isDatatype() ? metaProperty.getRange().asDatatype() : null;
+        if (getMetaProperty() != null) {
+            return getMetaProperty().getRange().isDatatype() ? getMetaProperty().getRange().asDatatype() : null;
         } else {
             return Datatypes.getNN(String.class);
         }
@@ -121,8 +124,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
-        if (metaProperty != null) {
-            Map<String, Object> annotations = metaProperty.getAnnotations();
+        if (getMetaProperty() != null) {
+            Map<String, Object> annotations = getMetaProperty().getAnnotations();
 
             if (this instanceof CaseConversionSupported
                     && ((CaseConversionSupported) this).getCaseConversion() == CaseConversion.NONE) {
@@ -168,8 +171,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     @Override
     protected void initFieldConverter() {
-        if (metaProperty != null) {
-            switch (metaProperty.getType()) {
+        if (getMetaProperty() != null) {
+            switch (getMetaProperty().getType()) {
                 case ASSOCIATION:
                     component.setConverter(new StringToEntityConverter() {
                         @Override
@@ -180,12 +183,12 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                     break;
 
                 case DATATYPE:
-                    component.setConverter(new TextFieldStringToDatatypeConverter(metaProperty.getRange().asDatatype()));
+                    component.setConverter(new TextFieldStringToDatatypeConverter(getMetaProperty().getRange().asDatatype()));
                     break;
 
                 case ENUM:
                     //noinspection unchecked
-                    component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()){
+                    component.setConverter(new StringToEnumConverter((Class<Enum>) getMetaProperty().getJavaType()){
                         @Override
                         public Formatter getFormatter() {
                             return WebAbstractTextField.this.getFormatter();
@@ -205,6 +208,11 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         } else {
             component.setConverter(new TextFieldStringToDatatypeConverter(Datatypes.getNN(String.class)));
         }
+    }
+
+    @Override
+    public void setupValueConversion(ValueSource<?> valueSource) {
+        // vaadin8
     }
 
     @Override

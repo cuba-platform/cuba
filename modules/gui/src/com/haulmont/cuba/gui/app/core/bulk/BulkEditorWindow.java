@@ -194,13 +194,12 @@ public class BulkEditorWindow extends AbstractWindow {
         grid.setFrame(frame);
 
         List<ManagedField> editFields = new ArrayList<>(managedFields.values());
-        editFields.sort((o1, o2) -> o1.getLocalizedName().compareTo(o2.getLocalizedName()));
+        editFields.sort(Comparator.comparing(ManagedField::getLocalizedName));
 
         String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 
         for (ManagedField field : editFields) {
-            Label label = componentsFactory.createComponent(Label.class);
-            label.setFrame(getFrame());
+            Label<String> label = componentsFactory.createComponent(Label.class);
             label.setValue(field.getLocalizedName());
             label.setAlignment(Alignment.TOP_LEFT);
             label.setStyleName("field-label");
@@ -280,7 +279,6 @@ public class BulkEditorWindow extends AbstractWindow {
                 dataFields.put(field.getFqn(), editField);
             } else {
                 Label unknownLabel = componentsFactory.createComponent(Label.class);
-                unknownLabel.setFrame(getFrame());
                 grid.add(unknownLabel);
             }
         }

@@ -81,7 +81,7 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected ExportDisplay exportDisplay;
 
     @Named("fg.bodyContentType")
-    protected TextField bodyContentTypeField;
+    protected TextField<String> bodyContentTypeField;
 
     @Inject
     protected FileLoader fileLoader;

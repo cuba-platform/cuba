@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
 
-public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> implements PasswordField {
+public class WebPasswordField extends WebAbstractTextField<CubaPasswordField, String> implements PasswordField {
 
     protected CapsLockIndicator capsLockIndicator;
 
@@ -48,12 +48,6 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> im
     @Override
     public void setAutocomplete(Boolean value) {
         component.setAutocomplete(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getValue() {
-        return super.getValue();
     }
 
     @Override

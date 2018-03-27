@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Date;
 
-public interface DatePicker extends Field, Component.Focusable {
+public interface DatePicker<V extends Date> extends Field<V>, Component.Focusable {
     String NAME = "datePicker";
 
     enum Resolution {
@@ -70,5 +70,5 @@ public interface DatePicker extends Field, Component.Focusable {
 
     @SuppressWarnings("unchecked")
     @Override
-    Date getValue();
+    V getValue();
 }

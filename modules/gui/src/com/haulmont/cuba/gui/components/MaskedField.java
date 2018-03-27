@@ -33,7 +33,7 @@ package com.haulmont.cuba.gui.components;
  */
 public interface MaskedField
         extends
-            TextInputField,
+            TextInputField<String>,
             TextInputField.TextSelectionSupported,
             TextInputField.CursorPositionSupported,
             TextInputField.EnterPressNotifier {

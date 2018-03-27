@@ -30,7 +30,7 @@ import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
+public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V> implements ResizableTextArea<V> {
 
     protected Datatype datatype;
 
@@ -71,16 +71,6 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     @Override
     public boolean isResizable() {
         return getResizableDirection() != ResizeDirection.NONE;
-    }
-
-    @Override
-    public void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        addResizeListener(new ResizeListenerWrapper(resizeListener));
-    }
-
-    @Override
-    public void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        removeResizeListener(new ResizeListenerWrapper(resizeListener));
     }
 
     @Override

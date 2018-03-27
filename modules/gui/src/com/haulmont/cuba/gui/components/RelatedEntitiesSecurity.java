@@ -25,6 +25,8 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
+// todo move to separate package
+// todo convert to bean
 public final class RelatedEntitiesSecurity {
 
     private RelatedEntitiesSecurity() {

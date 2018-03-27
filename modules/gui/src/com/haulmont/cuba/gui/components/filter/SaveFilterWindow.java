@@ -30,9 +30,8 @@ import java.util.Map;
  * Window for editing new filter name
  */
 public class SaveFilterWindow extends AbstractWindow {
-
     @Inject
-    protected TextField filterName;
+    protected TextField<String> filterName;
 
     @Inject
     protected ThemeConstants theme;

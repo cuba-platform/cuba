@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
@@ -37,7 +38,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebSearchPickerField extends WebSearchField implements SearchPickerField, SecuredActionsHolder {
+public class WebSearchPickerField<V extends Entity> extends WebSearchField<V> implements SearchPickerField<V>, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
     protected boolean updateComponentValue = false;

@@ -1080,8 +1080,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         if (!canBeSorted(datasource))
             setSortable(false);
-
-        assignAutoDebugId();
     }
 
     protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
@@ -1265,8 +1263,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
 //        if (!canBeSorted(datasource))
 //            setSortable(false);
-
-        assignAutoDebugId();
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -1290,19 +1286,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         if (id != null && AppUI.getCurrent().isTestMode()) {
             componentComposition.setCubaId(id + "_composition");
-        }
-    }
-
-    @Override
-    public void assignAutoDebugId() {
-        super.assignAutoDebugId();
-
-        if (buttonsPanel != null) {
-            for (com.haulmont.cuba.gui.components.Component subComponent : buttonsPanel.getComponents()) {
-                if (subComponent instanceof WebAbstractComponent) {
-                    ((WebAbstractComponent) subComponent).assignAutoDebugId();
-                }
-            }
         }
     }
 
@@ -2668,13 +2651,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
-            if (columnComponent instanceof DatasourceComponent) {
+            if (columnComponent instanceof DatasourceComponent
+                    && columnComponent instanceof Editable) {
                 DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
                 MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
                 if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(dsComponent.isEditable()
+                    Editable editable = (Editable) dsComponent;
+
+                    editable.setEditable(editable.isEditable()
                             && webTable.security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
                 }
             }

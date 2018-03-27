@@ -58,7 +58,8 @@ import java.util.function.Supplier;
  *
  * @see LookupPickerField
  */
-public interface PickerField extends Field, Component.ActionsHolder, Component.Buffered, LookupComponent, Component.Focusable {
+public interface PickerField<V extends Entity> extends Field<V>, Component.ActionsHolder, Component.Buffered,
+        LookupComponent, Component.Focusable {
 
     String NAME = "pickerField";
 

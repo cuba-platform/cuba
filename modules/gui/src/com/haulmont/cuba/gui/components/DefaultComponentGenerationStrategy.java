@@ -23,6 +23,7 @@ import org.springframework.core.Ordered;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+// todo move to package
 @org.springframework.stereotype.Component(DefaultComponentGenerationStrategy.NAME)
 public class DefaultComponentGenerationStrategy extends AbstractComponentGenerationStrategy implements Ordered {
     public static final String NAME = "cuba_DefaultMetaComponentStrategy";

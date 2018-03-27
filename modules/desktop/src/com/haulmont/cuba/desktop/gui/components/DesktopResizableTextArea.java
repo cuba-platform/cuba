@@ -38,16 +38,6 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
     }
 
     @Override
-    public void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        //Do nothing, because desktop text area is not resizable
-    }
-
-    @Override
-    public void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        //Do nothing, because desktop text area is not resizable
-    }
-
-    @Override
     public void addResizeListener(ResizeListener resizeListener) {
         //Do nothing, because desktop text area is not resizable
     }

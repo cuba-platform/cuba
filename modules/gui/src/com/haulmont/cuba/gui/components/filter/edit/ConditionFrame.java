@@ -45,7 +45,7 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     protected Component defaultValueComponent;
     protected CheckBox required;
     protected CheckBox hidden;
-    protected LookupField width;
+    protected LookupField<Integer> width;
     protected BoxLayout defaultValueLayout;
 
     @Override

@@ -38,9 +38,9 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect>
-        extends WebAbstractField<T>
-        implements OptionsField {
+public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect, V>
+        extends WebAbstractField<T, V>
+        implements OptionsField<V> {
 
     protected List optionsList;
     protected Map<String, ?> optionsMap;
@@ -52,6 +52,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
     protected String captionProperty;
     protected String descriptionProperty;
 
+    /*
+todo
     @Override
     public void setDatasource(Datasource datasource, String property) {
         if ((datasource == null && property != null) || (datasource != null && property == null))
@@ -124,7 +126,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
 
             initBeanValidator();
         }
-    }
+    }*/
 
     protected EnumerationContainer createEnumContainer(List options) {
         return new EnumerationContainer(options);
@@ -146,8 +148,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
 
     @Override
     public void setOptionsMap(Map<String, ?> options) {
-        if (metaProperty != null && metaProperty.getRange().isEnum()) {
-            List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
+        if (getMetaProperty() != null && getMetaProperty().getRange().isEnum()) {
+            List constants = Arrays.asList(getMetaProperty().getRange().asEnumeration().getJavaClass().getEnumConstants());
             List opts = new ArrayList();
 
             for (Map.Entry<String, ?> entry : options.entrySet()) {
@@ -156,7 +158,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
 
                 component.setItemCaption(itemId, key);
                 if (!constants.contains(itemId)) {
-                    throw new UnsupportedOperationException(itemId + " is not of class of meta property" + metaProperty);
+                    throw new UnsupportedOperationException(itemId + " is not of class of meta property" + getMetaProperty());
                 }
                 opts.add(itemId);
             }
@@ -185,9 +187,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
 
     @Override
     public void setOptionsList(List optionsList) {
-        if (metaProperty != null) {
+        if (getMetaProperty() != null) {
             Object currentValue = component.getValue();
-            if (metaProperty.getRange().isEnum()) {
+            if (getMetaProperty().getRange().isEnum()) {
                 setComponentContainerDs(createEnumContainer(optionsList));
                 setCaptionMode(CaptionMode.ITEM);
             } else {
@@ -221,14 +223,14 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.Abstrac
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
         Object currentValue = null;
-        if (metaProperty != null) {
+        if (getMetaProperty() != null) {
             currentValue = component.getValue();
         }
         List options = Arrays.asList(optionsEnum.getEnumConstants());
         setComponentContainerDs(createEnumContainer(options));
         setCaptionMode(CaptionMode.ITEM);
 
-        if (metaProperty != null) {
+        if (getMetaProperty() != null) {
             component.setValue(currentValue);
         }
 

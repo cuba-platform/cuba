@@ -33,7 +33,7 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
     protected BoxLayout operationLayout;
 
     @Inject
-    protected TextField caption;
+    protected TextField<String> caption;
 
     @Inject
     protected TextField property;

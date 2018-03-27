@@ -119,7 +119,7 @@ public class FrameContextImpl implements FrameContext {
     protected <T> T getValue(Component component) {
         if (component instanceof Component.HasValue) {
             //noinspection RedundantTypeArguments
-            return ((Component.HasValue) component).<T>getValue();
+            return (T) ((Component.HasValue) component).getValue();
         } else if (component instanceof ListComponent) {
             ListComponent list = (ListComponent) component;
             //noinspection unchecked

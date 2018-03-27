@@ -112,7 +112,7 @@ public class NameBuilderListener<T extends Entity> implements Datasource.ItemPro
             return datasource.getItem().getValue(name);
         } else if (window != null) {
             Field field = (Field) window.getComponentNN(name);
-            return field.getValue();
+            return (String) field.getValue();
         } else {
             return (String) fieldGroup.getFieldValue(name);
         }

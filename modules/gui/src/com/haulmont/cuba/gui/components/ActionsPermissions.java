@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
+// todo move to package
 public class ActionsPermissions {
     private Component.SecuredActionsHolder actionsHolder;
 

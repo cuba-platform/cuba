@@ -25,7 +25,9 @@ import com.haulmont.chile.core.model.MetaProperty;
  * vaadin8
  */
 @Deprecated
-public interface DatasourceComponent<T> extends Component, Component.HasValue<T> {
+public interface DatasourceComponent<V> extends Component, Component.HasValue<V> {
+
+    // todo replace all with default methods
 
     /**
      * vaadin8

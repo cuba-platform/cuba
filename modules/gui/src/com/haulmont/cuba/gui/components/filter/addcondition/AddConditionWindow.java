@@ -45,7 +45,7 @@ public class AddConditionWindow extends AbstractWindow {
     protected ConditionDescriptorsDs conditionDescriptorsDs;
 
     @Inject
-    protected TextField treeFilter;
+    protected TextField<String> treeFilter;
 
     @Inject
     protected Tree tree;
@@ -80,12 +80,7 @@ public class AddConditionWindow extends AbstractWindow {
         });
 
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
-        filterHelper.addTextChangeListener(treeFilter, new FilterHelper.TextChangeListener() {
-            @Override
-            public void textChanged(String text) {
-                _search(text);
-            }
-        });
+        filterHelper.addTextChangeListener(treeFilter, this::_search);
 
         filterHelper.addShortcutListener(treeFilter, new FilterHelper.ShortcutListener("search", new KeyCombination(Key.ENTER)) {
             @Override

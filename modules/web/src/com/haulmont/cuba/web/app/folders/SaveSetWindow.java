@@ -34,7 +34,7 @@ public class SaveSetWindow extends AbstractWindow {
     private String entityType;
     private String entityClass;
     private CubaFoldersPane foldersPane;
-    private LookupField foldersSelect;
+    private LookupField<SearchFolder> foldersSelect;
     private String query;
 
     @Override

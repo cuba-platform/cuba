@@ -39,7 +39,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField beanNameField;
 
     @Inject
-    protected LookupField methodNameField;
+    protected LookupField<MethodInfo> methodNameField;
 
     @Inject
     protected LookupField userNameField;

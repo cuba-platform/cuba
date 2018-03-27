@@ -47,7 +47,7 @@ public interface ComponentsFactory {
      * @param type component type
      * @return component instance for the current client type (web or desktop)
      */
-    <T extends Component> T createComponent(Class<T> type);
+    <T extends Component> T createComponent(Class type);
 
     /**
      * Creates a component according to the given {@link ComponentGenerationContext}.
@@ -65,8 +65,12 @@ public interface ComponentsFactory {
     Component createComponent(ComponentGenerationContext context);
 
     /**
+     * //vaadin8 todo remove from here
+     *
+     * @deprecated todo
      * Create a timer instance.
      * @return client-specific implementation of the timer
      */
+    @Deprecated
     Timer createTimer();
 }

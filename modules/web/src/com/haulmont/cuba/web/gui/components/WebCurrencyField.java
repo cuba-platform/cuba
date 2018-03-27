@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -32,10 +33,11 @@ import com.haulmont.cuba.web.widgets.CubaTextField;
 
 import java.util.Map;
 
-public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implements CurrencyField {
+public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> implements CurrencyField<V> {
     protected TextField textField;
 
     public WebCurrencyField() {
+        // todo rework
         textField = AppBeans.get(ComponentsFactory.class).createComponent(TextField.class);
 
         this.component = new CubaCurrencyField(textField.unwrap(CubaTextField.class));
@@ -126,8 +128,10 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     }
 
     @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         textField.addValueChangeListener(listener);
+        // todo
+        return () -> {};
     }
 
     @Override
@@ -136,12 +140,12 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     }
 
     @Override
-    public <V> V getValue() {
-        return textField.getValue();
+    public V getValue() {
+        return (V) textField.getValue();
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(V value) {
         textField.setValue(value);
     }
 

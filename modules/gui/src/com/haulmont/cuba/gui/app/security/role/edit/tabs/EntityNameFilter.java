@@ -35,7 +35,7 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
     protected final CheckBox assignedOnlyCheckBox;
     protected final CheckBox systemLevelCheckBox;
 
-    protected final TextField entityFilter;
+    protected final TextField<String> entityFilter;
 
     public EntityNameFilter(Metadata metadata, CheckBox assignedOnlyCheckBox, CheckBox systemLevelCheckBox,
                             TextField entityFilter) {
@@ -62,7 +62,7 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
                 }
             }
 
-            String filterValue = StringUtils.trimToEmpty(entityFilter.<String>getValue());
+            String filterValue = StringUtils.trimToEmpty(entityFilter.getValue());
             return StringUtils.isBlank(filterValue)
                     || StringUtils.containsIgnoreCase(target.getCaption(), filterValue);
         }

@@ -17,12 +17,12 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParamWrapper implements Component.HasValue {
+public class ParamWrapper implements Component, Component.HasValue<Object> {
 
     public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE + "\\s*?(escape '(\\S+)')?",
             Pattern.CASE_INSENSITIVE);
@@ -51,7 +51,7 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     @Override
-    public <T> T getValue() {
+    public Object getValue() {
         Object value = param.getValue();
         if (value instanceof String
                 && !StringUtils.isEmpty((String) value)
@@ -101,7 +101,7 @@ public class ParamWrapper implements Component.HasValue {
                 value = ((EnumClass) value).getId();
             }
         }
-        return (T) value;
+        return value;
     }
 
     protected String wrapValueForLike(Object value) {
@@ -117,23 +117,16 @@ public class ParamWrapper implements Component.HasValue {
         param.setValue(value);
     }
 
-    @Override
-    public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+   @Override
+    public Subscription addValueChangeListener(Component.ValueChangeListener listener) {
         param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
+
+        // todo
+        return () -> {};
     }
 
     @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
+    public void removeValueChangeListener(Component.ValueChangeListener listener) {
         param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
     }
 
@@ -171,15 +164,6 @@ public class ParamWrapper implements Component.HasValue {
         public int hashCode() {
             return valueChangeListener.hashCode();
         }
-    }
-
-    @Override
-    public boolean isEditable() {
-        return false;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
     }
 
     @Override
@@ -313,14 +297,5 @@ public class ParamWrapper implements Component.HasValue {
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return null;
-    }
-
-    @Override
-    public Frame getFrame() {
-        return null;
-    }
-
-    @Override
-    public void setFrame(Frame frame) {
     }
 }

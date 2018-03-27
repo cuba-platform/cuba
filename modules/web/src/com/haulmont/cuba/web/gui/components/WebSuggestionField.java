@@ -21,15 +21,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
+import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> implements SuggestionField, Component.Wrapper {
+public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField, V> implements SuggestionField<V> {
 
     private static final Logger log = LoggerFactory.getLogger(WebSuggestionField.class);
 
@@ -103,7 +102,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     }
 
     @Override
-    public <V> V getValue() {
+    public V getValue() {
         V value = super.getValue();
         return value instanceof OptionWrapper
                 ? (V) ((OptionWrapper) value).getValue()

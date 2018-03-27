@@ -97,7 +97,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected Embedded logoImage;
 
     @Inject
-    protected TextField loginField;
+    protected TextField<String> loginField;
 
     @Inject
     protected CheckBox rememberMeCheckBox;
@@ -112,7 +112,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected Label localesSelectLabel;
 
     @Inject
-    protected LookupField localesSelect;
+    protected LookupField<Locale> localesSelect;
 
     protected boolean loginByRememberMe = false;
 

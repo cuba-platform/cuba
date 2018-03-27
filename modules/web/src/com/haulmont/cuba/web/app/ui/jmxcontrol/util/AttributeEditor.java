@@ -35,8 +35,8 @@ import java.util.*;
 public class AttributeEditor {
 
     protected CheckBox checkBox;
-    protected TextField textField;
-    protected DateField dateField;
+    protected TextField<String> textField;
+    protected DateField<Date> dateField;
     protected BoxLayout layout;
     protected String type;
 
@@ -50,13 +50,13 @@ public class AttributeEditor {
     public AttributeEditor(Frame frame, String type, Object value, boolean requestFocus, boolean isFixedSize) {
         this.type = type;
         if (AttributeHelper.isBoolean(type)) {
-            checkBox = componentsFactory.createComponent(WebCheckBox.class);
+            checkBox = componentsFactory.createComponent(CheckBox.class);
             checkBox.setFrame(frame);
             if (requestFocus) {
                 checkBox.requestFocus();
             }
             if (value != null) {
-                checkBox.setValue(value);
+                checkBox.setValue((Boolean) value);
             }
 
         } else if (AttributeHelper.isArrayOrCollection(type)) {
@@ -66,7 +66,8 @@ public class AttributeEditor {
             dateField.setWidth("500px");
             dateField.setFrame(frame);
             if (value != null) {
-                dateField.setValue(value.toString());
+                // todo ??? vaadin8
+//                dateField.setValue(value.toString());
             }
         } else {
             textField = componentsFactory.createComponent(WebTextField.class);
@@ -228,7 +229,7 @@ public class AttributeEditor {
         List<String> values = new ArrayList<>(layout.getComponents().size() - 1);
         for (Component component : layout.getComponents()) {
             if (component instanceof TextField) {
-                values.add(((TextField) component).getValue());
+                values.add((String) ((TextField) component).getValue());
             }
         }
         return values;

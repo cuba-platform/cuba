@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import org.apache.commons.lang.StringUtils;
 
-public interface SourceCodeEditor extends Field, Component.Focusable {
+public interface SourceCodeEditor extends Field<String>, Component.Focusable {
     String NAME = "sourceCodeEditor";
 
     enum Mode {

@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
 public enum SizeUnit {
     /**
@@ -45,7 +45,7 @@ public enum SizeUnit {
     }
 
     public static SizeUnit getUnitFromSymbol(String symbol) {
-        if (StringUtils.isEmpty(symbol)) {
+        if (Strings.isNullOrEmpty(symbol)) {
             return SizeUnit.PIXELS; // Defaults to pixels
         }
 

@@ -17,21 +17,16 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.OptionsGroup;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
-import com.haulmont.cuba.web.gui.components.converters.SetToListConverter;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> implements OptionsGroup {
+public class WebOptionsGroup<V> extends WebAbstractOptionsBase<CubaOptionGroup, V> implements OptionsGroup<V> {
 
     protected Orientation orientation = Orientation.VERTICAL;
 
@@ -44,7 +39,8 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                     return;
                 }
 
-                super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                // todo
+                /*super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
 
                     @Override
                     public Class getType() {
@@ -70,7 +66,7 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                         final Object v = getValueFromKey(newValue);
                         itemProperty.setValue(v);
                     }
-                });
+                });*/
             }
         };
         attachListener(component);
@@ -96,7 +92,8 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
         }
     }
 
-    @Override
+    // todo
+    /*@Override
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
@@ -105,7 +102,7 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                 component.setConverter(new SetToListConverter());
             }
         }
-    }
+    }*/
 
     @Override
     public void setLookupSelectHandler(Runnable selectHandler) {

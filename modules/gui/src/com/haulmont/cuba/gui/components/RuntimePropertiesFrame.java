@@ -51,6 +51,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  * Universal frame for editing dynamic attributes
  * of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
+ *
+ * todo move to package
  */
 public class RuntimePropertiesFrame extends AbstractFrame {
 

@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Date;
 
-public interface TimeField extends Field, Component.Buffered, Component.Focusable {
+public interface TimeField extends Field<Date>, Component.Buffered, Component.Focusable {
     String NAME = "timeField";
 
     boolean getShowSeconds();
@@ -26,8 +26,4 @@ public interface TimeField extends Field, Component.Buffered, Component.Focusabl
 
     String getFormat();
     void setFormat(String timeFormat);
-
-    @SuppressWarnings("unchecked")
-    @Override
-    Date getValue();
 }

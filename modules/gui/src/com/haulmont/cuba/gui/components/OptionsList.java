@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface OptionsList extends OptionsField {
+public interface OptionsList<V> extends OptionsField<V> {
 
     String NAME = "optionsList";
 

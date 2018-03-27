@@ -196,8 +196,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
             if (datasource != null && propertyPath != null) {
                 MetaClass metaClass = datasource.getMetaClass();
-                if (!security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
-                    dsComponent.setEditable(false);
+                if (!security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
+                        && dsComponent instanceof Component.Editable) {
+                    ((Component.Editable) dsComponent).setEditable(false);
                 }
                 if (!security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                     dsComponent.setVisible(false);

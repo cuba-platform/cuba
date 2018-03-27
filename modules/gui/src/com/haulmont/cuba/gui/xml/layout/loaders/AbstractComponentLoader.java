@@ -76,6 +76,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected String messagesPack;
     protected Context context;
 
+    // todo create loaders with Spring
     protected Security security = AppBeans.get(Security.NAME);
 
     protected Messages messages = AppBeans.get(Messages.NAME);

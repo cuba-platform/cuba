@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.ColorPicker;
 import com.haulmont.cuba.web.widgets.CubaColorPickerWrapper;
 import com.haulmont.cuba.web.gui.components.converters.ColorStringConverter;
 
-public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper> implements ColorPicker {
+public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper, String> implements ColorPicker {
 
     public WebColorPicker() {
         component = new CubaColorPickerWrapper();

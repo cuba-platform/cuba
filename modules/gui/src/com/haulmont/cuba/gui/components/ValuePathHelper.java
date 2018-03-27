@@ -24,6 +24,7 @@ import java.util.ArrayList;
 /**
  * Utility class to format and parse component paths
  *
+ * todo move to package
  */
 public class ValuePathHelper {
 

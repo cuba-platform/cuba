@@ -30,7 +30,6 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
     @Override
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
-        assignFrame(resultComponent);
 
         loadDatasource(resultComponent, element);
 

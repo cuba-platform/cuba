@@ -23,9 +23,8 @@ import javax.inject.Inject;
 import java.util.Map;
 
 public class FtsConditionFrame extends ConditionFrame<FtsCondition> {
-
     @Inject
-    protected TextField caption;
+    protected TextField<String> caption;
 
     @Override
     public void init(Map<String, Object> params) {

@@ -34,7 +34,6 @@ import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.v7.event.ItemClickEvent;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.Tree;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
@@ -224,8 +223,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
         for (Action action : getActions()) {
             action.refreshState();
         }
-
-        assignAutoDebugId();
     }
 
     protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {

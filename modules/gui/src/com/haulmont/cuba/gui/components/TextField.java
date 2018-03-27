@@ -18,9 +18,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 
-public interface TextField
+public interface TextField<V>
         extends
-            TextInputField,
+            TextInputField<V>,
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
             TextInputField.TextSelectionSupported,

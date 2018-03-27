@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface ColorPicker extends Field, Component.Focusable {
+public interface ColorPicker extends Field<String>, Component.Focusable {
 
     String NAME = "colorPicker";
 
@@ -269,7 +269,4 @@ public interface ColorPicker extends Field, Component.Focusable {
      * @return caption text.
      */
     String getButtonCaption();
-
-    @Override
-    String getValue();
 }

@@ -38,7 +38,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
     protected Button downloadTailBtn;
 
     @Inject
-    protected LookupField remoteContextField;
+    protected LookupField<String> remoteContextField;
 
     @Inject
     protected BoxLayout remoteContextBox;

@@ -22,7 +22,7 @@ import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
-public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
+public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, String> implements MaskedField {
 
     protected ShortcutListener enterShortcutListener;
 

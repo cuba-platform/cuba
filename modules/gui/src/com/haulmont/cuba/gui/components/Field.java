@@ -16,12 +16,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.data.HasValueBinding;
+
 import java.util.Collection;
 
 /**
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
  */
-public interface Field<T> extends DatasourceComponent<T>, Component.HasValueBinding<T>, Component.HasCaption,
+public interface Field<T> extends DatasourceComponent<T>, HasValueBinding<T>, Component.HasCaption,
         Component.HasValue<T>, Component.Editable, Component.BelongToFrame, Component.Validatable, Component.HasIcon,
         Component.HasContextHelp {
 

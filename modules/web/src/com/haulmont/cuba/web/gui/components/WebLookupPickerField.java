@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
@@ -35,7 +36,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class WebLookupPickerField extends WebLookupField implements LookupPickerField, SecuredActionsHolder {
+public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> implements LookupPickerField<V>, SecuredActionsHolder {
 
     protected WebPickerField pickerField;
     protected boolean updateComponentValue = false;

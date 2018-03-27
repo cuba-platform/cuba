@@ -65,15 +65,13 @@ public class CreditsFrame extends AbstractFrame {
                 if (item.getAcknowledgement() != null)
                     acknowledgements.append("<p>").append(item.getAcknowledgement());
 
-                Label nameLab = componentsFactory.createComponent(Label.class);
+                Label<String> nameLab = componentsFactory.createComponent(Label.class);
                 nameLab.setValue(item.getName());
-                nameLab.setFrame(frame);
                 nameLab.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(nameLab, 0, i);
 
-                Label dash = componentsFactory.createComponent(Label.class);
+                Label<String> dash = componentsFactory.createComponent(Label.class);
                 dash.setValue("-");
-                dash.setFrame(frame);
                 dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 1, i);
 
@@ -87,7 +85,6 @@ public class CreditsFrame extends AbstractFrame {
 
                 dash = componentsFactory.createComponent(Label.class);
                 dash.setValue("-");
-                dash.setFrame(frame);
                 dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 3, i);
 
@@ -109,7 +106,7 @@ public class CreditsFrame extends AbstractFrame {
             scrollBox.add(grid);
 
             if (acknowledgements.length() > 0) {
-                Label ackLab = componentsFactory.createComponent(Label.class);
+                Label<String> ackLab = componentsFactory.createComponent(Label.class);
                 ackLab.setWidth("420px");
                 ackLab.setHtmlEnabled(true);
                 ackLab.setValue(acknowledgements.toString());

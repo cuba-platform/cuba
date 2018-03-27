@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor> implements SourceCodeEditor {
+public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor, String> implements SourceCodeEditor {
 
     protected Mode mode = Mode.Text;
     protected Suggester suggester;

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  *
  * WARNING: for internal use only!
  */
-public interface ListEditor extends Field, Component.Focusable {
+public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
 
     String NAME = "listEditor";
 

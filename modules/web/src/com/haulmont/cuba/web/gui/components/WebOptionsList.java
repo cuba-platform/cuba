@@ -22,7 +22,7 @@ import com.haulmont.cuba.web.widgets.CubaListSelect;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 
-public class WebOptionsList extends WebAbstractOptionsBase<CubaListSelect> implements OptionsList {
+public class WebOptionsList<V> extends WebAbstractOptionsBase<CubaListSelect, V> implements OptionsList<V> {
     public WebOptionsList() {
         component = new CubaListSelect() {
             @Override

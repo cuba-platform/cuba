@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -31,7 +29,6 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
 import java.util.Arrays;
@@ -81,8 +78,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
         if (frame != null) {
             frame.registerComponent(this);
         }
-
-        assignAutoDebugId();
     }
 
     @Override
@@ -100,34 +95,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
         if (composition instanceof AbstractComponent) {
             ((AbstractComponent) composition).setResponsive(true);
-        }
-    }
-
-    public void assignAutoDebugId() {
-        AppUI ui = AppUI.getCurrent();
-        if (ui != null && ui.isTestMode()) {
-            String alternativeDebugId = getAlternativeDebugId();
-
-            // always change cuba id, do not assign auto id for components
-            if (getId() == null && component != null) {
-                component.setCubaId(alternativeDebugId);
-            }
-
-            if (frame == null || StringUtils.isEmpty(frame.getId()))
-                return;
-
-            String fullFrameId = ComponentsHelper.getFullFrameId(frame);
-            TestIdManager testIdManager = ui.getTestIdManager();
-
-            String candidateId = fullFrameId + "." + alternativeDebugId;
-            if (getDebugId() != null) {
-                String postfix = StringUtils.replace(getDebugId(), testIdManager.normalize(candidateId), "");
-                if (StringUtils.isEmpty(postfix) || NumberUtils.isDigits(postfix)) {
-                    // do not assign new Id
-                    return;
-                }
-            }
-            setDebugId(testIdManager.getTestId(candidateId));
         }
     }
 

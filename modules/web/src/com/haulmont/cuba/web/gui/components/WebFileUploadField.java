@@ -161,8 +161,8 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected FileDescriptor commitFileDescriptor(FileDescriptor fileDescriptor) {
-        if (datasource != null) {
-            return datasource.getDataSupplier().commit(fileDescriptor);
+        if (getDatasource() != null) {
+            return getDatasource().getDataSupplier().commit(fileDescriptor);
         }
 
         if (getFrame().getDsContext().getDataSupplier() != null) {

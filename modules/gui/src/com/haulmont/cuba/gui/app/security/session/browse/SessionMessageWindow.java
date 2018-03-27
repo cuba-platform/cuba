@@ -28,7 +28,7 @@ import java.util.*;
 public class SessionMessageWindow extends AbstractWindow {
 
     @Inject
-    protected TextArea messageField;
+    protected TextArea<String> messageField;
 
     @Inject
     protected OptionsGroup whomOptionsGroup;

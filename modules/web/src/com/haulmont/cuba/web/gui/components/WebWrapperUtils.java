@@ -174,10 +174,10 @@ public final class WebWrapperUtils {
         return vMode;
     }
 
-    public static Component.MouseEventDetails toMouseEventDetails(MouseEvents.ClickEvent event) {
+    public static MouseEventDetails toMouseEventDetails(MouseEvents.ClickEvent event) {
         checkNotNullArgument(event);
 
-        Component.MouseEventDetails mouseEventDetails = new Component.MouseEventDetails();
+        MouseEventDetails mouseEventDetails = new MouseEventDetails();
         mouseEventDetails.setButton(toMouseButton(event.getButton()));
         mouseEventDetails.setClientX(event.getClientX());
         mouseEventDetails.setClientY(event.getClientY());
@@ -192,18 +192,18 @@ public final class WebWrapperUtils {
         return mouseEventDetails;
     }
 
-    public static Component.MouseEventDetails.MouseButton toMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
+    public static MouseEventDetails.MouseButton toMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
         if (mouseButton == null) {
             return null;
         }
 
         switch (mouseButton) {
             case LEFT:
-                return Component.MouseEventDetails.MouseButton.LEFT;
+                return MouseEventDetails.MouseButton.LEFT;
             case MIDDLE:
-                return Component.MouseEventDetails.MouseButton.MIDDLE;
+                return MouseEventDetails.MouseButton.MIDDLE;
             case RIGHT:
-                return Component.MouseEventDetails.MouseButton.RIGHT;
+                return MouseEventDetails.MouseButton.RIGHT;
             default:
                 throw new UnsupportedOperationException("Unsupported Vaadin MouseButton");
         }

@@ -17,7 +17,10 @@
 package com.haulmont.cuba.gui.app.security.constraintloc.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
@@ -34,7 +37,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
     protected LookupField operationTypeField;
 
     @Inject
-    protected LookupField localesSelect;
+    protected LookupField<Locale> localesSelect;
 
     @Inject
     protected TextField entityName;

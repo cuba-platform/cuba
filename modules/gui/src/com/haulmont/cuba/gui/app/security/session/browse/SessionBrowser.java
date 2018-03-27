@@ -50,16 +50,16 @@ public class SessionBrowser extends AbstractLookup {
     protected Label lastUpdateTsLab;
 
     @Inject
-    protected TextField userLogin;
+    protected TextField<String> userLogin;
 
     @Inject
-    protected TextField userName;
+    protected TextField<String> userName;
 
     @Inject
-    protected TextField userAddress;
+    protected TextField<String> userAddress;
 
     @Inject
-    protected TextField userInfo;
+    protected TextField<String> userInfo;
 
     @Named("sessionsTable.refresh")
     protected Action refreshAction;
@@ -130,19 +130,22 @@ public class SessionBrowser extends AbstractLookup {
                 messages.getMessage(getClass(), "killConfirm"),
                 MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(Type.OK).withHandler(event -> {
-                            for (UserSessionEntity session : selected) {
-                                if (!session.getId().equals(userSessionSource.getUserSession().getId())) {
-                                    uss.killSession(session.getId());
-                                } else {
-                                    showNotification(getMessage("killUnavailable"), NotificationType.WARNING);
-                                }
-                            }
-                            sessionsTable.getDatasource().refresh();
-                            sessionsTable.requestFocus();
-                        }),
+                        new DialogAction(Type.OK)
+                                .withHandler(event -> disconnectSession(selected)),
                         new DialogAction(Type.CANCEL, Status.PRIMARY)
                 }
         );
+    }
+
+    protected void disconnectSession(Set<UserSessionEntity> selected) {
+        for (UserSessionEntity session : selected) {
+            if (!session.getId().equals(userSessionSource.getUserSession().getId())) {
+                uss.killSession(session.getId());
+            } else {
+                showNotification(getMessage("killUnavailable"), NotificationType.WARNING);
+            }
+        }
+        sessionsTable.getDatasource().refresh();
+        sessionsTable.requestFocus();
     }
 }

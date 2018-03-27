@@ -177,8 +177,9 @@ public class WebComponentsFactory implements ComponentsFactory {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Component> T createComponent(Class<T> type) {
+    public <T extends Component> T createComponent(Class type) {
         String name = names.get(type);
         if (name == null) {
             java.lang.reflect.Field nameField;
@@ -192,7 +193,7 @@ public class WebComponentsFactory implements ComponentsFactory {
             else
                 names.put(type, name);
         }
-        return type.cast(createComponent(name));
+        return (T) createComponent(name);
     }
 
     @Override

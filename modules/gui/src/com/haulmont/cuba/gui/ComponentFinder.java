@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui;
 import com.haulmont.cuba.gui.components.Component;
 
 /**
+ * todo replace with lambda interface
+ *
  * Visitor used in {@link com.haulmont.cuba.gui.ComponentsHelper#walkComponents(com.haulmont.cuba.gui.components.Component.Container, com.haulmont.cuba.gui.ComponentFinder)}
  */
 public interface ComponentFinder {

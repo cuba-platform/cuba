@@ -61,7 +61,7 @@ import static java.util.Arrays.asList;
 public class ConstraintEditor extends AbstractEditor<Constraint> {
 
     @Inject
-    protected LookupField entityName;
+    protected LookupField<String> entityName;
 
     @Inject
     protected SourceCodeEditor joinClause;

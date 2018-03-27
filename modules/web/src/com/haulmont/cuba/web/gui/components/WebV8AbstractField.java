@@ -15,192 +15,91 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.BeanValidation;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
-import com.haulmont.cuba.gui.components.validators.BeanValidator;
+import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
+import com.haulmont.cuba.gui.components.data.ValueBinder;
+import com.haulmont.cuba.gui.components.data.ValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.vaadin.v7.data.Property;
-import org.apache.commons.lang.StringUtils;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.metadata.BeanDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
-
 // vaadin8 ??? Custom binding bridge for the new UI components ?
 public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, V>
         extends WebAbstractComponent<T> implements Field<V> {
 
-    protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
-
-    protected Datasource<Entity> datasource;
-    protected MetaProperty metaProperty;
-    protected MetaPropertyPath metaPropertyPath;
-
+    protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
     protected List<Validator> validators; // lazily initialized list
 
-    protected Object prevValue;
+    protected V internalValue;
 
     protected boolean editable = true;
 
-    protected ItemWrapper itemWrapper;
+    protected ValueBinding<V> valueBinding;
 
-    protected Datasource.ItemChangeListener<Entity> securityItemChangeListener;
-    protected WeakItemChangeListener securityWeakItemChangeListener;
     protected EditableChangeListener parentEditableChangeListener;
 
     @Override
+    public void setValueSource(ValueSource<V> valueSource) {
+        if (this.valueBinding != null) {
+            valueBinding.unbind();
+
+            this.valueBinding = null;
+        }
+
+        if (valueSource != null) {
+            // todo use ApplicationContextAware and lookup
+            ValueBinder binder = AppBeans.get(ValueBinder.class);
+
+            this.valueBinding = binder.bind(this, valueSource);
+        }
+    }
+
+    @Override
+    public ValueSource<V> getValueSource() {
+        return valueBinding != null ? valueBinding.getSource() : null;
+    }
+
+    @Override
     public Datasource getDatasource() {
-        return datasource;
+        if (valueBinding == null) {
+            return null;
+        }
+
+        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
     }
 
     @Override
     public MetaProperty getMetaProperty() {
-        return metaProperty;
+        if (valueBinding == null) {
+            return null;
+        }
+        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
     }
 
     @Override
     public MetaPropertyPath getMetaPropertyPath() {
-        return metaPropertyPath;
+        if (valueBinding == null) {
+            return null;
+        }
+        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null))
-            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
-
-        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null)))
-            return;
-
-        if (this.datasource != null) {
-            metaProperty = null;
-            metaPropertyPath = null;
-
-            //noinspection unchecked
-            this.datasource.removeItemChangeListener(securityWeakItemChangeListener);
-            securityWeakItemChangeListener = null;
-
-            this.datasource = null;
-
-            if (itemWrapper != null) {
-                itemWrapper.unsubscribe();
-            }
-
-            disableBeanValidator();
-        }
-
-        if (datasource != null) {
-            //noinspection unchecked
-            this.datasource = datasource;
-
-            MetaClass metaClass = datasource.getMetaClass();
-            resolveMetaPropertyPath(metaClass, property);
-
-            initFieldConverter();
-
-            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-
-            Property itemProperty = itemWrapper.getItemProperty(metaPropertyPath);
-
-            initRequired(metaPropertyPath);
-
-            if (metaProperty.isReadOnly()) {
-                setEditable(false);
-            }
-
-            handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-            securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-
-            securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
-            //noinspection unchecked
-            this.datasource.addItemChangeListener(securityWeakItemChangeListener);
-
-            initBeanValidator();
-        }
-    }
-
-    protected void initRequired(MetaPropertyPath metaPropertyPath) {
-        MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-
-        boolean newRequired = metaProperty.isMandatory();
-        Object notNullUiComponent = metaProperty.getAnnotations().get(NotNull.class.getName() + "_notnull_ui_component");
-        if (Boolean.TRUE.equals(notNullUiComponent)) {
-            newRequired = true;
-        }
-        setRequired(newRequired);
-
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaPropertyPath.getMetaClass(), metaPropertyPath.toString()));
-        }
-    }
-
-    protected void initBeanValidator() {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
-        Class enclosingJavaClass = propertyEnclosingMetaClass.getJavaClass();
-
-        if (enclosingJavaClass != KeyValueEntity.class
-                && !DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-            BeanValidation beanValidation = AppBeans.get(BeanValidation.NAME);
-            javax.validation.Validator validator = beanValidation.getValidator();
-            BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
-
-            if (beanDescriptor.isBeanConstrained()) {
-                addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
-            }
-        }
-    }
-
-    protected void disableBeanValidator() {
-        if (validators != null) {
-            for (Validator validator : validators.toArray(new Validator[validators.size()])) {
-                if (validator instanceof BeanValidator) {
-                    validators.remove(validator);
-                }
-            }
-        }
-    }
-
-    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = getResolvedMetaPropertyPath(metaClass, property);
-        this.metaProperty = metaPropertyPath.getMetaProperty();
-    }
-
-    protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
-        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                .resolveMetaPropertyPath(metaClass, property);
-        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        return metaPropertyPath;
-    }
-
-    protected void initFieldConverter() {
-    }
-
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths);
+        this.setValueSource(new DatasourceValueSource(datasource, property));
     }
 
     @Override
@@ -242,7 +141,8 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     public void setParent(Component parent) {
         if (this.parent instanceof EditableChangeNotifier
                 && parentEditableChangeListener != null) {
-            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
+            ((EditableChangeNotifier) this.parent)
+                    .removeEditableChangeListener(parentEditableChangeListener);
 
             parentEditableChangeListener = null;
         }
@@ -291,18 +191,10 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(ValueChangeListener listener) {
         getEventRouter().addListener(ValueChangeListener.class, listener);
+        // todo
+        return () -> {};
     }
 
     @Override
@@ -310,21 +202,9 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
         getEventRouter().removeListener(ValueChangeListener.class, listener);
     }
 
+    @SuppressWarnings("unchecked")
     protected void attachListener(T component) {
-        component.addValueChangeListener(vEvent -> {
-            final Object value = getValue();
-            final Object oldValue = prevValue;
-            prevValue = value;
-
-            if (!InstanceUtils.propertyValueEquals(oldValue, value)) {
-                if (hasValidationError()) {
-                    setValidationError(null);
-                }
-
-                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
-            }
-        });
+        component.addValueChangeListener(this::componentValueChanged);
     }
 
     @Override
@@ -427,18 +307,6 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     }
 
     @Override
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
-            return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
-        }
-
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public String getContextHelpText() {
         return component.getContextHelpText();
     }
@@ -466,5 +334,20 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     @Override
     public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
         // todo vaadin8
+    }
+
+    protected void componentValueChanged(com.vaadin.data.HasValue.ValueChangeEvent componentEvent) {
+        V value = getValue();
+        V oldValue = internalValue;
+        internalValue = value;
+
+        if (!InstanceUtils.propertyValueEquals(oldValue, value)) {
+            if (hasValidationError()) {
+                setValidationError(null);
+            }
+
+            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+        }
     }
 }

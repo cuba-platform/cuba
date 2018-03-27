@@ -80,22 +80,22 @@ public class SettingsWindow extends AbstractWindow {
     protected Button changePasswordBtn;
 
     @Inject
-    protected OptionsGroup modeOptions;
+    protected OptionsGroup<String> modeOptions;
 
     @Inject
-    protected LookupField appThemeField;
+    protected LookupField<String> appThemeField;
 
     @Inject
-    protected LookupField timeZoneLookup;
+    protected LookupField<String> timeZoneLookup;
 
     @Inject
-    protected LookupField appLangField;
+    protected LookupField<String> appLangField;
 
     @Inject
     protected CheckBox timeZoneAutoField;
 
     @Inject
-    protected LookupField defaultScreenField;
+    protected LookupField<String> defaultScreenField;
 
     @Inject
     protected MenuConfig menuConfig;

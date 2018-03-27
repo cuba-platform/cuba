@@ -16,20 +16,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.widgets.CubaCheckBox;
 
-import java.util.Collection;
-
-public class WebCheckBox extends WebAbstractField<com.vaadin.v7.ui.CheckBox> implements CheckBox {
+public class WebCheckBox extends WebAbstractField<com.vaadin.v7.ui.CheckBox, Boolean> implements CheckBox {
     public WebCheckBox() {
         this.component = new CubaCheckBox();
         component.setInvalidCommitted(true);
@@ -38,41 +30,12 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.v7.ui.CheckBox> imp
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
-                    @Override
-                    public Object getValue() {
-                        Object value = super.getValue();
-                        if (value == null) {
-                            Range range = propertyPath.getRange();
-                            if (range.isDatatype()
-                                    && range.asDatatype().equals(Datatypes.get(Boolean.class))) {
-                                value = Boolean.FALSE;
-                            }
-                        }
-                        return value;
-                    }
-                };
-            }
-        };
-    }
-
-    @Override
-    public void setValue(Object value) {
+    public void setValue(Boolean value) {
         if (value == null) {
             super.setValue(Boolean.FALSE);
         } else {
             super.setValue(value);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Boolean getValue() {
-        return super.getValue();
     }
 
     @Override

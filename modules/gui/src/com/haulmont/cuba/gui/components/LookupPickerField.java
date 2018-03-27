@@ -17,11 +17,12 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 /**
  * LookupPickerField adds to PickerField the ability to select an entity from drop-down list.
- *
  */
-public interface LookupPickerField extends LookupField, PickerField {
+public interface LookupPickerField<V extends Entity> extends LookupField<V>, PickerField<V> {
 
     String NAME = "lookupPickerField";
 

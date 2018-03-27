@@ -20,7 +20,6 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
@@ -28,15 +27,11 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractField;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -44,10 +39,9 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
-import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-public class WebPickerField extends WebAbstractField<CubaPickerField>
-        implements PickerField, Component.SecuredActionsHolder {
+public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPickerField, V>
+        implements PickerField<V>, Component.SecuredActionsHolder {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -61,12 +55,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
-
-    protected Datasource.ItemChangeListener itemChangeListener;
-    protected WeakItemChangeListener weakItemChangeListener;
-
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
-    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
 
     public WebPickerField() {
         component = new Picker(this);
@@ -107,7 +95,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     public MetaClass getMetaClass() {
         final Datasource ds = getDatasource();
         if (ds != null) {
-            return metaProperty.getRange().asClass();
+            return getMetaProperty().getRange().asClass();
         } else {
             return metaClass;
         }
@@ -123,9 +111,9 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(V value) {
         if (value != null) {
-            if (datasource == null && metaClass == null) {
+            if (getDatasource() == null && metaClass == null) {
                 throw new IllegalStateException("Datasource or metaclass must be set for field");
             }
 
@@ -172,94 +160,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
         if (!metaPropertyPath.getRange().isClass()) {
             throw new DevelopmentException(String.format("property '%s.%s' should have Entity type", datasource.getMetaClass().getName(), property));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null))
-            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
-
-        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null)))
-            return;
-
-        if (this.datasource != null) {
-            metaProperty = null;
-            metaPropertyPath = null;
-
-            component.setPropertyDataSource(null);
-
-            this.datasource.removeItemChangeListener(securityWeakItemChangeListener);
-            securityWeakItemChangeListener = null;
-
-            this.datasource.removeItemChangeListener(weakItemChangeListener);
-            weakItemChangeListener = null;
-
-            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
-            weakItemPropertyChangeListener = null;
-
-            this.datasource = null;
-
-            if (itemWrapper != null) {
-                itemWrapper.unsubscribe();
-            }
-
-            disableBeanValidator();
-        }
-
-        if (datasource != null) {
-            checkDatasourceProperty(datasource, property);
-
-            // noinspection unchecked
-            this.datasource = datasource;
-
-            metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
-            metaProperty = metaPropertyPath.getMetaProperty();
-
-            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-            Property itemProperty = itemWrapper.getItemProperty(metaPropertyPath);
-
-            component.setPropertyDataSource(itemProperty);
-
-            itemChangeListener = e -> {
-                Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
-                setValue(newValue);
-            };
-            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
-            //noinspection unchecked
-            datasource.addItemChangeListener(weakItemChangeListener);
-
-            itemPropertyChangeListener = e -> {
-                if (!isBuffered() && e.getProperty().equals(metaPropertyPath.toString())) {
-                    setValue(e.getValue());
-                }
-            };
-            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
-            //noinspection unchecked
-            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
-
-            if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-                if (property.equals(metaPropertyPath.toString())) {
-                    Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-                    setValue(newValue);
-                }
-            }
-
-            initRequired(metaPropertyPath);
-
-            if (metaProperty.isReadOnly()) {
-                setEditable(false);
-            }
-
-            handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-            securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-            securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
-            //noinspection unchecked
-            this.datasource.addItemChangeListener(securityWeakItemChangeListener);
-
-            initBeanValidator();
         }
     }
 
