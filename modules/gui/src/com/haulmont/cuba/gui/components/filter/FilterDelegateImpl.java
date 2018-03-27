@@ -2631,9 +2631,14 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         public void build() {
             for (Map.Entry<String, List<String>> entry : components.entrySet()) {
-                Component component = getControlsLayoutComponent(entry.getKey(), entry.getValue());
+                String componentName = entry.getKey();
+                Component component = getControlsLayoutComponent(componentName, entry.getValue());
                 if (component == null) {
-                    log.warn("Filter controls layout component {} not supported", entry.getKey());
+                    //in case of disabled FTS add-on, the missing fts_switch component is not an error
+                    if (!isFtsModeEnabled() && "fts_switch".equals(componentName)) {
+                        continue;
+                    }
+                    log.warn("Filter controls layout component {} not supported", componentName);
                     continue;
                 }
                 controlsLayout.add(component);
