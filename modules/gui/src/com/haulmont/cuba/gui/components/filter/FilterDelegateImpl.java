@@ -1787,7 +1787,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 Integer oldMaxResultsValue = !Strings.isNullOrEmpty(maxResultsEl.getText()) ?
                         Integer.valueOf(maxResultsEl.getText()) : null;
                 Integer newMaxResultsValue = maxResultsField.getValue();
-                if (!Objects.equals(oldMaxResultsValue, newMaxResultsValue)) {
+                if (newMaxResultsValue != null && !Objects.equals(oldMaxResultsValue, newMaxResultsValue)) {
                     maxResultsEl.setText(newMaxResultsValue.toString());
                     changed = true;
                 }
