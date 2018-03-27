@@ -874,6 +874,8 @@ configure(restApiModule) {
             exclude(group: 'org.springframework.security')
         }
 
+        compile(bom['io.swagger:swagger-models'])
+
         provided(bom['javax.servlet:javax.servlet-api'])
 
         testCompile(clientModule.sourceSets.test.output)

@@ -31,6 +31,9 @@ public interface EntitySerializationAPI {
 
     String NAME = "cuba_EntitySerialization";
 
+    String ENTITY_NAME_PROP = "_entityName";
+    String INSTANCE_NAME_PROP = "_instanceName";
+
     /**
      * Serializes a single entity to the JSON object graph.
      * <p>

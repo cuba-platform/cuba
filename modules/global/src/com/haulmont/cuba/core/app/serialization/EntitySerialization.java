@@ -56,9 +56,6 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     private static final Logger log = LoggerFactory.getLogger(EntitySerialization.class);
 
-    protected static final String ENTITY_NAME_PROP = "_entityName";
-    protected static final String INSTANCE_NAME_PROP = "_instanceName";
-
     @Inject
     protected MetadataTools metadataTools;
 
