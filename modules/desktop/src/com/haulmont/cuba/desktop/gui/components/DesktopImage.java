@@ -227,6 +227,10 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
     }
 
     protected java.awt.Image scaleImage(BufferedImage image) {
+        if (image == null) {
+            return null;
+        }
+
         switch (scaleMode) {
             case FILL:
                 return image.getScaledInstance(Math.round(getWidth()), Math.round(getHeight()), java.awt.Image.SCALE_FAST);
