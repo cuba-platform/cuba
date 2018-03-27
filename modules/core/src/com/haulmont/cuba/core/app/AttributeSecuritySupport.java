@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.app.events.SetupAttributeAccessEvent;
 import com.haulmont.cuba.core.entity.*;
@@ -347,9 +348,21 @@ public class AttributeSecuritySupport {
     protected void setNullPropertyValue(Entity entity, MetaProperty property) {
         // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
         // which is the case when in-memory constraints exist
-        BaseEntityInternalAccess.setValue(entity, property.getName(), null);
-        if (property.getRange().isClass()) {
-            BaseEntityInternalAccess.setValueForHolder(entity, property.getName(), null);
+        Range range = property.getRange();
+        if (range.isClass()) {
+            Object nullValue = null;
+            if (range.getCardinality().isMany()) {
+                Class<?> propertyType = property.getJavaType();
+                if (List.class.isAssignableFrom(propertyType)) {
+                    nullValue = new ArrayList<>();
+                } else if (Set.class.isAssignableFrom(propertyType)) {
+                    nullValue = new LinkedHashSet<>();
+                }
+            }
+            BaseEntityInternalAccess.setValue(entity, property.getName(), nullValue);
+            BaseEntityInternalAccess.setValueForHolder(entity, property.getName(), nullValue);
+        } else {
+            BaseEntityInternalAccess.setValue(entity, property.getName(), null);
         }
     }
 
