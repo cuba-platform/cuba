@@ -89,6 +89,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(FileMultiUploadField.NAME, DesktopFileMultiUploadField.class);
         classes.put(TabSheet.NAME, DesktopTabSheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
+        classes.put(Image.NAME, DesktopImage.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBoxLayout.NAME, DesktopGroupBox.class);
         classes.put(ProgressBar.NAME, DesktopProgressBar.class);
