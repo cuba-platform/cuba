@@ -23,18 +23,21 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 // todo
 public class DatasourceValueSource<E extends Entity, V> extends EventPublisher implements EntityValueSource<E, V> {
-    private final Datasource<E> datasource;
-    private final MetaPropertyPath metaPropertyPath;
+    protected final Datasource<E> datasource;
+    protected final MetaPropertyPath metaPropertyPath;
 
+    protected ValueSourceState state = ValueSourceState.INACTIVE;
+
+    @SuppressWarnings("unchecked")
     public DatasourceValueSource(Datasource<E> datasource, String property) {
         checkNotNullArgument(datasource);
         checkNotNullArgument(property);
@@ -52,21 +55,33 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
 
         this.datasource.addStateChangeListener(e -> {
             if (e.getState() == Datasource.State.VALID) {
-                // todo fire ACTIVE state
+                setState(ValueSourceState.ACTIVE);
             } else {
-                // todo
+                setState(ValueSourceState.INACTIVE);
             }
         });
 
         this.datasource.addItemChangeListener(e -> {
-            if (e.getItem() != null) {
-                // todo fire
+            if (e.getItem() != null && datasource.getState() == Datasource.State.VALID) {
+                setState(ValueSourceState.ACTIVE);
+
+                publish(InstanceChangeEvent.class, new InstanceChangeEvent<>(this, e.getPrevItem(), e.getItem()));
             }
         });
 
         this.datasource.addItemPropertyChangeListener(e -> {
-            // todo fire
+            if (Objects.equals(e.getProperty(), property)) {
+                publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
+            }
         });
+    }
+
+    public void setState(ValueSourceState state) {
+        if (this.state != state) {
+            this.state = state;
+
+            publish(StateChangeEvent.class, new StateChangeEvent<>(this,  ValueSourceState.ACTIVE));
+        }
     }
 
     public Datasource getDatasource() {
@@ -137,18 +152,13 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<ValueSourceStateChangeEvent<V>> listener) {
-        return subscribe(ValueSourceStateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
+        return subscribe(StateChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Subscription addValueChangeListener(Component.ValueChangeListener listener) {
-        // todo
-        return () -> removeValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeValueChangeListener(Component.ValueChangeListener listener) {
-        // todo
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        return subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 }

@@ -57,7 +57,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
     protected Map<String, FieldConfig> fields = new HashMap<>();
     protected List<List<FieldConfig>> columnFieldMapping = new ArrayList<>();
 
-    protected boolean editable;
+    protected boolean editable = true;
 
     {
         columnFieldMapping.add(new ArrayList<>());

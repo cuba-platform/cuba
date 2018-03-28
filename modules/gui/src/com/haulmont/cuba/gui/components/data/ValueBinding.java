@@ -25,12 +25,12 @@ import com.haulmont.cuba.gui.components.Component.HasValue;
  * @param <V> todo
  */
 public interface ValueBinding<V> {
-    Class<V> getType();
-
     ValueSource<V> getSource();
     HasValue<V> getComponent();
 
     void unbind();
+
+    void activate();
 
     // todo buffering support
 }

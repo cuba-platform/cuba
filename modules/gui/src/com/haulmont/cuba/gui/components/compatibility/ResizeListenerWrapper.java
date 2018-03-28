@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.components.compatibility;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.ResizeListener;
 
+// todo for removal
 @Deprecated
 public class ResizeListenerWrapper implements ResizableTextArea.ResizeListener {
 

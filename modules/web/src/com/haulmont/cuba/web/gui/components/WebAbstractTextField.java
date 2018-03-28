@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
-import com.haulmont.cuba.gui.components.data.SupportsImplicitValueConversion;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
@@ -48,7 +47,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
         extends
             WebAbstractField<T, V>
         implements
-            TextInputField<V>, SupportsImplicitValueConversion {
+            TextInputField<V> {
 
     protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
 
@@ -93,7 +92,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
     @Override
     public void setValue(V value) {
         if (value instanceof String) {
-            component.setValue((String) value);
+            component.setValueIgnoreReadOnly((String) value);
         } else {
             String formattedValue;
 
@@ -107,7 +106,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
                 formattedValue = metadataTools.format(value);
             }
 
-            component.setValue(formattedValue);
+            component.setValueIgnoreReadOnly(formattedValue);
         }
     }
 
@@ -211,6 +210,12 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
     }
 
     @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        setupValueConversion(valueSource);
+    }
+
     public void setupValueConversion(ValueSource<?> valueSource) {
         // vaadin8
     }

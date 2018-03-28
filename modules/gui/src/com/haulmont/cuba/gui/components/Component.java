@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -239,7 +240,9 @@ public interface Component {
     <X> X unwrapComposition(Class<X> internalCompositionClass);
 
     /**
-     * Component which can contain other components
+     * Component which can contain other components.
+     *
+     * todo extract
      */
     interface Container extends Component {
         void add(Component childComponent);
@@ -284,6 +287,8 @@ public interface Component {
 
     /**
      * Component which can contain other components and provides indexed access to children.
+     *
+     * todo extract
      */
     interface OrderedContainer extends Container {
         void add(Component childComponent, int index);
@@ -330,7 +335,9 @@ public interface Component {
     }
 
     /**
-     * Component delegating work to some "wrapped" client-specific implementation
+     * Component delegating work to some "wrapped" client-specific implementation.
+     *
+     * todo extract
      */
     interface Wrapper extends Component {
         Object getComponent();
@@ -422,6 +429,8 @@ public interface Component {
 
     /**
      * Layout having a mouse click listener.
+     *
+     * todo extract
      */
     interface LayoutClickNotifier {
         void addLayoutClickListener(LayoutClickListener listener);
@@ -439,6 +448,8 @@ public interface Component {
     /**
      * Describes layout click event.
      * Event contains a data about layout, nested component and mouse event.
+     *
+     * todo extract
      */
     class LayoutClickEvent extends EventObject {
         private final Component childComponent;
@@ -467,6 +478,8 @@ public interface Component {
 
     /**
      * Component having a shortcut listener.
+     *
+     * todo extract
      */
     interface ShortcutNotifier {
         void addShortcutAction(ShortcutAction action);
@@ -475,6 +488,8 @@ public interface Component {
 
     /**
      * The ShortcutAction is triggered when the user presses a given key combination.
+     *
+     * todo extract
      */
     class ShortcutAction {
         protected final KeyCombination shortcut;
@@ -507,6 +522,8 @@ public interface Component {
     /**
      * Describes shortcut triggered event.
      * The event contains a data about source component and target component.
+     *
+     * todo extract
      */
     class ShortcutTriggeredEvent extends EventObject {
         private final Component target;
@@ -537,7 +554,9 @@ public interface Component {
     }
 
     /**
-     * Object having a border
+     * Object having a border.
+     *
+     * todo extract
      */
     interface HasBorder {
         boolean isBorderVisible();
@@ -549,15 +568,21 @@ public interface Component {
      *
      * todo V parameter
      */
-    class ValueChangeEvent {
+    class ValueChangeEvent extends EventObject {
         private final Component.HasValue component;
         private final Object prevValue;
         private final Object value;
 
         public ValueChangeEvent(Component.HasValue component, Object prevValue, Object value) {
+            super(component);
             this.component = component;
             this.prevValue = prevValue;
             this.value = value;
+        }
+
+        @Override
+        public Component.HasValue getSource() {
+            return (HasValue) super.getSource();
         }
 
         /**
@@ -608,9 +633,21 @@ public interface Component {
     /**
      * Object having a value.
      */
-    interface HasValue<T> extends ValueChangeNotifier {
-        T getValue();
-        void setValue(T value);
+    interface HasValue<V> extends ValueChangeNotifier {
+        V getValue();
+        void setValue(V value);
+
+        default void clear() {
+            setValue(getEmptyValue());
+        }
+
+        default V getEmptyValue() {
+            return null;
+        }
+
+        default boolean isEmpty() {
+            return Objects.equals(getValue(), getEmptyValue());
+        }
 
         /**
          * vaadin8 for removal
@@ -622,6 +659,7 @@ public interface Component {
             addValueChangeListener(new ComponentValueListenerWrapper(listener));
         }
 
+        // vaadin8 for removal
         @Deprecated
         default void removeListener(ValueListener listener) {
             removeValueChangeListener(new ComponentValueListenerWrapper(listener));
@@ -629,7 +667,9 @@ public interface Component {
     }
 
     /**
-     * Object having a formatter
+     * Object having a formatter.
+     *
+     * todo extract
      */
     interface HasFormatter {
         Formatter getFormatter();
@@ -645,7 +685,9 @@ public interface Component {
     }
 
     /**
-     * A component containing {@link Action}s
+     * A component containing {@link Action}s.
+     *
+     * todo extract
      */
     interface ActionsHolder extends Component {
         /**
@@ -700,6 +742,8 @@ public interface Component {
 
     /**
      * An {@link ActionsHolder} component that loads and controls permissions on owned actions.
+     *
+     * todo extract
      */
     interface SecuredActionsHolder extends ActionsHolder {
         /**
@@ -727,12 +771,16 @@ public interface Component {
 
     /**
      * Component that manages editable property of child components.
+     *
+     * todo extract
      */
     interface ChildEditableController extends Editable {
     }
 
     /**
      * Event that is fired when "editable" property of Editable component has been changed.
+     *
+     * todo extract
      */
     class EditableChangeEvent extends EventObject {
         public EditableChangeEvent(Component.Editable source) {
@@ -752,6 +800,8 @@ public interface Component {
 
     /**
      * Component that fires EditableChangeEvent events.
+     *
+     * todo extract
      */
     interface EditableChangeNotifier {
         void addEditableChangeListener(EditableChangeListener listener);
@@ -798,6 +848,8 @@ public interface Component {
     /**
      * Object supporting save/restore of user settings.
      * @see com.haulmont.cuba.security.app.UserSettingService
+     *
+     * todo extract
      */
     interface HasSettings {
         void applySettings(Element element);
@@ -809,6 +861,8 @@ public interface Component {
 
     /**
      * Describes expanded state change event of {@link com.haulmont.cuba.gui.components.Component.Collapsable}.
+     *
+     * todo extract
      */
     class ExpandedStateChangeEvent {
         private final Component.Collapsable component;
@@ -845,7 +899,9 @@ public interface Component {
     }
 
     /**
-     * Is able to collapse (folding)
+     * Is able to collapse (folding).
+     *
+     * todo extract
      */
     interface Collapsable extends Component {
         boolean isExpanded();
@@ -884,7 +940,9 @@ public interface Component {
     }
 
     /**
-     * Component supporting an action
+     * Component supporting an action.
+     *
+     * todo extract
      */
     interface ActionOwner {
         Action getAction();
@@ -913,6 +971,8 @@ public interface Component {
 
     /**
      * Component having a buttons pancel.
+     *
+     * todo extract
      */
     interface HasButtonsPanel {
         ButtonsPanel getButtonsPanel();
@@ -921,6 +981,8 @@ public interface Component {
 
     /**
      * Component having a {@link RowsCount} component.
+     *
+     * todo extract
      */
     interface HasRowsCount {
         RowsCount getRowsCount();
@@ -992,6 +1054,8 @@ public interface Component {
 
     /**
      * Component having presentations.
+     *
+     * todo extract
      */
     interface HasPresentations extends HasSettings {
         void usePresentations(boolean b);
@@ -1010,6 +1074,8 @@ public interface Component {
 
     /**
      * A class that implements this interface can have space between child components.
+     *
+     * todo extract
      */
     interface Spacing {
         void setSpacing(boolean enabled);
@@ -1018,6 +1084,8 @@ public interface Component {
 
     /**
      * A class that implements this interface can have indentation between the outer borders and the container content.
+     *
+     * todo extract
      */
     interface Margin {
         default void setMargin(boolean enable) {
@@ -1034,6 +1102,8 @@ public interface Component {
 
     /**
      * A class that implements this interface can have indentation outside the border.
+     *
+     * todo extract
      */
     interface OuterMargin {
         /**
@@ -1074,6 +1144,8 @@ public interface Component {
 
     /**
      * todo JavaDoc
+     *
+     * todo extract
      */
     interface HasInputPrompt {
         /**
@@ -1092,6 +1164,8 @@ public interface Component {
 
     /**
      * State of subcomponents can be managed by UI permissions.
+     *
+     * todo extract
      */
     interface UiPermissionAware {
 
@@ -1108,6 +1182,8 @@ public interface Component {
     /**
      * A component that is marked with this interface allows to manage additional style names for options displayed
      * by this component.
+     *
+     * todo extract
      */
     interface HasOptionsStyleProvider {
         /**
@@ -1126,6 +1202,8 @@ public interface Component {
     /**
      * An object that returns stylename for the given {@code item} (option) that is displayed by the given
      * {@code component}.
+     *
+     * todo extract
      */
     @FunctionalInterface
     interface OptionsStyleProvider {

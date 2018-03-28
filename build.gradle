@@ -762,7 +762,7 @@ configure(webToolkitModule) {
         workers = 2
 
         // Performance and widgetset size:
-        style = 'OBF' // 'OBF' or 'PRETTY' or 'DETAILED'
+        style = 'PRETTY' // 'OBF' or 'PRETTY' or 'DETAILED'
         disableCastChecking = false
         optimize = 9
         draft = false

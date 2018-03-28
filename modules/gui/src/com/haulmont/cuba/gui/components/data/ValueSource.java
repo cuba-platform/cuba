@@ -17,8 +17,8 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.Component;
 
+import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  *
  * @param <V> todo
  */
-public interface ValueSource<V> extends Component.ValueChangeNotifier {
+public interface ValueSource<V> {
     V getValue();
     void setValue(V value);
 
@@ -36,5 +36,52 @@ public interface ValueSource<V> extends Component.ValueChangeNotifier {
 
     ValueSourceState getStatus();
 
-    Subscription addStateChangeListener(Consumer<ValueSourceStateChangeEvent<V>> listener);
+    Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener);
+    Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener);
+
+    // todo
+    class StateChangeEvent<V> extends EventObject {
+        protected ValueSourceState status;
+
+        public StateChangeEvent(ValueSource<V> source, ValueSourceState status) {
+            super(source);
+            this.status = status;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public ValueSource<V> getSource() {
+            return (ValueSource<V>) super.getSource();
+        }
+
+        public ValueSourceState getState() {
+            return status;
+        }
+    }
+
+    // todo
+    class ValueChangeEvent<V> extends EventObject {
+        private final V prevValue;
+        private final V value;
+
+        public ValueChangeEvent(ValueSource<V> source, V prevValue, V value) {
+            super(source);
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public ValueSource<V> getSource() {
+            return (ValueSource<V>) super.getSource();
+        }
+
+        public V getPrevValue() {
+            return prevValue;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
 }

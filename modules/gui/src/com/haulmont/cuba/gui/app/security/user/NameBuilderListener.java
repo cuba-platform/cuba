@@ -134,6 +134,7 @@ public class NameBuilderListener<T extends Entity> implements Datasource.ItemPro
         String displayedName;
         try {
             if (this.pattern == null) {
+                // todo rework with Config interface
                 pattern = AppContext.getProperty("cuba.user.fullNamePattern");
                 if (StringUtils.isBlank(pattern))
                     pattern = DEFAULT_NAME_PATTERN;

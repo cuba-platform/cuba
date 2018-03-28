@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Component;
 
+// todo for removal
 @Deprecated
 public class ComponentExpandCollapseListenerWrapper implements Component.ExpandedStateChangeListener {
 

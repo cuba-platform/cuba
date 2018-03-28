@@ -60,7 +60,10 @@
                         <action id="exportZIP" caption="msg://exportZIP" invoke="exportZIP"/>
                     </actions>
                 </popupButton>
+
+                <!-- vaadin8 requires WebJar support, visible set to false -->
                 <upload id="importRolesUpload"
+                        visible="false"
                         uploadButtonIcon="icons/upload.png"
                         uploadButtonDescription="mainMsg://actions.Import"/>
             </buttonsPanel>

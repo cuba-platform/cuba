@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.EventPublisher;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
-        extends EventRouter
+        extends EventRouter // vaadin8 replace with EventPublisher
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption {
 
@@ -58,6 +59,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
 
+    protected EventPublisher eventPublisher = null;
+
     /**
      * Use EventRouter for listeners instead of fields with listeners List.
      *
@@ -65,6 +68,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
      */
     protected EventRouter getEventRouter() {
         return this;
+    }
+
+    protected EventPublisher getEventPublisher() {
+        if (eventPublisher == null) {
+            eventPublisher = new EventPublisher();
+        }
+        return eventPublisher;
     }
 
     @Override

@@ -48,12 +48,7 @@ public class ValueBinder {
     protected BeanValidation beanValidation;
 
     public <V> ValueBinding<V> bind(Component.HasValue<V> component, ValueSource<V> valueSource) {
-        ValueBindingImpl<V> binding = new ValueBindingImpl<>(valueSource.getType(), valueSource, component);
-
-        // setup implicit value conversion for component
-        if (component instanceof SupportsImplicitValueConversion) {
-            ((SupportsImplicitValueConversion) component).setupValueConversion(valueSource);
-        }
+        ValueBindingImpl<V> binding = new ValueBindingImpl<>(component, valueSource);
 
         if (component instanceof Component.Editable) {
             ((Component.Editable) component).setEditable(!valueSource.isReadOnly());
@@ -64,9 +59,8 @@ public class ValueBinder {
             initRequired((Field) component, ((EntityValueSource) valueSource).getMetaPropertyPath());
 
             // todo reset required if the attribute is not available due to security rules
+            // todo on item change - reset required if needed
         }
-
-        initFieldValue(component, valueSource);
 
         binding.bind(component, valueSource);
 
@@ -76,12 +70,6 @@ public class ValueBinder {
         }
 
         return binding;
-    }
-
-    protected <V> void initFieldValue(Component.HasValue<V> component, ValueSource<V> valueSource) {
-        if (valueSource.getStatus() == ValueSourceState.ACTIVE) {
-            component.setValue(valueSource.getValue());
-        }
     }
 
     protected void initRequired(Field<?> component, MetaPropertyPath metaPropertyPath) {
@@ -117,7 +105,6 @@ public class ValueBinder {
     }
 
     protected static class ValueBindingImpl<V> implements ValueBinding<V> {
-        protected Class<V> type;
         protected ValueSource<V> source;
         protected Component.HasValue<V> component;
 
@@ -126,15 +113,9 @@ public class ValueBinder {
         protected Subscription sourceValueChangeSubscription;
         protected Subscription sourceStateChangeSupscription;
 
-        public ValueBindingImpl(Class<V> type, ValueSource<V> source, Component.HasValue<V> component) {
-            this.type = type;
+        public ValueBindingImpl(Component.HasValue<V> component, ValueSource<V> source) {
             this.source = source;
             this.component = component;
-        }
-
-        @Override
-        public Class<V> getType() {
-            return type;
         }
 
         @Override
@@ -169,6 +150,13 @@ public class ValueBinder {
             }
         }
 
+        @Override
+        public void activate() {
+            if (source.getStatus() == ValueSourceState.ACTIVE) {
+                component.setValue(source.getValue());
+            }
+        }
+
         protected void disableBeanValidator(Field<?> component) {
             Collection<Field.Validator> validators = component.getValidators();
 
@@ -187,7 +175,7 @@ public class ValueBinder {
             this.sourceStateChangeSupscription = valueSource.addStateChangeListener(this::valueSourceStateChanged);
         }
 
-        protected void valueSourceStateChanged(ValueSourceStateChangeEvent<V> event) {
+        protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {
             if (event.getState() == ValueSourceState.ACTIVE) {
                 // read value to component
                 component.setValue(source.getValue());
@@ -202,7 +190,7 @@ public class ValueBinder {
         }
 
         @SuppressWarnings("unchecked")
-        protected void sourceValueChanged(@SuppressWarnings("unused") Component.ValueChangeEvent event) {
+        protected void sourceValueChanged(@SuppressWarnings("unused") ValueSource.ValueChangeEvent event) {
             component.setValue((V) event.getValue());
         }
     }

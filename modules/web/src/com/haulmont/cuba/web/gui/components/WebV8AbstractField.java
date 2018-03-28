@@ -21,13 +21,11 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +61,21 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
             ValueBinder binder = AppBeans.get(ValueBinder.class);
 
             this.valueBinding = binder.bind(this, valueSource);
+
+            valueBindingConnected(valueSource);
+
+            this.valueBinding.activate();
+
+            valueBindingActivated(valueSource);
         }
+    }
+
+    protected void valueBindingActivated(ValueSource<V> valueSource) {
+        // hook
+    }
+
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        // hook
     }
 
     @Override

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Timer;
 
+// todo for removal
 @Deprecated
 public class TimerListenerWrapper implements Timer.ActionListener, Timer.StopListener {
 

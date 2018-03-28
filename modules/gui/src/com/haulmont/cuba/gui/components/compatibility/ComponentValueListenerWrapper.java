@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.components.compatibility;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.ValueListener;
 
+// todo for removal
 @Deprecated
 public class ComponentValueListenerWrapper implements Component.ValueChangeListener {
 
