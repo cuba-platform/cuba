@@ -19,12 +19,14 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -313,6 +315,13 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
+                            if (editedItem instanceof BaseGenericIdEntity) {
+                                BaseGenericIdEntity genericEditedEntity = (BaseGenericIdEntity) editedItem;
+                                if (datasource.getLoadDynamicAttributes() && genericEditedEntity.getDynamicAttributes() == null) {
+                                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+                                    dynamicAttributesGuiTools.reloadDynamicAttributes(genericEditedEntity);
+                                }
+                            }
                             if (addFirst && datasource instanceof CollectionDatasource.Ordered)
                                 ((CollectionDatasource.Ordered) datasource).includeItemFirst(editedItem);
                             else

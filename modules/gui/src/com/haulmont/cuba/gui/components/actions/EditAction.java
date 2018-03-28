@@ -20,15 +20,16 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -281,6 +282,13 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
+                            if (editedItem instanceof BaseGenericIdEntity) {
+                                BaseGenericIdEntity genericEditedEntity = (BaseGenericIdEntity) editedItem;
+                                if (datasource.getLoadDynamicAttributes() && genericEditedEntity.getDynamicAttributes() == null) {
+                                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+                                    dynamicAttributesGuiTools.reloadDynamicAttributes(genericEditedEntity);
+                                }
+                            }
                             //noinspection unchecked
                             datasource.updateItem(editedItem);
                         }
