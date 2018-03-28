@@ -168,10 +168,11 @@ public class MetadataImpl implements Metadata {
     protected String getEntityNameForIdGeneration(MetaClass metaClass) {
         MetaClass result = metaClass.getAncestors().stream()
                 .filter(mc -> {
-                    // use root of inheritance tree if the strategy is JOINED because ID is stored in the root table
+                    // use root of inheritance tree if the strategy is JOINED (ID is stored in the root table) or
+                    // the strategy is SINGLE_TABLE (ID is stored in single table for all entities)
                     Class<?> javaClass = mc.getJavaClass();
                     Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
-                    return inheritance != null && inheritance.strategy() == InheritanceType.JOINED;
+                    return inheritance != null && inheritance.strategy() != InheritanceType.TABLE_PER_CLASS;
                 })
                 .findFirst()
                 .orElse(metaClass);
