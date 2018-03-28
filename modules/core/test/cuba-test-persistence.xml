@@ -71,5 +71,9 @@
         <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame1</class>
         <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame2</class>
 
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdJoinedRoot</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdJoinedChild</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild</class>
     </persistence-unit>
 </persistence>

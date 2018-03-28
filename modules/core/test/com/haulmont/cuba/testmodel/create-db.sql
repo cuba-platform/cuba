@@ -697,3 +697,35 @@ create table TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK (
     primary key (MANY2_MANY__FETCH_SAME2_ID, MANY2_MANY__FETCH_SAME1_ID)
 )^
 
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_NUMBER_ID_JOINED_ROOT (
+    ID bigint not null,
+    DTYPE varchar(10),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_NUMBER_ID_JOINED_CHILD (
+    ID bigint not null,
+    --
+    INFO varchar(255),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_NUMBER_ID_JOINED_CHILD add constraint FK_TEST_NUMBER_ID_JOINED_CHILD_ROOT
+    foreign key (ID) references TEST_NUMBER_ID_JOINED_ROOT(ID)^
+
+create table TEST_NUMBER_ID_SINGLE_TABLE_ROOT (
+    ID bigint not null,
+    DTYPE varchar(10),
+    --
+    NAME varchar(255),
+    INFO varchar(255),
+    --
+    primary key (ID)
+)^
