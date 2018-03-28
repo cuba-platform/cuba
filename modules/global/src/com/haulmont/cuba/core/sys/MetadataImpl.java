@@ -166,16 +166,19 @@ public class MetadataImpl implements Metadata {
     }
 
     protected String getEntityNameForIdGeneration(MetaClass metaClass) {
-        MetaClass result = metaClass.getAncestors().stream()
-                .filter(mc -> {
-                    // use root of inheritance tree if the strategy is JOINED because ID is stored in the root table
-                    Class<?> javaClass = mc.getJavaClass();
-                    Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
-                    return inheritance != null && inheritance.strategy() == InheritanceType.JOINED;
-                })
-                .findFirst()
-                .orElse(metaClass);
-        return result.getName();
+        Optional<MetaClass> optRoot = metaClass.getAncestors().stream()
+                .filter(mc -> tools.isPersistent(mc)) // filter out all mapped superclasses
+                .findFirst();
+        if (optRoot.isPresent()) {
+            MetaClass root = optRoot.get();
+            Class<?> javaClass = root.getJavaClass();
+            Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
+            if (inheritance == null || inheritance.strategy() != InheritanceType.TABLE_PER_CLASS) {
+                // use root of inheritance tree if the strategy is JOINED or SINGLE_TABLE because ID is stored in the root table
+                return root.getName();
+            }
+        }
+        return metaClass.getName();
     }
 
     protected void assignUuid(Entity entity) {
