@@ -296,8 +296,12 @@ configure(globalModule) {
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
-        releaseTimeStampPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp"
-        releaseNumberPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.number"
+        releaseTimeStampPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.timestamp"
+        releaseNumberPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.number"
+    }
+    // do not use classes directory, because it will break Gradle task UP-TO-DATE caching
+    jar {
+        from new File(project.buildDir, 'release-number')
     }
 
     task enhance(type: CubaEnhancing)
