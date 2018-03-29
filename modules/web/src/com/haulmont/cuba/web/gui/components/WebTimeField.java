@@ -17,18 +17,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
-import com.vaadin.server.UserError;
 import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -36,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
@@ -159,7 +153,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
         component.setWidth(newWidth + "px");
     }
 
-    private boolean checkStringValue(String value) {
+    protected boolean checkStringValue(String value) {
         if (value.equals(placeholder) || StringUtils.isEmpty(value))
             return true;
         SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
@@ -176,7 +170,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
     @Override
     public Date getValue() {
         Object value = super.getValue();
-        if (value instanceof String) {
+        if (value instanceof String) { // vaadin8 rework
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                 return sdf.parse((String) value);
@@ -266,6 +260,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
         component.setNullRepresentation(placeholder);
     }
 
+/* todo
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
         return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
@@ -311,7 +306,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
                 };
             }
         };
-    }
+    }*/
 
     @Override
     public int getTabIndex() {

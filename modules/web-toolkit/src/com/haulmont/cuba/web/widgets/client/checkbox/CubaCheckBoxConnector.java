@@ -26,9 +26,9 @@ import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.CubaCheckBox;
 import com.vaadin.client.VTooltip;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.v7.client.ui.checkbox.CheckBoxConnector;
+import com.vaadin.client.ui.checkbox.CheckBoxConnector;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.v7.shared.AbstractFieldState;
+import com.vaadin.shared.AbstractFieldState;
 
 @Connect(value = CubaCheckBox.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaCheckBoxConnector extends CheckBoxConnector {

@@ -573,6 +573,8 @@ public interface Component {
         private final Object prevValue;
         private final Object value;
 
+        // vaadin8 add isUserOriginated !!!
+
         public ValueChangeEvent(Component.HasValue component, Object prevValue, Object value) {
             super(component);
             this.component = component;

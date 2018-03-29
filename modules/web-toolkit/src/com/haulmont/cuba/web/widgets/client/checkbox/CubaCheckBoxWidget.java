@@ -24,8 +24,7 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.i18n.client.HasDirection;
 import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.ui.Icon;
-import com.vaadin.v7.client.ui.VCheckBox;
+import com.vaadin.client.ui.VCheckBox;
 
 public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurHandler {
 
@@ -85,7 +84,7 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     }
 
     protected void updateCaptionStyle() {
-        if (getText() == null || "".equals(getText())) {
+        if (getText() == null || getText().isEmpty()) {
             addStyleDependentName("empty-caption");
         } else {
             removeStyleDependentName("empty-caption");

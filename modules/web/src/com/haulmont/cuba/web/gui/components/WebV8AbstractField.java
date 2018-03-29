@@ -33,13 +33,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-// vaadin8 ??? Custom binding bridge for the new UI components ?
 public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, V>
         extends WebAbstractComponent<T> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
     protected List<Validator> validators; // lazily initialized list
 
+    // todo should be initialized in constructor of component
     protected V internalValue;
 
     protected boolean editable = true;
@@ -111,7 +111,11 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.setValueSource(new DatasourceValueSource(datasource, property));
+        if (datasource != null) {
+            this.setValueSource(new DatasourceValueSource(datasource, property));
+        } else {
+            this.setValueSource(null);
+        }
     }
 
     @Override
@@ -140,13 +144,13 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     @SuppressWarnings("unchecked")
     @Override
     public V getValue() {
-        return (V) component.getValue();
+        return internalValue;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void setValue(V value) {
-        component.setValue(value);
+        component.setValue(convertToPresentation(value));
     }
 
     @Override
@@ -215,7 +219,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     }
 
     @SuppressWarnings("unchecked")
-    protected void attachListener(T component) {
+    protected void attachValueChangeListener(T component) {
         component.addValueChangeListener(this::componentValueChanged);
     }
 
@@ -348,12 +352,12 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
         // todo vaadin8
     }
 
-    protected void componentValueChanged(com.vaadin.data.HasValue.ValueChangeEvent componentEvent) {
-        V value = getValue();
+    protected void componentValueChanged(com.vaadin.data.HasValue.ValueChangeEvent valueChangeEvent) {
+        V value = convertToModel(component.getValue());
         V oldValue = internalValue;
         internalValue = value;
 
-        if (!InstanceUtils.propertyValueEquals(oldValue, value)) {
+        if (!fieldValueEquals(value, oldValue)) {
             if (hasValidationError()) {
                 setValidationError(null);
             }
@@ -361,5 +365,18 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected V convertToModel(Object componentRawValue) {
+        return (V) componentRawValue;
+    }
+
+    protected Object convertToPresentation(V modelValue) {
+        return modelValue;
+    }
+
+    protected boolean fieldValueEquals(V value, V oldValue) {
+        return InstanceUtils.propertyValueEquals(oldValue, value);
     }
 }

@@ -22,14 +22,13 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTwinColSelect;
-import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
+import com.vaadin.server.Resource;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.server.Resource;
 import com.vaadin.v7.ui.AbstractSelect;
 
 import java.util.*;
@@ -77,26 +76,6 @@ public class WebTwinColumn<V> extends WebAbstractOptionsField<CubaTwinColSelect,
         component.setMultiSelect(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
-    }
-
-    @Override
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        super.setOptionsDatasource(datasource);
-
-        if (datasource != null) {
-            collectionDsListenersWrapper.bind(datasource);
-        }
-    }
-
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
-
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new CollectionPropertyWrapper(item, propertyPath);
-            }
-        };
     }
 
     public static class CollectionPropertyWrapper extends PropertyWrapper {

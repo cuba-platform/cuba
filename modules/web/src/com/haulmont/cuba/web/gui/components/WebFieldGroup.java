@@ -463,6 +463,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     protected com.vaadin.v7.ui.Field getFieldImplementation(Component c) {
         com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
+
+        // vaadin8 !
         if (composition instanceof com.vaadin.v7.ui.Field) {
             return (com.vaadin.v7.ui.Field) composition;
         } else {

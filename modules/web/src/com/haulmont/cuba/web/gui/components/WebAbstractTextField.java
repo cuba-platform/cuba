@@ -119,6 +119,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
         }
     }
 
+    // vaadin8 rework to setValueSource()
     @Override
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
@@ -207,17 +208,6 @@ public abstract class WebAbstractTextField<T extends AbstractTextField, V>
         } else {
             component.setConverter(new TextFieldStringToDatatypeConverter(Datatypes.getNN(String.class)));
         }
-    }
-
-    @Override
-    protected void valueBindingConnected(ValueSource<V> valueSource) {
-        super.valueBindingConnected(valueSource);
-
-        setupValueConversion(valueSource);
-    }
-
-    public void setupValueConversion(ValueSource<?> valueSource) {
-        // vaadin8
     }
 
     @Override

@@ -17,13 +17,14 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.checkbox.CubaCheckBoxState;
-import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.ui.CheckBox;
 
 public class CubaCheckBox extends CheckBox {
 
     public CubaCheckBox() {
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
+//        vaadin8
+//        setValidationVisible(false);
+//        setShowBufferedSourceException(false);
     }
 
     public CubaCheckBox(String caption) {

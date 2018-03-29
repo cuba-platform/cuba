@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-// todo
 public class DatasourceValueSource<E extends Entity, V> extends EventPublisher implements EntityValueSource<E, V> {
     protected final Datasource<E> datasource;
     protected final MetaPropertyPath metaPropertyPath;
@@ -51,29 +50,10 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
 
         this.metaPropertyPath = metaPropertyPath;
         this.datasource = datasource;
-        // todo setup listeners:
 
-        this.datasource.addStateChangeListener(e -> {
-            if (e.getState() == Datasource.State.VALID) {
-                setState(ValueSourceState.ACTIVE);
-            } else {
-                setState(ValueSourceState.INACTIVE);
-            }
-        });
-
-        this.datasource.addItemChangeListener(e -> {
-            if (e.getItem() != null && datasource.getState() == Datasource.State.VALID) {
-                setState(ValueSourceState.ACTIVE);
-
-                publish(InstanceChangeEvent.class, new InstanceChangeEvent<>(this, e.getPrevItem(), e.getItem()));
-            }
-        });
-
-        this.datasource.addItemPropertyChangeListener(e -> {
-            if (Objects.equals(e.getProperty(), property)) {
-                publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
-            }
-        });
+        this.datasource.addStateChangeListener(this::datasourceStateChanged);
+        this.datasource.addItemChangeListener(this::datasourceItemChanged);
+        this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
     }
 
     public void setState(ValueSourceState state) {
@@ -160,5 +140,31 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
         return subscribe(ValueChangeEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void datasourceItemChanged(Datasource.ItemChangeEvent e) {
+        if (e.getItem() != null && datasource.getState() == Datasource.State.VALID) {
+            setState(ValueSourceState.ACTIVE);
+        } else {
+            setState(ValueSourceState.INACTIVE);
+        }
+
+        publish(InstanceChangeEvent.class, new InstanceChangeEvent(this, e.getPrevItem(), e.getItem()));
+    }
+
+    protected void datasourceStateChanged(Datasource.StateChangeEvent<E> e) {
+        if (e.getState() == Datasource.State.VALID) {
+            setState(ValueSourceState.ACTIVE);
+        } else {
+            setState(ValueSourceState.INACTIVE);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+        if (Objects.equals(e.getProperty(), metaPropertyPath.toPathString())) {
+            publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
+        }
     }
 }

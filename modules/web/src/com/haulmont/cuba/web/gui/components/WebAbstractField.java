@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
 import com.vaadin.v7.data.Property;
 import org.apache.commons.lang.StringUtils;
@@ -122,23 +121,10 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.setValueSource(new DatasourceValueSource(datasource, property));
-    }
-
-    // todo remove
-    protected void initRequired(MetaPropertyPath metaPropertyPath) {
-        MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-
-        boolean newRequired = metaProperty.isMandatory();
-        Object notNullUiComponent = metaProperty.getAnnotations().get(NotNull.class.getName() + "_notnull_ui_component");
-        if (Boolean.TRUE.equals(notNullUiComponent)) {
-            newRequired = true;
-        }
-        setRequired(newRequired);
-
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaPropertyPath.getMetaClass(), metaPropertyPath.toString()));
+        if (datasource != null) {
+            this.setValueSource(new DatasourceValueSource(datasource, property));
+        } else {
+            this.setValueSource(null);
         }
     }
 
@@ -152,10 +138,6 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     }
 
     protected void initFieldConverter() {
-    }
-
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths);
     }
 
     @Override
@@ -259,12 +241,12 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         component.addValueChangeListener(this::componentValueChanged);
     }
 
-    protected void componentValueChanged(Property.ValueChangeEvent componentEvent) {
+    protected void componentValueChanged(Property.ValueChangeEvent valueChangeEvent) {
         V value = getValue();
         V oldValue = internalValue;
         internalValue = value;
 
-        if (!InstanceUtils.propertyValueEquals(oldValue, value)) {
+        if (!fieldValueEquals(value, oldValue)) {
             if (hasValidationError()) {
                 setValidationError(null);
             }
@@ -272,6 +254,10 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
+    }
+
+    protected boolean fieldValueEquals(V value, V oldValue) {
+        return InstanceUtils.propertyValueEquals(oldValue, value);
     }
 
     @Override

@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.checkbox;
 
-import com.vaadin.v7.shared.ui.checkbox.CheckBoxState;
+import com.vaadin.shared.ui.checkbox.CheckBoxState;
 
 public class CubaCheckBoxState extends CheckBoxState {
 

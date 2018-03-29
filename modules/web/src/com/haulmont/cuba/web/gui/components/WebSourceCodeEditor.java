@@ -61,7 +61,7 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
             }
         };
 
-        attachListener(component);
+        attachValueChangeListener(component);
     }
 
     protected CubaSourceCodeEditor createCubaSourceCodeEditor() {

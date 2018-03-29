@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -27,16 +26,12 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
 import com.vaadin.v7.ui.InlineDateField;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
@@ -53,16 +48,6 @@ public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateFi
 
         Messages messages = AppBeans.get(Messages.NAME);
         component.setDateOutOfRangeMessage(messages.getMainMessage("datePicker.dateOutOfRangeMessage"));
-    }
-
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath);
-            }
-        };
     }
 
     @Override
