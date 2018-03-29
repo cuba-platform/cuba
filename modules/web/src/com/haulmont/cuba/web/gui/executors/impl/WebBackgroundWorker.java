@@ -40,7 +40,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -249,7 +252,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @ExecutedOnUIThread
         protected final void handleDone() {
             if (isCancelled()) {
-                // handle cancel from edt before execution start
+                // handle cancel from EDT before execution start
                 log.trace("Done statement is not processed because it is canceled task");
                 return;
             }
@@ -263,6 +266,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             // do not allow to cancel task from done listeners and exception handler
             isClosed = true;
+
+            log.trace("Unregister task");
 
             ui.getApp().removeBackgroundTask(future);
             watchDog.removeTask(taskHandler);
@@ -310,6 +315,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
             if (isClosed) {
                 return false;
             }
+
+            log.trace("Unregister task");
+
+            ui.getApp().removeBackgroundTask(future);
+            watchDog.removeTask(taskHandler);
 
             log.debug("Cancel task. User: {}", userLogin);
 
