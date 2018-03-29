@@ -1704,10 +1704,13 @@ public class DesktopWindowManager extends WindowManager {
                 });
             }
 
-            action.actionPerform(null);
-            dialog.setVisible(false);
-            cleanupAfterModalDialogClosed(null);
-            dialog.dispose();
+            try {
+                action.actionPerform(null);
+            } finally {
+                dialog.setVisible(false);
+                cleanupAfterModalDialogClosed(null);
+                dialog.dispose();
+            }
         }
 
         @Override
