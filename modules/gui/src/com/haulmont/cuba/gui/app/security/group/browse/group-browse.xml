@@ -77,9 +77,7 @@
                             </actions>
                         </popupButton>
 
-                        <!-- vaadin8 requires WebJar support, visible set to false -->
                         <upload id="importUpload"
-                                visible="false"
                                 uploadButtonIcon="icons/upload.png"
                                 uploadButtonCaption=""
                                 uploadButtonDescription="mainMsg://actions.Import"/>

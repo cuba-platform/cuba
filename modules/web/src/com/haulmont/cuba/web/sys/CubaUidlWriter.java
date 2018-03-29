@@ -17,10 +17,11 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.web.widgets.WebJarResource;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.server.communication.UidlWriter;
+import com.vaadin.ui.Dependency;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +39,13 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
-    /*
-    @SuppressWarnings("deprecation")
     @Override
     protected void handleAdditionalDependencies(List<Class<? extends ClientConnector>> newConnectorTypes,
-                                                List<String> scriptDependencies, List<String> styleDependencies) {
-        LegacyCommunicationManager manager = VaadinSession.getCurrent().getCommunicationManager();
+                                                LegacyCommunicationManager manager, List<Dependency> dependencies) {
+        super.handleAdditionalDependencies(newConnectorTypes, manager, dependencies);
 
-        for (Class<? extends ClientConnector> connector : newConnectorTypes) {
-            WebJarResource webJarResource = connector.getAnnotation(WebJarResource.class);
+        for (Class<? extends ClientConnector> connectorClass : newConnectorTypes) {
+            WebJarResource webJarResource = connectorClass.getAnnotation(WebJarResource.class);
             if (webJarResource == null)
                 continue;
 
@@ -57,16 +56,17 @@ public class CubaUidlWriter extends UidlWriter {
                 resourcePath = resourcePath.replace(META_INF_PREFIX, VAADIN_PREFIX);
 
                 if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
-                    scriptDependencies.add(manager.registerDependency(resourcePath, connector));
+                    String url = manager.registerDependency(resourcePath, connectorClass);
+                    dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
                 }
 
                 if (resourcePath.endsWith(CSS_EXTENSION)) {
-                    styleDependencies.add(manager.registerDependency(resourcePath, connector));
+                    String url = manager.registerDependency(resourcePath, connectorClass);
+                    dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
                 }
             }
         }
     }
-*/
 
     protected String getResourceActualPath(String uri) {
         Matcher matcher = OLD_WEBJAR_IDENTIFIER.matcher(uri);

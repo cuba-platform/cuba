@@ -30,7 +30,6 @@ import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -45,7 +44,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -179,16 +177,7 @@ public class CubaVaadinServletService extends VaadinServletService
 
         for (RequestHandler handler : requestHandlers) {
             if (handler instanceof UidlRequestHandler) {
-                // replace UidlRequestHandler with CubaUidlRequestHandler
-                cubaRequestHandlers.add(new UidlRequestHandler());
-                /* vaadin8 reimplement
-                cubaRequestHandlers.add(new UidlRequestHandler() {
-                    @Override
-                    protected UidlWriter createUidlWriter() {
-                        return new CubaUidlWriter(servletContext);
-                    }
-                });
-                */
+                cubaRequestHandlers.add(new CubaUidlRequestHandler());
             } else if (handler instanceof PublishedFileHandler) {
                 // replace PublishedFileHandler with CubaPublishedFileHandler
                 // for support resources from VAADIN directory
@@ -381,33 +370,22 @@ public class CubaVaadinServletService extends VaadinServletService
      * that use web resources from WebJars
      */
     protected static class CubaServletUIInitHandler extends ServletUIInitHandler {
-
-        private static final Logger log = LoggerFactory.getLogger(CubaServletUIInitHandler.class);
-
-        protected final ServletContext servletContext;
-
-        public CubaServletUIInitHandler(ServletContext servletContext) {
-            this.servletContext = servletContext;
-        }
-
         @Override
-        protected String getInitialUidl(VaadinRequest request, UI uI) throws IOException {
-            // CAUTION: copied from parent class
-            try (StringWriter writer = new StringWriter()) {
-                writer.write("{");
-
-                VaadinSession session = uI.getSession();
-                if (session.getConfiguration().isXsrfProtectionEnabled()) {
-                    writer.write(getSecurityKeyUIDL(session));
-                }
-                writer.write(getPushIdUIDL(session));
-                new CubaUidlWriter(servletContext).write(uI, writer, false);
-                writer.write("}");
-
-                String initialUIDL = writer.toString();
-                log.trace("Initial UIDL: {}", initialUIDL);
-                return initialUIDL;
-            }
+        protected UidlWriter createUidlWriter() {
+            return new CubaUidlWriter();
         }
     }
+
+    /*
+     * Uses CubaUidlWriter instead of default UidlWriter to support reloading screens that contain components
+     * that use web resources from WebJars
+     */
+    protected static class CubaUidlRequestHandler extends UidlRequestHandler {
+        @Override
+        protected UidlWriter createUidlWriter() {
+            return new CubaUidlWriter();
+        }
+    }
+
+    // vaadin8 replace UidlWriter in AtmospherePushConnection
 }

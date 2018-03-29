@@ -493,4 +493,26 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
         return bodyTemplate;
     }
+
+    @Override
+    protected String getStaticFilePath(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null) {
+            return null;
+        }
+
+        if (pathInfo.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX)) {
+            // handled in CubaWebJarsHandler
+            return null;
+        }
+
+        String servletPrefixedPath = request.getServletPath() + pathInfo;
+
+        if (servletPrefixedPath.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX)) {
+            // handled in CubaWebJarsHandler
+            return null;
+        }
+
+        return super.getStaticFilePath(request);
+    }
 }

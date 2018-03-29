@@ -238,12 +238,15 @@ public class AppUI extends CubaUI
         String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
 
         VerticalLayout content = new VerticalLayout();
+        content.setMargin(false);
+        content.setSpacing(false);
         content.setStyleName("c-init-error-view");
         content.setSizeFull();
 
         VerticalLayout errorPanel = new VerticalLayout();
         errorPanel.setStyleName("c-init-error-panel");
         errorPanel.setWidthUndefined();
+        errorPanel.setMargin(false);
         errorPanel.setSpacing(true);
 
         Label captionLabel = new Label(initErrorCaption);
