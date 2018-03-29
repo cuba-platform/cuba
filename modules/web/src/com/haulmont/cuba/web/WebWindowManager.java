@@ -1310,6 +1310,11 @@ public class WebWindowManager extends WindowManager {
         ui.addWindow(vWindow);
         vWindow.center();
         vWindow.focus();
+
+        if (ui.isTestMode()) {
+            messageLab.setCubaId("messageDialogLabel");
+            button.setCubaId("messageDialogOk");
+        }
     }
 
     @Override
@@ -1369,7 +1374,6 @@ public class WebWindowManager extends WindowManager {
             }
         }
         ((CubaWindow) window).setCloseOnClickOutside(closeOnClickOutside);
-
 
         if (messageType.getMaximized() != null) {
             if (messageType.getMaximized()) {
@@ -1438,6 +1442,10 @@ public class WebWindowManager extends WindowManager {
 
         ui.addWindow(window);
         window.center();
+
+        if (ui.isTestMode()) {
+            messageLab.setCubaId("optionDialogLabel");
+        }
     }
 
     @Override
