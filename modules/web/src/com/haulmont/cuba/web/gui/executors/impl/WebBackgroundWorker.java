@@ -267,10 +267,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // do not allow to cancel task from done listeners and exception handler
             isClosed = true;
 
-            log.trace("Unregister task");
-
-            ui.getApp().removeBackgroundTask(future);
-            watchDog.removeTask(taskHandler);
+            unregister();
 
             try {
                 V result = future.get();
@@ -316,10 +313,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 return false;
             }
 
-            log.trace("Unregister task");
-
-            ui.getApp().removeBackgroundTask(future);
-            watchDog.removeTask(taskHandler);
+            unregister();
 
             log.debug("Cancel task. User: {}", userLogin);
 
@@ -338,6 +332,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
             }
 
             return isCanceledNow;
+        }
+
+        @ExecutedOnUIThread
+        protected void unregister() {
+            log.trace("Unregister task");
+
+            ui.getApp().removeBackgroundTask(future);
+            watchDog.removeTask(taskHandler);
         }
 
         @ExecutedOnUIThread
