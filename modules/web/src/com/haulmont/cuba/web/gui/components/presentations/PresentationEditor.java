@@ -85,6 +85,7 @@ public class PresentationEditor extends CubaWindow {
         VerticalLayout root = new VerticalLayout();
         root.setWidthUndefined();
         root.setSpacing(true);
+        root.setMargin(false);
         setContent(root);
 
         messages = AppBeans.get(Messages.class);
@@ -112,6 +113,7 @@ public class PresentationEditor extends CubaWindow {
         }
 
         HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setMargin(false);
         buttons.setSpacing(true);
         buttons.setWidthUndefined();
         root.addComponent(buttons);

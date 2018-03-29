@@ -32,11 +32,15 @@ import java.util.Map;
  *  <li>separate action manager for shortcuts</li>
  *  <li>description icon support</li>
  * </ul>
- *
  */
 public class CubaOrderedActionsLayout extends AbstractOrderedLayout implements Action.Container, LegacyComponent {
 
     private ActionManager actionManager;
+
+    public CubaOrderedActionsLayout() {
+        setMargin(false);
+        setSpacing(false);
+    }
 
     @Override
     public void addActionHandler(Action.Handler actionHandler) {

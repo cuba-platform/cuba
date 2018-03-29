@@ -106,6 +106,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
+        layout.setMargin(false);
         layout.setWidthUndefined();
         layout.setStyleName("c-nousersession-dialog-layout");
         layout.setSpacing(true);

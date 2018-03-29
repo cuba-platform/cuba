@@ -58,6 +58,8 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
 
         contextMenuPopup = new VerticalLayout();
+        contextMenuPopup.setSpacing(false);
+        contextMenuPopup.setMargin(false);
 
         contextMenuPopup.setCubaId("cubaContextMenu");
 

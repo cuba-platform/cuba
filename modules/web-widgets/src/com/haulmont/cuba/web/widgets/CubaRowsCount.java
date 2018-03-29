@@ -52,6 +52,7 @@ public class CubaRowsCount extends CustomComponent {
         HorizontalLayout contentLayout = new HorizontalLayout();
         contentLayout.setStyleName("c-paging-wrap");
         contentLayout.setSpacing(true);
+        contentLayout.setMargin(false);
 
         firstButton = new CubaButton();
         firstButton.setStyleName("c-paging-change-page");

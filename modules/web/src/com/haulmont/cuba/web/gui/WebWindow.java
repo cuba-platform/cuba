@@ -1908,6 +1908,8 @@ public class WebWindow implements Window, Component.Wrapper,
             rootLayout.setSpacing(true);
 
             container = new VerticalLayout();
+            container.setMargin(false);
+            container.setSpacing(false);
             container.setStyleName(C_WINDOW_LAYOUT);
             container.setSizeFull();
 

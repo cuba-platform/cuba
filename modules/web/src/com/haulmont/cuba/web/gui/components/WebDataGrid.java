@@ -1759,6 +1759,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected HorizontalLayout createTopPanel() {
         HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setMargin(false);
+        topPanel.setSpacing(false);
         topPanel.setStyleName("c-data-grid-top");
         return topPanel;
     }

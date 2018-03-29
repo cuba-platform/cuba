@@ -43,6 +43,7 @@ public class ComponentCustomField extends CustomField<Component> {
      */
     @Override
     protected Component initContent() {
+        layout.setMargin(false);
         layout.setSizeFull();
         layout.addStyleName("cr-editor-field");
         return layout;

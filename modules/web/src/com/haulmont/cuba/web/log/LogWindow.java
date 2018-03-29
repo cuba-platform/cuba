@@ -81,12 +81,15 @@ public class LogWindow extends CubaWindow {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
+        layout.setMargin(false);
         layout.setSizeFull();
         setContent(layout);
 
         Panel scrollablePanel = new Panel();
         scrollablePanel.setSizeFull();
         VerticalLayout scrollContent = new VerticalLayout();
+        scrollContent.setMargin(false);
+        scrollContent.setSpacing(false);
         scrollContent.setSizeUndefined();
         scrollablePanel.setContent(scrollContent);
 
@@ -99,6 +102,8 @@ public class LogWindow extends CubaWindow {
         ((Layout)scrollablePanel.getContent()).addComponent(label);
 
         HorizontalLayout topLayout = new HorizontalLayout();
+        topLayout.setMargin(false);
+        topLayout.setSpacing(false);
         topLayout.setWidth("100%");
         topLayout.setHeightUndefined();
 

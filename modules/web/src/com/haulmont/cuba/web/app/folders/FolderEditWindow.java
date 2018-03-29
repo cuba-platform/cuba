@@ -102,6 +102,7 @@ public class FolderEditWindow extends CubaWindow {
         layout = new VerticalLayout();
         layout.setWidthUndefined();
         layout.setSpacing(true);
+        layout.setMargin(false);
 
         setContent(layout);
         setModal(true);

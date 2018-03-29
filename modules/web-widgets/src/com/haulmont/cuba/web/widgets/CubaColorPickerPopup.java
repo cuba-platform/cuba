@@ -60,6 +60,7 @@ public class CubaColorPickerPopup extends ColorPickerPopup {
     @Override
     protected Component createSelectTab() {
         VerticalLayout selLayout = new VerticalLayout();
+        selLayout.setSpacing(false);
         selLayout.setMargin(new MarginInfo(false, false, true, false));
         selLayout.addComponent(selPreview);
         selLayout.addStyleName("seltab");

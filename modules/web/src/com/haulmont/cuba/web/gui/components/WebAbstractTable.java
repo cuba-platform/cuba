@@ -1792,6 +1792,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected HorizontalLayout createTopPanel() {
         HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setMargin(false);
+        topPanel.setSpacing(false);
         topPanel.setStyleName("c-table-top");
         return topPanel;
     }
@@ -1852,10 +1854,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                         com.vaadin.ui.Component vComponent = component.unwrapComposition(Component.class);
 
+                        // vaadin8 rework
                         // wrap field for show required asterisk
                         if ((vComponent instanceof com.vaadin.v7.ui.Field)
                                 && (((com.vaadin.v7.ui.Field) vComponent).isRequired())) {
                             VerticalLayout layout = new VerticalLayout();
+                            layout.setMargin(false);
+                            layout.setSpacing(false);
                             layout.addComponent(vComponent);
 
                             if (vComponent.getWidth() < 0) {
@@ -2494,6 +2499,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             VerticalLayout layout = new VerticalLayout();
+            layout.setMargin(false);
+            layout.setSpacing(false);
             layout.setWidthUndefined();
             layout.setStyleName("c-table-view-textcut");
 
@@ -2639,6 +2646,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             if (composition instanceof com.vaadin.v7.ui.Field
                     && ((com.vaadin.v7.ui.Field) composition).isRequired()) {
                 VerticalLayout layout = new VerticalLayout();
+                layout.setMargin(false);
+                layout.setSpacing(false);
                 layout.addComponent(composition);
 
                 if (composition.getWidth() < 0) {
@@ -2866,6 +2875,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void showCustomPopupActions(List<Action> actions) {
         VerticalLayout customContextMenu = new VerticalLayout();
+        customContextMenu.setMargin(false);
+        customContextMenu.setSpacing(false);
         customContextMenu.setWidthUndefined();
         customContextMenu.setStyleName("c-cm-container");
 

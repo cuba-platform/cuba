@@ -166,6 +166,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
     protected HorizontalLayout createTopPanel() {
         HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setSpacing(false);
+        topPanel.setMargin(false);
         topPanel.setStyleName("c-tree-top");
         return topPanel;
     }

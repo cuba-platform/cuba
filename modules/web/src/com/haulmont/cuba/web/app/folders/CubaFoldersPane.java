@@ -186,6 +186,7 @@ public class CubaFoldersPane extends VerticalLayout {
             vertSplit.setSplitPosition(verticalSplitPos);
 
             VerticalLayout afLayout = new VerticalLayout();
+            afLayout.setMargin(false);
             afLayout.setSpacing(true);
             afLayout.setSizeFull();
             if (appFoldersLabel != null)
@@ -195,6 +196,7 @@ public class CubaFoldersPane extends VerticalLayout {
             vertSplit.setFirstComponent(afLayout);
 
             VerticalLayout sfLayout = new VerticalLayout();
+            sfLayout.setMargin(false);
             sfLayout.setSpacing(true);
             sfLayout.setSizeFull();
             if (searchFoldersLabel != null)

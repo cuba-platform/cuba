@@ -124,6 +124,7 @@ public class ExceptionDialog extends CubaWindow {
         final String stackTrace = getStackTrace(exception);
 
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(false);
         mainLayout.setSpacing(true);
 
         TextArea textArea = new TextArea();
@@ -143,6 +144,7 @@ public class ExceptionDialog extends CubaWindow {
         mainLayout.addComponent(textArea);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
+        buttonsLayout.setMargin(false);
         buttonsLayout.setSpacing(true);
         buttonsLayout.setWidth("100%");
         mainLayout.addComponent(buttonsLayout);
