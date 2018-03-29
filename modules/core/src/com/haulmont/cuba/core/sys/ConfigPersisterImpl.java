@@ -51,7 +51,7 @@ public class ConfigPersisterImpl implements ConfigPersister {
 
     @Override
     public void setProperty(SourceType sourceType, String name, String value) {
-        log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
+        log.debug("Setting property '{}' to '{}', source={}", name, value, sourceType.name());
         switch (sourceType) {
             case SYSTEM:
                 System.setProperty(name, value);
