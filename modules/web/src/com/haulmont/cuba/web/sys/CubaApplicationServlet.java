@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
@@ -45,6 +47,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main CUBA web-application servlet.
@@ -109,10 +112,13 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected void servletInitialized() throws ServletException {
         super.servletInitialized();
 
-        getService().addSessionInitListener(event -> {
-            BootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
-            event.getSession().addBootstrapListener(bootstrapListener);
-        });
+        ApplicationContext applicationContext = AppContext.getApplicationContext();
+        List<BootstrapListener> bootstrapListeners = applicationContext.getBeansOfType(BootstrapListener.class)
+                .values().stream()
+                .sorted(AnnotationAwareOrderComparator.INSTANCE)
+                .collect(Collectors.toList());
+
+        getService().addSessionInitListener(event -> bootstrapListeners.forEach(event.getSession()::addBootstrapListener));
     }
 
     @Override
