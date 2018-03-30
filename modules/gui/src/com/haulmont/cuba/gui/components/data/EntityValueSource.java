@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
+import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
@@ -35,4 +37,37 @@ public interface EntityValueSource<E extends Entity, V> extends ValueSource<V> {
     E getItem();
 
     Subscription addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener);
+
+    class InstanceChangeEvent<E extends Entity> extends EventObject {
+        private final E prevItem;
+        private final E item;
+
+        public InstanceChangeEvent(EntityValueSource<E, ?> source, E prevItem, E item) {
+            super(source);
+            this.prevItem = prevItem;
+            this.item = item;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public EntityValueSource<E, ?> getSource() {
+            return (EntityValueSource<E, ?>) super.getSource();
+        }
+
+        /**
+         * @return current item
+         */
+        @Nullable
+        public E getItem() {
+            return item;
+        }
+
+        /**
+         * @return previous selected item
+         */
+        @Nullable
+        public E getPrevItem() {
+            return prevItem;
+        }
+    }
 }
