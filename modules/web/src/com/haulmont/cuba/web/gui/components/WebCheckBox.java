@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.web.widgets.CubaCheckBox;
 
-public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Boolean> implements CheckBox {
+public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Boolean, Boolean> implements CheckBox {
     public WebCheckBox() {
         this.component = new CubaCheckBox();
         this.internalValue = false;

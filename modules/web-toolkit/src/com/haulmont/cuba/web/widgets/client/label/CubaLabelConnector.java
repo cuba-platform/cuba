@@ -24,7 +24,8 @@ import com.vaadin.client.Profiler;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Icon;
-import com.vaadin.v7.client.ui.label.LabelConnector;
+import com.vaadin.client.ui.VLabel;
+import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaLabel.class, loadStyle = Connect.LoadStyle.EAGER)
@@ -38,41 +39,39 @@ public class CubaLabelConnector extends LabelConnector {
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         // CAUTION copied from superclass
+        // todo rework! extract extenstion points
         super.onStateChanged(stateChangeEvent);
+
         boolean sinkOnloads = false;
         Profiler.enter("LabelConnector.onStateChanged update content");
+        VLabel widget = getWidget();
         switch (getState().contentMode) {
             case PREFORMATTED:
                 PreElement preElement = Document.get().createPreElement();
                 preElement.setInnerText(getState().text);
                 // clear existing content
-                getWidget().setHTML("");
+                widget.setHTML("");
                 // add preformatted text to dom
-                getWidget().getElement().appendChild(preElement);
+                widget.getElement().appendChild(preElement);
                 break;
 
             case TEXT:
                 // clear existing content
-                getWidget().setHTML("");
+                widget.setHTML("");
                 // set multiline text if needed
                 // Haulmont API
                 String text = getState().text;
                 if (text != null && text.contains("\n")) {
                     text = WidgetUtil.escapeHTML(text).replace("\n", "<br/>");
-                    getWidget().setHTML(text);
+                    widget.setHTML(text);
                 } else {
-                    getWidget().setText(text);
+                    widget.setText(text);
                 }
                 break;
 
             case HTML:
-            case RAW:
                 sinkOnloads = true;
-            case XML:
-                getWidget().setHTML(getState().text);
-                break;
-            default:
-                getWidget().setText("");
+                widget.setHTML(getState().text);
                 break;
         }
 
@@ -89,7 +88,7 @@ public class CubaLabelConnector extends LabelConnector {
 
         if (sinkOnloads) {
             Profiler.enter("LabelConnector.onStateChanged sinkOnloads");
-            WidgetUtil.sinkOnloadForImages(getWidget().getElement());
+            WidgetUtil.sinkOnloadForImages(widget.getElement());
             Profiler.leave("LabelConnector.onStateChanged sinkOnloads");
         }
     }

@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.v7.ui.Label;
+import com.vaadin.ui.Label;
 
 /**
  * Label widget which supports multiline strings in {@link com.vaadin.v7.shared.ui.label.ContentMode#TEXT} mode

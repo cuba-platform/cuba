@@ -25,9 +25,8 @@ import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.vaadin.data.HasValue;
-import com.vaadin.ui.AbstractComponent;
 
-public class WebAbstractValueComponent<T extends AbstractComponent & HasValue<P>, P, V>
+public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & HasValue<P>, P, V>
         extends WebAbstractComponent<T> implements Component.HasValue<V>, HasValueBinding<V> {
 
     protected V internalValue;
@@ -72,8 +71,7 @@ public class WebAbstractValueComponent<T extends AbstractComponent & HasValue<P>
     @Override
     public Subscription addValueChangeListener(ValueChangeListener listener) {
         getEventRouter().addListener(ValueChangeListener.class, listener);
-        // todo
-        return () -> {};
+        return () -> getEventRouter().removeListener(ValueChangeListener.class, listener);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class WebAbstractValueComponent<T extends AbstractComponent & HasValue<P>
         component.setValue(convertToPresentation(value));
     }
 
-    protected void componentValueChanged(P prevComponentValue, P newComponentValue) {
+    protected void componentValueChanged(P prevComponentValue, P newComponentValue, boolean isUserOriginated) {
         V value = convertToModel(newComponentValue);
         V oldValue = internalValue;
         internalValue = value;
@@ -102,7 +100,7 @@ public class WebAbstractValueComponent<T extends AbstractComponent & HasValue<P>
                 setValidationError(null);
             }
 
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
     }

@@ -43,10 +43,10 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     protected List<Field.Validator> validators; // lazily initialized list
 
-    protected V internalValue;
 
     protected boolean editable = true;
 
+    protected V internalValue;
     protected ValueBinding<V> valueBinding;
 
     protected EditableChangeListener parentEditableChangeListener;

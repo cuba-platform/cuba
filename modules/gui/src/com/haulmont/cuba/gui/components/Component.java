@@ -120,6 +120,7 @@ public interface Component {
     boolean isEnabledItself();
 
     /** Set focus to this component */
+    // vaadin8 move to Focusable
     void requestFocus();
 
     /** Get component height in {@link #getHeightUnits()} */
@@ -353,14 +354,19 @@ public interface Component {
     }
 
     /**
-     * Object having a caption
+     * todo
      */
-    interface HasCaption {
-        String getCaption();
-        void setCaption(String caption);
-
+    interface HasDescription {
         String getDescription();
         void setDescription(String description);
+    }
+
+    /**
+     * Object having a caption
+     */
+    interface HasCaption extends HasDescription {
+        String getCaption();
+        void setCaption(String caption);
     }
 
     /**

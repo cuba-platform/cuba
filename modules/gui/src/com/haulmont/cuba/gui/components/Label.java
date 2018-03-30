@@ -16,8 +16,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Label<V>
-        extends DatasourceComponent<V>, Component.HasFormatter, Component.HasCaption, Component.HasIcon {
+import com.haulmont.cuba.gui.components.data.HasValueBinding;
+
+public interface Label<V> extends HasValueBinding<V>, DatasourceComponent<V>, Component.HasFormatter,
+        Component.HasDescription, Component.HasIcon {
 
     String NAME = "label";
 

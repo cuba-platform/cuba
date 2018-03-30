@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import org.apache.commons.lang.StringUtils;
 
@@ -42,19 +41,18 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
             resultComponent.setHtmlEnabled(Boolean.parseBoolean(htmlEnabled));
         }
 
-        String caption = element.attributeValue("value");
-        if (StringUtils.isNotEmpty(caption)) {
-            caption = loadResourceString(caption);
-            resultComponent.setValue(caption);
+        String value = element.attributeValue("value");
+        if (StringUtils.isNotEmpty(value)) {
+            value = loadResourceString(value);
+            resultComponent.setValue(value);
         }
         
-        loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
         loadIcon(resultComponent, element);
 
-        loadWidth(resultComponent, element, Component.AUTO_SIZE);
-        loadHeight(resultComponent, element, Component.AUTO_SIZE);
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
         loadResponsive(resultComponent, element);
 

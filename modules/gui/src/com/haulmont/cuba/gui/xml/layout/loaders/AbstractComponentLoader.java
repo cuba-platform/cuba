@@ -197,6 +197,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 MetaClass metaClass = wiredComponent.getDatasource().getMetaClass();
                 MetaPropertyPath propertyPath = wiredComponent.getMetaPropertyPath();
 
+                // vaadin8 move to ValueBinder !
                 if (propertyPath != null
                         && !security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                     ((Component.Editable) component).setEditable(false);
@@ -220,7 +221,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadDescription(Component.HasCaption component, Element element) {
+    protected void loadDescription(Component.HasDescription component, Element element) {
         if (element.attribute("description") != null) {
             String description = element.attributeValue("description");
 

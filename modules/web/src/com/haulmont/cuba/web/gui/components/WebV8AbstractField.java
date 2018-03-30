@@ -27,6 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Base class for Vaadin8 based input components.
+ *
+ * @param <T> type of underlying Vaadin component
+ * @param <P> type of value of presentation
+ * @param <V> type of value of model
+ */
 public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P>, P, V>
         extends WebAbstractValueComponent<T, P, V> implements Field<V> {
 
@@ -151,7 +158,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
     @SuppressWarnings("unchecked")
     protected void attachValueChangeListener(T component) {
         component.addValueChangeListener(event ->
-                componentValueChanged(event.getOldValue(), event.getValue())
+                componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated())
         );
     }
 

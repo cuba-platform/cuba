@@ -268,16 +268,6 @@ public class DesktopLabel<V> extends DesktopAbstractComponent<JLabel> implements
     }
 
     @Override
-    public String getCaption() {
-        return null;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        // do nothing
-    }
-
-    @Override
     public String getDescription() {
         return impl.getToolTipText();
     }

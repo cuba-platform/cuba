@@ -37,8 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
-        extends EventRouter // vaadin8 replace with EventPublisher
+public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
+        extends EventPublisher // vaadin8 replace with EventPublisher
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption {
 
@@ -59,7 +59,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
 
-    protected EventPublisher eventPublisher = null;
+    // todo remove
+    private EventRouter eventRouter = null;
 
     /**
      * Use EventRouter for listeners instead of fields with listeners List.
@@ -67,14 +68,10 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
      * @see EventRouter
      */
     protected EventRouter getEventRouter() {
-        return this;
-    }
-
-    protected EventPublisher getEventPublisher() {
-        if (eventPublisher == null) {
-            eventPublisher = new EventPublisher();
+        if (eventRouter == null) {
+            return new EventRouter();
         }
-        return eventPublisher;
+        return eventRouter;
     }
 
     @Override
@@ -234,7 +231,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     @Override
     public void setDescription(String description) {
-        component.setDescription(description);
+        ((AbstractComponent) component).setDescription(description);
     }
 
     @Override
