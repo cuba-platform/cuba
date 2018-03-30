@@ -492,15 +492,15 @@ public class EntitySerialization implements EntitySerializationAPI {
                 MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(entity.getMetaClass(), propertyName);
                 MetaProperty metaProperty = metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null;
                 if (metaProperty != null) {
-                    if (propertyValue.isJsonNull()) {
-                        entity.setValue(propertyName, null);
-                        continue;
-                    }
-
                     if (entity instanceof BaseGenericIdEntity
                             && DynamicAttributesUtils.isDynamicAttribute(propertyName)
                             && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
                         fetchDynamicAttributes(entity);
+                    }
+
+                    if (propertyValue.isJsonNull()) {
+                        entity.setValue(propertyName, null);
+                        continue;
                     }
 
                     if (metaProperty.isReadOnly()) {
