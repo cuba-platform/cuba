@@ -42,6 +42,11 @@ public interface TaskLifeCycle<T> {
     boolean isInterrupted();
 
     /**
+     * @return true if a task was interrupted by calling the "cancel" method
+     */
+    boolean isCancelled();
+
+    /**
      * @return execution parameters that was set by {@link BackgroundTask#getParams()}
      */
     @Nonnull

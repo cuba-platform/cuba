@@ -219,6 +219,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     }
 
                     @Override
+                    public boolean isCancelled() {
+                        return future.isCancelled();
+                    }
+
+                    @Override
                     @Nonnull
                     public Map<String, Object> getParams() {
                         return params;

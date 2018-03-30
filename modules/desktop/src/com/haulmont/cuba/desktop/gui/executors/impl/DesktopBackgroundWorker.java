@@ -20,7 +20,6 @@ package com.haulmont.cuba.desktop.gui.executors.impl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.event.BackgroundTaskUnhandledExceptionEvent;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
@@ -145,6 +144,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                         @Override
                         public boolean isInterrupted() {
                             return Thread.currentThread().isInterrupted();
+                        }
+
+                        @Override
+                        public boolean isCancelled() {
+                            return DesktopTaskExecutor.this.isCancelled();
                         }
 
                         @Override
