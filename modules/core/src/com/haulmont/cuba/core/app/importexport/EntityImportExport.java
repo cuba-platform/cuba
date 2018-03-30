@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.app.DataStore;
 import com.haulmont.cuba.core.app.RdbmsStore;
 import com.haulmont.cuba.core.app.StoreFactory;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
@@ -215,6 +216,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             LoadContext<? extends Entity> ctx = LoadContext.create(srcEntity.getClass())
                     .setSoftDeletion(false)
                     .setView(regularView)
+                    .setLoadDynamicAttributes(true)
                     .setId(srcEntity.getId());
             Entity dstEntity = dataManager.secure().load(ctx);
 
@@ -339,7 +341,15 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         if (entityHasDynamicAttributes(srcEntity)) {
-            ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(((BaseGenericIdEntity) srcEntity).getDynamicAttributes());
+            if (PersistenceHelper.isNew(dstEntity) && ((BaseGenericIdEntity) dstEntity).getDynamicAttributes() == null) {
+                ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(new HashMap<>());
+            }
+            Map<String, CategoryAttributeValue> srcDynamicAttributes = ((BaseGenericIdEntity) srcEntity).getDynamicAttributes();
+            for (Map.Entry<String, CategoryAttributeValue> entry : srcDynamicAttributes.entrySet()) {
+                String dynamicAttributeCode = entry.getKey();
+                CategoryAttributeValue srcDynamicAttribute = entry.getValue();
+                dstEntity.setValue(DynamicAttributesUtils.encodeAttributeCode(dynamicAttributeCode), srcDynamicAttribute.getValue());
+            }
         }
 
         return dstEntity;
