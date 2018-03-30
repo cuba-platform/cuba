@@ -202,27 +202,58 @@ public class MetadataImpl implements Metadata {
     }
 
     protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
-        List<Method> postConstructMethods = new ArrayList<>(4);
-        List<String> methodNames = new ArrayList<>(4);
+        List<Method> postConstructMethods = Collections.emptyList();
+        List<String> methodNames = Collections.emptyList();
         Class clazz = entity.getClass();
         while (clazz != Object.class) {
             Method[] classMethods = clazz.getDeclaredMethods();
             for (Method method : classMethods) {
-                if (method.isAnnotationPresent(PostConstruct.class) && !methodNames.contains(method.getName())) {
+                if (method.isAnnotationPresent(PostConstruct.class)
+                        && !methodNames.contains(method.getName())) {
+                    if (postConstructMethods.isEmpty()) {
+                        postConstructMethods = new ArrayList<>();
+                    }
                     postConstructMethods.add(method);
+
+                    if (methodNames.isEmpty()) {
+                        methodNames = new ArrayList<>();
+                    }
                     methodNames.add(method.getName());
                 }
             }
+
+            Class[] interfaces = clazz.getInterfaces();
+            for (Class interfaceClazz : interfaces) {
+                Method[] interfaceMethods = interfaceClazz.getDeclaredMethods();
+                for (Method method : interfaceMethods) {
+                    if (method.isAnnotationPresent(PostConstruct.class)
+                            && method.isDefault()
+                            && !methodNames.contains(method.getName())) {
+                        if (postConstructMethods.isEmpty()) {
+                            postConstructMethods = new ArrayList<>();
+                        }
+                        postConstructMethods.add(method);
+
+                        if (methodNames.isEmpty()) {
+                            methodNames = new ArrayList<>();
+                        }
+                        methodNames.add(method.getName());
+                    }
+                }
+            }
+
             clazz = clazz.getSuperclass();
         }
 
-        ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
-        while (iterator.hasPrevious()) {
-            Method method = iterator.previous();
-            if (!method.isAccessible()) {
-                method.setAccessible(true);
+        if (!postConstructMethods.isEmpty()) {
+            ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
+            while (iterator.hasPrevious()) {
+                Method method = iterator.previous();
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                method.invoke(entity);
             }
-            method.invoke(entity);
         }
     }
 
