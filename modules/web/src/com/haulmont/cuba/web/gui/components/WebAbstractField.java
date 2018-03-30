@@ -23,7 +23,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
@@ -33,10 +32,7 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
-import com.vaadin.v7.data.Property;
-import org.apache.commons.lang.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -238,11 +234,14 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     @SuppressWarnings("unchecked")
     protected void attachListener(T component) {
-        component.addValueChangeListener(this::componentValueChanged);
+        component.addValueChangeListener(event -> {
+            Object value = event.getProperty().getValue();
+            componentValueChanged(value);
+        });
     }
 
-    protected void componentValueChanged(Property.ValueChangeEvent valueChangeEvent) {
-        V value = getValue();
+    protected void componentValueChanged(Object newComponentValue) {
+        V value = convertToModel(newComponentValue);
         V oldValue = internalValue;
         internalValue = value;
 
@@ -254,6 +253,16 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected V convertToModel(Object componentRawValue) {
+        return (V) componentRawValue;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Object convertToPresentation(V modelValue) {
+        return modelValue;
     }
 
     protected boolean fieldValueEquals(V value, V oldValue) {

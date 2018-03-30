@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
-import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;

@@ -15,16 +15,10 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
-import com.haulmont.cuba.gui.components.data.ValueBinder;
-import com.haulmont.cuba.gui.components.data.ValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.ArrayList;
@@ -33,55 +27,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, V>
-        extends WebAbstractComponent<T> implements Field<V> {
+public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P>, P, V>
+        extends WebAbstractValueComponent<T, P, V> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
     protected List<Validator> validators; // lazily initialized list
 
-    // todo should be initialized in constructor of component
-    protected V internalValue;
-
     protected boolean editable = true;
 
-    protected ValueBinding<V> valueBinding;
-
     protected EditableChangeListener parentEditableChangeListener;
-
-    @Override
-    public void setValueSource(ValueSource<V> valueSource) {
-        if (this.valueBinding != null) {
-            valueBinding.unbind();
-
-            this.valueBinding = null;
-        }
-
-        if (valueSource != null) {
-            // todo use ApplicationContextAware and lookup
-            ValueBinder binder = AppBeans.get(ValueBinder.class);
-
-            this.valueBinding = binder.bind(this, valueSource);
-
-            valueBindingConnected(valueSource);
-
-            this.valueBinding.activate();
-
-            valueBindingActivated(valueSource);
-        }
-    }
-
-    protected void valueBindingActivated(ValueSource<V> valueSource) {
-        // hook
-    }
-
-    protected void valueBindingConnected(ValueSource<V> valueSource) {
-        // hook
-    }
-
-    @Override
-    public ValueSource<V> getValueSource() {
-        return valueBinding != null ? valueBinding.getSource() : null;
-    }
 
     @Override
     public Datasource getDatasource() {
@@ -141,18 +95,6 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
         return "";
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public V getValue() {
-        return internalValue;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setValue(V value) {
-        component.setValue(convertToPresentation(value));
-    }
-
     @Override
     public void setParent(Component parent) {
         if (this.parent instanceof EditableChangeNotifier
@@ -206,21 +148,11 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
         component.setReadOnly(!editable);
     }
 
-    @Override
-    public Subscription addValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().addListener(ValueChangeListener.class, listener);
-        // todo
-        return () -> {};
-    }
-
-    @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().removeListener(ValueChangeListener.class, listener);
-    }
-
     @SuppressWarnings("unchecked")
     protected void attachValueChangeListener(T component) {
-        component.addValueChangeListener(this::componentValueChanged);
+        component.addValueChangeListener(event ->
+                componentValueChanged(event.getOldValue(), event.getValue())
+        );
     }
 
     @Override
@@ -350,33 +282,5 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField, 
     @Override
     public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
         // todo vaadin8
-    }
-
-    protected void componentValueChanged(com.vaadin.data.HasValue.ValueChangeEvent valueChangeEvent) {
-        V value = convertToModel(component.getValue());
-        V oldValue = internalValue;
-        internalValue = value;
-
-        if (!fieldValueEquals(value, oldValue)) {
-            if (hasValidationError()) {
-                setValidationError(null);
-            }
-
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected V convertToModel(Object componentRawValue) {
-        return (V) componentRawValue;
-    }
-
-    protected Object convertToPresentation(V modelValue) {
-        return modelValue;
-    }
-
-    protected boolean fieldValueEquals(V value, V oldValue) {
-        return InstanceUtils.propertyValueEquals(oldValue, value);
     }
 }
