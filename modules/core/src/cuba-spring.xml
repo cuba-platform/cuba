@@ -200,7 +200,7 @@
                         fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
         <task:scheduled ref="cuba_MiddlewareStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
         <task:scheduled ref="cuba_ServerTokenStore" method="deleteExpiredTokens" cron="${cuba.rest.deleteExpiredTokensCron?:0 0 3 * * ?}"/>
-        <!--<task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="600000"/>-->
+        <task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="600000"/>
     </task:scheduled-tasks>
 
     <!-- Email setup -->
