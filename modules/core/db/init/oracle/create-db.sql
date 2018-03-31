@@ -858,8 +858,14 @@ values ('a405db59e6744f638afe269dda788fe8', current_timestamp, 0, 'anonymous', '
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061b26f4de2a5bedff348347f93', current_timestamp, 0, 'Administrators', 10)^
 
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
+values ('cd541dd4eeb7cd5b847ed32236552fa9', current_timestamp, 0, 'Anonymous', 30)^
+
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a96d04ef4a7c0dff348347f93', current_timestamp, 0, '608859871b61424794c7dff348347f93', '0c018061b26f4de2a5bedff348347f93')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
+values ('f01fb532c2f0dc18b86c450cf8a8d8c5', current_timestamp, 0, 'a405db59e6744f638afe269dda788fe8', 'cd541dd4eeb7cd5b847ed32236552fa9')^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,COMPONENT,NAME,XML,USER_ID,GLOBAL_DEFAULT)
 values (newid(), current_timestamp, 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',
