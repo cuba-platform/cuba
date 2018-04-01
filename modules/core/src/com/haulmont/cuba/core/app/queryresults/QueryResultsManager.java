@@ -18,10 +18,7 @@
 package com.haulmont.cuba.core.app.queryresults;
 
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.DataServiceQueryBuilder;
 import com.haulmont.cuba.core.global.*;
@@ -65,7 +62,11 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
     @Inject
     protected Metadata metadata;
 
-    private static final int BATCH_SIZE = 100;
+    protected static final int BATCH_SIZE = 100;
+
+    protected static final int DELETE_BATCH_SIZE = 100;
+
+    protected static final int INACTIVE_DELETION_MAX = 100000;
 
     @Override
     public void savePreviousQueryResults(LoadContext loadContext) {
@@ -119,7 +120,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         insert(queryKey, idList);
     }
 
-    private boolean resultsAlreadySaved(Integer queryKey, LoadContext.Query query) {
+    protected boolean resultsAlreadySaved(Integer queryKey, LoadContext.Query query) {
         LinkedHashMap<Integer, QueryHolder> recentQueries =
                 userSessionSource.getUserSession().getAttribute("_recentQueries");
         if (recentQueries == null) {
@@ -234,28 +235,49 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
                 || !configuration.getConfig(GlobalConfig.class).getAllowQueryFromSelected())
             return;
 
+        internalDeleteForInactiveSessions();
+    }
+
+    public void internalDeleteForInactiveSessions() {
         log.debug("Delete query results for inactive user sessions");
 
-        StringBuilder sb = new StringBuilder("delete from SYS_QUERY_RESULT");
-        Collection<UserSession> userSessionEntities = userSessions.getUserSessionsStream().collect(Collectors.toList());
-        DbTypeConverter converter = persistence.getDbTypeConverter();
-        if (!userSessionEntities.isEmpty()) {
-            sb.append(" where SESSION_ID not in (");
-            for (Iterator<UserSession> it = userSessionEntities.iterator(); it.hasNext(); ) {
-                UserSession userSession = it.next();
-                UUID userSessionId = userSession.getId();
-                String userSessionIdStr = converter.getSqlObject(userSessionId).toString();
-                sb.append("'").append(userSessionIdStr).append("'");
-                if (it.hasNext())
-                    sb.append(",");
-            }
-            sb.append(")");
+        List<Object[]> rows;
+        try (Transaction tx = persistence.createTransaction()) {
+            TypedQuery<Object[]> query = persistence.getEntityManager().createQuery(
+                    "select e.id, e.sessionId from sys$QueryResult e", Object[].class);
+            query.setMaxResults(INACTIVE_DELETION_MAX);
+            rows = query.getResultList();
         }
+        if (rows.size() == INACTIVE_DELETION_MAX) {
+            log.debug("Processing " + INACTIVE_DELETION_MAX + " records, run again for the rest");
+        }
+
+        Set<UUID> sessionIds = userSessions.getUserSessionsStream().map(UserSession::getId).collect(Collectors.toSet());
+
+        List<Long> ids = new ArrayList<>();
+        int i = 0;
+        for (Object[] row : rows) {
+            if (!sessionIds.contains((UUID) row[1])) {
+                ids.add((Long) row[0]);
+            }
+            i++;
+            if (i % DELETE_BATCH_SIZE == 0) {
+                delete(ids);
+                ids.clear();
+            }
+        }
+        if (!ids.isEmpty())
+            delete(ids);
+    }
+
+    protected void delete(List<Long> ids) {
+        log.debug("Deleting " + ids.size() + " records");
+        String str = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
-            runner.update(sb.toString());
+            runner.update("delete from SYS_QUERY_RESULT where ID in (" + str + ")");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error deleting query result records", e);
         }
     }
 }
