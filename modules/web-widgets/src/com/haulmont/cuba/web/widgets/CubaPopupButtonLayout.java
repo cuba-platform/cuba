@@ -22,5 +22,7 @@ public class CubaPopupButtonLayout extends VerticalLayout {
     public CubaPopupButtonLayout() {
         setStyleName("c-popupbutton-container");
         setWidthUndefined();
+        setMargin(false);
+        setSpacing(false);
     }
 }
