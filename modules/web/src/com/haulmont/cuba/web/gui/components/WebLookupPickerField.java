@@ -57,7 +57,8 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
                 return false;
             }
 
-            pickerField.component.setComponentError(message);
+            // vaadin8
+//            pickerField.component.setComponentError(message);
             return true;
         };
 

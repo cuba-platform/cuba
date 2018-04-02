@@ -46,7 +46,6 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;

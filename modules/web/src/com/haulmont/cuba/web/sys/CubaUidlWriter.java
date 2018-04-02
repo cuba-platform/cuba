@@ -26,6 +26,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +42,12 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
+    protected ServletContext servletContext;
+
+    public CubaUidlWriter(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
     @Override
     protected void handleAdditionalDependencies(List<Class<? extends ClientConnector>> newConnectorTypes,
                                                 LegacyCommunicationManager manager, List<Dependency> dependencies) {
@@ -49,11 +58,11 @@ public class CubaUidlWriter extends UidlWriter {
             if (webJarResource == null)
                 continue;
 
+            String overridePath = webJarResource.overridePath();
+
             for (String uri : webJarResource.value()) {
                 String resourceUri = processResourceUri(uri);
-                String resourcePath = getResourceActualPath(resourceUri);
-
-                resourcePath = resourcePath.replace(META_INF_PREFIX, VAADIN_PREFIX);
+                String resourcePath = getResourceActualPath(resourceUri, overridePath);
 
                 if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
                     String url = manager.registerDependency(resourcePath, connectorClass);
@@ -68,22 +77,22 @@ public class CubaUidlWriter extends UidlWriter {
         }
     }
 
-    protected String getResourceActualPath(String uri) {
+    protected String getResourceActualPath(String uri, String overridePath) {
         Matcher matcher = OLD_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
         }
 
         matcher = NEW_WEBJAR_IDENTIFIER.matcher(uri);
         if (matcher.matches()) {
-            return getWebJarResourcePath(matcher.group(1), matcher.group(2));
+            return getWebJarResourcePath(matcher.group(1), matcher.group(2), overridePath);
         }
 
         log.error("Malformed WebJar resource path: {}", uri);
         throw new RuntimeException("Malformed WebJar resource path: " + uri);
     }
 
-    protected String getWebJarResourcePath(String webJar, String resource) {
+    protected String getWebJarResourcePath(String webJar, String resource, String overridePath) {
         String staticResourcePath = getWebJarStaticResourcePath(overridePath, resource);
         if (staticResourcePath != null && !staticResourcePath.isEmpty()) {
             return staticResourcePath;

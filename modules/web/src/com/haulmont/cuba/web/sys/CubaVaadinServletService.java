@@ -177,7 +177,7 @@ public class CubaVaadinServletService extends VaadinServletService
 
         for (RequestHandler handler : requestHandlers) {
             if (handler instanceof UidlRequestHandler) {
-                cubaRequestHandlers.add(new CubaUidlRequestHandler());
+                cubaRequestHandlers.add(new CubaUidlRequestHandler(servletContext));
             } else if (handler instanceof PublishedFileHandler) {
                 // replace PublishedFileHandler with CubaPublishedFileHandler
                 // for support resources from VAADIN directory
@@ -370,9 +370,15 @@ public class CubaVaadinServletService extends VaadinServletService
      * that use web resources from WebJars
      */
     protected static class CubaServletUIInitHandler extends ServletUIInitHandler {
+        protected final ServletContext servletContext;
+
+        public CubaServletUIInitHandler(ServletContext servletContext) {
+            this.servletContext = servletContext;
+        }
+
         @Override
         protected UidlWriter createUidlWriter() {
-            return new CubaUidlWriter();
+            return new CubaUidlWriter(servletContext);
         }
     }
 
@@ -381,9 +387,15 @@ public class CubaVaadinServletService extends VaadinServletService
      * that use web resources from WebJars
      */
     protected static class CubaUidlRequestHandler extends UidlRequestHandler {
+        protected final ServletContext servletContext;
+
+        public CubaUidlRequestHandler(ServletContext servletContext) {
+            this.servletContext = servletContext;
+        }
+
         @Override
         protected UidlWriter createUidlWriter() {
-            return new CubaUidlWriter();
+            return new CubaUidlWriter(servletContext);
         }
     }
 

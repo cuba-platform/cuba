@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui;
+package com.haulmont.cuba.web.widgets;
 
 import com.vaadin.ui.CssLayout;
 

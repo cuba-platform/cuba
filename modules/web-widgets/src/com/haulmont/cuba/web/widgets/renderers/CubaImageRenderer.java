@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.widgets.renderers;
 
 import com.haulmont.cuba.web.widgets.EnhancedUI;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ResourceReference;
@@ -29,8 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class CubaImageRenderer extends ClickableRenderer<String> {
-
-    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
     public CubaImageRenderer() {
         super(String.class, null);

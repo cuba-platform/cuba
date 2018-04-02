@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheetcsslayout;
 
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheetCssLayout;
+import com.haulmont.cuba.web.widgets.CubaTabSheetCssLayout;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.VCaption;

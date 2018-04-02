@@ -31,6 +31,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.events.UIRefreshEvent;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -98,6 +99,9 @@ public class AppUI extends CubaUI
 
     @Inject
     protected UiEventsMulticaster uiEventsMulticaster;
+
+    @Inject
+    protected IconResolver iconResolver;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -513,6 +517,6 @@ public class AppUI extends CubaUI
 
     @Override
     public Resource createVersionedResource(String value) {
-        return new VersionedThemeResource(value);
+        return iconResolver.getIconResource(value);
     }
 }
