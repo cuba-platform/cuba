@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -99,6 +100,12 @@ public class Emailer implements EmailerAPI {
     }
 
     @Override
+    public void sendEmail(String addresses, String caption, String body, String bodyContentType,
+                          EmailAttachment... attachments) throws EmailException {
+        sendEmail(new EmailInfo(addresses, caption, null, body, bodyContentType, attachments));
+    }
+
+    @Override
     public void sendEmail(EmailInfo info) throws EmailException {
         prepareEmailInfo(info);
         persistAndSendEmail(info);
@@ -155,7 +162,8 @@ public class Emailer implements EmailerAPI {
             address = address.trim();
             if (StringUtils.isNotBlank(address)) {
                 SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
-                        info.getBody(), info.getHeaders(), info.getAttachments(), attemptsCount, deadline);
+                        info.getBody(), info.getBodyContentType(), info.getHeaders(), info.getAttachments(), attemptsCount,
+                        deadline);
 
                 sendingMessageList.add(sendingMessage);
             }
@@ -535,7 +543,9 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body, @Nullable List<EmailHeader> headers,
+    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body,
+                                                     String bodyContentType,
+                                                     @Nullable List<EmailHeader> headers,
                                                      @Nullable EmailAttachment[] attachments,
                                                      @Nullable Integer attemptsCount, @Nullable Date deadline) {
         SendingMessage sendingMessage = metadata.create(SendingMessage.class);
@@ -547,6 +557,13 @@ public class Emailer implements EmailerAPI {
         sendingMessage.setAttemptsCount(attemptsCount);
         sendingMessage.setDeadline(deadline);
         sendingMessage.setAttemptsMade(0);
+
+        if (Strings.isNullOrEmpty(bodyContentType)) {
+            bodyContentType = getContentBodyType(sendingMessage);
+            sendingMessage.setBodyContentType(bodyContentType);
+        } else {
+            sendingMessage.setBodyContentType(bodyContentType);
+        }
 
         if (attachments != null && attachments.length > 0) {
             StringBuilder attachmentsName = new StringBuilder();
@@ -577,6 +594,19 @@ public class Emailer implements EmailerAPI {
         replaceRecipientIfNecessary(sendingMessage);
 
         return sendingMessage;
+    }
+
+    protected String getContentBodyType(SendingMessage sendingMessage) {
+        String bodyContentType;
+        String text = sendingMessage.getContentText();
+        if (text.trim().startsWith("<html>")) {
+            bodyContentType = "text/html; charset=UTF-8";
+        } else {
+            bodyContentType = "text/plain; charset=UTF-8";
+        }
+        log.warn("Content body type is not set for email '{}' with addresses: {}. Will be used '{}'.",
+                sendingMessage.getCaption(), sendingMessage.getAddress(), bodyContentType);
+        return bodyContentType;
     }
 
     protected void replaceRecipientIfNecessary(SendingMessage msg) {

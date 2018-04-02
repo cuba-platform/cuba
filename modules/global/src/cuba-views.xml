@@ -205,6 +205,7 @@
         <property name="from"/>
         <property name="status"/>
         <property name="updateTs"/>
+        <property name="bodyContentType"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadFromQueue" extends="_local"

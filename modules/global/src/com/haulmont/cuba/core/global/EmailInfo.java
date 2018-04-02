@@ -33,6 +33,9 @@ public class EmailInfo implements Serializable {
 
     private static final long serialVersionUID = -382773435130109083L;
 
+    public static final String HTML_CONTENT_TYPE = "text/html; charset=UTF-8";
+    public static final String TEXT_CONTENT_TYPE = "text/plain; charset=UTF-8";
+
     /**
      * Recipient email addresses separated with "," or ";" symbol.
      */
@@ -42,20 +45,25 @@ public class EmailInfo implements Serializable {
     private String templatePath;
     private Map<String, Serializable> templateParameters;
     private String body;
+    private String bodyContentType;
     private EmailAttachment[] attachments;
     private List<EmailHeader> headers;
 
     /**
      * Constructor. Example usage:
-     * <pre>
+     * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
-                "john.doe@company.com,jane.roe@company.com",
-                "Company news",
-                "do-not-reply@company.com",
-                "com/company/sample/email_templates/news.txt",
-                Collections.singletonMap("some_var", some_value)
-            );
-     * </pre>
+     *          "john.doe@company.com,jane.roe@company.com",
+     *          "Company news",
+     *          "do-not-reply@company.com",
+     *          "com/company/sample/email_templates/news.txt",
+     *          Collections.singletonMap("some_var", some_value)
+     *     );
+     * }</pre>
+     *
+     * If you want to set content body type you can use
+     * {@link #EmailInfo(String, String, String, String, String, Map, EmailAttachment...)} instead or use {@code
+     * setBodyContentType()} method.
      *
      * @param addresses             comma or semicolon separated list of addresses
      * @param caption               email subject
@@ -76,15 +84,53 @@ public class EmailInfo implements Serializable {
     }
 
     /**
-     * Constructor.
-     * <pre>
+     * Constructor. Example usage:
+     * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
-                "john.doe@company.com,jane.roe@company.com",
-                "Company news",
-                null,
-                "Some content"
-            );
-     * </pre>
+     *          "john.doe@company.com,jane.roe@company.com",
+     *          "Company news",
+     *          "do-not-reply@company.com",
+     *          EmailInfo.HTML_CONTENT_TYPE,
+     *          "com/company/sample/email_templates/news.txt",
+     *          Collections.singletonMap("some_var", some_value)
+     *     );
+     * }</pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param templatePath          path to a Freemarker template which is used to create the message body. The template
+     *                              is loaded through {@link Resources} in the <b>core</b> module.
+     * @param templateParameters    map of parameters to be passed to the template
+     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     */
+    public EmailInfo(String addresses, String caption, @Nullable String from, String bodyContentType,
+                     String templatePath, Map<String, Serializable> templateParameters,
+                     EmailAttachment... attachments) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.templatePath = templatePath;
+        this.attachments = attachments;
+        this.templateParameters = templateParameters;
+        this.from = from;
+        this.bodyContentType = bodyContentType;
+    }
+
+    /**
+     * Constructor.
+     * <pre>{@code
+     *     EmailInfo emailInfo = new EmailInfo(
+     *          "john.doe@company.com,jane.roe@company.com",
+     *          "Company news",
+     *          null,
+     *          "Some content"
+     *     );
+     * }</pre>
+     *
+     * If you want to set content body type you can use
+     * {@link #EmailInfo(String, String, String, String, String, EmailAttachment...)} instead or use {@code
+     * setBodyContentType()} method.
      *
      * @param addresses             comma or semicolon separated list of addresses
      * @param caption               email subject
@@ -101,14 +147,46 @@ public class EmailInfo implements Serializable {
     }
 
     /**
-     * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
-     * <pre>
+     * Constructor.
+     * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
-                "john.doe@company.com,jane.roe@company.com",
-                "Company news",
-                "Some content"
-            );
-     * </pre>
+     *          "john.doe@company.com,jane.roe@company.com",
+     *          "Company news",
+     *          null,
+     *          "Some content",
+     *          EmailInfo.TEXT_CONTENT_TYPE
+     *     );
+     * }</pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param body                  email body
+     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     */
+    public EmailInfo(String addresses, String caption, @Nullable String from, String body, String bodyContentType,
+                     EmailAttachment... attachments) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.body = body;
+        this.bodyContentType = bodyContentType;
+        this.attachments = attachments;
+        this.from = from;
+    }
+
+    /**
+     * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
+     * <pre>{@code
+     *     EmailInfo emailInfo = new EmailInfo(
+     *          "john.doe@company.com,jane.roe@company.com",
+     *          "Company news",
+     *          "Some content"
+     *     );
+     * }</pre>
+     *
+     * If you want to set content body type you can use {@link #EmailInfo(String, String, String, String)} instead or
+     * use {@code setBodyContentType()} method.
      *
      * @param addresses             comma or semicolon separated list of addresses
      * @param caption               email subject
@@ -120,6 +198,28 @@ public class EmailInfo implements Serializable {
         this.body = body;
     }
 
+    /**
+     * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
+     * <pre>{@code
+     *     EmailInfo emailInfo = new EmailInfo(
+     *         "john.doe@company.com,jane.roe@company.com",
+     *         "Company news",
+     *         "Some content",
+     *         EmailInfo.TEXT_CONTENT_TYPE"
+     *     );
+     * }</pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param body                  email body
+     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     */
+    public EmailInfo(String addresses, String caption, String body, String bodyContentType) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.body = body;
+        this.bodyContentType = bodyContentType;
+    }
 
     public String getAddresses() {
         return addresses;
@@ -189,5 +289,13 @@ public class EmailInfo implements Serializable {
         if (this.headers == null)
             this.headers = new ArrayList<>();
         this.headers.add(new EmailHeader(name, value));
+    }
+
+    public String getBodyContentType() {
+        return bodyContentType;
+    }
+
+    public void setBodyContentType(String bodyContentType) {
+        this.bodyContentType = bodyContentType;
     }
 }

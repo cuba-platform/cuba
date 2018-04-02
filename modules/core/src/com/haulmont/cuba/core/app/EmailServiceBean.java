@@ -33,7 +33,13 @@ public class EmailServiceBean implements EmailService {
 
     @Override
     public void sendEmail(String address, String caption, String body, EmailAttachment... attachment) throws EmailException {
-        emailer.sendEmail(address, caption, body, attachment);
+        emailer.sendEmail(address, caption, body, null, attachment);
+    }
+
+    @Override
+    public void sendEmail(String address, String caption, String body, String bodyContentType,
+                          EmailAttachment... attachment) throws EmailException {
+        emailer.sendEmail(address, caption, body, bodyContentType, attachment);
     }
 
     @Override

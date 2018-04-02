@@ -1,0 +1,1 @@
+alter table SYS_SENDING_MESSAGE add BODY_CONTENT_TYPE varchar(50);

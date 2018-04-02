@@ -349,6 +349,7 @@ create table SYS_SENDING_MESSAGE (
     ATTEMPTS_COUNT integer,
     ATTEMPTS_MADE integer,
     ATTACHMENTS_NAME clob,
+    BODY_CONTENT_TYPE varchar2(50),
     primary key(ID)
 )^
 create index IDX_SYS_SENDING_MES_DAT_SEN on SYS_SENDING_MESSAGE(DATE_SENT)^

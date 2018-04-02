@@ -33,6 +33,9 @@ public interface EmailService {
     String NAME = "cuba_EmailService";
 
     /**
+     * Use {@link #sendEmail(String, String, String, String, EmailAttachment...)} instead.
+     * <p>
+     *
      * Send email synchronously.
      *
      * @param address    comma or semicolon separated list of addresses
@@ -42,7 +45,22 @@ public interface EmailService {
      * @throws com.haulmont.cuba.core.global.EmailException
      *          in case of any errors
      */
+    @Deprecated
     void sendEmail(String address, String caption, String body, EmailAttachment... attachment)
+            throws EmailException;
+
+    /**
+     * Send email synchronously.
+     *
+     * @param address         comma or semicolon separated list of addresses
+     * @param caption         email subject
+     * @param body            email body
+     * @param bodyContentType email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param attachment      email attachments
+     * @throws com.haulmont.cuba.core.global.EmailException
+     *          in case of any errors
+     */
+    void sendEmail(String address, String caption, String body, String bodyContentType, EmailAttachment... attachment)
             throws EmailException;
 
     /**

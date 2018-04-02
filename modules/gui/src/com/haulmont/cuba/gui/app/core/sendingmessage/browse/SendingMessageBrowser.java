@@ -39,6 +39,7 @@ import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,10 @@ public class SendingMessageBrowser extends AbstractWindow {
     @Inject
     protected ExportDisplay exportDisplay;
 
-    protected Button showAsHtmlButton;
+    @Named("fg.bodyContentType")
+    private TextField bodyContentTypeField;
+
+    protected Button showContentButton;
     protected TextArea contentTextArea;
 
     @Override
@@ -93,22 +97,28 @@ public class SendingMessageBrowser extends AbstractWindow {
                 contentTextArea.setEditable(false);
                 contentTextArea.setHeight(themeConstants.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
 
-                showAsHtmlButton = factory.createComponent(Button.class);
-                showAsHtmlButton.setAction(new AbstractAction("") {
+                showContentButton = factory.createComponent(Button.class);
+                showContentButton.setAction(new AbstractAction("") {
                     @Override
                     public void actionPerform(Component component) {
                         String textAreaValue = contentTextArea.getValue();
                         if (textAreaValue != null) {
                             ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(textAreaValue.getBytes(StandardCharsets.UTF_8));
-                            exportDisplay.show(dataProvider, "email-preview.html", ExportFormat.HTML);
+
+                            String type = bodyContentTypeField.getRawValue();
+                            if (StringUtils.containsIgnoreCase(type, ExportFormat.HTML.getContentType())) {
+                                exportDisplay.show(dataProvider, "email-preview.html", ExportFormat.HTML);
+                            } else {
+                                exportDisplay.show(dataProvider, "email-preview.txt", ExportFormat.TEXT);
+                            }
                         }
                     }
                 });
-                showAsHtmlButton.setEnabled(false);
-                showAsHtmlButton.setCaption(messages.getMessage(getClass(), "sendingMessage.showAsHtml"));
+                showContentButton.setEnabled(false);
+                showContentButton.setCaption(messages.getMessage(getClass(), "sendingMessage.showContent"));
 
                 contentArea.add(contentTextArea);
-                contentArea.add(showAsHtmlButton);
+                contentArea.add(showContentButton);
 
                 return contentArea;
             }
@@ -125,9 +135,9 @@ public class SendingMessageBrowser extends AbstractWindow {
         }
 
         if (StringUtils.isNotEmpty(contentText)) {
-            showAsHtmlButton.setEnabled(true);
+            showContentButton.setEnabled(true);
         } else {
-            showAsHtmlButton.setEnabled(false);
+            showContentButton.setEnabled(false);
         }
 
         contentTextArea.setValue(contentText);
