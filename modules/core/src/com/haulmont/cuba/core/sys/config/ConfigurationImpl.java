@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.sys.ConfigPersisterImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
 import org.springframework.stereotype.Component;
+
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +44,7 @@ public class ConfigurationImpl implements Configuration, BeanFactoryPostProcesso
     public <T extends Config> T getConfig(Class<T> configInterface) {
         ConfigHandler handler = cache.get(configInterface);
         if (handler == null) {
-            handler = new ConfigHandler(new ConfigPersisterImpl(), configInterface);
+            handler = new ConfigHandler(createPersister(), configInterface);
             cache.put(configInterface, handler);
         }
         ClassLoader classLoader = configInterface.getClassLoader();
@@ -55,5 +55,9 @@ public class ConfigurationImpl implements Configuration, BeanFactoryPostProcesso
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         // empty, just to make sure this bean is instantiated before others
+    }
+
+    protected ConfigPersisterImpl createPersister() {
+        return new ConfigPersisterImpl();
     }
 }
