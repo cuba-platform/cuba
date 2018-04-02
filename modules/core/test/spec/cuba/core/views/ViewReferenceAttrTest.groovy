@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.global
+package spec.cuba.core.views
 
+import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.DevelopmentException
+import com.haulmont.cuba.core.global.LoadContext
+import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.testsupport.TestContainer
@@ -23,7 +28,7 @@ import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class ViewTest extends Specification {
+class ViewReferenceAttrTest extends Specification {
 
     @Shared
     @ClassRule
