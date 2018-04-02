@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package spec.cuba.web.menu
 
 import com.haulmont.bali.util.Dom4j
 import com.haulmont.cuba.core.global.Messages

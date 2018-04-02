@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package spec.cuba.web.menu
 
 import com.haulmont.cuba.client.testsupport.TestUserSessionSource
 import com.haulmont.cuba.core.config.Config

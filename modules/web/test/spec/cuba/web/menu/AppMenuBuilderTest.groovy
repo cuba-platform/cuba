@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package spec.cuba.web.menu
 
+import com.haulmont.cuba.core.global.MessageTools
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu
+import com.haulmont.cuba.gui.config.MenuConfig
 import com.haulmont.cuba.gui.config.MenuItem
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppMenu
+import com.haulmont.cuba.web.sys.MenuBuilder
 
 import java.util.function.Consumer
 
 class AppMenuBuilderTest extends AbstractMenuBuilderSpecification {
 
-    def noActionMenuCommand = new Consumer<AppMenu.MenuItem>() {
-        @Override
-        void accept(AppMenu.MenuItem menuItem) {
-        }
-    }
-
-    def builder = new MenuBuilder() {
-        @Override
-        protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-            return noActionMenuCommand
-        }
-    }
+    def builder = new TestAppMenuBuilder()
 
     @Override
     void setup() {
@@ -151,5 +144,36 @@ class AppMenuBuilderTest extends AbstractMenuBuilderSpecification {
         children[1].separator == true
         children[0].separator == false
         children[2].separator == false
+    }
+
+    static class TestAppMenuBuilder extends MenuBuilder {
+
+        static final noActionMenuCommand = new Consumer<AppMenu.MenuItem>() {
+            @Override
+            void accept(AppMenu.MenuItem menuItem) {
+            }
+        }
+
+        @Override
+        Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
+            return noActionMenuCommand
+        }
+
+        @Override
+        void build(AppMenu appMenu, List<MenuItem> rootItems) {
+            super.build(appMenu, rootItems)
+        }
+
+        void setSession(UserSession userSession) {
+            this.@session = userSession
+        }
+
+        void setMenuConfig(MenuConfig menuConfig) {
+            this.@menuConfig = menuConfig
+        }
+
+        void setMessageTools(MessageTools messageTools) {
+            this.@messageTools = messageTools
+        }
     }
 }

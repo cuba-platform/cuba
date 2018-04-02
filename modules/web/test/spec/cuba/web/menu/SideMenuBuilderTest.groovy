@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package spec.cuba.web.menu
 
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu
+import com.haulmont.cuba.core.global.MessageTools
+import com.haulmont.cuba.gui.components.mainwindow.SideMenu
+import com.haulmont.cuba.gui.config.MenuConfig
 import com.haulmont.cuba.gui.config.MenuItem
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.web.gui.components.mainwindow.WebSideMenu
+import com.haulmont.cuba.web.sys.SideMenuBuilder
 
 import java.util.function.Consumer
 
 class SideMenuBuilderTest extends AbstractMenuBuilderSpecification {
 
-    def noActionMenuCommand = new Consumer<AppMenu.MenuItem>() {
-        @Override
-        void accept(AppMenu.MenuItem menuItem) {
-        }
-    }
-
-    def builder = new SideMenuBuilder() {
-        @Override
-        protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-            return noActionMenuCommand
-        }
-    }
+    def builder = new TestSideMenuBuilder()
 
     @Override
     void setup() {
@@ -117,5 +110,36 @@ class SideMenuBuilderTest extends AbstractMenuBuilderSpecification {
         menu.menuItems
 
         menu.menuItems[0].children.size() == 2
+    }
+
+    static class TestSideMenuBuilder extends SideMenuBuilder {
+
+        static final noActionMenuCommand = new Consumer<SideMenu.MenuItem>() {
+            @Override
+            void accept(SideMenu.MenuItem menuItem) {
+            }
+        }
+
+        void setSession(UserSession userSession) {
+            this.@session = userSession
+        }
+
+        void setMenuConfig(MenuConfig menuConfig) {
+            this.@menuConfig = menuConfig
+        }
+
+        void setMessageTools(MessageTools messageTools) {
+            this.@messageTools = messageTools
+        }
+
+        @Override
+        void build(SideMenu menu, List<MenuItem> rootItems) {
+            super.build(menu, rootItems)
+        }
+
+        @Override
+        protected Consumer<SideMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
+            return noActionMenuCommand
+        }
     }
 }
