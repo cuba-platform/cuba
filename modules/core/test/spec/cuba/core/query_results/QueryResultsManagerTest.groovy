@@ -93,5 +93,9 @@ class QueryResultsManagerTest extends Specification {
         list.size() == 1
         list[0].sessionId == session1.id
 
+        cleanup:
+
+        userSessions.remove(session1)
+        userSessions.remove(session2)
     }
 }
