@@ -50,6 +50,14 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
     }
 
     @Override
+    protected void buildDate(boolean forceValid) {
+        super.buildDate(forceValid);
+        // Update valueBeforeEdit and send onChange
+        // in case of selecting date using Calendar popup
+        getImpl().valueChange(false);
+    }
+
+    @Override
     public CubaMaskedFieldWidget getImpl() {
         return (CubaMaskedFieldWidget) super.getImpl();
     }
