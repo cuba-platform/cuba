@@ -18,16 +18,23 @@
 package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 
 @Component("cuba_CachingFacadeMBean")
@@ -52,6 +59,15 @@ public class CachingFacade implements CachingFacadeMBean {
 
     @Inject
     private MenuConfig menuConfig;
+
+    @Inject
+    protected WebAuthConfig webAuthConfig;
+
+    @Inject
+    protected TrustedClientService trustedClientService;
+
+    @Inject
+    protected DynamicAttributesCacheStrategy dynamicAttributesCacheStrategy;
 
     @Override
     public int getMessagesCacheSize() {
@@ -89,5 +105,18 @@ public class CachingFacade implements CachingFacadeMBean {
     @Override
     public void clearMenuConfig() {
         menuConfig.reset();
+    }
+
+    @Override
+    public void clearDynamicAttributesCache() {
+        try {
+            UserSession systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+            AppContext.withSecurityContext(new SecurityContext(systemSession), () -> {
+                dynamicAttributesCacheStrategy.loadObject();
+
+            });
+        } catch (LoginException e) {
+            log.error("Login exception", e);
+        }
     }
 }
