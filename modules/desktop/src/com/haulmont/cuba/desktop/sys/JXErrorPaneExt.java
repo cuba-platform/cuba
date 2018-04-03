@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
@@ -129,7 +130,7 @@ public class JXErrorPaneExt extends JXErrorPane {
                 binding.putAll(additionalExceptionReportBinding);
             }
 
-            reportService.sendExceptionReport(clientConfig.getSupportEmail(), MapUtils.unmodifiableMap(binding));
+            reportService.sendExceptionReport(clientConfig.getSupportEmail(), ImmutableMap.copyOf(binding));
 
             mainFrame.showNotification(messages.getMainMessage("errorPane.emailSent", locale),
                     Frame.NotificationType.TRAY);
