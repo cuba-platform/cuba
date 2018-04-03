@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.app.OrmXmlPostProcessor;
+import com.haulmont.cuba.core.app.PersistenceXmlPostProcessor;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
@@ -30,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import java.io.*;
 import java.util.*;
@@ -150,6 +154,8 @@ public class PersistenceConfigProcessor {
             element.addAttribute("value", entry.getValue());
         }
 
+        postProcess(doc);
+
         log.info("Creating file " + outFile);
         OutputStream os = null;
         try {
@@ -159,6 +165,21 @@ public class PersistenceConfigProcessor {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(os);
+        }
+    }
+
+    private void postProcess(Document document) {
+        String postProcessorClassName = AppContext.getProperty("cuba.persistenceXmlPostProcessor");
+
+        if (!Strings.isNullOrEmpty(postProcessorClassName)) {
+            log.debug("Running persistence.xml post-processor: " + postProcessorClassName);
+            try {
+                Class processorClass = ReflectionHelper.loadClass(postProcessorClassName);
+                PersistenceXmlPostProcessor processor = (PersistenceXmlPostProcessor) processorClass.newInstance();
+                processor.process(document);
+            } catch (Exception e) {
+                throw new RuntimeException("Error post-processing persistence.xml", e);
+            }
         }
     }
 
