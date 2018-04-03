@@ -319,6 +319,15 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
     }
 
+    @Override
+    public void updateFieldContent(String text) {
+        super.updateFieldContent(text);
+
+        if (text == null || text.isEmpty()) {
+            valueBeforeEdit = valueBuilder.toString();
+        }
+    }
+
     public void updateTextState() {
         if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
             valueBeforeEdit = getText();
