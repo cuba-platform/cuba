@@ -459,6 +459,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.setDatasource(embedDs);
         fieldGroup.bind();
 
+        createCustomFields(fieldGroup, customFields);
+
         for (String dateTimeField : dateTimeFields) {
             FieldGroup.FieldConfig field = fieldGroup.getField(dateTimeField);
             if (field != null && field.getComponent() != null) {
