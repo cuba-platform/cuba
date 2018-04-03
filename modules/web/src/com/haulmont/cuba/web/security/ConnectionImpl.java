@@ -315,7 +315,11 @@ public class ConnectionImpl extends EventRouter implements Connection {
         }
 
         if (session.isAuthenticated()) {
-            authenticationService.logout();
+            try {
+                authenticationService.logout();
+            } catch (NoUserSessionException e) {
+                log.debug("An attempt to perform logout for expired session: {}", session, e);
+            }
         }
 
         publishUserSessionFinishedEvent(session);

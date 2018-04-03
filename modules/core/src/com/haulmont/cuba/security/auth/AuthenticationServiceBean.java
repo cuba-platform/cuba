@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.entity.SessionLogEntry;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.InternalAuthenticationException;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -145,6 +146,9 @@ public class AuthenticationServiceBean implements AuthenticationService {
             authenticationManager.logout();
 
             userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
+        } catch (NoUserSessionException e) {
+            log.debug("An attempt to perform logout for expired session", e);
+            throw e;
         } catch (Throwable e) {
             log.error("Logout error", e);
             throw new RuntimeException("Logout error: " + e.toString());

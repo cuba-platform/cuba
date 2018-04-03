@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.auth;
 
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nonnull;
@@ -68,6 +69,8 @@ public interface AuthenticationService {
 
     /**
      * Log out and destroy an active user session.
+     *
+     * @throws NoUserSessionException if session is absent or expired
      */
     void logout();
 }
