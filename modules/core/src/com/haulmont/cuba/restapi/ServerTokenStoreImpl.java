@@ -31,8 +31,10 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.LocaleUtils;
@@ -58,6 +60,9 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Inject
     protected AuthenticationManager authenticationManager;
+
+    @Inject
+    protected UserSessionLog userSessionLog;
 
     @Inject
     protected UserSessionsAPI userSessions;
@@ -527,8 +532,6 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         try {
             refreshTokenValueToRefreshTokenStore.put(refreshToken.getTokenValue(), refreshToken.getTokenBytes());
             refreshTokenValueToAuthenticationStore.put(refreshToken.getTokenValue(), refreshToken.getAuthenticationBytes());
-
-
         } finally {
             lock.writeLock().unlock();
         }
@@ -598,6 +601,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                     AppContext.setSecurityContext(new SecurityContext(session));
                     try {
                         authenticationManager.logout();
+
+                        userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
                     } finally {
                         AppContext.setSecurityContext(null);
                     }

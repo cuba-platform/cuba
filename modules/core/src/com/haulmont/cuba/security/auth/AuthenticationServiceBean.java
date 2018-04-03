@@ -141,8 +141,6 @@ public class AuthenticationServiceBean implements AuthenticationService {
                 throw new RuntimeException("Logout of system session from client is not permitted");
             }
 
-            userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
-
             authenticationManager.logout();
 
             userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
