@@ -341,23 +341,34 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     public void handleInput(String inputType) {
         String newText = getText();
-        if (inputType != null) {
-            switch (inputType) {
-                case "deleteByCut":
-                    handleCut(newText);
-                    break;
-                case "insertFromPaste":
-                    handlePaste(newText);
-                    break;
-                default:
-                    Logger.getLogger("CubaMaskedFieldWidget").log(Level.WARNING, "Unknown inputType");
-            }
-        } else {
-            if (newText.length() < valueBuilder.length()) {
+
+        if (inputType == null) {
+            handleCutAndPaste();
+            return;
+        }
+
+        switch (inputType) {
+            case "deleteByCut":
                 handleCut(newText);
-            } else {
+                break;
+            case "insertFromPaste":
                 handlePaste(newText);
-            }
+                break;
+            case "insertCompositionText":
+                handlePaste(newText); // in Chrome and Opera on Android when typing
+                break;
+            default:
+                handleCutAndPaste();
+                Logger.getLogger("CubaMaskedFieldWidget").log(Level.WARNING, "Unknown inputType: " + inputType);
+        }
+    }
+
+    protected void handleCutAndPaste() {
+        String newText = getText();
+        if (newText.length() < valueBuilder.length()) {
+            handleCut(newText);
+        } else {
+            handlePaste(newText);
         }
     }
 
