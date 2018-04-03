@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
@@ -63,6 +64,15 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
             if (this.action != null) {
                 this.action.removeOwner(this);
                 this.action.removePropertyChangeListener(actionPropertyChangeListener);
+                if (Objects.equals(this.action.getCaption(), getCaption())) {
+                    setCaption(null);
+                }
+                if (Objects.equals(this.action.getDescription(), getDescription())) {
+                    setDescription(null);
+                }
+                if (Objects.equals(this.action.getIcon(), getIcon())) {
+                    setIcon(null);
+                }
             }
 
             this.action = action;
