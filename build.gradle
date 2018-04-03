@@ -279,6 +279,7 @@ configure(globalModule) {
         compile(bom['org.codehaus.groovy:groovy-all'])
 
         compile(bom['commons-lang:commons-lang'])
+        compile(bom['org.apache.commons:commons-lang3']) // simplify version management with reports and bpm
         compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['commons-io:commons-io'])
         compile(bom['commons-cli:commons-cli'])
@@ -289,6 +290,8 @@ configure(globalModule) {
         compile(bom['org.apache.commons:commons-compress'])
 
         compile(bom['dom4j:dom4j'])
+        compile(bom['xml-apis:xml-apis']) // simplify version management with core
+        compile(bom['javax.activation:activation']) // simplify version management with core
         compile(bom['com.sun.mail:javax.mail'])
         compile(bom['ch.qos.logback:logback-classic'])
         compile(bom['org.slf4j:log4j-over-slf4j'])
@@ -619,6 +622,8 @@ configure(webModule) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
 
+        compile(bom['org.jsoup:jsoup']) // use the same version as core
+
         /* Vaadin addons */
         compile(bom['org.vaadin.addons:popupbutton']) {
             exclude(group: 'com.vaadin', module: 'vaadin-client')
@@ -869,6 +874,7 @@ configure(restApiModule) {
         compile(bom['org.json:json'])
 
         compile(bom['com.fasterxml.jackson.core:jackson-databind'])
+        compile(bom['com.fasterxml.jackson.core:jackson-annotations'])
         compile(bom['com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'])
 
         compile(bom['org.springframework.security:spring-security-core'])
