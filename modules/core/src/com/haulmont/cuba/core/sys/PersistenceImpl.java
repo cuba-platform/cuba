@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -72,6 +73,9 @@ public class PersistenceImpl implements Persistence {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected MiddlewareStatisticsAccumulator statisticsAccumulator;
 
     @Inject @Named("entityManagerFactory")
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
@@ -250,6 +254,8 @@ public class PersistenceImpl implements Persistence {
         log.trace("registerSynchronizations for store '{}'", store);
         TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
         support.getInstanceContainerResourceHolder(store);
+
+        statisticsAccumulator.incStartedTransactionsCount();
     }
 
     protected TransactionSynchronization createSynchronization(String store) {
