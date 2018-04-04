@@ -99,4 +99,9 @@ public interface EmailService {
      * @return email content text
      */
     String loadContentText(SendingMessage sendingMessage);
+
+    /**
+     * @return true if email body text and attachments are stored in file storage instead of BLOB columns in database
+     */
+    boolean isFileStorageUsed();
 }

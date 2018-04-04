@@ -31,6 +31,9 @@ public class EmailServiceBean implements EmailService {
     @Inject
     protected EmailerAPI emailer;
 
+    @Inject
+    protected EmailerConfig emailerConfig;
+
     @Override
     public void sendEmail(String address, String caption, String body, EmailAttachment... attachment) throws EmailException {
         emailer.sendEmail(address, caption, body, null, attachment);
@@ -60,5 +63,10 @@ public class EmailServiceBean implements EmailService {
     @Override
     public String loadContentText(SendingMessage sendingMessage) {
         return emailer.loadContentText(sendingMessage);
+    }
+
+    @Override
+    public boolean isFileStorageUsed() {
+        return emailerConfig.isFileStorageUsed();
     }
 }

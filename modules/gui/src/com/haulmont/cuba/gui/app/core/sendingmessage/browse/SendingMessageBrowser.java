@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
+import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -31,6 +32,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -80,6 +82,9 @@ public class SendingMessageBrowser extends AbstractWindow {
 
     @Named("fg.bodyContentType")
     protected TextField bodyContentTypeField;
+
+    @Inject
+    protected FileLoader fileLoader;
 
     protected Button showContentButton;
     protected TextArea contentTextArea;
@@ -180,10 +185,20 @@ public class SendingMessageBrowser extends AbstractWindow {
 
     protected void exportFile(SendingAttachment attachment) {
         try {
-            FileDescriptor fileDescriptor = getFileDescriptor(attachment);
-            AppConfig.createExportDisplay(this).show(fileDescriptor, ExportFormat.OCTET_STREAM);
+            FileDescriptor fd;
+
+            if (emailService.isFileStorageUsed()
+                    && attachment.getContentFile() != null
+                    && fileLoader.fileExists(attachment.getContentFile())) {
+                fd = attachment.getContentFile();
+            } else {
+                fd = getFileDescriptor(attachment);
+            }
+
+            AppConfig.createExportDisplay(this)
+                    .show(new FileDataProvider(fd), fd.getName(), ExportFormat.OCTET_STREAM);
         } catch (FileStorageException e) {
-            throw new RuntimeException("File export filed", e);
+            throw new RuntimeException("File export failed", e);
         }
     }
 }
