@@ -32,17 +32,19 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import org.jdesktop.swingx.JXImageView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class DesktopImage extends DesktopAbstractComponent<JXImageView> implements Image {
+
+    private static final Logger log = LoggerFactory.getLogger(DesktopImage.class);
 
     protected static final Map<Class<? extends Resource>, Class<? extends Resource>> resourcesClasses;
 
@@ -75,6 +77,9 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
 
     protected EventRouter eventRouter;
     protected MouseListener mouseListener;
+    protected String alternateText;
+
+    protected boolean scalingEnabled = true;
 
     public DesktopImage() {
         impl = new JXImageView();
@@ -83,11 +88,18 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
         impl.setBackgroundPainter((g, object, width, height) ->
                 g.setBackground(Color.gray));
 
+        impl.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                impl.setImage(scaleImage(impl.getImage()));
+            }
+        });
+
         resourceUpdateHandler = () -> {
-            BufferedImage image = this.resource == null ?
-                    null
-                    : ((DesktopAbstractResource) this.resource).getResource();
-            impl.setImage(scaleImage(image));
+            java.awt.Image image = this.resource == null
+                    ? null
+                    : _getResource(resource);
+            impl.setImage(image);
         };
     }
 
@@ -160,11 +172,11 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
 
         this.resource = value;
 
-        BufferedImage image = null;
+        java.awt.Image image = null;
         if (value != null && ((DesktopAbstractResource) value).hasSource()) {
-            image = ((DesktopAbstractResource) value).getResource();
+            image = _getResource(resource);
         }
-        impl.setImage(scaleImage(image));
+        impl.setImage(image);
 
         if (value != null) {
             ((DesktopAbstractResource) value).setResourceUpdatedHandler(resourceUpdateHandler);
@@ -198,6 +210,41 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
                 getFrame().getId());
     }
 
+    protected java.awt.Image _getResource(Resource resource) {
+        try {
+            BufferedImage image = ((DesktopAbstractResource) resource).getResource();
+            scalingEnabled = true;
+            return scaleImage(image);
+        } catch (Exception e) {
+            scalingEnabled = false;
+            log.info("An error occurred while loading image", e);
+            return getErrorMessageImage();
+        }
+    }
+
+    protected BufferedImage getErrorMessageImage() {
+        BufferedImage errorImage = new BufferedImage(400, 100, BufferedImage.TYPE_INT_RGB);
+
+        Graphics graphics = errorImage.getGraphics();
+
+        graphics.setColor(new Color(214, 217, 224));
+        graphics.fillRect(0, 0, 400, 100);
+
+        graphics.setColor(Color.BLACK);
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        if (alternateText == null || alternateText.isEmpty()) {
+            graphics.drawString("An error occurred while loading image.", 10, 25);
+            graphics.drawString("Check logs for more information.", 10, 45);
+        } else {
+            graphics.drawString(alternateText, 10, 25);
+        }
+
+        graphics.dispose();
+
+        return errorImage;
+    }
+
     @Override
     public Datasource getDatasource() {
         return datasource;
@@ -221,38 +268,50 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
 
         DesktopAbstractResource desktopResource = (DesktopAbstractResource) this.resource;
         if (desktopResource != null && desktopResource.hasSource()) {
-            java.awt.Image scaledImage = scaleImage(desktopResource.getResource());
-            impl.setImage(scaledImage);
+            impl.setImage(_getResource(desktopResource));
         }
     }
 
-    protected java.awt.Image scaleImage(BufferedImage image) {
+    protected java.awt.Image scaleImage(java.awt.Image image) {
         if (image == null) {
             return null;
         }
 
+        if (!scalingEnabled) {
+            return image;
+        }
+
+        float implHeight = impl.getHeight();
+        float implWidth = impl.getWidth();
+
+        if (implHeight <= 0 || implWidth <= 0) {
+            return image;
+        }
+
         switch (scaleMode) {
             case FILL:
-                return image.getScaledInstance(Math.round(getWidth()), Math.round(getHeight()), java.awt.Image.SCALE_FAST);
+                return _scaleImage(image, implHeight, implWidth);
             case CONTAIN:
             case SCALE_DOWN:
-                int newH = Math.round(getHeight());
-                int newW = Math.round(getWidth());
+                float newH = implHeight;
+                float newW = implWidth;
 
                 float scaleCoef;
 
-                if (getHeight() > getWidth()) {
-                    scaleCoef = getWidth() / image.getWidth();
-
-                    newH = Math.round(image.getHeight() * scaleCoef);
+                if (implHeight > implWidth) {
+                    scaleCoef = implWidth / image.getWidth(impl);
+                    newH = Math.round(image.getHeight(impl) * scaleCoef);
                 } else {
-                    scaleCoef = getHeight() / image.getHeight();
-
-                    newW = Math.round(image.getWidth() * scaleCoef);
+                    scaleCoef = implHeight / image.getHeight(impl);
+                    newW = Math.round(image.getWidth(impl) * scaleCoef);
                 }
-                return image.getScaledInstance(newW, newH, java.awt.Image.SCALE_DEFAULT);
+                return _scaleImage(image, newH, newW);
         }
         return image;
+    }
+
+    protected java.awt.Image _scaleImage(java.awt.Image image, float newHeight, float newWidth) {
+        return image.getScaledInstance(Math.round(newWidth), Math.round(newHeight), java.awt.Image.SCALE_SMOOTH);
     }
 
     protected EventRouter getEventRouter() {
@@ -332,12 +391,12 @@ public class DesktopImage extends DesktopAbstractComponent<JXImageView> implemen
 
     @Override
     public void setAlternateText(String alternateText) {
-        impl.setToolTipText(alternateText);
+        this.alternateText = alternateText;
     }
 
     @Override
     public String getAlternateText() {
-        return impl.getToolTipText();
+        return alternateText;
     }
 
     @Override
