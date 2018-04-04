@@ -72,7 +72,7 @@ public class WindowBreadCrumbs extends CssLayout {
             super.setVisible(false);
         }
 
-        addAttachListener((AttachListener) event ->
+        addAttachListener(event ->
                 adjustParentStyles()
         );
 
@@ -82,7 +82,7 @@ public class WindowBreadCrumbs extends CssLayout {
         linksLayout.setSizeUndefined();
 
         if (!tabbedMode) {
-            closeBtn = new CubaButton("", (Button.ClickListener) event -> {
+            closeBtn = new CubaButton("", event -> {
                 Window window = getCurrentWindow();
                 if (!isCloseWithCloseButtonPrevented(window)) {
                     window.close(Window.CLOSE_ACTION_ID);
@@ -216,7 +216,7 @@ public class WindowBreadCrumbs extends CssLayout {
     }
 
     protected void fireListeners(Window window) {
-        for (Listener listener : listeners) {
+        for (Listener listener : listeners.toArray(new Listener[listeners.size()])) {
             listener.windowClick(window);
         }
     }

@@ -82,7 +82,7 @@ public class WindowBreadCrumbs extends JPanel {
     }
 
     private void fireListeners(Window window) {
-        for (Listener listener : listeners) {
+        for (Listener listener : listeners.toArray(new Listener[listeners.size()])) {
             listener.windowClick(window);
         }
     }
