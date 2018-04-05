@@ -2403,6 +2403,16 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
             }
         }
+
+        @Override
+        public String getCaption() {
+            return getMainMessage("filter.clearValues");
+        }
+
+        @Override
+        public String getIcon() {
+            return "icons/erase.png";
+        }
     }
 
     protected void removeFilterEntity() {
@@ -2681,6 +2691,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 case "make_default":
                 case "save_search_folder":
                 case "save_app_folder":
+                case "clear_values":
                     return createActionBtn(name, options);
             }
             return null;
