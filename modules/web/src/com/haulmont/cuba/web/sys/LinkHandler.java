@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
@@ -358,6 +359,6 @@ public class LinkHandler {
     }
 
     protected AbstractSearchFolder loadFolder(UUID folderId) {
-        return dataService.load(new LoadContext<>(AbstractSearchFolder.class).setId(folderId));
+        return dataService.load(new LoadContext<>(AppFolder.class).setId(folderId));
     }
 }
