@@ -2,12 +2,14 @@ package com.haulmont.cuba.web.sys.linkhandling;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.web.app.folders.Folders;
 import org.slf4j.Logger;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -42,8 +44,9 @@ public class FoldersLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
         }
     }
 
+    @Nullable
     protected AbstractSearchFolder loadFolder(UUID folderId) {
-        return dataService.load(new LoadContext<>(AbstractSearchFolder.class).setId(folderId));
+        return dataService.load(new LoadContext<>(AppFolder.class).setId(folderId));
     }
 
     @Override
