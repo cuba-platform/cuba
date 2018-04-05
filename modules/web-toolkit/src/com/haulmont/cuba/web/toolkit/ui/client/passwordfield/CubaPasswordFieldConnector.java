@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.passwordfield;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaPasswordField;
+import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.passwordfield.PasswordFieldConnector;
 import com.vaadin.shared.ui.Connect;
@@ -40,5 +41,11 @@ public class CubaPasswordFieldConnector extends PasswordFieldConnector {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().setAutocomplete(getState().autocomplete);
+
+        if (stateChangeEvent.hasPropertyChanged("capsLockIndicator")) {
+            ComponentConnector capsLockIndicator = (ComponentConnector) getState().capsLockIndicator;
+
+            getWidget().setIndicateCapsLock(capsLockIndicator == null ? null : capsLockIndicator.getWidget());
+        }
     }
 }

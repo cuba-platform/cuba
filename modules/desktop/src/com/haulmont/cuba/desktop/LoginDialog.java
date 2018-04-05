@@ -20,7 +20,10 @@ package com.haulmont.cuba.desktop;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
+import com.haulmont.cuba.desktop.sys.vcl.JTextFieldCapsLockSubscriber;
+import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.Frame.NotificationType;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.LocaleUtils;
@@ -43,7 +46,7 @@ public class LoginDialog extends JDialog {
 
     protected Connection connection;
     protected Locale resolvedLocale;
-    protected Map<String,Locale> locales;
+    protected Map<String, Locale> locales;
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
@@ -52,6 +55,7 @@ public class LoginDialog extends JDialog {
     protected JComboBox<String> localeCombo;
     protected JButton loginBtn;
     protected LoginProperties loginProperties;
+    protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
 
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
@@ -80,6 +84,13 @@ public class LoginDialog extends JDialog {
         MigLayout layout = new MigLayout("fillx, insets dialog", "[right][]");
         JPanel panel = new JPanel(layout);
 
+        JTextFieldCapsLockSubscriber capsLockSubscriber = new JTextFieldCapsLockSubscriber();
+        CapsLockIndicator capsLock = componentsFactory.createComponent(CapsLockIndicator.class);
+        capsLock.setCapsLockOnMessage(messages.getMainMessage("capsLockIndicator.capsLockOnMessage", resolvedLocale));
+
+        JComponent capsLockIndicator = DesktopComponentsHelper.getComposition(capsLock);
+        panel.add(capsLockIndicator, "span, align center, height 18!");
+
         panel.add(new JLabel(messages.getMainMessage("loginWindow.loginField", resolvedLocale)));
 
         nameField = new JTextField();
@@ -103,6 +114,7 @@ public class LoginDialog extends JDialog {
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
         panel.add(passwordField, "width 150!, wrap");
+        capsLockSubscriber.subscribe(passwordField, capsLock);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
 
@@ -119,7 +131,7 @@ public class LoginDialog extends JDialog {
                 doLogin()
         );
         DesktopComponentsHelper.adjustSize(loginBtn);
-        panel.add(loginBtn, "span, align center");
+        panel.add(loginBtn, "span, align center, gapy 6 0");
 
         getRootPane().setDefaultButton(loginBtn);
 

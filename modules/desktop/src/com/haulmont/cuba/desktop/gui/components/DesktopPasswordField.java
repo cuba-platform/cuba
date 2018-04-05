@@ -18,6 +18,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
+import com.haulmont.cuba.desktop.sys.vcl.JTextFieldCapsLockSubscriber;
+import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.PasswordField;
 
 import javax.swing.*;
@@ -26,6 +28,10 @@ import java.awt.*;
 public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordField> implements PasswordField {
 
     protected Boolean autocomplete = false;
+
+    protected CapsLockIndicator capsLockIndicator;
+
+    protected JTextFieldCapsLockSubscriber capsLockSubscriber = new JTextFieldCapsLockSubscriber();
 
     @Override
     protected JPasswordField createTextComponentImpl() {
@@ -87,6 +93,22 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
     public boolean isModified() {
         // do nothing
         return false;
+    }
+
+    @Override
+    public void setCapsLockIndicator(CapsLockIndicator capsLockIndicator) {
+        this.capsLockIndicator = capsLockIndicator;
+
+        if (capsLockIndicator != null) {
+            capsLockSubscriber.subscribe(impl, capsLockIndicator);
+        } else {
+            capsLockSubscriber.unsubscribe(impl);
+        }
+    }
+
+    @Override
+    public CapsLockIndicator getCapsLockIndicator() {
+        return capsLockIndicator;
     }
 
     protected class PasswordFlushableField extends JPasswordField implements Flushable {

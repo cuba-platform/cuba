@@ -80,6 +80,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(MaskedField.NAME, DesktopMaskedField.class);
         classes.put(CurrencyField.NAME, DesktopCurrencyField.class);
+        classes.put(CapsLockIndicator.NAME, DesktopCapsLockIndicator.class);
 
         classes.put(SearchField.NAME, DesktopSearchField.class);
         classes.put(SearchPickerField.NAME, DesktopSearchPickerField.class);

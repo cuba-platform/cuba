@@ -56,4 +56,8 @@
       color: #5b5857;
     }
   }
+
+  .c-login-capslockindicator {
+    height: round(2*$v-unit-size/3);
+  }
 }

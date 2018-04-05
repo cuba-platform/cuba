@@ -17,10 +17,21 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.passwordfield;
 
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.capslockindicator.CapsLockChangeHandler;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VPasswordField;
 
-public class CubaPasswordFieldWidget extends VPasswordField {
+public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressHandler, KeyDownHandler {
+
+    protected Boolean capsLock;
+    protected Widget capslockIndicator;
+
+    protected HandlerRegistration pressHandlerRegistration = null;
+    protected HandlerRegistration downHandlerRegistration = null;
 
     public void setAutocomplete(boolean autocomplete) {
         if (autocomplete) {
@@ -35,6 +46,77 @@ public class CubaPasswordFieldWidget extends VPasswordField {
             } else {
                 getElement().setAttribute("autocomplete", "new-password");
             }
+        }
+    }
+
+    public void setIndicateCapsLock(Widget capslockIndicator) {
+        this.capslockIndicator = capslockIndicator;
+
+        if (capslockIndicator != null) {
+            if (pressHandlerRegistration == null) {
+                pressHandlerRegistration = addKeyPressHandler(this);
+                downHandlerRegistration = addKeyDownHandler(this);
+            }
+        } else if (pressHandlerRegistration != null) {
+            downHandlerRegistration.removeHandler();
+            downHandlerRegistration = null;
+
+            pressHandlerRegistration.removeHandler();
+            pressHandlerRegistration = null;
+        }
+    }
+
+    protected boolean isMacOS() {
+        String userAgent = Window.Navigator.getUserAgent();
+        return userAgent.contains("Mac");
+    }
+
+    @Override
+    public void onKeyPress(KeyPressEvent event) {
+        char charCode = event.getCharCode();
+
+        if (charCode == 0) {
+            return;
+        }
+
+        if (Character.toLowerCase(charCode) == Character.toUpperCase(charCode)) {
+            return;
+        }
+
+        capsLock = (Character.toLowerCase(charCode) == charCode && event.isShiftKeyDown())
+                || (Character.toUpperCase(charCode) == charCode && !event.isShiftKeyDown());
+
+        if (pressHandlerRegistration != null) {
+            showCapsLockStatus(capsLock);
+        }
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+        if (event.getNativeKeyCode() == 20 && capsLock != null && !isMacOS()) {
+
+            capsLock = !capsLock;
+
+            if (pressHandlerRegistration != null) {
+                showCapsLockStatus(capsLock);
+            }
+        }
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        capsLock = null;
+
+        if (pressHandlerRegistration != null) {
+            showCapsLockStatus(false);
+        }
+
+        super.onBlur(event);
+    }
+
+    protected void showCapsLockStatus(boolean isCapsLock) {
+        if (capslockIndicator instanceof CapsLockChangeHandler) {
+            ((CapsLockChangeHandler) capslockIndicator).showCapsLockStatus(isCapsLock);
         }
     }
 }

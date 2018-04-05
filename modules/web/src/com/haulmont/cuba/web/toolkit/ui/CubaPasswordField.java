@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.PasswordField;
 import com.haulmont.cuba.web.toolkit.ui.client.passwordfield.CubaPasswordFieldState;
 
@@ -65,5 +67,10 @@ public class CubaPasswordField extends PasswordField {
         }
 
         return superError;
+    }
+
+    public void setCapsLockIndicator(CapsLockIndicator capsLockIndicator) {
+        getState().capsLockIndicator = capsLockIndicator == null ? null
+                : capsLockIndicator.unwrapComposition(Component.class);
     }
 }

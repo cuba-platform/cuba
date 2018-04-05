@@ -1400,6 +1400,7 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="autocomplete" type="xs:boolean"/>
+                <xs:attribute name="capsLockIndicator" type="xs:string"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
@@ -2633,6 +2634,17 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- CapsLockIndicator Component-->
+    <xs:complexType name="capsLockIndicatorComponent">
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attribute name="capsLockOnMessage" type="resourceString"/>
+        <xs:attribute name="capsLockOffMessage" type="resourceString"/>
+    </xs:complexType>
+
     <!-- Datasources -->
 
     <!-- CollectionDatasource -->
@@ -2911,6 +2923,8 @@
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
                 <xs:element name="relatedEntities" type="relatedComponent"/>
                 <xs:element name="bulkEditor" type="bulkEditorComponent"/>
+
+                <xs:element name="capsLockIndicator" type="capsLockIndicatorComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>
