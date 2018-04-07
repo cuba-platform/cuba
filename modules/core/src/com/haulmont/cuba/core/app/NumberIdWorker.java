@@ -31,7 +31,6 @@ import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -45,6 +44,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Generates ids for entities with long/integer PK using database sequences.
+ */
 @Component(NumberIdWorker.NAME)
 public class NumberIdWorker implements NumberIdSequence {
 
@@ -71,6 +73,13 @@ public class NumberIdWorker implements NumberIdSequence {
     public Long createLongId(String entityName) {
         String sqlScript = getSequenceSupport(entityName).getNextValueSql(getSequenceName(entityName));
         return getResult(entityName, sqlScript, 0, globalConfig.getNumberIdCacheSize());
+    }
+
+    /**
+     * INTERNAL. Used by tests.
+     */
+    public void reset() {
+        existingSequences.clear();
     }
 
     protected String getDataStore(String entityName) {
@@ -119,23 +128,25 @@ public class NumberIdWorker implements NumberIdSequence {
         if (existingSequences.contains(seqName))
             return;
 
-        // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
-        // regardless of possible errors in the invoking code
-        Transaction tx = persistence.createTransaction(getDataStore(entityName));
-        try {
-            EntityManager em = persistence.getEntityManager(getDataStore(entityName));
-            SequenceSupport sequenceSupport = getSequenceSupport(entityName);
-            Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
-            List list = query.getResultList();
-            if (list.isEmpty()) {
-                query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, startValue, increment));
-                query.executeUpdate();
-            }
-            existingSequences.add(seqName);
+        synchronized (this) {
+            // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
+            // regardless of possible errors in the invoking code
+            Transaction tx = persistence.createTransaction(getDataStore(entityName));
+            try {
+                EntityManager em = persistence.getEntityManager(getDataStore(entityName));
+                SequenceSupport sequenceSupport = getSequenceSupport(entityName);
+                Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
+                List list = query.getResultList();
+                if (list.isEmpty()) {
+                    query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, startValue, increment));
+                    query.executeUpdate();
+                }
+                existingSequences.add(seqName);
 
-            tx.commit();
-        } finally {
-            tx.end();
+                tx.commit();
+            } finally {
+                tx.end();
+            }
         }
     }
 
