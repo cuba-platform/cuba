@@ -673,7 +673,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     }
 
     protected boolean useSecurityToken() {
-        return globalConfig.getRestUseSecurityTokenForClient();
+        return globalConfig.getRestRequiresSecurityToken();
     }
 
     protected Entity findReferenceEntity(Entity entity, EntityImportViewProperty viewProperty, CommitContext commitContext,

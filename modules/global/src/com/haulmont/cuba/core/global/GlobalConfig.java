@@ -238,8 +238,8 @@ public interface GlobalConfig extends Config {
     /**
      * @return true if REST doesn't check security token for entities with security constraints
      */
-    @Property("cuba.rest.useSecurityTokenForClient")
+    @Property("cuba.rest.requiresSecurityToken")
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
-    boolean getRestUseSecurityTokenForClient();
+    boolean getRestRequiresSecurityToken();
 }
