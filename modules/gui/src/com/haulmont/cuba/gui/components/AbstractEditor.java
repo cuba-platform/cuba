@@ -18,9 +18,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 
 import javax.annotation.Nullable;
 
@@ -34,6 +35,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     public AbstractEditor() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T getItem() {
         return (T) ((Editor) frame).getItem();
@@ -79,7 +81,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * Called by the framework to validate and commit changes.
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
-     * @return true if commit was succesful
+     * @return true if commit was successful
      */
     @Override
     public boolean commit() {
@@ -91,7 +93,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
      * @param validate false to avoid validation
-     * @return true if commit was succesful
+     * @return true if commit was successful
      */
     @Override
     public boolean commit(boolean validate) {
@@ -175,13 +177,24 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             if (showSaveNotification) {
                 Entity entity = ((Editor) frame).getItem();
                 frame.showNotification(
-                        messages.formatMessage(AppConfig.getMessagesPack(), "info.EntitySave",
+                        messages.formatMainMessage("info.EntitySave",
                                 messages.getTools().getEntityCaption(entity.getMetaClass()), entity.getInstanceName()),
                         NotificationType.TRAY);
             }
             postInit();
+
+            afterWindowApplyPostInit();
         }
         return true;
+    }
+
+    /**
+     * Called after "postInit" in "Apply" action processing.
+     */
+    protected void afterWindowApplyPostInit() {
+        if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(getContext())) {
+            ((DsContextImplementation) getDsContext()).resumeSuspended();
+        }
     }
 
     public boolean isShowSaveNotification() {
