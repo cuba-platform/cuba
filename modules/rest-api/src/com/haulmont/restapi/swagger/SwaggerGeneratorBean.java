@@ -405,9 +405,7 @@ public class SwaggerGeneratorBean implements SwaggerGenerator {
                         .property(new BooleanProperty()),
                 new QueryParameter()
                         .name("view")
-                        .description("Name of the view which is used for loading the entity. Specify this parameter " +
-                                "if you want to extract entities with the view other than it is defined " +
-                                "in the REST queries configuration file.")
+                        .description("Name of the view which is used for loading the entity.")
                         .property(new StringProperty())
         );
 
