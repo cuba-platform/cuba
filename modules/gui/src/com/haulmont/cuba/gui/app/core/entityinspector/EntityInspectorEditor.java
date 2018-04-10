@@ -341,6 +341,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected void createDataComponents(MetaClass metaClass, Entity item) {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         fieldGroup.setBorderVisible(true);
+        fieldGroup.setWidthFull();
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
@@ -584,7 +585,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setCustom(custom);
         field.setRequired(required);
         field.setEditable(!readOnly);
-        field.setWidth("400px");
+        field.setWidth("100%");
 
         if (requireTextArea(metaProperty, item)) {
             Element root = DocumentHelper.createElement("textArea");
@@ -654,7 +655,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
                     field.setCaption(caption);
                     field.setMetaClass(propertyMeta);
-                    field.setWidth("400px");
+                    field.setWidth("100%");
 
                     PickerField.LookupAction lookupAction = field.addLookupAction();
                     //forwards lookup to the EntityInspectorBrowse window
