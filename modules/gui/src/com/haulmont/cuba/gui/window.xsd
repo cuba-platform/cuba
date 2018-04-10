@@ -20,8 +20,7 @@
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         xmlns:views="http://schemas.haulmont.com/cuba/view.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+        elementFormDefault="qualified">
 
     <xs:import namespace="http://schemas.haulmont.com/cuba/view.xsd"
                schemaLocation="http://schemas.haulmont.com/cuba/view.xsd"/>
@@ -347,7 +346,6 @@
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.IntegerValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.LongValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.PatternValidator"/>
-                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.RangeValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.ScriptValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.StringValidator"/>
                 </xs:restriction>

@@ -29,6 +29,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+/**
+ * @deprecated Use custom validator instead.
+ */
+@Deprecated
 public class RangeValidator implements Field.Validator {
 
     protected String message;
