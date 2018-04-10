@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.components.ComponentGenerationContext;
 import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.Timer;
 
+import javax.annotation.Nullable;
+
 /**
  * Factory to create UI components in client independent manner.
  * <br> An instance of the factory can be injected into screen controllers or obtained through {@link com.haulmont.cuba.core.global.AppBeans}.
