@@ -1084,9 +1084,22 @@ task aggregateJavadoc(type: Javadoc,
     exclude 'com/haulmont/cuba/core/app/cache/**'
     exclude 'com/haulmont/cuba/core/sys/jpql/antlr2/**'
     exclude 'com/haulmont/cuba/core/sys/utils/**'
-    exclude 'com/haulmont/cuba/desktop/sys/vcl/**'
     exclude 'com/haulmont/cuba/restapi/**'
+
+    exclude 'com/haulmont/cuba/gui/components/compatibility/**'
+    exclude 'com/haulmont/cuba/gui/xml/layout/loaders/**'
+
+    exclude 'com/haulmont/cuba/desktop/sys/**'
+    exclude 'com/haulmont/cuba/desktop/gui/components/**'
+    exclude 'com/haulmont/cuba/desktop/gui/data/**'
+    exclude 'com/haulmont/cuba/desktop/gui/executors/**'
+
     exclude 'com/haulmont/cuba/web/toolkit/**'
+    exclude 'com/haulmont/cuba/web/controllers/**'
+    exclude 'com/haulmont/cuba/web/gui/components/**'
+    exclude 'com/haulmont/cuba/web/gui/data/**'
+    exclude 'com/haulmont/cuba/web/gui/executors/**'
+
     exclude 'org/eclipse/**'
 
     subprojects.each { proj ->
