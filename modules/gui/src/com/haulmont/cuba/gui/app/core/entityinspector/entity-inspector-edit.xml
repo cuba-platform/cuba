@@ -22,12 +22,8 @@
         <tabSheet id="tablesTabSheet" width="100%">
             <tab id="general" caption="msg://general" spacing="true">
                 <scrollBox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
-                    <vbox id="contentPane"
-                          spacing="true"
-                          width="theme://cuba.gui.entity-inspector-edit.contentPane.width"/>
-                    <vbox id="runtimePane"
-                          spacing="true"
-                          width="theme://cuba.gui.entity-inspector-edit.runtimePane.width"/>
+                    <vbox id="contentPane" spacing="true"/>
+                    <vbox id="runtimePane" spacing="true"/>
                 </scrollBox>
             </tab>
         </tabSheet>
