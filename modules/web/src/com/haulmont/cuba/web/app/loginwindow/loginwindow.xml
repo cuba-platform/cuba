@@ -28,7 +28,7 @@
         <vbox id="loginWrapper">
             <vbox id="loginMainBox"
                   stylename="c-login-panel" width="AUTO"
-                  margin="true" spacing="true" align="MIDDLE_CENTER">
+                  margin="true" align="MIDDLE_CENTER">
                 <hbox id="loginTitleBox" stylename="c-login-title"
                       spacing="true" align="MIDDLE_CENTER">
                     <embedded id="logoImage"
@@ -88,7 +88,7 @@
                         <row id="submitRow">
                             <label id="submitSpacer"/>
 
-                            <button id="loginButton" action="submit"/>
+                            <button id="loginButton" action="submit" stylename="c-login-submit-button"/>
                         </row>
                     </rows>
                 </grid>
