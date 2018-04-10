@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
+import com.haulmont.cuba.gui.app.security.ds.ScreenComponentsTreeDatasource;
 import com.haulmont.cuba.gui.app.security.ds.UiPermissionsDatasource;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
@@ -92,7 +93,19 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected Companion companion;
 
     @Inject
-    private GroupBoxLayout editPane;
+    protected GroupBoxLayout editPane;
+
+    @Inject
+    protected Tree<ScreenComponentDescriptor> componentsTree;
+
+    @Inject
+    protected VBoxLayout componentsTreeBox;
+
+    @Inject
+    protected Button componentsTreeBtn;
+
+    @Inject
+    protected ScreenComponentsTreeDatasource componentDescriptorsDs;
 
     protected boolean itemChanging = false;
 
@@ -100,17 +113,7 @@ public class UiPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-        Collection<WindowInfo> windows = sortWindowInfos(windowConfig.getWindows());
-        Map<String, Object> screens = new LinkedHashMap<>();
-        for (WindowInfo windowInfo : windows) {
-            String id = windowInfo.getId();
-            String menuId = "menu-config." + id;
-            String localeMsg = messages.getMessage(AppConfig.getMessagesPack(), menuId);
-            String title = menuId.equals(localeMsg) ? id : localeMsg + " (" + id + ")";
-            screens.put(title, id);
-        }
-        screenFilter.setOptionsMap(screens);
+        initScreenFilter();
 
         companion.initPermissionsColoredColumns(uiPermissionsTable);
 
@@ -163,6 +166,40 @@ public class UiPermissionsFrame extends AbstractFrame {
         editPane.setEnabled(security.isEntityOpPermitted(Role.class, EntityOp.UPDATE));
 
         applyPermissions(hasPermissionsToModifyPermission);
+    }
+
+    protected void initScreenFilter() {
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        Collection<WindowInfo> windows = sortWindowInfos(windowConfig.getWindows());
+        Map<String, Object> screens = new LinkedHashMap<>();
+        for (WindowInfo windowInfo : windows) {
+            String id = windowInfo.getId();
+            String menuId = "menu-config." + id;
+            String localeMsg = messages.getMessage(AppConfig.getMessagesPack(), menuId);
+            String title = menuId.equals(localeMsg) ? id : localeMsg + " (" + id + ")";
+            screens.put(title, id);
+        }
+        screenFilter.setOptionsMap(screens);
+
+        componentsTreeBtn.setEnabled(screenFilter.getValue() != null);
+        screenFilter.addValueChangeListener(e -> {
+            componentsTreeBtn.setEnabled(screenFilter.getValue() != null);
+
+            componentDescriptorsDs.setScreenId(screenFilter.getValue());
+            componentDescriptorsDs.refresh();
+
+            componentsTree.expandTree();
+        });
+    }
+
+    public void changeComponentsTreeVisibility() {
+        if (componentsTreeBox.isVisible()) {
+            componentsTreeBox.setVisible(false);
+            componentsTreeBtn.setDescription(getMessage("componentsTree.show"));
+        } else if (StringUtils.isNotBlank(screenFilter.getValue())) {
+            componentsTreeBox.setVisible(true);
+            componentsTreeBtn.setDescription(getMessage("componentsTree.hide"));
+        }
     }
 
     protected Collection<WindowInfo> sortWindowInfos(Collection<WindowInfo> infos) {
@@ -263,5 +300,13 @@ public class UiPermissionsFrame extends AbstractFrame {
             uiPermissionsTable.expandPath(target);
             uiPermissionsTable.setSelected(target);
         }
+    }
+
+    public void collapseTree() {
+        componentsTree.collapseTree();
+    }
+
+    public void expandTree() {
+        componentsTree.expandTree();
     }
 }
