@@ -111,7 +111,7 @@ public class LayoutAnalyzer {
 
                 if (scrollBox.getOrientation() == ScrollBoxLayout.Orientation.HORIZONTAL) {
                     for (Component component : scrollBox.getOwnComponents()) {
-                        if (component.getWidth() > 0 && component.getWidthUnits() == Component.UNITS_PERCENTAGE) {
+                        if (component.getWidth() > 0 && component.getWidthSizeUnit() == SizeUnit.PERCENTAGE) {
                             if (tips == null) {
                                 tips = new ArrayList<>();
                             }
@@ -123,7 +123,7 @@ public class LayoutAnalyzer {
                     }
                 } else {
                     for (Component component : scrollBox.getOwnComponents()) {
-                        if (component.getHeight() > 0 && component.getHeightUnits() == Component.UNITS_PERCENTAGE) {
+                        if (component.getHeight() > 0 && component.getHeightSizeUnit() == SizeUnit.PERCENTAGE) {
                             if (tips == null) {
                                 tips = new ArrayList<>();
                             }
@@ -153,7 +153,7 @@ public class LayoutAnalyzer {
                 Component.Container container = (Component.Container) c;
                 if (c.getWidth() < 0) {
                     for (Component component : container.getOwnComponents()) {
-                        if (component.getWidthUnits() == Component.UNITS_PERCENTAGE && component.getWidth() > 0) {
+                        if (component.getWidthSizeUnit() == SizeUnit.PERCENTAGE && component.getWidth() > 0) {
                             if (tips == null) {
                                 tips = new ArrayList<>();
                             }
@@ -167,7 +167,7 @@ public class LayoutAnalyzer {
 
                 if (c.getHeight() < 0) {
                     for (Component component : container.getOwnComponents()) {
-                        if (component.getHeightUnits() == Component.UNITS_PERCENTAGE && component.getHeight() > 0) {
+                        if (component.getHeightSizeUnit() == SizeUnit.PERCENTAGE && component.getHeight() > 0) {
                             if (tips == null) {
                                 tips = new ArrayList<>();
                             }
@@ -232,7 +232,7 @@ public class LayoutAnalyzer {
                     if (tips == null) {
                         tips = new ArrayList<>();
                     }
-                    if (component.getHeightUnits() == Component.UNITS_PERCENTAGE && component.getHeight() > 0) {
+                    if (component.getHeightSizeUnit() == SizeUnit.PERCENTAGE && component.getHeight() > 0) {
                         String id = component.getId() != null ? component.getId() : component.getClass().getSimpleName();
                         tips.add(warn("Nested component '" + id + "'",
                                 "Nested component has relative height %s%% inside window with undefined height",
@@ -259,7 +259,7 @@ public class LayoutAnalyzer {
                     if (tips == null) {
                         tips = new ArrayList<>();
                     }
-                    if (component.getWidthUnits() == Component.UNITS_PERCENTAGE && component.getWidth() > 0) {
+                    if (component.getWidthSizeUnit() == SizeUnit.PERCENTAGE && component.getWidth() > 0) {
                         String id = component.getId() != null ? component.getId() : component.getClass().getSimpleName();
                         tips.add(warn("Nested component '" + id + "'",
                                 "Nested component has relative width %s%% inside window with undefined width",
@@ -341,10 +341,10 @@ public class LayoutAnalyzer {
 
         private boolean isSizeIgnored(ExpandingLayout container, Component component) {
             return container.getExpandDirection() == ExpandDirection.HORIZONTAL
-                    && component.getWidthUnits() == Component.UNITS_PERCENTAGE
+                    && component.getWidthSizeUnit() == SizeUnit.PERCENTAGE
                     && component.getWidth() > 0
                     || container.getExpandDirection() == ExpandDirection.VERTICAL
-                    && component.getHeightUnits() == Component.UNITS_PERCENTAGE
+                    && component.getHeightSizeUnit() == SizeUnit.PERCENTAGE
                     && component.getHeight() > 0;
         }
     }

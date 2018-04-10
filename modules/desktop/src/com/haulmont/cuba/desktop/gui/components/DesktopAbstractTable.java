@@ -339,7 +339,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     public void setWidth(String width) {
         super.setWidth(width);
         CC cc = new CC().grow();
-        MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.unit, false);
+        MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.sizeUnit, false);
         layout.setComponentConstraints(scrollPane, cc);
     }
 

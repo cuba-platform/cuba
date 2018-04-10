@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -124,7 +125,12 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Override
     public int getMenuWidthUnits() {
-        return UNIT_SYMBOLS.indexOf(vPopupComponent.getWidthUnits());
+        return ComponentsHelper.convertFromSizeUnit(getMenuWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getMenuWidthSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(vPopupComponent.getWidthUnits());
     }
 
     @Override

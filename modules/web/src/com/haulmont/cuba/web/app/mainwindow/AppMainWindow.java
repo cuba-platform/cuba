@@ -72,7 +72,7 @@ public class AppMainWindow extends AbstractMainWindow {
 
         if (webConfig.getFoldersPaneEnabled()) {
             if (webConfig.getFoldersPaneVisibleByDefault()) {
-                foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), Component.UNITS_PIXELS);
+                foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), SizeUnit.PIXELS);
             } else {
                 foldersSplit.setSplitPosition(0);
             }

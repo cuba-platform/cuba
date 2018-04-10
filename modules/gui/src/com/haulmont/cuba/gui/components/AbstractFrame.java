@@ -163,6 +163,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public SizeUnit getHeightSizeUnit() {
+        return frame.getHeightSizeUnit();
+    }
+
+    @Override
     public void setHeight(String height) {
         frame.setHeight(height);
     }
@@ -175,6 +180,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public int getWidthUnits() {
         return frame.getWidthUnits();
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return frame.getWidthSizeUnit();
     }
 
     @Override

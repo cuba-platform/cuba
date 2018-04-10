@@ -50,8 +50,18 @@ public interface PopupButton extends Component.ActionsHolder, Component.HasCapti
     float getMenuWidth();
     /**
      * @return one of width units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE}
+     *
+     * @deprecated Use {@link #getMenuWidthSizeUnit()}
      */
+    @Deprecated
     int getMenuWidthUnits();
+
+    /**
+     * Gets the menu width property units.
+     *
+     * @return units used in the menu width property.
+     */
+    SizeUnit getMenuWidthSizeUnit();
 
     /**
      * @return whether to close menu automatically after action triggerring or not

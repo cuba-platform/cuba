@@ -1005,7 +1005,12 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public int getHeightUnits() {
-        return WebAbstractComponent.UNIT_SYMBOLS.indexOf(component.getHeightUnits());
+        return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getHeightSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(component.getHeightUnits());
     }
 
     @Override
@@ -1020,7 +1025,12 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public int getWidthUnits() {
-        return WebAbstractComponent.UNIT_SYMBOLS.indexOf(component.getWidthUnits());
+        return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(component.getWidthUnits());
     }
 
     @Override

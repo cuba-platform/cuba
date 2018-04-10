@@ -19,6 +19,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -109,7 +110,12 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setSplitPosition(int pos, int unit) {
-        if (unit != UNITS_PERCENTAGE) {
+        setSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
+
+    @Override
+    public void setSplitPosition(int pos, SizeUnit unit) {
+        if (unit != SizeUnit.PERCENTAGE) {
             // not supported
             return;
         }
@@ -119,7 +125,12 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setSplitPosition(int pos, int unit, boolean reversePosition) {
-        if (unit != UNITS_PERCENTAGE) {
+        setSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit), reversePosition);
+    }
+
+    @Override
+    public void setSplitPosition(int pos, SizeUnit unit, boolean reversePosition) {
+        if (unit != SizeUnit.PERCENTAGE) {
             // not supported
             return;
         }
@@ -134,27 +145,47 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public int getSplitPositionUnit() {
-        return UNITS_PERCENTAGE;
+        return ComponentsHelper.convertFromSizeUnit(getSplitPositionSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getSplitPositionSizeUnit() {
+        return SizeUnit.PERCENTAGE;
     }
 
     @Override
     public void setMaxSplitPosition(int pos, int unit) {
-        if (unit != UNITS_PERCENTAGE) {
-            // not supported
-            return;
-        }
+        // FIXME: gg, what is going on here?
+//        if (unit != UNITS_PERCENTAGE) {
+//            // not supported
+//            return;
+//        }
+//
+//        setMaxSplitPosition(pos, UNITS_PIXELS);
+        setMaxSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
 
-        setMaxSplitPosition(pos, UNITS_PIXELS);
+    @Override
+    public void setMaxSplitPosition(int pos, SizeUnit unit) {
+        ;
+        // VAADIN8: gg, implement?
     }
 
     @Override
     public void setMinSplitPosition(int pos, int unit) {
-        if (unit != UNITS_PERCENTAGE) {
-            // not supported
-            return;
-        }
+        // FIXME: gg, what is going on here?
+//        if (unit != UNITS_PERCENTAGE) {
+//            // not supported
+//            return;
+//        }
+//
+//        setMaxSplitPosition(pos, UNITS_PIXELS);
+        setMinSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
 
-        setMaxSplitPosition(pos, UNITS_PIXELS);
+    @Override
+    public void setMinSplitPosition(int pos, SizeUnit unit) {
+        // VAADIN8: gg, implement?
     }
 
     @Override

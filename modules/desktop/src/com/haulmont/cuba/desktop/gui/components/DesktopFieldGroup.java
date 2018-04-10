@@ -458,8 +458,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
                 CC cell = new CC().cell(colIndex * 3 + 1, insertRowIndex, 1, 1);
 
-                MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthUnits(), false);
-                MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
+                MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthSizeUnit(), false);
+                MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightSizeUnit(), false);
                 MigLayoutHelper.applyAlignment(cell, fieldComponent.getAlignment());
 
                 composition.putClientProperty(getSwingPropertyId(), fci.getId());

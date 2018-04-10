@@ -39,13 +39,40 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     void setOrientation(int orientation);
 
     void setSplitPosition(int pos);
+
+    /**
+     * @deprecated Use {@link #setSplitPosition(int, SizeUnit)}
+     */
+    @Deprecated
     void setSplitPosition(int pos, int unit);
 
     /**
      * Set position of split from the left side by default.
-     * If reversePosition is true position will be set from right.
+     *
+     * @param pos  the new size of the first region.
+     * @param unit the unit (from {@link SizeUnit}) in which the size is given.
      */
+    void setSplitPosition(int pos, SizeUnit unit);
+
+    /**
+     * Set position of split from the left side by default.
+     * If reversePosition is true position will be set from right.
+     *
+     * @deprecated Use {@link #setSplitPosition(int, SizeUnit, boolean)}
+     */
+    @Deprecated
     void setSplitPosition(int pos, int unit, boolean reversePosition);
+
+    /**
+     * Set position of split from the left side by default.
+     * If reversePosition is true position will be set from right.
+     *
+     * @param pos             the new size of the first region.
+     * @param unit            the unit (from {@link SizeUnit}) in which the size is given.
+     * @param reversePosition if set to true the split splitter position is measured
+     *                        by the second region else it is measured by the first region
+     */
+    void setSplitPosition(int pos, SizeUnit unit, boolean reversePosition);
 
     /**
      * @return position of the splitter.
@@ -56,7 +83,15 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
      * @return unit of the splitter position.
      * See {@link Component#UNITS_PIXELS} and {@link Component#UNITS_PERCENTAGE}
      */
+    @Deprecated
     int getSplitPositionUnit();
+
+    /**
+     * Returns the unit of position of the splitter.
+     *
+     * @return unit of position of the splitter
+     */
+    SizeUnit getSplitPositionSizeUnit();
 
     /**
      * Return from which side position is set.
@@ -66,14 +101,38 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     /**
      * Set minimum available position of split.
      * Minimum position of split will be set from the right if position is reversed.
+     *
+     * @deprecated Use {@link #setMinSplitPosition(int, SizeUnit)}
      */
+    @Deprecated
     void setMinSplitPosition(int pos, int unit);
+
+    /**
+     * Sets the minimum split position to the given position and unit. If the
+     * split position is reversed, maximum and minimum are also reversed.
+     *
+     * @param pos  the new size of the first region.
+     * @param unit the unit (from {@link SizeUnit}) in which the size is given.
+     */
+    void setMinSplitPosition(int pos, SizeUnit unit);
 
     /**
      * Set maximum available position of split.
      * Maximum position of split will be set from the right if position is reversed.
+     *
+     * @deprecated Use {@link #setMaxSplitPosition(int, SizeUnit)}
      */
+    @Deprecated
     void setMaxSplitPosition(int pos, int unit);
+
+    /**
+     * Sets the maximum split position to the given position and unit. If the
+     * split position is reversed, maximum and minimum are also reversed.
+     *
+     * @param pos  the new size of the first region.
+     * @param unit the unit (from {@link SizeUnit}) in which the size is given.
+     */
+    void setMaxSplitPosition(int pos, SizeUnit unit);
 
     /**
      * Sets whether users are able to change the separator position or not.

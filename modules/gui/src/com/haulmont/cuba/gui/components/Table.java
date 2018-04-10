@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -850,9 +851,15 @@ public interface Table<E extends Entity>
             return -1;
         }
 
+        @Deprecated
         @Override
         public int getHeightUnits() {
-            return UNITS_PIXELS;
+            return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
+        }
+
+        @Override
+        public SizeUnit getHeightSizeUnit() {
+            return SizeUnit.PIXELS;
         }
 
         @Override
@@ -865,9 +872,15 @@ public interface Table<E extends Entity>
             return -1;
         }
 
+        @Deprecated
         @Override
         public int getWidthUnits() {
-            return UNITS_PIXELS;
+            return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
+        }
+
+        @Override
+        public SizeUnit getWidthSizeUnit() {
+            return SizeUnit.PIXELS;
         }
 
         @Override

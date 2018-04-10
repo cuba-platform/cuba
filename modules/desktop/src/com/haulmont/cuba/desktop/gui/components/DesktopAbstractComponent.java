@@ -25,10 +25,9 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -280,7 +279,12 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public int getHeightUnits() {
-        return heightSize != null ? heightSize.unit : 0;
+        return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getHeightSizeUnit() {
+        return heightSize != null ? heightSize.sizeUnit : SizeUnit.PIXELS;
     }
 
     @Override
@@ -296,7 +300,12 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public int getWidthUnits() {
-        return widthSize != null ? widthSize.unit : 0;
+        return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return widthSize != null ? widthSize.sizeUnit : SizeUnit.PIXELS;
     }
 
     @Override

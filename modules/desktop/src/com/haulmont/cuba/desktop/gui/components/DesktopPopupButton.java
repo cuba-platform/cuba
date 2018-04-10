@@ -22,6 +22,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
@@ -182,7 +183,12 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     @Override
     public int getMenuWidthUnits() {
-        return UNITS_PIXELS; // unsupported
+        return ComponentsHelper.convertFromSizeUnit(getMenuWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getMenuWidthSizeUnit() {
+        return SizeUnit.PIXELS; // unsupported
     }
 
     @Override
@@ -437,6 +443,11 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
+        public SizeUnit getHeightSizeUnit() {
+            return SizeUnit.PIXELS;
+        }
+
+        @Override
         public void setHeight(String height) {
         }
 
@@ -448,6 +459,11 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         @Override
         public int getWidthUnits() {
             return 0;
+        }
+
+        @Override
+        public SizeUnit getWidthSizeUnit() {
+            return SizeUnit.PIXELS;
         }
 
         @Override

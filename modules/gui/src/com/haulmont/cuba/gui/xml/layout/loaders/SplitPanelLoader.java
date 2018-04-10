@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import org.apache.commons.lang.StringUtils;
@@ -118,14 +119,14 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         String minSplitPosition = element.attributeValue("minSplitPosition");
         if (!StringUtils.isEmpty(minSplitPosition)) {
             int position;
-            int unit;
+            SizeUnit unit;
 
             if (minSplitPosition.endsWith("px")) {
                 position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("px")));
-                unit = Component.UNITS_PIXELS;
+                unit = SizeUnit.PIXELS;
             } else if (minSplitPosition.endsWith("%")) {
                 position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%")));
-                unit = Component.UNITS_PERCENTAGE;
+                unit = SizeUnit.PERCENTAGE;
             } else {
                 throw new GuiDevelopmentException("Unit of minSplitPosition is not set", context.getFullFrameId());
             }
@@ -138,14 +139,14 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         String maxSplitPosition = element.attributeValue("maxSplitPosition");
         if (!StringUtils.isEmpty(maxSplitPosition)) {
             int position;
-            int unit;
+            SizeUnit unit;
 
             if (maxSplitPosition.endsWith("px")) {
                 position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px")));
-                unit = Component.UNITS_PIXELS;
+                unit = SizeUnit.PIXELS;
             } else if (maxSplitPosition.endsWith("%")) {
                 position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("%")));
-                unit = Component.UNITS_PERCENTAGE;
+                unit = SizeUnit.PERCENTAGE;
             } else {
                 throw new GuiDevelopmentException("Unit of maxSplitPosition is not set", context.getFullFrameId());
             }
@@ -159,7 +160,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         if (!StringUtils.isEmpty(pos)) {
             boolean reversePosition = false;
             int position;
-            int unit;
+            SizeUnit unit;
 
             if (Boolean.parseBoolean(element.attributeValue("reversePosition"))) {
                 reversePosition = true;
@@ -167,14 +168,14 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
             if (pos.endsWith("px")) {
                 position = Integer.parseInt(pos.substring(0, pos.indexOf("px")));
-                unit = Component.UNITS_PIXELS;
+                unit = SizeUnit.PIXELS;
             } else {
                 if (pos.endsWith("%")) {
                     position = Integer.parseInt(pos.substring(0, pos.indexOf("%")));
                 } else {
                     position = Integer.parseInt(pos);
                 }
-                unit = Component.UNITS_PERCENTAGE;
+                unit = SizeUnit.PERCENTAGE;
             }
 
             resultComponent.setSplitPosition(position, unit, reversePosition);

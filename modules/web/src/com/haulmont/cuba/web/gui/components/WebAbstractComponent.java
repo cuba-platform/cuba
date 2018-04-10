@@ -19,8 +19,10 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.EventPublisher;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -42,6 +44,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption {
 
+    @Deprecated
     public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
@@ -283,7 +286,12 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public int getHeightUnits() {
-        return UNIT_SYMBOLS.indexOf(getComposition().getHeightUnits());
+        return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getHeightSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(getComposition().getHeightUnits());
     }
 
     @Override
@@ -298,7 +306,12 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public int getWidthUnits() {
-        return UNIT_SYMBOLS.indexOf(getComposition().getWidthUnits());
+        return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(getComposition().getWidthUnits());
     }
 
     @Override

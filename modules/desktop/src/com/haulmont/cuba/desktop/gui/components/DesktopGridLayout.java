@@ -23,10 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.MarginInfo;
+import com.haulmont.cuba.gui.components.*;
 import net.miginfocom.layout.CC;
 
 import javax.annotation.Nullable;
@@ -353,14 +350,14 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
                 composition = wrappers.get(child).getFirst();
                 CC constraints = MigLayoutHelper.getConstraints(child);
                 if (child.getHeight() == -1.0) {
-                    MigLayoutHelper.applyHeight(constraints, -1, UNITS_PIXELS, false);
+                    MigLayoutHelper.applyHeight(constraints, -1, SizeUnit.PIXELS, false);
                 } else {
-                    MigLayoutHelper.applyHeight(constraints, 100, UNITS_PERCENTAGE, false);
+                    MigLayoutHelper.applyHeight(constraints, 100, SizeUnit.PERCENTAGE, false);
                 }
                 if (child.getWidth() == -1.0) {
-                    MigLayoutHelper.applyWidth(constraints, -1, UNITS_PIXELS, false);
+                    MigLayoutHelper.applyWidth(constraints, -1, SizeUnit.PIXELS, false);
                 } else {
-                    MigLayoutHelper.applyWidth(constraints, 100, UNITS_PERCENTAGE, false);
+                    MigLayoutHelper.applyWidth(constraints, 100, SizeUnit.PERCENTAGE, false);
                 }
                 BoxLayoutAdapter adapter = wrappers.get(child).getSecond();
                 adapter.updateConstraints(DesktopComponentsHelper.getComposition(child), constraints);

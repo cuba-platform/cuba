@@ -1245,7 +1245,12 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public int getHeightUnits() {
-        return heightSize != null ? heightSize.unit : 0;
+        return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getHeightSizeUnit() {
+        return heightSize != null ? heightSize.sizeUnit : SizeUnit.PIXELS;
     }
 
     @Override
@@ -1260,7 +1265,12 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public int getWidthUnits() {
-        return widthSize != null ? widthSize.unit : 0;
+        return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return widthSize != null ? widthSize.sizeUnit : SizeUnit.PIXELS;
     }
 
     @Override
@@ -1414,14 +1424,14 @@ public class DesktopWindow implements Window, Component.Disposable,
                 composition = wrappers.get(child).getFirst();
                 CC constraints = MigLayoutHelper.getConstraints(child);
                 if (child.getHeight() == -1.0) {
-                    MigLayoutHelper.applyHeight(constraints, -1, UNITS_PIXELS, false);
+                    MigLayoutHelper.applyHeight(constraints, -1, SizeUnit.PIXELS, false);
                 } else {
-                    MigLayoutHelper.applyHeight(constraints, 100, UNITS_PERCENTAGE, false);
+                    MigLayoutHelper.applyHeight(constraints, 100, SizeUnit.PERCENTAGE, false);
                 }
                 if (child.getWidth() == -1.0) {
-                    MigLayoutHelper.applyWidth(constraints, -1, UNITS_PIXELS, false);
+                    MigLayoutHelper.applyWidth(constraints, -1, SizeUnit.PIXELS, false);
                 } else {
-                    MigLayoutHelper.applyWidth(constraints, 100, UNITS_PERCENTAGE, false);
+                    MigLayoutHelper.applyWidth(constraints, 100, SizeUnit.PERCENTAGE, false);
                 }
                 BoxLayoutAdapter adapter = wrappers.get(child).getSecond();
                 adapter.updateConstraints(DesktopComponentsHelper.getComposition(child), constraints);
@@ -1965,15 +1975,15 @@ public class DesktopWindow implements Window, Component.Disposable,
             CC cc = new CC();
 
             if (widthSize != null) {
-                MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.unit, true);
+                MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.sizeUnit, true);
             } else {
-                MigLayoutHelper.applyWidth(cc, 100, UNITS_PERCENTAGE, true);
+                MigLayoutHelper.applyWidth(cc, 100, SizeUnit.PERCENTAGE, true);
             }
 
             if (heightSize != null) {
-                MigLayoutHelper.applyHeight(cc, (int) heightSize.value, heightSize.unit, true);
+                MigLayoutHelper.applyHeight(cc, (int) heightSize.value, heightSize.sizeUnit, true);
             } else {
-                MigLayoutHelper.applyHeight(cc, 100, UNITS_PERCENTAGE, true);
+                MigLayoutHelper.applyHeight(cc, 100, SizeUnit.PERCENTAGE, true);
             }
 
             MigLayout migLayout = (MigLayout) panel.getLayout();

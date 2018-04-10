@@ -18,8 +18,10 @@
 package com.haulmont.cuba.desktop.sys.layout;
 
 import com.haulmont.cuba.desktop.gui.components.AutoExpanding;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.UnitValue;
 import org.apache.commons.lang.StringUtils;
@@ -48,11 +50,11 @@ public class MigLayoutHelper {
 
         if (direction == null || direction == BoxLayoutAdapter.FlowDirection.X
                 && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
-            applyWidth(cc, 100, Component.UNITS_PERCENTAGE, true);
+            applyWidth(cc, 100, SizeUnit.PERCENTAGE, true);
         }
         if (direction == null || direction == BoxLayoutAdapter.FlowDirection.Y
                 && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
-            applyHeight(cc, 100, Component.UNITS_PERCENTAGE, true);
+            applyHeight(cc, 100, SizeUnit.PERCENTAGE, true);
         }
 
         return cc;
@@ -73,10 +75,10 @@ public class MigLayoutHelper {
         }
 
         int width = (int) component.getWidth();
-        int widthUnits = component.getWidthUnits();
+        SizeUnit widthUnits = component.getWidthSizeUnit();
 
         int height = (int) component.getHeight();
-        int heightUnits = component.getHeightUnits();
+        SizeUnit heightUnits = component.getHeightSizeUnit();
 
         CC cc = new CC();
 
@@ -123,12 +125,20 @@ public class MigLayoutHelper {
         }
     }
 
+    /**
+     * @deprecated Use {@link #applyHeight(CC, int, SizeUnit, boolean)}
+     */
+    @Deprecated
     public static void applyHeight(CC constraints, int height, int heightUnits, boolean expand) {
+        applyHeight(constraints, height, ComponentsHelper.convertToSizeUnit(heightUnits), expand);
+    }
+
+    public static void applyHeight(CC constraints, int height, SizeUnit heightUnits, boolean expand) {
         if (height == -1) { // own size
             constraints.growY(0.0f);
-        } else if (heightUnits == Component.UNITS_PERCENTAGE) {
+        } else if (heightUnits == SizeUnit.PERCENTAGE) {
             constraints.height(height + "%");
-        } else if (height != 0 && heightUnits == Component.UNITS_PIXELS) {
+        } else if (height != 0 && heightUnits == SizeUnit.PIXELS) {
             constraints.growY(0.0f);
             constraints.height(height + "!"); // min, pref, max size as specified
         } else {
@@ -142,12 +152,17 @@ public class MigLayoutHelper {
         }
     }
 
+    @Deprecated
     public static void applyWidth(CC constraints, int width, int widthUnits, boolean expand) {
+        applyWidth(constraints, width, ComponentsHelper.convertToSizeUnit(widthUnits), expand);
+    }
+
+    public static void applyWidth(CC constraints, int width, SizeUnit widthUnits, boolean expand) {
         if (width == -1) { // own size
             constraints.growX(0);
-        } else if (widthUnits == Component.UNITS_PERCENTAGE) {
+        } else if (widthUnits == SizeUnit.PERCENTAGE) {
             constraints.width(width + "%");
-        } else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
+        } else if (width != 0 && widthUnits == SizeUnit.PIXELS) {
             constraints.growX(0);
             constraints.width(width + "!");  // min, pref, max size as specified
         } else {

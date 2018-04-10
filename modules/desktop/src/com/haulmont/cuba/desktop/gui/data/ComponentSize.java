@@ -17,35 +17,45 @@
 
 package com.haulmont.cuba.desktop.gui.data;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.SizeUnit;
 
 public class ComponentSize {
 
-    private static final String PIXEL = "px";
-    private static final String PERCENT = "%";
-
+    // FIXME: gg, why public?
     public final float value;
+    @Deprecated
     public final int unit; // Component.UNITS_PIXELS or Component.UNITS_PERCENTAGE
+    public final SizeUnit sizeUnit;
 
+    /**
+     * @deprecated use one of {@link #ComponentSize(float)} or {@link #ComponentSize(float, SizeUnit)}
+     */
+    @Deprecated
     public ComponentSize(float value, int unit) {
+        this(value, ComponentsHelper.convertToSizeUnit(unit));
+    }
+
+    public ComponentSize(float value, SizeUnit sizeUnit) {
         this.value = value;
-        this.unit = unit;
+        this.sizeUnit = sizeUnit;
+        this.unit = ComponentsHelper.convertFromSizeUnit(sizeUnit);
     }
 
     public ComponentSize(float value) {
-        this(value, Component.UNITS_PIXELS);
+        this(value, SizeUnit.PIXELS);
     }
 
     public boolean isOwnSize() {
-        return value == -1 && unit == Component.UNITS_PIXELS;
+        return value == -1 && sizeUnit == SizeUnit.PIXELS;
     }
 
     public boolean inPixels() {
-        return unit == Component.UNITS_PIXELS && value != -1;
+        return sizeUnit == SizeUnit.PIXELS && value != -1;
     }
 
     public boolean inPercents() {
-        return unit == Component.UNITS_PERCENTAGE;
+        return sizeUnit == SizeUnit.PERCENTAGE;
     }
 
     public static final ComponentSize OWN_SIZE = new ComponentSize(-1);
@@ -55,19 +65,16 @@ public class ComponentSize {
             return ComponentSize.OWN_SIZE;
         }
         try {
-            if (sizeString.endsWith(PIXEL)) {
-                String value = sizeString.substring(0, sizeString.length() - PIXEL.length());
-                return new ComponentSize(Float.parseFloat(value), Component.UNITS_PIXELS);
+            if (sizeString.endsWith(SizeUnit.PIXELS.getSymbol())) {
+                String value = sizeString.substring(0, sizeString.length() - SizeUnit.PIXELS.getSymbol().length());
+                return new ComponentSize(Float.parseFloat(value), SizeUnit.PIXELS);
+            } else if (sizeString.endsWith(SizeUnit.PERCENTAGE.getSymbol())) {
+                String value = sizeString.substring(0, sizeString.length() - SizeUnit.PERCENTAGE.getSymbol().length());
+                return new ComponentSize(Float.parseFloat(value), SizeUnit.PERCENTAGE);
+            } else { // default unit
+                return new ComponentSize(Float.parseFloat(sizeString), SizeUnit.PIXELS);
             }
-            else if (sizeString.endsWith(PERCENT)) {
-                String value = sizeString.substring(0, sizeString.length() - PERCENT.length());
-                return new ComponentSize(Float.parseFloat(value), Component.UNITS_PERCENTAGE);
-            }
-            else { // default unit
-                return new ComponentSize(Float.parseFloat(sizeString), Component.UNITS_PIXELS);
-            }
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Unable to parse value: " + sizeString);
         }
     }

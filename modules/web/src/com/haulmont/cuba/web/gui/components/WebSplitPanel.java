@@ -20,6 +20,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
 import com.haulmont.cuba.web.widgets.client.split.SplitPanelDockMode;
@@ -247,24 +248,22 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public void setSplitPosition(int pos, int unit) {
-        if (unit == UNITS_PIXELS) {
-            component.setSplitPosition(pos, Unit.PIXELS);
-        } else if (unit == UNITS_PERCENTAGE) {
-            component.setSplitPosition(pos, Unit.PERCENTAGE);
-        } else {
-            throw new IllegalArgumentException("Unsupported unit " + unit);
-        }
+        setSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
+
+    @Override
+    public void setSplitPosition(int pos, SizeUnit unit) {
+        component.setSplitPosition(pos, WebWrapperUtils.toVaadinUnit(unit));
     }
 
     @Override
     public void setSplitPosition(int pos, int unit, boolean reversePosition) {
-        if (unit == UNITS_PIXELS) {
-            component.setSplitPosition(pos, Unit.PIXELS, reversePosition);
-        } else if (unit == UNITS_PERCENTAGE) {
-            component.setSplitPosition(pos, Unit.PERCENTAGE, reversePosition);
-        } else {
-            throw new IllegalArgumentException("Unsupported unit " + unit);
-        }
+        setSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit), reversePosition);
+    }
+
+    @Override
+    public void setSplitPosition(int pos, SizeUnit unit, boolean reversePosition) {
+        component.setSplitPosition(pos, WebWrapperUtils.toVaadinUnit(unit), reversePosition);
     }
 
     @Override
@@ -274,13 +273,12 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public int getSplitPositionUnit() {
-        if (component.getSplitPositionUnit() == Unit.PIXELS) {
-            return UNITS_PIXELS;
-        } else if (component.getSplitPositionUnit() == Unit.PERCENTAGE) {
-            return UNITS_PERCENTAGE;
-        } else {
-            throw new IllegalArgumentException("Component has unsupported split position unit " + component.getSplitPositionUnit());
-        }
+        return ComponentsHelper.convertFromSizeUnit(getSplitPositionSizeUnit());
+    }
+
+    @Override
+    public SizeUnit getSplitPositionSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(component.getSplitPositionUnit());
     }
 
     @Override
@@ -290,24 +288,22 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public void setMinSplitPosition(int pos, int unit) {
-        if (unit == UNITS_PIXELS) {
-            component.setMinSplitPosition(pos, Unit.PIXELS);
-        } else if (unit == UNITS_PERCENTAGE) {
-            component.setMinSplitPosition(pos, Unit.PERCENTAGE);
-        } else {
-            throw new IllegalArgumentException("Unsupported unit " + unit);
-        }
+        setMinSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
+
+    @Override
+    public void setMinSplitPosition(int pos, SizeUnit unit) {
+        component.setMinSplitPosition(pos, WebWrapperUtils.toVaadinUnit(unit));
     }
 
     @Override
     public void setMaxSplitPosition(int pos, int unit) {
-        if (unit == UNITS_PIXELS) {
-            component.setMaxSplitPosition(pos, Unit.PIXELS);
-        } else if (unit == UNITS_PERCENTAGE) {
-            component.setMaxSplitPosition(pos, Unit.PERCENTAGE);
-        } else {
-            throw new IllegalArgumentException("Unsupported unit " + unit);
-        }
+        setMaxSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
+    }
+
+    @Override
+    public void setMaxSplitPosition(int pos, SizeUnit unit) {
+        component.setMaxSplitPosition(pos, WebWrapperUtils.toVaadinUnit(unit));
     }
 
     @Override

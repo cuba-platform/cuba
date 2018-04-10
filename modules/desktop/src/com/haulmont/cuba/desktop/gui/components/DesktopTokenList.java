@@ -1108,12 +1108,12 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
             CC tokensContainerCC = new CC();
             if ((getHeight() < 0 || getWidth() < 0) && !inline) {
-                MigLayoutHelper.applyWidth(tokensContainerCC, -1, UNITS_PIXELS, false);
+                MigLayoutHelper.applyWidth(tokensContainerCC, -1, SizeUnit.PIXELS, false);
             } else {
-                MigLayoutHelper.applyWidth(tokensContainerCC, 100, UNITS_PERCENTAGE, false);
+                MigLayoutHelper.applyWidth(tokensContainerCC, 100, SizeUnit.PERCENTAGE, false);
             }
 
-            MigLayoutHelper.applyHeight(tokensContainerCC, -1, UNITS_PIXELS, false);
+            MigLayoutHelper.applyHeight(tokensContainerCC, -1, SizeUnit.PIXELS, false);
 
             tokensContainer.removeAll();
 
@@ -1164,8 +1164,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
                     if (tokensContainer.getLayout() instanceof MigLayout) {
                         CC tokenCC = new CC();
-                        MigLayoutHelper.applyWidth(tokenCC, -1, UNITS_PIXELS, false);
-                        MigLayoutHelper.applyHeight(tokenCC, -1, UNITS_PIXELS, false);
+                        MigLayoutHelper.applyWidth(tokenCC, -1, SizeUnit.PIXELS, false);
+                        MigLayoutHelper.applyHeight(tokenCC, -1, SizeUnit.PIXELS, false);
 
                         tokensContainer.add(f.getComposition(), tokenCC);
                     } else {

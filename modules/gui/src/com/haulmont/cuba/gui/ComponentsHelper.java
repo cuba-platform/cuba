@@ -44,6 +44,7 @@ import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getFiltered
  * Utility class working with GenericUI components.
  */
 public abstract class ComponentsHelper {
+    @Deprecated
     public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex", "mm", "cm", "in", "%" };
 
     /**
@@ -428,22 +429,23 @@ public abstract class ComponentsHelper {
 
     public static String getComponentWidth(Component c) {
         float width = c.getWidth();
-        int widthUnit = c.getWidthUnits();
-        return width + UNIT_SYMBOLS[widthUnit];
+        SizeUnit widthUnit = c.getWidthSizeUnit();
+        return width + widthUnit.getSymbol();
     }
 
+    // FIXME: gg, fix typo in the method name?
     public static String getComponentHeigth(Component c) {
         float height = c.getHeight();
-        int heightUnit = c.getHeightUnits();
-        return height + UNIT_SYMBOLS[heightUnit];
+        SizeUnit heightUnit = c.getHeightSizeUnit();
+        return height + heightUnit.getSymbol();
     }
 
     public static boolean hasFullWidth(Component c) {
-        return (int) c.getWidth() == 100 && c.getWidthUnits() == Component.UNITS_PERCENTAGE;
+        return (int) c.getWidth() == 100 && c.getWidthSizeUnit() == SizeUnit.PERCENTAGE;
     }
 
     public static boolean hasFullHeight(Component c) {
-        return (int) c.getHeight() == 100 && c.getHeightUnits() == Component.UNITS_PERCENTAGE;
+        return (int) c.getHeight() == 100 && c.getHeightSizeUnit() == SizeUnit.PERCENTAGE;
     }
 
     /**
@@ -605,5 +607,27 @@ public abstract class ComponentsHelper {
             return true;
         }
         return false;
+    }
+
+    public static SizeUnit convertToSizeUnit(int unit) {
+        switch (unit) {
+            case Component.UNITS_PIXELS:
+                return SizeUnit.PIXELS;
+            case Component.UNITS_PERCENTAGE:
+                return SizeUnit.PERCENTAGE;
+            default:
+                throw new IllegalArgumentException("Unsupported unit: " + unit);
+        }
+    }
+
+    public static int convertFromSizeUnit(SizeUnit unit) {
+        switch (unit) {
+            case PIXELS:
+                return Component.UNITS_PIXELS;
+            case PERCENTAGE:
+                return Component.UNITS_PERCENTAGE;
+            default:
+                throw new IllegalArgumentException("Unsupported unit: " + unit);
+        }
     }
 }

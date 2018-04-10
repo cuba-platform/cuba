@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
@@ -246,6 +247,11 @@ public class ParamWrapper implements Component, Component.HasValue<Object> {
     }
 
     @Override
+    public SizeUnit getHeightSizeUnit() {
+        return SizeUnit.PIXELS;
+    }
+
+    @Override
     public void setHeight(String height) {
     }
 
@@ -257,6 +263,11 @@ public class ParamWrapper implements Component, Component.HasValue<Object> {
     @Override
     public int getWidthUnits() {
         return 0;
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return SizeUnit.PIXELS;
     }
 
     @Override

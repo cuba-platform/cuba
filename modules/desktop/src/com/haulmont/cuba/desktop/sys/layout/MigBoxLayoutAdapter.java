@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import com.haulmont.cuba.gui.components.SizeUnit;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -126,11 +127,11 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         if (cc instanceof CC) {
             if (direction == null || direction == BoxLayoutAdapter.FlowDirection.X
                     && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
-                MigLayoutHelper.applyWidth((CC) cc, 100, com.haulmont.cuba.gui.components.Component.UNITS_PERCENTAGE, true);
+                MigLayoutHelper.applyWidth((CC) cc, 100, SizeUnit.PERCENTAGE, true);
             }
             if (direction == null || direction == BoxLayoutAdapter.FlowDirection.Y
                     && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
-                MigLayoutHelper.applyHeight((CC) cc, 100, com.haulmont.cuba.gui.components.Component.UNITS_PERCENTAGE, true);
+                MigLayoutHelper.applyHeight((CC) cc, 100, SizeUnit.PERCENTAGE, true);
             }
 
         } else
@@ -150,7 +151,6 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     @Override
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
-        CC constraints = MigLayoutHelper.getConstraints(component);
-        return constraints;
+        return MigLayoutHelper.getConstraints(component);
     }
 }
