@@ -363,8 +363,9 @@ public class CubaMaskedFieldWidget extends VTextField {
             case "insertFromPaste":
                 handlePaste(newText);
                 break;
-            case "insertCompositionText":
-                handlePaste(newText); // in Chrome and Opera on Android when typing
+            case "insertText":
+            case "insertCompositionText": // in Chrome and Opera on Android when typing
+                handleInsertText(newText);
                 break;
             default:
                 handleCutAndPaste();
@@ -397,6 +398,25 @@ public class CubaMaskedFieldWidget extends VTextField {
             valueBuilder.replace(0, valueBuilder.length(), resultValue.toString());
             super.setText(resultValue.toString());
             setCursorPos(cursorPos);
+        }
+    }
+
+    protected void handleInsertText(String newText) {
+        int pasteLength = newText.length() - valueBuilder.length();
+        int pasteStart = getCursorPos() - pasteLength;
+
+        StringBuilder maskedPart = maskValue(newText.substring(pasteStart, pasteStart + pasteLength), pasteStart, pasteStart + pasteLength);
+        valueBuilder.replace(pasteStart, pasteStart + maskedPart.length(), maskedPart.toString());
+        super.setText(valueBuilder.toString());
+
+        if (maskedPart.length() == 0) {
+            return;
+        }
+
+        if (maskedPart.toString().charAt(0) == PLACE_HOLDER) {
+            setCursorPos(getNextPos(pasteStart - 1));
+        } else {
+            setCursorPos(getNextPos(pasteStart + pasteLength - 1));
         }
     }
 
