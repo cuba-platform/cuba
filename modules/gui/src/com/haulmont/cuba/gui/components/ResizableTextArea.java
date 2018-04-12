@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 
-public interface ResizableTextArea<V> extends TextArea<V>, Component.HasSettings {
+public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
     String NAME = TextArea.NAME;
 
     /**

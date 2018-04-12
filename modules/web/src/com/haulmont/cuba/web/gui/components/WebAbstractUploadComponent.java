@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.UploadField;
 
 import java.util.Set;
@@ -35,7 +36,7 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Abstrac
 
     protected Set<String> permittedExtensions;
     protected DropZone dropZone;
-    protected Container pasteZone;
+    protected ComponentContainer pasteZone;
     protected String dropZonePrompt;
 
     @Override
@@ -93,12 +94,12 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Abstrac
     }
 
     @Override
-    public void setPasteZone(Container pasteZone) {
+    public void setPasteZone(ComponentContainer pasteZone) {
         this.pasteZone = pasteZone;
     }
 
     @Override
-    public Container getPasteZone() {
+    public ComponentContainer getPasteZone() {
         return pasteZone;
     }
 

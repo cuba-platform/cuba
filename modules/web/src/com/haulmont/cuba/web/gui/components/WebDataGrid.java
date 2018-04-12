@@ -47,9 +47,9 @@ import com.haulmont.cuba.web.gui.components.converters.YesNoIconConverter;
 import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.*;
 import com.haulmont.cuba.web.widgets.data.DataGridContainer;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.contextmenu.Menu;
 import com.vaadin.contextmenu.MenuItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -77,7 +77,6 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
-import static com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 
 public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid>
         implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier {

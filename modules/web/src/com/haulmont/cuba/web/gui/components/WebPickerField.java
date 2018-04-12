@@ -41,7 +41,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPickerField, V>
-        implements PickerField<V>, Component.SecuredActionsHolder {
+        implements PickerField<V>, SecuredActionsHolder {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;

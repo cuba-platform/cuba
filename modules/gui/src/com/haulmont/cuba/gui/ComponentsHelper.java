@@ -53,7 +53,7 @@ public abstract class ComponentsHelper {
      * @param container container to start from
      * @return          collection of components
      */
-    public static Collection<Component> getComponents(Component.Container container) {
+    public static Collection<Component> getComponents(ComponentContainer container) {
         // do not return LinkedHashSet, it uses much more memory than ArrayList
         Collection<Component> res = new ArrayList<>();
 
@@ -86,14 +86,14 @@ public abstract class ComponentsHelper {
                 FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                 return field != null ? field.getComponent() : null;
-            } else if (innerComponent instanceof Component.Container) {
+            } else if (innerComponent instanceof ComponentContainer) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof Component.HasNamedComponents) {
+                return ((ComponentContainer) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof HasNamedComponents) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
+                return ((HasNamedComponents) innerComponent).getComponent(subPath);
             }
 
             return null;
@@ -119,14 +119,14 @@ public abstract class ComponentsHelper {
                 FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                 return field != null ? field.getComponent() : null;
-            } else if (innerComponent instanceof Component.Container) {
+            } else if (innerComponent instanceof ComponentContainer) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof Component.HasNamedComponents) {
+                return ((ComponentContainer) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof HasNamedComponents) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
+                return ((HasNamedComponents) innerComponent).getComponent(subPath);
             }
 
             return null;
@@ -134,7 +134,7 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    public static Component getComponent(Component.Container container, String id) {
+    public static Component getComponent(ComponentContainer container, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             final com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
@@ -158,14 +158,14 @@ public abstract class ComponentsHelper {
                     FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                     return field != null ? field.getComponent() : null;
-                } else if (innerComponent instanceof Component.Container) {
+                } else if (innerComponent instanceof ComponentContainer) {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                    return ((com.haulmont.cuba.gui.components.Component.Container) innerComponent).getComponent(subPath);
-                } else if (innerComponent instanceof Component.HasNamedComponents) {
+                    return ((com.haulmont.cuba.gui.components.ComponentContainer) innerComponent).getComponent(subPath);
+                } else if (innerComponent instanceof HasNamedComponents) {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                    return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
+                    return ((HasNamedComponents) innerComponent).getComponent(subPath);
                 }
 
                 return null;
@@ -174,12 +174,12 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    private static Component getComponentByIteration(Component.Container container, String id) {
+    private static Component getComponentByIteration(ComponentContainer container, String id) {
         for (Component component : container.getOwnComponents()) {
             if (id.equals(component.getId())) {
                 return component;
-            } else if (component instanceof Component.Container) {
-                Component innerComponent = getComponentByIteration((Component.Container) component, id);
+            } else if (component instanceof ComponentContainer) {
+                Component innerComponent = getComponentByIteration((ComponentContainer) component, id);
                 if (innerComponent != null) {
                     return innerComponent;
                 }
@@ -188,13 +188,13 @@ public abstract class ComponentsHelper {
         return null;
     }
 
-    private static void fillChildComponents(Component.Container container, Collection<Component> components) {
+    private static void fillChildComponents(ComponentContainer container, Collection<Component> components) {
         final Collection<Component> ownComponents = container.getOwnComponents();
         components.addAll(ownComponents);
 
         for (Component component : ownComponents) {
-            if (component instanceof Component.Container) {
-                fillChildComponents((Component.Container) component, components);
+            if (component instanceof ComponentContainer) {
+                fillChildComponents((ComponentContainer) component, components);
             }
         }
     }
@@ -231,33 +231,33 @@ public abstract class ComponentsHelper {
      * @param visitor   visitor instance
      */
     public static void walkComponents(
-            com.haulmont.cuba.gui.components.Component.Container container,
+            com.haulmont.cuba.gui.components.ComponentContainer container,
             ComponentVisitor visitor
     ) {
         __walkComponents(container, visitor, "");
     }
 
     private static void __walkComponents(
-            com.haulmont.cuba.gui.components.Component.Container container,
+            com.haulmont.cuba.gui.components.ComponentContainer container,
             ComponentVisitor visitor,
             String path
     ) {
         for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
             String id = component.getId();
-            if (id == null && component instanceof Component.ActionOwner
-                    && ((Component.ActionOwner) component).getAction() != null) {
-                id = ((Component.ActionOwner) component).getAction().getId();
+            if (id == null && component instanceof ActionOwner
+                    && ((ActionOwner) component).getAction() != null) {
+                id = ((ActionOwner) component).getAction().getId();
             }
             if (id == null) {
                 id = component.getClass().getSimpleName();
             }
             visitor.visit(component, path + id);
 
-            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+            if (component instanceof com.haulmont.cuba.gui.components.ComponentContainer) {
                 String p = component instanceof Frame ?
                         path + id + "." :
                         path;
-                __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
+                __walkComponents(((com.haulmont.cuba.gui.components.ComponentContainer) component), visitor, p);
             } else if (component instanceof AppWorkArea) {
                 AppWorkArea workArea = (AppWorkArea) component;
                 if (workArea.getState() == AppWorkArea.State.INITIAL_LAYOUT) {
@@ -275,20 +275,20 @@ public abstract class ComponentsHelper {
      * @param container container to start from
      * @param finder   finder instance
      */
-    public static boolean walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+    public static boolean walkComponents(com.haulmont.cuba.gui.components.ComponentContainer container,
                                       ComponentFinder finder) {
         return __walkComponents(container, finder);
     }
 
-    private static boolean __walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+    private static boolean __walkComponents(com.haulmont.cuba.gui.components.ComponentContainer container,
                                             ComponentFinder finder) {
         for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
             if (finder.visit(component)) {
                 return true;
             }
 
-            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                if (__walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), finder)) {
+            if (component instanceof com.haulmont.cuba.gui.components.ComponentContainer) {
+                if (__walkComponents(((com.haulmont.cuba.gui.components.ComponentContainer) component), finder)) {
                     return true;
                 }
             }
@@ -377,7 +377,7 @@ public abstract class ComponentsHelper {
 
     /**
      * Searches for an action by name.
-     * @param actionName    action name, can be a path to an action contained in some {@link Component.ActionsHolder}
+     * @param actionName    action name, can be a path to an action contained in some {@link ActionsHolder}
      * @param frame         current frame
      * @return              action instance or null if there is no action with the specified name
      * @throws IllegalStateException    if the component denoted by the path doesn't exist or is not an ActionsHolder
@@ -391,8 +391,8 @@ public abstract class ComponentsHelper {
             String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
             Component component = frame.getComponent(ValuePathHelper.format(subPath));
             if (component != null) {
-                if (component instanceof Component.ActionsHolder) {
-                    return ((Component.ActionsHolder) component).getAction(id);
+                if (component instanceof ActionsHolder) {
+                    return ((ActionsHolder) component).getAction(id);
                 } else {
                     throw new IllegalArgumentException(
                             String.format("Component '%s' can't contain actions", Arrays.toString(subPath)));
@@ -496,7 +496,7 @@ public abstract class ComponentsHelper {
      * @param e         exception
      * @param errors    errors container
      */
-    public static void fillErrorMessages(Component.Validatable component, ValidationException e,
+    public static void fillErrorMessages(Validatable component, ValidationException e,
                                          ValidationErrors errors) {
         if (e instanceof ValidationException.HasRelatedComponent) {
             errors.add(((ValidationException.HasRelatedComponent) e).getComponent(), e.getMessage());
@@ -506,8 +506,8 @@ public abstract class ComponentsHelper {
             }
         } else if (e instanceof FieldGroup.FieldsValidationException) {
             FieldGroup.FieldsValidationException fve = (FieldGroup.FieldsValidationException) e;
-            Map<Component.Validatable, ValidationException> fields = fve.getProblemFields();
-            for (Map.Entry<Component.Validatable, ValidationException> problem : fields.entrySet()) {
+            Map<Validatable, ValidationException> fields = fve.getProblemFields();
+            for (Map.Entry<Validatable, ValidationException> problem : fields.entrySet()) {
                 ValidationException exception = problem.getValue();
 
                 fillErrorMessages(problem.getKey(), exception, errors);

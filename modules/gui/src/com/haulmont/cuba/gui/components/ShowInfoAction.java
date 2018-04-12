@@ -19,13 +19,14 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.HashMap;
 import java.util.Map;
 
+// todo move to package
 public class ShowInfoAction extends BaseAction {
 
     public static final String ACTION_ID = "showSystemInfo";
@@ -64,7 +65,8 @@ public class ShowInfoAction extends BaseAction {
         Map<String, Object> params = new HashMap<>();
         params.put("metaClass", metaClass);
         params.put("item", entity);
-        Frame frame = (component).getFrame();
-        frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
+
+        Frame frame = component.getFrame();
+        frame.openWindow("sysInfoWindow", OpenType.DIALOG, params);
     }
 }

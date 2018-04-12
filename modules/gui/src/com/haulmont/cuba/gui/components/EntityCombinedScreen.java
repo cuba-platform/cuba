@@ -41,8 +41,8 @@ public class EntityCombinedScreen extends AbstractLookup {
     /**
      * Returns the left container with browse components. Override if the container id differs from "lookupBox".
      */
-    protected Container getLookupBox() {
-        return (Container) getComponentNN("lookupBox");
+    protected ComponentContainer getLookupBox() {
+        return (ComponentContainer) getComponentNN("lookupBox");
     }
 
     /**
@@ -55,8 +55,8 @@ public class EntityCombinedScreen extends AbstractLookup {
     /**
      * Returns the right container with edit components. Override if the container id differs from "editBox".
      */
-    protected Container getEditBox() {
-        return (Container) getComponentNN("editBox");
+    protected ComponentContainer getEditBox() {
+        return (ComponentContainer) getComponentNN("editBox");
     }
 
     /**
@@ -78,8 +78,8 @@ public class EntityCombinedScreen extends AbstractLookup {
     /**
      * Returns the container with edit actions (save, cancel). Override if the container id differs from "actionsPane".
      */
-    protected Container getActionsPane() {
-        return (Container) getComponentNN("actionsPane");
+    protected ComponentContainer getActionsPane() {
+        return (ComponentContainer) getComponentNN("actionsPane");
     }
 
     @Override
@@ -244,7 +244,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      * Adds ESCAPE shortcut that invokes cancel() method.
      */
     protected void initShortcuts() {
-        Container editBox = getEditBox();
+        ComponentContainer editBox = getEditBox();
         if (editBox instanceof ShortcutNotifier) {
             ((ShortcutNotifier) editBox).addShortcutAction(
                     new ShortcutAction(new KeyCombination(KeyCombination.Key.ESCAPE),
@@ -296,7 +296,7 @@ public class EntityCombinedScreen extends AbstractLookup {
                     ((FieldGroup) component).setEditable(enabled);
                 } else if (component instanceof Table) {
                     ((Table) component).getActions().forEach(action -> action.setEnabled(enabled));
-                } else if (!(component instanceof Component.Container)) {
+                } else if (!(component instanceof ComponentContainer)) {
                     component.setEnabled(enabled);
                 }
             });

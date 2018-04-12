@@ -34,7 +34,7 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.BelongToFrame;
-import com.haulmont.cuba.gui.components.Component.Container;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Window.BeforeCloseWithCloseButtonEvent;
@@ -65,12 +65,12 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.shared.ui.ContentMode;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -119,7 +119,7 @@ public class WebWindowManager extends WindowManager {
     @Inject
     protected IconResolver iconResolver;
 
-    protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
+    protected final Map<com.vaadin.ui.ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Pair<Window, Integer>>> stacks = new HashMap<>();
     protected final Map<Window, WindowOpenInfo> windowOpenMode = new LinkedHashMap<>();
     protected final Map<Window, Integer> windows = new HashMap<>();
@@ -245,9 +245,9 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected ComponentContainer findTab(Integer hashCode) {
-        Set<Map.Entry<ComponentContainer, WindowBreadCrumbs>> set = tabs.entrySet();
-        for (Map.Entry<ComponentContainer, WindowBreadCrumbs> entry : set) {
+    protected com.vaadin.ui.ComponentContainer findTab(Integer hashCode) {
+        Set<Map.Entry<com.vaadin.ui.ComponentContainer, WindowBreadCrumbs>> set = tabs.entrySet();
+        for (Map.Entry<com.vaadin.ui.ComponentContainer, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
             if (hashCode.equals(getWindowHashCode(currentWindow))) {
                 return entry.getKey();
@@ -310,7 +310,7 @@ public class WebWindowManager extends WindowManager {
                 if (workArea.getMode() == Mode.SINGLE) {
                     VerticalLayout mainLayout = workArea.getSingleWindowContainer();
                     if (mainLayout.iterator().hasNext()) {
-                        ComponentContainer oldLayout = (ComponentContainer) mainLayout.iterator().next();
+                        com.vaadin.ui.ComponentContainer oldLayout = (com.vaadin.ui.ComponentContainer) mainLayout.iterator().next();
                         WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
                         if (oldBreadCrumbs != null) {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
@@ -322,11 +322,11 @@ public class WebWindowManager extends WindowManager {
                     }
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
-                    ComponentContainer tab = null;
+                    com.vaadin.ui.ComponentContainer tab = null;
                     if (hashCode != null && !multipleOpen) {
                         tab = findTab(hashCode);
                     }
-                    ComponentContainer oldLayout = tab;
+                    com.vaadin.ui.ComponentContainer oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
 
                     if (oldBreadCrumbs != null
@@ -500,7 +500,7 @@ public class WebWindowManager extends WindowManager {
 
             String tabId;
             Integer hashCode = getWindowHashCode(window);
-            ComponentContainer tab = null;
+            com.vaadin.ui.ComponentContainer tab = null;
             if (hashCode != null) {
                 tab = findTab(hashCode);
             }
@@ -920,7 +920,7 @@ public class WebWindowManager extends WindowManager {
         closeAllTabbedWindowsExcept(null);
     }
 
-    public void closeAllTabbedWindowsExcept(@Nullable ComponentContainer keepOpened) {
+    public void closeAllTabbedWindowsExcept(@Nullable com.vaadin.ui.ComponentContainer keepOpened) {
         boolean modified = false;
         List<WebWindow> windowsToClose = new ArrayList<>();
         WindowBreadCrumbs keepOpenedCrumbs = tabs.get(keepOpened);
@@ -1108,8 +1108,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showFrame(com.haulmont.cuba.gui.components.Component parent, Frame frame) {
-        if (parent instanceof Container) {
-            Container container = (Container) parent;
+        if (parent instanceof ComponentContainer) {
+            ComponentContainer container = (ComponentContainer) parent;
             for (com.haulmont.cuba.gui.components.Component c : container.getComponents()) {
                 if (c instanceof com.haulmont.cuba.gui.components.Component.Disposable) {
                     com.haulmont.cuba.gui.components.Component.Disposable disposable =
@@ -1449,7 +1449,7 @@ public class WebWindowManager extends WindowManager {
         dialog.focus();
     }
 
-    public WindowBreadCrumbs getBreadCrumbs(ComponentContainer container) {
+    public WindowBreadCrumbs getBreadCrumbs(com.vaadin.ui.ComponentContainer container) {
         return tabs.get(container);
     }
 

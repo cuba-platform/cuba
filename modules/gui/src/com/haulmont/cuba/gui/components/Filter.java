@@ -22,9 +22,9 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 
 import java.util.List;
 
-public interface Filter extends Component.Margin, Component.BelongToFrame, Component.HasNamedComponents,
-        Component.HasXmlDescriptor, Component.HasSettings, Component.HasCaption,
-        Component.HasIcon, Component.Collapsable {
+public interface Filter extends Margin, Component.BelongToFrame, HasNamedComponents,
+        Component.HasXmlDescriptor, HasSettings, Component.HasCaption,
+        Component.HasIcon, Collapsable {
 
     String NAME = "filter";
 

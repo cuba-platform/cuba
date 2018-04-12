@@ -272,14 +272,14 @@ public class Param {
             for (ParamValueChangeListener listener : new ArrayList<>(listeners)) {
                 listener.valueChanged(prevValue, value);
             }
-            if (updateEditComponent && this.editComponent instanceof Component.HasValue) {
+            if (updateEditComponent && this.editComponent instanceof HasValue) {
                 if (value instanceof Collection && editComponent instanceof TextField) {
                     //if the value type is an array and the editComponent is a textField ('IN' condition for String attribute)
                     //then we should set the string value (not the array) to the text field
                     String caption = new StrBuilder().appendWithSeparators((Collection) value, ",").toString();
                     ((TextField) editComponent).setValue(caption);
                 } else {
-                    ((Component.HasValue) editComponent).setValue(value);
+                    ((HasValue) editComponent).setValue(value);
                 }
             }
         }

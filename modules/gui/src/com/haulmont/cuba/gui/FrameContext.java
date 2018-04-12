@@ -16,8 +16,8 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.ValueListener;
 
 import java.util.Map;
@@ -47,7 +47,7 @@ public interface FrameContext {
      * @param property path to the value. Parsed by the following rules:
      * <br>First split by dots taking into account square brackets, and looking for a component from left to right.
      * <br>If a component not found, return null.
-     * <br>If a component found and it is a {@link com.haulmont.cuba.gui.components.Component.HasValue}
+     * <br>If a component found and it is a {@link com.haulmont.cuba.gui.components.HasValue}
      * or {@link com.haulmont.cuba.gui.components.ListComponent}, retrieve its value.
      * <br>If the value is null, return it.
      * <br>If there is nothing left in the path after the component name, return the value.
@@ -62,7 +62,7 @@ public interface FrameContext {
      * Set value of a component by its path in the window
      * @param property path to the component (separated by dots, taking into account square brackets)
      * @param value value to set
-     * @throws UnsupportedOperationException if the component not found or is not a {@link com.haulmont.cuba.gui.components.Component.HasValue}
+     * @throws UnsupportedOperationException if the component not found or is not a {@link com.haulmont.cuba.gui.components.HasValue}
      */
     void setValue(String property, Object value);
 
@@ -75,8 +75,8 @@ public interface FrameContext {
     void removeValueListener(String componentName, ValueListener listener);
 
     /** Add the value listener to the specified component */
-    void addValueChangeListener(String componentName, Component.ValueChangeListener listener);
+    void addValueChangeListener(String componentName, HasValue.ValueChangeListener listener);
 
     /** Remove the value listener from the specified component */
-    void removeValueChangeListener(String componentName, Component.ValueChangeListener listener);
+    void removeValueChangeListener(String componentName, HasValue.ValueChangeListener listener);
 }

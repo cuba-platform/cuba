@@ -22,8 +22,7 @@ import com.haulmont.bali.util.Preconditions;
 import java.util.List;
 import java.util.Map;
 
-public interface SuggestionField<V> extends Field<V>, Component.Focusable, Component.HasInputPrompt,
-        Component.HasOptionsStyleProvider {
+public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasInputPrompt, HasOptionsStyleProvider {
 
     String NAME = "suggestionField";
 

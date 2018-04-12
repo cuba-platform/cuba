@@ -71,7 +71,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebWindow implements Window, Component.Wrapper,
                                   Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
-                                  Component.SecuredActionsHolder, Component.HasIcon {
+                                  SecuredActionsHolder, Component.HasIcon {
 
     private static final Logger log = LoggerFactory.getLogger(WebWindow.class);
 
@@ -181,15 +181,15 @@ public class WebWindow implements Window, Component.Wrapper,
         return new WindowDelegate(this);
     }
 
-    protected ComponentContainer createLayout() {
+    protected com.vaadin.ui.ComponentContainer createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
         layout.setStyleName(C_WINDOW_LAYOUT);
         layout.setSizeFull();
         return layout;
     }
 
-    protected ComponentContainer getContainer() {
-        return (ComponentContainer) component;
+    protected com.vaadin.ui.ComponentContainer getContainer() {
+        return (com.vaadin.ui.ComponentContainer) component;
     }
 
     @Nullable
@@ -602,7 +602,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
     }
 
-    protected com.vaadin.ui.Component.Focusable getComponentToFocus(ComponentContainer container) {
+    protected com.vaadin.ui.Component.Focusable getComponentToFocus(com.vaadin.ui.ComponentContainer container) {
         for (com.vaadin.ui.Component child : container) {
             if (child instanceof Panel) {
                 child = ((Panel) child).getContent();
@@ -614,8 +614,8 @@ public class WebWindow implements Window, Component.Wrapper,
                 // it may break component tree
                 continue;
             }
-            if (child instanceof ComponentContainer) {
-                com.vaadin.ui.Component.Focusable result = getComponentToFocus((ComponentContainer) child);
+            if (child instanceof com.vaadin.ui.ComponentContainer) {
+                com.vaadin.ui.Component.Focusable result = getComponentToFocus((com.vaadin.ui.ComponentContainer) child);
                 if (result != null) {
                     return result;
                 }
@@ -828,7 +828,7 @@ public class WebWindow implements Window, Component.Wrapper,
             remove(childComponent);
         }
 
-        ComponentContainer container = getContainer();
+        com.vaadin.ui.ComponentContainer container = getContainer();
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         ((AbstractOrderedLayout)container).addComponent(vComponent, index);
 
@@ -961,7 +961,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public boolean isResponsive() {
-        ComponentContainer container = getContainer();
+        com.vaadin.ui.ComponentContainer container = getContainer();
 
         return container instanceof AbstractComponent
                 && ((AbstractComponent) container).isResponsive();
@@ -969,7 +969,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void setResponsive(boolean responsive) {
-        ComponentContainer container = getContainer();
+        com.vaadin.ui.ComponentContainer container = getContainer();
 
         if (container instanceof AbstractComponent) {
             ((AbstractComponent) container).setResponsive(responsive);
@@ -1283,7 +1283,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 TabSheet.Tab tabWindow = asTabWindow();
                 if (tabWindow != null) {
                     setTabCaptionAndDescription(tabWindow);
-                    windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
+                    windowManager.getBreadCrumbs((com.vaadin.ui.ComponentContainer) tabWindow.getComponent()).update();
                 } else {
                     Layout singleModeWindow = asSingleWindow();
                     if (singleModeWindow != null) {
@@ -1316,7 +1316,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 TabSheet.Tab tabWindow = asTabWindow();
                 if (tabWindow != null) {
                     setTabCaptionAndDescription(tabWindow);
-                    windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
+                    windowManager.getBreadCrumbs((com.vaadin.ui.ComponentContainer) tabWindow.getComponent()).update();
                 }
             }
         }
@@ -1871,7 +1871,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        protected ComponentContainer getContainer() {
+        protected com.vaadin.ui.ComponentContainer getContainer() {
             return container;
         }
 
@@ -1912,7 +1912,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        protected ComponentContainer createLayout() {
+        protected com.vaadin.ui.ComponentContainer createLayout() {
             rootLayout = new CubaVerticalActionsLayout();
             rootLayout.setStyleName("c-lookup-window-wrapper");
             rootLayout.setSizeFull();

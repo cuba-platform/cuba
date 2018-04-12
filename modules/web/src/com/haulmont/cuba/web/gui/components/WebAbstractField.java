@@ -49,7 +49,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
 
-    protected EditableChangeListener parentEditableChangeListener;
+    protected EditableChangeNotifier.EditableChangeListener parentEditableChangeListener;
 
     protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
     protected ContextHelpIconClickListener contextHelpIconClickListener;

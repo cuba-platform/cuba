@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.Collection;
 
-public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, Component.ActionsHolder {
+public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, ActionsHolder {
 
     boolean isMultiSelect();
 

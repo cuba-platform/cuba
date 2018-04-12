@@ -35,11 +35,11 @@ import java.util.Map;
  */
 public interface Frame
         extends ExpandingLayout,
-                Component.OrderedContainer,
+                OrderedContainer,
                 Component.BelongToFrame,
-                Component.Spacing,
-                Component.Margin,
-                Component.ActionsHolder,
+                Spacing,
+                Margin,
+                ActionsHolder,
                 Component.HasIcon,
                 Component.HasCaption {
 

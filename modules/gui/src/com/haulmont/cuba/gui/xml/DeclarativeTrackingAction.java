@@ -21,12 +21,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import javax.annotation.Nullable;
 
-public class DeclarativeTrackingAction extends DeclarativeAction implements Action.HasTarget, Action.UiPermissionAware,
+public class DeclarativeTrackingAction extends DeclarativeAction implements Action.HasTarget, Action.SecuredAction,
         Action.HasSecurityConstraint {
 
     protected Security security = AppBeans.get(Security.NAME);
@@ -35,7 +35,7 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Acti
     protected String constraintCode;
 
     public DeclarativeTrackingAction(String id, String caption, String description, String icon, String enable, String visible,
-                                     String methodName, @Nullable String shortcut, Component.ActionsHolder holder) {
+                                     String methodName, @Nullable String shortcut, ActionsHolder holder) {
         super(id, caption, description, icon, enable, visible, methodName, shortcut, holder);
     }
 

@@ -18,10 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.web.widgets.CubaGroupBox;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
@@ -47,7 +44,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     protected boolean settingsEnabled = true;
 
-    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
+    protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
     public WebGroupBox() {
         component = new CubaGroupBox();

@@ -37,7 +37,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
-        implements PopupButton, Component.SecuredActionsHolder {
+        implements PopupButton, SecuredActionsHolder {
 
     protected final static String CONTEXT_MENU_BUTTON_STYLENAME = "c-cm-button";
 

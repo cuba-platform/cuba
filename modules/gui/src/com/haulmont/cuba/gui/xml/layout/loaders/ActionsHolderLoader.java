@@ -20,16 +20,17 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> extends AbstractComponentLoader<T> {
+public abstract class ActionsHolderLoader<T extends ActionsHolder> extends AbstractComponentLoader<T> {
 
     @Override
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (StringUtils.isEmpty(id)) {
             throw new GuiDevelopmentException("No action id provided", context.getFullFrameId(),

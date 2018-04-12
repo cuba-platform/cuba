@@ -54,7 +54,7 @@ import java.util.function.Consumer;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class BaseAction extends AbstractAction implements Action.HasTarget, Action.UiPermissionAware {
+public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction {
 
     private boolean enabledByUiPermissions = true;
     private boolean visibleByUiPermissions = true;

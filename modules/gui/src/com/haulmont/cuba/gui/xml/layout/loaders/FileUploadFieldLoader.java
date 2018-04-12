@@ -16,10 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.UploadField;
+import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -174,8 +171,8 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
         String pasteZoneId = element.attributeValue("pasteZone");
         if (StringUtils.isNotEmpty(pasteZoneId)) {
             Component pasteZone = context.getFrame().getComponent(pasteZoneId);
-            if (pasteZone instanceof Component.Container) {
-                uploadField.setPasteZone((Component.Container) pasteZone);
+            if (pasteZone instanceof ComponentContainer) {
+                uploadField.setPasteZone((ComponentContainer) pasteZone);
             } else if (pasteZone != null) {
                 log.warn("Unsupported pasteZone class {}", pasteZone.getClass().getName());
             } else {

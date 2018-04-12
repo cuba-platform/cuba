@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data;
 
-import com.haulmont.cuba.gui.components.Component.HasValue;
+import com.haulmont.cuba.gui.components.HasValue;
 
 /**
  * vaadin8 todo JavaDoc

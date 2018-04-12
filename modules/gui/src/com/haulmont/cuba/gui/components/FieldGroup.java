@@ -29,9 +29,9 @@ import java.util.function.Consumer;
  * Multi-column form component.
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-                                    Component.HasBorder, Component.Editable, Component.Validatable,
-                                    Component.EditableChangeNotifier, Component.ChildEditableController,
-                                    Component.Container {
+                                    HasBorder, Component.Editable, Validatable,
+                                    EditableChangeNotifier, ChildEditableController,
+                                    ComponentContainer {
     String NAME = "fieldGroup";
 
     /**
@@ -480,14 +480,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         /**
          * @return a context help icon click handler
          */
-        Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler();
+        Consumer<HasContextHelp.ContextHelpIconClickEvent> getContextHelpIconClickHandler();
 
         /**
          * Sets a context help icon click handler
          *
          * @param handler the handler to set
          */
-        void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler);
+        void setContextHelpIconClickHandler(Consumer<HasContextHelp.ContextHelpIconClickEvent> handler);
     }
 
     /**
@@ -495,7 +495,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * Contains validation exceptions for fields that have failed validation.
      */
     class FieldsValidationException extends ValidationException {
-        private Map<Component.Validatable, ValidationException> problemFields;
+        private Map<Validatable, ValidationException> problemFields;
 
         public FieldsValidationException() {
         }
@@ -512,11 +512,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
             super(cause);
         }
 
-        public Map<Component.Validatable, ValidationException> getProblemFields() {
+        public Map<Validatable, ValidationException> getProblemFields() {
             return problemFields;
         }
 
-        public void setProblemFields(Map<Component.Validatable, ValidationException> problemFields) {
+        public void setProblemFields(Map<Validatable, ValidationException> problemFields) {
             this.problemFields = problemFields;
         }
     }

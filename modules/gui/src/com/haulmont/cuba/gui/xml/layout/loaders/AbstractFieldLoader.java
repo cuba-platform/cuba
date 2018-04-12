@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -90,7 +90,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         }
     }
 
-    protected void loadBuffered(Component.Buffered component, Element element) {
+    protected void loadBuffered(Buffered component, Element element) {
         String buffered = element.attributeValue("buffered");
         if (StringUtils.isNotEmpty(buffered)) {
             component.setBuffered(Boolean.parseBoolean(buffered));

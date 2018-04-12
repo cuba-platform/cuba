@@ -16,16 +16,16 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.chile.core.model.MetaProperty;
 
 /**
  * A component that represents data from one property of a datasource.
  * vaadin8
  */
 @Deprecated
-public interface DatasourceComponent<V> extends Component, Component.HasValue<V> {
+public interface DatasourceComponent<V> extends Component, HasValue<V> {
 
     // todo replace all with default methods
 

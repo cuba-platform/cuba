@@ -21,10 +21,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.LocalizedConstraintMessage;
 
 import javax.inject.Inject;
@@ -91,7 +88,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
         localesSelect.setValue(userSessionSource.getLocale());
     }
 
-    protected ValueChangeListener createLocaleSelectValueChangeListener() {
+    protected HasValue.ValueChangeListener createLocaleSelectValueChangeListener() {
         return e -> {
             captionValueChangeListener.suspend();
             messageValueChangeListener.suspend();
@@ -141,11 +138,11 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
                         .width(480));
     }
 
-    protected abstract class LocalizationValueChangeListener implements ValueChangeListener {
+    protected abstract class LocalizationValueChangeListener implements HasValue.ValueChangeListener {
         protected boolean active = true;
 
         @Override
-        public void valueChanged(ValueChangeEvent e) {
+        public void valueChanged(HasValue.ValueChangeEvent e) {
             if (active) {
                 Locale selectedLocale = localesSelect.getValue();
                 String localeCode = messages.getTools().localeToString(selectedLocale);

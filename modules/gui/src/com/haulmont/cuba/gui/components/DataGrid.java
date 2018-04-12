@@ -25,16 +25,12 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.util.Collections;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
-import static com.haulmont.cuba.gui.components.MouseEventDetails.*;
+import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
 
-public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.HasButtonsPanel, Component.HasCaption,
-                                                    Component.HasIcon, Component.HasRowsCount, Component.HasSettings,
+public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
+                                                    Component.HasIcon, HasRowsCount, HasSettings,
                                                     LookupComponent, Component.Focusable {
 
     String NAME = "dataGrid";

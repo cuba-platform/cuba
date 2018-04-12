@@ -66,7 +66,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected Label scriptNameLabel;
 
     @Inject
-    protected Container methodParamsBox;
+    protected ComponentContainer methodParamsBox;
 
     @Inject
     protected Datasource<ScheduledTask> taskDs;
@@ -272,7 +272,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
         int rowsCount = 0;
 
-        for (final MethodParameterInfo parameterInfo : methodInfo.getParameters()) {
+        for (MethodParameterInfo parameterInfo : methodInfo.getParameters()) {
             Label nameLabel = componentsFactory.createComponent(Label.class);
             nameLabel.setValue(parameterInfo.getType().getSimpleName() + " " + parameterInfo.getName());
 

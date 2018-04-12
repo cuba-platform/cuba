@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface CheckBox extends Field<Boolean>, Component.Buffered, Component.Focusable {
+public interface CheckBox extends Field<Boolean>, Buffered, Component.Focusable {
     String NAME = "checkBox";
 
     /**

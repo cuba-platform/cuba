@@ -16,16 +16,15 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
-import java.util.List;
 
 public class FrameContextImpl implements FrameContext {
 
@@ -117,9 +116,9 @@ public class FrameContextImpl implements FrameContext {
     }
 
     protected <T> T getValue(Component component) {
-        if (component instanceof Component.HasValue) {
+        if (component instanceof HasValue) {
             //noinspection RedundantTypeArguments
-            return (T) ((Component.HasValue) component).getValue();
+            return (T) ((HasValue) component).getValue();
         } else if (component instanceof ListComponent) {
             ListComponent list = (ListComponent) component;
             //noinspection unchecked
@@ -132,8 +131,8 @@ public class FrameContextImpl implements FrameContext {
     @Override
     public void setValue(String property, Object value) {
         final Component component = frame.getComponent(property);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).setValue(value);
+        if (component instanceof HasValue) {
+            ((HasValue) component).setValue(value);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -150,12 +149,12 @@ public class FrameContextImpl implements FrameContext {
     }
 
     @Override
-    public void addValueChangeListener(String componentName, Component.ValueChangeListener listener) {
+    public void addValueChangeListener(String componentName, HasValue.ValueChangeListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
             throw new RuntimeException("Component not found: " + componentName);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).addValueChangeListener(listener);
+        if (component instanceof HasValue) {
+            ((HasValue) component).addValueChangeListener(listener);
         } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {
@@ -164,12 +163,12 @@ public class FrameContextImpl implements FrameContext {
     }
 
     @Override
-    public void removeValueChangeListener(String componentName, Component.ValueChangeListener listener) {
+    public void removeValueChangeListener(String componentName, HasValue.ValueChangeListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
             throw new RuntimeException("Component not found: " + componentName);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).removeValueChangeListener(listener);
+        if (component instanceof HasValue) {
+            ((HasValue) component).removeValueChangeListener(listener);
         } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {

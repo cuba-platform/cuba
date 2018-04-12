@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -32,7 +33,7 @@ public class DeclarativeAction extends BaseAction {
     private String methodName;
 
     public DeclarativeAction(String id, String caption, String description, String icon, String enable, String visible,
-                             String methodName, @Nullable String shortcut, Component.ActionsHolder holder) {
+                             String methodName, @Nullable String shortcut, ActionsHolder holder) {
         super(id, shortcut);
         this.caption = caption;
         this.description = description;
@@ -46,7 +47,7 @@ public class DeclarativeAction extends BaseAction {
     }
 
     public DeclarativeAction(String id, String caption, String description, String icon, boolean enabled, boolean visible,
-                             String methodName, Component.ActionsHolder holder) {
+                             String methodName, ActionsHolder holder) {
         super(id);
 
         this.caption = caption;
@@ -60,7 +61,7 @@ public class DeclarativeAction extends BaseAction {
         checkActionsHolder(holder);
     }
 
-    protected void checkActionsHolder(Component.ActionsHolder holder) {
+    protected void checkActionsHolder(ActionsHolder holder) {
         if (holder instanceof Frame) {
             frame = (Frame) holder;
         } else if (holder instanceof Component.BelongToFrame) {

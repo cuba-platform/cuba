@@ -17,12 +17,12 @@
 
 package com.haulmont.cuba.gui.components.compatibility;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.ValueListener;
 
 // todo for removal
 @Deprecated
-public class ComponentValueListenerWrapper implements Component.ValueChangeListener {
+public class ComponentValueListenerWrapper implements HasValue.ValueChangeListener {
 
     protected final ValueListener listener;
 
@@ -51,7 +51,7 @@ public class ComponentValueListenerWrapper implements Component.ValueChangeListe
     }
 
     @Override
-    public void valueChanged(Component.ValueChangeEvent e) {
+    public void valueChanged(HasValue.ValueChangeEvent e) {
         listener.valueChanged(e.getComponent(), "value", e.getPrevValue(), e.getValue());
     }
 }

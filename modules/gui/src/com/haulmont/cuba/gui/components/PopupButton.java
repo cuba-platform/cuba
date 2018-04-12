@@ -22,7 +22,7 @@ import java.util.EventObject;
 /**
  * A {@link Button} with a popup. The popup can contain actions.
  */
-public interface PopupButton extends Component.ActionsHolder, Component.HasCaption, Component.BelongToFrame,
+public interface PopupButton extends ActionsHolder, Component.HasCaption, Component.BelongToFrame,
         Component.HasIcon, Component.Focusable {
 
     String NAME = "popupButton";

@@ -103,24 +103,24 @@ public interface Action {
     /**
      * @return  a single component owning the action. If there are several owners, first will be returned.
      */
-    Component.ActionOwner getOwner();
+    ActionOwner getOwner();
 
     /**
      * @return the collection of owners
      */
-    Collection<Component.ActionOwner> getOwners();
+    Collection<ActionOwner> getOwners();
 
     /**
      * Add an owner component.
      * @param actionOwner   owner component
      */
-    void addOwner(Component.ActionOwner actionOwner);
+    void addOwner(ActionOwner actionOwner);
 
     /**
      * Remove an owner component.
      * @param actionOwner   owner component
      */
-    void removeOwner(Component.ActionOwner actionOwner);
+    void removeOwner(ActionOwner actionOwner);
 
     /**
      * Invoked by owning component when an action occurs.
@@ -154,7 +154,7 @@ public interface Action {
     /**
      * Indicates that the action can be affected by UI permissions.
      */
-    interface UiPermissionAware extends Action {
+    interface SecuredAction extends Action {
         boolean isEnabledByUiPermissions();
         void setEnabledByUiPermissions(boolean enabledByUiPermissions);
 
@@ -203,7 +203,6 @@ public interface Action {
      */
     enum Status {
         NORMAL,
-
         PRIMARY
     }
 

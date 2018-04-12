@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -27,9 +27,9 @@ public class CollectionDsActionsNotifier implements Datasource.ItemChangeListene
                                                     Datasource.StateChangeListener,
                                                     CollectionDatasource.CollectionChangeListener {
 
-    private final Component.ActionsHolder actionsHolder;
+    private final ActionsHolder actionsHolder;
 
-    public CollectionDsActionsNotifier(Component.ActionsHolder actionsHolder) {
+    public CollectionDsActionsNotifier(ActionsHolder actionsHolder) {
         this.actionsHolder = actionsHolder;
     }
 

@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.gui.components.presentations.actions;
 
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasPresentations;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.AppUI;
@@ -46,7 +46,7 @@ public abstract class AbstractEditPresentationAction extends AbstractPresentatio
         PresentationEditor window;
         try {
             Constructor<? extends PresentationEditor> windowConstructor = windowClass
-                    .getConstructor(Presentation.class, Component.HasPresentations.class);
+                    .getConstructor(Presentation.class, HasPresentations.class);
             window = windowConstructor.newInstance(presentation, table);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new DevelopmentException("Invalid presentation's screen");

@@ -17,14 +17,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -36,7 +33,6 @@ import com.haulmont.cuba.web.widgets.CubaDateField;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.ui.Layout;
 import com.vaadin.v7.data.Property;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
@@ -116,7 +112,7 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         };
     }
 
-    protected Component.ValueChangeListener createTimeValueChangeListener() {
+    protected ValueChangeListener createTimeValueChangeListener() {
         return event -> {
             if (!checkRange(constructDate())) {
                 return;

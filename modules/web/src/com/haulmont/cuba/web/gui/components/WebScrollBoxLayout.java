@@ -18,10 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
@@ -44,7 +41,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
-    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
+    protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxLayout();

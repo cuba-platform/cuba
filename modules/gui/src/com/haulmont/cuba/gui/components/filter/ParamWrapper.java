@@ -23,20 +23,19 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.SizeUnit;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
-import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParamWrapper implements Component, Component.HasValue<Object> {
+public class ParamWrapper implements Component, HasValue<Object> {
 
     public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE + "\\s*?(escape '(\\S+)')?",
             Pattern.CASE_INSENSITIVE);
@@ -119,7 +118,7 @@ public class ParamWrapper implements Component, Component.HasValue<Object> {
     }
 
    @Override
-    public Subscription addValueChangeListener(Component.ValueChangeListener listener) {
+    public Subscription addValueChangeListener(HasValue.ValueChangeListener listener) {
         param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
 
         // todo
@@ -127,7 +126,7 @@ public class ParamWrapper implements Component, Component.HasValue<Object> {
     }
 
     @Override
-    public void removeValueChangeListener(Component.ValueChangeListener listener) {
+    public void removeValueChangeListener(HasValue.ValueChangeListener listener) {
         param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
     }
 

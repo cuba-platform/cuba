@@ -19,8 +19,8 @@ package com.haulmont.cuba.gui.components;
 import javax.annotation.Nullable;
 import java.util.EventObject;
 
-public interface SplitPanel extends Component.Container, Component.BelongToFrame, Component.HasIcon,
-        Component.HasCaption, Component.HasSettings {
+public interface SplitPanel extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
+        Component.HasCaption, HasSettings {
 
     String NAME = "split";
 

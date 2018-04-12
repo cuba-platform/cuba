@@ -23,7 +23,7 @@ package com.haulmont.cuba.gui.components;
  * <br>
  * To indicate that a task of unknown length is executing, you can put a progress bar into indeterminate mode.
  */
-public interface ProgressBar extends Component, Component.BelongToFrame, Component.HasValue<Float>,
+public interface ProgressBar extends Component, Component.BelongToFrame, HasValue<Float>,
         Component.HasIcon, Component.HasCaption {
 
     String NAME = "progressBar";

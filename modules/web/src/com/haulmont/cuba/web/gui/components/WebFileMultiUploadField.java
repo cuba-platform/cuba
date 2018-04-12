@@ -22,16 +22,14 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.compatibility.MultiUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
@@ -213,7 +211,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     }
 
     @Override
-    public void setPasteZone(Container pasteZone) {
+    public void setPasteZone(ComponentContainer pasteZone) {
         super.setPasteZone(pasteZone);
 
         if (pasteZone == null) {

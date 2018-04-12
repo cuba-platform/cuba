@@ -29,8 +29,8 @@ import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.security.global.UserSession;
@@ -692,9 +692,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         this.refreshMode = refreshMode;
     }
 
-    protected class ComponentValueListener implements Component.ValueChangeListener {
+    protected class ComponentValueListener implements HasValue.ValueChangeListener {
         @Override
-        public void valueChanged(Component.ValueChangeEvent e) {
+        public void valueChanged(HasValue.ValueChangeEvent e) {
             refresh();
         }
     }

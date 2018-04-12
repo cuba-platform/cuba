@@ -209,7 +209,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                Component.Validatable validatable = (Component.Validatable) component;
+                Validatable validatable = (Validatable) component;
                 if (validatable.isValidateOnCommit() && !validatable.isValid())
                     return false;
             }
@@ -222,7 +222,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                Component.Validatable validatable = (Component.Validatable) component;
+                Validatable validatable = (Validatable) component;
                 if (validatable.isValidateOnCommit()) {
                     validatable.validate();
                 }

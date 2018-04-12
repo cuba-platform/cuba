@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
@@ -427,7 +428,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     @Override
-    public void setPasteZone(Container pasteZone) {
+    public void setPasteZone(ComponentContainer pasteZone) {
         super.setPasteZone(pasteZone);
         if (uploadButton instanceof CubaFileUpload) {
             if (pasteZone == null) {

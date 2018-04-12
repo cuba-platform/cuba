@@ -157,12 +157,12 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      *
      * @param pasteZone paste zone container
      */
-    void setPasteZone(Container pasteZone);
+    void setPasteZone(ComponentContainer pasteZone);
 
     /**
      * @return current paste zone container
      */
-    Container getPasteZone();
+    ComponentContainer getPasteZone();
 
     /**
      * @return current drop zone prompt

@@ -74,7 +74,7 @@ public class SelectAction extends AbstractAction {
         return (LookupComponent) lookupComponent;
     }
 
-    private Window.Lookup.Handler getLookupHandler() {
+    protected Window.Lookup.Handler getLookupHandler() {
         Window.Lookup.Handler lookupHandler = window.getLookupHandler();
         if (lookupHandler == null)
             throw new DevelopmentException("Lookup.Handler was not passed to lookup window " + window.getId());

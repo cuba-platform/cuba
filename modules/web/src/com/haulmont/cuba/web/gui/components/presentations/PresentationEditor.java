@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasPresentations;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -44,7 +45,7 @@ public class PresentationEditor extends CubaWindow {
 
     protected Presentation presentation;
 
-    protected Component.HasPresentations component;
+    protected HasPresentations component;
     protected TextField nameField;
     protected CheckBox autoSaveField;
     protected CheckBox defaultField;
@@ -57,7 +58,7 @@ public class PresentationEditor extends CubaWindow {
     protected Messages messages;
     protected UserSessionSource sessionSource;
 
-    public PresentationEditor(Presentation presentation, Component.HasPresentations component) {
+    public PresentationEditor(Presentation presentation, HasPresentations component) {
         this.presentation = presentation;
         this.component = component;
 

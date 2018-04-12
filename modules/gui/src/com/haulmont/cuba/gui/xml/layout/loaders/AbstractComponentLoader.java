@@ -230,7 +230,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadContextHelp(Component.HasContextHelp component, Element element) {
+    protected void loadContextHelp(HasContextHelp component, Element element) {
         String contextHelpText = element.attributeValue("contextHelpText");
         if (StringUtils.isNotEmpty(contextHelpText)) {
             contextHelpText = loadResourceString(contextHelpText);
@@ -336,7 +336,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadSettingsEnabled(Component.HasSettings component, Element element) {
+    protected void loadSettingsEnabled(HasSettings component, Element element) {
         String settingsEnabled = element.attributeValue("settingsEnabled");
         if (StringUtils.isNotEmpty(settingsEnabled)) {
             component.setSettingsEnabled(Boolean.parseBoolean(settingsEnabled));
@@ -354,7 +354,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadCollapsible(Component.Collapsable component, Element element, boolean defaultCollapsable) {
+    protected void loadCollapsible(Collapsable component, Element element, boolean defaultCollapsable) {
         String collapsable = element.attributeValue("collapsable");
         boolean b = Strings.isNullOrEmpty(collapsable) ? defaultCollapsable : Boolean.parseBoolean(collapsable);
         component.setCollapsable(b);
@@ -366,7 +366,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadBorder(Component.HasBorder component, Element element) {
+    protected void loadBorder(HasBorder component, Element element) {
         String border = element.attributeValue("border");
         if (!StringUtils.isEmpty(border)) {
             if ("visible".equalsIgnoreCase(border)) {
@@ -377,7 +377,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadMargin(Component.Margin layout, Element element) {
+    protected void loadMargin(Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
             MarginInfo marginInfo = parseMarginInfo(margin);
@@ -411,14 +411,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             throw new GuiDevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
     }
 
-    protected void loadAction(Component.ActionOwner component, Element element) {
+    protected void loadAction(ActionOwner component, Element element) {
         final String actionName = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionName)) {
             context.addPostInitTask(new AssignActionPostInitTask(component, actionName, context.getFrame()));
         }
     }
 
-    protected void loadPresentations(Component.HasPresentations component, Element element) {
+    protected void loadPresentations(HasPresentations component, Element element) {
         String presentations = element.attributeValue("presentations");
         if (StringUtils.isNotEmpty(presentations)) {
             component.usePresentations(Boolean.parseBoolean(presentations));
@@ -512,7 +512,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return validator;
     }
 
-    protected void loadActions(Component.ActionsHolder actionsHolder, Element element) {
+    protected void loadActions(ActionsHolder actionsHolder, Element element) {
         Element actionsEl = element.element("actions");
         if (actionsEl == null)
             return;
@@ -522,11 +522,11 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         return loadDeclarativeActionDefault(actionsHolder, element);
     }
 
-    protected Action loadDeclarativeActionDefault(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadDeclarativeActionDefault(ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null) {
             Element component = element;
@@ -678,7 +678,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return null;
     }
 
-    protected Action loadPickerDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadPickerDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null) {
             Element component = element;
@@ -791,7 +791,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return loader;
     }
 
-    protected void loadInputPrompt(Component.HasInputPrompt component, Element element) {
+    protected void loadInputPrompt(HasInputPrompt component, Element element) {
         String inputPrompt = element.attributeValue("inputPrompt");
         if (StringUtils.isNotBlank(inputPrompt)) {
             component.setInputPrompt(loadResourceString(inputPrompt));

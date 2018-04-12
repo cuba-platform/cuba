@@ -95,5 +95,5 @@ public interface FilterHelper {
 
     void setInternalDebugId(Component component, String id);
 
-    Component.Container createSearchButtonGroupContainer();
+    ComponentContainer createSearchButtonGroupContainer();
 }

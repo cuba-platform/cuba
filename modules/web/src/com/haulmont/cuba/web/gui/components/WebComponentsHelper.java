@@ -19,9 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component.Container;
-import com.haulmont.cuba.gui.components.Component.HasButtonsPanel;
-import com.haulmont.cuba.gui.components.Component.ShortcutTriggeredEvent;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -585,8 +583,8 @@ public class WebComponentsHelper {
             return new ShortcutTriggeredEvent(source, source);
         }
 
-        if (source instanceof Container) {
-            Container container = (Container) source;
+        if (source instanceof ComponentContainer) {
+            ComponentContainer container = (ComponentContainer) source;
             com.haulmont.cuba.gui.components.Component childComponent =
                     findChildComponent(container, target);
             return new ShortcutTriggeredEvent(source, childComponent);
@@ -625,7 +623,7 @@ public class WebComponentsHelper {
     }
 
     @Nullable
-    protected static com.haulmont.cuba.gui.components.Component findChildComponent(Container container,
+    protected static com.haulmont.cuba.gui.components.Component findChildComponent(ComponentContainer container,
                                                                                    Component target) {
         Component vaadinSource = getVaadinSource(container);
         Collection<com.haulmont.cuba.gui.components.Component> components = container.getOwnComponents();
@@ -654,8 +652,8 @@ public class WebComponentsHelper {
             if (unwrapped == targetComponent) {
                 com.haulmont.cuba.gui.components.Component child = null;
 
-                if (component instanceof Container) {
-                    child = findChildComponent((Container) component, target);
+                if (component instanceof ComponentContainer) {
+                    child = findChildComponent((ComponentContainer) component, target);
                 }
 
                 if (component instanceof HasButtonsPanel) {

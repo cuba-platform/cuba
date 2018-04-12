@@ -44,7 +44,7 @@ public abstract class AbstractAction implements Action {
 
     protected boolean visible = true;
 
-    protected List<Component.ActionOwner> owners = new ArrayList<>();
+    protected List<ActionOwner> owners = new ArrayList<>();
 
     protected PropertyChangeSupport changeSupport;
 
@@ -166,7 +166,7 @@ public abstract class AbstractAction implements Action {
         boolean oldValue = this.enabled;
         if (oldValue != enabled) {
             this.enabled = enabled;
-            for (Component.ActionOwner owner : owners) {
+            for (ActionOwner owner : owners) {
                 if (owner != null && owner instanceof Component) {
                     ((Component) owner).setEnabled(enabled);
                 }
@@ -185,7 +185,7 @@ public abstract class AbstractAction implements Action {
         boolean oldValue = this.visible;
         if (oldValue != visible) {
             this.visible = visible;
-            for (Component.ActionOwner owner : owners) {
+            for (ActionOwner owner : owners) {
                 if (owner != null && owner instanceof Component) {
                     ((Component) owner).setVisible(visible);
                 }
@@ -195,24 +195,24 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public Collection<Component.ActionOwner> getOwners() {
+    public Collection<ActionOwner> getOwners() {
         return Collections.unmodifiableCollection(owners);
     }
 
     @Override
-    public Component.ActionOwner getOwner() {
+    public ActionOwner getOwner() {
         return owners.isEmpty() ? null : owners.get(0);
     }
 
     @Override
-    public void addOwner(Component.ActionOwner actionOwner) {
+    public void addOwner(ActionOwner actionOwner) {
         if (!owners.contains(actionOwner)) {
             owners.add(actionOwner);
         }
     }
 
     @Override
-    public void removeOwner(Component.ActionOwner actionOwner) {
+    public void removeOwner(ActionOwner actionOwner) {
         owners.remove(actionOwner);
     }
 

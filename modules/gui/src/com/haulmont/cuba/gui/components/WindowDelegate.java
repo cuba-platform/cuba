@@ -114,17 +114,17 @@ public class WindowDelegate {
                     window,
                     (component, name) -> {
                         if (component.getId() != null
-                                && component instanceof Component.HasSettings) {
+                                && component instanceof HasSettings) {
                             log.trace("Saving settings for : {} : {}", name, component);
 
                             Element e = WindowDelegate.this.settings.get(name);
-                            boolean modified = ((Component.HasSettings) component).saveSettings(e);
+                            boolean modified = ((HasSettings) component).saveSettings(e);
 
-                            if (component instanceof Component.HasPresentations
-                                    && ((Component.HasPresentations) component).isUsePresentations()) {
-                                Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
+                            if (component instanceof HasPresentations
+                                    && ((HasPresentations) component).isUsePresentations()) {
+                                Object def = ((HasPresentations) component).getDefaultPresentationId();
                                 e.addAttribute("presentation", def != null ? def.toString() : "");
-                                Presentations presentations = ((Component.HasPresentations) component).getPresentations();
+                                Presentations presentations = ((HasPresentations) component).getPresentations();
                                 if (presentations != null) {
                                     presentations.commit();
                                 }
@@ -147,18 +147,18 @@ public class WindowDelegate {
                 window,
                 (component, name) -> {
                     if (component.getId() != null
-                            && component instanceof Component.HasSettings) {
+                            && component instanceof HasSettings) {
                         log.trace("Applying settings for : {} : {} ", name, component);
 
                         Element e = WindowDelegate.this.settings.get(name);
-                        ((Component.HasSettings) component).applySettings(e);
+                        ((HasSettings) component).applySettings(e);
 
-                        if (component instanceof Component.HasPresentations
+                        if (component instanceof HasPresentations
                                 && e.attributeValue("presentation") != null) {
                             final String def = e.attributeValue("presentation");
                             if (!StringUtils.isEmpty(def)) {
                                 UUID defaultId = UUID.fromString(def);
-                                ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
+                                ((HasPresentations) component).applyPresentationAsDefault(defaultId);
                             }
                         }
                     }
@@ -180,8 +180,8 @@ public class WindowDelegate {
     public boolean isValid() {
         Collection<Component> components = ComponentsHelper.getComponents(window);
         for (Component component : components) {
-            if (component instanceof Component.Validatable) {
-                Component.Validatable validatable = (Component.Validatable) component;
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
                 if (validatable.isValidateOnCommit() && !validatable.isValid())
                     return false;
             }
@@ -192,8 +192,8 @@ public class WindowDelegate {
     public void validate() throws ValidationException {
         Collection<Component> components = ComponentsHelper.getComponents(window);
         for (Component component : components) {
-            if (component instanceof Component.Validatable) {
-                Component.Validatable validatable = (Component.Validatable) component;
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
                 if (validatable.isValidateOnCommit()) {
                     validatable.validate();
                 }

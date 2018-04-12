@@ -19,10 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.MouseEventDetails;
+import com.haulmont.cuba.gui.components.*;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
@@ -31,12 +28,12 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends WebAbstractComponent<T>
-        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-        Component.LayoutClickNotifier, Component.ShortcutNotifier {
+        implements OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+        LayoutClickNotifier, ShortcutNotifier {
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
-    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
+    protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
     @Override
     public void add(Component childComponent) {
@@ -179,9 +176,9 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends
         }
     }
 
-    protected Component findChildComponent(Container layout, com.vaadin.ui.Component clickedComponent) {
+    protected Component findChildComponent(ComponentContainer layout, com.vaadin.ui.Component clickedComponent) {
         for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
+            if (component.unwrapComposition(com.vaadin.ui.Component.class) == clickedComponent) {
                 return component;
             }
         }

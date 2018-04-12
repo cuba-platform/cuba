@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -63,7 +63,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
     }
 
     @Override
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         return loadPickerDeclarativeAction(actionsHolder, element);
     }
 }

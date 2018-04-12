@@ -16,17 +16,18 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.ShortcutTriggeredEvent;
 
 public class ContainerShortcutActionWrapper extends com.vaadin.event.ShortcutListener {
 
-    protected Component.ShortcutAction action;
-    protected Component.Container container;
+    protected ShortcutAction action;
+    protected ComponentContainer container;
     protected KeyCombination keyCombination;
 
-    public ContainerShortcutActionWrapper(Component.ShortcutAction action,
-                                          Component.Container container, KeyCombination keyCombination) {
+    public ContainerShortcutActionWrapper(ShortcutAction action, ComponentContainer container, KeyCombination keyCombination) {
         super(null, keyCombination.getKey().getCode(), KeyCombination.Modifier.codes(keyCombination.getModifiers()));
         this.action = action;
         this.keyCombination = keyCombination;
@@ -35,16 +36,16 @@ public class ContainerShortcutActionWrapper extends com.vaadin.event.ShortcutLis
 
     @Override
     public void handleAction(Object sender, Object target) {
-        Component.ShortcutTriggeredEvent event = WebComponentsHelper.getShortcutEvent(container,
+        ShortcutTriggeredEvent event = WebComponentsHelper.getShortcutEvent(container,
                 (com.vaadin.ui.Component) target);
         action.getHandler().accept(event);
     }
 
-    public Component.ShortcutAction getAction() {
+    public ShortcutAction getAction() {
         return action;
     }
 
-    public Component.Container getContainer() {
+    public ComponentContainer getContainer() {
         return container;
     }
 

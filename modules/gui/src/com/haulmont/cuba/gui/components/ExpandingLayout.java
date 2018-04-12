@@ -18,9 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * Component container which can expand enclosing components
- *
  */
-public interface ExpandingLayout extends Component.Container {
+public interface ExpandingLayout extends ComponentContainer {
 
     void expand(Component component);
     void expand(Component component, String height, String width);

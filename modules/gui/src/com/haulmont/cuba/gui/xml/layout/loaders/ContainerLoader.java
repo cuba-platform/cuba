@@ -18,7 +18,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.ExpandingLayout;
+import com.haulmont.cuba.gui.components.Spacing;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.StringUtils;
@@ -51,14 +53,14 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         }
     }
 
-    protected void loadSpacing(Component.Spacing layout, Element element) {
+    protected void loadSpacing(Spacing layout, Element element) {
         String spacing = element.attributeValue("spacing");
         if (StringUtils.isNotEmpty(spacing)) {
             layout.setSpacing(Boolean.parseBoolean(spacing));
         }
     }
 
-    protected void createSubComponents(Component.Container container, Element containerElement) {
+    protected void createSubComponents(ComponentContainer container, Element containerElement) {
         LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());

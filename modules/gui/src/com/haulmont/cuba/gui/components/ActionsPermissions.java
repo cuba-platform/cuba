@@ -22,12 +22,12 @@ import java.util.List;
 
 // todo move to package
 public class ActionsPermissions {
-    private Component.SecuredActionsHolder actionsHolder;
+    private SecuredActionsHolder actionsHolder;
 
     private List<String> disabledActionsIds;
     private List<String> hiddenActionsIds;
 
-    public ActionsPermissions(Component.SecuredActionsHolder actionsHolder) {
+    public ActionsPermissions(SecuredActionsHolder actionsHolder) {
         this.actionsHolder = actionsHolder;
     }
 
@@ -40,8 +40,8 @@ public class ActionsPermissions {
         }
 
         Action action = actionsHolder.getAction(actionId);
-        if (action instanceof Action.UiPermissionAware) {
-            ((Action.UiPermissionAware) action).setEnabledByUiPermissions(false);
+        if (action instanceof Action.SecuredAction) {
+            ((Action.SecuredAction) action).setEnabledByUiPermissions(false);
         }
     }
 
@@ -53,8 +53,8 @@ public class ActionsPermissions {
             hiddenActionsIds.add(actionId);
         }
         Action action = actionsHolder.getAction(actionId);
-        if (action instanceof Action.UiPermissionAware) {
-            ((Action.UiPermissionAware) action).setVisibleByUiPermissions(false);
+        if (action instanceof Action.SecuredAction) {
+            ((Action.SecuredAction) action).setVisibleByUiPermissions(false);
         }
     }
 
@@ -73,12 +73,12 @@ public class ActionsPermissions {
     }
 
     public void apply(Action action) {
-        if (action instanceof Action.UiPermissionAware) {
+        if (action instanceof Action.SecuredAction) {
             if (isHiddenAction(action.getId())) {
-                ((Action.UiPermissionAware) action).setVisibleByUiPermissions(false);
+                ((Action.SecuredAction) action).setVisibleByUiPermissions(false);
             }
             if (isDisabledAction(action.getId())) {
-                ((Action.UiPermissionAware) action).setEnabledByUiPermissions(false);
+                ((Action.SecuredAction) action).setEnabledByUiPermissions(false);
             }
         }
     }

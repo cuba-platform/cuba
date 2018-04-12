@@ -23,10 +23,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
-import com.haulmont.cuba.gui.components.Accordion;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleAccordionSelectedTabChangeListener;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -48,7 +45,7 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
-public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion, Component.UiPermissionAware {
+public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion, UiPermissionAware {
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
 
@@ -553,12 +550,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                                 Element e = settings.get(name);
                                 ((HasSettings) settingsComponent).applySettings(e);
 
-                                if (component instanceof Component.HasPresentations
+                                if (component instanceof HasPresentations
                                         && e.attributeValue("presentation") != null) {
                                     final String def = e.attributeValue("presentation");
                                     if (!StringUtils.isEmpty(def)) {
                                         UUID defaultId = UUID.fromString(def);
-                                        ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
+                                        ((HasPresentations) component).applyPresentationAsDefault(defaultId);
                                     }
                                 }
                             }

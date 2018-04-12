@@ -48,8 +48,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
-        implements FieldGroup, Component.UiPermissionAware {
+public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> implements FieldGroup, UiPermissionAware {
 
     protected CubaFieldGroup wrapper;
     protected boolean wrapperAttached = false;
@@ -393,8 +392,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             }
         }
 
-        if (fieldComponent instanceof Component.HasFormatter && fci.getTargetFormatter() != null) {
-            ((Component.HasFormatter) fieldComponent).setFormatter(fci.getTargetFormatter());
+        if (fieldComponent instanceof HasFormatter && fci.getTargetFormatter() != null) {
+            ((HasFormatter) fieldComponent).setFormatter(fci.getTargetFormatter());
         }
 
         if (StringUtils.isNotEmpty(fci.getTargetStylename())) {
@@ -680,7 +679,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             return;
         }
 
-        Map<Component.Validatable, ValidationException> problemFields = null; // lazily initialized
+        Map<Validatable, ValidationException> problemFields = null; // lazily initialized
 
         // validate column by column
         List<FieldConfig> fieldsByColumns = getColumnOrderedFields();
@@ -781,7 +780,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             FieldConfig fieldConfig = getField(actionHolderComponentId);
             if (fieldConfig == null
                     || fieldConfig.getComponent() == null
-                    || !((fieldConfig.getComponent() instanceof Component.SecuredActionsHolder))) {
+                    || !((fieldConfig.getComponent() instanceof SecuredActionsHolder))) {
                 log.info("Couldn't find suitable component {} in window {} for UI security rule", actionHolderComponentId, screenId);
                 return;
             }
@@ -837,7 +836,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         protected boolean isTargetCustom;
 
         protected List<Field.Validator> targetValidators = new ArrayList<>(0);
-        protected Consumer<ContextHelpIconClickEvent> targetContextHelpIconClickHandler;
+        protected Consumer<HasContextHelp.ContextHelpIconClickEvent> targetContextHelpIconClickHandler;
         protected FieldAttachMode attachMode = FieldAttachMode.APPLY_DEFAULTS;
 
         public FieldConfigImpl(String id) {
@@ -1298,7 +1297,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         @Override
-        public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        public Consumer<HasContextHelp.ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
             if (component instanceof Field) {
                 return ((Field) component).getContextHelpIconClickHandler();
             }
@@ -1306,7 +1305,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         }
 
         @Override
-        public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        public void setContextHelpIconClickHandler(Consumer<HasContextHelp.ContextHelpIconClickEvent> handler) {
             if (component instanceof Field) {
                 ((Field) component).setContextHelpIconClickHandler(handler);
             } else {
@@ -1482,11 +1481,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             this.targetContextHelpTextHtmlEnabled = targetContextHelpTextHtmlEnabled;
         }
 
-        public Consumer<ContextHelpIconClickEvent> getTargetContextHelpIconClickHandler() {
+        public Consumer<HasContextHelp.ContextHelpIconClickEvent> getTargetContextHelpIconClickHandler() {
             return targetContextHelpIconClickHandler;
         }
 
-        public void setTargetContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> targetContextHelpIconClickHandler) {
+        public void setTargetContextHelpIconClickHandler(Consumer<HasContextHelp.ContextHelpIconClickEvent> targetContextHelpIconClickHandler) {
             this.targetContextHelpIconClickHandler = targetContextHelpIconClickHandler;
         }
 

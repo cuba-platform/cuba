@@ -25,6 +25,8 @@ import java.util.Map;
 /**
  * Handles active shortcuts for actions holder (Table or Tree)
  *
+ * todo move to package
+ *
  * @param <T> type of shortcut descriptor
  */
 public abstract class ShortcutsDelegate<T> {

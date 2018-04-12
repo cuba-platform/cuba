@@ -40,7 +40,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
  */
 public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.AbstractComponent
         & com.vaadin.event.Action.ShortcutNotifier>
-        extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
+        extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.SecuredActionsHolder {
 
     protected final List<Action> actionList = new ArrayList<>();
 

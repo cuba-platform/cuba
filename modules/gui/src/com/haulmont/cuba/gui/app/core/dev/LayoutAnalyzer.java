@@ -147,10 +147,10 @@ public class LayoutAnalyzer {
         @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
-            if (c instanceof Component.Container) {
+            if (c instanceof ComponentContainer) {
                 List<LayoutTip> tips = null;
 
-                Component.Container container = (Component.Container) c;
+                ComponentContainer container = (ComponentContainer) c;
                 if (c.getWidth() < 0) {
                     for (Component component : container.getOwnComponents()) {
                         if (component.getWidthSizeUnit() == SizeUnit.PERCENTAGE && component.getWidth() > 0) {
@@ -190,11 +190,11 @@ public class LayoutAnalyzer {
         @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
-            if (c instanceof Component.Container) {
+            if (c instanceof ComponentContainer) {
                 if (c.getWidth() < 0 && c.getHeight() < 0) {
                     List<LayoutTip> tips = null;
 
-                    Component.Container container = (Component.Container) c;
+                    ComponentContainer container = (ComponentContainer) c;
                     for (Component component : container.getOwnComponents()) {
                         if (tips == null) {
                             tips = new ArrayList<>();
@@ -227,7 +227,7 @@ public class LayoutAnalyzer {
             if (c instanceof Window && c.getHeight() < 0) {
                 List<LayoutTip> tips = null;
 
-                Component.Container container = (Component.Container) c;
+                ComponentContainer container = (ComponentContainer) c;
                 for (Component component : container.getOwnComponents()) {
                     if (tips == null) {
                         tips = new ArrayList<>();
@@ -254,7 +254,7 @@ public class LayoutAnalyzer {
             if (c instanceof Window && c.getWidth() < 0) {
                 List<LayoutTip> tips = null;
 
-                Component.Container container = (Component.Container) c;
+                ComponentContainer container = (ComponentContainer) c;
                 for (Component component : container.getOwnComponents()) {
                     if (tips == null) {
                         tips = new ArrayList<>();

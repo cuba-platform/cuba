@@ -19,15 +19,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.HasValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.vaadin.data.HasValue;
 
-public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & HasValue<P>, P, V>
-        extends WebAbstractComponent<T> implements Component.HasValue<V>, HasValueBinding<V> {
+public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
+        extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
 
     protected V internalValue;
     protected ValueBinding<V> valueBinding;

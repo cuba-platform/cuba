@@ -30,7 +30,7 @@ import java.util.List;
  * Base class for simple screen controllers.
  */
 public class AbstractWindow extends AbstractFrame 
-        implements Window, Component.HasXmlDescriptor, Window.Wrapper, Component.SecuredActionsHolder {
+        implements Window, Component.HasXmlDescriptor, Window.Wrapper, SecuredActionsHolder {
 
     public AbstractWindow() {
     }

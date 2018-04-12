@@ -24,8 +24,8 @@ import java.util.Collection;
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
  */
 public interface Field<T> extends DatasourceComponent<T>, HasValueBinding<T>, Component.HasCaption,
-        Component.HasValue<T>, Component.Editable, Component.BelongToFrame, Component.Validatable, Component.HasIcon,
-        Component.HasContextHelp {
+        HasValue<T>, Component.Editable, Component.BelongToFrame, Validatable, Component.HasIcon,
+        HasContextHelp {
 
     /**
      * @return whether the field must contain a non-null value

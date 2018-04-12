@@ -18,13 +18,14 @@
 package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.HasPresentations;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -32,6 +33,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,9 +52,10 @@ public class FoldersBean implements Folders {
 
     @Inject
     protected Messages messages;
-
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected WindowConfig windowConfig;
 
     @Override
     public void openFolder(AbstractSearchFolder folder) {
@@ -64,7 +67,6 @@ public class FoldersBean implements Folders {
         String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
         String screenId = strings[0];
 
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<>();
@@ -80,8 +82,8 @@ public class FoldersBean implements Folders {
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
 
-        com.haulmont.cuba.gui.components.Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
-                OpenType.NEW_TAB, params);
+        WebWindowManager wm = App.getInstance().getWindowManager();
+        Window window = wm.openWindow(windowInfo, OpenType.NEW_TAB, params);
 
         Filter filterComponent = null;
 
@@ -105,9 +107,9 @@ public class FoldersBean implements Folders {
         }
 
         if (filterComponent != null && folder instanceof SearchFolder) {
-            final SearchFolder searchFolder = (SearchFolder) folder;
+            SearchFolder searchFolder = (SearchFolder) folder;
             if (searchFolder.getPresentation() != null) {
-                ((com.haulmont.cuba.gui.components.Component.HasPresentations) filterComponent.getApplyTo())
+                ((HasPresentations) filterComponent.getApplyTo())
                         .applyPresentation(searchFolder.getPresentation().getId());
             }
         }

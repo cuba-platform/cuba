@@ -44,7 +44,7 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
-public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, Component.UiPermissionAware {
+public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, UiPermissionAware {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -593,12 +593,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                                 Element e = settings.get(name);
                                 ((HasSettings) settingsComponent).applySettings(e);
 
-                                if (component instanceof Component.HasPresentations
+                                if (component instanceof HasPresentations
                                         && e.attributeValue("presentation") != null) {
                                     final String def = e.attributeValue("presentation");
                                     if (!StringUtils.isEmpty(def)) {
                                         UUID defaultId = UUID.fromString(def);
-                                        ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
+                                        ((HasPresentations) component).applyPresentationAsDefault(defaultId);
                                     }
                                 }
                             }

@@ -30,7 +30,10 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class AttributeEditor {
 
@@ -131,7 +134,7 @@ public class AttributeEditor {
         }
     }
 
-    protected void addRow(Object value, Component.Container parent, boolean isReadOnly) {
+    protected void addRow(Object value, ComponentContainer parent, boolean isReadOnly) {
         BoxLayout row = componentsFactory.createComponent(WebHBoxLayout.class);
         row.setSpacing(true);
         row.setWidth("100%");

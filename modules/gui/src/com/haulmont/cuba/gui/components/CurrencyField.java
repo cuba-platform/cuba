@@ -21,7 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 /**
  * The CurrencyField component is intended for displaying currency values.
  */
-public interface CurrencyField<V> extends Field<V>, Component.Buffered {
+public interface CurrencyField<V> extends Field<V>, Buffered {
     String NAME = "currencyField";
 
     /**

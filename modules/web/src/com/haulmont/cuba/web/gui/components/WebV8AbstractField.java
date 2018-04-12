@@ -42,7 +42,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
 
     protected boolean editable = true;
 
-    protected EditableChangeListener parentEditableChangeListener;
+    protected EditableChangeNotifier.EditableChangeListener parentEditableChangeListener;
 
     @Override
     public Datasource getDatasource() {

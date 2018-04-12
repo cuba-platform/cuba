@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.Date;
 import java.util.TimeZone;
 
-public interface DateField<V extends Date> extends Field<V>, Component.Buffered, Component.Focusable {
+public interface DateField<V extends Date> extends Field<V>, Buffered, Component.Focusable {
     String NAME = "dateField";
 
     enum Resolution {

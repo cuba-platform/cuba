@@ -43,9 +43,9 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -325,7 +325,7 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public com.haulmont.cuba.gui.components.Component.Container createSearchButtonGroupContainer() {
+    public com.haulmont.cuba.gui.components.ComponentContainer createSearchButtonGroupContainer() {
         CssLayout layout = componentsFactory.createComponent(CssLayout.class);
         layout.addStyleName("v-component-group");
         return layout;

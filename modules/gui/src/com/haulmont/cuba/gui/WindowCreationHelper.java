@@ -21,10 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
-import com.haulmont.cuba.gui.components.ActionsPermissions;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
@@ -40,7 +37,6 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class used by the framework when it creates frames and windows. Not for use in application code.
- *
  */
 public final class WindowCreationHelper {
 
@@ -126,8 +122,8 @@ public final class WindowCreationHelper {
             final Component compositeComponent = window.getComponent(customComponentId);
 
             if (compositeComponent != null) {
-                if (compositeComponent instanceof Component.UiPermissionAware) {
-                    Component.UiPermissionAware uiPermissionAwareComponent = (Component.UiPermissionAware) compositeComponent;
+                if (compositeComponent instanceof UiPermissionAware) {
+                    UiPermissionAware uiPermissionAwareComponent = (UiPermissionAware) compositeComponent;
                     UiPermissionValue uiPermissionValue = UiPermissionValue.fromId(permissionValue);
 
                     UiPermissionDescriptor permissionDescriptor;
@@ -171,9 +167,9 @@ public final class WindowCreationHelper {
             final String actionId = matcher.group(2);
             final Component actionHolderComponent = window.getComponent(customComponentId);
             if (actionHolderComponent != null) {
-                if (actionHolderComponent instanceof Component.SecuredActionsHolder) {
+                if (actionHolderComponent instanceof SecuredActionsHolder) {
                     ActionsPermissions permissions =
-                            ((Component.SecuredActionsHolder) actionHolderComponent).getActionsPermissions();
+                            ((SecuredActionsHolder) actionHolderComponent).getActionsPermissions();
                     if (permissionValue == UiPermissionValue.HIDE.getValue()) {
                         permissions.addHiddenActionPermission(actionId);
                     } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {

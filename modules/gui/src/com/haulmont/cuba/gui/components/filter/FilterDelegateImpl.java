@@ -144,13 +144,13 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected GroupBoxLayout groupBoxLayout;
     protected BoxLayout layout;
     protected PopupButton filtersPopupButton;
-    protected Component.Container conditionsLayout;
+    protected ComponentContainer conditionsLayout;
     protected BoxLayout maxResultsLayout;
     protected Field<Integer> maxResultsField;
     protected TextField maxResultsTextField;
     protected LookupField maxResultsLookupField;
     protected BoxLayout controlsLayout;
-    protected Component.Container appliedFiltersLayout;
+    protected ComponentContainer appliedFiltersLayout;
     protected PopupButton settingsBtn;
     protected Component applyTo;
     protected SaveAction saveAction;
@@ -158,7 +158,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected TextField<String> ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
     protected LinkButton addConditionBtn;
-    protected Component.Container filtersPopupBox;
+    protected ComponentContainer filtersPopupBox;
     protected Button searchBtn;
     protected Component controlsLayoutGap;
     protected Object paramEditComponentToFocus;
@@ -769,8 +769,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 ((SearchFolder) folder).setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         }
         Presentations presentations;
-        if (applyTo != null && applyTo instanceof Component.HasPresentations) {
-            final Component.HasPresentations presentationsOwner = (Component.HasPresentations) applyTo;
+        if (applyTo != null && applyTo instanceof HasPresentations) {
+            final HasPresentations presentationsOwner = (HasPresentations) applyTo;
             presentations = presentationsOwner.isUsePresentations()
                     ? presentationsOwner.getPresentations() : null;
         } else {
@@ -814,7 +814,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void recursivelyCreateConditionsLayout(ConditionsFocusType conditionsFocusType,
                                                      boolean initialFocusSet,
                                                      List<Node<AbstractCondition>> nodes,
-                                                     Component.Container parentContainer,
+                                                     ComponentContainer parentContainer,
                                                      int level) {
         List<Node<AbstractCondition>> visibleConditionNodes = fetchVisibleNodes(nodes);
 
@@ -1248,7 +1248,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
     }
 
-    protected void addAppliedFilterLayoutHook(Component.Container layout) {
+    protected void addAppliedFilterLayoutHook(ComponentContainer layout) {
         //nothing
     }
 
@@ -1313,7 +1313,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public Component.Container getLayout() {
+    public ComponentContainer getLayout() {
         return groupBoxLayout;
     }
 
@@ -1929,8 +1929,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public Object getParamValue(String paramName) {
         Component component = getOwnComponent(paramName);
-        if (component instanceof Component.HasValue) {
-            return ((Component.HasValue) component).getValue();
+        if (component instanceof HasValue) {
+            return ((HasValue) component).getValue();
         }
         return null;
     }
@@ -1938,8 +1938,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setParamValue(String paramName, Object value) {
         Component component = getOwnComponent(paramName);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).setValue(value);
+        if (component instanceof HasValue) {
+            ((HasValue) component).setValue(value);
         }
     }
 
@@ -2164,12 +2164,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         this.captionChangedListener = captionChangedListener;
     }
 
-    protected class FiltersLookupChangeListener implements Component.ValueChangeListener {
+    protected class FiltersLookupChangeListener implements HasValue.ValueChangeListener {
         public FiltersLookupChangeListener() {
         }
 
         @Override
-        public void valueChanged(Component.ValueChangeEvent e) {
+        public void valueChanged(HasValue.ValueChangeEvent e) {
             if (!filtersLookupListenerEnabled) return;
             if (e.getValue() instanceof FilterEntity) {
                 setFilterEntity((FilterEntity) e.getValue());
@@ -2594,10 +2594,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected static class AppliedFilterHolder {
         public final AppliedFilter filter;
-        public final Component.Container layout;
+        public final ComponentContainer layout;
         public final Button button;
 
-        protected AppliedFilterHolder(AppliedFilter filter, Component.Container layout, Button button) {
+        protected AppliedFilterHolder(AppliedFilter filter, ComponentContainer layout, Button button) {
             this.filter = filter;
             this.layout = layout;
             this.button = button;

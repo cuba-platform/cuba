@@ -27,7 +27,7 @@ import java.util.EventObject;
  * An accordion is a component similar to a {@link TabSheet}, but with a vertical orientation and the selected component
  * presented between tabs.
  */
-public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption,
+public interface Accordion extends ComponentContainer, Component.BelongToFrame, Component.HasCaption,
                                    Component.HasIcon, Component.Focusable {
     String NAME = "accordion";
 

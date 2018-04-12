@@ -38,7 +38,7 @@ import java.util.*;
 /**
  * Base class for frame controllers.
  */
-public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, Component.OrderedContainer {
+public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, OrderedContainer {
 
     protected Frame frame;
     private Object _companion;

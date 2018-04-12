@@ -18,10 +18,9 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -58,7 +57,7 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
     }
 
     @Override
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+    protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         return loadPickerDeclarativeAction(actionsHolder, element);
     }
 }

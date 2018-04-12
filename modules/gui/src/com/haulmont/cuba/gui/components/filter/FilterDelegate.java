@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -54,7 +55,7 @@ public interface FilterDelegate {
 
     void setFilterEntity(FilterEntity filterEntity);
 
-    Component.Container getLayout();
+    ComponentContainer getLayout();
 
     void setDatasource(CollectionDatasource datasource);
 

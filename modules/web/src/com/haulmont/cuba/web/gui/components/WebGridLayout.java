@@ -33,7 +33,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
-    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
+    protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
     public WebGridLayout() {
         component = new CubaGridLayout();

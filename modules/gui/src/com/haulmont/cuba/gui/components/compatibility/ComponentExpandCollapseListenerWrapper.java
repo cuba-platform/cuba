@@ -17,28 +17,28 @@
 
 package com.haulmont.cuba.gui.components.compatibility;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Collapsable;
 
 // todo for removal
 @Deprecated
-public class ComponentExpandCollapseListenerWrapper implements Component.ExpandedStateChangeListener {
+public class ComponentExpandCollapseListenerWrapper implements Collapsable.ExpandedStateChangeListener {
 
     private Object expandCollapseListener;
 
-    public ComponentExpandCollapseListenerWrapper(Component.Collapsable.ExpandListener expandListener) {
+    public ComponentExpandCollapseListenerWrapper(Collapsable.ExpandListener expandListener) {
         this.expandCollapseListener = expandListener;
     }
 
-    public ComponentExpandCollapseListenerWrapper(Component.Collapsable.CollapseListener collapseListener) {
+    public ComponentExpandCollapseListenerWrapper(Collapsable.CollapseListener collapseListener) {
         this.expandCollapseListener = collapseListener;
     }
 
     @Override
-    public void expandedStateChanged(Component.ExpandedStateChangeEvent e) {
-        if (e.isExpanded() && expandCollapseListener instanceof Component.Collapsable.ExpandListener) {
-            ((Component.Collapsable.ExpandListener) expandCollapseListener).onExpand(e.getComponent());
-        } else if (!e.isExpanded() && expandCollapseListener instanceof Component.Collapsable.CollapseListener) {
-            ((Component.Collapsable.CollapseListener) expandCollapseListener).onCollapse(e.getComponent());
+    public void expandedStateChanged(Collapsable.ExpandedStateChangeEvent e) {
+        if (e.isExpanded() && expandCollapseListener instanceof Collapsable.ExpandListener) {
+            ((Collapsable.ExpandListener) expandCollapseListener).onExpand(e.getComponent());
+        } else if (!e.isExpanded() && expandCollapseListener instanceof Collapsable.CollapseListener) {
+            ((Collapsable.CollapseListener) expandCollapseListener).onCollapse(e.getComponent());
         }
     }
 

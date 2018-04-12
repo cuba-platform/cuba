@@ -28,8 +28,8 @@ public interface TextField<V>
             TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
-            Component.HasFormatter,
-            Component.HasInputPrompt {
+            HasFormatter,
+            HasInputPrompt {
 
     String NAME = "textField";
 

@@ -32,7 +32,7 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
-    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
+    protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
     @Override
     public void add(Component childComponent) {

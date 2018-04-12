@@ -17,10 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.FilterImplementation;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -36,7 +33,6 @@ import java.util.List;
 
 /**
  * Generic filter implementation for the web-client.
- *
  */
 public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implements Filter, FilterImplementation {
 
@@ -51,8 +47,8 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
         delegate = AppBeans.get(FilterDelegate.class);
         delegate.setFilter(this);
         component = new CubaCssActionsLayout();
-        Container layout = delegate.getLayout();
-        com.vaadin.ui.Component unwrap = WebComponentsHelper.getComposition(layout);
+        ComponentContainer layout = delegate.getLayout();
+        com.vaadin.ui.Component unwrap = layout.unwrapComposition(com.vaadin.ui.Component.class);
         component.addComponent(unwrap);
         component.setWidth("100%");
         component.setPrimaryStyleName(FILTER_STYLENAME);

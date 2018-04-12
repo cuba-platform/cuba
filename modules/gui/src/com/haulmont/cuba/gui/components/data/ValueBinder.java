@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -47,7 +48,7 @@ public class ValueBinder {
     @Inject
     protected BeanValidation beanValidation;
 
-    public <V> ValueBinding<V> bind(Component.HasValue<V> component, ValueSource<V> valueSource) {
+    public <V> ValueBinding<V> bind(HasValue<V> component, ValueSource<V> valueSource) {
         ValueBindingImpl<V> binding = new ValueBindingImpl<>(component, valueSource);
 
         if (component instanceof Component.Editable) {
@@ -106,14 +107,14 @@ public class ValueBinder {
 
     protected static class ValueBindingImpl<V> implements ValueBinding<V> {
         protected ValueSource<V> source;
-        protected Component.HasValue<V> component;
+        protected HasValue<V> component;
 
         protected Subscription componentValueChangeSubscription;
 
         protected Subscription sourceValueChangeSubscription;
         protected Subscription sourceStateChangeSupscription;
 
-        public ValueBindingImpl(Component.HasValue<V> component, ValueSource<V> source) {
+        public ValueBindingImpl(HasValue<V> component, ValueSource<V> source) {
             this.source = source;
             this.component = component;
         }
@@ -124,7 +125,7 @@ public class ValueBinder {
         }
 
         @Override
-        public Component.HasValue<V> getComponent() {
+        public HasValue<V> getComponent() {
             return component;
         }
 
@@ -167,7 +168,7 @@ public class ValueBinder {
             }
         }
 
-        public void bind(Component.HasValue<V> component, ValueSource<V> valueSource) {
+        public void bind(HasValue<V> component, ValueSource<V> valueSource) {
             this.componentValueChangeSubscription = component.addValueChangeListener(this::componentValueChanged);
 
             // todo weak references on binding !
@@ -183,7 +184,7 @@ public class ValueBinder {
         }
 
         @SuppressWarnings("unchecked")
-        protected void componentValueChanged(@SuppressWarnings("unused") Component.ValueChangeEvent event) {
+        protected void componentValueChanged(@SuppressWarnings("unused") HasValue.ValueChangeEvent event) {
             if (source.getStatus() == ValueSourceState.ACTIVE) {
                 source.setValue((V) event.getValue());
             }

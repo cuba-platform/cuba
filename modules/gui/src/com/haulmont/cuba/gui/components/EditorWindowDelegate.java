@@ -113,6 +113,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         this.window.addAction(commitAction);
 
         this.window.addAction(
+                // todo use BaseAction
                 new AbstractAction(Window.Editor.WINDOW_CLOSE) {
                     @Override
                     public String getCaption() {

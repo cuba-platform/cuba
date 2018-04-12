@@ -25,11 +25,11 @@ import java.util.Arrays;
 
 public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
 
-    protected Component.ActionOwner component;
+    protected ActionOwner component;
     protected String actionName;
     private Frame frame;
 
-    public AssignActionPostInitTask(Component.ActionOwner component, String actionName, Frame frame) {
+    public AssignActionPostInitTask(ActionOwner component, String actionName, Frame frame) {
         this.component = component;
         this.actionName = actionName;
         this.frame = frame;
@@ -50,13 +50,13 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
                         context.getFullFrameId(), "Component ID", Arrays.toString(subPath));
             }
 
-            if (!(holder instanceof Component.ActionsHolder)) {
+            if (!(holder instanceof ActionsHolder)) {
                 throw new GuiDevelopmentException(String.format(
                         "Component '%s' can't contain actions", holder.getId()), context.getFullFrameId(),
                         "Holder ID", holder.getId());
             }
 
-            Action action = ((Component.ActionsHolder) holder).getAction(id);
+            Action action = ((ActionsHolder) holder).getAction(id);
             if (action == null) {
                 throw new GuiDevelopmentException(String.format(
                         "Can't find action '%s' in '%s'", id, holder.getId()), context.getFullFrameId(),

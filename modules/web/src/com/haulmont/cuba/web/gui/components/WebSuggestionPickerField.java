@@ -18,11 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ActionsPermissions;
-import com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.SuggestionPickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.Component;
 

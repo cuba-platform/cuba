@@ -154,9 +154,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
         });
     }
 
-    private class ObjectNameFieldListener implements ValueChangeListener {
+    private class ObjectNameFieldListener implements HasValue.ValueChangeListener {
         @Override
-        public void valueChanged(ValueChangeEvent e) {
+        public void valueChanged(HasValue.ValueChangeEvent e) {
             mbeanDs.refresh(ParamsMap.of("objectName", e.getValue()));
 
             if (StringUtils.isNotEmpty((String) e.getValue())) {
