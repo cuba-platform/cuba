@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -576,6 +577,19 @@ public class QueryTest {
                 // ok
             }
         }
+    }
+
+
+    @Test
+    public void testNoImplicitConversion() throws Exception {
+        cont.persistence().runInTransaction(em -> {
+            Group group = em.find(Group.class, TestSupport.COMPANY_GROUP_ID);
+
+            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.group = :group", User.class);
+            query.setParameter("group", group, false);
+            List<User> users = query.getResultList();
+            assertTrue(!users.isEmpty());
+        });
     }
 
     @Test
