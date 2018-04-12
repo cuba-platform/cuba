@@ -191,6 +191,11 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isEnabledRecursive() {
         return DesktopComponentsHelper.isRecursivelyEnabled(getComposition());
     }
 
@@ -235,6 +240,11 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isVisible() {
+        return this.visible;
+    }
+
+    @Override
+    public boolean isVisibleRecursive() {
         return DesktopComponentsHelper.isRecursivelyVisible(getComposition());
     }
 
@@ -253,16 +263,6 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
             requestContainerUpdate();
         }
-    }
-
-    @Override
-    public boolean isVisibleItself() {
-        return visible;
-    }
-
-    @Override
-    public boolean isEnabledItself() {
-        return enabled;
     }
 
     @Override

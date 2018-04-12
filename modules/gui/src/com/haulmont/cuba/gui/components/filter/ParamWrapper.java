@@ -223,13 +223,13 @@ public class ParamWrapper implements Component, Component.HasValue<Object> {
     }
 
     @Override
-    public boolean isVisibleItself() {
-        throw new UnsupportedOperationException();
+    public boolean isVisibleRecursive() {
+        return false;
     }
 
     @Override
-    public boolean isEnabledItself() {
-        throw new UnsupportedOperationException();
+    public boolean isEnabledRecursive() {
+        return false;
     }
 
     @Override

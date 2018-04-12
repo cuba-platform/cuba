@@ -75,7 +75,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         impl.setEnabled(enabled);
         impl.setEditable(editable);
         impl.setDocument(doc);
-        impl.setVisible(isVisible());
+        impl.setVisible(isVisibleRecursive());
 
         TextFieldListener listener = createTextListener();
         impl.addKeyListener(listener);
@@ -341,7 +341,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     protected void flush() {
-        if (isEditable() && isEnabled()) {
+        if (isEditable() && isEnabledRecursive()) {
             Object newValue = validateRawValue(getImpl().getText());
             if ("".equals(newValue))
                 newValue = null;

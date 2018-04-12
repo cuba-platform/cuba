@@ -43,10 +43,12 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
+import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -976,22 +978,22 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public boolean isVisible() {
-        return true;
+        return getComposition().isVisible();
+    }
+
+    @Override
+    public boolean isVisibleRecursive() {
+        return isVisible(); // vaadin8 is this correct?
+    }
+
+    @Override
+    public boolean isEnabledRecursive() {
+        return isEnabled(); // vaadin8 is this correct?
     }
 
     @Override
     public void setVisible(boolean visible) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isVisibleItself() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabledItself() {
-        return component.isEnabled();
     }
 
     @Override

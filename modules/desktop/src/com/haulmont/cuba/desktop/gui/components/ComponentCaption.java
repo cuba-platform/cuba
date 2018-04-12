@@ -83,8 +83,8 @@ public class ComponentCaption extends JPanel {
             toolTipButton = null;
         }
 
-        setVisible(owner.isVisible());
-        setEnabled(owner.isEnabled());
+        setVisible(owner.isVisibleRecursive());
+        setEnabled(owner.isEnabledRecursive());
     }
 
     protected void removeToolTipButtonActionListener() {

@@ -337,7 +337,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected void doLogin(Credentials credentials) throws LoginException {
         if (credentials instanceof AbstractClientCredentials) {
-            ((AbstractClientCredentials) credentials).setOverrideLocale(localesSelect.isVisible());
+            ((AbstractClientCredentials) credentials).setOverrideLocale(localesSelect.isVisibleRecursive());
         }
         connection.login(credentials);
     }

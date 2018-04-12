@@ -326,7 +326,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditableWithParent() || !isEnabled())
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive())
             return;
 
         try {
@@ -669,7 +669,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     protected void flush() {
-        if (isEditable() && isEnabled()) {
+        if (isEditable() && isEnabledRecursive()) {
             try {
                 datePicker.getEditor().commitEdit();
             } catch (ParseException e) {

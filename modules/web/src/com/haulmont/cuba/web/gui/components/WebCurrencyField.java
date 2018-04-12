@@ -180,7 +180,7 @@ public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> 
             setValidationError(null);
         }
 
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
             return;
         }
 

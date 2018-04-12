@@ -204,10 +204,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
         entityFilter.addEnterPressListener(e -> applyFilter());
 
         entityTargetsDs.addItemChangeListener(e -> {
-            if (!selectedEntityPanel.isVisible() && (e.getItem() != null)) {
+            if (!selectedEntityPanel.isVisibleRecursive() && (e.getItem() != null)) {
                 selectedEntityPanel.setVisible(true);
             }
-            if (selectedEntityPanel.isVisible() && (e.getItem() == null)) {
+            if (selectedEntityPanel.isVisibleRecursive() && (e.getItem() == null)) {
                 selectedEntityPanel.setVisible(false);
             }
 

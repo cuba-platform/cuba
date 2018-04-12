@@ -32,10 +32,8 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.PropertyBoundComponent;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.apache.commons.lang.StringUtils;
 
@@ -125,7 +123,7 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditableWithParent() || !isEnabled())
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive())
             return;
 
         Object value = getValue();

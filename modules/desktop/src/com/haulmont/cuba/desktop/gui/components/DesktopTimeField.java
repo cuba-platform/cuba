@@ -449,7 +449,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     protected void flush() {
-        if (isEditable() && isEnabled()) {
+        if (isEditable() && isEnabledRecursive()) {
             Object newValue;
             try {
                 newValue = validateRawValue(getImpl().getText());

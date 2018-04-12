@@ -676,7 +676,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
             return;
         }
 
@@ -716,8 +716,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         for (FieldConfig fc : getColumnOrderedFields()) {
             Component component = fc.getComponent();
             if (component != null
-                    && component.isEnabled()
-                    && component.isVisible()
+                    && component.isEnabledRecursive()
+                    && component.isVisibleRecursive()
                     && component instanceof Focusable
                     && ((Focusable) component).isFocusable()) {
 

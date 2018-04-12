@@ -419,13 +419,13 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
-        public boolean isVisibleItself() {
-            return DesktopPopupButton.this.isVisibleItself();
+        public boolean isVisibleRecursive() {
+            return DesktopPopupButton.this.isVisibleRecursive();
         }
 
         @Override
-        public boolean isEnabledItself() {
-            return action.isEnabled();
+        public boolean isEnabledRecursive() {
+            return DesktopPopupButton.this.isEnabledRecursive();
         }
 
         @Override

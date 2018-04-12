@@ -50,8 +50,7 @@ public interface Component {
         BOTTOM_CENTER
     }
 
-    // vaadin8 convert to enumeration
-    // todo use com.haulmont.cuba.gui.components.SizeUnit
+    // vaadin8 JavaDoc for deprecated
     @Deprecated
     int UNITS_PIXELS = 0;
     @Deprecated
@@ -84,7 +83,8 @@ public interface Component {
     void setDebugId(String id);
 
     /**
-     * Are the component and its parent enabled?
+     * Is the component enabled?
+     * vaadin8 add JavaDoc
      */
     boolean isEnabled();
     /** Set component enabled state */
@@ -103,21 +103,42 @@ public interface Component {
     void setResponsive(boolean responsive);
 
     /**
-     * Are the component and its parent visible?
+     * Is the component visible?
+     * vaadin8 add JavaDoc
      */
     boolean isVisible();
     /** Set component visibility */
     void setVisible(boolean visible);
 
     /**
-     * Is the component visible regardless of the parent?
+     * @return
      */
-    boolean isVisibleItself();
+    boolean isVisibleRecursive();
+
+    /**
+     * @return
+     */
+    boolean isEnabledRecursive();
+
+    /**
+     * Is the component visible regardless of the parent?
+     *
+     * @deprecated Use {{@link #isVisible()} instead.
+     */
+    @Deprecated
+    default boolean isVisibleItself() {
+        return isVisible();
+    }
 
     /**
      * Is the component enabled regardless of the parent?
+     *
+     * @deprecated Use {{@link #isEnabled()} instead.
      */
-    boolean isEnabledItself();
+    @Deprecated
+    default boolean isEnabledItself() {
+        return isEnabled();
+    }
 
     /** Set focus to this component */
     // vaadin8 move to Focusable

@@ -104,7 +104,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
 
     public void downloadTail() {
         LogDataProvider logDataProvider;
-        if (remoteContextBox.isVisible()) {
+        if (remoteContextBox.isVisibleRecursive()) {
             logDataProvider = new LogDataProvider(connection, logFileName, remoteContextField.getValue(), false);
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, false);
@@ -118,7 +118,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
 
     public void downloadFull() {
         LogDataProvider logDataProvider;
-        if (remoteContextBox.isVisible()) {
+        if (remoteContextBox.isVisibleRecursive()) {
             logDataProvider = new LogDataProvider(connection, logFileName, remoteContextField.getValue(), true);
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, true);

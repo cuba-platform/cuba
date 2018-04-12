@@ -536,7 +536,7 @@ public class DesktopWindowManager extends WindowManager {
             if (focusComponentId != null) {
                 com.haulmont.cuba.gui.components.Component focusComponent = window.getComponent(focusComponentId);
                 if (focusComponent != null) {
-                    if (focusComponent.isEnabled() && focusComponent.isVisible()) {
+                    if (focusComponent.isEnabledRecursive() && focusComponent.isVisibleRecursive()) {
                         focusComponent.requestFocus();
                         focused = true;
                     }

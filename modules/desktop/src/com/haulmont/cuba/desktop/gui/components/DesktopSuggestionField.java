@@ -371,7 +371,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     protected void handleSearchResults(List<?> searchResultItems) {
-        if (isVisible() && isEnabled() && isEditable()) {
+        if (isVisibleRecursive() && isEnabledRecursive() && isEditable()) {
             items.clear();
             List<SearchObjectWrapper> wrappers = new ArrayList<>();
             for (int i = 0; i < searchResultItems.size() && i < suggestionsLimit; i++) {

@@ -311,8 +311,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         for (FieldConfig fc : getColumnOrderedFields()) {
             Component component = fc.getComponent();
             if (component != null
-                    && component.isEnabled()
-                    && component.isVisible()
+                    && component.isEnabledRecursive()
+                    && component.isVisibleRecursive()
                     && component instanceof Focusable
                     && ((Focusable) component).isFocusable()) {
 
@@ -440,7 +440,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                     } else {
                         label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
                     }
-                    label.setVisible(fieldComponent.isVisible());
+                    label.setVisible(fieldComponent.isVisibleRecursive());
 
                     CC labelCc = new CC();
                     MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
@@ -886,7 +886,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
             return;
         }
 
@@ -1007,7 +1007,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             toolTipButton.setToolTipText(contextHelpText);
         }
 
-        toolTipButton.setVisible(component.isVisible()
+        toolTipButton.setVisible(component.isVisibleRecursive()
                 && (StringUtils.isNotEmpty(contextHelpText) || hasContextHelpIconClickListeners));
     }
 
@@ -1272,7 +1272,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         @Override
         public Boolean isVisible() {
             if (component != null) {
-                return component.isVisible();
+                return component.isVisibleRecursive();
             }
             return targetVisible;
         }

@@ -204,7 +204,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
             setValidationError(null);
         }
 
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
             return;
         }
 

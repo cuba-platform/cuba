@@ -286,10 +286,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attributeTargetsDs.addItemChangeListener(e -> {
             MultiplePermissionTarget item = e.getItem();
             boolean itemExists = item != null;
-            if (!selectedEntityPanel.isVisible() && itemExists) {
+            if (!selectedEntityPanel.isVisibleRecursive() && itemExists) {
                 selectedEntityPanel.setVisible(true);
             }
-            if (selectedEntityPanel.isVisible() && (item == null)) {
+            if (selectedEntityPanel.isVisibleRecursive() && (item == null)) {
                 selectedEntityPanel.setVisible(false);
             }
 

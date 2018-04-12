@@ -63,7 +63,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
             impl.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
-                    if (isEnabled() && isEditable()
+                    if (isEnabledRecursive() && isEditable()
                             && e.getKeyCode() == KeyEvent.VK_TAB
                             && e.getModifiers() == KeyEvent.CTRL_MASK) {
 

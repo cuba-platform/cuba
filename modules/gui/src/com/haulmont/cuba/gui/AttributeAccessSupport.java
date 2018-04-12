@@ -114,7 +114,7 @@ public class AttributeAccessSupport {
             }
         }
         if (component instanceof Field) {
-            if (componentState.required && ((Field) component).isEditable() && component.isVisible()) {
+            if (componentState.required && ((Field) component).isEditable() && component.isVisibleRecursive()) {
                 ((Field) component).setRequired(true);
             }
         }

@@ -110,10 +110,10 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         companion.initPermissionColoredColumns(screenPermissionsTree);
 
         screenPermissionsTreeDs.addItemChangeListener(e -> {
-            if (!selectedScreenPanel.isVisible() && (e.getItem() != null)) {
+            if (!selectedScreenPanel.isVisibleRecursive() && (e.getItem() != null)) {
                 selectedScreenPanel.setVisible(true);
             }
-            if (selectedScreenPanel.isVisible() && (e.getItem() == null)) {
+            if (selectedScreenPanel.isVisibleRecursive() && (e.getItem() == null)) {
                 selectedScreenPanel.setVisible(false);
             }
 

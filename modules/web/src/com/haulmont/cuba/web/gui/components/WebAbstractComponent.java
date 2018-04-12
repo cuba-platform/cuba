@@ -184,6 +184,11 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public boolean isEnabled() {
+        return getComposition().isEnabled();
+    }
+
+    @Override
+    public boolean isEnabledRecursive() {
         return WebComponentsHelper.isComponentEnabled(getComposition());
     }
 
@@ -194,22 +199,17 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public boolean isVisible() {
+        return getComposition().isVisible();
+    }
+
+    @Override
+    public boolean isVisibleRecursive() {
         return WebComponentsHelper.isComponentVisible(getComposition());
     }
 
     @Override
     public void setVisible(boolean visible) {
         getComposition().setVisible(visible);
-    }
-
-    @Override
-    public boolean isVisibleItself() {
-        return component.isVisible();
-    }
-
-    @Override
-    public boolean isEnabledItself() {
-        return component.isEnabled();
     }
 
     @Override

@@ -19,7 +19,9 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -833,13 +835,13 @@ public interface Table<E extends Entity>
         }
 
         @Override
-        public boolean isVisibleItself() {
-            throw new UnsupportedOperationException();
+        public boolean isVisibleRecursive() {
+            return true;
         }
 
         @Override
-        public boolean isEnabledItself() {
-            throw new UnsupportedOperationException();
+        public boolean isEnabledRecursive() {
+            return true;
         }
 
         @Override

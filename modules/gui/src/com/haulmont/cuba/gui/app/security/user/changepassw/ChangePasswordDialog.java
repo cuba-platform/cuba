@@ -101,7 +101,7 @@ public class ChangePasswordDialog extends AbstractWindow {
     public void ready() {
         super.ready();
 
-        if (currentPasswordField.isVisible() && currentPasswordField.isEnabled()) {
+        if (currentPasswordField.isVisibleRecursive() && currentPasswordField.isEnabledRecursive()) {
             currentPasswordField.requestFocus();
         }
 

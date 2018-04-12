@@ -123,6 +123,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public boolean isEnabledRecursive() {
+        return frame.isEnabledRecursive();
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         frame.setEnabled(enabled);
     }
@@ -138,13 +143,8 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
-    public boolean isVisibleItself() {
-        return frame.isVisibleItself();
-    }
-
-    @Override
-    public boolean isEnabledItself() {
-        return frame.isEnabledItself();
+    public boolean isVisibleRecursive() {
+        return frame.isVisibleRecursive();
     }
 
     @Override

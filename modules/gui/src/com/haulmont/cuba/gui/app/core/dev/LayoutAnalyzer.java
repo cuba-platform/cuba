@@ -314,7 +314,7 @@ public class LayoutAnalyzer {
                             expanded.getId() : expanded.getClass().getSimpleName();
                     for (Component innerComponent : components) {
                         if (innerComponent != expanded
-                                && innerComponent.isVisible()
+                                && innerComponent.isVisibleRecursive()
                                 && isSizeIgnored(container, innerComponent)) {
                             String id = innerComponent.getId() != null ?
                                     innerComponent.getId() : innerComponent.getClass().getSimpleName();

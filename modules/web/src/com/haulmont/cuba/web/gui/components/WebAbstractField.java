@@ -311,7 +311,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
             setValidationError(null);
         }
 
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
             return;
         }
 
