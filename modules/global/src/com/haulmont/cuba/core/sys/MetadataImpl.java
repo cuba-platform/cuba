@@ -43,6 +43,7 @@ import javax.persistence.InheritanceType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
@@ -166,11 +167,11 @@ public class MetadataImpl implements Metadata {
     }
 
     protected String getEntityNameForIdGeneration(MetaClass metaClass) {
-        Optional<MetaClass> optRoot = metaClass.getAncestors().stream()
+        List<MetaClass> persistentAncestors = metaClass.getAncestors().stream()
                 .filter(mc -> tools.isPersistent(mc)) // filter out all mapped superclasses
-                .findFirst();
-        if (optRoot.isPresent()) {
-            MetaClass root = optRoot.get();
+                .collect(Collectors.toList());
+        if (persistentAncestors.size() > 0) {
+            MetaClass root = persistentAncestors.get(persistentAncestors.size() - 1);
             Class<?> javaClass = root.getJavaClass();
             Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
             if (inheritance == null || inheritance.strategy() != InheritanceType.TABLE_PER_CLASS) {
