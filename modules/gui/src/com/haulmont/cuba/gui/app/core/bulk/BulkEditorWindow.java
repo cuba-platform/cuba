@@ -107,6 +107,9 @@ public class BulkEditorWindow extends AbstractWindow {
     protected boolean loadDynamicAttributes = true;
 
     @WindowParam
+    protected boolean useConfirmDialog = true;
+
+    @WindowParam
     protected Map<String, Field.Validator> fieldValidators;
 
     @WindowParam
@@ -605,28 +608,36 @@ public class BulkEditorWindow extends AbstractWindow {
                 }
 
                 if (!fields.isEmpty()) {
-                    showOptionDialog(getMessage("bulk.confirmation"),
-                            formatMessage("bulk.applyConfirmation", items.size(), StringUtils.join(fields, "\n")),
-                            MessageType.CONFIRMATION, new Action[]{
-                                    new AbstractAction("actions.Apply") {
-                                        {
-                                            icon = AppBeans.get(Icons.class)
-                                                    .get(CubaIcon.DIALOG_OK);
-                                        }
-
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            commitChanges();
-                                        }
-                                    },
-                                    new DialogAction(Type.CANCEL, Status.PRIMARY)
-                            });
+                    showConfirmDialogOrCommit(fields);
                 } else {
                     showNotification(getMessage("bulk.noChanges"), NotificationType.HUMANIZED);
                 }
             } else {
                 showNotification(sb.toString(), NotificationType.TRAY);
             }
+        }
+    }
+
+    protected void showConfirmDialogOrCommit(List<String> fields) {
+        if (useConfirmDialog) {
+            showOptionDialog(getMessage("bulk.confirmation"),
+                    formatMessage("bulk.applyConfirmation", items.size(), StringUtils.join(fields, "\n")),
+                    MessageType.CONFIRMATION, new Action[]{
+                            new AbstractAction("actions.Apply") {
+                                {
+                                    icon = AppBeans.get(Icons.class)
+                                            .get(CubaIcon.DIALOG_OK);
+                                }
+
+                                @Override
+                                public void actionPerform(Component component) {
+                                    commitChanges();
+                                }
+                            },
+                            new DialogAction(Type.CANCEL, Status.PRIMARY)
+                    });
+        } else {
+            commitChanges();
         }
     }
 

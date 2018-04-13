@@ -37,6 +37,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     protected List<Field.Validator> modelValidators;
     protected ConstraintOperationType constraintOperationType;
     protected boolean loadDynamicAttributes = true;
+    protected boolean useConfirmDialog = true;
 
     @Override
     public WindowManager.OpenType getOpenType() {
@@ -130,6 +131,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
             bulkEditAction.setVisible(visible);
             bulkEditAction.setConstraintOperationType(constraintOperationType);
             bulkEditAction.setLoadDynamicAttributes(loadDynamicAttributes);
+            bulkEditAction.setUseConfirmDialog(useConfirmDialog);
 
             listComponent.addAction(bulkEditAction);
         }
@@ -182,5 +184,18 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     @Override
     public boolean isLoadDynamicAttributes() {
         return loadDynamicAttributes;
+    }
+
+    @Override
+    public void setUseConfirmDialog(boolean useConfirmDialog) {
+        this.useConfirmDialog = useConfirmDialog;
+        if (bulkEditAction != null) {
+            bulkEditAction.setUseConfirmDialog(useConfirmDialog);
+        }
+    }
+
+    @Override
+    public boolean getUseConfirmDialog() {
+        return useConfirmDialog;
     }
 }

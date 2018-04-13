@@ -42,7 +42,7 @@ import java.util.*;
  */
 @org.springframework.stereotype.Component("cuba_BulkEditAction")
 @Scope("prototype")
-public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler  {
+public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler {
 
     protected OpenType openType = OpenType.DIALOG;
     protected String exclude;
@@ -50,6 +50,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
     protected Boolean loadDynamicAttributes;
+    protected Boolean useConfirmDialog;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
@@ -122,6 +123,14 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
         this.loadDynamicAttributes = loadDynamicAttribute;
     }
 
+    public void setUseConfirmDialog(Boolean useConfirmDialog) {
+        this.useConfirmDialog = useConfirmDialog;
+    }
+
+    public Boolean getUseConfirmDialog() {
+        return useConfirmDialog;
+    }
+
     @Override
     public void actionPerform(Component component) {
         if (beforeActionPerformedHandler != null) {
@@ -158,6 +167,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                 .pair("fieldValidators", fieldValidators)
                 .pair("modelValidators", modelValidators)
                 .pair("loadDynamicAttributes", loadDynamicAttributes)
+                .pair("useConfirmDialog", useConfirmDialog)
                 .create();
 
         Window bulkEditor = target.getFrame().openWindow("bulkEditor", openType, params);

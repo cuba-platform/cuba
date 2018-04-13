@@ -41,8 +41,7 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
     List<String> getIncludeProperties();
 
     /**
-     * Sets entity's attributes to the bulk editor dialog.
-     * Unspecified attributes will not be shown.
+     * Sets entity's attributes to the bulk editor dialog. Unspecified attributes will not be shown.
      *
      * @param includeProperties list of entity's attributes
      */
@@ -70,4 +69,16 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
      * @return {@link ConstraintOperationType} of the BulkEditAction
      */
     ConstraintOperationType getConstraintOperationType();
+
+    /**
+     * Set useConfirmDialog property to false if you want to disable confirm dialog and commit changes immediately.
+     *
+     * @param useConfirmDialog useConfirmDialog option
+     */
+    void setUseConfirmDialog(boolean useConfirmDialog);
+
+    /**
+     * @return true if confirm dialog should be enabled
+     */
+    boolean getUseConfirmDialog();
 }
