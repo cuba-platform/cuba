@@ -75,6 +75,15 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
         }
     }
 
+    public void reset() {
+        startedTransactionsCount.set(0);
+        committedTransactionsCount.set(0);
+        rolledBackTransactionsCount.set(0);
+        middlewareRequestsCount.set(0);
+        cubaScheduledTasksCount.set(0);
+        implicitFlushCount.set(0);
+    }
+
     protected String getAppName() {
         return config.getWebContextName();
     }
