@@ -836,6 +836,7 @@ create table TEST_NUMBER_ID_SINGLE_TABLE_ROOT (
     --
     NAME varchar(255),
     INFO varchar(255),
+    DESCRIPTION varchar(255),
     --
     primary key (ID)
 )^

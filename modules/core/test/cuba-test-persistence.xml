@@ -83,5 +83,6 @@
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdJoinedChild</class>
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot</class>
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableGrandChild</class>
     </persistence-unit>
 </persistence>

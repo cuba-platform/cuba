@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.sys.persistence.SequenceSupport
 import com.haulmont.cuba.testmodel.number_id.NumberIdJoinedChild
 import com.haulmont.cuba.testmodel.number_id.NumberIdJoinedRoot
 import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild
+import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableGrandChild
 import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -90,6 +91,18 @@ class NumberIdGenerationTest extends Specification {
         !sequenceExists(metadata.getClassNN(NumberIdSingleTableChild).getName())
         child1.id == root2.id + 1
         child2.id == child1.id + 1
+
+        when: "creating grand children entities"
+
+        def grandChild1 = metadata.create(NumberIdSingleTableGrandChild)
+        def grandChild2 = metadata.create(NumberIdSingleTableGrandChild)
+
+        then: "the same sequence as for root is used"
+
+        !sequenceExists(metadata.getClassNN(NumberIdSingleTableChild).getName())
+        !sequenceExists(metadata.getClassNN(NumberIdSingleTableGrandChild).getName())
+        grandChild1.id == child2.id + 1
+        grandChild2.id == grandChild1.id + 1
     }
 
     private boolean sequenceExists(String entityName) {
