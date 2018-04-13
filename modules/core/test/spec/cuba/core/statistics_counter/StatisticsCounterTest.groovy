@@ -17,6 +17,7 @@
 package spec.cuba.core.statistics_counter
 
 import com.haulmont.cuba.core.Persistence
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.jmx.StatisticsCounterMBean
 import com.haulmont.cuba.core.sys.AppContext
@@ -38,6 +39,7 @@ class StatisticsCounterTest extends Specification {
     void setup() {
         persistence = cont.persistence()
         statCounter = AppBeans.get(StatisticsCounterMBean)
+        AppBeans.get(MiddlewareStatisticsAccumulator).reset()
         AppContext.setProperty('cuba.entityLog.enabled', 'false')
     }
 
