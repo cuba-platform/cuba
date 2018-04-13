@@ -39,6 +39,7 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
     protected List<Field.Validator> modelValidators;
     protected ConstraintOperationType constraintOperationType;
     protected boolean loadDynamicAttributes = true;
+    protected boolean useConfirmDialog = true;
 
     public DesktopBulkEditor() {
         setCaption(null);
@@ -136,6 +137,7 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
             bulkEditAction.setVisible(visible);
             bulkEditAction.setConstraintOperationType(constraintOperationType);
             bulkEditAction.setLoadDynamicAttributes(loadDynamicAttributes);
+            bulkEditAction.setUseConfirmDialog(useConfirmDialog);
 
             listComponent.addAction(bulkEditAction);
         }
@@ -188,5 +190,18 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
     @Override
     public boolean isLoadDynamicAttributes() {
         return loadDynamicAttributes;
+    }
+
+    @Override
+    public void setUseConfirmDialog(boolean useConfirmDialog) {
+        this.useConfirmDialog = useConfirmDialog;
+        if (bulkEditAction != null) {
+            bulkEditAction.setUseConfirmDialog(useConfirmDialog);
+        }
+    }
+
+    @Override
+    public boolean getUseConfirmDialog() {
+        return useConfirmDialog;
     }
 }
