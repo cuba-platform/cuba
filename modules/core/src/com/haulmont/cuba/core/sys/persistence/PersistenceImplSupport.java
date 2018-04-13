@@ -381,11 +381,6 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         @Override
         public void afterCompletion(int status) {
             try {
-                if (status == TransactionSynchronization.STATUS_COMMITTED)
-                    statisticsAccumulator.incCommittedTransactionsCount();
-                else
-                    statisticsAccumulator.incRolledBackTransactionsCount();
-
                 Collection<Entity> instances = container.getAllInstances();
                 if (log.isTraceEnabled())
                     log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
