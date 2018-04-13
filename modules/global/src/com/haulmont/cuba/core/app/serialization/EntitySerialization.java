@@ -247,9 +247,10 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
 
         protected void writeIdField(Entity entity, JsonObject jsonObject) {
-            MetaProperty primaryKeyProperty = entity instanceof AbstractNotPersistentEntity ?
-                    entity.getMetaClass().getProperty("id") :
-                    metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            if (primaryKeyProperty == null) {
+                primaryKeyProperty = entity.getMetaClass().getProperty("id");
+            }
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
             if (metadataTools.hasCompositePrimaryKey(entity.getMetaClass())) {
