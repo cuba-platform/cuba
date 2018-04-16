@@ -840,3 +840,53 @@ create table TEST_NUMBER_ID_SINGLE_TABLE_ROOT (
     --
     primary key (ID)
 )^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_JPA_CASCADE_FOO (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    BAR_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JPA_CASCADE_BAR (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JPA_CASCADE_ITEM (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    FOO_ID varchar(36),
+    --
+    primary key (ID)
+)^
+

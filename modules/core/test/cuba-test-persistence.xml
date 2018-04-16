@@ -84,5 +84,9 @@
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot</class>
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild</class>
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableGrandChild</class>
+
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeFoo</class>
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeBar</class>
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
     </persistence-unit>
 </persistence>
