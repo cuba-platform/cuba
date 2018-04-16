@@ -1305,6 +1305,8 @@ public class DesktopWindowManager extends WindowManager {
         boolean hasPrimaryAction = false;
         for (final Action action : actions) {
             JButton button = new JButton(action.getCaption());
+            button.setEnabled(action.isEnabled());
+
             String icon = action.getIcon();
 
             if (icon != null) {
