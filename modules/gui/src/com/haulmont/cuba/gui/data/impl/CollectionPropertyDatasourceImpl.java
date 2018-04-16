@@ -61,7 +61,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected boolean doNotModify;
 
-    protected List<CollectionChangeListener<T, K>> collectionChangeListeners;
+    protected List<CollectionChangeListener<? super T, K>> collectionChangeListeners;
 
     protected AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -730,7 +730,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+    public void addCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         Preconditions.checkNotNullArgument(listener, "listener cannot be null");
 
         if (collectionChangeListeners == null) {
@@ -742,7 +742,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void removeCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+    public void removeCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         if (collectionChangeListeners != null) {
             collectionChangeListeners.remove(listener);
         }
@@ -816,7 +816,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
             CollectionChangeEvent<T, K> event = new CollectionChangeEvent<>(this, operation, items);
 
-            for (CollectionChangeListener<T, K> listener : new ArrayList<>(collectionChangeListeners)) {
+            for (CollectionChangeListener<? super T, K> listener : new ArrayList<>(collectionChangeListeners)) {
                 listener.collectionChanged(event);
             }
         }
