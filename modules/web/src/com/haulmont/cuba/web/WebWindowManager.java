@@ -1395,6 +1395,7 @@ public class WebWindowManager extends WindowManager {
         for (Action action : actions) {
             Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
+            button.setEnabled(action.isEnabled());
             button.addClickListener(event -> {
                 try {
                     action.actionPerform(null);
