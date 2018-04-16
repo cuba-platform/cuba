@@ -24,17 +24,14 @@ import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
-import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
-public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> implements TimeField {
+public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String, Date> implements TimeField {
 
     protected boolean showSeconds;
 
@@ -52,7 +49,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
         component.setMaskedMode(true);
         component.setTimeMask(true);
         setShowSeconds(timeFormat.contains("ss"));
-
+/*      vaadin8
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
         component.addValidator(value -> {
@@ -111,7 +108,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
             public Class<String> getPresentationType() {
                 return String.class;
             }
-        });
+        });*/
     }
 
     public boolean isAmPmUsed() {
@@ -257,9 +254,11 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField, Date> im
         String mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
         placeholder = StringUtils.replaceChars(mask, "#U", "__");
         component.setMask(mask);
-        component.setNullRepresentation(placeholder);
+//        vaadin8
+//        component.setNullRepresentation(placeholder);
     }
 
+//        vaadin8
 /* todo
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {

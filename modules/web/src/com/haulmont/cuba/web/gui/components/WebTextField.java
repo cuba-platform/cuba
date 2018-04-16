@@ -17,65 +17,130 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
-import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
-public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> implements TextField<V> {
+import java.text.ParseException;
+import java.util.Locale;
 
-    protected Datatype datatype;
-    protected Formatter formatter;
+public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V>
+        implements TextField<V>, InitializingBean {
+
+    protected Datatype<V> datatype;
+    protected Formatter<? super V> formatter;
 
     protected boolean trimming = true;
-    protected FieldEvents.TextChangeListener textChangeListener;
+
     protected ShortcutListener enterShortcutListener;
 
+    protected Locale locale;
+
     public WebTextField() {
+        this.component = createTextFieldImpl();
+
+        attachValueChangeListener(this.component);
     }
 
-    @Override
+//    vaadin8
+//    @Override
     protected CubaTextField createTextFieldImpl() {
         return new CubaTextField();
     }
 
     @Override
-    public Datatype getDatatype() {
+    protected String convertToPresentation(V modelValue) throws ConversionException {
+        if (formatter != null) {
+            return formatter.format(modelValue);
+        }
+
+        if (datatype != null) {
+            return datatype.format(modelValue);
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            return propertyDataType.format(modelValue);
+        }
+
+        return super.convertToPresentation(modelValue);
+    }
+
+    @Override
+    protected V convertToModel(String componentRawValue) throws ConversionException {
+        String value = componentRawValue;
+
+        if (isTrimming()) {
+            value = StringUtils.trimToEmpty(value);
+        }
+
+        if (datatype != null) {
+            try {
+                return datatype.parse(value, locale);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            try {
+                return propertyDataType.parse(componentRawValue);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
+        return super.convertToModel(componentRawValue);
+    }
+
+    @Override
+    public Datatype<V> getDatatype() {
         return datatype;
     }
 
     @Override
-    public void setDatatype(Datatype datatype) {
+    public void setDatatype(Datatype<V> datatype) {
         this.datatype = datatype;
-        if (datatype == null) {
-            initFieldConverter();
-        } else {
-            component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
-        }
     }
 
     @Override
     public CaseConversion getCaseConversion() {
-        return CaseConversion.valueOf(component.getCaseConversion().name());
+        return CaseConversion.NONE;
+//        vaadin8
+//        return CaseConversion.valueOf(component.getCaseConversion().name());
     }
 
     @Override
     public void setCaseConversion(CaseConversion caseConversion) {
-        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
-                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
-        component.setCaseConversion(widgetCaseConversion);
+//        vaadin8
+//        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
+//                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
+//        component.setCaseConversion(widgetCaseConversion);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Formatter<V> getFormatter() {
+        return (Formatter<V>) formatter;
     }
 
     @Override
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
-    @Override
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Formatter<? super V> formatter) {
         this.formatter = formatter;
     }
 
@@ -85,19 +150,8 @@ public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> impl
     }
 
     @Override
-    public void setMaxLength(int value) {
-        component.setMaxLength(value);
-    }
-
-    @Override
-    protected Datatype getActualDatatype() {
-        if (getMetaProperty() != null) {
-            return getMetaProperty().getRange().isDatatype() ? getMetaProperty().getRange().asDatatype() : null;
-        } else if (datatype != null) {
-            return datatype;
-        } else {
-            return Datatypes.getNN(String.class);
-        }
+    public void setMaxLength(int maxLength) {
+        component.setMaxLength(maxLength);
     }
 
     @Override
@@ -112,12 +166,12 @@ public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> impl
 
     @Override
     public String getInputPrompt() {
-        return component.getInputPrompt();
+        return component.getPlaceholder();
     }
 
     @Override
     public void setInputPrompt(String inputPrompt) {
-        component.setInputPrompt(inputPrompt);
+        component.setPlaceholder(inputPrompt);
     }
 
     @Override
@@ -137,51 +191,52 @@ public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> impl
 
     @Override
     public void setSelectionRange(int pos, int length) {
-        component.setSelectionRange(pos, length);
+        component.setSelection(pos, length);
+    }
+
+    @Override
+    protected void componentValueChanged(String prevComponentValue, String newComponentValue, boolean isUserOriginated) {
+        if (isUserOriginated) {
+            fireTextChangeEvent(newComponentValue);
+        }
+
+        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
+    }
+
+    protected void fireTextChangeEvent(String newComponentValue) {
+        // call it before value change due to compatibility with the previous versions
+        TextChangeEvent event = new TextChangeEvent(this, newComponentValue, component.getCursorPosition());
+        getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
     }
 
     @Override
     public void addTextChangeListener(TextChangeListener listener) {
         getEventRouter().addListener(TextChangeListener.class, listener);
-
-        if (textChangeListener == null) {
-            textChangeListener = (FieldEvents.TextChangeListener) e -> {
-                TextChangeEvent event = new TextChangeEvent(this, e.getText(), e.getCursorPosition());
-
-                getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
-            };
-            component.addTextChangeListener(textChangeListener);
-        }
     }
 
     @Override
     public void removeTextChangeListener(TextChangeListener listener) {
         getEventRouter().removeListener(TextChangeListener.class, listener);
-
-        if (textChangeListener != null && !getEventRouter().hasListeners(TextChangeListener.class)) {
-            component.removeTextChangeListener(textChangeListener);
-            textChangeListener = null;
-        }
     }
 
     @Override
     public void setTextChangeTimeout(int timeout) {
-        component.setTextChangeTimeout(timeout);
+        component.setValueChangeTimeout(timeout);
     }
 
     @Override
     public int getTextChangeTimeout() {
-        return component.getTextChangeTimeout();
+        return component.getValueChangeTimeout();
     }
 
     @Override
     public TextChangeEventMode getTextChangeEventMode() {
-        return WebWrapperUtils.toTextChangeEventMode(component.getTextChangeEventMode());
+        return WebWrapperUtils.toTextChangeEventMode(component.getValueChangeMode());
     }
 
     @Override
     public void setTextChangeEventMode(TextChangeEventMode mode) {
-        component.setTextChangeEventMode(WebWrapperUtils.toVaadinTextChangeEventMode(mode));
+        component.setValueChangeMode(WebWrapperUtils.toVaadinValueChangeEventMode(mode));
     }
 
     @Override
@@ -189,13 +244,11 @@ public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> impl
         getEventRouter().addListener(EnterPressListener.class, listener);
 
         if (enterShortcutListener == null) {
-            enterShortcutListener = new ShortcutListener("", KeyCode.ENTER, null) {
-                @Override
-                public void handleAction(Object sender, Object target) {
-                    EnterPressEvent event = new EnterPressEvent(WebTextField.this);
-                    getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
-                }
-            };
+            enterShortcutListener = new ShortcutListenerDelegate("", KeyCode.ENTER, null)
+                    .withHandler((sender, target) -> {
+                        EnterPressEvent event = new EnterPressEvent(WebTextField.this);
+                        getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                    });
             component.addShortcutListener(enterShortcutListener);
         }
     }
@@ -207,5 +260,50 @@ public class WebTextField<V> extends WebAbstractTextField<CubaTextField, V> impl
         if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
             component.removeShortcutListener(enterShortcutListener);
         }
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void commit() {
+        // vaadin8
+    }
+
+    @Override
+    public void discard() {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // vaadin8
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isModified() {
+        // vaadin8
+        return false;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        UserSessionSource userSessionSource =
+                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+
+        this.locale = userSessionSource.getLocale();
     }
 }

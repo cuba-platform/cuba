@@ -22,7 +22,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.ShortcutActionHandler;
-import com.vaadin.v7.client.ui.VTextField;
+import com.vaadin.client.ui.VTextField;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -150,7 +150,7 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
             setTabIndex(0);
         }
     }
-
+/* vaadin8
     @Override
     public void setText(String text) {
         String styleName = getStyleName();
@@ -175,7 +175,7 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
                 removeStyleName(CUBA_EMPTY_VALUE);
             }
         }
-    }
+    }*/
 
     @Override
     public void setEnabled(boolean enabled) {

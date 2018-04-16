@@ -33,13 +33,13 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaCheckBox;
 import com.haulmont.cuba.web.widgets.CubaWindow;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.v7.ui.ComboBox;
@@ -87,13 +87,11 @@ public class FolderEditWindow extends CubaWindow {
         setWidthUndefined();
         setResizable(false);
 
-        int[] modifiers = {ShortcutAction.ModifierKey.CTRL};
-        addAction(new ShortcutListener("commit", com.vaadin.event.ShortcutAction.KeyCode.ENTER, modifiers) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                commit();
-            }
-        });
+        addAction(
+                new ShortcutListenerDelegate("commit", KeyCode.ENTER, new int[]{ModifierKey.CTRL})
+                        .withHandler((sender, target) ->
+                                commit()
+                        ));
 
         layout = new VerticalLayout();
         layout.setWidthUndefined();

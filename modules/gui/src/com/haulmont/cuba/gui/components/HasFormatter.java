@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 /**
  * Object having a formatter.
  */
-public interface HasFormatter {
-    Formatter getFormatter();
-    void setFormatter(Formatter formatter);
+public interface HasFormatter<V> {
+    Formatter<V> getFormatter();
+    void setFormatter(Formatter<? super V> formatter);
 }

@@ -56,6 +56,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -66,7 +67,7 @@ import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
@@ -721,19 +722,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
         });
 
-        component.addShortcutListener(new ShortcutListener("tableEnter",
-                com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (target == WebAbstractTable.this.component) {
-                    if (enterPressAction != null) {
-                        enterPressAction.actionPerform(WebAbstractTable.this);
-                    } else {
-                        handleClickAction();
-                    }
-                }
-            }
-        });
+        component.addShortcutListener(
+                new ShortcutListenerDelegate("tableEnter", KeyCode.ENTER, null)
+                        .withHandler((sender, target) -> {
+                            if (target == this.component) {
+                                if (enterPressAction != null) {
+                                    enterPressAction.actionPerform(this);
+                                } else {
+                                    handleClickAction();
+                                }
+                            }
+                        }));
 
         component.addItemClickListener(event -> {
             if (event.isDoubleClick() && event.getItem() != null) {

@@ -106,8 +106,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
     public void setParent(Component parent) {
         if (this.parent instanceof EditableChangeNotifier
                 && parentEditableChangeListener != null) {
-            ((EditableChangeNotifier) this.parent)
-                    .removeEditableChangeListener(parentEditableChangeListener);
+            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
 
             parentEditableChangeListener = null;
         }

@@ -38,7 +38,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
 
     interface MaxLengthLimited {
         int getMaxLength();
-        void setMaxLength(int value);
+        void setMaxLength(int maxLength);
     }
 
     interface CursorPositionSupported {
@@ -66,6 +66,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
         void setSelectionRange(int pos, int length);
     }
 
+    // vaadin8 - unsupported in Vaadin 8 text fields
     interface TextChangeNotifier {
         void addTextChangeListener(TextChangeListener listener);
         void removeTextChangeListener(TextChangeListener listener);
@@ -109,6 +110,8 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
      * are triggered by typing text with keyboard, but e.g. pasting content from clip board to a text field also
      * triggers an event.
      * <p>
+     * vaadin8 - it is not supported anymore
+     *
      * TextChangeEvents differ from {@link ValueChangeEvent}s so that they are triggered repeatedly while the end user
      * is filling the field. ValueChangeEvents are not fired until the user for example hits enter or focuses another
      * field. Also note the difference that TextChangeEvents are only fired if the change is triggered from the user,

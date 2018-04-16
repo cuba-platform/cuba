@@ -17,18 +17,16 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.textarea.CubaTextAreaState;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.CompositeErrorMessage;
-import com.vaadin.server.ErrorMessage;
-import com.vaadin.v7.ui.TextArea;
+import com.vaadin.ui.TextArea;
 
 import java.util.Objects;
 
 public class CubaTextArea extends TextArea {
     public CubaTextArea() {
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
-        setShowErrorForDisabledState(false);
+//        vaadin8
+//        setValidationVisible(false);
+//        setShowBufferedSourceException(false);
+//        setShowErrorForDisabledState(false);
     }
 
     @Override
@@ -41,7 +39,8 @@ public class CubaTextArea extends TextArea {
         return (CubaTextAreaState) super.getState(markAsDirty);
     }
 
-    @Override
+    // vaadin8
+    /*@Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
         if (!isReadOnly() && isRequired() && isEmpty()) {
@@ -52,7 +51,7 @@ public class CubaTextArea extends TextArea {
             }
         }
         return superError;
-    }
+    }*/
 
     public CaseConversion getCaseConversion() {
         return CaseConversion.valueOf(getState(false).caseConversion);

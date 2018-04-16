@@ -23,7 +23,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.capslockindicator.CapsLockChangeHandler;
 import com.vaadin.client.BrowserInfo;
-import com.vaadin.v7.client.ui.VPasswordField;
+import com.vaadin.client.ui.VPasswordField;
 
 public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressHandler, KeyDownHandler {
 

@@ -21,8 +21,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
 import com.vaadin.client.BrowserInfo;
-import com.vaadin.shared.EventId;
-import com.vaadin.v7.client.ui.VTextField;
+import com.vaadin.client.ui.VTextField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +64,8 @@ public class CubaMaskedFieldWidget extends VTextField {
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
-        valueBeforeEdit = "";
+//        vaadin8
+//        valueBeforeEdit = "";
 
         initMaskMap();
 
@@ -270,7 +270,7 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
         return true;
     }
-
+/* vaadin8
     @Override
     public void valueChange(boolean blurred) {
         if (client != null && paintableId != null) {
@@ -332,7 +332,7 @@ public class CubaMaskedFieldWidget extends VTextField {
         if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
             valueBeforeEdit = getText();
         }
-    }
+    }*/
 
     protected native void addInputHandler(Element elementID)/*-{
         var temp = this;  // hack to hold on to 'this' reference
@@ -670,7 +670,8 @@ public class CubaMaskedFieldWidget extends VTextField {
                     && !e.getNativeEvent().getAltKey()
                     && !e.getNativeEvent().getCtrlKey()
                     && !e.getNativeEvent().getShiftKey()) {
-                valueChange(false);
+//                vaadin8
+//                valueChange(false);
             }
 
             if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE

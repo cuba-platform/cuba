@@ -45,6 +45,7 @@ public class CubaUIConnector extends UIConnector {
                 // silent time
                 ValidationErrorHolder.onValidationError();
 
+                // vaadin8 - get rid of this mechanism
                 ApplicationConnection.MethodInvocationFilter filter = mi -> {
                     // use blacklist of invocations
                     // do not discard all

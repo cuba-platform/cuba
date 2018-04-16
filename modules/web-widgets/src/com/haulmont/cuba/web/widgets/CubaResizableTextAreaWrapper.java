@@ -147,7 +147,7 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
-        textArea.setRequired(required);
+        textArea.setRequiredIndicatorVisible(required);
     }
 
     @Override

@@ -38,8 +38,8 @@ public interface TextArea<V> extends TextInputField<V>,
     boolean isWordwrap();
     void setWordwrap(boolean wordwrap);
 
-    Datatype getDatatype();
-    void setDatatype(Datatype datatype);
+    Datatype<V> getDatatype();
+    void setDatatype(Datatype<V> datatype);
 
     /**
      * Returns a string representation of the value.

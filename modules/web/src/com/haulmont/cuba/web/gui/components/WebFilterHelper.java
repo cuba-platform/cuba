@@ -35,6 +35,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -304,12 +305,11 @@ public class WebFilterHelper implements FilterHelper {
         }
         int keyCode = listener.getKeyCombination().getKey().getCode();
 
-        vTextField.addShortcutListener(new com.vaadin.event.ShortcutListener(listener.getCaption(), keyCode, modifiers) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                listener.handleShortcutPressed();
-            }
-        });
+        vTextField.addShortcutListener(
+                new ShortcutListenerDelegate(listener.getCaption(), keyCode, modifiers)
+                    .withHandler((sender, target) ->
+                            listener.handleShortcutPressed()
+                    ));
     }
 
     @Override

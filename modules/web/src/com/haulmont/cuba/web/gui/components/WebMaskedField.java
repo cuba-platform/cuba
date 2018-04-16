@@ -18,13 +18,20 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
-public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, String> implements MaskedField {
+public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, String, String> implements MaskedField {
 
     protected ShortcutListener enterShortcutListener;
+
+    public WebMaskedField() {
+        this.component = createTextFieldImpl();
+
+        attachValueChangeListener(component);
+    }
 
     @Override
     public void setMask(String mask) {
@@ -61,7 +68,8 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, St
         return component.getValue();
     }
 
-    @Override
+//    vaadin8
+//    @Override
     protected CubaMaskedTextField createTextFieldImpl() {
         return new CubaMaskedTextField();
     }
@@ -78,7 +86,8 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, St
 
     @Override
     public void setSelectionRange(int pos, int length) {
-        component.setSelectionRange(pos, length);
+//        vaadin8
+//        component.setSelectionRange(pos, length);
     }
 
     @Override
@@ -86,13 +95,11 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, St
         getEventRouter().addListener(EnterPressListener.class, listener);
 
         if (enterShortcutListener == null) {
-            enterShortcutListener = new ShortcutListener("enter", KeyCode.ENTER, null) {
-                @Override
-                public void handleAction(Object sender, Object target) {
-                    EnterPressEvent event = new EnterPressEvent(WebMaskedField.this);
-                    getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
-                }
-            };
+            enterShortcutListener = new ShortcutListenerDelegate("enter", KeyCode.ENTER, null)
+                    .withHandler((sender, target) -> {
+                        EnterPressEvent event = new EnterPressEvent(WebMaskedField.this);
+                        getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                    });
             component.addShortcutListener(enterShortcutListener);
         }
     }
@@ -104,5 +111,42 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField, St
         if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
             component.removeShortcutListener(enterShortcutListener);
         }
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void commit() {
+        // vaadin8
+    }
+
+    @Override
+    public void discard() {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // vaadin8
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isModified() {
+        // vaadin8
+        return false;
     }
 }

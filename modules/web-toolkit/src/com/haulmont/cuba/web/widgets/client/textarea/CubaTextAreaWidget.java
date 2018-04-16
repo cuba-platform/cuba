@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.textarea;
 
 import com.google.gwt.dom.client.Element;
-import com.vaadin.v7.client.ui.VTextArea;
+import com.vaadin.client.ui.VTextArea;
 
 public class CubaTextAreaWidget extends VTextArea {
     protected static final String CUBA_DISABLED_OR_READONLY = "c-disabled-or-readonly";
@@ -69,6 +69,7 @@ public class CubaTextAreaWidget extends VTextArea {
         }
     }
 
+/*  vaadin8
     @Override
     public void setText(String text) {
         String styleName = getStyleName();
@@ -93,7 +94,7 @@ public class CubaTextAreaWidget extends VTextArea {
                 removeStyleName(CUBA_EMPTY_VALUE);
             }
         }
-    }
+    }*/
 
     @Override
     public void setEnabled(boolean enabled) {

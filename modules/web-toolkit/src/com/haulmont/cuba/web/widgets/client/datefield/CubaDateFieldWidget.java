@@ -54,7 +54,8 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         super.buildDate(forceValid);
         // Update valueBeforeEdit and send onChange
         // in case of selecting date using Calendar popup
-        getImpl().valueChange(false);
+//        vaadin8
+//        getImpl().valueChange(false);
     }
 
     @Override
@@ -62,7 +63,8 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         return (CubaMaskedFieldWidget) super.getImpl();
     }
 
-    @Override
+//    vaadin8
+    /*@Override
     protected CubaMaskedFieldWidget createImpl() {
         CubaMaskedFieldWidget cubaMaskedFieldWidget = new CubaMaskedFieldWidget() {
 
@@ -106,7 +108,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         cubaMaskedFieldWidget.setImmediate(isImmediate());
 
         return cubaMaskedFieldWidget;
-    }
+    }*/
 
     @Override
     public void onBrowserEvent(Event event) {
@@ -129,6 +131,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
     }
 
     public void updateTextState() {
-        getImpl().updateTextState();
+//        vaadin8
+//        getImpl().updateTextState();
     }
 }

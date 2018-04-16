@@ -58,6 +58,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.widgets.*;
@@ -1168,7 +1169,7 @@ public class WebWindowManager extends WindowManager {
     public void showMessageDialog(String title, String message, MessageType messageType) {
         backgroundWorker.checkUIAccess();
 
-        final com.vaadin.ui.Window vWindow = new CubaWindow(title);
+        com.vaadin.ui.Window vWindow = new CubaWindow(title);
 
         if (ui.isTestMode()) {
             vWindow.setCubaId("messageDialog");
@@ -1178,26 +1179,25 @@ public class WebWindowManager extends WindowManager {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination closeCombination = KeyCombination.create(closeShortcut);
 
-        vWindow.addAction(new ShortcutListener("Esc", closeCombination.getKey().getCode(),
-                KeyCombination.Modifier.codes(closeCombination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                vWindow.close();
-            }
-        });
+        vWindow.addAction(
+                new ShortcutListenerDelegate("Esc",
+                        closeCombination.getKey().getCode(),
+                        KeyCombination.Modifier.codes(closeCombination.getModifiers())
+                ).withHandler((sender, target) ->
+                        vWindow.close()
+                ));
 
-        vWindow.addAction(new ShortcutListener("Enter", ShortcutAction.KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                vWindow.close();
-            }
-        });
+        vWindow.addAction(new ShortcutListenerDelegate("Enter", ShortcutAction.KeyCode.ENTER, null)
+                .withHandler((sender, target) -> {
+                    vWindow.close();
+                }));
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("c-app-message-dialog");
         layout.setMargin(false);
         layout.setSpacing(true);
-        if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
+        if (messageType.getWidth() != null
+                && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
         }
         vWindow.setContent(layout);
@@ -1690,58 +1690,60 @@ public class WebWindowManager extends WindowManager {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination combination = KeyCombination.create(closeShortcut);
 
-        return new ShortcutListener("onClose", combination.getKey().getCode(),
-                KeyCombination.Modifier.codes(combination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow));
-                if (workArea.getState() != AppWorkArea.State.WINDOW_CONTAINER) {
-                    return;
-                }
+        return new ShortcutListenerDelegate("onClose", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers()))
+                .withHandler((sender, target) ->
+                        closeWindowByShortcut(topLevelWindow)
+                );
+    }
 
-                if (workArea.getMode() == Mode.TABBED) {
-                    TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
-                    if (tabSheet != null) {
-                        Layout layout = (Layout) tabSheet.getSelectedTab();
-                        if (layout != null) {
-                            tabSheet.focus();
+    protected void closeWindowByShortcut(Window.TopLevelWindow topLevelWindow) {
+        WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow));
+        if (workArea.getState() != AppWorkArea.State.WINDOW_CONTAINER) {
+            return;
+        }
 
-                            WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+        if (workArea.getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+            if (tabSheet != null) {
+                Layout layout = (Layout) tabSheet.getSelectedTab();
+                if (layout != null) {
+                    tabSheet.focus();
 
-                            if (!canWindowBeClosed(breadCrumbs.getCurrentWindow())) {
-                                return;
-                            }
+                    WindowBreadCrumbs breadCrumbs = tabs.get(layout);
 
-                            if (isCloseWithShortcutPrevented(breadCrumbs.getCurrentWindow())) {
-                                return;
-                            }
-
-                            if (stacks.get(breadCrumbs).empty()) {
-                                final Component previousTab = tabSheet.getPreviousTab(layout);
-                                if (previousTab != null) {
-                                    breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, () ->
-                                            tabSheet.setSelectedTab(previousTab)
-                                    );
-                                } else {
-                                    breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
-                                }
-                            } else {
-                                breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
-                            }
-                        }
+                    if (!canWindowBeClosed(breadCrumbs.getCurrentWindow())) {
+                        return;
                     }
-                } else {
-                    Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
-                    if (it.hasNext()) {
-                        Window currentWindow = it.next().getCurrentWindow();
-                        if (!isCloseWithShortcutPrevented(currentWindow)) {
-                            ui.focus();
-                            currentWindow.close(Window.CLOSE_ACTION_ID);
+
+                    if (isCloseWithShortcutPrevented(breadCrumbs.getCurrentWindow())) {
+                        return;
+                    }
+
+                    if (stacks.get(breadCrumbs).empty()) {
+                        final Component previousTab = tabSheet.getPreviousTab(layout);
+                        if (previousTab != null) {
+                            breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, () ->
+                                    tabSheet.setSelectedTab(previousTab)
+                            );
+                        } else {
+                            breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                         }
+                    } else {
+                        breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                     }
                 }
             }
-        };
+        } else {
+            Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
+            if (it.hasNext()) {
+                Window currentWindow = it.next().getCurrentWindow();
+                if (!isCloseWithShortcutPrevented(currentWindow)) {
+                    ui.focus();
+                    currentWindow.close(Window.CLOSE_ACTION_ID);
+                }
+            }
+        }
     }
 
     protected boolean canWindowBeClosed(Window window) {
@@ -1825,52 +1827,53 @@ public class WebWindowManager extends WindowManager {
         String nextTabShortcut = clientConfig.getNextTabShortcut();
         KeyCombination combination = KeyCombination.create(nextTabShortcut);
 
-        return new ShortcutListener("onNextTab", combination.getKey().getCode(),
-                KeyCombination.Modifier.codes(combination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                TabSheetBehaviour tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow))
-                        .getTabbedWindowContainer().getTabSheetBehaviour();
+        return new ShortcutListenerDelegate(
+                "onNextTab", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())
+        ).withHandler((sender, target) -> {
+            WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow));
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
-                if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
-                    Component selectedTabComponent = tabSheet.getSelectedTab();
-                    String tabId = tabSheet.getTab(selectedTabComponent);
-                    int tabPosition = tabSheet.getTabPosition(tabId);
-                    int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
+            if (tabSheet != null
+                    && !hasDialogWindows()
+                    && tabSheet.getComponentCount() > 1) {
+                Component selectedTabComponent = tabSheet.getSelectedTab();
+                String tabId = tabSheet.getTab(selectedTabComponent);
+                int tabPosition = tabSheet.getTabPosition(tabId);
+                int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
 
-                    String newTabId = tabSheet.getTab(newTabPosition);
-                    tabSheet.setSelectedTab(newTabId);
+                String newTabId = tabSheet.getTab(newTabPosition);
+                tabSheet.setSelectedTab(newTabId);
 
-                    moveFocus(tabSheet, newTabId);
-                }
+                moveFocus(tabSheet, newTabId);
             }
-        };
+        });
     }
 
     public ShortcutListener createPreviousWindowTabShortcut(Window.TopLevelWindow topLevelWindow) {
         String previousTabShortcut = clientConfig.getPreviousTabShortcut();
         KeyCombination combination = KeyCombination.create(previousTabShortcut);
 
-        return new ShortcutListener("onPreviousTab", combination.getKey().getCode(),
-                KeyCombination.Modifier.codes(combination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                TabSheetBehaviour tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow))
-                        .getTabbedWindowContainer().getTabSheetBehaviour();
+        return new ShortcutListenerDelegate("onPreviousTab", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())
+        ).withHandler((sender, target) -> {
+            WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow));
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
-                if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
-                    Component selectedTabComponent = tabSheet.getSelectedTab();
-                    String selectedTabId = tabSheet.getTab(selectedTabComponent);
-                    int tabPosition = tabSheet.getTabPosition(selectedTabId);
-                    int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
+            if (tabSheet != null
+                    && !hasDialogWindows()
+                    && tabSheet.getComponentCount() > 1) {
+                Component selectedTabComponent = tabSheet.getSelectedTab();
+                String selectedTabId = tabSheet.getTab(selectedTabComponent);
+                int tabPosition = tabSheet.getTabPosition(selectedTabId);
+                int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
 
-                    String newTabId = tabSheet.getTab(newTabPosition);
-                    tabSheet.setSelectedTab(newTabId);
+                String newTabId = tabSheet.getTab(newTabPosition);
+                tabSheet.setSelectedTab(newTabId);
 
-                    moveFocus(tabSheet, newTabId);
-                }
+                moveFocus(tabSheet, newTabId);
             }
-        };
+        });
     }
 
     protected class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {

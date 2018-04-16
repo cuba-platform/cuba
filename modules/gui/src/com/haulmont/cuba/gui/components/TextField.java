@@ -28,13 +28,13 @@ public interface TextField<V>
             TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
-            HasFormatter,
+            HasFormatter<V>,
             HasInputPrompt {
 
     String NAME = "textField";
 
-    Datatype getDatatype();
-    void setDatatype(Datatype datatype);
+    Datatype<V> getDatatype();
+    void setDatatype(Datatype<V> datatype);
 
     /**
      * Returns a string representation of the value.

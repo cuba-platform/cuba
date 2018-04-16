@@ -22,6 +22,10 @@ import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -34,6 +38,9 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
     @Inject
     protected List<ComponentGenerationStrategy> componentGenerationStrategies;
+
+    @Inject
+    protected ApplicationContext applicationContext;
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<>();
 
@@ -114,6 +121,25 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         }
     }
 
+    protected void autowireContext(Component instance) {
+        AutowireCapableBeanFactory autowireBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+        autowireBeanFactory.autowireBean(instance);
+
+        if (instance instanceof ApplicationContextAware) {
+            ((ApplicationContextAware) instance).setApplicationContext(applicationContext);
+        }
+
+        if (instance instanceof InitializingBean) {
+            try {
+                ((InitializingBean) instance).afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "Unable to initialize Component - calling afterPropertiesSet for " +
+                                instance.getClass());
+            }
+        }
+    }
+
     @Override
     public Component createComponent(String name) {
         final Class<? extends Component> componentClass = classes.get(name);
@@ -122,14 +148,17 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         }
 
         try {
-            return componentClass.newInstance();
+            Component instance = componentClass.newInstance();
+            autowireContext(instance);
+            return instance;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error creating the '" + name + "' component instance", e);
         }
     }
 
+    @SuppressWarnings("UnnecessarySemicolon")
     @Override
-    public <T extends Component> T createComponent(Class<T> type) {
+    public <T extends Component> T createComponent(Class type) {
         String name = names.get(type);
         if (name == null) {
             java.lang.reflect.Field nameField;
@@ -143,7 +172,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
             else
                 names.put(type, name);
         }
-        return type.cast(createComponent(name));
+        return (T) createComponent(name);
     }
 
     @Override

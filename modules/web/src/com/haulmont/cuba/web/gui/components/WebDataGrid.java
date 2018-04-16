@@ -45,6 +45,7 @@ import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
 import com.haulmont.cuba.web.gui.components.converters.StringToObjectConverter;
 import com.haulmont.cuba.web.gui.components.converters.YesNoIconConverter;
 import com.haulmont.cuba.web.gui.components.renderers.*;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -173,19 +174,18 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
             @Override
             protected ShortcutListener attachShortcut(String actionId, KeyCombination keyCombination) {
-                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-
-                    @Override
-                    public void handleAction(Object sender, Object target) {
-                        if (target == component) {
-                            Action action = getAction(actionId);
-                            if (action != null && action.isEnabled() && action.isVisible()) {
-                                action.actionPerform(WebDataGrid.this);
+                ShortcutListener shortcut =
+                        new ShortcutListenerDelegate(actionId, keyCombination.getKey().getCode(),
+                                KeyCombination.Modifier.codes(keyCombination.getModifiers())
+                        ).withHandler((sender, target) -> {
+                            if (target == component) {
+                                Action action = getAction(actionId);
+                                if (action != null && action.isEnabled() && action.isVisible()) {
+                                    action.actionPerform(WebDataGrid.this);
+                                }
                             }
-                        }
-                    }
-                };
+                        });
+
                 component.addShortcutListener(shortcut);
                 return shortcut;
             }
@@ -280,24 +280,23 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         });
 
-        component.addShortcutListener(new ShortcutListener("dataGridEnter", KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (target == WebDataGrid.this.component) {
-                    if (WebDataGrid.this.isEditorEnabled()) {
-                        // Prevent custom actions on Enter if DataGrid editor is enabled
-                        // since it's the default shortcut to open editor
-                        return;
-                    }
+        component.addShortcutListener(
+                new ShortcutListenerDelegate("dataGridEnter", KeyCode.ENTER, null)
+                        .withHandler((sender, target) -> {
+                            if (target == this.component) {
+                                if (WebDataGrid.this.isEditorEnabled()) {
+                                    // Prevent custom actions on Enter if DataGrid editor is enabled
+                                    // since it's the default shortcut to open editor
+                                    return;
+                                }
 
-                    if (enterPressAction != null) {
-                        enterPressAction.actionPerform(WebDataGrid.this);
-                    } else {
-                        handleDoubleClickAction();
-                    }
-                }
-            }
-        });
+                                if (enterPressAction != null) {
+                                    enterPressAction.actionPerform(this);
+                                } else {
+                                    handleDoubleClickAction();
+                                }
+                            }
+                        }));
 
         component.addItemClickListener(e -> {
             if (e.isDoubleClick() && e.getItem() != null && !WebDataGrid.this.isEditorEnabled()) {

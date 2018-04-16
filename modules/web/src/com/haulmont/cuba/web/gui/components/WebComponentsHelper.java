@@ -21,12 +21,14 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.widgets.*;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
@@ -299,7 +301,7 @@ public class WebComponentsHelper {
             return new com.vaadin.event.ShortcutAction(
                     action.getCaption(),
                     keyCombination.getKey().getCode(),
-                    KeyCombination.Modifier.codes(keyCombination.getModifiers())
+                    Modifier.codes(keyCombination.getModifiers())
             );
         } else {
             return null;
@@ -437,7 +439,7 @@ public class WebComponentsHelper {
 
     public static void setClickShortcut(Button button, String shortcut) {
         KeyCombination closeCombination = KeyCombination.create(shortcut);
-        int[] closeModifiers = KeyCombination.Modifier.codes(closeCombination.getModifiers());
+        int[] closeModifiers = Modifier.codes(closeCombination.getModifiers());
         int closeCode = closeCombination.getKey().getCode();
 
         button.setClickShortcut(closeCode, closeModifiers);
@@ -526,14 +528,14 @@ public class WebComponentsHelper {
     }
 
     @Deprecated
-    public static void addEnterShortcut(TextField textField, final Runnable runnable) {
-        CubaTextField cubaTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
-        cubaTextField.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, KeyCombination.Modifier.codes()) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                runnable.run();
-            }
-        });
+    public static void addEnterShortcut(TextField textField, Runnable runnable) {
+        CubaTextField cubaTextField = textField.unwrap(CubaTextField.class);
+
+        cubaTextField.addShortcutListener(
+                new ShortcutListenerDelegate("", ShortcutAction.KeyCode.ENTER, null)
+                    .withHandler((sender, target) ->
+                            runnable.run()
+                    ));
     }
 
     public static void focusProblemComponent(ValidationErrors errors) {

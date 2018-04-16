@@ -18,15 +18,18 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueBinder;
-import com.haulmont.cuba.gui.components.data.ValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.*;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+
+import javax.inject.Inject;
 
 public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
+
+    @Inject
+    protected ApplicationContext applicationContext;
 
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
@@ -40,8 +43,7 @@ public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.v
         }
 
         if (valueSource != null) {
-            // todo use ApplicationContextAware and lookup
-            ValueBinder binder = AppBeans.get(ValueBinder.class);
+            ValueBinder binder = applicationContext.getBean(ValueBinder.NAME, ValueBinder.class);
 
             this.valueBinding = binder.bind(this, valueSource);
 
@@ -86,31 +88,60 @@ public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.v
     @SuppressWarnings("unchecked")
     @Override
     public void setValue(V value) {
-        component.setValue(convertToPresentation(value));
-    }
+        setValueToPresentation(convertToPresentation(value));
 
-    protected void componentValueChanged(P prevComponentValue, P newComponentValue, boolean isUserOriginated) {
-        V value = convertToModel(newComponentValue);
         V oldValue = internalValue;
-        internalValue = value;
+        this.internalValue = value;
 
         if (!fieldValueEquals(value, oldValue)) {
-            if (hasValidationError()) {
-                setValidationError(null);
-            }
-
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
     }
 
+    protected void setValueToPresentation(P value) {
+        if (hasValidationError()) {
+            setValidationError(null);
+        }
+
+        component.setValue(value);
+    }
+
+    protected void componentValueChanged(P prevComponentValue, P newComponentValue, boolean isUserOriginated) {
+        if (isUserOriginated) {
+            V value;
+
+            try {
+                value = convertToModel(newComponentValue);
+                P presentationValue = convertToPresentation(value);
+
+                // always update presentation value after change
+                // for instance: "1000" entered by user could be "1 000" in case of integer formatting
+                setValueToPresentation(presentationValue);
+            } catch (ConversionException ce) {
+                LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
+
+                setValidationError(ce.getMessage());
+                return;
+            }
+
+            V oldValue = internalValue;
+            internalValue = value;
+
+            if (!fieldValueEquals(value, oldValue)) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
+                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    protected V convertToModel(P componentRawValue) {
+    protected V convertToModel(P componentRawValue) throws ConversionException {
         return (V) componentRawValue;
     }
 
     @SuppressWarnings("unchecked")
-    protected P convertToPresentation(V modelValue) {
+    protected P convertToPresentation(V modelValue) throws ConversionException {
         return (P) modelValue;
     }
 

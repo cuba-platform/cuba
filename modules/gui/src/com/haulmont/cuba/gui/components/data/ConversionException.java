@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets.client.textarea;
+package com.haulmont.cuba.gui.components.data;
 
-import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.shared.ui.textarea.TextAreaState;
+/**
+ * Exception that can be thrown during value conversion methods of UI components.
+ */
+public class ConversionException extends RuntimeException {
+    public ConversionException(String message) {
+        super(message);
+    }
 
-public class CubaTextAreaState extends TextAreaState {
-
-    @NoLayout
-    public String caseConversion = "NONE";
+    public ConversionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

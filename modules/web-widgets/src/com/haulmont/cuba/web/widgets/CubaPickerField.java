@@ -41,6 +41,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
 
     // CAUTION used only for IE 9 layout, is null for another browsers
     // Fixes PL-8205
+    // vaadin8 remove completely
     protected CssLayout ie9InputWrapper = null;
 
     protected boolean useCustomField = false;
@@ -119,7 +120,8 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         field.setReadOnlyFocusable(true);
 
         field.setReadOnly(true);
-        field.setNullRepresentation("");
+//        vaadin8
+//        field.setNullRepresentation("");
 
         addValueChangeListener(event -> {
             if (!suppressTextChangeListener) {
@@ -127,7 +129,8 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
             }
         });
 
-        this.field = field;
+//        vaadin8
+//        this.field = field;
     }
 
     public boolean isFieldReadOnly() {
@@ -213,7 +216,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         suppressTextChangeListener = true;
 
         String value = getStringRepresentation();
-        textField.setValueIgnoreReadOnly(value != null ? value : "");
+        textField.setValue(value != null ? value : "");
 
         suppressTextChangeListener = false;
     }

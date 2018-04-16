@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
@@ -23,6 +24,8 @@ import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -33,18 +36,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @org.springframework.stereotype.Component(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory {
-
+    @Inject
+    protected ApplicationContext applicationContext;
     @Inject
     protected List<ComponentGenerationStrategy> componentGenerationStrategies;
 
-    @Inject
-    protected ApplicationContext applicationContext;
+    protected Map<String, Class<? extends Component>> classes = new ConcurrentHashMap<>();
+    protected Map<Class, String> names = new ConcurrentHashMap<>();
 
-    private static Map<String, Class<? extends Component>> classes = new ConcurrentHashMap<>();
-
-    private static Map<Class, String> names = new ConcurrentHashMap<>();
-
-    static {
+    {
         classes.put(Window.NAME, WebWindow.class);
         classes.put(Window.Editor.NAME, WebWindow.Editor.class);
         classes.put(Window.Lookup.NAME, WebWindow.Lookup.class);
@@ -66,8 +66,10 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(SourceCodeEditor.NAME, WebSourceCodeEditor.class);
         classes.put(TextField.NAME, WebTextField.class);
         classes.put(PasswordField.NAME, WebPasswordField.class);
-        // Use resizable text area instead of text area
+
         classes.put(ResizableTextArea.NAME, WebResizableTextArea.class);
+        // vaadin8 - PL-9217
+//        classes.put(TextArea.NAME, WebTextArea.class);
         classes.put(RichTextArea.NAME, WebRichTextArea.class);
         classes.put(MaskedField.NAME, WebMaskedField.class);
 
@@ -136,7 +138,9 @@ public class WebComponentsFactory implements ComponentsFactory {
      */
     @Deprecated
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
-        classes.put(element, componentClass);
+        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+
+        ((WebComponentsFactory) componentsFactory).classes.put(element, componentClass);
     }
 
     /**
@@ -144,10 +148,13 @@ public class WebComponentsFactory implements ComponentsFactory {
      */
     @Deprecated
     public static void registerComponents(ComponentPalette... palettes) {
+        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+        WebComponentsFactory webComponentsFactory = (WebComponentsFactory) componentsFactory;
+
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends Component>> loaders = palette.getComponents();
             for (Map.Entry<String, Class<? extends Component>> loaderEntry : loaders.entrySet()) {
-                classes.put(loaderEntry.getKey(), loaderEntry.getValue());
+                webComponentsFactory.classes.put(loaderEntry.getKey(), loaderEntry.getValue());
             }
         }
     }
@@ -172,8 +179,21 @@ public class WebComponentsFactory implements ComponentsFactory {
     }
 
     protected void autowireContext(Component instance) {
+        AutowireCapableBeanFactory autowireBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+        autowireBeanFactory.autowireBean(instance);
+
         if (instance instanceof ApplicationContextAware) {
             ((ApplicationContextAware) instance).setApplicationContext(applicationContext);
+        }
+
+        if (instance instanceof InitializingBean) {
+            try {
+                ((InitializingBean) instance).afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "Unable to initialize UI Component - calling afterPropertiesSet for " +
+                        instance.getClass(), e);
+            }
         }
     }
 

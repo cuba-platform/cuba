@@ -21,7 +21,6 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.haulmont.cuba.web.widgets.CurrencyLabelPosition;
-import com.haulmont.cuba.web.gui.components.converters.StringToDatatypeConverter;
 import com.vaadin.server.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -73,11 +72,12 @@ public class CubaCurrencyField extends CustomField {
 
         textField.addStyleName(CURRENCYFIELD_TEXT_STYLENAME);
 
-        textField.setValidationVisible(false);
+//        vaadin8
+        /*textField.setValidationVisible(false);
         textField.setShowBufferedSourceException(false);
         textField.setShowErrorForDisabledState(false);
         textField.setNullRepresentation(StringUtils.EMPTY);
-        textField.setConverter(new StringToDatatypeConverter(datatype));
+        textField.setConverter(new StringToDatatypeConverter(datatype));*/
 
         textField.addValueChangeListener(event -> markAsDirty());
     }
@@ -200,32 +200,36 @@ public class CubaCurrencyField extends CustomField {
 
     @Override
     public void setRequired(boolean required) {
-        textField.setRequired(required);
+        textField.setRequiredIndicatorVisible(required);
 
         markAsDirty();
     }
 
     @Override
     public boolean isRequired() {
-        return textField.isRequired();
+        return textField.isRequiredIndicatorVisible();
     }
 
     @Override
     public void setRequiredError(String requiredMessage) {
-        textField.setRequiredError(requiredMessage);
+//        vaadin8
+//        textField.setRequiredError(requiredMessage);
 
         markAsDirty();
     }
 
     @Override
     public String getRequiredError() {
-        return textField.getRequiredError();
+        //        vaadin8
+//        return textField.getRequiredError();
+
+        return null;
     }
 
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!textField.isReadOnly() && textField.isRequired() && textField.isEmpty()) {
+        if (!textField.isReadOnly() && textField.isRequiredIndicatorVisible() && textField.isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
@@ -245,8 +249,9 @@ public class CubaCurrencyField extends CustomField {
         try {
             Object parsedValue = datatype.parse(textField.getValue(), getLocale());
 
-            textField.setConverter(new StringToDatatypeConverter(datatype));
-            textField.setConvertedValue(parsedValue);
+//            vaadin8
+//            textField.setConverter(new StringToDatatypeConverter(datatype));
+//            textField.setConvertedValue(parsedValue);
         } catch (ParseException e) {
             String message = String.format("Value %s cannot be parsed as %s datatype",
                     textField.getValue(), datatype);

@@ -21,11 +21,17 @@ import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
 
-public class WebPasswordField extends WebAbstractTextField<CubaPasswordField, String> implements PasswordField {
+public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, String, String> implements PasswordField {
 
     protected CapsLockIndicator capsLockIndicator;
 
-    @Override
+    public WebPasswordField() {
+        this.component = createTextFieldImpl();
+
+        attachValueChangeListener(component);
+    }
+
+    //    @Override
     protected CubaPasswordField createTextFieldImpl() {
         return new CubaPasswordField();
     }
@@ -48,6 +54,43 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField, St
     @Override
     public void setAutocomplete(Boolean value) {
         component.setAutocomplete(value);
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void commit() {
+        // vaadin8
+    }
+
+    @Override
+    public void discard() {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // vaadin8
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // vaadin8
+    }
+
+    @Override
+    public boolean isModified() {
+        // vaadin8
+        return false;
     }
 
     @Override

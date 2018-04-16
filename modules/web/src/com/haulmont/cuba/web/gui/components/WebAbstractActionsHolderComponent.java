@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ShortcutsDelegate;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -68,20 +69,19 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
 
         shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
             @Override
-            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
-                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-
-                    @Override
-                    public void handleAction(Object sender, Object target) {
-                        if (target == component) {
-                            Action action = getAction(actionId);
-                            if (action != null && action.isEnabled() && action.isVisible()) {
-                                action.actionPerform(WebAbstractActionsHolderComponent.this);
+            protected ShortcutListener attachShortcut(String actionId, KeyCombination keyCombination) {
+                ShortcutListener shortcut =
+                        new ShortcutListenerDelegate(actionId, keyCombination.getKey().getCode(),
+                                KeyCombination.Modifier.codes(keyCombination.getModifiers())
+                        ).withHandler((sender, target) -> {
+                            if (target == component) {
+                                Action action = getAction(actionId);
+                                if (action != null && action.isEnabled() && action.isVisible()) {
+                                    action.actionPerform(WebAbstractActionsHolderComponent.this);
+                                }
                             }
-                        }
-                    }
-                };
+                        });
+
                 component.addShortcutListener(shortcut);
                 return shortcut;
             }

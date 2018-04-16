@@ -39,8 +39,11 @@ import java.util.Collection;
 
 // todo buffering support
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-@org.springframework.stereotype.Component()
+@org.springframework.stereotype.Component(ValueBinder.NAME)
 public class ValueBinder {
+
+    public static final String NAME = "cuba_ValueBinder";
+
     @Inject
     protected MessageTools messageTools;
     @Inject

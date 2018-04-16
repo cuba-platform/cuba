@@ -26,11 +26,11 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaTextField;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -58,12 +58,11 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
             searchField.setCubaId("ftsField");
             searchField.setId(ui.getTestIdManager().reserveId("ftsField"));
         }
-        searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                openSearchWindow();
-            }
-        });
+        searchField.addShortcutListener(
+                new ShortcutListenerDelegate("fts", KeyCode.ENTER, null)
+                        .withHandler((sender, target) ->
+                                openSearchWindow()
+                        ));
 
         searchBtn = new CubaButton();
         searchBtn.setStyleName("c-ftsfield-button");

@@ -18,12 +18,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
-import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
@@ -32,24 +29,29 @@ import org.dom4j.Element;
 
 public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V> implements ResizableTextArea<V> {
 
-    protected Datatype datatype;
-
     protected CubaResizableTextAreaWrapper wrapper;
     protected boolean settingsEnabled = true;
 
-    protected FieldEvents.TextChangeListener textChangeListener;
-
     public WebResizableTextArea() {
+        component = createTextFieldImpl();
+        attachValueChangeListener(component);
+
         wrapper = new CubaResizableTextAreaWrapper(component);
         wrapper.addResizeListener((oldWidth, oldHeight, width, height) -> {
             ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
             getEventRouter().fireEvent(ResizeListener.class, ResizeListener::sizeChanged, e);
         });
-
-        component.addValueChangeListener(event -> wrapper.markAsDirty());
     }
 
     @Override
+    protected void componentValueChanged(String prevComponentValue, String newComponentValue, boolean isUserOriginated) {
+        wrapper.markAsDirty();
+
+        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
+    }
+
+    //    vaadin8
+//    @Override
     protected CubaTextArea createTextFieldImpl() {
         return new CubaTextArea() {
             @Override
@@ -90,13 +92,13 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void setCaption(String caption) {
-        wrapper.setCaption(caption);
+    public String getCaption() {
+        return wrapper.getCaption();
     }
 
     @Override
-    public String getCaption() {
-        return wrapper.getCaption();
+    public void setCaption(String caption) {
+        wrapper.setCaption(caption);
     }
 
     @Override
@@ -145,13 +147,13 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void setRequiredMessage(String msg) {
-        wrapper.setRequiredError(msg);
+    public String getRequiredMessage() {
+        return wrapper.getRequiredError();
     }
 
     @Override
-    public String getRequiredMessage() {
-        return wrapper.getRequiredError();
+    public void setRequiredMessage(String msg) {
+        wrapper.setRequiredError(msg);
     }
 
     @Override
@@ -165,16 +167,12 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void setCursorPosition(int position) {
-        component.setCursorPosition(position);
-    }
-
-    @Override
     public void applySettings(Element element) {
         if (isSettingsEnabled() && isResizable()) {
             String width = element.attributeValue("width");
             String height = element.attributeValue("height");
-            if (StringUtils.isNotEmpty(width) && StringUtils.isNotEmpty(height)) {
+            if (StringUtils.isNotEmpty(width)
+                    && StringUtils.isNotEmpty(height)) {
                 setWidth(width);
                 setHeight(height);
             }
@@ -206,46 +204,6 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public String getInputPrompt() {
-        return component.getInputPrompt();
-    }
-
-    @Override
-    public void setInputPrompt(String inputPrompt) {
-        component.setInputPrompt(inputPrompt);
-    }
-
-    @Override
-    public boolean isWordwrap() {
-        return component.isWordwrap();
-    }
-
-    @Override
-    public void setWordwrap(boolean wordwrap) {
-        component.setWordwrap(wordwrap);
-    }
-
-    @Override
-    public Datatype getDatatype() {
-        return datatype;
-    }
-
-    @Override
-    public void setDatatype(Datatype datatype) {
-        this.datatype = datatype;
-        if (datatype == null) {
-            initFieldConverter();
-        } else {
-            component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
-        }
-    }
-
-    @Override
-    public String getRawValue() {
-        return component.getValue();
-    }
-
-    @Override
     public CaseConversion getCaseConversion() {
         return CaseConversion.valueOf(component.getCaseConversion().name());
     }
@@ -258,67 +216,13 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void selectAll() {
-        component.selectAll();
-    }
-
-    @Override
-    public void setSelectionRange(int pos, int length) {
-        component.setSelectionRange(pos, length);
-    }
-
-    @Override
-    public void addTextChangeListener(TextChangeListener listener) {
-        getEventRouter().addListener(TextChangeListener.class, listener);
-
-        if (textChangeListener == null) {
-            textChangeListener = (FieldEvents.TextChangeListener) e -> {
-                TextChangeEvent event = new TextChangeEvent(this, e.getText(), e.getCursorPosition());
-
-                getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
-            };
-            component.addTextChangeListener(textChangeListener);
-        }
-    }
-
-    @Override
-    public void removeTextChangeListener(TextChangeListener listener) {
-        getEventRouter().removeListener(TextChangeListener.class, listener);
-
-        if (textChangeListener != null && !getEventRouter().hasListeners(TextChangeListener.class)) {
-            component.removeTextChangeListener(textChangeListener);
-            textChangeListener = null;
-        }
-    }
-
-    @Override
-    public void setTextChangeTimeout(int timeout) {
-        component.setTextChangeTimeout(timeout);
-    }
-
-    @Override
-    public int getTextChangeTimeout() {
-        return component.getTextChangeTimeout();
-    }
-
-    @Override
-    public TextChangeEventMode getTextChangeEventMode() {
-        return WebWrapperUtils.toTextChangeEventMode(component.getTextChangeEventMode());
-    }
-
-    @Override
-    public void setTextChangeEventMode(TextChangeEventMode mode) {
-        component.setTextChangeEventMode(WebWrapperUtils.toVaadinTextChangeEventMode(mode));
+    public ResizeDirection getResizableDirection() {
+        return WebWrapperUtils.toResizeDirection(wrapper.getResizableDirection());
     }
 
     @Override
     public void setResizableDirection(ResizeDirection direction) {
         Preconditions.checkNotNullArgument(direction);
         wrapper.setResizableDirection(WebWrapperUtils.toVaadinResizeDirection(direction));
-    }
-
-    @Override
-    public ResizeDirection getResizableDirection() {
-        return WebWrapperUtils.toResizeDirection(wrapper.getResizableDirection());
     }
 }

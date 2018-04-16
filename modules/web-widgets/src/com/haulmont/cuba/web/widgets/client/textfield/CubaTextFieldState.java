@@ -18,9 +18,9 @@
 package com.haulmont.cuba.web.widgets.client.textfield;
 
 import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.v7.shared.ui.textfield.AbstractTextFieldState;
+import com.vaadin.shared.ui.textfield.TextFieldState;
 
-public class CubaTextFieldState extends AbstractTextFieldState {
+public class CubaTextFieldState extends TextFieldState {
 
     @NoLayout
     public boolean readOnlyFocusable;

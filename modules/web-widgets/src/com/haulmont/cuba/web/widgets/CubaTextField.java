@@ -20,14 +20,16 @@ import com.haulmont.cuba.web.widgets.client.textfield.CubaTextFieldState;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.*;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.shared.Registration;
-import com.vaadin.v7.ui.TextField;
+import com.vaadin.ui.LegacyComponent;
+import com.vaadin.ui.TextField;
 
 import java.util.Map;
 import java.util.Objects;
 
-public class CubaTextField extends TextField implements Action.Container {
+public class CubaTextField extends TextField implements Action.Container, LegacyComponent {
 
     /**
      * Keeps track of the Actions added to this component, and manages the
@@ -36,11 +38,13 @@ public class CubaTextField extends TextField implements Action.Container {
     protected ActionManager shortcutsManager;
 
     public CubaTextField() {
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
-        setShowErrorForDisabledState(false);
+        // vaadin8
+//        setValidationVisible(false);
+//        setShowBufferedSourceException(false);
+//        setShowErrorForDisabledState(false);
     }
 
+    /* vaadin8
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
@@ -52,12 +56,10 @@ public class CubaTextField extends TextField implements Action.Container {
             }
         }
         return superError;
-    }
+    }*/
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-
         if (shortcutsManager != null) {
             shortcutsManager.paintActions(null, target);
         }
@@ -73,8 +75,6 @@ public class CubaTextField extends TextField implements Action.Container {
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-
         // Actions
         if (shortcutsManager != null) {
             shortcutsManager.handleActions(variables, this);

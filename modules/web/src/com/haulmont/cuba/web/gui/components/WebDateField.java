@@ -87,8 +87,9 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         timeField = new WebTimeField();
 
         CubaMaskedTextField vTimeField = (CubaMaskedTextField) timeField.getComponent();
-        vTimeField.setInvalidAllowed(false);
-        vTimeField.setInvalidCommitted(true);
+//        vaadin8
+//        vTimeField.setInvalidAllowed(false);
+//        vTimeField.setInvalidCommitted(true);
 
         dateField.addValueChangeListener(createDateValueChangeListener());
         timeField.addValueChangeListener(createTimeValueChangeListener());

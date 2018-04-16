@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.shared.ui.grid.GridStaticCellType;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -134,6 +135,23 @@ public final class WebWrapperUtils {
         }
     }
 
+    public static TextInputField.TextChangeEventMode toTextChangeEventMode(ValueChangeMode mode) {
+        if (mode == null) {
+            return null;
+        }
+
+        switch (mode) {
+            case EAGER:
+                return TextInputField.TextChangeEventMode.EAGER;
+            case LAZY:
+                return TextInputField.TextChangeEventMode.LAZY;
+            case TIMEOUT:
+                return TextInputField.TextChangeEventMode.TIMEOUT;
+            default:
+                throw new UnsupportedOperationException("Unsupported Vaadin TextChangeEventMode");
+        }
+    }
+
     public static TextInputField.TextChangeEventMode toTextChangeEventMode(TextChangeEventMode mode) {
         if (mode == null) {
             return null;
@@ -149,6 +167,29 @@ public final class WebWrapperUtils {
             default:
                 throw new UnsupportedOperationException("Unsupported Vaadin TextChangeEventMode");
         }
+    }
+
+    public static ValueChangeMode toVaadinValueChangeEventMode(TextInputField.TextChangeEventMode mode) {
+        if (mode == null) {
+            return null;
+        }
+
+        ValueChangeMode vMode;
+        switch (mode) {
+            case EAGER:
+                vMode = ValueChangeMode.EAGER;
+                break;
+            case LAZY:
+                vMode = ValueChangeMode.LAZY;
+                break;
+            case TIMEOUT:
+                vMode = ValueChangeMode.TIMEOUT;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported TextChangeEventMode");
+        }
+
+        return vMode;
     }
 
     public static TextChangeEventMode toVaadinTextChangeEventMode(TextInputField.TextChangeEventMode mode) {

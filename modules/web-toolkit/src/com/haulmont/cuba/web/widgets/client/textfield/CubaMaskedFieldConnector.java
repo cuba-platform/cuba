@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.widgets.client.textfield;
 
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.v7.client.ui.textfield.TextFieldConnector;
+import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaMaskedTextField.class)

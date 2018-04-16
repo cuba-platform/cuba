@@ -36,13 +36,13 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.ComboBox;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -191,20 +191,17 @@ public class ServerLogWindow extends AbstractWindow {
         downloadButton.setEnabled(security.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
 
         ComboBox comboBox = logFileNameField.unwrap(ComboBox.class);
-        comboBox.addShortcutListener(new ShortcutListener("", KeyCode.D,
-                new int[]{ModifierKey.CTRL, ModifierKey.SHIFT}) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                downloadLog();
-            }
-        });
-        comboBox.addShortcutListener(new ShortcutListener("", KeyCode.S,
-                new int[]{ModifierKey.CTRL, ModifierKey.SHIFT}) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                showLogTail();
-            }
-        });
+        comboBox.addShortcutListener(
+                new ShortcutListenerDelegate("", KeyCode.D, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
+                        .withHandler((sender, target) ->
+                                downloadLog()
+                        ));
+
+        comboBox.addShortcutListener(
+                new ShortcutListenerDelegate("", KeyCode.S, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
+                    .withHandler((sender, target) ->
+                            showLogTail()
+                    ));
 
         downloadButton.setDescription("CTRL-SHIFT-D");
         showTailButton.setDescription("CTRL-SHIFT-S");

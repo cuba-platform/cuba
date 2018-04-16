@@ -18,17 +18,22 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  * vaadin8 rework !
  */
 public interface PropertyBoundComponent {
     // todo remove
-    InstanceContainer getEntityContainer();
+    default InstanceContainer getEntityContainer() {
+        throw new NotImplementedException();
+    }
 
     // todo remove
     MetaPropertyPath getMetaPropertyPath();
 
     // todo remove ? TO_BE_DISCUSSED
-    void setContainer(InstanceContainer container, String property);
+    default void setContainer(InstanceContainer container, String property) {
+        // do nothing
+    }
 }

@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.widgets.client.textarea;
 
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.vaadin.client.annotations.OnStateChange;
-import com.vaadin.v7.client.ui.textarea.TextAreaConnector;
+import com.vaadin.client.ui.textarea.TextAreaConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaTextArea.class)

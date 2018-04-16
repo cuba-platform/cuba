@@ -31,13 +31,13 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.gui.data.UnsubscribableDsWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
@@ -91,14 +91,15 @@ public class WebLookupField<V> extends WebAbstractOptionsField<CubaComboBox, V> 
             newOptionHandler.addNewOption(newItemCaption);
         });
 
-        component.addShortcutListener(new ShortcutListener("clearShortcut", KeyCode.DELETE, new int[]{ModifierKey.SHIFT}) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (!isRequired() && isEnabledRecursive() && isEditableWithParent()) {
-                    setValue(null);
-                }
-            }
-        });
+        component.addShortcutListener(
+                new ShortcutListenerDelegate("clearShortcut", KeyCode.DELETE, new int[]{ModifierKey.SHIFT})
+                        .withHandler((sender, target) -> {
+                            if (!isRequired()
+                                    && isEnabledRecursive()
+                                    && isEditableWithParent()) {
+                                setValue(null);
+                            }
+                        }));
     }
 
     protected void createComponent() {
