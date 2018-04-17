@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
@@ -106,21 +107,30 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
                 }
             }
 
-            if (entity instanceof FetchGroupTracker) {
-                FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
-                if (fetchGroup != null) {
-                    boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
-                    if (!inFetchGroup) {
-                        // definitely not loaded
-                        return PropertyLoadedState.NO;
-                    } else {
-                        // requires additional check specific for the tier
-                        return PropertyLoadedState.UNKNOWN;
-                    }
+            return isLoadedByFetchGroup(entity, property);
+        }
+
+        if (entity instanceof EmbeddableEntity) {
+            return isLoadedByFetchGroup(entity, property);
+        }
+
+        return PropertyLoadedState.UNKNOWN;
+    }
+
+    protected PropertyLoadedState isLoadedByFetchGroup(Object entity, String property) {
+        if (entity instanceof FetchGroupTracker) {
+            FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
+            if (fetchGroup != null) {
+                boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
+                if (!inFetchGroup) {
+                    // definitely not loaded
+                    return PropertyLoadedState.NO;
+                } else {
+                    // requires additional check specific for the tier
+                    return PropertyLoadedState.UNKNOWN;
                 }
             }
         }
-
         return PropertyLoadedState.UNKNOWN;
     }
 
