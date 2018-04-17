@@ -27,7 +27,7 @@ import java.util.Arrays;
 import javax.sql.DataSource;
 
 /**
- * Executes SQL queries with pluggable strategies for handling
+ * Executes SQL queries with pluggable factories for handling
  * {@code ResultSet}s.  This class is thread safe.
  *
  * @see ResultSetHandler

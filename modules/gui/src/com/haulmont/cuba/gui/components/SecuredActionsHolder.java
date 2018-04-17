@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.security.ActionsPermissions;
+
 /**
  * An {@link ActionsHolder} component that loads and controls permissions on owned actions.
  */

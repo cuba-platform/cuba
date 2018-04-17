@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.ArrayUtils;
 

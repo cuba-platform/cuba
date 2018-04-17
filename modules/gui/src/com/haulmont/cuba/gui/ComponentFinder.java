@@ -17,11 +17,12 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 
 /**
  * todo replace with lambda interface
  *
- * Visitor used in {@link com.haulmont.cuba.gui.ComponentsHelper#walkComponents(com.haulmont.cuba.gui.components.Component.Container, com.haulmont.cuba.gui.ComponentFinder)}
+ * Visitor used in {@link ComponentsHelper#walkComponents(ComponentContainer, ComponentFinder)}
  */
 public interface ComponentFinder {
 

@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;

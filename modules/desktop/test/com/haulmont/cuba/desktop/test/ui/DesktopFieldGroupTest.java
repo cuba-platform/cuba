@@ -22,7 +22,7 @@ import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
 import com.haulmont.cuba.desktop.gui.components.DesktopFieldGroup;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
-import com.haulmont.cuba.gui.components.DefaultComponentGenerationStrategy;
+import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;

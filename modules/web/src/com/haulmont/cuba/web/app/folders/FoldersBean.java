@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.HasPresentations;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.config.WindowConfig;

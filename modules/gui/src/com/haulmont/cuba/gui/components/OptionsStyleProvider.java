@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui.components;
 /**
  * An object that returns stylename for the given {@code item} (option) that is displayed by the given
  * {@code component}.
+ *
+ * vaadin8 typings
  */
 @FunctionalInterface
 public interface OptionsStyleProvider {

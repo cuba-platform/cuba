@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.ExpandingLayout;
-import com.haulmont.cuba.gui.components.Spacing;
+import com.haulmont.cuba.gui.components.HasSpacing;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +53,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         }
     }
 
-    protected void loadSpacing(Spacing layout, Element element) {
+    protected void loadSpacing(HasSpacing layout, Element element) {
         String spacing = element.attributeValue("spacing");
         if (StringUtils.isNotEmpty(spacing)) {
             layout.setSpacing(Boolean.parseBoolean(spacing));

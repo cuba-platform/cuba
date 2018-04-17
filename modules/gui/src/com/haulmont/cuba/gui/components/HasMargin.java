@@ -18,10 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * A class that implements this interface can have indentation between the outer borders and the container content.
- *
- * todo rename
  */
-public interface Margin {
+public interface HasMargin {
     default void setMargin(boolean enable) {
         setMargin(new MarginInfo(enable, enable, enable, enable));
     }

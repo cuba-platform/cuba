@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * A layout where the components are laid out on a grid using cell coordinates.
  */
-public interface GridLayout extends ComponentContainer, Spacing, Margin, Component.BelongToFrame,
+public interface GridLayout extends ComponentContainer, HasSpacing, HasMargin, Component.BelongToFrame,
         Component.HasIcon, Component.HasCaption, LayoutClickNotifier, ShortcutNotifier {
 
     String NAME = "grid";

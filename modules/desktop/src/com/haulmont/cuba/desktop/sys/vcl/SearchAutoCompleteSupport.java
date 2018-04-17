@@ -774,7 +774,7 @@ public final class SearchAutoCompleteSupport<E> {
      *
      * <p>The <code>filterator</code> will be used to extract searchable text
      * strings from each of the <code>items</code>. A <code>null</code>
-     * filterator implies one of two default strategies will be used. If the
+     * filterator implies one of two default factories will be used. If the
      * <code>format</code> is not null then the String value returned from the
      * <code>format</code> object will be used when filtering a given item.
      * Otherwise, the item's toString() method will be used when it is filtered.

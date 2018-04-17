@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
-import com.haulmont.cuba.gui.components.DefaultComponentGenerationStrategy;
+import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;

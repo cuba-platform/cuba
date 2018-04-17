@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 
-// todo move to package
-@org.springframework.stereotype.Component(FieldGroupFieldFactory.NAME)
-public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
+@org.springframework.stereotype.Component(DataGridEditorFieldFactory.NAME)
+public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactory {
 
     @Inject
     protected ComponentsFactory componentsFactory;
 
     @Override
-    public GeneratedField createField(FieldGroup.FieldConfig fc) {
-        return createFieldComponent(fc);
+    public Field createField(Datasource datasource, String property) {
+        return createFieldComponent(datasource, property);
     }
 
-    protected GeneratedField createFieldComponent(FieldGroup.FieldConfig fc) {
-        MetaClass metaClass = resolveMetaClass(fc.getTargetDatasource());
+    protected Field createFieldComponent(Datasource datasource, String property) {
+        MetaClass metaClass = resolveMetaClass(datasource);
 
-        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, fc.getProperty())
-                .setDatasource(fc.getTargetDatasource())
-                .setOptionsDatasource(fc.getOptionsDatasource())
-                .setXmlDescriptor(fc.getXmlDescriptor())
-                .setComponentClass(FieldGroup.class);
+        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
+                .setDatasource(datasource)
+                .setComponentClass(DataGrid.class);
 
-        return new GeneratedField(componentsFactory.createComponent(context));
+        Component component = componentsFactory.createComponent(context);
+        if (component instanceof Field) {
+            return (Field) component;
+        }
+
+        throw new IllegalStateException("Editor field must implement com.haulmont.cuba.gui.components.Field");
     }
 
     protected MetaClass resolveMetaClass(Datasource datasource) {

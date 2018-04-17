@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;

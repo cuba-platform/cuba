@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.ShowInfoAction;
+import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;

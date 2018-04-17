@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -33,7 +34,6 @@ import org.springframework.core.Ordered;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-// todo move to package
 @org.springframework.stereotype.Component(DataGridEditorComponentGenerationStrategy.NAME)
 public class DataGridEditorComponentGenerationStrategy extends AbstractComponentGenerationStrategy implements Ordered {
     public static final String NAME = "cuba_DataGridEditorMetaComponentStrategy";

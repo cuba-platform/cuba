@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
+import com.haulmont.cuba.gui.components.security.RelatedEntitiesSecurity;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import org.apache.commons.lang.StringUtils;
 

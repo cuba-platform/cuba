@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.sys;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -22,9 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Utility class to format and parse component paths
- *
- * todo move to package
+ * Utility class to format and parse component paths.
  */
 public class ValuePathHelper {
 

@@ -377,7 +377,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadMargin(Margin layout, Element element) {
+    protected void loadMargin(HasMargin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
             MarginInfo marginInfo = parseMarginInfo(margin);

@@ -37,8 +37,8 @@ public interface Frame
         extends ExpandingLayout,
                 OrderedContainer,
                 Component.BelongToFrame,
-                Spacing,
-                Margin,
+        HasSpacing,
+        HasMargin,
                 ActionsHolder,
                 Component.HasIcon,
                 Component.HasCaption {

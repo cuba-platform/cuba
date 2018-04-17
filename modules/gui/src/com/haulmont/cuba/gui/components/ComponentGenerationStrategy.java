@@ -23,12 +23,12 @@ import javax.annotation.Nullable;
  */
 public interface ComponentGenerationStrategy {
     /**
-     * Defines the highest precedence for {@link org.springframework.core.Ordered} component strategies of the platform.
+     * Defines the highest precedence for {@link org.springframework.core.Ordered} component factories of the platform.
      */
     int HIGHEST_PLATFORM_PRECEDENCE = 100;
 
     /**
-     * Defines the lowest precedence for {@link org.springframework.core.Ordered} component strategies of the platform.
+     * Defines the lowest precedence for {@link org.springframework.core.Ordered} component factories of the platform.
      */
     int LOWEST_PLATFORM_PRECEDENCE = 1000;
 

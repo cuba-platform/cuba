@@ -18,10 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * A class that implements this interface can have space between child components.
- *
- * todo rename
  */
-public interface Spacing {
+public interface HasSpacing {
     void setSpacing(boolean enabled);
     boolean getSpacing();
 }

@@ -40,6 +40,8 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
+import com.haulmont.cuba.gui.components.factories.AbstractFieldFactory;
+import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;

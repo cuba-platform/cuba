@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;

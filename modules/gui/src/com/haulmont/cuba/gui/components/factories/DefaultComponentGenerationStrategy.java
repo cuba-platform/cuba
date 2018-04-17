@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentGenerationContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-// todo move to package
 @org.springframework.stereotype.Component(DefaultComponentGenerationStrategy.NAME)
 public class DefaultComponentGenerationStrategy extends AbstractComponentGenerationStrategy implements Ordered {
     public static final String NAME = "cuba_DefaultMetaComponentStrategy";

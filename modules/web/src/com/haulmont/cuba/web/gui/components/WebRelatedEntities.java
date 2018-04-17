@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
-import com.haulmont.cuba.gui.components.RelatedEntitiesSecurity;
+import com.haulmont.cuba.gui.components.security.RelatedEntitiesSecurity;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.vaadin.ui.ComponentContainer;

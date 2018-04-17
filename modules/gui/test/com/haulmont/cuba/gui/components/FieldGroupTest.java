@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.components.factories.FieldGroupFieldFactoryImpl;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;

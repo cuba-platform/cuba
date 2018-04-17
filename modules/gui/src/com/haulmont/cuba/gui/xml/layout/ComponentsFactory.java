@@ -54,7 +54,7 @@ public interface ComponentsFactory {
      * <p>
      * Trying to find {@link ComponentGenerationStrategy} implementations. If at least one strategy exists, then:
      * <ol>
-     * <li>Iterates over strategies according to the {@link org.springframework.core.Ordered} interface.</li>
+     * <li>Iterates over factories according to the {@link org.springframework.core.Ordered} interface.</li>
      * <li>Returns the first created not {@code null} component.</li>
      * </ol>
      *
