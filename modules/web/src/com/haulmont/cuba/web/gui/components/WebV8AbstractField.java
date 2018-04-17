@@ -18,8 +18,10 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,41 +45,6 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
     protected boolean editable = true;
 
     protected EditableChangeNotifier.EditableChangeListener parentEditableChangeListener;
-
-    @Override
-    public Datasource getDatasource() {
-        if (valueBinding == null) {
-            return null;
-        }
-
-        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if (datasource != null) {
-            this.setValueSource(new DatasourceValueSource(datasource, property));
-        } else {
-            this.setValueSource(null);
-        }
-    }
 
     @Override
     public boolean isRequired() {
@@ -207,15 +174,31 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
             return;
         }
 
-        Object value = getValue();
-        if (isEmpty(value)) {
+        try {
+            // if we cannot convert current presentation value into model - UI value is invalid
+            convertToModel(component.getValue());
+        } catch (ConversionException ce) {
+            LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
+
+            setValidationError(ce.getLocalizedMessage());
+
+            throw new ValidationException(ce.getLocalizedMessage());
+        }
+
+        if (isEmpty()) {
             if (isRequired()) {
                 throw new RequiredValueMissingException(getRequiredMessage(), this);
             } else {
+                // vaadin8 rework this PL-10701
                 return;
             }
         }
 
+        Object value = getValue();
+        triggerValidators(value);
+    }
+
+    protected void triggerValidators(Object value) throws ValidationFailedException {
         if (validators != null) {
             try {
                 for (Validator validator : validators) {
@@ -288,5 +271,42 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
     @Override
     public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
         // todo vaadin8
+    }
+
+    /* Legacy data binding support */
+
+    @Override
+    public Datasource getDatasource() {
+        if (valueBinding == null) {
+            return null;
+        }
+
+        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
+    }
+
+    @Override
+    public MetaProperty getMetaProperty() {
+        if (valueBinding == null) {
+            return null;
+        }
+        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
+    }
+
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        if (valueBinding == null) {
+            return null;
+        }
+        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        if (datasource != null) {
+            this.setValueSource(new DatasourceValueSource(datasource, property));
+        } else {
+            this.setValueSource(null);
+        }
     }
 }

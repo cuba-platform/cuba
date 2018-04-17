@@ -121,7 +121,7 @@ public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.v
             } catch (ConversionException ce) {
                 LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
 
-                setValidationError(ce.getMessage());
+                setValidationError(ce.getLocalizedMessage());
                 return;
             }
 

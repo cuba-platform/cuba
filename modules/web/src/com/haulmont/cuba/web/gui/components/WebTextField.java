@@ -63,7 +63,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         }
 
         if (datatype != null) {
-            return datatype.format(modelValue);
+            return datatype.format(modelValue, locale);
         }
 
         if (valueBinding != null

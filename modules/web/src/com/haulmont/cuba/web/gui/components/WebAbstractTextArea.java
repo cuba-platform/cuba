@@ -40,7 +40,7 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
         if (datatype != null) {
-            return datatype.format(modelValue);
+            return datatype.format(modelValue, locale);
         }
 
         if (valueBinding != null
