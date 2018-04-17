@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
@@ -44,6 +45,9 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
+
     protected enum PropertyLoadedState {
         YES,
         NO,
@@ -55,15 +59,16 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         if (isDynamicAttribute(property)) {
             @SuppressWarnings("unchecked")
-            Map<String, CategoryAttributeValue> dynamicAttributes =
+            Map<String, CategoryAttributeValue> entityDynamicAttributes =
                     ((BaseGenericIdEntity) entity).getDynamicAttributes();
 
-            if (dynamicAttributes == null) {
+            if (entityDynamicAttributes == null) {
                 return false;
             }
 
             String attributeCode = decodeAttributeCode(property);
-            return dynamicAttributes.containsKey(attributeCode);
+            return entityDynamicAttributes.containsKey(attributeCode) ||
+                    dynamicAttributes.getAttributeForMetaClass(metaClass, property) != null;
         }
 
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
