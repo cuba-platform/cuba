@@ -516,8 +516,12 @@ paths:
           description: Successfully authenticated.
           schema:
             $ref: '#/definitions/token'
+        400:
+          description: Authentication failed, e.g. because of invalid CUBA user username or password
+          schema:
+            $ref: '#/definitions/oauthError'
         401:
-          description: Unauthorized
+          description: Basic authentcation failed
           schema:
             $ref: '#/definitions/oauthError'
       security:
