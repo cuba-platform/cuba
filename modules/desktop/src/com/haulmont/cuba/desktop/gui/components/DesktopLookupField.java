@@ -587,7 +587,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     protected void setSelectedItem(Object item) {
         comboBox.setSelectedItem(item);
-        if (!editable) {
+        if (impl == textField) {
             updateTextField();
         }
         updateMissingValueState();
