@@ -475,7 +475,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         /**
          * Enclosed collection changed.
          */
-        void collectionChanged(CollectionChangeEvent<? extends T, K> e);
+        void collectionChanged(CollectionChangeEvent<T, K> e);
     }
 
     void addCollectionChangeListener(CollectionChangeListener<? super T, K> listener);
