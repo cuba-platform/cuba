@@ -814,9 +814,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return;
         }
         if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
-            CollectionChangeEvent<T, K> event = new CollectionChangeEvent<>(this, operation, items);
+            CollectionChangeEvent event = new CollectionChangeEvent<>(this, operation, items);
 
             for (CollectionChangeListener<? super T, K> listener : new ArrayList<>(collectionChangeListeners)) {
+                //noinspection unchecked
                 listener.collectionChanged(event);
             }
         }
