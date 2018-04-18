@@ -56,7 +56,8 @@ import java.util.Objects;
 
 import static com.google.common.hash.Hashing.md5;
 
-public class CubaVaadinServletService extends VaadinServletService {
+public class CubaVaadinServletService extends VaadinServletService
+        implements AtmospherePushConnection.UidlWriterFactory {
 
     private final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
 
@@ -201,6 +202,11 @@ public class CubaVaadinServletService extends VaadinServletService {
         cubaRequestHandlers.add(new CubaWebJarsHandler(getServlet().getServletContext()));
 
         return cubaRequestHandlers;
+    }
+
+    @Override
+    public UidlWriter createUidlWriter() {
+        return new CubaUidlWriter();
     }
 
     // Add ability to load JS and CSS resources from VAADIN directory
