@@ -18,7 +18,8 @@
 <metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
 
     <metadata-model root-package="com.haulmont.cuba">
-        <class>com.haulmont.cuba.testmodel.TestNotPersistentEntity</class>
+        <class>com.haulmont.cuba.testmodel.not_persistent.TestNotPersistentEntity</class>
+        <class>com.haulmont.cuba.testmodel.not_persistent.NotPersistentStringIdEntity</class>
         <class>com.haulmont.cuba.testmodel.numberformat.TestNumberValuesEntity</class>
     </metadata-model>
 

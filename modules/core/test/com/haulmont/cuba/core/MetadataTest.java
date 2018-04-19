@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.testmodel.TestNotPersistentEntity;
+import com.haulmont.cuba.testmodel.not_persistent.TestNotPersistentEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
 import org.junit.ClassRule;
