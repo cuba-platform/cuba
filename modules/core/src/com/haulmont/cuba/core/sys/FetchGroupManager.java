@@ -278,13 +278,13 @@ public class FetchGroupManager {
         }
 
         if (!fetchHints.isEmpty()) {
-            if (query.getDatabaseQuery().isObjectLevelReadQuery()) {
-                //use separate instance of ExpressionBuilder for each query with LEFT JOIN/BATCH hints
-                //because instance is shared by default and can be modified by same JPQL with different LEFT JOIN/BATCH hints
-                //https://youtrack.haulmont.com/issue/PL-10597
-                ObjectLevelReadQuery objectLevelReadQuery = (ObjectLevelReadQuery) query.getDatabaseQuery();
-                objectLevelReadQuery.setExpressionBuilder((ExpressionBuilder) objectLevelReadQuery.getExpressionBuilder().clone());
-            }
+//            if (query.getDatabaseQuery().isObjectLevelReadQuery()) {
+//                //use separate instance of ExpressionBuilder for each query with LEFT JOIN/BATCH hints
+//                //because instance is shared by default and can be modified by same JPQL with different LEFT JOIN/BATCH hints
+//                //https://youtrack.haulmont.com/issue/PL-10597
+//                ObjectLevelReadQuery objectLevelReadQuery = (ObjectLevelReadQuery) query.getDatabaseQuery();
+//                objectLevelReadQuery.setExpressionBuilder((ExpressionBuilder) objectLevelReadQuery.getExpressionBuilder().clone());
+//            }
             for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
                 query.setHint(entry.getValue(), entry.getKey());
             }
