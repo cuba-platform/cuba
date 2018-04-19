@@ -382,4 +382,12 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.validationNotificationType")
     @Default("TRAY")
     String getValidationNotificationType();
+
+    /**
+     * Enables reloading of entity after editing by EditAction before setting it to the browser's
+     * datasource if browser's view is wider than editor's.
+     */
+    @Property("cuba.gui.reloadEntityAfterEditIfRequired")
+    @DefaultBoolean(false)
+    boolean getReloadEntityAfterEditIfRequired();
 }
