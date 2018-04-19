@@ -433,25 +433,23 @@ public class MetaModelLoader {
 
         boolean persistentClass = Boolean.TRUE.equals(metaProperty.getDomain().getAnnotations().get(MetadataTools.PERSISTENT_ANN_NAME));
 
-        if (isPersistent(field)) {
-            if (persistentClass) {
-                metaProperty.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
-            }
+        if (isPrimaryKey(field)) {
+            metaProperty.getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, true);
+            metaProperty.getDomain().getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, metaProperty.getName());
+        }
 
-            if (isPrimaryKey(field)) {
-                metaProperty.getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, true);
-                metaProperty.getDomain().getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, metaProperty.getName());
-            }
+        if (isPersistent(field) && persistentClass) {
+            metaProperty.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
+        }
 
-            if (isEmbedded(field) && persistentClass) {
-                metaProperty.getAnnotations().put(MetadataTools.EMBEDDED_ANN_NAME, true);
-            }
+        if (isEmbedded(field) && persistentClass) {
+            metaProperty.getAnnotations().put(MetadataTools.EMBEDDED_ANN_NAME, true);
+        }
 
-            Column column = field.getAnnotation(Column.class);
-            Lob lob = field.getAnnotation(Lob.class);
-            if (column != null && column.length() != 0 && lob == null) {
-                metaProperty.getAnnotations().put("length", column.length());
-            }
+        Column column = field.getAnnotation(Column.class);
+        Lob lob = field.getAnnotation(Lob.class);
+        if (column != null && column.length() != 0 && lob == null) {
+            metaProperty.getAnnotations().put("length", column.length());
         }
 
         Temporal temporal = field.getAnnotation(Temporal.class);
@@ -589,7 +587,8 @@ public class MetaModelLoader {
     }
 
     protected boolean isPersistent(Field field) {
-        return field.isAnnotationPresent(Column.class)
+        return field.isAnnotationPresent(Id.class)
+                || field.isAnnotationPresent(Column.class)
                 || field.isAnnotationPresent(ManyToOne.class)
                 || field.isAnnotationPresent(OneToMany.class)
                 || field.isAnnotationPresent(ManyToMany.class)
