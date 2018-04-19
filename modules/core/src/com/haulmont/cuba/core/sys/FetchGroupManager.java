@@ -29,10 +29,12 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.LoadGroup;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -134,7 +136,7 @@ public class FetchGroupManager {
 
                 boolean selfRef = false;
                 for (MetaProperty mp : refField.metaPropertyPath.getMetaProperties()) {
-                    if (!mp.getRange().getCardinality().isMany()){
+                    if (!mp.getRange().getCardinality().isMany()) {
                         MetaClass mpClass = mp.getRange().asClass();
                         if (metadataTools.isAssignableFrom(mpClass, metaClass) || metadataTools.isAssignableFrom(metaClass, mpClass)) {
                             batchFields.add(refField);
@@ -193,7 +195,7 @@ public class FetchGroupManager {
             if (!isNullFields.isEmpty()) {
                 for (Iterator<FetchGroupField> fieldIt = joinFields.iterator(); fieldIt.hasNext(); ) {
                     FetchGroupField joinField = fieldIt.next();
-                    boolean isNullField =  isNullFields.stream()
+                    boolean isNullField = isNullFields.stream()
                             .anyMatch(f -> joinField == f || f.fetchMode == FetchMode.AUTO
                                     && joinField.metaPropertyPath.startsWith(f.metaPropertyPath));
                     if (isNullField) {
@@ -231,7 +233,7 @@ public class FetchGroupManager {
                     List<FetchGroupField> selfRefs = refFields.stream()
                             .filter(f -> isTransitiveSelfReference(refField, f))
                             .collect(Collectors.toList());
-                    for (FetchGroupField selfRef: selfRefs) {
+                    for (FetchGroupField selfRef : selfRefs) {
                         List<FetchGroupField> secondLevelSelfRefs = refFields.stream()
                                 .filter(f -> isTransitiveSelfReference(selfRef, f))
                                 .collect(Collectors.toList());
@@ -274,8 +276,18 @@ public class FetchGroupManager {
                     .collect(Collectors.joining(", "));
             log.debug("Fetch modes for " + view + ": " + (fetchModes.equals("") ? "<none>" : fetchModes));
         }
-        for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
-            query.setHint(entry.getValue(), entry.getKey());
+
+        if (!fetchHints.isEmpty()) {
+            if (query.getDatabaseQuery().isObjectLevelReadQuery()) {
+                //use separate instance of ExpressionBuilder for each query with LEFT JOIN/BATCH hints
+                //because instance is shared by default and can be modified by same JPQL with different LEFT JOIN/BATCH hints
+                //https://youtrack.haulmont.com/issue/PL-10597
+                ObjectLevelReadQuery objectLevelReadQuery = (ObjectLevelReadQuery) query.getDatabaseQuery();
+                objectLevelReadQuery.setExpressionBuilder((ExpressionBuilder) objectLevelReadQuery.getExpressionBuilder().clone());
+            }
+            for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
+                query.setHint(entry.getValue(), entry.getKey());
+            }
         }
 
         if (hasBatches) {
@@ -321,7 +333,7 @@ public class FetchGroupManager {
                     } else {
                         result.add(toManyField.path() + "." + inverseProp.getName());
                     }
-        });
+                });
 
         return result;
     }
