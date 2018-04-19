@@ -21,12 +21,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -75,8 +75,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     protected BulkEditorIntegration bulkEditorIntegration = new BulkEditorIntegration();
-
-    protected boolean reloadEnabled;
 
     public interface AfterCommitHandler {
         /**
@@ -154,7 +152,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);
         setShortcut(config.getTableEditShortcut());
-        reloadEnabled = config.getReloadEntityAfterEditIfRequired();
     }
 
     @Override
@@ -284,10 +281,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
-                            Entity reloadedItem = reloadEntityIfNeeded(
-                                    editedItem, datasource.getView(), datasource.getDsContext().getDataSupplier());
+                            editedItem = AppBeans.get(GuiActionSupport.class).reloadEntityIfNeeded(editedItem, datasource);
                             //noinspection unchecked
-                            datasource.updateItem(reloadedItem);
+                            datasource.updateItem(editedItem);
                         }
                         afterCommit(editedItem);
                         if (afterCommitHandler != null) {
@@ -304,20 +300,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         } else {
             window.addCloseListener(editorCloseListener);
         }
-    }
-
-    protected Entity reloadEntityIfNeeded(Entity entity, View view, DataSupplier dataSupplier) {
-        if (reloadEnabled) {
-            if (view == null) {
-                ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-                view = viewRepository.getView(entity.getClass(), View.LOCAL);
-            }
-            EntityStates entityStates = AppBeans.get(EntityStates.class);
-            if (!entityStates.isLoadedWithView(entity, view)) {
-                return dataSupplier.reload(entity, view);
-            }
-        }
-        return entity;
     }
 
     /**
