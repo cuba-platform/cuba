@@ -44,6 +44,7 @@ import java.util.List;
 public class CubaOrderedLayoutSlot extends Slot implements ClickHandler {
 
     public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+    public static final String CONTEXT_HELP_CLICKABLE_CLASSNAME = "c-context-help-button-clickable";
 
     protected Element contextHelpIcon;
 
@@ -155,6 +156,11 @@ public class CubaOrderedLayoutSlot extends Slot implements ClickHandler {
                 // TODO decide something better (e.g. use CSS to insert the character)
                 contextHelpIcon.setInnerHTML("?");
                 contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                ComponentConnector componentConnector = Util.findConnectorFor(widget);
+                if (hasContextHelpIconListeners(componentConnector.getState())) {
+                    contextHelpIcon.addClassName(CONTEXT_HELP_CLICKABLE_CLASSNAME);
+                }
 
                 // The question mark should not be read by the screen reader, as it is
                 // purely visual. Required state is set at the element level for
