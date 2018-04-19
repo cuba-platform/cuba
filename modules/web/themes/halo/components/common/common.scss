@@ -27,7 +27,8 @@
   .c-context-help-button {
     display: inline-block;
     font-size: 0;
-    width: $v-font-size;
+    width: $v-font-size + $v-font-size * .2; // icon padding = .2em, so we need to add
+                                             // this value to the context-help-button width
   }
 
   .c-context-help-button::before {
