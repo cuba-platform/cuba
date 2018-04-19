@@ -40,11 +40,17 @@ public final class ControllerUtils {
     private ControllerUtils() {
     }
 
+    /**
+     * The URL string that is returned will have '/' in the end
+     */
     public static String getLocationWithoutParams() {
         URI location = AppUI.getCurrent().getPage().getLocation();
         return getLocationWithoutParams(location);
     }
 
+    /**
+     * The URL string that is returned will have '/' in the end
+     */
     public static String getLocationWithoutParams(URI location) {
         try {
             StringBuilder baseUrl = new StringBuilder(location.toURL().toExternalForm());
@@ -53,7 +59,8 @@ public final class ControllerUtils {
             } else if (location.getFragment() != null) {
                 baseUrl.delete(baseUrl.indexOf("#" + location.getFragment()), baseUrl.length());
             }
-            return baseUrl.toString();
+            String baseUrlString = baseUrl.toString();
+            return baseUrlString.endsWith("/") ? baseUrlString : baseUrlString + "/";
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to get location without params", e);
         }
