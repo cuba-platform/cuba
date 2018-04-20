@@ -939,6 +939,10 @@ configure(idpModule) {
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
 
+        compile(bom['org.springframework.ldap:spring-ldap-core']) {
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        }
+
         compile(bom['org.springframework.security:spring-security-core'])
         compile(bom['org.springframework.security:spring-security-config'])
         compile(bom['org.springframework.security:spring-security-web'])
