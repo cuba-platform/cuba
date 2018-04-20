@@ -40,14 +40,15 @@ public class CapsLockIndicatorLoader extends AbstractComponentLoader<CapsLockInd
 
         String capsLockOnMessage = element.attributeValue("capsLockOnMessage");
         if (capsLockOnMessage != null) {
-            String caption = loadResourceString(capsLockOnMessage);
-            resultComponent.setCapsLockOnMessage(caption);
+            capsLockOnMessage = loadResourceString(capsLockOnMessage);
+            resultComponent.setCapsLockOnMessage(capsLockOnMessage);
         } else {
             resultComponent.setCapsLockOnMessage(messages.getMainMessage("capsLockIndicator.capsLockOnMessage"));
         }
 
         String capsLockOffMessage = element.attributeValue("capsLockOffMessage");
         if (!Strings.isNullOrEmpty(capsLockOffMessage)) {
+            capsLockOffMessage = loadResourceString(capsLockOffMessage);
             resultComponent.setCapsLockOffMessage(capsLockOffMessage);
         }
     }
