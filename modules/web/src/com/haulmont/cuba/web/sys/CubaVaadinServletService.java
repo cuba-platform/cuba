@@ -18,15 +18,14 @@
 package com.haulmont.cuba.web.sys;
 
 import com.google.common.hash.HashCode;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
+import com.haulmont.cuba.web.sys.events.WebSessionDestroyedEvent;
+import com.haulmont.cuba.web.sys.events.WebSessionInitializedEvent;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
@@ -69,9 +68,13 @@ public class CubaVaadinServletService extends VaadinServletService
     protected boolean testMode;
     protected boolean performanceTestMode;
 
+    protected Events events;
+
     public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
         super(servlet, deploymentConfiguration);
+
+        this.events = AppBeans.get(Events.NAME);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
@@ -96,6 +99,8 @@ public class CubaVaadinServletService extends VaadinServletService
 
             log.debug("HttpSession {} initialized, timeout={}sec",
                     httpSession, wrappedSession.getMaxInactiveInterval());
+
+            events.publish(new WebSessionInitializedEvent(event.getSession()));
         });
 
         addSessionDestroyListener(event -> {
@@ -108,6 +113,8 @@ public class CubaVaadinServletService extends VaadinServletService
             if (app != null) {
                 app.cleanupBackgroundTasks();
             }
+
+            events.publish(new WebSessionDestroyedEvent(event.getSession()));
         });
 
         setSystemMessagesProvider(systemMessagesInfo -> {
