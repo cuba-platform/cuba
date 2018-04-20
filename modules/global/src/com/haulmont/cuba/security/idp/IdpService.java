@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.idp;
 
+import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
 
@@ -23,7 +24,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,17 +37,13 @@ public interface IdpService {
     /**
      * Login using user name and password
      *
-     * @param login    login name
-     * @param password encrypted password
-     * @param locale   client locale
-     * @param params   map of login parameters. Supported parameters are:<br>
-     *                 - "com.haulmont.cuba.core.global.ClientType": "WEB" or "DESKTOP". It is used to check the
-     *                   "cuba.gui.loginToClient" specific permission.
+     * @param credentials credentials object
+     * @param params      map of login parameters
      * @return login result
      * @throws LoginException in case of unsuccessful login
      */
     @Nonnull
-    IdpLoginResult login(String login, String password, Locale locale,
+    IdpLoginResult login(Credentials credentials,
                          @Nullable Map<String, Object> params) throws LoginException;
 
     /**
@@ -122,6 +118,9 @@ public interface IdpService {
     List<String> processEviction(int sessionExpirationTimeoutSec, int ticketExpirationTimeoutSec);
 
     class IdpLoginResult implements Serializable {
+        private String sessionId;
+        private String serviceProviderTicket;
+
         public IdpLoginResult() {
         }
 
@@ -129,9 +128,6 @@ public interface IdpService {
             this.sessionId = sessionId;
             this.serviceProviderTicket = serviceProviderTicket;
         }
-
-        private String sessionId;
-        private String serviceProviderTicket;
 
         public String getSessionId() {
             return sessionId;
