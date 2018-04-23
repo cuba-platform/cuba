@@ -177,7 +177,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @Override
     protected void setEditableToComponent(boolean editable) {
-        updateEnabled();
+        impl.setEnabled(editable && isEnabledWithParent());
     }
 
     @Override
