@@ -72,7 +72,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
      */
     protected EventRouter getEventRouter() {
         if (eventRouter == null) {
-            return new EventRouter();
+            eventRouter = new EventRouter();
         }
         return eventRouter;
     }
