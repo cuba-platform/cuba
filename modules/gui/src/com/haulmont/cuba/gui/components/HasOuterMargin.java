@@ -18,10 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * A class that implements this interface can have indentation outside the border.
- *
- * todo rename
  */
-public interface OuterMargin {
+public interface HasOuterMargin {
     /**
      * Enables or disables margins on all sides simultaneously.
      *
