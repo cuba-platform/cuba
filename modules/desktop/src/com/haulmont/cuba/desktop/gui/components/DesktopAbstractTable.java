@@ -1507,6 +1507,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             associatedRuntimeColumn = col;
         }
 
+        col.setOwner(this);
+
         tableModel.addGeneratedColumn(col);
         TableColumn tableColumn = getColumn(col);
         DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator, componentClass);
