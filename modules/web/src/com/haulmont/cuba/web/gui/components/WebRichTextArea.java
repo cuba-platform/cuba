@@ -27,22 +27,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebRichTextArea extends WebAbstractField<CubaRichTextArea, String> implements RichTextArea {
+public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String> implements RichTextArea {
 
     public WebRichTextArea() {
         component = new CubaRichTextArea();
-        attachListener(component);
+        attachValueChangeListener(this.component);
 
-        component.setNullRepresentation("");
-        component.setInvalidAllowed(false);
-        component.setInvalidCommitted(true);
         component.setLocaleMap(loadLabels());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getValue() {
-        return super.getValue();
     }
 
     protected Map<String, String> loadLabels() {

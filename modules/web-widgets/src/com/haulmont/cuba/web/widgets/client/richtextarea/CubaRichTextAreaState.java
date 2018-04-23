@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.richtextarea;
 
-import com.vaadin.v7.shared.ui.textarea.RichTextAreaState;
+import com.vaadin.shared.ui.richtextarea.RichTextAreaState;
 
 import java.util.HashMap;
 import java.util.Map;

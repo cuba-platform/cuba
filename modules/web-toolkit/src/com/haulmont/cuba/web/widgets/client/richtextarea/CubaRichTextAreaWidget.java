@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.richtextarea;
 
 import com.google.gwt.user.client.ui.RichTextArea;
-import com.vaadin.v7.client.ui.VRichTextArea;
+import com.vaadin.client.ui.VRichTextArea;
 
 import java.util.Map;
 
