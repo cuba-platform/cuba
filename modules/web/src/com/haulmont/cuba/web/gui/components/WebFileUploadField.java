@@ -31,10 +31,7 @@ import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
-import com.haulmont.cuba.web.widgets.CubaUpload;
 import com.haulmont.cuba.web.widgets.UploadComponent;
-import com.vaadin.server.Page;
-import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.io.IOUtils;
@@ -52,7 +49,7 @@ import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
 public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
 
-    private final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
+    private static final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
     protected FileUploadingAPI fileUploading;
     protected ExportDisplay exportDisplay;
@@ -81,12 +78,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         exportDisplay = AppBeans.get(ExportDisplay.NAME);
         messages = AppBeans.get(Messages.NAME);
 
-        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
-        if ((webBrowser.isIE() && !webBrowser.isEdge()) && webBrowser.getBrowserMajorVersion() < 10) {
-            initOldUploadButton();
-        } else {
-            initUploadButton();
-        }
+        initUploadButton();
 
         initComponent();
         attachListener(component);
@@ -173,70 +165,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         return AppBeans.get(DataManager.class).commit(fileDescriptor);
     }
 
-    protected void initOldUploadButton() {
-        uploadButton = createOldComponent();
-        final CubaUpload impl = (CubaUpload) uploadButton;
-
-        impl.setButtonCaption(messages.getMainMessage("upload.submit"));
-        impl.setDescription(null);
-
-        impl.setReceiver((fileName1, MIMEType) -> {
-            FileOutputStream outputStream;
-            try {
-                tempFileId = fileUploading.createEmptyFile();
-                File tmpFile = fileUploading.getFile(tempFileId);
-                //noinspection ConstantConditions
-                outputStream = new FileOutputStream(tmpFile);
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to receive file", e);
-            }
-            return outputStream;
-        });
-
-        impl.addStartedListener(event -> {
-            if (event.getContentLength() > getActualFileSizeLimit()) {
-                impl.interruptUpload();
-                String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), getFileSizeLimitString());
-
-                getFrame().showNotification(warningMsg, NotificationType.WARNING);
-            } else if (hasInvalidExtensionOld(event.getFilename())) {
-                impl.interruptUpload();
-                String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", event.getFilename());
-                getFrame().showNotification(warningMsg, NotificationType.WARNING);
-            } else {
-                fireFileUploadStart(event.getFilename(), event.getContentLength());
-            }
-        });
-
-        impl.addFinishedListener(event -> fireFileUploadFinish(event.getFilename(), event.getLength()));
-
-        impl.addSucceededListener(event -> {
-            fileName = event.getFilename();
-            fileId = tempFileId;
-
-            saveFile(getFileDescriptor());
-            component.setFileNameButtonCaption(fileName);
-
-            fireFileUploadSucceed(event.getFilename(), event.getLength());
-        });
-
-        impl.addFailedListener(event -> {
-            try {
-                fileUploading.deleteFile(tempFileId);
-                tempFileId = null;
-            } catch (Exception e) {
-                if (e instanceof FileStorageException) {
-                    FileStorageException fse = (FileStorageException) e;
-                    if (fse.getType() != FileStorageException.Type.FILE_NOT_FOUND)
-                        log.warn(String.format("Could not remove temp file %s after broken uploading", tempFileId));
-                }
-                log.warn(String.format("Error while delete temp file %s", tempFileId));
-            }
-
-            fireFileUploadError(event.getFilename(), event.getLength(), event.getReason());
-        });
-    }
-
     protected void initUploadButton() {
         uploadButton = createComponent();
         CubaFileUpload impl = (CubaFileUpload) uploadButton;
@@ -305,22 +233,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     protected CubaFileUpload createComponent() {
         return new CubaFileUpload();
-    }
-
-    protected CubaUpload createOldComponent() {
-        return new CubaUpload();
-    }
-
-    protected boolean hasInvalidExtensionOld(String name) {
-        if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
-            if (name.lastIndexOf(".") > 0) {
-                String fileExtension = name.substring(name.lastIndexOf("."), name.length());
-                return !getPermittedExtensions().contains(fileExtension.toLowerCase());
-            } else {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
