@@ -29,12 +29,10 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.LoadGroup;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -98,25 +96,56 @@ public class FetchGroupManager {
 
         boolean useFetchGroup = attrGroup instanceof FetchGroup;
 
+        FetchGroupDescription description = calculateFetchGroup(queryString, view, singleResultExpected, useFetchGroup);
+
+        if (attrGroup instanceof FetchGroup)
+            ((FetchGroup) attrGroup).setShouldLoadAll(true);
+
+        if (log.isTraceEnabled())
+            log.trace((useFetchGroup ? "Fetch" : "Load") + " group for " + view + ":\n" + description.getAttributes().stream().collect(Collectors.joining("\n")));
+        for (String attribute : description.getAttributes()) {
+            attrGroup.addAttribute(attribute);
+        }
+
+        MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
+        if (!metadataTools.isCacheable(metaClass)) {
+            query.setHint(useFetchGroup ? QueryHints.FETCH_GROUP : QueryHints.LOAD_GROUP, attrGroup);
+        }
+
+        if (log.isDebugEnabled()) {
+            String fetchModes = description.getHints().entrySet().stream()
+                    .map(e -> e.getKey() + "=" + (e.getValue().equals(QueryHints.LEFT_FETCH) ? "JOIN" : "BATCH"))
+                    .collect(Collectors.joining(", "));
+            log.debug("Fetch modes for " + view + ": " + (fetchModes.equals("") ? "<none>" : fetchModes));
+        }
+
+        for (Map.Entry<String, String> entry : description.getHints().entrySet()) {
+            query.setHint(entry.getValue(), entry.getKey());
+        }
+
+        if (description.hasBatches()) {
+            query.setHint(QueryHints.BATCH_TYPE, "IN");
+        }
+    }
+
+    public FetchGroupDescription calculateFetchGroup(String queryString,
+                                                      View view,
+                                                      boolean singleResultExpected,
+                                                      boolean useFetchGroup) {
         Set<FetchGroupField> fetchGroupFields = new LinkedHashSet<>();
         processView(view, null, fetchGroupFields, useFetchGroup);
 
-        Set<String> fetchGroupAttributes = new TreeSet<>();
-        Map<String, String> fetchHints = new TreeMap<>(); // sort hints by attribute path
+        FetchGroupDescription description = new FetchGroupDescription();
 
         for (FetchGroupField field : fetchGroupFields) {
-            fetchGroupAttributes.add(field.path());
+            description.addAttribute(field.path());
         }
-        if (attrGroup instanceof FetchGroup)
-            ((FetchGroup) attrGroup).setShouldLoadAll(true);
 
         List<FetchGroupField> refFields = new ArrayList<>();
         for (FetchGroupField field : fetchGroupFields) {
             if (field.metaProperty.getRange().isClass() && !metadataTools.isEmbedded(field.metaProperty))
                 refFields.add(field);
         }
-
-        boolean hasBatches = false;
 
         MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         if (!refFields.isEmpty()) {
@@ -129,7 +158,7 @@ public class FetchGroupManager {
                 if (refField.fetchMode == FetchMode.UNDEFINED) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
                         List<String> masterAttributes = getMasterEntityAttributes(fetchGroupFields, refField, useFetchGroup);
-                        fetchGroupAttributes.addAll(masterAttributes);
+                        description.addAttributes(masterAttributes);
                     }
                     continue;
                 }
@@ -149,7 +178,7 @@ public class FetchGroupManager {
                 if (!selfRef) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
                         List<String> masterAttributes = getMasterEntityAttributes(fetchGroupFields, refField, useFetchGroup);
-                        fetchGroupAttributes.addAll(masterAttributes);
+                        description.addAttributes(masterAttributes);
 
                         if (refField.fetchMode == FetchMode.JOIN) {
                             joinFields.add(refField);
@@ -200,7 +229,7 @@ public class FetchGroupManager {
                                     && joinField.metaPropertyPath.startsWith(f.metaPropertyPath));
                     if (isNullField) {
                         fieldIt.remove();
-                        fetchGroupAttributes.removeIf(attr -> attr.startsWith(joinField.path() + "."));
+                        description.removeAttributeIf(attr -> attr.startsWith(joinField.path() + "."));
                     }
                 }
             }
@@ -248,51 +277,18 @@ public class FetchGroupManager {
 
             for (FetchGroupField joinField : joinFields) {
                 String attr = alias + "." + joinField.path();
-                fetchHints.put(attr, QueryHints.LEFT_FETCH);
+                description.addHint(attr, QueryHints.LEFT_FETCH);
             }
 
             for (FetchGroupField batchField : batchFields) {
                 if (batchField.fetchMode == FetchMode.BATCH || !singleResultExpected || batchFields.size() > 1) {
                     String attr = alias + "." + batchField.path();
-                    fetchHints.put(attr, QueryHints.BATCH);
-                    hasBatches = true;
+                    description.addHint(attr, QueryHints.BATCH);
                 }
             }
         }
 
-        if (log.isTraceEnabled())
-            log.trace((useFetchGroup ? "Fetch" : "Load") + " group for " + view + ":\n" + fetchGroupAttributes.stream().collect(Collectors.joining("\n")));
-        for (String attribute : fetchGroupAttributes) {
-            attrGroup.addAttribute(attribute);
-        }
-
-        if (!metadataTools.isCacheable(metaClass)) {
-            query.setHint(useFetchGroup ? QueryHints.FETCH_GROUP : QueryHints.LOAD_GROUP, attrGroup);
-        }
-
-        if (log.isDebugEnabled()) {
-            String fetchModes = fetchHints.entrySet().stream()
-                    .map(e -> e.getKey() + "=" + (e.getValue().equals(QueryHints.LEFT_FETCH) ? "JOIN" : "BATCH"))
-                    .collect(Collectors.joining(", "));
-            log.debug("Fetch modes for " + view + ": " + (fetchModes.equals("") ? "<none>" : fetchModes));
-        }
-
-        if (!fetchHints.isEmpty()) {
-//            if (query.getDatabaseQuery().isObjectLevelReadQuery()) {
-//                //use separate instance of ExpressionBuilder for each query with LEFT JOIN/BATCH hints
-//                //because instance is shared by default and can be modified by same JPQL with different LEFT JOIN/BATCH hints
-//                //https://youtrack.haulmont.com/issue/PL-10597
-//                ObjectLevelReadQuery objectLevelReadQuery = (ObjectLevelReadQuery) query.getDatabaseQuery();
-//                objectLevelReadQuery.setExpressionBuilder((ExpressionBuilder) objectLevelReadQuery.getExpressionBuilder().clone());
-//            }
-            for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
-                query.setHint(entry.getValue(), entry.getKey());
-            }
-        }
-
-        if (hasBatches) {
-            query.setHint(QueryHints.BATCH_TYPE, "IN");
-        }
+        return description;
     }
 
     private boolean isTransitiveSelfReference(FetchGroupField root, FetchGroupField current) {
@@ -422,17 +418,12 @@ public class FetchGroupManager {
                                                   FetchGroupField parentField,
                                                   String property,
                                                   FetchMode fetchMode) {
-        MetaClass metaClass = getRealClass(entityClass, property);
+        MetaClass metaClass = metadata.getClassNN(entityClass);
         return new FetchGroupField(metaClass, parentField, property, getFetchMode(metaClass, fetchMode));
     }
 
     private FetchMode getFetchMode(MetaClass metaClass, FetchMode fetchMode) {
         return metadataTools.isCacheable(metaClass) ? FetchMode.UNDEFINED : fetchMode;
-    }
-
-    private MetaClass getRealClass(Class<? extends Entity> entityClass, String property) {
-        // todo ?
-        return metadata.getClassNN(entityClass);
     }
 
     protected static class FetchGroupField {
