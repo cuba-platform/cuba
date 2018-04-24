@@ -23,8 +23,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.entity.IdProxy;
+import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.entity.contracts.Ids;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
@@ -35,6 +35,7 @@ import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -116,11 +117,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 log.trace("Transformed JPQL query: {}", transformedQueryString);
 
                 Class effectiveClass = getEffectiveResultClass();
-                if (effectiveClass != null) {
-                    query = (JpaQuery) emDelegate.createQuery(transformedQueryString, effectiveClass);
-                } else {
-                    query = (JpaQuery) emDelegate.createQuery(transformedQueryString);
-                }
+                query = buildJPAQuery(transformedQueryString, effectiveClass);
                 if (view != null) {
                     MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
                     if (!metadata.getTools().isCacheable(metaClass) || !singleResultExpected) {
@@ -183,6 +180,33 @@ public class QueryImpl<T> implements TypedQuery<T> {
             return metadata.getExtendedEntities().getEffectiveClass(resultClass);
         }
         return resultClass;
+    }
+
+    protected JpaQuery buildJPAQuery(String queryString, Class<T> resultClass) {
+        boolean useJPQLCache = true;
+        View view = views.isEmpty() ? null : views.get(0);
+        if (view != null) {
+            boolean useFetchGroup = view.loadPartialEntities();
+            for (View it : views) {
+                FetchGroupDescription description = fetchGroupMgr.calculateFetchGroup(queryString, it, singleResultExpected, useFetchGroup);
+                if (description.hasBatches()) {
+                    useJPQLCache = false;
+                    break;
+                }
+            }
+        }
+        if (!useJPQLCache) {
+            CubaUtil.setEnabledJPQLParseCache(false);
+        }
+        try {
+            if (resultClass != null) {
+                return (JpaQuery) emDelegate.createQuery(queryString, resultClass);
+            } else {
+                return (JpaQuery) emDelegate.createQuery(queryString);
+            }
+        } finally {
+            CubaUtil.setEnabledJPQLParseCache(true);
+        }
     }
 
     protected void checkState() {
@@ -425,7 +449,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         } else if (value instanceof Id) {
             value = ((Id) value).getValue();
         } else if (value instanceof Ids) {
-            value = ((Ids)value).getValues();
+            value = ((Ids) value).getValues();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
