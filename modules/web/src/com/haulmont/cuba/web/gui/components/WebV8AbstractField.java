@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.vaadin.ui.AbstractComponent;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import java.util.function.Consumer;
  * @param <P> type of value of presentation
  * @param <V> type of value of model
  */
-public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P>, P, V>
+public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractValueComponent<T, P, V> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
@@ -194,11 +195,11 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
             }
         }
 
-        Object value = getValue();
+        V value = getValue();
         triggerValidators(value);
     }
 
-    protected void triggerValidators(Object value) throws ValidationFailedException {
+    protected void triggerValidators(V value) throws ValidationFailedException {
         if (validators != null) {
             try {
                 for (Validator validator : validators) {
@@ -245,22 +246,22 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.AbstractField<P
 
     @Override
     public String getContextHelpText() {
-        return component.getContextHelpText();
+        return ((AbstractComponent) component).getContextHelpText();
     }
 
     @Override
     public void setContextHelpText(String contextHelpText) {
-        component.setContextHelpText(contextHelpText);
+        ((AbstractComponent) component).setContextHelpText(contextHelpText);
     }
 
     @Override
     public boolean isContextHelpTextHtmlEnabled() {
-        return component.isContextHelpTextHtmlEnabled();
+        return ((AbstractComponent) component).isContextHelpTextHtmlEnabled();
     }
 
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        component.setContextHelpTextHtmlEnabled(enabled);
+        ((AbstractComponent) component).setContextHelpTextHtmlEnabled(enabled);
     }
 
     @Override
