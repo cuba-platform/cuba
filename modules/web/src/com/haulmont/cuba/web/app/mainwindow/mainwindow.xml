@@ -25,7 +25,7 @@
               expand="mainMenu" width="100%" height="AUTO"
               spacing="true" margin="false;false;false;true">
 
-            <embedded id="logoImage" align="MIDDLE_LEFT" type="IMAGE" stylename="c-app-icon"/>
+            <image id="logoImage" align="MIDDLE_LEFT" scaleMode="SCALE_DOWN" stylename="c-app-icon"/>
 
             <main:menu id="mainMenu" align="MIDDLE_LEFT"/>
 

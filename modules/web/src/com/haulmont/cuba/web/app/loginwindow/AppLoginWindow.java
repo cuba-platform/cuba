@@ -94,7 +94,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected Connection connection;
 
     @Inject
-    protected Embedded logoImage;
+    protected Image logoImage;
 
     @Inject
     protected TextField<String> loginField;
@@ -170,7 +170,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         if (StringUtils.isBlank(loginLogoImagePath) || "loginWindow.logoImage".equals(loginLogoImagePath)) {
             logoImage.setVisible(false);
         } else {
-            logoImage.setSource("theme://" + loginLogoImagePath);
+            logoImage.setSource(ThemeResource.class).setPath(loginLogoImagePath);
         }
     }
 

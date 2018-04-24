@@ -51,7 +51,7 @@ public class AppMainWindow extends AbstractMainWindow {
     protected FtsField ftsField;
 
     @Inject
-    protected Embedded logoImage;
+    protected Image logoImage;
 
     @Inject
     protected WebConfig webConfig;

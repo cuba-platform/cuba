@@ -31,12 +31,12 @@
                   margin="true" align="MIDDLE_CENTER">
                 <hbox id="loginTitleBox" stylename="c-login-title"
                       spacing="true" align="MIDDLE_CENTER">
-                    <embedded id="logoImage"
-                              width="AUTO"
-                              height="AUTO"
-                              type="IMAGE"
-                              align="MIDDLE_LEFT"
-                              stylename="c-login-icon"/>
+                    <image id="logoImage"
+                           align="MIDDLE_LEFT"
+                           height="AUTO"
+                           width="AUTO"
+                           scaleMode="SCALE_DOWN"
+                           stylename="c-login-icon"/>
 
                     <label id="welcomeLabel"
                            align="MIDDLE_LEFT"

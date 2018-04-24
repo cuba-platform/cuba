@@ -72,10 +72,10 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
         this.foldersPane = foldersPane;
     }
 
-    protected void initLogoImage(Embedded logoImage) {
+    protected void initLogoImage(Image logoImage) {
         String logoImagePath = messages.getMainMessage("application.logoImage");
         if (StringUtils.isNotBlank(logoImagePath) && !"application.logoImage".equals(logoImagePath)) {
-            logoImage.setSource("theme://" + logoImagePath);
+            logoImage.setSource(ThemeResource.class).setPath(logoImagePath);
         }
     }
 
