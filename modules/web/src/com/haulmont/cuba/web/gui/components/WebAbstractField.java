@@ -30,14 +30,13 @@ import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField, V>
-        extends WebAbstractComponent<T> implements Field<V>, PropertyBoundComponent /* todo ds: move to Field */ {
+        extends WebAbstractComponent<T> implements Field<V> /* todo ds: move to Field */ {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
@@ -411,15 +410,5 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         if (contextHelpIconClickHandler != null) {
             contextHelpIconClickHandler.accept(event);
         }
-    }
-
-    @Override
-    public InstanceContainer getEntityContainer() {
-        return null; // todo
-    }
-
-    @Override
-    public void setContainer(InstanceContainer container, String property) {
-        // todo
     }
 }

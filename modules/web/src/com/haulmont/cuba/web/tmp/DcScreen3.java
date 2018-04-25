@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.data.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContextFactory;
@@ -42,7 +43,7 @@ import java.util.Map;
 public class DcScreen3 extends AbstractWindow {
 
     @Inject
-    private TextField textField1;
+    private TextField<String> textField1;
     @Inject
     private SplitPanel split;
     @Inject
@@ -90,6 +91,6 @@ public class DcScreen3 extends AbstractWindow {
         usersTable.setContainer(usersContainer);
         userRolesTable.setContainer(userRolesContainer);
         
-        textField1.setContainer(usersContainer, "name");
+        textField1.setValueSource(new ContainerValueSource<>(usersContainer, "name"));
     }
 }

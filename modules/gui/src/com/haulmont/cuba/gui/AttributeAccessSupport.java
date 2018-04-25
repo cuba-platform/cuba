@@ -25,10 +25,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Component.Editable;
-import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -60,9 +62,7 @@ public class AttributeAccessSupport {
      */
     public void applyAttributeAccess(Frame frame, boolean reset) {
         ComponentsHelper.walkComponents(frame, (component, name) -> {
-            if (component instanceof DatasourceComponent) {
-                visitComponent((DatasourceComponent) component, reset);
-            }
+            visitComponent(component, reset);
         });
     }
 
@@ -86,25 +86,35 @@ public class AttributeAccessSupport {
         applyAttributeAccess(frame, reset);
     }
 
-    protected void visitComponent(DatasourceComponent component, boolean reset) {
-        Datasource datasource = component.getDatasource();
-        MetaPropertyPath propertyPath = component.getMetaPropertyPath();
-        if (datasource == null || datasource.getState() != Datasource.State.VALID || propertyPath == null || datasource.getItem() == null) {
+    protected void visitComponent(com.haulmont.cuba.gui.components.Component component, boolean reset) {
+        if (!(component instanceof HasValueBinding)) {
+            return;
+        }
+
+        ValueSource valueSource = ((HasValueBinding) component).getValueSource();
+        if (!(valueSource instanceof EntityValueSource)) {
+            return;
+        }
+
+        EntityValueSource entityValueSource = (EntityValueSource) valueSource;
+
+        MetaPropertyPath propertyPath = entityValueSource.getMetaPropertyPath();
+        if (valueSource.getState() != BindingState.ACTIVE || propertyPath == null) {
             return;
         }
 
         if (reset) {
-            component.setVisible(security.isEntityAttrReadPermitted(datasource.getMetaClass(), propertyPath.toString()));
+            component.setVisible(security.isEntityAttrReadPermitted(entityValueSource.getMetaClass(), propertyPath.toString()));
 
             if (component instanceof Editable) {
-                ((Editable) component).setEditable(security.isEntityAttrUpdatePermitted(datasource.getMetaClass(), propertyPath.toString()));
+                ((Editable) component).setEditable(security.isEntityAttrUpdatePermitted(entityValueSource.getMetaClass(), propertyPath.toString()));
             }
             if (component instanceof Field) {
                 ((Field) component).setRequired(propertyPath.getMetaProperty().isMandatory());
             }
         }
 
-        ComponentState componentState = calculateComponentState(datasource.getItem(), propertyPath);
+        ComponentState componentState = calculateComponentState(entityValueSource.getItem(), propertyPath);
         if (componentState.hidden) {
             component.setVisible(false);
         }

@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.tmp;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.data.ContainerValueSource;
 import com.haulmont.cuba.gui.model.DataContextFactory;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
@@ -33,9 +34,9 @@ import java.util.UUID;
 public class DcScreen1 extends AbstractWindow {
 
     @Inject
-    private TextField textField1;
+    private TextField<String> textField1;
     @Inject
-    private TextField textField2;
+    private TextField<String> textField2;
 
     @Inject
     private DataContextFactory dataContextFactory;
@@ -46,8 +47,8 @@ public class DcScreen1 extends AbstractWindow {
     public void init(Map<String, Object> params) {
         container = dataContextFactory.createInstanceContainer(User.class);
 
-        textField1.setContainer(container, "name");
-        textField2.setContainer(container, "name");
+        textField1.setValueSource(new ContainerValueSource<>(container, "name"));
+        textField2.setValueSource(new ContainerValueSource<>(container, "name"));
 
         InstanceLoader<User, UUID> loader = dataContextFactory.createInstanceLoader();
         loader.setContainer(container);
