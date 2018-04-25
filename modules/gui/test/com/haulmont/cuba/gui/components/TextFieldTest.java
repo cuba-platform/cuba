@@ -124,7 +124,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
         AtomicInteger counter = new AtomicInteger(0);
 
-        Component.ValueChangeListener okListener = e -> {
+        HasValue.ValueChangeListener okListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals("OK", e.getValue());
 
@@ -149,7 +149,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        Component.ValueChangeListener dsLoadListener = e -> {
+        HasValue.ValueChangeListener dsLoadListener = e -> {
             assertEquals("Test", e.getPrevValue());
             assertNull(e.getValue());
 
@@ -162,7 +162,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
         component.removeValueChangeListener(dsLoadListener);
 
-        Component.ValueChangeListener dsListener = e -> {
+        HasValue.ValueChangeListener dsListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals("dsValue", e.getValue());
 

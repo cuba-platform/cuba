@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.test;
 
 import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
+import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import junit.framework.TestCase;
 
 import java.util.HashMap;

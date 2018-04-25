@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data;
 
-public enum ValueSourceState {
-    ACTIVE,
-    INACTIVE
+// todo JavaDoc
+public interface Binding {
+    void unbind();
 }

@@ -156,7 +156,7 @@ public class ValueBinder {
 
         @Override
         public void activate() {
-            if (source.getStatus() == ValueSourceState.ACTIVE) {
+            if (source.getState() == BindingState.ACTIVE) {
                 component.setValue(source.getValue());
             }
         }
@@ -164,7 +164,7 @@ public class ValueBinder {
         protected void disableBeanValidator(Field<?> component) {
             Collection<Field.Validator> validators = component.getValidators();
 
-            for (Field.Validator validator : validators.toArray(new Field.Validator[validators.size()])) {
+            for (Field.Validator validator : validators.toArray(new Field.Validator[0])) {
                 if (validator instanceof BeanValidator) {
                     component.removeValidator(validator);
                 }
@@ -180,7 +180,7 @@ public class ValueBinder {
         }
 
         protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {
-            if (event.getState() == ValueSourceState.ACTIVE) {
+            if (event.getState() == BindingState.ACTIVE) {
                 // read value to component
                 component.setValue(source.getValue());
             }
@@ -188,7 +188,7 @@ public class ValueBinder {
 
         @SuppressWarnings("unchecked")
         protected void componentValueChanged(@SuppressWarnings("unused") HasValue.ValueChangeEvent event) {
-            if (source.getStatus() == ValueSourceState.ACTIVE) {
+            if (source.getState() == BindingState.ACTIVE) {
                 source.setValue((V) event.getValue());
             }
         }

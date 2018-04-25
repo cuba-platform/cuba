@@ -168,7 +168,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         final Group g1 = new Group();
         final Group g2 = new Group();
 
-        Component.ValueChangeListener listener1 = e -> {
+        HasValue.ValueChangeListener listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -182,7 +182,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(listener1);
         assertEquals(1, counter.get());
 
-        Component.ValueChangeListener listener2 = e -> {
+        HasValue.ValueChangeListener listener2 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g, e.getValue());
 
@@ -201,7 +201,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
         assertEquals(2, counter.get());
 
-        Component.ValueChangeListener listener3 = e -> {
+        HasValue.ValueChangeListener listener3 = e -> {
             assertEquals(g1, e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -218,7 +218,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         component.setValue(g);
         Group gCopy = (Group) SerializationSupport.deserialize(SerializationSupport.serialize(g));
 
-        Component.ValueChangeListener listener4 = e -> {
+        HasValue.ValueChangeListener listener4 = e -> {
             assertEquals(g, e.getPrevValue());
             assertEquals(gCopy, e.getValue());
 
@@ -229,7 +229,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         assertEquals(4, counter.get());
         component.removeValueChangeListener(listener4);
 
-        Component.ValueChangeListener listener5 = e -> {
+        HasValue.ValueChangeListener listener5 = e -> {
             assertEquals(g, e.getPrevValue());
             assertEquals(gCopy, e.getValue());
 

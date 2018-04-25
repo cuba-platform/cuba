@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.User;
@@ -41,7 +42,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
         // unbind
         textField.setDatasource(null, null);
 
-        Component.ValueChangeListener listener = e -> {
+        HasValue.ValueChangeListener listener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         textField.addValueChangeListener(listener);
@@ -77,7 +78,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
         // listener before datasource
 
         boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
         textField.addValueChangeListener(listener);
 
         textField.setDatasource(userDs, "name");
@@ -109,7 +110,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
         // setup
         boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
 
         // datasource before listener
 

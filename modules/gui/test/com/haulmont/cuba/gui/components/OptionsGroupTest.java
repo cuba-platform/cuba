@@ -186,7 +186,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
         assertNull(component.getValue());
 
-        Component.ValueChangeListener listener1 = e -> {
+        HasValue.ValueChangeListener listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals("Two", e.getValue());
 
@@ -201,7 +201,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
         assertEquals(1, counter.get());
 
-        Component.ValueChangeListener listener2 = e -> {
+        HasValue.ValueChangeListener listener2 = e -> {
             assertEquals("Two", e.getPrevValue());
             assertEquals("One", e.getValue());
 
@@ -215,7 +215,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
         assertEquals(2, counter.get());
 
         component.removeValueChangeListener(listener2);
-        Component.ValueChangeListener listener3 = e -> {
+        HasValue.ValueChangeListener listener3 = e -> {
             assertEquals("One", e.getPrevValue());
             assertEquals("Three", e.getValue());
 

@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -51,7 +52,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
         // unbind
         lookupField.setDatasource(null, null);
 
-        Component.ValueChangeListener listener = e -> {
+        HasValue.ValueChangeListener listener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         lookupField.addValueChangeListener(listener);
@@ -131,7 +132,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
         user.setGroup(groups.get(0));
 
         boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
         lookupField.addValueChangeListener(listener);
 
         lookupField.setDatasource(userDs, "group");
@@ -156,7 +157,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
         // setup
         boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
 
         // datasource before listener
         lookupField.setDatasource(userDs, "group");

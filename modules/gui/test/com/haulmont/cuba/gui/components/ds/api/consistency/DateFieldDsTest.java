@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components.ds.api.consistency;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.User;
 import org.junit.Ignore;
@@ -46,7 +47,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
         // unbind
         dateField.setDatasource(null, null);
 
-        Component.ValueChangeListener valueChangeListener = e -> {
+        HasValue.ValueChangeListener valueChangeListener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         dateField.addValueChangeListener(valueChangeListener);
@@ -96,7 +97,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
         assertEquals(updateTs, dateField.getValue());
 
         boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
         dateField.addValueChangeListener(listener);
 
         Date updateTs2 = new Date();
@@ -155,7 +156,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
         // listener before datasource
         Boolean[] valueWasChanged = {false};
-        Component.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
         dateField.addValueChangeListener(listener);
 
         dateField.setDatasource(userDs, "updateTs");

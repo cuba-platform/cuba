@@ -20,17 +20,15 @@ import com.haulmont.bali.events.Subscription;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
- * vaadin8 document
+ * todo JavaDoc
  *
- * @param <V> todo
+ * @param <V> type of option object
  */
-public interface ValueSource<V> {
-    V getValue();
-    void setValue(V value);
-
-    boolean isReadOnly();
+public interface OptionsSource<V> {
+    Stream<V> getOptions();
 
     Class<V> getType();
 
@@ -38,20 +36,21 @@ public interface ValueSource<V> {
 
     Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener);
     Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener);
+    Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<V>> listener);
 
     // todo
     class StateChangeEvent<V> extends EventObject {
         protected BindingState status;
 
-        public StateChangeEvent(ValueSource<V> source, BindingState status) {
+        public StateChangeEvent(OptionsSource<V> source, BindingState status) {
             super(source);
             this.status = status;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public ValueSource<V> getSource() {
-            return (ValueSource<V>) super.getSource();
+        public OptionsSource<V> getSource() {
+            return (OptionsSource<V>) super.getSource();
         }
 
         public BindingState getState() {
@@ -64,7 +63,7 @@ public interface ValueSource<V> {
         private final V prevValue;
         private final V value;
 
-        public ValueChangeEvent(ValueSource<V> source, V prevValue, V value) {
+        public ValueChangeEvent(OptionsSource<V> source, V prevValue, V value) {
             super(source);
             this.prevValue = prevValue;
             this.value = value;
@@ -72,8 +71,8 @@ public interface ValueSource<V> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public ValueSource<V> getSource() {
-            return (ValueSource<V>) super.getSource();
+        public OptionsSource<V> getSource() {
+            return (OptionsSource<V>) super.getSource();
         }
 
         public V getPrevValue() {
@@ -82,6 +81,19 @@ public interface ValueSource<V> {
 
         public V getValue() {
             return value;
+        }
+    }
+
+    // todo
+    class OptionsChangeEvent<V> extends EventObject {
+        public OptionsChangeEvent(OptionsSource<V> source) {
+            super(source);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public OptionsSource<V> getSource() {
+            return (OptionsSource<V>) super.getSource();
         }
     }
 }

@@ -30,11 +30,13 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class DatasourceValueSource<E extends Entity, V> extends EventPublisher implements EntityValueSource<E, V> {
+public class DatasourceValueSource<E extends Entity, V> implements EntityValueSource<E, V> {
     protected final Datasource<E> datasource;
     protected final MetaPropertyPath metaPropertyPath;
 
-    protected ValueSourceState state = ValueSourceState.INACTIVE;
+    protected BindingState state = BindingState.INACTIVE;
+
+    protected EventPublisher events = new EventPublisher();
 
     @SuppressWarnings("unchecked")
     public DatasourceValueSource(Datasource<E> datasource, String property) {
@@ -56,11 +58,11 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
         this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
     }
 
-    public void setState(ValueSourceState state) {
+    public void setState(BindingState state) {
         if (this.state != state) {
             this.state = state;
 
-            publish(StateChangeEvent.class, new StateChangeEvent<>(this,  ValueSourceState.ACTIVE));
+            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  BindingState.ACTIVE));
         }
     }
 
@@ -115,56 +117,56 @@ public class DatasourceValueSource<E extends Entity, V> extends EventPublisher i
     }
 
     @Override
-    public ValueSourceState getStatus() {
+    public BindingState getState() {
         if (datasource.getState() == Datasource.State.VALID
                 && datasource.getItem() != null) {
-            return ValueSourceState.ACTIVE;
+            return BindingState.ACTIVE;
         }
 
-        return ValueSourceState.INACTIVE;
+        return BindingState.INACTIVE;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener) {
-        return subscribe(InstanceChangeEvent.class, (Consumer) listener);
+        return events.subscribe(InstanceChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
-        return subscribe(StateChangeEvent.class, (Consumer) listener);
+        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
-        return subscribe(ValueChangeEvent.class, (Consumer) listener);
+        return events.subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     protected void datasourceItemChanged(Datasource.ItemChangeEvent e) {
         if (e.getItem() != null && datasource.getState() == Datasource.State.VALID) {
-            setState(ValueSourceState.ACTIVE);
+            setState(BindingState.ACTIVE);
         } else {
-            setState(ValueSourceState.INACTIVE);
+            setState(BindingState.INACTIVE);
         }
 
-        publish(InstanceChangeEvent.class, new InstanceChangeEvent(this, e.getPrevItem(), e.getItem()));
+        events.publish(InstanceChangeEvent.class, new InstanceChangeEvent(this, e.getPrevItem(), e.getItem()));
     }
 
     protected void datasourceStateChanged(Datasource.StateChangeEvent<E> e) {
         if (e.getState() == Datasource.State.VALID) {
-            setState(ValueSourceState.ACTIVE);
+            setState(BindingState.ACTIVE);
         } else {
-            setState(ValueSourceState.INACTIVE);
+            setState(BindingState.INACTIVE);
         }
     }
 
     @SuppressWarnings("unchecked")
     protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
         if (Objects.equals(e.getProperty(), metaPropertyPath.toPathString())) {
-            publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
+            events.publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
         }
     }
 }

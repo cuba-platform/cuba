@@ -197,7 +197,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setOptionsDatasource(groupsDs);
 
-        Component.ValueChangeListener listener1 = e -> {
+        HasValue.ValueChangeListener listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -209,7 +209,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(listener1);
         assertEquals(1, counter.get());
 
-        Component.ValueChangeListener listener2 = e -> {
+        HasValue.ValueChangeListener listener2 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g, e.getValue());
 
@@ -229,7 +229,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         assertEquals(2, counter.get());
 
-        Component.ValueChangeListener listener3 = e -> {
+        HasValue.ValueChangeListener listener3 = e -> {
             assertEquals(g1, e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -284,7 +284,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setValue(g2);
 
-        Component.ValueChangeListener listener1 = e -> {
+        HasValue.ValueChangeListener listener1 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g1, e.getValue());
         };

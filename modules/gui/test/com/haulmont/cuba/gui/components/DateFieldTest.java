@@ -122,7 +122,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         AtomicInteger counter = new AtomicInteger(0);
 
         Date value1 = new SimpleDateFormat("dd.MM.yyyy").parse("12.12.2000");
-        Component.ValueChangeListener okListener = e -> {
+        HasValue.ValueChangeListener okListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals(value1, e.getValue());
 
@@ -148,7 +148,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        Component.ValueChangeListener dsLoadListener = e -> {
+        HasValue.ValueChangeListener dsLoadListener = e -> {
             assertEquals(value2, e.getPrevValue());
             assertNull(e.getValue());
 
@@ -162,7 +162,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(dsLoadListener);
 
         Date value3 = new SimpleDateFormat("dd.MM.yyyy").parse("01.01.2000");
-        Component.ValueChangeListener dsListener = e -> {
+        HasValue.ValueChangeListener dsListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals(value3, e.getValue());
 
