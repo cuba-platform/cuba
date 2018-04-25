@@ -86,8 +86,7 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
 
     @Override
     public void setSelectionRange(int pos, int length) {
-//        vaadin8
-//        component.setSelectionRange(pos, length);
+        component.setSelection(pos, length);
     }
 
     @Override

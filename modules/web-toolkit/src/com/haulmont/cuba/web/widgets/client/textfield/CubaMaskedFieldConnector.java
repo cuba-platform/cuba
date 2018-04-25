@@ -44,4 +44,9 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
         getWidget().setMaskedMode(getState().maskedMode);
         getWidget().setSendNullRepresentation(getState().sendNullRepresentation);
     }
+
+    @Override
+    protected String getTextFieldValue() {
+        return getWidget().getValueConsideringMaskedMode();
+    }
 }
