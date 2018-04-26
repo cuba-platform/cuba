@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.haulmont.bali.util.StackTrace;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
@@ -35,6 +38,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -51,7 +55,7 @@ public class MetadataImpl implements Metadata {
 
     protected volatile Session session;
 
-    protected volatile List<String> rootPackages = new ArrayList<>();
+    protected volatile List<String> rootPackages = Collections.emptyList();
 
     @Inject
     protected DatatypeRegistry datatypeRegistry;
@@ -77,6 +81,15 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected GlobalConfig config;
 
+    protected LoadingCache<Class<?>, List<Method>> postConstructMethodsCache =
+            CacheBuilder.newBuilder()
+                    .build(new CacheLoader<Class<?>, List<Method>>() {
+                        @Override
+                        public List<Method> load(@Nonnull Class<?> concreteClass) {
+                            return getPostConstructMethodsNotCached(concreteClass);
+                        }
+                    });
+
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     protected void initMetadata() {
@@ -94,7 +107,7 @@ public class MetadataImpl implements Metadata {
         session = new CachingMetadataSession(metadataLoader.getSession());
         SessionImpl.setSerializationSupportSession(session);
 
-        log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.info("Metadata initialized in {} ms", System.currentTimeMillis() - startTime);
     }
 
     @Override
@@ -133,7 +146,7 @@ public class MetadataImpl implements Metadata {
             invokePostConstructMethods((Entity) obj);
             return obj;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create entity instance", e);
         }
     }
 
@@ -149,7 +162,6 @@ public class MetadataImpl implements Metadata {
             // create an instance of embedded ID
             Entity key = create(primaryKeyProperty.getRange().asClass());
             ((BaseGenericIdEntity) entity).setId(key);
-
         } else {
             if (!config.getEnableIdGenerationForEntitiesInAdditionalDataStores()
                     && !Stores.MAIN.equals(tools.getStoreName(metaClass))) {
@@ -202,9 +214,23 @@ public class MetadataImpl implements Metadata {
     }
 
     protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
+        List<Method> postConstructMethods = postConstructMethodsCache.getUnchecked(entity.getClass());
+        if (!postConstructMethods.isEmpty()) {
+            ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
+            while (iterator.hasPrevious()) {
+                Method method = iterator.previous();
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                method.invoke(entity);
+            }
+        }
+    }
+
+    protected List<Method> getPostConstructMethodsNotCached(Class<?> clazz) {
         List<Method> postConstructMethods = Collections.emptyList();
         List<String> methodNames = Collections.emptyList();
-        Class clazz = entity.getClass();
+
         while (clazz != Object.class) {
             Method[] classMethods = clazz.getDeclaredMethods();
             for (Method method : classMethods) {
@@ -245,16 +271,7 @@ public class MetadataImpl implements Metadata {
             clazz = clazz.getSuperclass();
         }
 
-        if (!postConstructMethods.isEmpty()) {
-            ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
-            while (iterator.hasPrevious()) {
-                Method method = iterator.previous();
-                if (!method.isAccessible()) {
-                    method.setAccessible(true);
-                }
-                method.invoke(entity);
-            }
-        }
+        return postConstructMethods;
     }
 
     @Override
