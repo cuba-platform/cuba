@@ -109,6 +109,8 @@ public class CubaMaskedFieldWidget extends VTextField {
         this.shiftPressed = false;
         this.shiftPressPos = -1;
         this.focused = false;
+
+        valueChange(true);
     }
 
     public boolean isMaskedMode() {
@@ -173,13 +175,26 @@ public class CubaMaskedFieldWidget extends VTextField {
             getElement().removeClassName(EMPTY_FIELD_CLASS);
         }
 
-        if (valueBuilder.length() != 0
-                && mask != null
-                && validateText(text)) {
-            valueBeforeEdit = text;
-        }
-
         super.setText(text);
+    }
+
+    protected void valueChange(boolean blurred) {
+        String newText = getValue();
+
+        if (!newText.equals(valueBeforeEdit)) {
+            if (isTimeMask) {
+                newText = (newText.endsWith("__") && !newText.startsWith("__"))
+                        ? newText.replaceAll("__", "00")
+                        : newText;
+            }
+
+            if (validateText(newText)) {
+                valueBeforeEdit = newText;
+                setValue(newText);
+            } else {
+                setValue(valueBeforeEdit);
+            }
+        }
     }
 
     public String getRawText() {
@@ -263,7 +278,17 @@ public class CubaMaskedFieldWidget extends VTextField {
             }
         }
         nullRepresentation = valueBuilder.toString();
-        setText(valueBuilder.toString());
+
+        // if the field is connected with the datasource,
+        // then the value is set before mask is applied.
+        // In this case we want to keep the value, instead of
+        // replacing it with the `nullRepresentation`
+        String currentText = getText();
+        if (currentText.length() > 0 && validateText(currentText)) {
+            setText(currentText);
+        } else {
+            setText(valueBuilder.toString());
+        }
     }
 
     protected boolean validateText(String text) {
@@ -290,19 +315,10 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     public String getValueConsideringMaskedMode() {
         String text = getText();
-
         if (text.equals(nullRepresentation)) {
             return isSendNullRepresentation() ? text : getRawText();
         } else {
-            if (maskedMode) {
-                if (isTimeMask) {
-                    return (text.endsWith("__") && !text.startsWith("__")) ? text.replaceAll("__", "00") : text;
-                } else {
-                    return text;
-                }
-            } else {
-                return getRawText();
-            }
+            return isMaskedMode() ? text : getRawText();
         }
     }
 
@@ -368,13 +384,7 @@ public class CubaMaskedFieldWidget extends VTextField {
             resultValue.append(valueBuilder.substring(cursorPos + cutLength));
 
             valueBuilder.replace(0, valueBuilder.length(), resultValue.toString());
-            // VAADIN8: gg, actually, the value always fails validation
-            String valueBuilderText = valueBuilder.toString();
-            if (validateText(valueBuilderText)) {
-                super.setText(valueBuilderText);
-            } else {
-                setText(valueBeforeEdit);
-            }
+            super.setText(valueBuilder.toString());
             setCursorPos(cursorPos);
         }
     }
@@ -409,14 +419,8 @@ public class CubaMaskedFieldWidget extends VTextField {
 
         StringBuilder maskedPart = maskValue(newText.substring(pasteStart, pasteStart + pasteLength), pasteStart, pasteStart + pasteLength);
         valueBuilder.replace(pasteStart, pasteStart + maskedPart.length(), maskedPart.toString());
-        String valueBuilderText = valueBuilder.toString();
-        if (validateText(valueBuilderText)) {
-            super.setText(valueBuilderText);
-            setCursorPos(getNextPos(pasteStart + maskedPart.length() - 1));
-        } else {
-            setText(valueBeforeEdit);
-            setCursorPos(pasteStart);
-        }
+        super.setText(valueBuilder.toString());
+        setCursorPos(getNextPos(pasteStart + maskedPart.length() - 1));
     }
 
     // VAADIN8: gg, do we need this method?
@@ -651,14 +655,12 @@ public class CubaMaskedFieldWidget extends VTextField {
             if (isReadOnly())
                 return;
 
-            // VAADIN8: gg, remove
-            /*if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER
+            if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER
                     && !e.getNativeEvent().getAltKey()
                     && !e.getNativeEvent().getCtrlKey()
                     && !e.getNativeEvent().getShiftKey()) {
-//                vaadin8
-//                valueChange(false);
-            }*/
+                valueChange(false);
+            }
 
             if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE
                     || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE

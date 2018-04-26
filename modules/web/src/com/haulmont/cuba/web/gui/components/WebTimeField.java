@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
@@ -49,66 +50,17 @@ public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String
         component.setMaskedMode(true);
         component.setTimeMask(true);
         setShowSeconds(timeFormat.contains("ss"));
-/*      vaadin8
-        component.setInvalidAllowed(false);
-        component.setInvalidCommitted(true);
-        component.addValidator(value -> {
+
+        // vaadin8
+//        component.setInvalidAllowed(false);
+//        component.setInvalidCommitted(true);
+        /*component.addValidator(value -> {
             if (!(!(value instanceof String) || checkStringValue((String) value))) {
                 component.markAsDirty();
                 throw new com.vaadin.v7.data.Validator.InvalidValueException("Unable to parse value: " + value);
             }
-        });
-        attachListener(component);
-
-        component.setConverter(new Converter<String, Date>() {
-            @Override
-            public Date convertToModel(String formattedValue, Class<? extends Date> targetType, Locale locale)
-                    throws ConversionException {
-                if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
-                    try {
-                        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                        sdf.setLenient(false);
-
-                        Date date = sdf.parse(formattedValue);
-                        if (component.getComponentError() != null)
-                            component.setComponentError(null);
-                        if (targetType == java.sql.Time.class) {
-                            return new Time(date.getTime());
-                        }
-                        if (targetType == java.sql.Date.class) {
-                            LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
-                            return new java.sql.Date(date.getTime());
-                        }
-                        return date;
-                    } catch (Exception e) {
-                        LoggerFactory.getLogger(WebTimeField.class)
-                                .debug("Unable to parse value of component {}:\n{}", getId(), e.getMessage());
-                        throw new ConversionException("Invalid value");
-                    }
-                } else
-                    return null;
-            }
-
-            @Override
-            public String convertToPresentation(Date value, Class<? extends String> targetType, Locale locale)
-                    throws ConversionException {
-                if (value != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                    return sdf.format(value);
-                } else
-                    return null;
-            }
-
-            @Override
-            public Class<Date> getModelType() {
-                return Date.class;
-            }
-
-            @Override
-            public Class<String> getPresentationType() {
-                return String.class;
-            }
         });*/
+        attachValueChangeListener(component);
     }
 
     public boolean isAmPmUsed() {
@@ -150,6 +102,7 @@ public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String
         component.setWidth(newWidth + "px");
     }
 
+    // VAADIN8: gg, do we need this method?
     protected boolean checkStringValue(String value) {
         if (value.equals(placeholder) || StringUtils.isEmpty(value))
             return true;
@@ -163,33 +116,42 @@ public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Date getValue() {
-        Object value = super.getValue();
-        if (value instanceof String) { // vaadin8 rework
+    protected Date convertToModel(String componentRawValue) throws ConversionException {
+        if (StringUtils.isNotEmpty(componentRawValue) && !componentRawValue.equals(placeholder)) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                return sdf.parse((String) value);
-            } catch (ParseException e) {
+                sdf.setLenient(false);
+
+                Date date = sdf.parse(componentRawValue);
+                if (component.getComponentError() != null)
+                    component.setComponentError(null);
+                // VAADIN8: gg, do we need this?
+                /*if (targetType == java.sql.Time.class) {
+                    return new Time(date.getTime());
+                }
+                if (targetType == java.sql.Date.class) {
+                    LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
+                    return new java.sql.Date(date.getTime());
+                }*/
+                return date;
+            } catch (Exception e) {
                 LoggerFactory.getLogger(WebTimeField.class)
-                        .debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
-                return null;
+                        .debug("Unable to parse value of component {}:\n{}", getId(), e.getMessage());
+                throw new ConversionException("Invalid value");
             }
         } else {
-            return (Date) value;
+            return null;
         }
     }
 
     @Override
-    public void setValue(Date value) {
-        if (value != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat(this.timeFormat);
-            sdf.setLenient(false);
-
-            component.setValue(sdf.format(value));
+    protected String convertToPresentation(Date modelValue) throws ConversionException {
+        if (modelValue != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+            return sdf.format(modelValue);
         } else {
-            component.setValue(null);
+            return "";
         }
     }
 
