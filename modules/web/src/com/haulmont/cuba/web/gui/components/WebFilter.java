@@ -58,6 +58,7 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
         component.setPrimaryStyleName(FILTER_STYLENAME);
 
         delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
+        delegate.setCaptionChangedListener(this::updateCaptions);
     }
 
     @Override
@@ -192,12 +193,18 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public void setCaption(String caption) {
+        delegate.setCaption(caption);
+
+        updateCaptions(caption);
+    }
+
+    protected void updateCaptions(String caption) {
         if (delegate.isBorderVisible()) {
-            delegate.setCaption(caption);
             component.setCaption(null);
+            ((HasCaption) delegate.getLayout()).setCaption(caption);
         } else {
             component.setCaption(caption);
-            delegate.setCaption(null);
+            ((HasCaption) delegate.getLayout()).setCaption(null);
         }
     }
 
