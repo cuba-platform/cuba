@@ -32,6 +32,9 @@ import org.springframework.beans.factory.InitializingBean;
 import java.text.ParseException;
 import java.util.Locale;
 
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
+
 public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V>
         implements TextField<V>, InitializingBean {
 
@@ -52,36 +55,39 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
 //    vaadin8
 //    @Override
+    // vaadin8 introduce convention for implementation factory methods
     protected CubaTextField createTextFieldImpl() {
         return new CubaTextField();
     }
 
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
+        // Vaadin TextField does not permit `null` value
+
         if (formatter != null) {
-            return formatter.format(modelValue);
+            return nullToEmpty(formatter.format(modelValue));
         }
 
         if (datatype != null) {
-            return datatype.format(modelValue, locale);
+            return nullToEmpty(datatype.format(modelValue, locale));
         }
 
         if (valueBinding != null
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
-            return propertyDataType.format(modelValue);
+            return nullToEmpty(propertyDataType.format(modelValue));
         }
 
-        return super.convertToPresentation(modelValue);
+        return nullToEmpty(super.convertToPresentation(modelValue));
     }
 
     @Override
     protected V convertToModel(String componentRawValue) throws ConversionException {
-        String value = componentRawValue;
+        String value = emptyToNull(componentRawValue);
 
         if (isTrimming()) {
-            value = StringUtils.trimToEmpty(value);
+            value = StringUtils.trimToNull(value);
         }
 
         if (datatype != null) {

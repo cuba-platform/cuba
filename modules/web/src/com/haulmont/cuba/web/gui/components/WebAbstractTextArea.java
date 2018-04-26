@@ -28,6 +28,9 @@ import org.springframework.beans.factory.InitializingBean;
 import java.text.ParseException;
 import java.util.Locale;
 
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
+
 public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         extends WebV8AbstractField<T, String, V>
         implements TextArea<V>, InitializingBean {
@@ -39,26 +42,28 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
+        // Vaadin TextField does not permit `null` value
+
         if (datatype != null) {
-            return datatype.format(modelValue, locale);
+            return nullToEmpty(datatype.format(modelValue, locale));
         }
 
         if (valueBinding != null
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
-            return propertyDataType.format(modelValue);
+            return nullToEmpty(propertyDataType.format(modelValue));
         }
 
-        return super.convertToPresentation(modelValue);
+        return nullToEmpty(super.convertToPresentation(modelValue));
     }
 
     @Override
     protected V convertToModel(String componentRawValue) throws ConversionException {
-        String value = componentRawValue;
+        String value = emptyToNull(componentRawValue);
 
         if (isTrimming()) {
-            value = StringUtils.trimToEmpty(value);
+            value = StringUtils.trimToNull(value);
         }
 
         if (datatype != null) {
