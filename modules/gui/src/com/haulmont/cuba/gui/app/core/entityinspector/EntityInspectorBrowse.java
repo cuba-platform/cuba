@@ -155,8 +155,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
     }
 
-    protected Map<String, Object> getEntitiesLookupFieldOptions() {
-        Map<String, Object> options = new TreeMap<>();
+    protected Map<String, MetaClass> getEntitiesLookupFieldOptions() {
+        Map<String, MetaClass> options = new TreeMap<>();
 
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (readPermitted(metaClass)) {

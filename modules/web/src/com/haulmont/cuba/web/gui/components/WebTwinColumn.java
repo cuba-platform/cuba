@@ -19,8 +19,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.components.TwinColumn;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -32,6 +32,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class WebTwinColumn<V> extends WebAbstractOptionsField<CubaTwinColSelect, V> implements TwinColumn<V> {
 
@@ -76,6 +77,28 @@ public class WebTwinColumn<V> extends WebAbstractOptionsField<CubaTwinColSelect,
         component.setMultiSelect(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+    }
+
+    @Override
+    public void setOptionsSource(OptionsSource<V> optionsSource) {
+        // todo
+    }
+
+    @Override
+    public OptionsSource<V> getOptionsSource() {
+        // todo
+        return null;
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        // todo
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        // todo
+        return null;
     }
 
     public static class CollectionPropertyWrapper extends PropertyWrapper {

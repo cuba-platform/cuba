@@ -19,9 +19,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SearchPickerField;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -42,6 +43,7 @@ public class WebSearchPickerField<V extends Entity> extends WebSearchField<V> im
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebSearchPickerField() {
+        /* vaadin8
         final ComboBox selectComponent = component;
         WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
             @Override
@@ -56,7 +58,7 @@ public class WebSearchPickerField<V extends Entity> extends WebSearchField<V> im
         setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
 
         // Required for custom components in fieldgroup
-        initValueSync(selectComponent, picker);
+        initValueSync(selectComponent, picker);*/
     }
 
     protected void initValueSync(final ComboBox selectComponent, final WebPickerField.Picker picker) {
@@ -281,7 +283,8 @@ public class WebSearchPickerField<V extends Entity> extends WebSearchField<V> im
 
     @Override
     public void setRequired(boolean required) {
-        component.setNullSelectionAllowed(!required);
+//        vaadin8
+//        component.setNullSelectionAllowed(!required);
         pickerField.setRequired(required);
     }
 

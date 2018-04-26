@@ -19,17 +19,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
 
 import java.util.*;
@@ -52,6 +49,11 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
     protected ContextHelpIconClickListener contextHelpIconClickListener;
+
+    @Override
+    public ValueSource<V> getValueSource() {
+        return valueBinding != null ? valueBinding.getSource() : null;
+    }
 
     @Override
     public void setValueSource(ValueSource<V> valueSource) {
@@ -81,55 +83,6 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     protected void valueBindingConnected(ValueSource<V> valueSource) {
         // hook
-    }
-
-    @Override
-    public ValueSource<V> getValueSource() {
-        return valueBinding != null ? valueBinding.getSource() : null;
-    }
-
-    @Override
-    public Datasource getDatasource() {
-        if (valueBinding == null) {
-            return null;
-        }
-
-        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if (datasource != null) {
-            this.setValueSource(new DatasourceValueSource(datasource, property));
-        } else {
-            this.setValueSource(null);
-        }
-    }
-
-    // todo remove
-    protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
-        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                .resolveMetaPropertyPath(metaClass, property);
-        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        return metaPropertyPath;
     }
 
     protected void initFieldConverter() {
@@ -163,8 +116,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     @Override
     public void setValue(V value) {
-        //noinspection unchecked
-        component.setValueIgnoreReadOnly(value);
+        setValueToPresentation(convertToPresentation(value));
     }
 
     @Override
@@ -191,6 +143,14 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
                 setEditableToComponent(false);
             }
         }
+    }
+
+    protected void setValueToPresentation(Object value) {
+        if (hasValidationError()) {
+            setValidationError(null);
+        }
+
+        component.setValue(value);
     }
 
     @Override

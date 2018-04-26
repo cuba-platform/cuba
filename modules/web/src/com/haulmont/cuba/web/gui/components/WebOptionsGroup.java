@@ -16,61 +16,73 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.OptionsBinder;
+import com.haulmont.cuba.gui.components.data.OptionsBinding;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
-import com.vaadin.v7.data.Property;
+import org.springframework.context.ApplicationContext;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class WebOptionsGroup<V> extends WebAbstractOptionsBase<CubaOptionGroup, V> implements OptionsGroup<V> {
+public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> implements OptionsGroup<V> {
+
+    @Inject
+    protected MetadataTools metadataTools;
+    @Inject
+    protected ApplicationContext applicationContext;
+
+    protected OptionsBinding<V> optionsBinding;
 
     protected Orientation orientation = Orientation.VERTICAL;
 
+    protected Function<? super V, String> optionCaptionProvider;
+
     public WebOptionsGroup() {
-        component = new CubaOptionGroup() {
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null) {
-                    super.setPropertyDataSource(null);
-                    return;
-                }
+        component = new CubaOptionGroup();
 
-                // todo
-                /*super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
-
-                    @Override
-                    public Class getType() {
-                        // we ourselves convert values in this property adapter
-                        return Object.class;
-                    }
-
-                    @Override
-                    public Object getValue() {
-                        final Object o = itemProperty.getValue();
-
-                        Object keyFromValue = getKeyFromValue(o);
-                        if (metaProperty != null && keyFromValue != null) {
-                            if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
-                                return new ArrayList((Collection) keyFromValue);
-                            }
-                        }
-                        return keyFromValue;
-                    }
-
-                    @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                        final Object v = getValueFromKey(newValue);
-                        itemProperty.setValue(v);
-                    }
-                });*/
-            }
-        };
         attachListener(component);
-        initDefaults(component);
+    }
+
+    protected String generateDefaultItemCaption(V item) {
+        if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            return metadataTools.format(item, entityValueSource.getMetaPropertyPath().getMetaProperty());
+        }
+
+        return metadataTools.format(item);
+    }
+
+    protected String generateItemCaption(V item) {
+        if (item == null) {
+            return "";
+        }
+
+        if (optionCaptionProvider != null) {
+            return optionCaptionProvider.apply(item);
+        }
+
+        return generateDefaultItemCaption(item);
+    }
+
+    @Override
+    public boolean isMultiSelect() {
+        return component.isMultiSelect();
+    }
+
+    @Override
+    public void setMultiSelect(boolean multiselect) {
+        component.setMultiSelect(true);
     }
 
     @Override
@@ -92,17 +104,17 @@ public class WebOptionsGroup<V> extends WebAbstractOptionsBase<CubaOptionGroup, 
         }
     }
 
-    // todo
-    /*@Override
-    public void setDatasource(Datasource datasource, String property) {
-        super.setDatasource(datasource, property);
+    @Override
+    protected V convertToModel(Object componentRawValue) {
+        // todo
+        return super.convertToModel(componentRawValue);
+    }
 
-        if (metaProperty != null) {
-            if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
-                component.setConverter(new SetToListConverter());
-            }
-        }
-    }*/
+    @Override
+    protected Object convertToPresentation(V modelValue) {
+        // todo
+        return super.convertToPresentation(modelValue);
+    }
 
     @Override
     public void setLookupSelectHandler(Runnable selectHandler) {
@@ -115,5 +127,76 @@ public class WebOptionsGroup<V> extends WebAbstractOptionsBase<CubaOptionGroup, 
         return (value instanceof Collection)
                 ? (Collection) value
                 : Collections.singleton(value);
+    }
+
+    @Override
+    public OptionsSource<V> getOptionsSource() {
+        return optionsBinding != null ? optionsBinding.getSource() : null;
+    }
+
+    @Override
+    public void setOptionsSource(OptionsSource<V> optionsSource) {
+        if (this.optionsBinding != null) {
+            this.optionsBinding.unbind();
+            this.optionsBinding = null;
+        }
+
+        if (optionsSource != null) {
+            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
+            this.optionsBinding.activate();
+        }
+    }
+
+    @Override
+    protected void setValueToPresentation(Object value) {
+        component.setValueIgnoreReadOnly(value);
+    }
+
+    protected void setItemsToPresentation(Stream<V> options) {
+//        todo
+//        component.setItems(this::filterItemTest, options.collect(Collectors.toList()));
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        this.optionCaptionProvider = optionCaptionProvider;
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
+    }
+
+    @Override
+    public CaptionMode getCaptionMode() {
+        // vaadin8
+        return CaptionMode.ITEM;
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        // vaadin8
+    }
+
+    @Override
+    public String getCaptionProperty() {
+        // vaadin8
+        return null;
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        // vaadin8
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 }

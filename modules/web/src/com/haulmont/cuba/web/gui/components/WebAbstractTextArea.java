@@ -19,9 +19,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.DataAwareGuiTools;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -279,5 +281,18 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     @Override
     public void setTextChangeEventMode(TextChangeEventMode mode) {
         component.setValueChangeMode(WebWrapperUtils.toVaadinValueChangeEventMode(mode));
+    }
+
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        if (valueSource instanceof EntityValueSource) {
+            DataAwareGuiTools dataAwareGuiTools = applicationContext.getBean(DataAwareGuiTools.class);
+            EntityValueSource entityValueSource = (EntityValueSource) valueSource;
+
+            dataAwareGuiTools.setupCaseConversion(this, entityValueSource);
+            dataAwareGuiTools.setupMaxLength(this, entityValueSource);
+        }
     }
 }

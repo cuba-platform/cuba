@@ -18,23 +18,26 @@
 package com.haulmont.cuba.gui.components;
 
 public interface LookupField<V> extends OptionsField<V>, HasInputPrompt, Buffered, LookupComponent,
-        Component.Focusable,
-        HasOptionsStyleProvider {
+        Component.Focusable, HasOptionsStyleProvider {
 
     String NAME = "lookupField";
 
-    Object getNullOption();
-    void setNullOption(Object nullOption);
+    V getNullOption();
+    void setNullOption(V nullOption);
 
     FilterMode getFilterMode();
     void setFilterMode(FilterMode mode);
 
     /**
+     * vaadin8 deprecate
+     *
      * @return true if the component handles new options entered by user.
      * @see LookupField.NewOptionHandler
      */
     boolean isNewOptionAllowed();
     /**
+     * vaadin8 deprecate
+     *
      * Makes the component handle new options entered by user.
      * @see LookupField.NewOptionHandler
      */
@@ -86,20 +89,21 @@ public interface LookupField<V> extends OptionsField<V>, HasInputPrompt, Buffere
      *
      * @param optionIconProvider provider which provides icons for options
      */
-    void setOptionIconProvider(OptionIconProvider<?> optionIconProvider);
+    void setOptionIconProvider(OptionIconProvider<? super V> optionIconProvider);
 
     /**
      * Set the icon provider for LookupField.
+     * vaadin8 deprecate
      *
      * @param optionClass        class of the option
      * @param optionIconProvider provider which provides icons for options
      */
-    <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider);
+    void setOptionIconProvider(Class<V> optionClass, OptionIconProvider<V> optionIconProvider);
 
     /**
      * @return icon provider of the LookupField.
      */
-    OptionIconProvider<?> getOptionIconProvider();
+    OptionIconProvider<? super V> getOptionIconProvider();
 
     /**
      * Enables to setup how items should be filtered.
@@ -135,6 +139,8 @@ public interface LookupField<V> extends OptionsField<V>, HasInputPrompt, Buffere
 
     /**
      * Interface to be implemented if {@link #setNewOptionAllowed(boolean)} is set to true.
+     *
+     * vaadin8 replace with Consumer
      */
     interface NewOptionHandler {
         /**
@@ -146,6 +152,8 @@ public interface LookupField<V> extends OptionsField<V>, HasInputPrompt, Buffere
 
     /**
      * Allows to set icons for particular elements in the options list.
+     *
+     * vaadin8 replace with Supplier
      */
     interface OptionIconProvider<T> {
 

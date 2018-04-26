@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -33,7 +32,8 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
     public void loadComponent() {
         super.loadComponent();
 
-        loadTabIndex(resultComponent, element);
+//        vaadin8
+//        loadTabIndex(resultComponent, element);
     }
 
     protected void loadCaptionProperty(T component, Element element) {
@@ -49,17 +49,17 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
         String optionsEnumClass = element.attributeValue("optionsEnum");
         if (StringUtils.isNotEmpty(optionsEnumClass)) {
             Scripting scripting = AppBeans.get(Scripting.class);
-            resultComponent.setOptionsEnum(
-                    (Class<? extends EnumClass>) scripting.loadClass(optionsEnumClass));
+            resultComponent.setOptionsEnum(scripting.loadClass(optionsEnumClass));
         }
     }
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
         String multiselect = element.attributeValue("multiselect");
-        if (StringUtils.isNotEmpty(multiselect)) {
-            ((OptionsField) component).setMultiSelect(Boolean.parseBoolean(multiselect));
-        }
+//        vaadin8
+//        if (StringUtils.isNotEmpty(multiselect)) {
+//            ((OptionsField) component).setMultiSelect(Boolean.parseBoolean(multiselect));
+//        }
 
         String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {

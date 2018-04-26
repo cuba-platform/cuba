@@ -18,6 +18,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
+import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
 /**
@@ -25,9 +28,7 @@ import com.haulmont.cuba.gui.data.Datasource;
  * vaadin8
  */
 @Deprecated
-public interface DatasourceComponent<V> extends Component, HasValue<V> {
-
-    // todo replace all with default methods
+public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValueBinding<V> {
 
     /**
      * vaadin8
@@ -35,15 +36,22 @@ public interface DatasourceComponent<V> extends Component, HasValue<V> {
      * @return datasource instance
      */
     @Deprecated
-    Datasource getDatasource();
+    default Datasource getDatasource() {
+        ValueSource<V> valueSource = getValueSource();
+        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getDatasource();
+    }
 
     /**
      * vaadin8
-     * @deprecated Use {@link #getMetaPropertyPath()}
+     *
      * @return datasource property
+     * @deprecated Use {@link #getMetaPropertyPath()}
      */
     @Deprecated
-    MetaProperty getMetaProperty();
+    default MetaProperty getMetaProperty() {
+        ValueSource<V> valueSource = getValueSource();
+        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+    }
 
     /**
      * vaadin8
@@ -51,13 +59,23 @@ public interface DatasourceComponent<V> extends Component, HasValue<V> {
      * @return datasource property path
      */
     @Deprecated
-    MetaPropertyPath getMetaPropertyPath();
+    default MetaPropertyPath getMetaPropertyPath() {
+        ValueSource<V> valueSource = getValueSource();
+        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+    }
 
     /**
      * Set datasource and its property.
-     *
+     * <p>
      * vaadin8
      */
+    @SuppressWarnings("unchecked")
     @Deprecated
-    void setDatasource(Datasource datasource, String property);
+    default void setDatasource(Datasource datasource, String property) {
+        if (datasource != null) {
+            this.setValueSource(new DatasourceValueSource(datasource, property));
+        } else {
+            this.setValueSource(null);
+        }
+    }
 }

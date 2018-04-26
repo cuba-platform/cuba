@@ -15,12 +15,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.AbstractComponent;
 import org.slf4j.LoggerFactory;
 
@@ -272,42 +268,5 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     @Override
     public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
         // todo vaadin8
-    }
-
-    /* Legacy data binding support */
-
-    @Override
-    public Datasource getDatasource() {
-        if (valueBinding == null) {
-            return null;
-        }
-
-        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if (datasource != null) {
-            this.setValueSource(new DatasourceValueSource(datasource, property));
-        } else {
-            this.setValueSource(null);
-        }
     }
 }

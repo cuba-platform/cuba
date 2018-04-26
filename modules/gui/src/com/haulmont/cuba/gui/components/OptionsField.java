@@ -16,34 +16,101 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.gui.components.data.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public interface OptionsField<V> extends Field<V>, Component.Focusable {
-    boolean isMultiSelect();
-    void setMultiSelect(boolean multiselect);
+public interface OptionsField<V> extends Field<V> {
+    default void setOptions(Stream<V> options) {
+        setOptions(options.collect(Collectors.toList()));
+    }
+    default void setOptions(Collection<V> options) {
+        setOptionsSource(new ListOptionsSource<>(options));
+    }
 
+    void setOptionsSource(OptionsSource<V> optionsSource);
+    OptionsSource<V> getOptionsSource();
+
+    void setOptionCaptionProvider(Function<? super V, String> captionProvider);
+    Function<? super V, String> getOptionCaptionProvider();
+
+    @Deprecated
     CaptionMode getCaptionMode();
+    @Deprecated
     void setCaptionMode(CaptionMode captionMode);
 
+    @Deprecated
     String getCaptionProperty();
+    @Deprecated
     void setCaptionProperty(String captionProperty);
 
-    String getDescriptionProperty();
-    void setDescriptionProperty(String descProperty);
+    @Deprecated
+    default CollectionDatasource getOptionsDatasource() {
+        OptionsSource<V> optionsSource = getOptionsSource();
+        if (optionsSource instanceof CollectionDatasourceOptions) {
+            return ((CollectionDatasourceOptions) optionsSource).getDatasource();
+        }
+        return null;
+    }
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void setOptionsDatasource(CollectionDatasource datasource) {
+        if (datasource == null) {
+            setOptionsSource(null);
+        } else {
+            setOptionsSource(new CollectionDatasourceOptions<>(datasource));
+        }
+    }
 
-    CollectionDatasource getOptionsDatasource();
-    void setOptionsDatasource(CollectionDatasource datasource);
+    default List getOptionsList() {
+        OptionsSource optionsSource = getOptionsSource();
+        if (optionsSource instanceof ListOptionsSource) {
+            return (List) ((ListOptionsSource) optionsSource).getItemsCollection();
+        }
+        return null;
+    }
+    @SuppressWarnings("unchecked")
+    default void setOptionsList(List optionsList) {
+        setOptionsSource(new ListOptionsSource<>(optionsList));
+    }
 
-    List getOptionsList();
-    void setOptionsList(List optionsList);
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default Map<String, ?> getOptionsMap() {
+        OptionsSource optionsSource = getOptionsSource();
+        if (optionsSource instanceof MapOptionsSource) {
+            return ((MapOptionsSource) optionsSource).getItemsCollection();
+        }
+        return null;
+    }
+    @Deprecated
+    default void setOptionsMap(Map<String, V> map) {
+        BiMap<String, V> biMap = ImmutableBiMap.copyOf(map);
 
-    Map<String, ?> getOptionsMap();
-    void setOptionsMap(Map<String, ?> map);
+        setOptionsSource(new MapOptionsSource<>(map));
+        setOptionCaptionProvider(v -> biMap.inverse().get(v));
+    }
 
-    Class<? extends EnumClass> getOptionsEnum();
-    void setOptionsEnum(Class<? extends EnumClass> optionsEnum);
+    @Deprecated
+    default Class<? extends EnumClass> getOptionsEnum() {
+        OptionsSource optionsSource = getOptionsSource();
+        if (optionsSource instanceof EnumOptionsSource) {
+            return ((EnumOptionsSource) optionsSource).getEnumClass();
+        }
+        return null;
+    }
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void setOptionsEnum(Class<V> optionsEnum) {
+        setOptionsSource(new EnumOptionsSource(optionsEnum));
+    }
 }

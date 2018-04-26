@@ -139,19 +139,19 @@ public class EventPublisher {
     }
 
     protected static class SubscriptionImpl<T> implements Subscription {
-        protected EventPublisher router;
+        protected EventPublisher publisher;
         protected Class<T> eventClass;
         protected Consumer<T> listener;
 
-        public SubscriptionImpl(EventPublisher router, Class<T> eventClass, Consumer<T> listener) {
-            this.router = router;
+        public SubscriptionImpl(EventPublisher publisher, Class<T> eventClass, Consumer<T> listener) {
+            this.publisher = publisher;
             this.eventClass = eventClass;
             this.listener = listener;
         }
 
         @Override
         public void remove() {
-            router.unsubscribe(eventClass, listener);
+            publisher.unsubscribe(eventClass, listener);
         }
     }
 }

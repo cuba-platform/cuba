@@ -17,32 +17,26 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.vaadin.event.Action;
-import com.vaadin.server.*;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.CompositeErrorMessage;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.Field;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Action.Container {
 
-    protected Field field;
+    protected Component field;
     protected Converter captionFormatter;
 
     protected List<Button> buttons = new ArrayList<>(4);
     protected CubaCssActionsLayout container;
-
-    // CAUTION used only for IE 9 layout, is null for another browsers
-    // Fixes PL-8205
-    // vaadin8 remove completely
-    protected CssLayout ie9InputWrapper = null;
 
     protected boolean useCustomField = false;
     protected boolean fieldReadOnly = true;
@@ -84,25 +78,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
 
         field.setWidth(100, Unit.PERCENTAGE);
 
-        Page current = Page.getCurrent();
-        if (current != null) {
-            WebBrowser browser = current.getWebBrowser();
-            if (browser != null
-                    && (browser.isIE()
-                    && browser.getBrowserMajorVersion() <= 10
-                    || browser.isSafari())) {
-                ie9InputWrapper = new CssLayout();
-                ie9InputWrapper.setWidth(100, Unit.PERCENTAGE);
-                ie9InputWrapper.setPrimaryStyleName("ie9-input-wrap");
-                ie9InputWrapper.addComponent(field);
-
-                container.addComponent(ie9InputWrapper);
-            } else {
-                container.addComponent(field);
-            }
-        } else {
-            container.addComponent(field);
-        }
+        container.addComponent(field);
 
         /* vaadin8 reimplement with CSS
         if (App.isBound()) {
@@ -111,7 +87,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         }
         */
 
-        setFocusDelegate(field);
+        setFocusDelegate((Focusable) field);
     }
 
     protected void initTextField() {
@@ -129,8 +105,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
             }
         });
 
-//        vaadin8
-//        this.field = field;
+        this.field = field;
     }
 
     public boolean isFieldReadOnly() {
@@ -141,7 +116,8 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         this.fieldReadOnly = fieldReadOnly;
 
         if (!useCustomField) {
-            getField().setReadOnly(isReadOnly() || fieldReadOnly);
+//            vaadin8
+//            getField().setReadOnly(isReadOnly() || fieldReadOnly);
         }
     }
 
@@ -150,7 +126,8 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         super.setReadOnly(readOnly);
 
         if (!useCustomField) {
-            getField().setReadOnly(readOnly || fieldReadOnly);
+//            vaadin8
+//            getField().setReadOnly(readOnly || fieldReadOnly);
         }
     }
 
@@ -176,15 +153,9 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
             if (width < 0) {
                 container.setWidthUndefined();
                 field.setWidthUndefined();
-                if (ie9InputWrapper != null) {
-                    ie9InputWrapper.setWidthUndefined();
-                }
             } else {
                 container.setWidth(100, Unit.PERCENTAGE);
                 field.setWidth(100, Unit.PERCENTAGE);
-                if (ie9InputWrapper != null) {
-                    ie9InputWrapper.setWidth(100, Unit.PERCENTAGE);
-                }
             }
         }
     }
@@ -197,15 +168,9 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
             if (height < 0) {
                 container.setHeightUndefined();
                 field.setHeightUndefined();
-                if (ie9InputWrapper != null) {
-                    ie9InputWrapper.setHeightUndefined();
-                }
             } else {
                 container.setHeight(100, Unit.PERCENTAGE);
                 field.setHeight(100, Unit.PERCENTAGE);
-                if (ie9InputWrapper != null) {
-                    ie9InputWrapper.setHeight(100, Unit.PERCENTAGE);
-                }
             }
         }
     }
@@ -247,11 +212,12 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         container.removeComponent(button);
     }
 
-    public Field getField() {
+    public Component getField() {
         return field;
     }
 
     public void addFieldListener(BiConsumer<String, Object> listener) {
+        /* vaadin8
         field.addValueChangeListener(event -> {
             String text = (String) event.getProperty().getValue();
 
@@ -267,7 +233,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
                     updateTextRepresentation();
                 }
             }
-        });
+        });*/
     }
 
     @Override
@@ -277,7 +243,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
 
     @Override
     public void focus() {
-        field.focus();
+        ((Focusable)field).focus();
     }
 
     @Override
@@ -319,12 +285,12 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
 
     @Override
     public void setTabIndex(int tabIndex) {
-        field.setTabIndex(tabIndex);
+        ((Focusable)field).setTabIndex(tabIndex);
     }
 
     @Override
     public int getTabIndex() {
-        return field.getTabIndex();
+        return ((Focusable)field).getTabIndex();
     }
 
     @Override

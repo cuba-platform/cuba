@@ -46,7 +46,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.VerticalLayout;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -299,7 +298,8 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
     @Override
     public void setOptionsMap(Map<String, ?> map) {
-        lookupPickerField.setOptionsMap(map);
+        // vaadin8
+//        lookupPickerField.setOptionsMap(map);
     }
 
     @Override

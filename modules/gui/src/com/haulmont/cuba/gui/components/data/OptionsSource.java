@@ -30,8 +30,6 @@ import java.util.stream.Stream;
 public interface OptionsSource<V> {
     Stream<V> getOptions();
 
-    Class<V> getType();
-
     BindingState getState();
 
     Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener);
@@ -40,11 +38,11 @@ public interface OptionsSource<V> {
 
     // todo
     class StateChangeEvent<V> extends EventObject {
-        protected BindingState status;
+        protected BindingState state;
 
-        public StateChangeEvent(OptionsSource<V> source, BindingState status) {
+        public StateChangeEvent(OptionsSource<V> source, BindingState state) {
             super(source);
-            this.status = status;
+            this.state = state;
         }
 
         @SuppressWarnings("unchecked")
@@ -54,7 +52,7 @@ public interface OptionsSource<V> {
         }
 
         public BindingState getState() {
-            return status;
+            return state;
         }
     }
 

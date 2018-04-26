@@ -286,7 +286,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
 
     protected void fillTypeSelect(Param param) {
-        Map<String, Object> values = new LinkedHashMap<>();
+        Map<String, ParamType> values = new LinkedHashMap<>();
         for (ParamType paramType : ParamType.values()) {
             values.put(paramType.getLocCaption(), paramType);
         }

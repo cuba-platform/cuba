@@ -24,14 +24,19 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.AbstractField;
 import org.apache.commons.lang.StringUtils;
 
@@ -152,6 +157,15 @@ public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPicke
         OpenAction action = OpenAction.create(this);
         addAction(action);
         return action;
+    }
+
+    // todo remove
+    protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
+        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                .resolveMetaPropertyPath(metaClass, property);
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
+        return metaPropertyPath;
     }
 
     public void checkDatasourceProperty(Datasource datasource, String property) {
@@ -327,12 +341,12 @@ public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPicke
 
     @Override
     public int getTabIndex() {
-        return component.getField().getTabIndex();
+        return ((Component.Focusable) component.getField()).getTabIndex();
     }
 
     @Override
     public void setTabIndex(int tabIndex) {
-        component.getField().setTabIndex(tabIndex);
+        ((Component.Focusable) component.getField()).setTabIndex(tabIndex);
     }
 
     @Override
@@ -360,6 +374,7 @@ public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPicke
         return super.isModified();
     }
 
+    // todo use Vaadin button instead
     protected class PickerButton extends WebButton {
         public PickerButton() {
         }

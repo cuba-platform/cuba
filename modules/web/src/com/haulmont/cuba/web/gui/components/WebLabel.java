@@ -17,17 +17,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.data.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.data.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.vaadin.shared.ui.ContentMode;
 
@@ -41,41 +37,6 @@ public class WebLabel<V> extends WebAbstractComponent<com.vaadin.ui.Label> imple
     public WebLabel() {
         component = new CubaLabel();
         component.setSizeUndefined();
-    }
-
-    @Override
-    public Datasource getDatasource() {
-        if (valueBinding == null) {
-            return null;
-        }
-
-        return ((DatasourceValueSource) valueBinding.getSource()).getDatasource();
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath().getMetaProperty();
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        if (valueBinding == null) {
-            return null;
-        }
-        return ((DatasourceValueSource) valueBinding.getSource()).getMetaPropertyPath();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if (datasource != null) {
-            this.setValueSource(new DatasourceValueSource(datasource, property));
-        } else {
-            this.setValueSource(null);
-        }
     }
 
     protected void valueBindingActivated(ValueSource<V> valueSource) {

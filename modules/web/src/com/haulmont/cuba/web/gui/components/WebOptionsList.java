@@ -18,9 +18,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.OptionsList;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
+
+import java.util.function.Function;
 
 public class WebOptionsList<V> extends WebAbstractOptionsBase<CubaListSelect, V> implements OptionsList<V> {
     public WebOptionsList() {
@@ -66,5 +69,27 @@ public class WebOptionsList<V> extends WebAbstractOptionsBase<CubaListSelect, V>
     @Override
     public boolean isNullOptionVisible() {
         return component.isNullSelectionAllowed();
+    }
+
+    @Override
+    public void setOptionsSource(OptionsSource<V> optionsSource) {
+        // todo
+    }
+
+    @Override
+    public OptionsSource<V> getOptionsSource() {
+        // todo
+        return null;
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        // todo
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        // todo
+        return null;
     }
 }

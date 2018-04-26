@@ -177,7 +177,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
                 availableMethods = availableBeans.get(e.getValue());
 
                 if (availableMethods != null) {
-                    HashMap<String, Object> optionsMap = new HashMap<>();
+                    Map<String, MethodInfo> optionsMap = new HashMap<>();
                     for (MethodInfo availableMethod : availableMethods) {
                         optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
                     }

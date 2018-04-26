@@ -66,7 +66,7 @@ public class ValueBinder {
             // todo on item change - reset required if needed
         }
 
-        binding.bind(component, valueSource);
+        binding.bind();
 
         if (valueSource instanceof EntityValueSource
                 && component instanceof Field) {
@@ -171,12 +171,12 @@ public class ValueBinder {
             }
         }
 
-        public void bind(HasValue<V> component, ValueSource<V> valueSource) {
+        public void bind() {
             this.componentValueChangeSubscription = component.addValueChangeListener(this::componentValueChanged);
 
-            // todo weak references on binding !
-            this.sourceValueChangeSubscription = valueSource.addValueChangeListener(this::sourceValueChanged);
-            this.sourceStateChangeSupscription = valueSource.addStateChangeListener(this::valueSourceStateChanged);
+            // vaadin8 weak references on binding !
+            this.sourceValueChangeSubscription = source.addValueChangeListener(this::sourceValueChanged);
+            this.sourceStateChangeSupscription = source.addStateChangeListener(this::valueSourceStateChanged);
         }
 
         protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {

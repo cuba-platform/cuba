@@ -18,6 +18,8 @@
 package com.haulmont.cuba.gui.components;
 
 public interface OptionsList<V> extends OptionsField<V> {
+    boolean isMultiSelect();
+    void setMultiSelect(boolean multiselect);
 
     String NAME = "optionsList";
 

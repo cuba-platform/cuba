@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-package com.haulmont.cuba.gui.components;
 
-public interface OptionsGroup<V> extends OptionsField<V>, LookupComponent, Component.Focusable {
-    String NAME = "optionsGroup";
+package com.haulmont.cuba.gui.components.data;
 
-    boolean isMultiSelect();
-    void setMultiSelect(boolean multiselect);
+import com.haulmont.chile.core.model.MetaClass;
 
-    Orientation getOrientation();
-    void setOrientation(Orientation orientation);
+public interface EntityOptionsSource<V> extends OptionsSource<V> {
+    MetaClass getMetaClass();
 
-    enum Orientation {
-        VERTICAL,
-        HORIZONTAL
-    }
+    void setSelectedItem(V item);
 }

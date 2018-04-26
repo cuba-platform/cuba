@@ -18,13 +18,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -43,7 +44,7 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
 
     public WebLookupPickerField() {
     }
-
+/* vaadin8
     @Override
     protected void createComponent() {
         super.createComponent();
@@ -73,7 +74,7 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
 
         // Required for custom components in fieldgroup
         initValueSync(selectComponent, picker);
-    }
+    }*/
 
     protected void initValueSync(ComboBox selectComponent, WebPickerField.Picker picker) {
         selectComponent.addValueChangeListener(event -> {
@@ -297,7 +298,8 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
 
     @Override
     public void setRequired(boolean required) {
-        component.setNullSelectionAllowed(!required);
+//        vaadin8
+//        component.setNullSelectionAllowed(!required);
         pickerField.setRequired(required);
     }
 

@@ -55,11 +55,11 @@ public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.v
         }
     }
 
-    protected void valueBindingActivated(ValueSource<V> valueSource) {
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
         // hook
     }
 
-    protected void valueBindingConnected(ValueSource<V> valueSource) {
+    protected void valueBindingActivated(ValueSource<V> valueSource) {
         // hook
     }
 

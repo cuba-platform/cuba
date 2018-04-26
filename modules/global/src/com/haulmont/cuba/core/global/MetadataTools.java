@@ -43,12 +43,10 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static com.haulmont.bali.util.Preconditions.formatExceptionArgs;
 
 /**
  * Utility class to provide common metadata-related functionality. <br> Implemented as Spring bean to allow extension in
- * application projects. <br> A reference to this class can be obtained either via DI or by {@link
- * com.haulmont.cuba.core.global.Metadata#getTools()}.
+ * application projects. <br> A reference to this class can be obtained either via DI or by {@link Metadata#getTools()}.
  */
 @Component(MetadataTools.NAME)
 public class MetadataTools {
@@ -102,8 +100,8 @@ public class MetadataTools {
     /**
      * Formats a value according to the property type.
      *
-     * @param value    object to format
-     * @param property metadata
+     * @param value    value of the passed property to format
+     * @param property property
      * @return formatted value as string
      */
     public String format(@Nullable Object value, MetaProperty property) {
@@ -429,7 +427,7 @@ public class MetadataTools {
      * @param javaClass       entity class
      * @param property        property name
      * @param annotationClass annotation class
-     * @return
+     * @return true if the annotation is present
      */
     public boolean isAnnotationPresent(Class javaClass, String property, Class<? extends Annotation> annotationClass) {
         Field field;
@@ -960,6 +958,7 @@ public class MetadataTools {
     /**
      * Makes a deep copy of the source entity. All referenced entities and collections will be copied as well.
      */
+    @SuppressWarnings("unchecked")
     public <T extends Entity> T deepCopy(T source) {
         CachingEntitiesHolder entityFinder = new CachingEntitiesHolder();
         Entity destination = entityFinder.create(source.getClass(), source.getId());

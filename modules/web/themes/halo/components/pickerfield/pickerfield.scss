@@ -16,6 +16,8 @@
  */
 
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
+  // vaadin8 get rid of ie9-input-wrap
+
   & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;

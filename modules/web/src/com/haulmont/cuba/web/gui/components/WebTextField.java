@@ -18,10 +18,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.DataAwareGuiTools;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -53,11 +55,32 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         attachValueChangeListener(this.component);
     }
 
+    @Override
+    public void afterPropertiesSet() {
+        UserSessionSource userSessionSource =
+                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+
+        this.locale = userSessionSource.getLocale();
+    }
+
 //    vaadin8
 //    @Override
     // vaadin8 introduce convention for implementation factory methods
     protected CubaTextField createTextFieldImpl() {
         return new CubaTextField();
+    }
+
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        if (valueSource instanceof EntityValueSource) {
+            DataAwareGuiTools dataAwareGuiTools = applicationContext.getBean(DataAwareGuiTools.class);
+            EntityValueSource entityValueSource = (EntityValueSource) valueSource;
+
+            dataAwareGuiTools.setupCaseConversion(this, entityValueSource);
+            dataAwareGuiTools.setupMaxLength(this, entityValueSource);
+        }
     }
 
     @Override
@@ -112,6 +135,15 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         }
 
         return super.convertToModel(componentRawValue);
+    }
+
+    @Override
+    protected void componentValueChanged(String prevComponentValue, String newComponentValue, boolean isUserOriginated) {
+        if (isUserOriginated) {
+            fireTextChangeEvent(newComponentValue);
+        }
+
+        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
     }
 
     @Override
@@ -198,15 +230,6 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     @Override
     public void setSelectionRange(int pos, int length) {
         component.setSelection(pos, length);
-    }
-
-    @Override
-    protected void componentValueChanged(String prevComponentValue, String newComponentValue, boolean isUserOriginated) {
-        if (isUserOriginated) {
-            fireTextChangeEvent(newComponentValue);
-        }
-
-        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
     }
 
     protected void fireTextChangeEvent(String newComponentValue) {
@@ -303,13 +326,5 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     public boolean isModified() {
         // vaadin8
         return false;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
-        this.locale = userSessionSource.getLocale();
     }
 }

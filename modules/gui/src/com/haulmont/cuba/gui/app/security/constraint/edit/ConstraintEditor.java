@@ -123,7 +123,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 
     @Override
     public void postInit() {
-        Map<String, Object> options = new TreeMap<>();
+        Map<String, String> options = new TreeMap<>();
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         entities = new HashMap<>();
         for (MetaClass metaClass : metadata.getSession().getClasses()) {

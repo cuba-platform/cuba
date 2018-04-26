@@ -154,7 +154,7 @@ public class SettingsWindow extends AbstractWindow {
         }
 
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
-        TreeMap<String, Object> options = new TreeMap<>();
+        TreeMap<String, String> options = new TreeMap<>();
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
         }
@@ -243,7 +243,7 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected void initTimeZoneFields() {
-        Map<String, Object> options = new TreeMap<>();
+        Map<String, String> options = new TreeMap<>();
         for (String id : TimeZone.getAvailableIDs()) {
             TimeZone timeZone = TimeZone.getTimeZone(id);
             options.put(timeZones.getDisplayNameLong(timeZone), id);

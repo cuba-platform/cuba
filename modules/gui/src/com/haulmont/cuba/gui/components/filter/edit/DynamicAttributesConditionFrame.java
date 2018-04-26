@@ -226,7 +226,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         Collection<Category> categories = dynamicAttributes.getCategoriesForMetaClass(metaClass);
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
-        Map<String, Object> categoriesMap = new TreeMap<>();
+        Map<String, Category> categoriesMap = new TreeMap<>();
         if (categories.size() == 1 && (catId == null || Objects.equals(catId, categories.iterator().next().getId()))) {
             Category category = categories.iterator().next();
             categoryLookup.setVisible(false);
@@ -253,7 +253,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     protected void fillAttributeSelect(Category category) {
         UUID attrId = condition.getCategoryAttributeId();
         CategoryAttribute selectedAttribute = null;
-        Map<String, Object> attributesMap = new TreeMap<>();
+        Map<String, CategoryAttribute> attributesMap = new TreeMap<>();
         for (CategoryAttribute attribute : category.getCategoryAttrs()) {
             attributesMap.put(attribute.getLocaleName(), attribute);
             if (attribute.getId().equals(attrId)) {

@@ -16,27 +16,20 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 
-import java.util.*;
-
-import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect, V>
         extends WebAbstractField<T, V>
@@ -135,17 +128,7 @@ todo
     protected ObjectContainer createObjectContainer(List opts) {
         return new ObjectContainer(opts);
     }
-
-    @Override
-    public int getTabIndex() {
-        return component.getTabIndex();
-    }
-
-    @Override
-    public void setTabIndex(int tabIndex) {
-        component.setTabIndex(tabIndex);
-    }
-
+/*
     @Override
     public void setOptionsMap(Map<String, ?> options) {
         if (getMetaProperty() != null && getMetaProperty().getRange().isEnum()) {
@@ -179,7 +162,7 @@ todo
             component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
         }
-    }
+    }*/
 
     protected void setComponentContainerDs(com.vaadin.v7.data.Container newDataSource) {
         component.setContainerDataSource(newDataSource);
@@ -215,6 +198,7 @@ todo
         }
     }
 
+    /* vaadin8
     @Override
     public Class<? extends EnumClass> getOptionsEnum() {
         return optionsEnum;
@@ -235,14 +219,12 @@ todo
         }
 
         this.optionsEnum = optionsEnum;
-    }
+    }*/
 
-    @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
     }
 
-    @Override
     public void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
@@ -268,17 +250,6 @@ todo
         if (optionsDatasource != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
         }
-    }
-
-    @Override
-    public String getDescriptionProperty() {
-        return descriptionProperty;
-    }
-
-    @Override
-    public void setDescriptionProperty(String descriptionProperty) {
-        this.descriptionProperty = descriptionProperty;
-        //todo gorodnov: support description for all option fields
     }
 
     @Override
