@@ -195,6 +195,6 @@ public class DataServiceQueryBuilder {
         if (query == null)
             return null;
         else
-            return StringHelper.removeExtraSpaces(query.replace("\n", " "));
+            return StringHelper.removeExtraSpaces(query.replace('\n', ' '));
     }
 }

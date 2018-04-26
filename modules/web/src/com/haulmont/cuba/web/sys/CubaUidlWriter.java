@@ -42,6 +42,9 @@ public class CubaUidlWriter extends UidlWriter {
 
     private static final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
 
+    // Thread safe
+    public static final WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
+
     protected static final String JAVASCRIPT_EXTENSION = ".js";
     protected static final String CSS_EXTENSION = ".css";
     protected static final String VAADIN_PREFIX = "VAADIN/";
@@ -50,10 +53,6 @@ public class CubaUidlWriter extends UidlWriter {
 
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
-
-    protected ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
-
-    protected WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
 
     protected final ServletContext servletContext;
 
@@ -65,12 +64,16 @@ public class CubaUidlWriter extends UidlWriter {
     protected void writePerformanceData(UI ui, Writer writer) throws IOException {
         super.writePerformanceData(ui, writer);
 
-        String profilerMarker = profiler.getCurrentProfilerMarker(ui);
-        if (profilerMarker != null) {
-            profiler.setCurrentProfilerMarker(ui, null);
-            long lastRequestTimestamp = ui.getSession().getLastRequestTimestamp();
-            writer.write(String.format(", \"profilerMarker\": \"%s\", \"profilerEventTs\": \"%s\", \"profilerServerTime\": %s",
-                    profilerMarker, lastRequestTimestamp, System.currentTimeMillis() - lastRequestTimestamp));
+        if (!ui.getSession().getService().getDeploymentConfiguration().isProductionMode()) {
+            ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
+
+            String profilerMarker = profiler.getCurrentProfilerMarker(ui);
+            if (profilerMarker != null) {
+                profiler.setCurrentProfilerMarker(ui, null);
+                long lastRequestTimestamp = ui.getSession().getLastRequestTimestamp();
+                writer.write(String.format(", \"profilerMarker\": \"%s\", \"profilerEventTs\": \"%s\", \"profilerServerTime\": %s",
+                        profilerMarker, lastRequestTimestamp, System.currentTimeMillis() - lastRequestTimestamp));
+            }
         }
     }
 

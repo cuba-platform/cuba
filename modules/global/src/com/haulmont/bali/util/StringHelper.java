@@ -39,7 +39,7 @@ public final class StringHelper {
         for (int i = 0; i < str.length(); i++) {
             if (Character.isWhitespace(str.charAt(i)) || i == str.length() - 1) {
                 if (!prevWS) {
-                    sb.append(str.substring(pos, i)).append(str.charAt(i));
+                    sb.append(str, pos, i).append(str.charAt(i));
                 }
                 prevWS = true;
             } else {

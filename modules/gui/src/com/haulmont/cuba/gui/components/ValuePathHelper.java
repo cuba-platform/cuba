@@ -41,8 +41,13 @@ public class ValuePathHelper {
     }
 
     public static String[] parse(String path) {
-        if (!path.contains(".") && !path.contains("["))
+        if (!path.contains(".") && !path.contains("[")) {
             return new String[] {path};
+        }
+
+        if (!path.contains("[")) {
+            return path.split("\\.");
+        }
 
         List<String> elements = new ArrayList<>();
 

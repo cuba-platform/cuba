@@ -168,13 +168,22 @@ public class ObjectContainer implements com.vaadin.data.Container, Container.Ite
         protected Object item;
         protected String name;
 
-        public ObjectItem(final Object item) {
+        public ObjectItem(Object item) {
             this.item = item;
 
-            if (item instanceof Instance)
+            if (item instanceof Instance) {
                 this.name = InstanceUtils.getInstanceName((Instance) item);
-            else
+            } else if (item instanceof String) {
+                this.name = (String) item;
+            } else if (item instanceof Integer) {
+                this.name = String.valueOf((int)item);
+            } else if (item instanceof Double) {
+                this.name = String.valueOf((double)item);
+            } else if (item instanceof Long) {
+                this.name = String.valueOf((long)item);
+            } else {
                 this.name = getNameFromReflection(item);
+            }
         }
 
         private String getNameFromReflection(Object value) {
