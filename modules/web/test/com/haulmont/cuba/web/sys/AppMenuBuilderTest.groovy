@@ -152,4 +152,65 @@ class AppMenuBuilderTest extends AbstractMenuBuilderSpecification {
         children[0].separator == false
         children[2].separator == false
     }
+
+    def "menu should replace item and separator from root menu if they have insertAfter or insertBefore"() {
+
+        given: "menu loads XML with separator and item in the root menu"
+
+        def menu = new WebAppMenu()
+        menu.frame = mainWindow
+
+        menuConfig.loadTestMenu('''
+<menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
+    <menu id="MAIN">
+        <menu id="A"
+              description="F">
+            <item id="A1"
+                  screen="sec$User.browse"/>
+            <item id="A2"
+                  screen="sec$User.browse"/>
+        </menu>
+        
+        <separator/>
+
+        <menu id="B">
+            <item id="B1"
+                  screen="sec$User.browse"/>
+        </menu>
+    </menu>
+    
+    <separator insertBefore="A2"/>
+    
+    <item id="B2"
+          screen="sec$User.browse" 
+          insertAfter="B1"/>
+</menu-config>
+'''.trim())
+
+        when: "we build UI menu structure"
+            builder.build(menu, menuConfig.rootItems)
+
+        then: "root menu should contains only one child"
+            menu.menuItems.size() == 1
+
+        and: "separator should be inserted after A1"
+
+            def children = menu.menuItems[0].children
+            children.size() == 3
+
+            def childrenA = children[0].children
+
+            childrenA.size() == 3
+            childrenA[0].separator == false
+            childrenA[1].separator == true
+            childrenA[2].separator == false
+
+        and: "item B2 should be inserted after B1"
+
+            def childrenB = children[2].children
+
+            childrenB.size() == 2
+            childrenB[0].id == "B1"
+            childrenB[1].id == "B2"
+    }
 }
