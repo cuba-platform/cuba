@@ -74,6 +74,7 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -200,6 +201,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean borderVisible = true;
 
     protected Set<String> ftsLastDatasourceRefreshParamsNames = new HashSet<>();
+    protected Consumer<String> captionChangedListener;
 
     protected enum ConditionsFocusType {
         NONE,
@@ -1013,15 +1015,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAction.setEnabled(filterSavingPossible && filterModified);
         saveWithValuesAction.setEnabled(filterSavingPossible);
 
-        String currentCaption = groupBoxLayout.getCaption();
+        String currentCaption = filter.isBorderVisible() ? groupBoxLayout.getCaption() : filter.getCaption();
+
         if (StringUtils.isEmpty(currentCaption))
             return;
 
         if (filterModified && !currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
-            groupBoxLayout.setCaption(currentCaption + MODIFIED_INDICATOR_SYMBOL);
+            captionChangedListener.accept(currentCaption + MODIFIED_INDICATOR_SYMBOL);
         }
         if (!filterModified && currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
-            groupBoxLayout.setCaption(currentCaption.substring(0, currentCaption.length() - 1));
+            captionChangedListener.accept(currentCaption.substring(0, currentCaption.length() - 1));
         }
     }
 
@@ -1650,7 +1653,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
-        groupBoxLayout.setCaption(caption);
     }
 
     @Override
@@ -2116,7 +2118,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         windowManager.setWindowCaption(window, initialWindowCaption, filterTitle);
 
-        groupBoxLayout.setCaption(Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle);
+        String newCaption = Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle;
+        captionChangedListener.accept(newCaption);
     }
 
     protected ControlsLayoutBuilder createControlsLayoutBuilder(String layoutDescription) {
@@ -2154,6 +2157,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setAfterFilterAppliedHandler(Filter.AfterFilterAppliedHandler afterFilterAppliedHandler) {
         this.afterFilterAppliedHandler = afterFilterAppliedHandler;
+    }
+
+    @Override
+    public void setCaptionChangedListener(Consumer<String> captionChangedListener) {
+        this.captionChangedListener = captionChangedListener;
     }
 
     protected class FiltersLookupChangeListener implements Component.ValueChangeListener {

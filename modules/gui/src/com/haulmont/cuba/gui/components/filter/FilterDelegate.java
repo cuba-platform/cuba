@@ -25,6 +25,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Encapsulates common generic filter behaviour. All filter components delegates their method invocations
@@ -130,6 +131,8 @@ public interface FilterDelegate {
     void switchFilterMode(FilterMode filterMode);
 
     void requestFocus();
+
+    void setCaptionChangedListener(Consumer<String> captionChangedListener);
 
     class FDExpandedStateChangeEvent {
         private final FilterDelegate delegate;
