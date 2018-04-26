@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -66,6 +67,11 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
     @Override
     public String getRawValue() {
         return component.getValue();
+    }
+
+    @Override
+    protected String convertToPresentation(String modelValue) throws ConversionException {
+        return modelValue == null ? "" : modelValue;
     }
 
 //    vaadin8
