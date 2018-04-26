@@ -17,10 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.DataAwareGuiTools;
 import com.haulmont.cuba.gui.components.TextArea;
-import com.haulmont.cuba.gui.components.data.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 
 public class WebTextArea<V> extends WebAbstractTextArea<CubaTextArea, V>

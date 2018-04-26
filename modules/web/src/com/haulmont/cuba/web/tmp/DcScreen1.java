@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.tmp;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.data.ContainerValueSource;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.DataContextFactory;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;

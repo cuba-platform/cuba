@@ -24,4 +24,6 @@ package com.haulmont.cuba.gui.components.data;
 public interface HasValueBinding<V> {
     void setValueSource(ValueSource<V> valueSource);
     ValueSource<V> getValueSource();
+
+    // todo explicit readValueSource()
 }

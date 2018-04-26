@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.options;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 import java.util.Arrays;
 
-public class EnumOptionsSource<V extends EnumClass> extends ListOptionsSource<V> {
+public class EnumOptions<V extends EnumClass> extends ListOptions<V> {
     private Class<V> enumClass;
 
-    public EnumOptionsSource(Class<V> enumClass) {
+    public EnumOptions(Class<V> enumClass) {
         super(Arrays.asList(enumClass.getEnumConstants()));
         this.enumClass = enumClass;
     }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
-import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.collections4.MapUtils;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
@@ -26,9 +26,20 @@ import org.springframework.stereotype.Component;
 import javax.validation.constraints.Size;
 import java.util.Map;
 
-@Component("cuba_DataAwareTools")
-public class DataAwareGuiTools {
+/**
+ * todo JavaDoc
+ */
+@Component(DataAwareComponentsTools.NAME)
+public class DataAwareComponentsTools {
 
+    public static final String NAME = "cuba_DataAwareComponentsTools";
+
+    /**
+     * todo JavaDoc
+     *
+     * @param component
+     * @param valueSource
+     */
     public void setupCaseConversion(TextInputField.CaseConversionSupported component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Map<String, Object> annotations = metaProperty.getAnnotations();
@@ -44,6 +55,12 @@ public class DataAwareGuiTools {
         }
     }
 
+    /**
+     * todo JavaDoc
+     *
+     * @param component
+     * @param valueSource
+     */
     public void setupMaxLength(TextInputField.MaxLengthLimited component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Map<String, Object> annotations = metaProperty.getAnnotations();

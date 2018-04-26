@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.DataAwareGuiTools;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -75,11 +75,11 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareGuiTools dataAwareGuiTools = applicationContext.getBean(DataAwareGuiTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-            dataAwareGuiTools.setupCaseConversion(this, entityValueSource);
-            dataAwareGuiTools.setupMaxLength(this, entityValueSource);
+            dataAwareComponentsTools.setupCaseConversion(this, entityValueSource);
+            dataAwareComponentsTools.setupMaxLength(this, entityValueSource);
         }
     }
 

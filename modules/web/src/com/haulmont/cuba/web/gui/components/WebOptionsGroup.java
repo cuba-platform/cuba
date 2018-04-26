@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.OptionsBinder;
+import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.components.data.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.options;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.OptionsBinding;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -29,7 +35,7 @@ public class OptionsBinder {
 
     public static final String NAME = "cuba_OptionsBinder";
 
-    public <V> OptionsBinding<V> bind(OptionsSource<V> optionsSource, HasValue<V> component,
+    public <V> OptionsBinding<V> bind(OptionsSource<V> optionsSource, Component component,
                                       OptionsTarget<V> optionsTarget) {
 
         OptionBindingImpl<V> binding = new OptionBindingImpl<>(optionsSource, component, optionsTarget);
@@ -44,7 +50,7 @@ public class OptionsBinder {
     public static class OptionBindingImpl<V> implements OptionsBinding<V> {
         protected OptionsSource<V> source;
         protected OptionsTarget<V> optionsTarget;
-        protected HasValue<V> component;
+        protected Component component;
 
         protected Subscription componentValueChangeSubscription;
 
@@ -52,7 +58,7 @@ public class OptionsBinder {
         protected Subscription sourceOptionsChangeSupscription;
         protected Subscription sourceValueChangeSupscription;
 
-        public OptionBindingImpl(OptionsSource<V> source, HasValue<V> component, OptionsTarget<V> optionsTarget) {
+        public OptionBindingImpl(OptionsSource<V> source, Component component, OptionsTarget<V> optionsTarget) {
             this.source = source;
             this.component = component;
             this.optionsTarget = optionsTarget;
@@ -64,6 +70,11 @@ public class OptionsBinder {
         }
 
         @Override
+        public Component getComponent() {
+            return component;
+        }
+
+        @Override
         public void activate() {
             if (source.getState() == BindingState.ACTIVE) {
                 optionsTarget.setOptions(source.getOptions());
@@ -71,8 +82,9 @@ public class OptionsBinder {
         }
 
         public void bind() {
-            if (source instanceof EntityOptionsSource) {
-                this.componentValueChangeSubscription = component.addValueChangeListener(this::componentValueChanged);
+            if (source instanceof EntityOptionsSource
+                    && component instanceof HasValue) {
+                this.componentValueChangeSubscription = ((HasValue) component).addValueChangeListener(this::componentValueChanged);
             }
             // vaadin8 weak references for listeners ?
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::optionsSourceStateChanged);
@@ -90,7 +102,8 @@ public class OptionsBinder {
 
         @SuppressWarnings("unchecked")
         protected void componentValueChanged(HasValue.ValueChangeEvent event) {
-            ((EntityOptionsSource<V>) source).setSelectedItem((V) event.getValue());
+            EntityOptionsSource entityOptionsSource = (EntityOptionsSource) this.source;
+            entityOptionsSource.setSelectedItem((Entity) event.getValue());
         }
 
         protected void optionsSourceStateChanged(OptionsSource.StateChangeEvent<V> event) {

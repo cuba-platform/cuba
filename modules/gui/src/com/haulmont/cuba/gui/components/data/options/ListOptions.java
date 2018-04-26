@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.options;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ListOptionsSource<V> implements OptionsSource<V> {
+public class ListOptions<V> implements OptionsSource<V> {
     protected Collection<V> options;
 
-    public ListOptionsSource(Collection<V> options) {
+    public ListOptions(Collection<V> options) {
         Preconditions.checkNotNullArgument(options);
 
         this.options = options;

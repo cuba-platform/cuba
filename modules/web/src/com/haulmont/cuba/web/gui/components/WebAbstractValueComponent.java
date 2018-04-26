@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 

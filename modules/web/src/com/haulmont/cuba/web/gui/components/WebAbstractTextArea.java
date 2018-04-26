@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.DataAwareGuiTools;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
@@ -288,11 +288,11 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareGuiTools dataAwareGuiTools = applicationContext.getBean(DataAwareGuiTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-            dataAwareGuiTools.setupCaseConversion(this, entityValueSource);
-            dataAwareGuiTools.setupMaxLength(this, entityValueSource);
+            dataAwareComponentsTools.setupCaseConversion(this, entityValueSource);
+            dataAwareComponentsTools.setupMaxLength(this, entityValueSource);
         }
     }
 }

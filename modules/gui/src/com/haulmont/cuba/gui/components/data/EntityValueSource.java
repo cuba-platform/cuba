@@ -36,6 +36,7 @@ public interface EntityValueSource<E extends Entity, V> extends ValueSource<V> {
 
     E getItem();
 
+    // vaadin8 security listener
     Subscription addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener);
 
     class InstanceChangeEvent<E extends Entity> extends EventObject {

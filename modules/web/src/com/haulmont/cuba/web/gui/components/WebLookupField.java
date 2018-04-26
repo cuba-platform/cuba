@@ -26,6 +26,8 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
+import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CComboBox;
@@ -160,7 +162,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
 
             if (metaProperty.getRange().isEnum()) {
                 //noinspection unchecked
-                setOptionsSource(new EnumOptionsSource(metaProperty.getJavaType()));
+                setOptionsSource(new EnumOptions(metaProperty.getJavaType()));
             }
 
             // vaadin8 dynamic attributes

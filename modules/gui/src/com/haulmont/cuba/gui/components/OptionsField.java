@@ -20,6 +20,10 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
+import com.haulmont.cuba.gui.components.data.options.ListOptions;
+import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Collection;
@@ -34,7 +38,7 @@ public interface OptionsField<V> extends Field<V> {
         setOptions(options.collect(Collectors.toList()));
     }
     default void setOptions(Collection<V> options) {
-        setOptionsSource(new ListOptionsSource<>(options));
+        setOptionsSource(new ListOptions<>(options));
     }
 
     void setOptionsSource(OptionsSource<V> optionsSource);
@@ -73,22 +77,22 @@ public interface OptionsField<V> extends Field<V> {
 
     default List getOptionsList() {
         OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof ListOptionsSource) {
-            return (List) ((ListOptionsSource) optionsSource).getItemsCollection();
+        if (optionsSource instanceof ListOptions) {
+            return (List) ((ListOptions) optionsSource).getItemsCollection();
         }
         return null;
     }
     @SuppressWarnings("unchecked")
     default void setOptionsList(List optionsList) {
-        setOptionsSource(new ListOptionsSource<>(optionsList));
+        setOptionsSource(new ListOptions<>(optionsList));
     }
 
     @SuppressWarnings("unchecked")
     @Deprecated
     default Map<String, ?> getOptionsMap() {
         OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof MapOptionsSource) {
-            return ((MapOptionsSource) optionsSource).getItemsCollection();
+        if (optionsSource instanceof MapOptions) {
+            return ((MapOptions) optionsSource).getItemsCollection();
         }
         return null;
     }
@@ -96,21 +100,21 @@ public interface OptionsField<V> extends Field<V> {
     default void setOptionsMap(Map<String, V> map) {
         BiMap<String, V> biMap = ImmutableBiMap.copyOf(map);
 
-        setOptionsSource(new MapOptionsSource<>(map));
+        setOptionsSource(new MapOptions<>(map));
         setOptionCaptionProvider(v -> biMap.inverse().get(v));
     }
 
     @Deprecated
     default Class<? extends EnumClass> getOptionsEnum() {
         OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof EnumOptionsSource) {
-            return ((EnumOptionsSource) optionsSource).getEnumClass();
+        if (optionsSource instanceof EnumOptions) {
+            return ((EnumOptions) optionsSource).getEnumClass();
         }
         return null;
     }
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setOptionsEnum(Class<V> optionsEnum) {
-        setOptionsSource(new EnumOptionsSource(optionsEnum));
+        setOptionsSource(new EnumOptions(optionsEnum));
     }
 }

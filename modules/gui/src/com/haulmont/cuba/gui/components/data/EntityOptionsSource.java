@@ -17,9 +17,10 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 
-public interface EntityOptionsSource<V> extends OptionsSource<V> {
+public interface EntityOptionsSource<E extends Entity> extends OptionsSource<E> {
     MetaClass getMetaClass();
 
-    void setSelectedItem(V item);
+    void setSelectedItem(E item);
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.value;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
@@ -28,6 +28,10 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -188,7 +192,8 @@ public class ValueBinder {
 
         @SuppressWarnings("unchecked")
         protected void componentValueChanged(@SuppressWarnings("unused") HasValue.ValueChangeEvent event) {
-            if (source.getState() == BindingState.ACTIVE) {
+            if (source.getState() == BindingState.ACTIVE
+                    && !source.isReadOnly()) {
                 source.setValue((V) event.getValue());
             }
         }

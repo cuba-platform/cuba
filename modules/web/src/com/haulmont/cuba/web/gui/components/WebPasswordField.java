@@ -17,8 +17,8 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.DataAwareGuiTools;
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -39,10 +39,10 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareGuiTools dataAwareGuiTools = applicationContext.getBean(DataAwareGuiTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-            dataAwareGuiTools.setupMaxLength(this, entityValueSource);
+            dataAwareComponentsTools.setupMaxLength(this, entityValueSource);
         }
     }
 
