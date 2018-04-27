@@ -103,6 +103,32 @@ public interface LookupField extends OptionsField, LookupComponent,
      */
     OptionIconProvider<?> getOptionIconProvider();
 
+    /**
+     * Enables to setup how items should be filtered.
+     *
+     * @param filterPredicate items filter predicate
+     */
+    void setFilterPredicate(FilterPredicate filterPredicate);
+
+    /**
+     * @return items filter predicate
+     */
+    FilterPredicate getFilterPredicate();
+
+    /**
+     * A predicate that tests whether an item with the given caption matches to the given search string.
+     */
+    @FunctionalInterface
+    interface FilterPredicate {
+
+        /**
+         * @param itemCaption  a caption of item
+         * @param searchString search string as is
+         * @return true if item with the given caption matches to the given search string or false otherwise
+         */
+        boolean test(String itemCaption, String searchString);
+    }
+
     enum FilterMode {
         NO,
         STARTS_WITH,
