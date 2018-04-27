@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.Date;
 import java.util.TimeZone;
 
-public interface DateField<V extends Date> extends Field<V>, Buffered, Component.Focusable {
+public interface DateField<V extends Date> extends Field<V>, Buffered, Component.Focusable, HasRange {
     String NAME = "dateField";
 
     enum Resolution {
@@ -39,32 +39,4 @@ public interface DateField<V extends Date> extends Field<V>, Buffered, Component
 
     TimeZone getTimeZone();
     void setTimeZone(TimeZone timeZone);
-
-    /**
-     * Set start of range. If the value is set before this
-     * date, the component will not validate.
-     *
-     * @param rangeStart allowed start of range
-     */
-    void setRangeStart(Date rangeStart);
-    /**
-     * Return start of range for a certain resolution.
-     *
-     * @return start of allowed range
-     */
-    Date getRangeStart();
-
-    /**
-     * Set end of range. If the value is set after this
-     * date, the component will not validate.
-     *
-     * @param rangeEnd end of allowed range
-     */
-    void setRangeEnd(Date rangeEnd);
-    /**
-     * Return end of range for a certain resolution.
-     *
-     * @return end of allowed range
-     */
-    Date getRangeEnd();
 }

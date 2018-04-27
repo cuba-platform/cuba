@@ -16,37 +16,39 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.DateTimeUtils;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DatePicker;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
-import com.vaadin.v7.ui.InlineDateField;
+import com.vaadin.shared.ui.datefield.DateResolution;
+import com.vaadin.ui.InlineDateField;
+import org.springframework.beans.factory.InitializingBean;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.Objects;
 
-public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateField, V> implements DatePicker<V> {
+public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDateField, LocalDate, V>
+        implements DatePicker<V>, InitializingBean {
 
     protected Resolution resolution = Resolution.DAY;
 
-    protected boolean updatingInstance;
-
     public WebDatePicker() {
         this.component = new CubaDatePicker();
-        attachListener(component);
-        component.setInvalidCommitted(true);
 
-        Messages messages = AppBeans.get(Messages.NAME);
+        attachValueChangeListener(component);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Messages messages = applicationContext.getBean(Messages.class);
         component.setDateOutOfRangeMessage(messages.getMainMessage("datePicker.dateOutOfRangeMessage"));
     }
 
@@ -60,26 +62,25 @@ public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateFi
         Preconditions.checkNotNullArgument(resolution);
 
         this.resolution = resolution;
-        com.vaadin.v7.shared.ui.datefield.Resolution vResolution;
+        DateResolution vResolution;
         switch (resolution) {
             case MONTH:
-                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.MONTH;
+                vResolution = com.vaadin.shared.ui.datefield.DateResolution.MONTH;
                 break;
             case YEAR:
-                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.YEAR;
+                vResolution = com.vaadin.shared.ui.datefield.DateResolution.YEAR;
                 break;
             case DAY:
-                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.DAY;
-                break;
             default:
-                vResolution = com.vaadin.v7.shared.ui.datefield.Resolution.DAY;
+                vResolution = com.vaadin.shared.ui.datefield.DateResolution.DAY;
                 break;
         }
 
         component.setResolution(vResolution);
     }
 
-    protected boolean checkRange(Date value) {
+    // VAADIN8: gg, need to use?
+    /*protected boolean checkRange(Date value) {
         if (updatingInstance) {
             return true;
         }
@@ -97,9 +98,10 @@ public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateFi
         }
 
         return true;
-    }
+    }*/
 
-    protected void handleDateOutOfRange(Date value) {
+    // VAADIN8: gg, need to use?
+    /*protected void handleDateOutOfRange(Date value) {
         if (getFrame() != null) {
             Messages messages = AppBeans.get(Messages.NAME);
             getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
@@ -112,7 +114,7 @@ public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateFi
         } finally {
             updatingInstance = false;
         }
-    }
+    }*/
 
 /*  todo
     @Override
@@ -208,131 +210,65 @@ public class WebDatePicker<V extends Date> extends WebAbstractField<InlineDateFi
         }
     }*/
 
-    protected void setDateRangeByProperty(MetaProperty metaProperty) {
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-
-        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-            Date currentTimestamp = timeSource.currentTimestamp();
-
-            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
-            calendar.setTime(currentTimestamp);
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
-
-            setRangeEnd(calendar.getTime());
-        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-            Date currentTimestamp = timeSource.currentTimestamp();
-
-            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
-            calendar.setTime(currentTimestamp);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            calendar.add(Calendar.DATE, 1);
-
-            setRangeStart(calendar.getTime());
-        }
-    }
-
-    protected Date constructDate() {
-        Date datePickerDate = component.getValue();
-        if (datePickerDate == null) {
-            return null;
-        }
-
-        if (getMetaProperty() != null) {
-            Class javaClass = getMetaProperty().getRange().asDatatype().getJavaClass();
-            if (javaClass.equals(java.sql.Date.class)) {
-                return new java.sql.Date(datePickerDate.getTime());
-            } else {
-                return datePickerDate;
-            }
-        } else {
-            return datePickerDate;
-        }
-    }
-
-    protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, getMetaPropertyPath().getPath());
-    }
-
-    protected void fireValueChanged(Object value) {
-        Object oldValue = internalValue;
-
-        if (!Objects.equals(oldValue, value)) {
-            internalValue = (V) value;
-
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
-        }
-    }
-
-    protected void setValueToFields(Date value) {
-        updatingInstance = true;
-        try {
-            component.setValueIgnoreReadOnly(value);
-        } finally {
-            updatingInstance = false;
-        }
-    }
-
     @Override
-    public Date getRangeStart() {
-        return component.getRangeStart();
-    }
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
 
-    @Override
-    public void setRangeStart(Date rangeStart) {
-        component.setRangeStart(rangeStart);
-    }
+        if (valueSource instanceof EntityValueSource) {
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-    @Override
-    public Date getRangeEnd() {
-        return component.getRangeEnd();
-    }
-
-    @Override
-    public void setRangeEnd(Date rangeEnd) {
-        component.setRangeEnd(rangeEnd);
+            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public V getValue() {
-        return (V) constructDate();
+    protected V convertToModel(LocalDate componentRawValue) throws ConversionException {
+        if (componentRawValue == null) {
+            return null;
+        }
+
+        Date datePickerDate = DateTimeUtils.asDate(componentRawValue);
+
+        ValueSource<V> valueSource = getValueSource();
+        if (valueSource instanceof EntityValueSource) {
+            MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+            if (metaProperty != null) {
+                Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+                if (javaClass.equals(java.sql.Date.class)) {
+                    return (V) new java.sql.Date(datePickerDate.getTime());
+                }
+            }
+        }
+
+        return (V) datePickerDate;
     }
 
     @Override
-    public void setValue(V value) {
-        setValueToFields(value);
-        updateInstance();
+    protected LocalDate convertToPresentation(Date modelValue) throws ConversionException {
+        return DateTimeUtils.asLocalDate(modelValue);
     }
 
-    protected void updateInstance() {
-        if (updatingInstance) {
-            return;
-        }
+    @Override
+    public Date getRangeStart() {
+        return DateTimeUtils.asDate(component.getRangeStart());
+    }
 
-        updatingInstance = true;
-        try {
-            if (getDatasource() != null && getMetaPropertyPath() != null) {
-                Date value = constructDate();
+    @Override
+    public void setRangeStart(Date rangeStart) {
+        component.setRangeStart(DateTimeUtils.asLocalDate(rangeStart));
+    }
 
-                if (getDatasource().getItem() != null) {
-                    InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
-                }
-            }
-        } finally {
-            updatingInstance = false;
-        }
+    @Override
+    public Date getRangeEnd() {
+        return DateTimeUtils.asDate(component.getRangeEnd());
+    }
 
-        Object newValue = getValue();
-        fireValueChanged(newValue);
+    @Override
+    public void setRangeEnd(Date rangeEnd) {
+        component.setRangeEnd(DateTimeUtils.asLocalDate(rangeEnd));
     }
 
     @Override

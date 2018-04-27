@@ -18,12 +18,20 @@ package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.HasRange;
 import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.collections4.MapUtils;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -33,6 +41,12 @@ import java.util.Map;
 public class DataAwareComponentsTools {
 
     public static final String NAME = "cuba_DataAwareComponentsTools";
+
+    @Inject
+    protected UserSessionSource sessionSource;
+
+    @Inject
+    protected TimeSource timeSource;
 
     /**
      * todo JavaDoc
@@ -78,6 +92,35 @@ public class DataAwareComponentsTools {
         Integer lengthMax = (Integer) annotations.get(Length.class.getName() + "_max");
         if (lengthMax != null) {
             component.setMaxLength(lengthMax);
+        }
+    }
+
+    public void setupDateRange(HasRange component, EntityValueSource valueSource) {
+        MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
+
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+
+            component.setRangeEnd(calendar.getTime());
+        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.add(Calendar.DATE, 1);
+
+            component.setRangeStart(calendar.getTime());
         }
     }
 }
