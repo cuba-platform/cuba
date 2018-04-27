@@ -17,10 +17,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
@@ -28,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -130,16 +136,25 @@ public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String
                 sdf.setLenient(false);
 
                 Date date = sdf.parse(componentRawValue);
-                if (component.getComponentError() != null)
+                if (component.getComponentError() != null) {
                     component.setComponentError(null);
-                // VAADIN8: gg, do we need this?
-                /*if (targetType == java.sql.Time.class) {
-                    return new Time(date.getTime());
                 }
-                if (targetType == java.sql.Date.class) {
-                    LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
-                    return new java.sql.Date(date.getTime());
-                }*/
+
+                ValueSource<Date> valueSource = getValueSource();
+                if (valueSource instanceof EntityValueSource) {
+                    MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+                    MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+                    if (metaProperty != null) {
+                        Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+                        if (javaClass.equals(java.sql.Time.class)) {
+                            return new Time(date.getTime());
+                        }
+                        if (javaClass.equals(java.sql.Date.class)) {
+                            LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
+                            return new java.sql.Date(date.getTime());
+                        }
+                    }
+                }
                 return date;
             } catch (Exception e) {
                 LoggerFactory.getLogger(WebTimeField.class)
