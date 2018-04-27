@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.auth.AnonymousSessionHolder;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.TrustedClientOnly;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 
+@TrustedClientOnly
 @Component(TrustedClientService.NAME)
 public class TrustedClientServiceBean implements TrustedClientService {
 
