@@ -28,6 +28,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.InternalAuthenticationException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ public class AuthenticationServiceBean implements AuthenticationService {
     protected UserSessionLog userSessionLog;
     @Inject
     protected Authentication authentication;
+    @Inject
+    protected TrustedLoginHandler trustedLoginHandler;
 
     @Nonnull
     @Override
@@ -152,24 +155,33 @@ public class AuthenticationServiceBean implements AuthenticationService {
     protected LoginException wrapInLoginException(Throwable throwable) {
         //noinspection ThrowableResultOfMethodCallIgnored
         Throwable rootCause = ExceptionUtils.getRootCause(throwable);
-        if (rootCause == null)
+        if (rootCause == null) {
             rootCause = throwable;
-        // send text only to avoid ClassNotFoundException when the client has no dependency to some library
+        }
 
         // todo rework, do not send exception messages they can contain sensitive configuration data
 
+        // send text only to avoid ClassNotFoundException when the client has no dependency to some library
         return new InternalAuthenticationException(rootCause.toString());
     }
 
     protected void preprocessCredentials(Credentials credentials) {
-        if (credentials instanceof TrustedClientCredentials) {
-            RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
 
+        if (credentials instanceof TrustedClientCredentials) {
             TrustedClientCredentials tcCredentials = (TrustedClientCredentials) credentials;
             if (remoteClientInfo != null) {
                 tcCredentials.setClientIpAddress(remoteClientInfo.getAddress());
             } else {
                 tcCredentials.setClientIpAddress(null);
+            }
+        }
+
+        if (remoteClientInfo != null &&
+                credentials instanceof AbstractClientCredentials) {
+            String address = remoteClientInfo.getAddress();
+            if (!trustedLoginHandler.checkAddress(address)) {
+                ((AbstractClientCredentials) credentials).setIpAddress(address);
             }
         }
     }

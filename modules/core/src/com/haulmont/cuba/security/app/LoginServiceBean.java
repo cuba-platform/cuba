@@ -23,7 +23,9 @@ import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
+import com.haulmont.cuba.security.global.TrustedAccessRequiredException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +61,9 @@ public class LoginServiceBean implements LoginService {
     @Inject
     protected GlobalConfig globalConfig;
 
+    @Inject
+    protected TrustedLoginHandler trustedLoginHandler;
+
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
         return login(login, password, locale, Collections.emptyMap());
@@ -78,6 +83,8 @@ public class LoginServiceBean implements LoginService {
 
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        checkRemoteClientTrusted();
+
         TrustedClientCredentials credentials = new TrustedClientCredentials(login, password, locale, params);
         RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
         if (remoteClientInfo != null) {
@@ -155,11 +162,15 @@ public class LoginServiceBean implements LoginService {
 
     @Override
     public int loginAttemptsLeft(String login, String ipAddress) {
+        checkRemoteClientTrusted();
+
         return bruteForceProtectionAPI.loginAttemptsLeft(login, ipAddress);
     }
 
     @Override
     public int registerUnsuccessfulLogin(String login, String ipAddress) {
+        checkRemoteClientTrusted();
+
         return bruteForceProtectionAPI.registerUnsuccessfulLogin(login, ipAddress);
     }
 
@@ -184,6 +195,24 @@ public class LoginServiceBean implements LoginService {
         }
         if (!globalConfig.getLocaleSelectVisible()) {
             credentials.setOverrideLocale(false);
+        }
+
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        if (remoteClientInfo != null) {
+            String address = remoteClientInfo.getAddress();
+            if (!trustedLoginHandler.checkAddress(address)) {
+                credentials.setIpAddress(address);
+            }
+        }
+    }
+
+    protected void checkRemoteClientTrusted() {
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        if (remoteClientInfo != null) {
+            String address = remoteClientInfo.getAddress();
+            if (!trustedLoginHandler.checkAddress(address)) {
+                throw new TrustedAccessRequiredException();
+            }
         }
     }
 }

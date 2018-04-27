@@ -25,6 +25,7 @@ import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.TrustedClientOnly;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service(IdpService.NAME)
+@TrustedClientOnly
 public class IdpServiceBean implements IdpService {
 
     private final Logger log = LoggerFactory.getLogger(IdpServiceBean.class);
