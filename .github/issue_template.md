@@ -12,5 +12,6 @@ When creating an issue, provide as much as possible of the following information
 - Client type: <!-- Web, Polymer, Portal, Desktop -->
 - Browser: <!-- Chrome, etc. -->
 - Database: <!-- PostgreSQL, etc. -->
+- Operating system: <!-- Windows, Linux, macOS -->
 
 ### Description of the bug or enhancement
