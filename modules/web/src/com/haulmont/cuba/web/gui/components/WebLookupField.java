@@ -66,6 +66,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
     protected OptionsStyleProvider optionsStyleProvider;
+    protected FilterPredicate filterPredicate;
 
     public WebLookupField() {
         createComponent();
@@ -521,6 +522,22 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public OptionsStyleProvider getOptionsStyleProvider() {
         return optionsStyleProvider;
+    }
+
+    @Override
+    public void setFilterPredicate(FilterPredicate filterPredicate) {
+        this.filterPredicate = filterPredicate;
+
+        if (filterPredicate != null) {
+            component.setFilterPredicate(filterPredicate::test);
+        } else {
+            component.setFilterPredicate(null);
+        }
+    }
+
+    @Override
+    public FilterPredicate getFilterPredicate() {
+        return filterPredicate;
     }
 
     protected interface LookupFieldDsWrapper {

@@ -99,6 +99,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected OptionIconProvider optionIconProvider;
     // just stub
     protected OptionsStyleProvider optionsStyleProvider;
+    // just stub
+    protected FilterPredicate filterPredicate;
 
     public DesktopSearchField() {
         composition = new JPanel();
@@ -758,6 +760,18 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public OptionsStyleProvider getOptionsStyleProvider() {
         return optionsStyleProvider;
+    }
+
+    // just stub
+    @Override
+    public void setFilterPredicate(FilterPredicate filterPredicate) {
+        this.filterPredicate = filterPredicate;
+    }
+
+    // just stub
+    @Override
+    public FilterPredicate getFilterPredicate() {
+        return filterPredicate;
     }
 
     protected class NullOption extends EntityWrapper {
