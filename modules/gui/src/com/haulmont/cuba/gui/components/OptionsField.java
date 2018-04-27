@@ -47,6 +47,10 @@ public interface OptionsField<V> extends Field<V> {
     void setOptionCaptionProvider(Function<? super V, String> captionProvider);
     Function<? super V, String> getOptionCaptionProvider();
 
+    /*
+     * Deprecated API
+     */
+
     @Deprecated
     CaptionMode getCaptionMode();
     @Deprecated
