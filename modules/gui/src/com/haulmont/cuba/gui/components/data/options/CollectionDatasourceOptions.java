@@ -34,10 +34,39 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
     protected CollectionDatasource<E, K> datasource;
     protected EventPublisher events = new EventPublisher();
 
+    protected BindingState state = BindingState.INACTIVE;
+
     public CollectionDatasourceOptions(CollectionDatasource<E, K> datasource) {
         this.datasource = datasource;
 
-        // vaadin8 event forwarding
+        this.datasource.addStateChangeListener(this::datasourceStateChanged);
+        this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
+        this.datasource.addCollectionChangeListener(this::datasourceCollectionChanged);
+    }
+
+    protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> e) {
+        events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent<E> e) {
+        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, e.getPrevValue(), e.getValue()));
+    }
+
+    protected void datasourceStateChanged(Datasource.StateChangeEvent<E> e) {
+        if (e.getState() == Datasource.State.VALID) {
+            setState(BindingState.ACTIVE);
+        } else {
+            setState(BindingState.INACTIVE);
+        }
+    }
+
+    public void setState(BindingState state) {
+        if (this.state != state) {
+            this.state = state;
+
+            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  state));
+        }
     }
 
     public CollectionDatasource<E, K> getDatasource() {

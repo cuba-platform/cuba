@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 
-public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
+public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
 
     @Inject
@@ -68,7 +68,6 @@ public class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.v
     public ValueSource<V> getValueSource() {
         return valueBinding != null ? valueBinding.getSource() : null;
     }
-
 
     @Override
     public Subscription addValueChangeListener(ValueChangeListener listener) {

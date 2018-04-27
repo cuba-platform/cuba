@@ -41,11 +41,11 @@ public interface ValueSource<V> {
 
     // todo
     class StateChangeEvent<V> extends EventObject {
-        protected BindingState status;
+        protected BindingState state;
 
-        public StateChangeEvent(ValueSource<V> source, BindingState status) {
+        public StateChangeEvent(ValueSource<V> source, BindingState state) {
             super(source);
-            this.status = status;
+            this.state = state;
         }
 
         @SuppressWarnings("unchecked")
@@ -55,7 +55,7 @@ public interface ValueSource<V> {
         }
 
         public BindingState getState() {
-            return status;
+            return state;
         }
     }
 

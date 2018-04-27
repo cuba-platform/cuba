@@ -139,9 +139,9 @@ public class EventPublisher {
     }
 
     protected static class SubscriptionImpl<T> implements Subscription {
-        protected EventPublisher publisher;
-        protected Class<T> eventClass;
-        protected Consumer<T> listener;
+        private final EventPublisher publisher;
+        private final Class<T> eventClass;
+        private final Consumer<T> listener;
 
         public SubscriptionImpl(EventPublisher publisher, Class<T> eventClass, Consumer<T> listener) {
             this.publisher = publisher;

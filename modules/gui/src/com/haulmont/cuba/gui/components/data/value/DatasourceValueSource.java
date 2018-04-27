@@ -47,8 +47,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
         MetaClass metaClass = datasource.getMetaClass();
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
+        MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(metaClass, property);
 
         checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
 
@@ -60,11 +59,16 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
     }
 
+    protected MetadataTools getMetadataTools() {
+        // simplify unit testing
+        return AppBeans.get(MetadataTools.NAME);
+    }
+
     public void setState(BindingState state) {
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  BindingState.ACTIVE));
+            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  state));
         }
     }
 
