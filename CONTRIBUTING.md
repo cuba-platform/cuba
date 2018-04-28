@@ -2,15 +2,9 @@
 
 These instructions are for contributing code to the core framework.
 
-## Bug tracking
+## Reporting bugs
 
-We use our internal bug tracker system YouTrack available at https://youtrack.cuba-platform.com/issues. 
-It is read-only for external contributors. For external contributions and bug reports please use 
-[GitHub issues](https://github.com/cuba-platform/cuba/issues) and [pull-requests](https://github.com/cuba-platform/cuba/pulls).
-
-If you want to discuss your problem or ask something please use our forum: https://cuba-platform.com/support 
-
-Getting in touch with us early will also help us coordinate efforts so that not everyone ends up working on the same bug or feature at the same time.
+If you want to discuss your problem or ask something please use our forum: https://www.cuba-platform.com/discuss. Search through existing issues before adding a new one - there is a good chance someone has already faced the same problem. Comment on existing issues to let us know that it is relevant to you or to add more details.
 
 ## Submitting patches
 
