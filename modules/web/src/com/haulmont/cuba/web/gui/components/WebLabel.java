@@ -16,127 +16,60 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.data.value.ValueBinder;
-import com.haulmont.cuba.gui.components.data.ValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.vaadin.shared.ui.ContentMode;
 
-public class WebLabel<V> extends WebAbstractComponent<com.vaadin.ui.Label> implements Label<V> {
+import javax.inject.Inject;
 
-    protected V internalValue;
-    protected ValueBinding<V> valueBinding;
+public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, String, V> implements Label<V> {
 
-    protected Formatter formatter;
+    @Inject
+    protected MetadataTools metadataTools;
+
+    protected Formatter<? super V> formatter;
 
     public WebLabel() {
         component = new CubaLabel();
         component.setSizeUndefined();
     }
 
-    protected void valueBindingActivated(ValueSource<V> valueSource) {
-        // hook
-    }
-
-    protected void valueBindingConnected(ValueSource<V> valueSource) {
-        // hook
-    }
-
     @Override
-    public ValueSource<V> getValueSource() {
-        return valueBinding != null ? valueBinding.getSource() : null;
-    }
-
-    @Override
-    public void setValueSource(ValueSource<V> valueSource) {
-        if (this.valueBinding != null) {
-            valueBinding.unbind();
-
-            this.valueBinding = null;
+    protected void setValueToPresentation(String value) {
+        if (hasValidationError()) {
+            setValidationError(null);
         }
 
-        if (valueSource != null) {
-            // todo use ApplicationContextAware and lookup
-            ValueBinder binder = AppBeans.get(ValueBinder.class);
-
-            this.valueBinding = binder.bind(this, valueSource);
-
-            valueBindingConnected(valueSource);
-
-            this.valueBinding.activate();
-
-            valueBindingActivated(valueSource);
-        }
+        component.setValue(value);
     }
 
-    @Override
-    public Subscription addValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().addListener(ValueChangeListener.class, listener);
-        return () -> getEventRouter().removeListener(ValueChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().removeListener(ValueChangeListener.class, listener);
-    }
-
-    @Override
-    public V getValue() {
-        return internalValue;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setValue(V value) {
-        String prevComponentValue = component.getValue();
-        String newComponentValue = convertToPresentation(value);
-        component.setValue(newComponentValue);
-
-        componentValueChanged(prevComponentValue, newComponentValue);
-    }
-
-    protected void componentValueChanged(String prevComponentValue, String newComponentValue) {
-        V value = convertToModel(newComponentValue);
-        V oldValue = internalValue;
-        internalValue = value;
-
-        if (!fieldValueEquals(value, oldValue)) {
-            if (hasValidationError()) {
-                setValidationError(null);
-            }
-
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected V convertToModel(String componentRawValue) {
-        return (V) componentRawValue;
-    }
-
-    @SuppressWarnings("unchecked")
     protected String convertToPresentation(V modelValue) {
-        // todo implement
-        return (String) modelValue;
+        if (formatter != null) {
+            return formatter.format(modelValue);
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            MetaProperty metaProperty = entityValueSource.getMetaPropertyPath().getMetaProperty();
+            return metadataTools.format(modelValue, metaProperty);
+        }
+
+        return metadataTools.format(modelValue);
     }
 
-    protected boolean fieldValueEquals(V value, V oldValue) {
-        return InstanceUtils.propertyValueEquals(oldValue, value);
+    @SuppressWarnings("unchecked")
+    @Override
+    public Formatter<V> getFormatter() {
+        return (Formatter<V>) formatter;
     }
 
     @Override
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
-    @Override
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Formatter<? super V> formatter) {
         this.formatter = formatter;
     }
 

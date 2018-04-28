@@ -89,7 +89,6 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
         return internalValue;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setValue(V value) {
         setValueToPresentation(convertToPresentation(value));
