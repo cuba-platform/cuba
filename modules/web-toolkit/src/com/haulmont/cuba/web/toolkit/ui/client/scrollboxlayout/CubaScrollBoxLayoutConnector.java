@@ -16,11 +16,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.scrollboxlayout;
 
-import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutConnector;
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutState;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.SimpleManagedLayout;
 import com.vaadin.shared.ui.Connect;
 
@@ -40,12 +40,33 @@ public class CubaScrollBoxLayoutConnector extends CubaCssActionsLayoutConnector 
     @Override
     public void layout() {
         CubaScrollBoxLayoutWidget widget = getWidget();
-        Element element = widget.getElement();
 
-        element.setScrollTop(getState().scrollTop);
-        element.setScrollLeft(getState().scrollLeft);
+        widget.setScrollTop(getState().scrollTop);
+        widget.setScrollLeft(getState().scrollLeft);
 
-        widget.onScrollHandler = (scrollTop, scrollLeft) ->
-                getRpcProxy(CubaScrollBoxLayoutServerRpc.class).setScroll(scrollTop, scrollLeft);
+        widget.onScrollHandler = (scrollTop, scrollLeft) -> {
+            if (getState().scrollChangeMode.equals(CubaScrollBoxLayoutState.DEFERRED_MODE)) {
+                getRpcProxy(CubaScrollBoxLayoutServerRpc.class).setDeferredScroll(scrollTop, scrollLeft);
+            } else {
+                getRpcProxy(CubaScrollBoxLayoutServerRpc.class).setDelayedScroll(scrollTop, scrollLeft);
+            }
+        };
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("scrollTop")) {
+            getWidget().setScrollTop(getState().scrollTop);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("scrollLeft")) {
+            getWidget().setScrollLeft(getState().scrollLeft);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("scrollChangeMode")) {
+            getWidget().setScrollChangeMode(getState().scrollChangeMode);
+        }
     }
 }

@@ -24,9 +24,18 @@ public class CubaScrollBoxLayout extends CubaCssActionsLayout {
     protected CubaScrollBoxLayoutServerRpc serverRpc;
 
     public CubaScrollBoxLayout() {
-        serverRpc = (scrollTop, scrollLeft) -> {
-            getState().scrollTop = scrollTop;
-            getState().scrollLeft = scrollLeft;
+        serverRpc = new CubaScrollBoxLayoutServerRpc() {
+            @Override
+            public void setDeferredScroll(int scrollTop, int scrollLeft) {
+                getState().scrollTop = scrollTop;
+                getState().scrollLeft = scrollLeft;
+            }
+
+            @Override
+            public void setDelayedScroll(int scrollTop, int scrollLeft) {
+                getState().scrollTop = scrollTop;
+                getState().scrollLeft = scrollLeft;
+            }
         };
         registerRpc(serverRpc);
     }
@@ -39,6 +48,11 @@ public class CubaScrollBoxLayout extends CubaCssActionsLayout {
     @Override
     protected CubaScrollBoxLayoutState getState(boolean markAsDirty) {
         return (CubaScrollBoxLayoutState) super.getState(markAsDirty);
+    }
+
+    public void setDelayed(boolean delayed) {
+        getState().scrollChangeMode = delayed ?
+                CubaScrollBoxLayoutState.DELAYED_MODE : CubaScrollBoxLayoutState.DEFERRED_MODE;
     }
 
     public void setScrollTop(int scrollTop) {
