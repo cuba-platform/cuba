@@ -209,6 +209,8 @@ public class ServerLogWindow extends AbstractWindow {
 
         downloadButton.setDescription("CTRL-SHIFT-D");
         showTailButton.setDescription("CTRL-SHIFT-S");
+
+        logContainer.unwrapComposition(CubaScrollBoxLayout.class).setDelayed(true);
     }
 
     private void refreshHostInfo() {

@@ -20,6 +20,11 @@ import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLa
 
 public class CubaScrollBoxLayoutState extends CubaCssActionsLayoutState {
 
+    public static final String DELAYED_MODE = "DELAYED"; // send after 200ms delay
+    public static final String DEFERRED_MODE = "DEFERRED"; // send only with changes from other components
+
     public int scrollTop = 0;
     public int scrollLeft = 0;
+
+    public String scrollChangeMode = DEFERRED_MODE;
 }

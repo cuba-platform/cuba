@@ -22,5 +22,7 @@ import com.vaadin.shared.communication.ServerRpc;
 public interface CubaScrollBoxLayoutServerRpc extends ServerRpc {
 
     @Delayed(lastOnly = true)
-    void setScroll(int scrollTop, int scrollLeft);
+    void setDeferredScroll(int scrollTop, int scrollLeft);
+
+    void setDelayedScroll(int scrollTop, int scrollLeft);
 }
