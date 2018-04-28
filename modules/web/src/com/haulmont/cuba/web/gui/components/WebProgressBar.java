@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 
 /**
  * Web realization of progress bar depending on vaadin {@link ProgressBar} component.
@@ -25,14 +26,33 @@ import com.haulmont.cuba.gui.components.ProgressBar;
  * Note that indeterminate bar implemented here just like as determinate, but with fixed 0.0 value
  * <br>
  */
-public class WebProgressBar extends WebAbstractField<com.vaadin.v7.ui.ProgressBar, Float> implements ProgressBar {
+public class WebProgressBar extends WebAbstractViewComponent<com.vaadin.ui.ProgressBar, Float, Double>
+        implements ProgressBar {
+
+    private static final float DEFAULT_VALUE = 0f;
 
     public WebProgressBar() {
-        component = new com.vaadin.v7.ui.ProgressBar();
-        component.setInvalidCommitted(true);
+        component = new com.vaadin.ui.ProgressBar();
         component.setIndeterminate(false);
+    }
 
-        attachListener(component);
+    @Override
+    protected void setValueToPresentation(Float value) {
+        if (hasValidationError()) {
+            setValidationError(null);
+        }
+
+        component.setValue(value);
+    }
+
+    @Override
+    protected Double convertToModel(Float componentRawValue) throws ConversionException {
+        return componentRawValue != null ? componentRawValue.doubleValue() : null;
+    }
+
+    @Override
+    protected Float convertToPresentation(Double modelValue) throws ConversionException {
+        return modelValue != null ? modelValue.floatValue() : DEFAULT_VALUE;
     }
 
     @Override

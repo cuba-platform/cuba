@@ -207,7 +207,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
     }
 
     protected void showProgress(Number processedValue) {
-        float value = processedValue.floatValue() / totalProgress.floatValue();
+        double value = processedValue.doubleValue() / totalProgress.doubleValue();
 
         taskProgressBar.setValue(value);
 
