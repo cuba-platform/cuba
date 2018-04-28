@@ -436,7 +436,7 @@ public class CategoryAttribute extends StandardEntity {
     public Map<String, Object> getLocalizedEnumerationMap() {
         String enumeration = getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         for (String s : values) {
             map.put(LocaleHelper.getEnumLocalizedValue(s, enumerationLocales), s);
         }

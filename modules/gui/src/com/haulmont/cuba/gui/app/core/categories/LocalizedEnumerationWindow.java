@@ -20,15 +20,12 @@ import com.haulmont.cuba.core.entity.CategoryAttributeEnumValue;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorWindowController;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 public class LocalizedEnumerationWindow extends AbstractWindow implements ListEditorWindowController {
@@ -55,13 +52,12 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     protected List<Object> values;
 
     @WindowParam
-    protected Map<Object, String> valuesMap;
-
-    @WindowParam
     protected String enumerationLocales;
 
     @Inject
     private Action add;
+
+    protected List<Object> currentValues;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -72,7 +68,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
                 @Override
                 public void actionPerform(Component component) {
                     enumValuesDs.removeItem(entity);
-                    valuesMap.remove(entity.getValue());
+                    currentValues.remove(entity.getValue());
                 }
             });
             return delItemBtn;
@@ -110,7 +106,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     @Override
     public void ready() {
         initValues();
-        if (valuesMap.isEmpty()) {
+        if (currentValues.isEmpty()) {
             localizedFrame.setEditableFields(false);
         }
     }
@@ -120,14 +116,13 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             values = new ArrayList<>();
         }
 
-        valuesMap = values.stream()
-                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, ListEditor.ItemType.STRING, null)));
+        currentValues = new ArrayList<>(values);
 
-        if (!valuesMap.isEmpty()) {
+        if (!currentValues.isEmpty()) {
             Map<String, String> localizedValues = LocaleHelper.getLocalizedValuesMap(enumerationLocales);
 
-            for (Map.Entry<Object, String> entry : valuesMap.entrySet()) {
-                addValueToDatasource(entry.getKey(), buildLocalizedValuesForEnumValue(entry.getValue(), localizedValues));
+            for (Object value : currentValues) {
+                addValueToDatasource(value, buildLocalizedValuesForEnumValue(String.valueOf(value), localizedValues));
             }
 
             enumValuesTable.setSelected(enumValuesDs.getItems().iterator().next());
@@ -137,7 +132,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
 
     @Override
     public List<Object> getValue() {
-        return new ArrayList<>(valuesMap.keySet());
+        return currentValues;
     }
 
     public String getLocalizedValues() {
@@ -151,7 +146,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     }
 
     protected boolean valueExists(Object value) {
-        return valuesMap.keySet().contains(value);
+        return currentValues.contains(value);
     }
 
     protected void addValueToDatasource(Object value, String enumLocaleValues) {
@@ -180,7 +175,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             if (!valueExists(value)) {
                 valueField.setValue(null);
                 addValueToDatasource(value, null);
-                valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING, null));
+                currentValues.add(value);
             }
         }
     }
