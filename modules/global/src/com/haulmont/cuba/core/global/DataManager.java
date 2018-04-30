@@ -159,4 +159,23 @@ public interface DataManager {
      * </pre>
      */
     DataManager secure();
+
+    /**
+     * Entry point to the fluent API for loading entities.
+     * <p>
+     * Usage examples:
+     * <pre>
+     * Customer customer = dataManager.load(Customer.class).id(someId).one();
+     *
+     * List&lt;Customer&gt; customers = dataManager.load(Customer.class)
+     *      .query("select c from sample$Customer c where c.name = :name")
+     *      .parameter("name", "Smith")
+     *      .view("customer-view")
+     *      .list();
+     * </pre>
+     * @param entityClass   class of entity that needs to be loaded
+     */
+    default <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
+        return new FluentLoader<>(entityClass, this);
+    }
 }
