@@ -28,11 +28,11 @@ import java.lang.reflect.Method;
 
 public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
 
-    private final String methodName;
-    private final Table table;
+    protected final String methodName;
+    protected final Table table;
 
-    private Method method;
-    private boolean unableToFindMethod = false;
+    protected Method method;
+    protected boolean unableToFindMethod = false;
 
     public DeclarativeColumnGenerator(Table table, String methodName) {
         this.table = table;
