@@ -89,6 +89,11 @@ public class EntityCalendarEventProvider implements CalendarEventProvider, Seria
     }
 
     @Override
+    public void removeAllEvents() {
+        throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");
+    }
+
+    @Override
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
     }

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.calendar;
 import com.haulmont.cuba.gui.components.Calendar;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ListCalendarEventProvider implements CalendarEventProvider {
@@ -56,6 +57,18 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
     public void removeEvent(CalendarEvent calendarEvent) {
         calendarEvent.removeEventChangeListener(eventChangeListener);
         eventList.remove(calendarEvent);
+        fireEventSetChange();
+    }
+
+    @Override
+    public void removeAllEvents() {
+        Iterator<CalendarEvent> eventIterator = eventList.iterator();
+        while (eventIterator.hasNext()) {
+            CalendarEvent calendarEvent = eventIterator.next();
+            calendarEvent.removeEventChangeListener(eventChangeListener);
+            eventIterator.remove();
+        }
+
         fireEventSetChange();
     }
 
