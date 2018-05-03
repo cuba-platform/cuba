@@ -159,7 +159,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 if (StringUtils.isNotEmpty(generatorMethod)) {
                     //noinspection unchecked
                     resultComponent.addGeneratedColumn(String.valueOf(column),
-                            new DeclarativeColumnGenerator(resultComponent, generatorMethod));
+                            AppBeans.getPrototype(DeclarativeColumnGenerator.NAME, resultComponent, generatorMethod));
                 }
             }
         }
