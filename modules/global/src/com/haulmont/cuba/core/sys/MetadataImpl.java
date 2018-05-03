@@ -49,7 +49,9 @@ public class MetadataImpl implements Metadata {
 
     private static final Logger log = LoggerFactory.getLogger(MetadataImpl.class);
 
-    protected Session session;
+    protected volatile Session session;
+
+    protected volatile List<String> rootPackages = new ArrayList<>();
 
     @Inject
     protected DatatypeRegistry datatypeRegistry;
@@ -74,8 +76,6 @@ public class MetadataImpl implements Metadata {
 
     @Inject
     protected GlobalConfig config;
-
-    protected List<String> rootPackages = new ArrayList<>();
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
