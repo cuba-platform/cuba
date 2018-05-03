@@ -19,6 +19,9 @@ package com.haulmont.cuba.core.sys;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -26,11 +29,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import javax.annotation.Nonnull;
 import java.util.concurrent.*;
 
-public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler implements ApplicationListener<ContextClosedEvent> {
+public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler implements ApplicationContextAware,
+        ApplicationListener<ContextClosedEvent> {
 
     private static final long serialVersionUID = -2882103892163602009L;
 
+    protected ApplicationContext applicationContext;
     protected StatisticsAccumulator statisticsAccumulator;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     public void setStatisticsAccumulator(StatisticsAccumulator statisticsAccumulator) {
         this.statisticsAccumulator = statisticsAccumulator;
@@ -74,7 +84,9 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler impleme
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
-        getScheduledExecutor().shutdown();
+        if (applicationContext == event.getApplicationContext()) {
+            getScheduledExecutor().shutdown();
+        }
     }
 
     protected static class TaskDecorator<V> implements RunnableScheduledFuture<V> {
