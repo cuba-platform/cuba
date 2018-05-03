@@ -417,7 +417,6 @@ public class RdbmsStore implements DataStore {
             }
 
             if (!context.isDiscardCommitted() && isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
-                security.filterByConstraints(res);
                 security.calculateFilteredData(res);
             }
 
