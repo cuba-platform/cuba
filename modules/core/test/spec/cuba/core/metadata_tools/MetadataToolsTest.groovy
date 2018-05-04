@@ -20,7 +20,10 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.MetadataTools
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserSessionEntity
+import com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef
 import com.haulmont.cuba.testmodel.not_persistent.NotPersistentStringIdEntity
+import com.haulmont.cuba.testmodel.not_persistent.TestNotPersistentEntity
+import com.haulmont.cuba.testmodel.primary_keys.EntityKey
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -76,5 +79,32 @@ class MetadataToolsTest extends Specification {
         then:
 
         primaryKeyName == 'identifier'
+    }
+
+    def "deepCopy supports non-persistent and embedded references"() {
+
+        def entity = cont.metadata().create(CustomerWithNonPersistentRef)
+        entity.name = 'foo'
+
+        def embedded = cont.metadata().create(EntityKey)
+        entity.entityKey = embedded
+
+        def notPersistentEntity = cont.metadata().create(TestNotPersistentEntity)
+        entity.notPersistentEntity = notPersistentEntity
+
+        when:
+
+        def copy = metadataTools.deepCopy(entity)
+
+        then:
+
+        !copy.is(entity)
+        copy.name == entity.name
+
+        copy.entityKey == entity.entityKey
+        !copy.entityKey.is(entity.entityKey)
+
+        copy.notPersistentEntity == entity.notPersistentEntity
+        !copy.notPersistentEntity.is(entity.notPersistentEntity)
     }
 }
