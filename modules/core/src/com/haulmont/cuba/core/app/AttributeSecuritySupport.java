@@ -150,6 +150,22 @@ public class AttributeSecuritySupport {
     }
 
     /**
+     * Should be called after persisting a new entity.
+     *
+     * @param entity new entity
+     * @param view entity view
+     */
+    public void afterPersist(Entity entity, View view) {
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
+            setupAttributeAccess(genericIdEntity);
+            if (view != null) {
+                metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
+            }
+        }
+    }
+
+    /**
      * Should be called before merging an entity.
      *
      * @param entity detached entity
