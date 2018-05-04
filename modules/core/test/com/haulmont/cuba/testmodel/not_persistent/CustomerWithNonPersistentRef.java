@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
 import com.haulmont.cuba.testmodel.sales.Status;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity(name = "test$CustomerWithNonPersistentRef")
 @Table(name = "TEST_CUSTOMER_W_NPERS_REF")
@@ -40,6 +37,7 @@ public class CustomerWithNonPersistentRef extends StandardEntity {
     private EntityKey entityKey;
 
     @MetaProperty
+    @Transient
     private TestNotPersistentEntity notPersistentEntity;
 
     public String getName() {
