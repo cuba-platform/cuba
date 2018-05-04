@@ -366,16 +366,21 @@ public class EntityInspectorBrowse extends AbstractLookup {
             } catch (FileStorageException e) {
                 log.error("Unable to delete temp file", e);
             }
+            String fileExtension = Files.getFileExtension(importUpload.getFileName());
             try {
                 Collection<Entity> importedEntities;
-                if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
+                if ("json".equals(fileExtension)) {
                     importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createEntityImportView(selectedMeta));
                 } else {
                     importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createEntityImportView(selectedMeta));
                 }
                 showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
             } catch (Exception e) {
-                showNotification(getMessage("importFailed"), e.getMessage(), NotificationType.ERROR);
+                String message = e.getMessage();
+                if (message != null && !"zip".equals(fileExtension)) {
+                    message = String.format(getMessage("importFailedMessage"), fileExtension);
+                }
+                showNotification(getMessage("importFailed"), message, NotificationType.ERROR);
                 log.error("Entities import error", e);
             }
             entitiesDs.refresh();
