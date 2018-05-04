@@ -225,4 +225,19 @@ public interface GlobalConfig extends Config {
     @Property("cuba.enableIdGenerationForEntitiesInAdditionalDataStores")
     @DefaultBoolean(true)
     boolean getEnableIdGenerationForEntitiesInAdditionalDataStores();
+
+    /**
+     * @return true if REST doesn't check security token for entities with security constraints
+     */
+    @Property("cuba.rest.requiresSecurityToken")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getRestRequiresSecurityToken();
+
+    /**
+     * Whether {@code MetadataTools.deepCopy()} should copy non-persistent reference attributes.
+     */
+    @Property("cuba.deepCopyNonPersistentReferences")
+    @DefaultBoolean(false)
+    boolean getDeepCopyNonPersistentReferences();
 }

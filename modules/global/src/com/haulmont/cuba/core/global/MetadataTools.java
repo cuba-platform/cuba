@@ -88,6 +88,9 @@ public class MetadataTools {
     @Inject
     protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
 
+    @Inject
+    protected GlobalConfig globalConfig;
+
     protected volatile Collection<Class> enums;
 
     /**
@@ -955,7 +958,7 @@ public class MetadataTools {
     }
 
     /**
-     * Make deep copy of the source entity: all referred entities ant collections will be copied as well
+     * Makes a deep copy of the source entity. All referenced entities and collections will be copied as well.
      */
     public <T extends Entity> T deepCopy(T source) {
         CachingEntitiesHolder entityFinder = new CachingEntitiesHolder();
@@ -983,7 +986,7 @@ public class MetadataTools {
 
             if (srcProperty.getRange().isClass()) {
                 Class refClass = srcProperty.getRange().asClass().getJavaClass();
-                if (!isPersistent(refClass)) {
+                if (!globalConfig.getDeepCopyNonPersistentReferences() && !isPersistent(refClass)) {
                     continue;
                 }
 
