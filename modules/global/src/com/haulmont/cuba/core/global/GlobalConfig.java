@@ -242,4 +242,11 @@ public interface GlobalConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getRestRequiresSecurityToken();
+
+    /**
+     * Whether {@code MetadataTools.deepCopy()} should copy non-persistent reference attributes.
+     */
+    @Property("cuba.deepCopyNonPersistentReferences")
+    @DefaultBoolean(true)
+    boolean getDeepCopyNonPersistentReferences();
 }
