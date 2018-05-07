@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.core.global.QueryUtils;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.Component;
@@ -58,13 +58,19 @@ public class ParamWrapper implements Component.HasValue {
                 && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
             // try to wrap value for case-insensitive "like" search
             if (condition instanceof PropertyCondition || condition instanceof DynamicAttributesCondition) {
+                String thisStore =  AppBeans.get(MetadataTools.class).getStoreName(condition.getDatasource().getMetaClass());
+                GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+                String escapedValue = value.toString();
+                if (config.getDisableEscapingLikeForDataStores() == null || !config.getDisableEscapingLikeForDataStores().contains(thisStore)) {
+                    escapedValue = QueryUtils.escapeForLike(escapedValue);
+                }
                 Op op = condition.getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
-                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()));
+                    value = wrapValueForLike(escapedValue);
                 } else if (Op.STARTS_WITH.equals(op)) {
-                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), false, true);
+                    value = wrapValueForLike(escapedValue, false, true);
                 } else if (Op.ENDS_WITH.equals(op)) {
-                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), true, false);
+                    value = wrapValueForLike(escapedValue, true, false);
                 }
             } else if (condition instanceof CustomCondition) {
                 String where = ((CustomCondition) condition).getWhere();
