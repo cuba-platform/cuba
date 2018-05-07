@@ -114,7 +114,7 @@ Start the following command to run static code analysis:
 ### Code style
 
 1. Source code files (Java, XML and Groovy) must have copyright notice with Apache 2.0 license. It will be generated automatically if you use IntelliJ Idea IDE.
-1. Use default IntelliJ Idea code formatting optioons. You can reformat your code (reformat changed code only!) using Ctrl+Alt+L shortcut.
+1. Use default IntelliJ Idea code formatting options. You can reformat your code (reformat changed code only!) using Ctrl+Alt+L shortcut.
 1. Maximum line length - 120 symbols.
 1. Recommended method length - up to 50 lines.
 1. All public interfaces, classes and their public methods must have JavaDoc statement (excluding entities and simple gettters/settters).

@@ -329,7 +329,9 @@ public class RdbmsStore implements DataStore {
                     em.persist(entity);
                     checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                     if (!context.isDiscardCommitted()) {
-                        entityFetcher.fetch(entity, getViewFromContextOrNull(context, entity), true);
+                        View view = getViewFromContextOrNull(context, entity);
+                        entityFetcher.fetch(entity, view, true);
+                        attributeSecurity.afterPersist(entity, view);
                         res.add(entity);
                     }
                     persisted.add(entity);
@@ -417,7 +419,6 @@ public class RdbmsStore implements DataStore {
             }
 
             if (!context.isDiscardCommitted() && isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
-                security.filterByConstraints(res);
                 security.calculateFilteredData(res);
             }
 

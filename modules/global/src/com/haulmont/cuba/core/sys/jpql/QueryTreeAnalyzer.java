@@ -32,10 +32,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class QueryTreeAnalyzer {
     protected DomainModel model;
@@ -48,13 +48,12 @@ public class QueryTreeAnalyzer {
 
     public void prepare(DomainModel model, String query, boolean failOnErrors) throws RecognitionException {
         Preconditions.checkNotNull(query, "query is null");
+        String modifiedQuery = StringUtils.replaceChars(query, "\n\r\t", "   ");
+
         this.model = model;
-        query = query.replace("\n", " ");
-        query = query.replace("\r", " ");
-        query = query.replace("\t", " ");
-        tree = Parser.parse(query, failOnErrors);
+        this.tree = Parser.parse(modifiedQuery, failOnErrors);
         TreeVisitor visitor = new TreeVisitor();
-        idVarSelector = new IdVarSelector(model);
+        this.idVarSelector = new IdVarSelector(model);
         visitor.visit(tree, idVarSelector);
     }
 
@@ -147,29 +146,25 @@ public class QueryTreeAnalyzer {
             return null;
         }
 
-        return getChildrenByClass(selectedItems, SelectedItemNode.class).stream()
-                .flatMap(selectedItemNode -> getChildrenByClass(selectedItemNode, PathNode.class).stream())
+        return generateChildrenByClass(selectedItems, SelectedItemNode.class)
+                .flatMap(selectedItemNode -> generateChildrenByClass(selectedItemNode, PathNode.class))
                 .collect(Collectors.toList());
     }
 
     public List<IdentificationVariableNode> getIdentificationVariableNodes() {
         CommonTree sourceNode = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-        List<IdentificationVariableNode> identificationVariableNodes = new ArrayList<>();
 
-        List<SelectionSourceNode> selectionSources = getChildrenByClass(sourceNode, SelectionSourceNode.class);
-        for (SelectionSourceNode selectionSource : selectionSources) {
-            identificationVariableNodes.addAll(getChildrenByClass(selectionSource, IdentificationVariableNode.class));
-        }
-
-        return identificationVariableNodes;
+        return generateChildrenByClass(sourceNode, SelectionSourceNode.class)
+                .flatMap(selectionSource -> generateChildrenByClass(selectionSource, IdentificationVariableNode.class))
+                .collect(Collectors.toList());
     }
 
     public List<SimpleConditionNode> findAllConditionsForMainEntityAttribute(String attribute) {
         IdentificationVariableNode mainEntityIdentification = getMainEntityIdentification();
         if (mainEntityIdentification != null) {
             return findAllConditions().stream().filter(condition -> {
-                List<PathNode> childrenByClass = getChildrenByClass(condition, PathNode.class);
-                return childrenByClass.stream().anyMatch(pathNode -> {
+                Stream<PathNode> childrenByClass = generateChildrenByClass(condition, PathNode.class);
+                return childrenByClass.anyMatch(pathNode -> {
                             String pathNodeAttribute = StringUtils.join(pathNode.getChildren(), ".");
                             return pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())
                                     && attribute.equals(pathNodeAttribute);
@@ -183,8 +178,8 @@ public class QueryTreeAnalyzer {
 
     public List<SimpleConditionNode> findConditionsForParameter(String paramName) {
         CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
-        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
-        return conditionNodes.stream()
+        Stream<SimpleConditionNode> conditionNodes = generateChildrenByClass(whereTree, SimpleConditionNode.class);
+        return conditionNodes
                 .filter((SimpleConditionNode n) -> {
                     ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
                     return parameter != null && (parameter.getChild(0).getText().contains(paramName) ||
@@ -214,15 +209,15 @@ public class QueryTreeAnalyzer {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected <T> Stream<T> generateChildrenByClass(CommonTree commonTree, Class<T> clazz) {
+        return commonTree.getChildren().stream()
+                .filter(o -> clazz.isAssignableFrom(o.getClass()))
+                .map(o -> (T)o);
+    }
 
     protected <T> List<T> getChildrenByClass(CommonTree commonTree, Class<T> clazz) {
-        List<Object> childrenByClass = new ArrayList<>();
-        for (Object o : commonTree.getChildren()) {
-            if (clazz.isAssignableFrom(o.getClass())) {
-                childrenByClass.add(o);
-            }
-        }
-
-        return (List<T>) childrenByClass;
+        return generateChildrenByClass(commonTree, clazz)
+                .collect(Collectors.toList());
     }
 }

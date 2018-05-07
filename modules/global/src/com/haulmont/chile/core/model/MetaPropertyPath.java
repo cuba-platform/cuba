@@ -24,7 +24,6 @@ import java.util.Arrays;
 
 /**
  * Object representing a relative path to a property from certain MetaClass
- *
  */
 public class MetaPropertyPath implements Serializable {
 
@@ -33,6 +32,7 @@ public class MetaPropertyPath implements Serializable {
     private MetaClass metaClass;
     private MetaProperty[] metaProperties;
     private String[] path;
+    private String pathString;
 
     public MetaPropertyPath(MetaClass metaClass, MetaProperty... metaProperties) {
         this.metaClass = metaClass;
@@ -42,6 +42,7 @@ public class MetaPropertyPath implements Serializable {
         for (int i = 0; i < metaProperties.length; i++) {
             path[i] = metaProperties[i].getName();
         }
+        this.pathString = getPathString(this.path);
     }
 
     public MetaPropertyPath(MetaPropertyPath parentPath, MetaProperty... addProperties) {
@@ -55,6 +56,13 @@ public class MetaPropertyPath implements Serializable {
         for (int i = 0; i < this.metaProperties.length; i++) {
             this.path[i] = this.metaProperties[i].getName();
         }
+        this.pathString = getPathString(this.path);
+    }
+
+    protected static String getPathString(String[] path) {
+        return new StrBuilder()
+                .appendWithSeparators(path, ".")
+                .toString();
     }
 
     /**
@@ -79,9 +87,8 @@ public class MetaPropertyPath implements Serializable {
         MetaPropertyPath that = (MetaPropertyPath) o;
 
         if (!metaClass.equals(that.metaClass)) return false;
-        if (!Arrays.equals(metaProperties, that.metaProperties)) return false;
 
-        return true;
+        return Arrays.equals(metaProperties, that.metaProperties);
     }
 
     @Override
@@ -134,7 +141,7 @@ public class MetaPropertyPath implements Serializable {
 
     @Override
     public String toString() {
-        return new StrBuilder().appendWithSeparators(path, ".").toString();
+        return pathString;
     }
 
     private Class getTypeClass(MetaProperty metaProperty) {

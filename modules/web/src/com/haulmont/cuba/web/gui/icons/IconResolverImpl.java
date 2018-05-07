@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 
 @Component(IconResolver.NAME)
 public class IconResolverImpl implements IconResolver {
@@ -57,16 +56,14 @@ public class IconResolverImpl implements IconResolver {
     }
 
     protected Resource getResource(String iconPath) {
-        Optional<IconProvider> provider = iconProviders.stream()
+        return iconProviders.stream()
                 .filter(p -> p.canProvide(iconPath))
-                .findAny();
-
-        if (provider.isPresent()) {
-            return provider.get().getIconResource(iconPath);
-        }
-
-        log.warn("There is no IconProvider for the given icon: {}", iconPath);
-        return null;
+                .findFirst()
+                .map(p -> p.getIconResource(iconPath))
+                .orElseGet(() -> {
+                    log.warn("There is no IconProvider for the given icon: {}", iconPath);
+                    return null;
+                });
     }
 
     protected String getThemeIcon(String iconName) {
@@ -89,13 +86,6 @@ public class IconResolverImpl implements IconResolver {
             iconPath = iconPath.substring(THEME_PREFIX.length());
         }
 
-        if (iconPath.contains("/")) {
-            iconPath = iconPath.replace("/", ".");
-        }
-
-        if (iconPath.contains(":")) {
-            iconPath = iconPath.replace(":", ".");
-        }
-        return iconPath;
+        return StringUtils.replaceChars(iconPath, "/:", "..");
     }
 }
