@@ -23,10 +23,17 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Table;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.springframework.context.annotation.Scope;
 
 import java.lang.reflect.Method;
 
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+@org.springframework.stereotype.Component(DeclarativeColumnGenerator.NAME)
+@Scope(SCOPE_PROTOTYPE)
 public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
+
+    public static final String NAME = "cuba_DeclarativeColumnGenerator";
 
     private final String methodName;
     private final Table table;
