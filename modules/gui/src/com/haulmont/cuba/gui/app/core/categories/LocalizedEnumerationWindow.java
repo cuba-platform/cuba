@@ -16,19 +16,17 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.entity.CategoryAttributeEnumValue;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorWindowController;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 public class LocalizedEnumerationWindow extends AbstractWindow implements ListEditorWindowController {
 
@@ -54,12 +52,13 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     protected List<Object> values;
 
     @WindowParam
+    protected Map<Object, String> valuesMap;
+
+    @WindowParam
     protected String enumerationLocales;
 
     @Inject
     private Action add;
-
-    protected List<Pair<Object, String>> currentValues;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -69,7 +68,8 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             delItemBtn.setAction(new AbstractAction("") {
                 @Override
                 public void actionPerform(Component component) {
-                    removeEnumValue(entity);
+                    enumValuesDs.removeItem(entity);
+                    valuesMap.remove(entity.getValue());
                 }
             });
             return delItemBtn;
@@ -107,7 +107,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     @Override
     public void ready() {
         initValues();
-        if (currentValues.isEmpty()) {
+        if (valuesMap.isEmpty()) {
             localizedFrame.setEditableFields(false);
         }
     }
@@ -117,16 +117,17 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             values = new ArrayList<>();
         }
 
-        currentValues = new ArrayList<>();
+        valuesMap = new LinkedHashMap<>();
+
         for (Object value : values) {
-            currentValues.add(new Pair<>(value, value.toString()));
+            valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING, null));
         }
 
-        if (!currentValues.isEmpty()) {
+        if (!valuesMap.isEmpty()) {
             Map<String, String> localizedValues = LocaleHelper.getLocalizedValuesMap(enumerationLocales);
 
-            for (Pair<Object, String> value : currentValues) {
-                addValueToDatasource(value.getFirst(), buildLocalizedValuesForEnumValue(value.getSecond(), localizedValues));
+            for (Map.Entry<Object, String> entry : valuesMap.entrySet()) {
+                addValueToDatasource(entry.getKey(), buildLocalizedValuesForEnumValue(entry.getValue(), localizedValues));
             }
 
             enumValuesTable.setSelected(enumValuesDs.getItems().iterator().next());
@@ -136,7 +137,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
 
     @Override
     public List<Object> getValue() {
-        return currentValues.stream().map(Pair::getFirst).collect(Collectors.toList());
+        return new ArrayList<>(valuesMap.keySet());
     }
 
     public String getLocalizedValues() {
@@ -150,12 +151,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
     }
 
     protected boolean valueExists(Object value) {
-        for (Pair pair : currentValues) {
-            if (pair.getFirst().equals(value)) {
-                return true;
-            }
-        }
-        return false;
+        return valuesMap.keySet().contains(value);
     }
 
     protected void addValueToDatasource(Object value, String enumLocaleValues) {
@@ -183,19 +179,8 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
         if (value != null) {
             if (!valueExists(value)) {
                 valueField.setValue(null);
-                currentValues.add(new Pair<>(value, value.toString()));
                 addValueToDatasource(value, null);
-            }
-        }
-    }
-
-    public void removeEnumValue(CategoryAttributeEnumValue value) {
-        enumValuesDs.removeItem(value);
-
-        for (Pair<Object, String> item : currentValues) {
-            if (item.getSecond().equals(value.getValue())) {
-                currentValues.remove(item);
-                break;
+                valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING, null));
             }
         }
     }
