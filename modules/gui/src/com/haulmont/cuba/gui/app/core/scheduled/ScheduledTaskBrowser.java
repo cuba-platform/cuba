@@ -70,6 +70,10 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         showExecutionsAction.setEnabled(false);
         tasksTable.addAction(showExecutionsAction);
 
+        final ExecuteOnceAction executeOnceAction = new ExecuteOnceAction();
+        executeOnceAction.setEnabled(false);
+        tasksTable.addAction(executeOnceAction);
+
         tasksDs.addItemChangeListener(e -> {
             ScheduledTask singleSelected = tasksTable.getSingleSelected();
             Set<ScheduledTask> selected = tasksTable.getSelected();
@@ -88,6 +92,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             }
 
             showExecutionsAction.setEnabled(isSingleSelected);
+            executeOnceAction.setEnabled(isSingleSelected && enableEdit);
         });
     }
 
@@ -137,6 +142,26 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         @Override
         public boolean isApplicable() {
             return tasksTable.getSelected().size() == 1;
+        }
+    }
+
+    protected class ExecuteOnceAction extends ItemTrackingAction {
+        public ExecuteOnceAction() {
+            super("executeOnce");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            ScheduledTask task = tasksTable.getSingleSelected();
+            if (task != null) {
+                service.runOnce(task);
+            }
+        }
+
+        @Override
+        public boolean isApplicable() {
+            return tasksTable.getSelected().size() == 1
+                    && !BooleanUtils.isTrue(tasksTable.getSingleSelected().getActive());
         }
     }
 }

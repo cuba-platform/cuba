@@ -69,4 +69,11 @@ public interface SchedulingService {
      * @param active true to activate
      */
     void setActive(Set<ScheduledTask> tasks, boolean active);
+
+    /**
+     * Runs a task right now and only once.
+     *
+     * @param task task to execute
+     */
+    void runOnce(ScheduledTask task);
 }

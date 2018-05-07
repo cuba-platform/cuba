@@ -74,4 +74,11 @@ public interface SchedulingAPI {
      * @return a list of active task instances in detached state
      */
     List<ScheduledTask> getActiveTasks();
+
+    /**
+     * Runs a task right now and only once.
+     *
+     * @param task task to execute
+     */
+    void runOnce(ScheduledTask task);
 }

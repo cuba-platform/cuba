@@ -421,4 +421,13 @@ public class Scheduling implements SchedulingAPI {
         }
         return false;
     }
+
+    @Override
+    public void runOnce(ScheduledTask task) {
+        try {
+            runTask(task, 0);
+        } catch (LoginException e) {
+            log.error("Unable to run the task: {}", task, e);
+        }
+    }
 }
