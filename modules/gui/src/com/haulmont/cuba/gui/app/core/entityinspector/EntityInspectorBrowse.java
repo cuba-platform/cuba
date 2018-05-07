@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -347,6 +348,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         exportPopupButton.addAction(new ExportAction("exportZIP", ZIP));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
+        importUpload.setFrame(this);
+        importUpload.setPermittedExtensions(Sets.newHashSet(".json", ".zip"));
         importUpload.setUploadButtonIcon(icons.get(CubaIcon.UPLOAD));
         importUpload.setUploadButtonCaption(getMessage("import"));
         importUpload.addFileUploadSucceedListener(event -> {
@@ -366,21 +369,16 @@ public class EntityInspectorBrowse extends AbstractLookup {
             } catch (FileStorageException e) {
                 log.error("Unable to delete temp file", e);
             }
-            String fileExtension = Files.getFileExtension(importUpload.getFileName());
             try {
                 Collection<Entity> importedEntities;
-                if ("json".equals(fileExtension)) {
+                if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
                     importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createEntityImportView(selectedMeta));
                 } else {
                     importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createEntityImportView(selectedMeta));
                 }
                 showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
             } catch (Exception e) {
-                String message = e.getMessage();
-                if (message != null && !"zip".equals(fileExtension)) {
-                    message = String.format(getMessage("importFailedMessage"), fileExtension);
-                }
-                showNotification(getMessage("importFailed"), message, NotificationType.ERROR);
+                showNotification(getMessage("importFailed"), e.getMessage(), NotificationType.ERROR);
                 log.error("Entities import error", e);
             }
             entitiesDs.refresh();
