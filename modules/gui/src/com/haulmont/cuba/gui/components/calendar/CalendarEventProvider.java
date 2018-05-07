@@ -26,6 +26,11 @@ public interface CalendarEventProvider {
     void addEvent(CalendarEvent event);
     void removeEvent(CalendarEvent event);
 
+    /**
+     * Removes all {@link CalendarEvent} in the list event provider.
+     */
+    void removeAllEvents();
+
     void setCalendar(Calendar calendar);
 
     void addEventSetChangeListener(EventSetChangeListener listener);

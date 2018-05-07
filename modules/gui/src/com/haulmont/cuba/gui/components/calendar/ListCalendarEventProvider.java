@@ -60,6 +60,17 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
     }
 
     @Override
+    public void removeAllEvents() {
+        for (CalendarEvent calendarEvent : eventList) {
+            calendarEvent.removeEventChangeListener(eventChangeListener);
+        }
+
+        eventList.clear();
+
+        fireEventSetChange();
+    }
+
+    @Override
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
     }
