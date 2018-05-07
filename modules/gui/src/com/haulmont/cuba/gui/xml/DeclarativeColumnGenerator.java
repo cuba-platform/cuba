@@ -35,11 +35,11 @@ public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
 
     public static final String NAME = "cuba_DeclarativeColumnGenerator";
 
-    private final String methodName;
-    private final Table table;
+    protected final String methodName;
+    protected final Table table;
 
-    private Method method;
-    private boolean unableToFindMethod = false;
+    protected Method method;
+    protected boolean unableToFindMethod = false;
 
     public DeclarativeColumnGenerator(Table table, String methodName) {
         this.table = table;
