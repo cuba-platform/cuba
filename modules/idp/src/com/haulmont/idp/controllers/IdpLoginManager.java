@@ -53,7 +53,15 @@ public class IdpLoginManager implements InitializingBean {
     protected LdapTemplate ldapTemplate;
 
     public IdpService.IdpLoginResult login(AuthRequest auth, Locale sessionLocale) throws LoginException {
-        switch (authenticationConfig.getAuthenticationMode()) {
+        IdpAuthMode authenticationMode = authenticationConfig.getAuthenticationMode();
+        List<String> standardAuthenticationUsers = authenticationConfig.getStandardAuthenticationUsers();
+
+        if (standardAuthenticationUsers.contains(auth.getUsername())) {
+            // user can only use STANDARD authentication
+            authenticationMode = IdpAuthMode.STANDARD;
+        }
+
+        switch (authenticationMode) {
             case STANDARD: {
                 LoginPasswordCredentials credentials = new LoginPasswordCredentials(
                         auth.getUsername(),
