@@ -59,4 +59,14 @@ public interface IdpAuthConfig extends Config {
     @Property("cuba.idp.ldap.userLoginField")
     @DefaultString("sAMAccountName")
     String getLdapUserLoginField();
+
+    /**
+     * @return list of users that are not allowed to use external authentication. They can use only standard authentication.
+     *         Empty list means that everyone is allowed to login using external authentication.
+     *
+     * @see #getAuthenticationMode()
+     */
+    @Property("cuba.idp.standardAuthenticationUsers")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getStandardAuthenticationUsers();
 }
