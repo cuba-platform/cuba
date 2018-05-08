@@ -258,5 +258,4 @@ public interface GlobalConfig extends Config {
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     @Stringify(stringify = CommaSeparatedStringListStringify.class)
     List<String> getDisableEscapingLikeForDataStores();
-    void setDisableEscapingLikeForDataStores(List<String> names);
 }

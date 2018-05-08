@@ -58,10 +58,14 @@ public class ParamWrapper implements Component.HasValue {
                 && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
             // try to wrap value for case-insensitive "like" search
             if (condition instanceof PropertyCondition || condition instanceof DynamicAttributesCondition) {
-                String thisStore =  AppBeans.get(MetadataTools.class).getStoreName(condition.getDatasource().getMetaClass());
-                GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
                 String escapedValue = value.toString();
-                if (config.getDisableEscapingLikeForDataStores() == null || !config.getDisableEscapingLikeForDataStores().contains(thisStore)) {
+                if (condition.getDatasource() != null) {
+                    String thisStore = AppBeans.get(MetadataTools.class).getStoreName(condition.getDatasource().getMetaClass());
+                    GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+                    if (config.getDisableEscapingLikeForDataStores() == null || !config.getDisableEscapingLikeForDataStores().contains(thisStore)) {
+                        escapedValue = QueryUtils.escapeForLike(escapedValue);
+                    }
+                } else {
                     escapedValue = QueryUtils.escapeForLike(escapedValue);
                 }
                 Op op = condition.getOperator();
