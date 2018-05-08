@@ -50,9 +50,58 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
         loadLookupRedCaption(resultComponent, element);
         loadButtonCaption(resultComponent, element);
 
+        loadRedSliderCaption(resultComponent, element);
+        loadGreenSliderCaption(resultComponent, element);
+        loadBlueSliderCaption(resultComponent, element);
+        loadHueSliderCaption(resultComponent, element);
+        loadSaturationSliderCaption(resultComponent, element);
+        loadValueSliderCaption(resultComponent, element);
+
         loadPopupCaption(resultComponent, element);
         loadSwatchesTabCaption(resultComponent, element);
         loadResponsive(resultComponent, element);
+    }
+
+    protected void loadRedSliderCaption(ColorPicker component, Element element) {
+        String redSliderCaption = element.attributeValue("redSliderCaption");
+        if (StringUtils.isNotEmpty(redSliderCaption)) {
+            component.setRedSliderCaption(loadResourceString(redSliderCaption));
+        }
+    }
+
+    protected void loadGreenSliderCaption(ColorPicker component, Element element) {
+        String greenSliderCaption = element.attributeValue("greenSliderCaption");
+        if (StringUtils.isNotEmpty(greenSliderCaption)) {
+            component.setGreenSliderCaption(loadResourceString(greenSliderCaption));
+        }
+    }
+
+    protected void loadBlueSliderCaption(ColorPicker component, Element element) {
+        String blueSliderCaption = element.attributeValue("blueSliderCaption");
+        if (StringUtils.isNotEmpty(blueSliderCaption)) {
+            component.setBlueSliderCaption(loadResourceString(blueSliderCaption));
+        }
+    }
+
+    protected void loadHueSliderCaption(ColorPicker component, Element element) {
+        String hueSliderCaption = element.attributeValue("hueSliderCaption");
+        if (StringUtils.isNotEmpty(hueSliderCaption)) {
+            component.setHueSliderCaption(loadResourceString(hueSliderCaption));
+        }
+    }
+
+    protected void loadSaturationSliderCaption(ColorPicker component, Element element) {
+        String saturationSliderCaption = element.attributeValue("saturationSliderCaption");
+        if (StringUtils.isNotEmpty(saturationSliderCaption)) {
+            component.setSaturationSliderCaption(loadResourceString(saturationSliderCaption));
+        }
+    }
+
+    protected void loadValueSliderCaption(ColorPicker component, Element element) {
+        String valueSliderCaption = element.attributeValue("valueSliderCaption");
+        if (StringUtils.isNotEmpty(valueSliderCaption)) {
+            component.setValueSliderCaption(loadResourceString(valueSliderCaption));
+        }
     }
 
     protected void loadPopupCaption(ColorPicker component, Element element) {

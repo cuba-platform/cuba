@@ -16,28 +16,32 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ColorPicker;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.widgets.CubaColorPickerWrapper;
-import com.haulmont.cuba.web.gui.components.converters.ColorStringConverter;
+import com.vaadin.shared.ui.colorpicker.Color;
+import org.springframework.beans.factory.InitializingBean;
 
-public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper, String> implements ColorPicker {
+public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, Color, String>
+        implements ColorPicker, InitializingBean {
 
     public WebColorPicker() {
         component = new CubaColorPickerWrapper();
-        //noinspection unchecked
-        component.setConverter(new ColorStringConverter());
-        attachListener(component);
-        setCaptions();
+        attachValueChangeListener(component);
 
         setHSVVisible(false);
         setSwatchesVisible(false);
         setHistoryVisible(false);
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setCaptions();
+    }
+
     protected void setCaptions() {
-        Messages messages = AppBeans.get(Messages.NAME);
+        Messages messages = applicationContext.getBean(Messages.class);
         component.setPopupCaption(messages.getMainMessage("colorPicker.popupCaption"));
         component.setSwatchesTabCaption(messages.getMainMessage("colorPicker.swatchesTabCaption"));
         component.setConfirmButtonCaption(messages.getMainMessage("colorPicker.confirmButtonCaption"));
@@ -106,10 +110,51 @@ public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper, Str
         return component.getButtonCaption();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public String getValue() {
-        return (String) component.getConvertedValue();
+    protected String convertToModel(Color componentRawValue) throws ConversionException {
+        if (componentRawValue == null) {
+            return null;
+        }
+
+        String redString = Integer.toHexString(componentRawValue.getRed());
+        redString = redString.length() < 2 ? "0" + redString : redString;
+
+        String greenString = Integer.toHexString(componentRawValue.getGreen());
+        greenString = greenString.length() < 2 ? "0" + greenString : greenString;
+
+        String blueString = Integer.toHexString(componentRawValue.getBlue());
+        blueString = blueString.length() < 2 ? "0" + blueString : blueString;
+
+        return redString + greenString + blueString;
+    }
+
+    @Override
+    protected Color convertToPresentation(String modelValue) throws ConversionException {
+        if (modelValue == null) {
+            return null;
+        }
+
+        if (modelValue.startsWith("#")) {
+            modelValue = modelValue.substring(1, modelValue.length());
+        }
+
+        try {
+            switch (modelValue.length()) {
+                case 3:
+                    return new Color(Integer.valueOf(modelValue.substring(0, 1), 16),
+                            Integer.valueOf(modelValue.substring(1, 2), 16),
+                            Integer.valueOf(modelValue.substring(2, 3), 16));
+                case 6:
+                    return new Color(Integer.valueOf(modelValue.substring(0, 2), 16),
+                            Integer.valueOf(modelValue.substring(2, 4), 16),
+                            Integer.valueOf(modelValue.substring(4, 6), 16));
+                default:
+                    throw new ConversionException(String.format("Value '%s' must be 3 or 6 characters in length",
+                            modelValue));
+            }
+        } catch (NumberFormatException e) {
+            throw new ConversionException(String.format("Value '%s' is not valid", modelValue));
+        }
     }
 
     @Override

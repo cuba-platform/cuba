@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.colorpicker;
 
-import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.v7.shared.ui.colorpicker.ColorPickerState;
+import com.vaadin.shared.ui.colorpicker.ColorPickerState;
 
 public class CubaColorPickerState extends ColorPickerState {
-    @NoLayout
-    public int tabIndex = 0;
 }

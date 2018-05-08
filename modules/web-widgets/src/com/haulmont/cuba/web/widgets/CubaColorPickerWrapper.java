@@ -17,12 +17,12 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.vaadin.ui.Component;
-import com.vaadin.v7.shared.ui.colorpicker.Color;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.shared.ui.colorpicker.Color;
+import com.vaadin.ui.CustomField;
 
 import java.util.Objects;
 
-public class CubaColorPickerWrapper extends CustomField {
+public class CubaColorPickerWrapper extends CustomField<Color> {
 
     protected CubaColorPicker field;
 
@@ -35,9 +35,8 @@ public class CubaColorPickerWrapper extends CustomField {
 
     protected void initColorPicker() {
         field = new CubaColorPicker();
-        field.addColorChangeListener(e ->
-                setValue(e.getColor())
-        );
+        field.addValueChangeListener((ValueChangeListener<Color>) event ->
+                fireEvent(createValueChange(event.getOldValue(), event.isUserOriginated())));
         field.setCaption(null);
     }
 
@@ -50,12 +49,15 @@ public class CubaColorPickerWrapper extends CustomField {
     }
 
     @Override
-    protected void setInternalValue(Object newValue) {
-        if (!Objects.equals(field.getColor(), newValue)) {
-            field.setColor((Color) newValue);
+    protected void doSetValue(Color value) {
+        if (!Objects.equals(field.getValue(), value)) {
+            field.setValue(value);
         }
+    }
 
-        super.setInternalValue(newValue);
+    @Override
+    public Color getValue() {
+        return field.getValue();
     }
 
     @Override
@@ -87,11 +89,6 @@ public class CubaColorPickerWrapper extends CustomField {
     @Override
     protected Component initContent() {
         return field;
-    }
-
-    @Override
-    public Class getType() {
-        return Color.class;
     }
 
     public void setDefaultCaptionEnabled(boolean value) {

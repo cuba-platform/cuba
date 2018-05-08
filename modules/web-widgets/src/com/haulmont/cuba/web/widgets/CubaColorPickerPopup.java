@@ -20,13 +20,21 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.v7.shared.ui.colorpicker.Color;
-import com.vaadin.v7.ui.components.colorpicker.ColorPickerPopup;
+import com.vaadin.shared.ui.colorpicker.Color;
+import com.vaadin.ui.components.colorpicker.ColorPickerPopup;
 
 public class CubaColorPickerPopup extends ColorPickerPopup {
 
     public CubaColorPickerPopup(Color initialColor) {
         super(initialColor);
+    }
+
+    @Override
+    protected VerticalLayout createHistoryOuterContainer(VerticalLayout innerContainer) {
+        innerContainer.setMargin(false);
+        VerticalLayout historyOuterContainer = super.createHistoryOuterContainer(innerContainer);
+        historyOuterContainer.setMargin(new MarginInfo(false, true, false, true));
+        return historyOuterContainer;
     }
 
     public void setConfirmButtonCaption(String caption) {
@@ -66,7 +74,7 @@ public class CubaColorPickerPopup extends ColorPickerPopup {
         selLayout.addStyleName("seltab");
 
         colorSelect = new CubaColorPickerSelect();
-        colorSelect.addColorChangeListener(this);
+        colorSelect.addValueChangeListener(this::colorChanged);
 
         selLayout.addComponent(colorSelect);
         return selLayout;

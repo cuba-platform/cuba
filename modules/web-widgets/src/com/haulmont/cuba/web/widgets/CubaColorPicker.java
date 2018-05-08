@@ -18,8 +18,8 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.colorpicker.CubaColorPickerState;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.shared.ui.colorpicker.Color;
-import com.vaadin.v7.ui.ColorPicker;
+import com.vaadin.shared.ui.colorpicker.Color;
+import com.vaadin.ui.ColorPicker;
 
 public class CubaColorPicker extends ColorPicker implements Component.Focusable {
 
@@ -40,7 +40,7 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
     protected String valueSliderCaption;
 
     @Override
-    protected void createPopupWindow() {
+    protected void createPopupWindow(Color color) {
         window = new CubaColorPickerPopup(color);
         ((CubaColorPickerPopup) window).setConfirmButtonCaption(confirmButtonCaption);
         ((CubaColorPickerPopup) window).setCancelButtonCaption(cancelButtonCaption);
@@ -59,6 +59,11 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
     }
 
     @Override
+    protected ValueChangeListener<Color> createColorValueChangeListener() {
+        return event -> setValue(event.getValue(), true);
+    }
+
+    @Override
     protected void showPopup(boolean open) {
         super.showPopup(open);
 
@@ -68,15 +73,18 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
     }
 
     @Override
-    public void setColor(Color color) {
+    public void setValue(Color color) {
         if (color == null) {
             color = new Color(0,0,0);
         }
-        super.setColor(color);
+        super.setValue(color);
     }
 
     public void setWindowCaption(String windowCaption) {
         this.popupCaption = windowCaption;
+        if (window != null) {
+            window.setCaption(windowCaption);
+        }
     }
 
     public String getWindowCaption() {
@@ -85,6 +93,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setConfirmButtonCaption(String confirmButtonCaption) {
         this.confirmButtonCaption = confirmButtonCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setConfirmButtonCaption(confirmButtonCaption);
+        }
     }
 
     public String getConfirmButtonCaption() {
@@ -93,6 +104,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setCancelButtonCaption(String cancelButtonCaption) {
         this.cancelButtonCaption = cancelButtonCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setCancelButtonCaption(cancelButtonCaption);
+        }
     }
 
     public String getCancelButtonCaption() {
@@ -101,6 +115,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setSwatchesTabCaption(String swatchesTabCaption) {
         this.swatchesTabCaption = swatchesTabCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setSwatchesTabCaption(swatchesTabCaption);
+        }
     }
 
     public String getSwatchesTabCaption() {
@@ -109,6 +126,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setLookupAllCaption(String lookupAllCaption) {
         this.lookupAllCaption = lookupAllCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setLookupAllCaption(lookupAllCaption);
+        }
     }
 
     public String getLookupAllCaption() {
@@ -117,6 +137,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setLookupRedCaption(String lookupRedCaption) {
         this.lookupRedCaption = lookupRedCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setLookupRedCaption(lookupRedCaption);
+        }
     }
 
     public String getLookupRedCaption() {
@@ -125,6 +148,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setLookupGreenCaption(String lookupGreenCaption) {
         this.lookupGreenCaption = lookupGreenCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setLookupGreenCaption(lookupGreenCaption);
+        }
     }
 
     public String getLookupGreenCaption() {
@@ -133,6 +159,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setLookupBlueCaption(String lookupBlueCaption) {
         this.lookupBlueCaption = lookupBlueCaption;
+        if (window != null) {
+            ((CubaColorPickerPopup) window).setLookupBlueCaption(lookupBlueCaption);
+        }
     }
 
     public String getLookupBlueCaption() {
@@ -145,6 +174,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setBlueSliderCaption(String blueSliderCaption) {
         this.blueSliderCaption = blueSliderCaption;
+        if (window != null) {
+            window.setBlueSliderCaption(blueSliderCaption);
+        }
     }
 
     public String getGreenSliderCaption() {
@@ -153,6 +185,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setGreenSliderCaption(String greenSliderCaption) {
         this.greenSliderCaption = greenSliderCaption;
+        if (window != null) {
+            window.setGreenSliderCaption(greenSliderCaption);
+        }
     }
 
     public String getRedSliderCaption() {
@@ -161,6 +196,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setRedSliderCaption(String redSliderCaption) {
         this.redSliderCaption = redSliderCaption;
+        if (window != null) {
+            window.setRedSliderCaption(redSliderCaption);
+        }
     }
 
     public String getHueSliderCaption() {
@@ -169,6 +207,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setHueSliderCaption(String hueSliderCaption) {
         this.hueSliderCaption = hueSliderCaption;
+        if (window != null) {
+            window.setHueSliderCaption(hueSliderCaption);
+        }
     }
 
     public String getSaturationSliderCaption() {
@@ -177,6 +218,9 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setSaturationSliderCaption(String saturationSliderCaption) {
         this.saturationSliderCaption = saturationSliderCaption;
+        if (window != null) {
+            window.setSaturationSliderCaption(saturationSliderCaption);
+        }
     }
 
     public String getValueSliderCaption() {
@@ -185,22 +229,8 @@ public class CubaColorPicker extends ColorPicker implements Component.Focusable 
 
     public void setValueSliderCaption(String valueSliderCaption) {
         this.valueSliderCaption = valueSliderCaption;
-    }
-
-    @Override
-    public void focus() {
-        super.focus();
-    }
-
-    @Override
-    public int getTabIndex() {
-        return getState(false).tabIndex;
-    }
-
-    @Override
-    public void setTabIndex(int tabIndex) {
-        if (getState(false).tabIndex != tabIndex) {
-            getState().tabIndex = tabIndex;
+        if (window != null) {
+            window.setValueSliderCaption(valueSliderCaption);
         }
     }
 

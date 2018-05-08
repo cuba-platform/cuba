@@ -1449,6 +1449,12 @@
                 <xs:attribute name="lookupGreenCaption" type="resourceString"/>
                 <xs:attribute name="lookupBlueCaption" type="resourceString"/>
                 <xs:attribute name="buttonCaption" type="resourceString"/>
+                <xs:attribute name="redSliderCaption" type="resourceString"/>
+                <xs:attribute name="greenSliderCaption" type="resourceString"/>
+                <xs:attribute name="blueSliderCaption" type="resourceString"/>
+                <xs:attribute name="hueSliderCaption" type="resourceString"/>
+                <xs:attribute name="saturationSliderCaption" type="resourceString"/>
+                <xs:attribute name="valueSliderCaption" type="resourceString"/>
 
                 <xs:attribute name="swatchesVisible" type="xs:boolean"/>
                 <xs:attribute name="rgbVisible" type="xs:boolean"/>

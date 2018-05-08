@@ -17,8 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.colorpicker;
 
 import com.haulmont.cuba.web.widgets.CubaColorPicker;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.v7.client.ui.colorpicker.ColorPickerConnector;
+import com.vaadin.client.ui.colorpicker.ColorPickerConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaColorPicker.class)
@@ -27,14 +26,5 @@ public class CubaColorPickerConnector extends ColorPickerConnector {
     @Override
     public CubaColorPickerState getState() {
         return (CubaColorPickerState) super.getState();
-    }
-
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
-            getWidget().setTabIndex(getState().tabIndex);
-        }
     }
 }
