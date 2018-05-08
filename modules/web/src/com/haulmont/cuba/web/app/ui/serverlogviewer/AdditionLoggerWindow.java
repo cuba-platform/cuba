@@ -20,7 +20,7 @@ package com.haulmont.cuba.web.app.ui.serverlogviewer;
 import ch.qos.logback.classic.Level;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.OptionsField;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
 import org.apache.commons.lang.StringUtils;
 
@@ -31,7 +31,7 @@ public class AdditionLoggerWindow extends AbstractWindow {
     @Inject
     protected TextField<String> loggerNameField;
     @Inject
-    protected OptionsField<Level> logLevelField;
+    protected LookupField<Level> logLevelField;
 
     protected Level selectedLevel;
 

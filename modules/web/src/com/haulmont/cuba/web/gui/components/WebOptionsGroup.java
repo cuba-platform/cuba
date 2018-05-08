@@ -20,41 +20,45 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.components.data.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
+import com.vaadin.v7.data.util.IndexedContainer;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> implements OptionsGroup<V> {
+public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> implements OptionsGroup<V, I> {
 
-    @Inject
     protected MetadataTools metadataTools;
-    @Inject
     protected ApplicationContext applicationContext;
 
-    protected OptionsBinding<V> optionsBinding;
+    protected OptionsBinding<I> optionsBinding;
 
-    protected Orientation orientation = Orientation.VERTICAL;
+    protected Function<? super I, String> optionCaptionProvider;
 
-    protected Function<? super V, String> optionCaptionProvider;
-
+    @SuppressWarnings("unchecked")
     public WebOptionsGroup() {
-        component = new CubaOptionGroup();
+        component = createComponent();
+        component.setContainerDataSource(new IndexedContainer());
+        component.setItemCaptionGenerator(o -> generateItemCaption((I) o));
 
         attachListener(component);
     }
 
-    protected String generateDefaultItemCaption(V item) {
+    protected CubaOptionGroup createComponent() {
+        return new CubaOptionGroup();
+    }
+
+    protected String generateDefaultItemCaption(I item) {
         if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             return metadataTools.format(item, entityValueSource.getMetaPropertyPath().getMetaProperty());
@@ -63,9 +67,9 @@ public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> imp
         return metadataTools.format(item);
     }
 
-    protected String generateItemCaption(V item) {
+    protected String generateItemCaption(I item) {
         if (item == null) {
-            return "";
+            return null;
         }
 
         if (optionCaptionProvider != null) {
@@ -75,6 +79,16 @@ public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> imp
         return generateDefaultItemCaption(item);
     }
 
+    @Inject
+    public void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
@@ -82,37 +96,76 @@ public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> imp
 
     @Override
     public void setMultiSelect(boolean multiselect) {
-        component.setMultiSelect(true);
+        component.setMultiSelect(multiselect);
     }
 
     @Override
     public Orientation getOrientation() {
-        return orientation;
+        switch (component.getOrientation()) {
+            case HORIZONTAL:
+                return Orientation.HORIZONTAL;
+            case VERTICAL:
+                return Orientation.VERTICAL;
+            default:
+                throw new RuntimeException("Unsupproted orientation of OptionGroup");
+        }
     }
 
     @Override
     public void setOrientation(Orientation orientation) {
         checkNotNull(orientation, "Orientation must not be null");
 
-        if (orientation != this.orientation) {
-            if (orientation == Orientation.HORIZONTAL) {
-                component.setOrientation(OptionGroupOrientation.HORIZONTAL);
-            } else {
-                component.setOrientation(OptionGroupOrientation.VERTICAL);
-            }
-            this.orientation = orientation;
+        if (orientation == Orientation.HORIZONTAL) {
+            component.setOrientation(OptionGroupOrientation.HORIZONTAL);
+        } else {
+            component.setOrientation(OptionGroupOrientation.VERTICAL);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected V convertToModel(Object componentRawValue) {
-        // todo
+        if (isMultiSelect()) {
+            Set collectionValue = (Set) componentRawValue;
+
+            List<I> itemIds = getCurrentItems();
+            Stream<I> selectedItemsStream = itemIds.stream()
+                    .filter(collectionValue::contains);
+
+            if (valueBinding != null) {
+                Class<V> targetType = valueBinding.getSource().getType();
+
+                if (List.class.isAssignableFrom(targetType)) {
+                    return (V) selectedItemsStream.collect(Collectors.toList());
+                }
+
+                if (Set.class.isAssignableFrom(targetType)) {
+                    return (V) selectedItemsStream.collect(Collectors.toCollection(LinkedHashSet::new));
+                }
+            }
+
+            return (V) selectedItemsStream.collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+
         return super.convertToModel(componentRawValue);
     }
 
+    @SuppressWarnings("unchecked")
+    protected List<I> getCurrentItems() {
+        IndexedContainer container = (IndexedContainer) component.getContainerDataSource();
+
+        return (List<I>) container.getItemIds();
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     protected Object convertToPresentation(V modelValue) {
-        // todo
+        if (isMultiSelect()) {
+            if (modelValue instanceof List) {
+                return new LinkedHashSet<I>((Collection<? extends I>) modelValue);
+            }
+        }
+
         return super.convertToPresentation(modelValue);
     }
 
@@ -130,12 +183,12 @@ public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> imp
     }
 
     @Override
-    public OptionsSource<V> getOptionsSource() {
+    public OptionsSource<I> getOptionsSource() {
         return optionsBinding != null ? optionsBinding.getSource() : null;
     }
 
     @Override
-    public void setOptionsSource(OptionsSource<V> optionsSource) {
+    public void setOptionsSource(OptionsSource<I> optionsSource) {
         if (this.optionsBinding != null) {
             this.optionsBinding.unbind();
             this.optionsBinding = null;
@@ -153,18 +206,18 @@ public class WebOptionsGroup<V> extends WebAbstractField<CubaOptionGroup, V> imp
         component.setValueIgnoreReadOnly(value);
     }
 
-    protected void setItemsToPresentation(Stream<V> options) {
-//        todo
-//        component.setItems(this::filterItemTest, options.collect(Collectors.toList()));
+    protected void setItemsToPresentation(Stream<I> options) {
+        List<I> itemIds = options.collect(Collectors.toList());
+        component.setContainerDataSource(new IndexedContainer(itemIds));
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+    public void setOptionCaptionProvider(Function<? super I, String> optionCaptionProvider) {
         this.optionCaptionProvider = optionCaptionProvider;
     }
 
     @Override
-    public Function<? super V, String> getOptionCaptionProvider() {
+    public Function<? super I, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
     }
 

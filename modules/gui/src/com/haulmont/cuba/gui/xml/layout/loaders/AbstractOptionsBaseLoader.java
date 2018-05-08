@@ -31,9 +31,6 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
     @Override
     public void loadComponent() {
         super.loadComponent();
-
-//        vaadin8
-//        loadTabIndex(resultComponent, element);
     }
 
     protected void loadCaptionProperty(T component, Element element) {
@@ -55,12 +52,6 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
-        String multiselect = element.attributeValue("multiselect");
-//        vaadin8
-//        if (StringUtils.isNotEmpty(multiselect)) {
-//            ((OptionsField) component).setMultiSelect(Boolean.parseBoolean(multiselect));
-//        }
-
         String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             Datasource ds = context.getDsContext().get(datasource);

@@ -21,6 +21,8 @@ import java.util.EventObject;
 
 /**
  * A component which can be set as lookup component for a screen.
+ *
+ * vaadin8 add typings
  */
 public interface LookupComponent extends Component {
     /**

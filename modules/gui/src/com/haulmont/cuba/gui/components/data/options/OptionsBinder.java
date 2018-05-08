@@ -102,8 +102,12 @@ public class OptionsBinder {
 
         @SuppressWarnings("unchecked")
         protected void componentValueChanged(HasValue.ValueChangeEvent event) {
-            EntityOptionsSource entityOptionsSource = (EntityOptionsSource) this.source;
-            entityOptionsSource.setSelectedItem((Entity) event.getValue());
+            // value could be List / Set / something else
+            if (event.getValue() instanceof Entity
+                    || event.getValue() == null) {
+                EntityOptionsSource entityOptionsSource = (EntityOptionsSource) this.source;
+                entityOptionsSource.setSelectedItem((Entity) event.getValue());
+            }
         }
 
         protected void optionsSourceStateChanged(OptionsSource.StateChangeEvent<V> event) {

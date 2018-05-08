@@ -80,7 +80,7 @@ public class SettingsWindow extends AbstractWindow {
     protected Button changePasswordBtn;
 
     @Inject
-    protected OptionsGroup<String> modeOptions;
+    protected OptionsGroup<String, String> modeOptions;
 
     @Inject
     protected LookupField<String> appThemeField;

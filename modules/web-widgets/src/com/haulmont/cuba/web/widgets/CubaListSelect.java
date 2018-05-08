@@ -21,12 +21,33 @@ import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.v7.ui.ListSelect;
 
+import java.util.function.Function;
+
 public class CubaListSelect extends ListSelect {
+
+    protected Function<Object, String> itemCaptionGenerator;
+
     public CubaListSelect() {
         setValidationVisible(false);
 
         setShowBufferedSourceException(false);
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    public Function<Object, String> getItemCaptionGenerator() {
+        return itemCaptionGenerator;
+    }
+
+    public void setItemCaptionGenerator(Function<Object, String> itemCaptionGenerator) {
+        this.itemCaptionGenerator = itemCaptionGenerator;
+    }
+
+    @Override
+    public String getItemCaption(Object itemId) {
+        if (itemCaptionGenerator != null) {
+            return itemCaptionGenerator.apply(itemId);
+        }
+        return super.getItemCaption(itemId);
     }
 
     @Override

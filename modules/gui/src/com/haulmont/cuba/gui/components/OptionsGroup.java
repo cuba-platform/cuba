@@ -16,7 +16,13 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface OptionsGroup<V> extends OptionsField<V>, LookupComponent, Component.Focusable {
+/**
+ * todo JavaDoc
+ *
+ * @param <V>
+ * @param <I>
+ */
+public interface OptionsGroup<V, I> extends OptionsField<V, I>, LookupComponent, Component.Focusable {
     String NAME = "optionsGroup";
 
     boolean isMultiSelect();

@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -42,6 +43,8 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
         this.datasource.addStateChangeListener(this::datasourceStateChanged);
         this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
         this.datasource.addCollectionChangeListener(this::datasourceCollectionChanged);
+
+        CollectionDsHelper.autoRefreshInvalid(datasource, true);
     }
 
     protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> e) {
@@ -61,14 +64,6 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
         }
     }
 
-    public void setState(BindingState state) {
-        if (this.state != state) {
-            this.state = state;
-
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  state));
-        }
-    }
-
     public CollectionDatasource<E, K> getDatasource() {
         return datasource;
     }
@@ -84,6 +79,14 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
             return BindingState.ACTIVE;
         }
         return BindingState.INACTIVE;
+    }
+
+    public void setState(BindingState state) {
+        if (this.state != state) {
+            this.state = state;
+
+            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
+        }
     }
 
     @SuppressWarnings("unchecked")

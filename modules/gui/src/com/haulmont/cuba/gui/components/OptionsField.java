@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.ListOptions;
@@ -33,19 +33,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface OptionsField<V> extends Field<V> {
-    default void setOptions(Stream<V> options) {
+/**
+ * todo JavaDoc
+ *
+ * @param <V>
+ * @param <I>
+ */
+public interface OptionsField<V, I> extends Field<V> {
+    default void setOptions(Stream<I> options) {
         setOptions(options.collect(Collectors.toList()));
     }
-    default void setOptions(Collection<V> options) {
+    default void setOptions(Collection<I> options) {
         setOptionsSource(new ListOptions<>(options));
     }
 
-    void setOptionsSource(OptionsSource<V> optionsSource);
-    OptionsSource<V> getOptionsSource();
+    void setOptionsSource(OptionsSource<I> optionsSource);
+    OptionsSource<I> getOptionsSource();
 
-    void setOptionCaptionProvider(Function<? super V, String> captionProvider);
-    Function<? super V, String> getOptionCaptionProvider();
+    void setOptionCaptionProvider(Function<? super I, String> captionProvider);
+    Function<? super I, String> getOptionCaptionProvider();
 
     /*
      * Deprecated API
@@ -63,7 +69,7 @@ public interface OptionsField<V> extends Field<V> {
 
     @Deprecated
     default CollectionDatasource getOptionsDatasource() {
-        OptionsSource<V> optionsSource = getOptionsSource();
+        OptionsSource<I> optionsSource = getOptionsSource();
         if (optionsSource instanceof CollectionDatasourceOptions) {
             return ((CollectionDatasourceOptions) optionsSource).getDatasource();
         }
@@ -101,8 +107,8 @@ public interface OptionsField<V> extends Field<V> {
         return null;
     }
     @Deprecated
-    default void setOptionsMap(Map<String, V> map) {
-        BiMap<String, V> biMap = ImmutableBiMap.copyOf(map);
+    default void setOptionsMap(Map<String, I> map) {
+        BiMap<String, I> biMap = ImmutableBiMap.copyOf(map);
 
         setOptionsSource(new MapOptions<>(map));
         setOptionCaptionProvider(v -> biMap.inverse().get(v));

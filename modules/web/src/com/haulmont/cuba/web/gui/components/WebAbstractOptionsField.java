@@ -31,9 +31,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect, V>
+public abstract class WebAbstractOptionsField<T extends com.vaadin.v7.ui.AbstractSelect, V, I>
         extends WebAbstractField<T, V>
-        implements OptionsField<V> {
+        implements OptionsField<V, I> {
 
     protected List optionsList;
     protected Map<String, ?> optionsMap;

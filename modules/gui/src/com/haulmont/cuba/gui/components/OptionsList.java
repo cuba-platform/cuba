@@ -17,14 +17,20 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface OptionsList<V> extends OptionsField<V> {
+/**
+ * todo JavaDoc
+ *
+ * @param <V>
+ * @param <I>
+ */
+public interface OptionsList<V, I> extends OptionsField<V, I>, Component.Focusable {
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
 
     String NAME = "optionsList";
 
     /**
-     * Sets visibility for first null element in suggestion popup.
+     * Sets visibility for first null element in list.
      */
     void setNullOptionVisible(boolean nullOptionVisible);
     /**

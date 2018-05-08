@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> {
@@ -25,10 +26,16 @@ public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> 
     public void loadComponent() {
         super.loadComponent();
 
+        String multiselect = element.attributeValue("multiselect");
+        if (StringUtils.isNotEmpty(multiselect)) {
+            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
+
         loadOrientation(resultComponent, element);
         loadCaptionProperty(resultComponent, element);
 
         loadOptionsEnum(resultComponent, element);
+        loadTabIndex(resultComponent, element);
     }
 
     protected void loadOrientation(OptionsGroup component, Element element) {

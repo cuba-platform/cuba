@@ -32,9 +32,15 @@ public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
     public void loadComponent() {
         super.loadComponent();
 
+        String multiselect = element.attributeValue("multiselect");
+        if (StringUtils.isNotEmpty(multiselect)) {
+            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
+
         loadCaptionProperty(resultComponent, element);
         loadOptionsEnum(resultComponent, element);
         loadNullOptionVisible(resultComponent, element);
+        loadTabIndex(resultComponent, element);
     }
 
     protected void loadNullOptionVisible(OptionsList resultComponent, Element element) {

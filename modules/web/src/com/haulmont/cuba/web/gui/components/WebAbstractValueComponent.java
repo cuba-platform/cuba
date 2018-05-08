@@ -29,11 +29,15 @@ import javax.inject.Inject;
 public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
 
-    @Inject
     protected ApplicationContext applicationContext;
 
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
+
+    @Inject
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     public void setValueSource(ValueSource<V> valueSource) {

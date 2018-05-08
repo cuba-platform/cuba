@@ -20,12 +20,25 @@ import com.haulmont.cuba.web.widgets.client.optiongroup.CubaOptionGroupState;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
 import com.vaadin.v7.ui.OptionGroup;
 
+import java.util.function.Function;
+
 public class CubaOptionGroup extends OptionGroup {
+
+    protected Function<Object, String> itemCaptionGenerator;
+
     public CubaOptionGroup() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
 
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    @Override
+    public String getItemCaption(Object itemId) {
+        if (itemCaptionGenerator != null) {
+            return itemCaptionGenerator.apply(itemId);
+        }
+        return super.getItemCaption(itemId);
     }
 
     @Override
@@ -46,5 +59,13 @@ public class CubaOptionGroup extends OptionGroup {
         if (orientation != getOrientation()) {
             getState().orientation = orientation;
         }
+    }
+
+    public Function<Object, String> getItemCaptionGenerator() {
+        return itemCaptionGenerator;
+    }
+
+    public void setItemCaptionGenerator(Function<Object, String> itemCaptionGenerator) {
+        this.itemCaptionGenerator = itemCaptionGenerator;
     }
 }
