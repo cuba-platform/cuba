@@ -240,4 +240,13 @@ public interface GlobalConfig extends Config {
     @Property("cuba.deepCopyNonPersistentReferences")
     @DefaultBoolean(false)
     boolean getDeepCopyNonPersistentReferences();
+
+    /**
+     * Disable ESCAPE in queries with LIKE for specified data stores.
+     */
+    @Property("cuba.disableEscapingLikeForDataStores")
+    @Source(type = SourceType.DATABASE)
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    @Stringify(stringify = CommaSeparatedStringListStringify.class)
+    List<String> getDisableEscapingLikeForDataStores();
 }
