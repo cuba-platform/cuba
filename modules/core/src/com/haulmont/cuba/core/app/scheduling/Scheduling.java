@@ -425,7 +425,8 @@ public class Scheduling implements SchedulingAPI {
     @Override
     public void runOnce(ScheduledTask task) {
         try {
-            runTask(task, 0);
+            lastStartCache.put(task, timeSource.currentTimeMillis());
+            runner.runOnceTask(task, timeSource.currentTimeMillis(), getUserSession(task));
         } catch (LoginException e) {
             log.error("Unable to run the task: {}", task, e);
         }

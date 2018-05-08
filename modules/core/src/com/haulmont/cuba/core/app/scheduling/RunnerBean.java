@@ -108,6 +108,16 @@ public class RunnerBean implements Runner {
 
     @Override
     public void runTask(ScheduledTask task, final long now, final @Nullable UserSession userSession) {
+        runTask(task, now, false, userSession);
+    }
+
+    @Override
+    public void runOnceTask(ScheduledTask task, long now, @Nullable UserSession userSession) {
+        runTask(task, now, true, userSession);
+    }
+
+    protected void runTask(ScheduledTask task, final long now, final boolean manually,
+                           final @Nullable UserSession userSession) {
         // It's better not to pass an entity instance in managed state to another thread
         final ScheduledTask taskCopy = metadata.getTools().copy(task);
 
@@ -122,9 +132,9 @@ public class RunnerBean implements Runner {
                         statisticsCounter.incCubaScheduledTasksCount();
                         try {
                             Object result = executeTask(taskCopy);
-                            registerExecutionFinish(taskCopy, execution, result);
+                            registerExecutionFinish(taskCopy, execution, result, manually);
                         } catch (Throwable throwable) {
-                            registerExecutionFinish(taskCopy, execution, throwable);
+                            registerExecutionFinish(taskCopy, execution, throwable, manually);
                             throw throwable;
                         }
                     } finally {
@@ -176,7 +186,7 @@ public class RunnerBean implements Runner {
         }
     }
 
-    protected void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result) {
+    protected void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result, boolean manually) {
         if ((!BooleanUtils.isTrue(task.getLogFinish()) && !BooleanUtils.isTrue(task.getSingleton()) && task.getSchedulingType() != SchedulingType.FIXED_DELAY)
                 || execution == null)
             return;
@@ -187,8 +197,16 @@ public class RunnerBean implements Runner {
             EntityManager em = persistence.getEntityManager();
             execution = em.merge(execution);
             execution.setFinishTime(timeSource.currentTimestamp());
-            if (result != null)
-                execution.setResult(result.toString());
+
+            StringBuilder sb = new StringBuilder();
+            if (result != null) {
+                sb.append(result.toString());
+            }
+
+            if (manually) {
+                sb.append("{Executed manually}");
+            }
+            execution.setResult(sb.toString());
 
             tx.commit();
         } finally {

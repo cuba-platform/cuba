@@ -31,4 +31,6 @@ public interface Runner {
     String NAME = "cuba_SchedulingRunner";
 
     void runTask(ScheduledTask task, long now, @Nullable UserSession userSession);
+
+    void runOnceTask(ScheduledTask task, long now, @Nullable UserSession userSession);
 }
