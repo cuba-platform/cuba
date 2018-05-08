@@ -133,7 +133,10 @@ public class PropertyCondition extends AbstractCondition {
 
             if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH
                     || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
-                sb.append(" ESCAPE '").append(QueryUtils.ESCAPE_CHARACTER).append("' ");
+                GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+                if (config.getDisableEscapingLikeForDataStores() == null || !config.getDisableEscapingLikeForDataStores().contains(thisStore)) {
+                    sb.append(" ESCAPE '").append(QueryUtils.ESCAPE_CHARACTER).append("' ");
+                }
             }
 
             if (operator == Op.NOT_IN) {
