@@ -20,8 +20,7 @@ import java.lang.annotation.*;
 
 /**
  * Marker annotation for {@link org.springframework.stereotype.Service} beans(classes) and methods that should be called
- * only from trusted clients. Make sure that you enabled "cuba.checkServiceCallFromTrustedIp" application property on
- * the middleware.
+ * only from trusted clients.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
