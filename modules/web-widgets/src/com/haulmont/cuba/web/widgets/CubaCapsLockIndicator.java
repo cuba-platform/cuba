@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui;
+package com.haulmont.cuba.web.widgets;
 
-import com.haulmont.cuba.web.toolkit.ui.client.capslockindicator.CubaCapsLockIndicatorState;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.haulmont.cuba.web.widgets.client.capslockindicator.CubaCapsLockIndicatorState;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 
 public class CubaCapsLockIndicator extends Label {

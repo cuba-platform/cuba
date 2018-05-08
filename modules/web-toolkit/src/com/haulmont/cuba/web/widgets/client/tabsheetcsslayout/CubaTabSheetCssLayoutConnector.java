@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.tabsheetcsslayout;
+package com.haulmont.cuba.web.widgets.client.tabsheetcsslayout;
 
 import com.haulmont.cuba.web.widgets.CubaTabSheetCssLayout;
 import com.vaadin.client.ComponentConnector;

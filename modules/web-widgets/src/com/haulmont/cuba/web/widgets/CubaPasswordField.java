@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.web.widgets.client.passwordfield.CubaPasswordFieldState;
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.PasswordField;
 
 public class CubaPasswordField extends PasswordField {
@@ -67,8 +67,7 @@ public class CubaPasswordField extends PasswordField {
     }
     */
 
-    public void setCapsLockIndicator(CapsLockIndicator capsLockIndicator) {
-        getState().capsLockIndicator = capsLockIndicator == null ? null
-                : capsLockIndicator.unwrapComposition(Component.class);
+    public void setCapsLockIndicator(Connector capsLockIndicator) {
+        getState().capsLockIndicator = capsLockIndicator;
     }
 }

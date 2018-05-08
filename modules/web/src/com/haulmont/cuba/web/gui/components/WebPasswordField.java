@@ -18,8 +18,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
-import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.PasswordField;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
@@ -112,7 +112,11 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
     public void setCapsLockIndicator(CapsLockIndicator capsLockIndicator) {
         this.capsLockIndicator = capsLockIndicator;
 
-        component.setCapsLockIndicator(capsLockIndicator);
+        if (capsLockIndicator != null) {
+            component.setCapsLockIndicator(capsLockIndicator.unwrap(com.vaadin.ui.Component.class));
+        } else {
+            component.setCapsLockIndicator(null);
+        }
     }
 
     @Override

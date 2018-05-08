@@ -42,7 +42,7 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
-    protected ServletContext servletContext;
+    protected final ServletContext servletContext;
 
     public CubaUidlWriter(ServletContext servletContext) {
         this.servletContext = servletContext;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.capslockindicator;
+package com.haulmont.cuba.web.widgets.client.capslockindicator;
 
-import com.haulmont.cuba.web.toolkit.ui.CubaCapsLockIndicator;
+import com.haulmont.cuba.web.widgets.CubaCapsLockIndicator;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.Connect;

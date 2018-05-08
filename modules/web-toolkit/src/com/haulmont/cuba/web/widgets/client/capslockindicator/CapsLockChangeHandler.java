@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.capslockindicator;
+package com.haulmont.cuba.web.widgets.client.capslockindicator;
 
-import com.vaadin.shared.ui.label.LabelState;
+public interface CapsLockChangeHandler {
 
-public class CubaCapsLockIndicatorState extends LabelState {
-
-    {
-        primaryStyleName = "c-capslockindicator";
-    }
-
-    public String capsLockOnMessage;
-
-    public String capsLockOffMessage;
+    void showCapsLockStatus(boolean isCapsLock);
 }

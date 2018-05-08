@@ -21,7 +21,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.client.capslockindicator.CapsLockChangeHandler;
+import com.haulmont.cuba.web.widgets.client.capslockindicator.CapsLockChangeHandler;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VPasswordField;
 

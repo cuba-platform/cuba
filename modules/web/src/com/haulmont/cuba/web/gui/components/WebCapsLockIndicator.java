@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
-import com.haulmont.cuba.web.toolkit.ui.CubaCapsLockIndicator;
+import com.haulmont.cuba.web.widgets.CubaCapsLockIndicator;
 
 public class WebCapsLockIndicator extends WebAbstractComponent<CubaCapsLockIndicator> implements CapsLockIndicator {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.capslockindicator;
+package com.haulmont.cuba.web.widgets.client.capslockindicator;
 
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VLabel;
