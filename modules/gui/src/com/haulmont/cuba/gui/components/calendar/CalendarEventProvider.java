@@ -23,11 +23,28 @@ import java.util.List;
 
 public interface CalendarEventProvider {
 
+    /**
+     * Adds {@link CalendarEvent} to the event provider list.
+     * <p>
+     * Not supported by {@link EntityCalendarEventProvider}, use datasource for changing data items.
+     *
+     * @param event calendar event
+     */
     void addEvent(CalendarEvent event);
+
+    /**
+     * Removes {@link CalendarEvent} from the event provider list.
+     * <p>
+     * Not supported by {@link EntityCalendarEventProvider}, use datasource for changing data items.
+     *
+     * @param event calendar event
+     */
     void removeEvent(CalendarEvent event);
 
     /**
-     * Removes all {@link CalendarEvent} in the list event provider.
+     * Removes all {@link CalendarEvent} in the event provider list.
+     * <p>
+     * Not supported by {@link EntityCalendarEventProvider}, use datasource for changing data items.
      */
     void removeAllEvents();
 
