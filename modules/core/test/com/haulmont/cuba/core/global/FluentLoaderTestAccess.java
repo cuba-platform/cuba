@@ -29,4 +29,12 @@ public class FluentLoaderTestAccess {
     public static LoadContext createLoadContext(FluentLoader.ByQuery loader) {
         return loader.createLoadContext();
     }
+
+    public static ValueLoadContext createLoadContext(AbstractFluentValueLoader loader) {
+        return loader.createLoadContext();
+    }
+
+    public static Object castValue(FluentValueLoader loader, Object value) {
+        return loader.castValue(value);
+    }
 }

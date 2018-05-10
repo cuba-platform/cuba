@@ -33,7 +33,7 @@ public class FluentLoader<E extends Entity<K>, K> {
     private String viewName;
     private boolean softDeletion = true;
 
-    public FluentLoader(Class<E> entityClass, DataManager dataManager) {
+    FluentLoader(Class<E> entityClass, DataManager dataManager) {
         this.entityClass = entityClass;
         this.dataManager = dataManager;
     }
@@ -132,7 +132,7 @@ public class FluentLoader<E extends Entity<K>, K> {
 
         private Object id;
 
-        public ById(Object id) {
+        ById(Object id) {
             this.id = id;
         }
 
@@ -198,7 +198,7 @@ public class FluentLoader<E extends Entity<K>, K> {
         private int maxResults;
         private boolean cacheable;
 
-        public ByQuery(String queryString) {
+        ByQuery(String queryString) {
             Preconditions.checkNotEmptyString(queryString, "queryString is empty");
             this.queryString = queryString;
         }
@@ -312,6 +312,14 @@ public class FluentLoader<E extends Entity<K>, K> {
             if (!implicitConversion) {
                 noConversionParams.add(name);
             }
+            return this;
+        }
+
+        /**
+         * Sets the map of query parameters.
+         */
+        public ByQuery setParameters(Map<String, Object> parameters) {
+            this.parameters.putAll(parameters);
             return this;
         }
 

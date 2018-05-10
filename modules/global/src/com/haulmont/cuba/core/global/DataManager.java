@@ -178,4 +178,46 @@ public interface DataManager {
     default <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
         return new FluentLoader<>(entityClass, this);
     }
+
+    /**
+     * Entry point to the fluent API for loading scalar values.
+     * <p>
+     * Usage examples:
+     * <pre>
+     * List&lt;KeyValueEntity&gt; customerDataList = dataManager.loadValues(
+     *          "select c.name, c.status from sample$Customer c where c.name = :n")
+     *      .properties("custName", "custStatus")
+     *      .parameter("name", "Smith")
+     *      .list();
+     *
+     * KeyValueEntity customerData = dataManager.loadValues(
+     *          "select c.name, count(c) from sample$Customer c group by c.name")
+     *      .properties("custName", "custCount")
+     *      .one();
+     * </pre>
+     * @param queryString   query string
+     */
+    default FluentValuesLoader loadValues(String queryString) {
+        return new FluentValuesLoader(queryString, this);
+    }
+
+    /**
+     * Entry point to the fluent API for loading a single scalar value.
+     * <p>
+     * Terminal methods of this API ({@code list}, {@code one} and {@code optional}) return a single value
+     * from the first column of the query result set. You should provide the expected type of this value in the second
+     * parameter. Number types will be converted appropriately, so for example if the query returns Long and you
+     * expected Integer, the returned value will be automatically converted from Long to Integer.
+     * <p>
+     * Usage examples:
+     * <pre>
+     * Long customerCount = dataManager.loadValue(
+     *          "select count(c) from sample$Customer c", Long.class).one();
+     * </pre>
+     * @param queryString   query string
+     * @param valueClass    type of the returning value
+     */
+    default <T> FluentValueLoader<T> loadValue(String queryString, Class<T> valueClass) {
+        return new FluentValueLoader<>(queryString, valueClass, this);
+    }
 }

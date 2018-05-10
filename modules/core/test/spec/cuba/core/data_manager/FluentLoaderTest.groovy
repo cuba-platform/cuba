@@ -57,7 +57,7 @@ class FluentLoaderTest extends Specification {
         cont.deleteRecord(customer)
     }
 
-    def "example usage"() {
+    def "usage examples"() {
 
         expect:
 
@@ -256,5 +256,17 @@ class FluentLoaderTest extends Specification {
         then:
 
         !loadContext.softDeletion
+
+        when:
+
+        loader = dataManager.load(Customer).query('select c from test$Customer c')
+            .firstResult(10)
+            .maxResults(100)
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.query.firstResult == 10
+        loadContext.query.maxResults == 100
     }
 }
