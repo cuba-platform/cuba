@@ -45,6 +45,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupTable, E> implements GroupTable<E> {
+public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupTable, E> implements GroupTable<E>, InitializingBean {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -64,6 +65,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
     public WebGroupTable() {
         component = createGroupTableComponent();
+    }
+
+    @Override
+    public void afterPropertiesSet() {
         initComponent(component);
 
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());

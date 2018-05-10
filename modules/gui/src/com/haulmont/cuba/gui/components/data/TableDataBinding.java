@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.widgets.data;
+package com.haulmont.cuba.gui.components.data;
 
-import com.vaadin.v7.data.Container;
+import com.haulmont.cuba.gui.components.Component;
 
-// todo rename, move to GUI
-public interface TableContainer extends Container.Sortable {
+public interface TableDataBinding<I> {
+    TableDataSource<I> getSource();
+    Component getComponent();
 
-    void resetSortOrder();
+    void activate();
 }

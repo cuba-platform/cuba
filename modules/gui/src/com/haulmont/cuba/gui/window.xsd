@@ -2197,7 +2197,6 @@
 
         <xs:attribute name="optionsDatasource" type="xs:string"/>
         <xs:attribute name="captionProperty" type="xs:string"/>
-        <xs:attribute name="descriptionProperty" type="xs:string"/>
         <xs:attribute name="field" type="xs:string"/>
         <xs:attribute name="showSeconds" type="xs:string"/>
         <xs:attribute name="required" type="xs:boolean"/>

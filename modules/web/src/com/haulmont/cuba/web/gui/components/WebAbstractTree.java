@@ -27,7 +27,6 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -296,24 +295,19 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         }
 
         Entity item = datasource.getItem(itemId);
-        String joinedStyle = null;
+        StringBuilder joinedStyle = null;
         for (Tree.StyleProvider styleProvider : styleProviders) {
             String styleName = styleProvider.getStyleName(item);
             if (styleName != null) {
                 if (joinedStyle == null) {
-                    joinedStyle = styleName;
+                    joinedStyle = new StringBuilder(styleName);
                 } else {
-                    joinedStyle += " " + styleName;
+                    joinedStyle.append(" ").append(styleName);
                 }
             }
         }
 
-        return joinedStyle;
-    }
-
-    @Override
-    public void setMultiSelect(boolean multiselect) {
-        super.setMultiSelect(multiselect);
+        return joinedStyle != null ? joinedStyle.toString() : null;
     }
 
     @Override

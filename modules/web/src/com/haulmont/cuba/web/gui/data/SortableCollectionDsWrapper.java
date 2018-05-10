@@ -32,11 +32,6 @@ import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
 public class SortableCollectionDsWrapper extends CollectionDsWrapper implements Container.Sortable {
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh,
-                                       CollectionDsListenersWrapper collectionDsListenersWrapper) {
-        super(datasource, autoRefresh, collectionDsListenersWrapper);
-    }
-
     public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
                                        boolean autoRefresh, CollectionDsListenersWrapper collectionDsListenersWrapper) {
         super(datasource, properties, autoRefresh, collectionDsListenersWrapper);

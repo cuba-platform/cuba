@@ -126,11 +126,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
     }
 
     @Override
-    public void setMultiSelect(boolean multiselect) {
-        component.setMultiSelect(multiselect);
-    }
-
-    @Override
     public CaptionMode getCaptionMode() {
         return captionMode;
     }

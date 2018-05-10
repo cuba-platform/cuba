@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.StringUtils;
 
+// todo do not use WebButton
 public abstract class ContextMenuButton extends WebButton {
 
     protected boolean showIconsForPopupMenuActions = false;

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components.formatters;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Formatter;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +25,11 @@ import java.util.stream.Collectors;
 
 public class CollectionFormatter implements Formatter<Collection> {
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected MetadataTools metadataTools;
+
+    public CollectionFormatter(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
 
     @Override
     public String format(Collection value) {

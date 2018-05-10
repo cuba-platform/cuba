@@ -21,15 +21,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.vaadin.v7.ui.AbstractSelect;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * @param <T>
+ * @param <T> type of underlying Vaadin component
  */
+@SuppressWarnings("deprecation")
 public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity>
     extends
         WebAbstractActionsHolderComponent<T>
@@ -37,14 +37,13 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         ListComponent<E> {
 
     protected CollectionDatasource datasource;
-    protected CollectionContainer container;
 
     @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
     }
 
-    protected void setMultiSelect(boolean multiselect) {
+    public void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
 
@@ -62,9 +61,14 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         Set<Object> itemIds = getSelectedItemIds();
 
         if (itemIds != null) {
+            if (itemIds.size() == 1) {
+                E item = (E) datasource.getItem(itemIds.iterator().next());
+                return Collections.singleton(item);
+            }
+
             Set res = new LinkedHashSet<>();
             for (Object id : itemIds) {
-                Entity item = container != null ? container.getItem(id) : datasource.getItem(id);
+                Entity item = datasource.getItem(id);
                 if (item != null)
                     res.add(item);
             }
@@ -101,19 +105,24 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
     @SuppressWarnings("unchecked")
     @Override
     public void setSelected(Collection<E> items) {
-        Set itemIds = new HashSet();
-        for (Entity item : items) {
-            boolean found = true;
-            if (container != null)
-                found = container.getItem(item.getId()) != null;
-            else if (datasource != null)
-                found = datasource.containsItem(item.getId());
-            if (!found) {
-                throw new IllegalStateException("Collection doesn't contain item to select: " + item);
+        if (items.isEmpty()) {
+            setSelectedIds(Collections.emptyList());
+        } else if (items.size() == 1) {
+            E item = items.iterator().next();
+            if (!datasource.containsItem(item.getId())) {
+                throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
             }
-            itemIds.add(item.getId());
+            setSelectedIds(Collections.singletonList(item.getId()));
+        } else {
+            Set itemIds = new HashSet();
+            for (Entity item : items) {
+                if (!datasource.containsItem(item.getId())) {
+                    throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
+                }
+                itemIds.add(item.getId());
+            }
+            setSelectedIds(itemIds);
         }
-        setSelectedIds(itemIds);
     }
 
     protected void setSelectedIds(Collection<Object> itemIds) {

@@ -23,9 +23,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.data.TableDataSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public interface Table<E extends Entity>
         extends
@@ -48,24 +49,38 @@ public interface Table<E extends Entity>
 
     String NAME = "table";
 
-    List<Column> getColumns();
+    List<Column<E>> getColumns();
 
-    Column getColumn(String id);
+    Column<E> getColumn(String id);
 
-    void addColumn(Column column);
+    void addColumn(Column<E> column);
 
-    void removeColumn(Column column);
+    void removeColumn(Column<E> column);
 
     Map<Object, Object> getAggregationResults();
 
+    void setTableDataSource(TableDataSource<E> tableDataSource);
+
+    // todo convert to default method
+    @Deprecated
     void setDatasource(CollectionDatasource datasource);
 
-    void setContainer(CollectionContainer container);
+    void setRequired(Column<E> column, boolean required, String message);
 
-    void setRequired(Column column, boolean required, String message);
-
-    void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
-    void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
+    /**
+     * @deprecated automatic validation of Table is not supported
+     */
+    @Deprecated
+    default void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator) {
+        LoggerFactory.getLogger(Table.class).warn("Field.Validator for Table is not supported");
+    }
+    /**
+     * @deprecated automatic validation of Table is not supported
+     */
+    @Deprecated
+    default void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
+        LoggerFactory.getLogger(Table.class).warn("Field.Validator for Table is not supported");
+    }
 
     /**
      * Assign caption for column in runtime.
@@ -325,6 +340,7 @@ public interface Table<E extends Entity>
      * @param item entity item
      * @return datasource containing the item
      */
+    @Deprecated
     Datasource getItemDatasource(Entity item);
 
     /**
@@ -524,7 +540,7 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
+    class Column<T> implements HasXmlDescriptor, HasCaption, HasFormatter {
 
         private static final Logger log = LoggerFactory.getLogger(Table.class);
 
@@ -543,9 +559,12 @@ public interface Table<E extends Entity>
         protected Integer maxTextLength;
         protected ColumnAlignment alignment;
 
+        protected Function<T, Object> valueProvider;
+
         protected Class type;
         protected Element element;
 
+        // vaadin8 add a separate interface for notifying parent
         protected Table owner;
 
         public Column(Object id) {
@@ -572,6 +591,29 @@ public interface Table<E extends Entity>
 
         public Object getId() {
             return id;
+        }
+
+        @Nullable
+        public MetaPropertyPath getBoundProperty() {
+            if (id instanceof MetaPropertyPath) {
+                return (MetaPropertyPath) id;
+            }
+            return null;
+        }
+
+        public String getStringId() {
+            if (id instanceof MetaPropertyPath) {
+                return ((MetaPropertyPath) id).toPathString();
+            }
+            return String.valueOf(id);
+        }
+
+        public Function<T, Object> getValueProvider() {
+            return valueProvider;
+        }
+
+        public void setValueProvider(Function<T, Object> valueProvider) {
+            this.valueProvider = valueProvider;
         }
 
         @Override
@@ -676,7 +718,7 @@ public interface Table<E extends Entity>
 
         public void setGroupAllowed(boolean groupAllowed) {
             this.groupAllowed = groupAllowed;
-            if (owner != null && owner instanceof GroupTable) {
+            if (owner instanceof GroupTable) {
                 ((GroupTable) owner).setColumnGroupAllowed(this, groupAllowed);
             }
         }

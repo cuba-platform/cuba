@@ -140,7 +140,7 @@ public class MetaPropertyPath implements Serializable {
     }
 
     public String toPathString() {
-        return new StrBuilder().appendWithSeparators(path, ".").toString();
+        return pathString;
     }
 
     @Override

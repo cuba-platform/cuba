@@ -26,21 +26,27 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.widgets.CubaTable;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.TableContainer;
-import com.haulmont.cuba.web.widgets.CubaTable;
 import com.vaadin.server.Resource;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.*;
 
-public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
+public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> implements InitializingBean {
 
     public WebTable() {
         component = createTableComponent();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         initComponent(component);
     }
 
     protected CubaTable createTableComponent() {
+        // todo rework to lambda handlers
         return new CubaTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
@@ -71,8 +77,7 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
                 new TableDsWrapper(datasource, columns, collectionDsListenersWrapper);
     }
 
-    protected class TableDsWrapper extends CollectionDsWrapper
-            implements AggregationContainer {
+    protected class TableDsWrapper extends CollectionDsWrapper implements AggregationContainer {
 
         protected List<Object> aggregationProperties = null;
 
@@ -218,8 +223,8 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
         @Override
         public void resetSortOrder() {
-            if (datasource instanceof CollectionDatasource.Sortable) {
-                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            if (this.datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) this.datasource).resetSortOrder();
             }
         }
     }

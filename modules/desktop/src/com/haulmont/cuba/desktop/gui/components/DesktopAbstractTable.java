@@ -35,12 +35,12 @@ import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.factories.AbstractFieldFactory;
+import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -1197,14 +1197,6 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             requiredColumns.put(column, message);
         else
             requiredColumns.remove(column);
-    }
-
-    @Override
-    public void addValidator(Column column, Field.Validator validator) {
-    }
-
-    @Override
-    public void addValidator(Field.Validator validator) {
     }
 
     @Override

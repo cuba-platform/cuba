@@ -398,6 +398,4 @@ public class CubaVaadinServletService extends VaadinServletService
             return new CubaUidlWriter(servletContext);
         }
     }
-
-    // vaadin8 replace UidlWriter in AtmospherePushConnection
 }

@@ -57,8 +57,8 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         this.autoRefresh = autoRefresh;
         this.collectionDsListenersWrapper = collectionDsListenersWrapper;
 
-        final View view = datasource.getView();
-        final MetaClass metaClass = datasource.getMetaClass();
+        View view = datasource.getView();
+        MetaClass metaClass = datasource.getMetaClass();
 
         if (properties == null) {
             createProperties(view, metaClass);

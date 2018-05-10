@@ -44,8 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScreensHelper {
     public static final String NAME = "cuba_ScreensHelper";
 
-    private static final Map<String, Object> EMPTY_MAP = new HashMap<>();
-
     private static final Logger log = LoggerFactory.getLogger(ScreensHelper.class);
 
     @Inject
@@ -66,15 +64,17 @@ public class ScreensHelper {
     @Inject
     protected Metadata metadata;
 
-    private Map<String, String> captionCache = new ConcurrentHashMap<>();
-    private Map<String, Map<String, Object>> availableScreensCache = new ConcurrentHashMap<>();
-    private Map<String, List<ScreenComponentDescriptor>> screenComponentsCache = new ConcurrentHashMap<>();
+    protected Map<String, String> captionCache = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, Object>> availableScreensCache = new ConcurrentHashMap<>();
+    protected Map<String, List<ScreenComponentDescriptor>> screenComponentsCache = new ConcurrentHashMap<>();
 
     /**
-     * Sorts window infos alphabetically, takes into account $ mark
+     * Sorts window infos alphabetically, takes into account $ mark.
+     *
+     * @param windowInfoCollection mutable list of window infos
      */
     public void sortWindowInfos(List<WindowInfo> windowInfoCollection) {
-        Collections.sort(windowInfoCollection, (w1, w2) -> {
+        windowInfoCollection.sort((w1, w2) -> {
             int w1DollarIndex = w1.getId().indexOf("$");
             int w2DollarIndex = w2.getId().indexOf("$");
 
@@ -264,7 +264,7 @@ public class ScreensHelper {
                         screensMap.put(windowId, windowId);
                     }
                 } catch (FileNotFoundException e) {
-                    log.error(e.getMessage());
+                    log.error("Unable to find file of screen", e.getMessage());
                 }
             }
 
@@ -366,7 +366,7 @@ public class ScreensHelper {
         if (StringUtils.isNotEmpty(text)) {
             try {
                 Document document = Dom4j.readDocument(text);
-                XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, EMPTY_MAP);
+                XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, Collections.emptyMap());
                 Element root = processor.getResultRoot();
                 if (root.getName().equals(Window.NAME))
                     return root;

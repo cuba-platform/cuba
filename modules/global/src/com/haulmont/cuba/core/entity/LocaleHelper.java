@@ -36,6 +36,7 @@ public final class LocaleHelper {
     private LocaleHelper() {
     }
 
+    // todo extract to bean
     public static String getLocalizedName(String localeBundle) {
         Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
         String localeName = null;
@@ -66,6 +67,7 @@ public final class LocaleHelper {
         return Collections.emptyMap();
     }
 
+    // todo extract to bean
     public static String getLocalizedEnumeration(String enumerationValues, String localeBundle) {
         String result = null;
         if (StringUtils.isNotEmpty(localeBundle)) {
@@ -92,6 +94,7 @@ public final class LocaleHelper {
         return result;
     }
 
+    // todo extract to bean
     public static String convertToSimpleKeyLocales(String localeBundle) {
         Properties result = new Properties();
         Properties properties = loadProperties(localeBundle);
@@ -105,6 +108,7 @@ public final class LocaleHelper {
         return convertPropertiesToString(result);
     }
 
+    // todo extract to bean
     public static String convertFromSimpleKeyLocales(String enumValue, String localeBundle) {
         Properties result = new Properties();
         Properties properties = loadProperties(localeBundle);
@@ -117,6 +121,7 @@ public final class LocaleHelper {
         return convertPropertiesToString(result);
     }
 
+    // todo extract to bean
     public static String getEnumLocalizedValue(String enumValue, String localeBundle) {
         if (enumValue == null) {
             return null;
@@ -139,6 +144,7 @@ public final class LocaleHelper {
         return Objects.equals(result, "") ? enumValue : result;
     }
 
+    // todo extract to bean
     public static String convertPropertiesToString(Properties properties) {
         StringWriter writer = new StringWriter();
         String result = null;
@@ -157,6 +163,7 @@ public final class LocaleHelper {
         return result;
     }
 
+    // todo extract to bean
     protected static Properties loadProperties(String localeBundle) {
         StringReader reader = new StringReader(localeBundle);
         Properties localeProperties = null;
@@ -169,6 +176,7 @@ public final class LocaleHelper {
         return localeProperties;
     }
 
+    // todo extract to bean
     public static boolean isLocalizedValueDefined(String localeBundle) {
         return getLocalizedName(localeBundle) != null;
     }

@@ -17,34 +17,22 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, UnsubscribableDsWrapper {
+public class ItemWrapper implements Item, UnsubscribableDsWrapper {
 
     protected Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();
 
-    // lazily initialized listeners list
-    protected List<PropertySetChangeListener> listeners = null;
-
     protected Object item;
     protected MetaClass metaClass;
-    protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
-    protected WeakCollectionChangeListener weakCollectionChangeListener;
-
-    public ItemWrapper(Object item, MetaClass metaClass) {
-        this(item, metaClass, AppBeans.<MetadataTools>get(MetadataTools.NAME).getPropertyPaths(metaClass));
-    }
 
     public ItemWrapper(Object item, MetaClass metaClass, Collection<MetaPropertyPath> properties) {
         this.item = item;
@@ -52,25 +40,6 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, Unsubs
 
         for (MetaPropertyPath property : properties) {
             this.properties.put(property, createPropertyWrapper(item, property));
-        }
-
-        if (item instanceof CollectionDatasource) {
-            cdsCollectionChangeListener = e -> fireItemPropertySetChanged();
-
-            CollectionDatasource datasource = (CollectionDatasource) item;
-            weakCollectionChangeListener = new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener);
-            //noinspection unchecked
-            datasource.addCollectionChangeListener(weakCollectionChangeListener);
-        }
-    }
-
-    protected void fireItemPropertySetChanged() {
-        if (listeners != null) {
-            PropertySetChangeEvent event = new PropertySetChangeEvent();
-
-            for (PropertySetChangeListener listener : listeners) {
-                listener.itemPropertySetChange(event);
-            }
         }
     }
 
@@ -82,12 +51,8 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, Unsubs
     public Property getItemProperty(Object id) {
         if (id instanceof MetaPropertyPath) {
             return properties.get(id);
-        } else if (id instanceof MetaProperty) {
-            final MetaProperty metaProperty = (MetaProperty) id;
-            return properties.get(new MetaPropertyPath(metaClass, metaProperty));
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -106,46 +71,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, Unsubs
     }
 
     @Override
-    public void addPropertySetChangeListener(PropertySetChangeListener listener) {
-        if (listeners == null) {
-            listeners = new LinkedList<>();
-        }
-
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
-    }
-
-    @Override
-    public void addListener(PropertySetChangeListener listener) {
-        addPropertySetChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertySetChangeListener(PropertySetChangeListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-
-            if (listeners.isEmpty()) {
-                listeners = null;
-            }
-        }
-    }
-
-    @Override
-    public void removeListener(PropertySetChangeListener listener) {
-        removePropertySetChangeListener(listener);
-    }
-
-    @Override
     public void unsubscribe() {
-        if (item instanceof CollectionDatasource) {
-            CollectionDatasource datasource = (CollectionDatasource) item;
-            // noinspection unchecked
-            datasource.removeCollectionChangeListener(weakCollectionChangeListener);
-            weakCollectionChangeListener = null;
-        }
-
         item = null;
         metaClass = null;
 
@@ -153,16 +79,9 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, Unsubs
         properties.clear();
     }
 
-    private class PropertySetChangeEvent implements Item.PropertySetChangeEvent {
-        @Override
-        public Item getItem() {
-            return ItemWrapper.this;
-        }
-    }
-
     @Override
     public String toString() {
-        final Entity entity = getItem();
+        Entity entity = getItem();
         return entity == null ? "" : entity.getInstanceName();
     }
 

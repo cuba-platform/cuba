@@ -73,7 +73,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
 
     @Override
     public Object getValue() {
-        final Instance instance = getInstance();
+        Instance instance = getInstance();
         return instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
     }
 
@@ -92,7 +92,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
 
     @Override
     public void setValue(Object newValue) throws Property.ReadOnlyException, Converter.ConversionException {
-        final Instance instance = getInstance();
+        Instance instance = getInstance();
 
         if (instance != null) {
             InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
