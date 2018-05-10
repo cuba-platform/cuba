@@ -100,7 +100,8 @@ public class EntityCombinedScreen extends AbstractLookup {
 
         browseDs.addItemChangeListener(e -> {
             if (e.getItem() != null) {
-                Entity reloadedItem = getDsContext().getDataSupplier().reload(e.getDs().getItem(), editDs.getView());
+                Entity reloadedItem = getDsContext().getDataSupplier().reload(
+                        e.getDs().getItem(), editDs.getView(), null, e.getDs().getLoadDynamicAttributes());
                 editDs.setItem(reloadedItem);
             }
         });
@@ -347,7 +348,8 @@ public class EntityCombinedScreen extends AbstractLookup {
 
         Entity selectedItem = browseDs.getItem();
         if (selectedItem != null) {
-            Entity reloadedItem = getDsContext().getDataSupplier().reload(selectedItem, editDs.getView());
+            Entity reloadedItem = getDsContext().getDataSupplier().reload(
+                    selectedItem, editDs.getView(), null, editDs.getLoadDynamicAttributes());
             browseDs.setItem(reloadedItem);
         } else {
             editDs.setItem(null);
