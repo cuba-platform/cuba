@@ -223,11 +223,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                     } else if (view != null && !view.containsProperty(metaProperty.getName())) {
                         continue;
                     }
-                    List<ConstraintData> existingConstraints = getConstraints(metaProperty.getRange().asClass(),
-                            constraint -> constraint.getCheckType().memory());
-                    if (CollectionUtils.isNotEmpty(existingConstraints)) {
+                    if (hasInMemoryConstraints(metaProperty.getRange().asClass(),
+                            ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
                         throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                                "even though there are active constraints for the related entities.", entity),
+                                "even though there are active READ/ALL constraints for the related entities.", entity),
                                 entity.getMetaClass().getName());
                     }
                 }
