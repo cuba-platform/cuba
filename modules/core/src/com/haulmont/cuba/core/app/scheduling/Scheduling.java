@@ -425,6 +425,12 @@ public class Scheduling implements SchedulingAPI {
     @Override
     public void runOnce(ScheduledTask task) {
         try {
+            Integer priority = getServerPriority(task, serverInfo.getServerId());
+            if (priority == null) {
+                log.trace("{}: not in permitted hosts or not a master", task);
+                return;
+            }
+
             lastStartCache.put(task, timeSource.currentTimeMillis());
             runner.runOnceTask(task, timeSource.currentTimeMillis(), getUserSession(task));
         } catch (LoginException e) {
