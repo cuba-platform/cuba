@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.factories;
 
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentGenerationContext;
@@ -30,8 +31,8 @@ public class DefaultComponentGenerationStrategy extends AbstractComponentGenerat
     public static final String NAME = "cuba_DefaultMetaComponentStrategy";
 
     @Inject
-    public DefaultComponentGenerationStrategy(Messages messages) {
-        super(messages);
+    public DefaultComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
+        super(messages, dynamicAttributesTools);
     }
 
     @Inject

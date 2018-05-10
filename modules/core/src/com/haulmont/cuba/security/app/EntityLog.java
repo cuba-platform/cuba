@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
@@ -68,6 +69,9 @@ public class EntityLog implements EntityLogAPI {
     protected ReferenceToEntitySupport referenceToEntitySupport;
     @Inject
     protected DynamicAttributes dynamicAttributes;
+    @Inject
+    protected DynamicAttributesTools dynamicAttributesTools;
+
     @Inject
     protected DataManager dataManager;
     @Inject
@@ -366,7 +370,7 @@ public class EntityLog implements EntityLogAPI {
         return attributes.stream()
                 .filter(attributeName -> {
                     if (DynamicAttributesUtils.isDynamicAttribute(attributeName)) {
-                        return DynamicAttributesUtils.getMetaPropertyPath(metaClass, attributeName) != null;
+                        return dynamicAttributesTools.getMetaPropertyPath(metaClass, attributeName) != null;
                     } else {
                         return metaClass.getPropertyPath(attributeName) != null;
                     }

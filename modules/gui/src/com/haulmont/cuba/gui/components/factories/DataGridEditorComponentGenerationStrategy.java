@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.factories;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -39,8 +40,8 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     public static final String NAME = "cuba_DataGridEditorMetaComponentStrategy";
 
     @Inject
-    public DataGridEditorComponentGenerationStrategy(Messages messages) {
-        super(messages);
+    public DataGridEditorComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
+        super(messages, dynamicAttributesTools);
     }
 
     @Inject

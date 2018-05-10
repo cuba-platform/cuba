@@ -17,20 +17,15 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Joiner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class DynamicAttributesUtils {
     private DynamicAttributesUtils() {
@@ -49,15 +44,8 @@ public final class DynamicAttributesUtils {
      */
     @Nullable
     public static MetaPropertyPath getMetaPropertyPath(MetaClass metaClass, String attributeCode) {
-        attributeCode = decodeAttributeCode(attributeCode);
-        CategoryAttribute attribute = AppBeans.get(DynamicAttributes.NAME, DynamicAttributes.class)
-                .getAttributeForMetaClass(metaClass, attributeCode);
-
-        if (attribute != null) {
-            return getMetaPropertyPath(metaClass, attribute);
-        } else {
-            return null;
-        }
+        return AppBeans.get(DynamicAttributesTools.NAME, DynamicAttributesTools.class)
+                .getMetaPropertyPath(metaClass, attributeCode);
     }
 
     /**
@@ -65,21 +53,8 @@ public final class DynamicAttributesUtils {
      */
     @Nullable
     public static MetaPropertyPath getMetaPropertyPath(MetaClass metaClass, UUID attributeId) {
-        Collection<CategoryAttribute> attributes = AppBeans.get(DynamicAttributes.NAME, DynamicAttributes.class)
-                .getAttributesForMetaClass(metaClass);
-        CategoryAttribute attribute = null;
-        for (CategoryAttribute theAttribute : attributes) {
-            if (theAttribute.getId().equals(attributeId)) {
-                attribute = theAttribute;
-                break;
-            }
-        }
-
-        if (attribute != null) {
-            return getMetaPropertyPath(metaClass, attribute);
-        } else {
-            return null;
-        }
+        return AppBeans.get(DynamicAttributesTools.NAME, DynamicAttributesTools.class)
+                .getMetaPropertyPath(metaClass, attributeId);
     }
 
     /**
@@ -143,16 +118,7 @@ public final class DynamicAttributesUtils {
      * for non-collection dynamic attribute a formatted value is returned
      */
     public static String getDynamicAttributeValueAsString(MetaProperty metaProperty, Object value) {
-        CategoryAttribute categoryAttribute = getCategoryAttribute(metaProperty);
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-        if (categoryAttribute.getIsCollection()) {
-            if (value instanceof Collection) {
-                List<String> valuesList = ((Collection<Object>) value).stream()
-                        .map(item -> metadataTools.format(item, metaProperty))
-                        .collect(Collectors.toList());
-                return Joiner.on(", ").join(valuesList);
-            }
-        }
-        return metadataTools.format(value, metaProperty);
+        return AppBeans.get(DynamicAttributesTools.NAME, DynamicAttributesTools.class)
+                .getDynamicAttributeValueAsString(metaProperty, value);
     }
 }

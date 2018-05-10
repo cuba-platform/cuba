@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
@@ -74,6 +75,9 @@ public class RuntimePropertiesFrame extends AbstractFrame {
 
     @Inject
     protected DynamicAttributes dynamicAttributes;
+
+    @Inject
+    protected DynamicAttributesTools dynamicAttributesTools;
 
     @Inject
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
@@ -303,7 +307,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
     protected void loadEditable(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
         if (fieldGroup.isEditable()) {
             MetaClass metaClass = rds.resolveCategorizedEntityClass();
-            MetaPropertyPath propertyPath = DynamicAttributesUtils.getMetaPropertyPath(
+            MetaPropertyPath propertyPath = dynamicAttributesTools.getMetaPropertyPath(
                     metaClass, field.getProperty());
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
             boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());

@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -48,9 +49,11 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Messages messages;
     protected ComponentsFactory componentsFactory;
+    protected DynamicAttributesTools dynamicAttributesTools;
 
-    public AbstractComponentGenerationStrategy(Messages messages) {
+    public AbstractComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
         this.messages = messages;
+        this.dynamicAttributesTools = dynamicAttributesTools;
     }
 
     protected Component createComponentInternal(ComponentGenerationContext context) {
@@ -397,7 +400,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
 
         if (mpp == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
-            mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+            mpp = dynamicAttributesTools.getMetaPropertyPath(metaClass, property);
         }
 
         return mpp;

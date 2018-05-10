@@ -23,6 +23,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
@@ -76,6 +77,9 @@ public class MetadataTools {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected DynamicAttributesTools dynamicAttributesTools;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -799,7 +803,7 @@ public class MetadataTools {
 
         MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(propertyPath);
         if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
-            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyPath);
+            metaPropertyPath = dynamicAttributesTools.getMetaPropertyPath(metaClass, propertyPath);
         }
         return metaPropertyPath;
     }
