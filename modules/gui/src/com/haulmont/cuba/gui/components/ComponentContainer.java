@@ -25,7 +25,18 @@ import java.util.Collection;
  */
 public interface ComponentContainer extends Component {
     void add(Component childComponent);
+    default void add(Component... childComponents) {
+        for (Component component : childComponents) {
+            add(component);
+        }
+    }
+
     void remove(Component childComponent);
+    default void remove(Component... childComponents) {
+        for (Component component : childComponents) {
+            remove(component);
+        }
+    }
 
     void removeAll();
 
