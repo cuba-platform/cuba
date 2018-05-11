@@ -668,7 +668,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                                     return !metadata.getTools().isLob(prop) ||
                                             persistenceManagerService.supportsLobSortingAndFiltering(storeName);
                                 }
-                                return true;
+                                return false;
                             })
                             .map(MetadataObject::getName)
                             .map(propName -> propertyPath.toString().concat(".").concat(propName))
