@@ -112,7 +112,7 @@ public class RunnerBean implements Runner {
     }
 
     @Override
-    public void runOnceTask(ScheduledTask task, long now, @Nullable UserSession userSession) {
+    public void runTaskOnce(ScheduledTask task, long now, @Nullable UserSession userSession) {
         runTask(task, now, true, userSession);
     }
 
@@ -204,7 +204,7 @@ public class RunnerBean implements Runner {
             }
 
             if (manually) {
-                sb.append("{Executed manually}");
+                sb.append("\n").append("{Executed manually}");
             }
             execution.setResult(sb.toString());
 

@@ -121,7 +121,7 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     @Override
-    public void runOnce(ScheduledTask task) {
+    public void runOnce(ScheduledTask task) throws RuntimeException {
         scheduling.runOnce(task);
     }
 

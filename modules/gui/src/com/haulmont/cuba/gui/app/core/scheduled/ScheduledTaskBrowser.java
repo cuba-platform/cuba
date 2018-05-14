@@ -27,11 +27,15 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
 
 public class ScheduledTaskBrowser extends AbstractWindow {
+
+    private static final Logger log = LoggerFactory.getLogger(ScheduledTaskBrowser.class);
 
     @Inject
     protected CollectionDatasource<ScheduledTask, UUID> tasksDs;
@@ -66,12 +70,10 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
         activateBtn.setEnabled(false);
 
-        final ShowExecutionsAction showExecutionsAction = new ShowExecutionsAction();
-        showExecutionsAction.setEnabled(false);
+        ShowExecutionsAction showExecutionsAction = new ShowExecutionsAction();
         tasksTable.addAction(showExecutionsAction);
 
-        final ExecuteOnceAction executeOnceAction = new ExecuteOnceAction();
-        executeOnceAction.setEnabled(false);
+        ExecuteOnceAction executeOnceAction = new ExecuteOnceAction();
         tasksTable.addAction(executeOnceAction);
 
         tasksDs.addItemChangeListener(e -> {
@@ -153,8 +155,15 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         @Override
         public void actionPerform(Component component) {
             ScheduledTask task = tasksTable.getSingleSelected();
-            if (task != null) {
-                service.runOnce(task);
+            try {
+                if (task != null) {
+                    service.runOnce(task);
+                }
+            } catch (RuntimeException e) {
+                showNotification(getMessage("errorNotification.caption"),
+                                 getMessage("errorNotification.message"),
+                                 NotificationType.ERROR);
+                log.error(e.getMessage());
             }
         }
 

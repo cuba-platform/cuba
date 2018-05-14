@@ -32,5 +32,5 @@ public interface Runner {
 
     void runTask(ScheduledTask task, long now, @Nullable UserSession userSession);
 
-    void runOnceTask(ScheduledTask task, long now, @Nullable UserSession userSession);
+    void runTaskOnce(ScheduledTask task, long now, @Nullable UserSession userSession);
 }
