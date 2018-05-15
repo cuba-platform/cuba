@@ -111,7 +111,7 @@ public class WebExportDisplay implements ExportDisplay {
             resource.setMIMEType(FileTypesHelper.getMIMEType(resourceName));
         }
 
-        if (showNewWindow && isBrowserSupportsPopups()) {
+        if ((showNewWindow && isBrowserSupportsPopups()) || isIOS()) {
             fileDownloader.viewDocument(resource);
         } else {
             fileDownloader.downloadFile(resource);
@@ -183,5 +183,9 @@ public class WebExportDisplay implements ExportDisplay {
 
     public boolean isBrowserSupportsPopups() {
         return !Page.getCurrent().getWebBrowser().isSafari();
+    }
+
+    protected boolean isIOS() {
+        return Page.getCurrent().getWebBrowser().isIOS();
     }
 }
