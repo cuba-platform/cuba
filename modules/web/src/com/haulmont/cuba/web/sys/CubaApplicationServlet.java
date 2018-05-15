@@ -125,11 +125,17 @@ public class CubaApplicationServlet extends VaadinServlet {
         int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
         int sessionPingPeriod = sessionExpirationTimeout / 3;
 
-        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
+        if (webConfig.getUiHeartbeatIntervalSec() > 0) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(webConfig.getUiHeartbeatIntervalSec()));
+        } else if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
             if (sessionPingPeriod > 0) {
                 // configure Vaadin heartbeat according to web config
                 initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
             }
+        }
+
+        if (webConfig.getCloseIdleHttpSessions()) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
         }
 
         if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.PARAMETER_WIDGETSET))) {
