@@ -289,6 +289,22 @@ public interface WebConfig extends Config {
     int getAppLogMaxItemsCount();
 
     /**
+     * @return the interval of the heartbeat requests for Web Client UI. If not set Web Client uses calculated
+     * value {@link #getHttpSessionExpirationTimeoutSec()} / 3.
+     */
+    @Property("cuba.web.uiHeartbeatIntervalSec")
+    @DefaultInt(-1)
+    int getUiHeartbeatIntervalSec();
+
+    /**
+     * @return If the it is enabled Web Client closes the UIs and the session after the
+     * {@link #getHttpSessionExpirationTimeoutSec()} expires after the last non-heartbeat request.
+     */
+    @Property("cuba.web.closeIdleHttpSessions")
+    @DefaultBoolean(false)
+    boolean getCloseIdleHttpSessions();
+
+    /**
      * @return true if push should use long polling transport instead of websocket+xhr
      */
     @Property("cuba.web.pushLongPolling")
