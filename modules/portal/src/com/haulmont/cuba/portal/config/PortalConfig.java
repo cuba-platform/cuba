@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
@@ -29,6 +30,14 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
  */
 @Source(type = SourceType.APP)
 public interface PortalConfig extends Config {
+
+    /**
+     * Whether to use local invocations instead of HTTPInvoker. Makes sense for improving performance,
+     * if the WEB and CORE applications started on the same JVM (same Tomcat instance).
+     */
+    @Property("cuba.useLocalServiceInvocation")
+    @DefaultBoolean(true)
+    boolean getUseLocalServiceInvocation();
 
     @Property("cuba.portal.anonymousUserLogin")
     String getAnonymousUserLogin();
