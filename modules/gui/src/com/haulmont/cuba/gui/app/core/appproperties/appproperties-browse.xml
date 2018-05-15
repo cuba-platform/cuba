@@ -46,7 +46,8 @@
                 <textField id="searchField" />
                 <button action="paramsTable.refresh"/>
                 <button action="paramsTable.editValue"/>
-                <button id="exportBtn" invoke="exportAsSql" icon="icons/download.png" description="mainMsg://actions.Export"/>
+                <button id="exportBtn" enable="false" invoke="exportAsSql" icon="icons/download.png"
+                        description="mainMsg://actions.Export"/>
             </buttonsPanel>
             <actions>
                 <action id="editValue" invoke="editValue" enable="false"
