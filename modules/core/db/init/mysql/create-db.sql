@@ -972,7 +972,7 @@ create index IDX_SESSION_LOG_STARTED_TS on SEC_SESSION_LOG (STARTED_TS DESC)^
 /**********************************************************************************************/
 
 drop function if exists newid^
-create function newid() returns varchar(32) not deterministic
+create function newid() returns varchar(32) not deterministic no sql
 return replace(uuid(), '-', '')^
 
 /**********************************************************************************************/
