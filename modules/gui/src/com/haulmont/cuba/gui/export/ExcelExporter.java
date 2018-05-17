@@ -59,6 +59,8 @@ public class ExcelExporter {
 
     private static final int SPACE_COUNT = 10;
 
+    public static final int MAX_ROW_COUNT = 65535;
+
     protected HSSFWorkbook wb;
 
     protected HSSFFont boldFont;
@@ -216,6 +218,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : ds.getRootItemIds()) {
+                    if (r >= MAX_ROW_COUNT) {
+                        break;
+                    }
+
                     r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
                 }
             } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
@@ -225,6 +231,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object item : ds.rootGroups()) {
+                    if (r >= MAX_ROW_COUNT) {
+                        break;
+                    }
+
                     r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
                 }
             } else {
@@ -232,6 +242,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : datasource.getItemIds()) {
+                    if (r == MAX_ROW_COUNT) {
+                        break;
+                    }
+
                     createRow(table, columns, 0, ++r, itemId);
                 }
             }
@@ -343,6 +357,10 @@ public class ExcelExporter {
             }
         } else {
             for (Object itemId : datasource.getItemIds()) {
+                if (r == MAX_ROW_COUNT) {
+                    break;
+                }
+
                 createDataGridRow(dataGrid, columns, 0, ++r, itemId);
             }
         }
@@ -516,6 +534,11 @@ public class ExcelExporter {
         if (startColumn >= columns.size()) {
             return;
         }
+
+        if (rowNumber > MAX_ROW_COUNT) {
+            return;
+        }
+
         HSSFRow row = sheet.createRow(rowNumber);
         Instance instance = table.getDatasource().getItem(itemId);
 

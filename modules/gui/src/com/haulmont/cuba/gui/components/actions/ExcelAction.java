@@ -177,6 +177,10 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
 
         if (listComponent.getSelected().isEmpty() || listComponent.getDatasource().size() <= 1) {
             export(ExportMode.ALL_ROWS);
+
+            if (listComponent.getDatasource().size() > (ExcelExporter.MAX_ROW_COUNT + 1)) {
+                showMaxRowsWarningNotification();
+            }
         } else {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
             String caption = messages.getMainMessage("actions.exportSelectedCaption");
@@ -193,6 +197,10 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
                 @Override
                 public void actionPerform(Component component) {
                     export(ExportMode.ALL_ROWS);
+
+                    if (listComponent.getDatasource().size() > (ExcelExporter.MAX_ROW_COUNT + 1)) {
+                        showMaxRowsWarningNotification();
+                    }
                 }
             };
             exportAllAction.setCaption(messages.getMainMessage(exportAllAction.getId()));
@@ -205,6 +213,13 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
             Frame frame = listComponent.getFrame();
             frame.showOptionDialog(title, caption, MessageType.CONFIRMATION, actions);
         }
+    }
+
+    protected void showMaxRowsWarningNotification(){
+        listComponent.getFrame().showNotification(
+                messages.getMainMessage("actions.warningExport.title"),
+                messages.getMainMessage("actions.warningExport.message"),
+                Frame.NotificationType.WARNING);
     }
 
     /**
