@@ -1878,7 +1878,7 @@ public class DesktopWindowManager extends WindowManager {
         addShortcuts(window, openType);
     }
 
-    public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
+    public void checkModificationsAndCloseAll(Runnable runIfOk, @Nullable Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
             if (!disableSavingScreenHistory) {
@@ -1896,7 +1896,12 @@ public class DesktopWindowManager extends WindowManager {
                 recursiveFramesClose = false;
             }
 
-            if (window.getDsContext() != null && window.getDsContext().isModified()) {
+            if (window instanceof WrappedWindow
+                    && ((WrappedWindow) window).getWrapper() instanceof Window.Committable) {
+                WrappedWindow wrappedWindow = (WrappedWindow) window;
+                modified = ((Window.Committable) wrappedWindow.getWrapper()).isModified();
+            } else if (window.getDsContext() != null
+                    && window.getDsContext().isModified()) {
                 modified = true;
             }
         }
