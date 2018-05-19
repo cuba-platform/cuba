@@ -412,7 +412,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 Boolean.parseBoolean(AppContext.getProperty("cuba.enableDeleteStatementInSoftDeleteMode"));
         if (!enableDeleteInSoftDeleteMode && entityManager.isSoftDeletion() && isDeleteQuery) {
             if (SoftDelete.class.isAssignableFrom(referenceClass)) {
-                throw new UnsupportedOperationException("Delete queries are not supported with enabled soft deletion");
+                throw new UnsupportedOperationException("Delete queries are not supported with enabled soft deletion. " +
+                        "Use 'cuba.enableDeleteStatementInSoftDeleteMode' application property to roll back to legacy behavior.");
             }
         }
         // In some cache configurations (in particular, when shared cache is on, but for some entities cache is set to ISOLATED),
