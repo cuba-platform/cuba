@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.ScheduledTaskExecuteException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -159,11 +160,11 @@ public class ScheduledTaskBrowser extends AbstractWindow {
                 if (task != null) {
                     service.runOnce(task);
                 }
-            } catch (RuntimeException e) {
+            } catch (ScheduledTaskExecuteException e) {
+                log.error("Can't execute {}: not in permitted hosts or not a master.", e.getMessage());
                 showNotification(getMessage("errorNotification.caption"),
                                  getMessage("errorNotification.message"),
                                  NotificationType.ERROR);
-                log.error(e.getMessage());
             }
         }
 

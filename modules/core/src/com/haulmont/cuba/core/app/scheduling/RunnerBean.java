@@ -204,7 +204,7 @@ public class RunnerBean implements Runner {
             }
 
             if (manually) {
-                sb.append("\n").append("{Executed manually}");
+                sb.append("\n{Executed manually}");
             }
             execution.setResult(sb.toString());
 

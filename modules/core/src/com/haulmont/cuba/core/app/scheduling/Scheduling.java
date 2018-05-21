@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ScheduledTaskExecuteException;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
@@ -423,17 +424,20 @@ public class Scheduling implements SchedulingAPI {
     }
 
     @Override
-    public void runOnce(ScheduledTask task) throws RuntimeException {
+    public void runOnce(ScheduledTask task) {
+        UserSession userSession;
         try {
-            Integer priority = getServerPriority(task, serverInfo.getServerId());
-            if (priority == null) {
-                throw new RuntimeException(task + ": not in permitted hosts or not a master");
-            }
-
-            lastStartCache.put(task, timeSource.currentTimeMillis());
-            runner.runTaskOnce(task, timeSource.currentTimeMillis(), getUserSession(task));
+            userSession = getUserSession(task);
         } catch (LoginException e) {
-            log.error("Unable to run the task: {}", task, e);
+            throw new RuntimeException("Unable to obtain user session", e);
         }
+
+        Integer priority = getServerPriority(task, serverInfo.getServerId());
+        if (priority == null) {
+            throw new ScheduledTaskExecuteException(task.toString());
+        }
+
+        lastStartCache.put(task, timeSource.currentTimeMillis());
+        runner.runTaskOnce(task, timeSource.currentTimeMillis(), userSession);
     }
 }
