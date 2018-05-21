@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
@@ -26,39 +25,48 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRowsCount;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import javax.inject.Inject;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
     protected static final String TABLE_ROWS_COUNT_STYLENAME = "c-table-rows-count";
 
-    protected CollectionDatasource datasource;
+    protected Messages messages;
+
+    protected ListComponent owner;
+
     protected boolean refreshing;
     protected State state;
     protected State lastState;
     protected int start;
     protected int size;
-    protected ListComponent owner;
     protected boolean samePage;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected WeakCollectionChangeListener weakCollectionChangeListener;
-
-    protected List<VisibilityChangeListener> visibilityChangeListeners;
+    private RowsCountTarget target;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
         component.setStyleName(TABLE_ROWS_COUNT_STYLENAME);
+    }
 
-        component.getFirstButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-first.png"));
-        component.getPrevButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-prev.png"));
-        component.getNextButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-next.png"));
-        component.getLastButton().setIcon(WebComponentsHelper.getIcon("icons/rows-count-last.png"));
+    @Inject
+    public void setMessages(Messages messages) {
+        this.messages = messages;
+    }
+
+    @Inject
+    public void setIconResolver(IconResolver iconResolver) {
+        // todo extract icon contants
+        component.getFirstButton().setIcon(iconResolver.getIconResource("icons/rows-count-first.png"));
+        component.getPrevButton().setIcon(iconResolver.getIconResource("icons/rows-count-prev.png"));
+        component.getNextButton().setIcon(iconResolver.getIconResource("icons/rows-count-next.png"));
+        component.getLastButton().setIcon(iconResolver.getIconResource("icons/rows-count-last.png"));
     }
 
     @Override
@@ -68,16 +76,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public CollectionDatasource getDatasource() {
-        return datasource;
+        return owner != null ? owner.getDatasource() : null;
     }
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
-        if (this.datasource != null) {
+        if (getDatasource() != null) {
             //noinspection unchecked
-            this.datasource.removeCollectionChangeListener(weakCollectionChangeListener);
+            getDatasource().removeCollectionChangeListener(weakCollectionChangeListener);
             weakCollectionChangeListener = null;
         } else {
             //noinspection unchecked
@@ -88,8 +96,6 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             };
 
         }
-
-        this.datasource = datasource;
 
         weakCollectionChangeListener = new WeakCollectionChangeListener(datasource, collectionChangeListener);
         //noinspection unchecked
@@ -116,12 +122,22 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.owner = owner;
     }
 
+    @Override
+    public RowsCountTarget getRowsCountTarget() {
+        return target;
+    }
+
+    @Override
+    public void setRowsCountTarget(RowsCountTarget target) {
+        this.target = target;
+    }
+
     protected void onPrevClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
         refreshDatasource(ds);
@@ -132,11 +148,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onNextClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
         int firstResult = ds.getFirstResult();
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
         refreshDatasource(ds);
@@ -155,11 +171,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onFirstClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
         ds.setFirstResult(0);
         refreshDatasource(ds);
         if (owner instanceof WebAbstractTable) {
@@ -169,12 +185,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onLastClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
-        int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
+        int count = ((CollectionDatasource.SupportsPaging) getDatasource()).getCount();
         int itemsToDisplay = count % ds.getMaxResults();
         if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
 
@@ -197,28 +213,28 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onLinkClick() {
-        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging)) {
+        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
-        int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        int count = ((CollectionDatasource.SupportsPaging) getDatasource()).getCount();
         component.getCountButton().setCaption(String.valueOf(count));
         component.getCountButton().addStyleName("c-paging-count-number");
         component.getCountButton().setEnabled(false);
     }
 
     protected void onCollectionChanged() {
-        if (datasource == null) {
+        if (getDatasource() == null) {
             return;
         }
 
         String msgKey;
-        size = datasource.size();
+        size = getDatasource().size();
         start = 0;
 
         boolean refreshSizeButton = false;
-        if (datasource instanceof CollectionDatasource.SupportsPaging) {
-            CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        if (getDatasource() instanceof CollectionDatasource.SupportsPaging) {
+            CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
             if (samePage) {
                 state = lastState == null ? State.FIRST_COMPLETE : lastState;
                 start = ds.getFirstResult();
@@ -303,7 +319,6 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             default:
                 throw new UnsupportedOperationException();
         }
-        Messages messages = AppBeans.get(Messages.NAME);
 
         component.getLabel().setValue(messages.formatMainMessage(msgKey, countValue));
 
@@ -324,31 +339,20 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public void addVisibilityChangeListener(VisibilityChangeListener listener) {
-        if (visibilityChangeListeners == null) {
-            visibilityChangeListeners = new LinkedList<>();
-        }
-
-        if (!visibilityChangeListeners.contains(listener)) {
-            visibilityChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(VisibilityChangeListener.class, listener);
     }
 
     @Override
     public void removeVisibilityChangeListener(VisibilityChangeListener listener) {
-        if (!visibilityChangeListeners.contains(listener)) {
-            visibilityChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(VisibilityChangeListener.class, listener);
     }
 
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
 
-        if (visibilityChangeListeners != null) {
-            VisibilityChangeEvent event = new VisibilityChangeEvent(this, visible);
-            for (VisibilityChangeListener listener : new ArrayList<>(visibilityChangeListeners)) {
-                listener.componentVisibilityChanged(event);
-            }
-        }
+        getEventRouter().fireEvent(VisibilityChangeListener.class,
+                VisibilityChangeListener::componentVisibilityChanged,
+                new VisibilityChangeEvent(this, visible));
     }
 }

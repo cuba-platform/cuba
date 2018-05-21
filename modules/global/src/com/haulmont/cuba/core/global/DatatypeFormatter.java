@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import org.springframework.stereotype.Component;
 
@@ -42,13 +42,15 @@ public class DatatypeFormatter {
 
     @Inject
     protected UserSessionSource uss;
+    @Inject
+    protected DatatypeRegistry datatypeRegistry;
 
     /**
      * Format Date (date without time) using {@code dateFormat} string specified in the main message pack.
      * @return string representation or empty string if the value is null
      */
     public String formatDate(@Nullable Date value) {
-        return Datatypes.getNN(java.sql.Date.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(java.sql.Date.class).format(value, uss.getLocale());
     }
 
     /**
@@ -56,7 +58,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatTime(@Nullable Date value) {
-        return Datatypes.getNN(Time.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(Time.class).format(value, uss.getLocale());
     }
 
     /**
@@ -66,7 +68,7 @@ public class DatatypeFormatter {
      */
     public String formatDateTime(@Nullable Date value) {
         TimeZone timeZone = uss.getUserSession().getTimeZone();
-        Datatype<Date> datatype = Datatypes.getNN(Date.class);
+        Datatype<Date> datatype = datatypeRegistry.getNN(Date.class);
         if (datatype instanceof TimeZoneAwareDatatype) {
             return ((TimeZoneAwareDatatype) datatype).format(value, uss.getLocale(), timeZone);
         }
@@ -78,7 +80,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatDouble(@Nullable Double value) {
-        return Datatypes.getNN(Double.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(Double.class).format(value, uss.getLocale());
     }
 
     /**
@@ -86,7 +88,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatBigDecimal(@Nullable BigDecimal value) {
-        return Datatypes.getNN(BigDecimal.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(BigDecimal.class).format(value, uss.getLocale());
     }
 
     /**
@@ -94,7 +96,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatBoolean(@Nullable Boolean value) {
-        return Datatypes.getNN(Boolean.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(Boolean.class).format(value, uss.getLocale());
     }
 
     /**
@@ -102,7 +104,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatInteger(@Nullable Integer value) {
-        return Datatypes.getNN(Integer.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(Integer.class).format(value, uss.getLocale());
     }
 
     /**
@@ -110,7 +112,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatLong(@Nullable Long value) {
-        return Datatypes.getNN(Long.class).format(value, uss.getLocale());
+        return datatypeRegistry.getNN(Long.class).format(value, uss.getLocale());
     }
 
     /**
@@ -119,7 +121,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Date parseDate(String str) throws ParseException {
-        return Datatypes.getNN(java.sql.Date.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(java.sql.Date.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -128,7 +130,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Date parseTime(String str) throws ParseException {
-        return Datatypes.getNN(Time.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(Time.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -139,7 +141,7 @@ public class DatatypeFormatter {
     @Nullable
     public Date parseDateTime(String str) throws ParseException {
         TimeZone timeZone = uss.getUserSession().getTimeZone();
-        Datatype<Date> datatype = Datatypes.getNN(Date.class);
+        Datatype<Date> datatype = datatypeRegistry.getNN(Date.class);
         if (datatype instanceof TimeZoneAwareDatatype) {
             return (Date)((TimeZoneAwareDatatype) datatype).parse(str, uss.getLocale(), timeZone);
         }
@@ -152,7 +154,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Double parseDouble(String str) throws ParseException {
-        return Datatypes.getNN(Double.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(Double.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -161,7 +163,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public BigDecimal parseBigDecimal(String str) throws ParseException {
-        return Datatypes.getNN(BigDecimal.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(BigDecimal.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -170,7 +172,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Boolean parseBoolean(String str) throws ParseException {
-        return Datatypes.getNN(Boolean.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(Boolean.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -179,7 +181,7 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Integer parseInteger(String str) throws ParseException {
-        return Datatypes.getNN(Integer.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(Integer.class).parse(str, uss.getLocale());
     }
 
     /**
@@ -188,6 +190,6 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Long parseLong(String str) throws ParseException {
-        return Datatypes.getNN(Long.class).parse(str, uss.getLocale());
+        return datatypeRegistry.getNN(Long.class).parse(str, uss.getLocale());
     }
 }

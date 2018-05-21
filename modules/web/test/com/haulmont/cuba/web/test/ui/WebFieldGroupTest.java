@@ -60,7 +60,8 @@ public class WebFieldGroupTest extends FieldGroupTest {
         return new WebComponentsFactory() {
             @Override
             public List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
-                DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages);
+                // vaadin8 fix
+                DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages, null);
                 strategy.setComponentsFactory(this);
                 return Collections.singletonList(strategy);
             }

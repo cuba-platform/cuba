@@ -61,7 +61,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
     @Override
     public HierarchicalDatasource getDatasource() {
-        return (HierarchicalDatasource) super.getDatasource();
+        return (HierarchicalDatasource) datasource;
     }
 
     @Override

@@ -832,7 +832,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 action = new ShowInfoAction();
                 addAction(action);
             }
-            action.setDatasource(datasource);
         }
     }
 
@@ -844,16 +843,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void setCaption(String caption) {
         getComposition().setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
     }
 
     @Override

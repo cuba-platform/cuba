@@ -32,6 +32,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
@@ -43,6 +44,7 @@ import com.vaadin.v7.data.util.HierarchicalContainer;
 import com.vaadin.v7.ui.Field;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -73,6 +75,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected Object focusColumn;
     protected Object focusItem;
     protected Runnable beforePaintListener;
+    protected Function<Object, Resource> iconProvider;
+    protected SpecificVariablesHandler specificVariablesHandler;
 
     public CubaTreeTable() {
         //noinspection Convert2Lambda
@@ -394,7 +398,20 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
             markAsDirty();
         }
 
+        if (specificVariablesHandler != null) {
+            clientNeedsContentRefresh = specificVariablesHandler.handleSpecificVariables(variables) || clientNeedsContentRefresh;
+        }
+
         return clientNeedsContentRefresh;
+    }
+
+    @Override
+    public Resource getItemIcon(Object itemId) {
+        if (iconProvider != null) {
+            return iconProvider.apply(itemId);
+        }
+
+        return super.getItemIcon(itemId);
     }
 
     @Override
@@ -713,6 +730,26 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     }
 
     @Override
+    public Function<Object, Resource> getIconProvider() {
+        return iconProvider;
+    }
+
+    @Override
+    public void setIconProvider(Function<Object, Resource> iconProvider) {
+        this.iconProvider = iconProvider;
+    }
+
+    @Override
+    public void setSpecificVariablesHandler(SpecificVariablesHandler specificVariablesHandler) {
+        this.specificVariablesHandler = specificVariablesHandler;
+    }
+
+    @Override
+    public SpecificVariablesHandler getSpecificVariablesHandler() {
+        return specificVariablesHandler;
+    }
+
+    @Override
     public Collection<?> getSortableContainerPropertyIds() {
         Collection<?> ids = new ArrayList<>(super.getSortableContainerPropertyIds());
         if (nonSortableProperties != null) {
@@ -889,6 +926,17 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     public void setBeforePaintListener(Runnable beforePaintListener) {
         this.beforePaintListener = beforePaintListener;
+    }
+
+    @Override
+    public void setCustomCellValueFormatter(CellValueFormatter cellValueFormatter) {
+        // todo
+    }
+
+    @Override
+    public CellValueFormatter getCustomCellValueFormatter() {
+        // todo
+        return null;
     }
 
     @Override

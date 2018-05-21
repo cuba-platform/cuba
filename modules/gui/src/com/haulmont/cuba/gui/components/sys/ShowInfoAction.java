@@ -15,35 +15,23 @@
  */
 package com.haulmont.cuba.gui.components.sys;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ShowInfoAction extends BaseAction {
 
     public static final String ACTION_ID = "showSystemInfo";
     public static final String ACTION_PERMISSION = "cuba.gui.showInfo";
 
-    private CollectionDatasource ds;
-
     public ShowInfoAction() {
         super(ACTION_ID);
-    }
-
-    public CollectionDatasource getDatasource() {
-        return ds;
-    }
-
-    public void setDatasource(CollectionDatasource ds) {
-        this.ds = ds;
     }
 
     @Override
@@ -53,20 +41,21 @@ public class ShowInfoAction extends BaseAction {
 
     @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-        if (ds == null)
-            return;
+        if (component instanceof Component.BelongToFrame
+                && component instanceof ListComponent) {
 
-        if (component instanceof Component.BelongToFrame) {
-            showInfo(ds.getItem(), ds.getMetaClass(), (Component.BelongToFrame) component);
+            Entity selectedItem = ((ListComponent) component).getSingleSelected();
+            if (selectedItem != null) {
+                showInfo(selectedItem, selectedItem.getMetaClass(), (Component.BelongToFrame) component);
+            }
         }
     }
 
     public void showInfo(Entity entity, MetaClass metaClass, Component.BelongToFrame component) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("metaClass", metaClass);
-        params.put("item", entity);
-
         Frame frame = component.getFrame();
-        frame.openWindow("sysInfoWindow", OpenType.DIALOG, params);
+        frame.openWindow("sysInfoWindow", OpenType.DIALOG,
+                ParamsMap.of(
+                        "metaClass", metaClass,
+                        "item", entity));
     }
 }

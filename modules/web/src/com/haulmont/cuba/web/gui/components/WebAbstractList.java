@@ -28,14 +28,17 @@ import java.util.*;
 
 /**
  * @param <T> type of underlying Vaadin component
+ *
+ * todo remove this class
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity>
     extends
         WebAbstractActionsHolderComponent<T>
     implements
         ListComponent<E> {
 
+    @Deprecated
     protected CollectionDatasource datasource;
 
     @Override
@@ -81,7 +84,7 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
     @SuppressWarnings("unchecked")
     @Nullable
     protected Set<Object> getSelectedItemIds() {
-        final Object value = component.getValue();
+        Object value = component.getValue();
         if (value == null) {
             return null;
         } else if (value instanceof Set) {
@@ -131,11 +134,6 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         } else {
             component.setValue(itemIds.size() > 0 ? itemIds.iterator().next() : null);
         }
-    }
-
-    @Override
-    public CollectionDatasource getDatasource() {
-        return datasource;
     }
 
     @Override

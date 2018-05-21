@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.web.gui.components.table;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.data.TableSource;
 
-public interface TableDataBinding<I> {
-    TableDataSource<I> getSource();
-    Component getComponent();
+public interface TableSourceEventsDelegate<I> {
+    void tableSourceItemSetChanged(TableSource.ItemSetChangeEvent<I> event);
 
-    void activate();
+    void tableSourcePropertyValueChanged(TableSource.ValueChangeEvent<I> event);
+
+    void tableSourceStateChanged(TableSource.StateChangeEvent<I> event);
+
+    void tableSourceSelectedItemChanged(TableSource.SelectedItemChangeEvent<I> event);
 }

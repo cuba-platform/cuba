@@ -115,7 +115,9 @@ public final class DynamicAttributesUtils {
 
     /**
      * For collection dynamic attributes the method returns a list of formatted collection items joined with the comma,
-     * for non-collection dynamic attribute a formatted value is returned
+     * for non-collection dynamic attribute a formatted value is returned.
+     *
+     * @see DynamicAttributesTools#getDynamicAttributeValueAsString(MetaProperty, Object)
      */
     public static String getDynamicAttributeValueAsString(MetaProperty metaProperty, Object value) {
         return AppBeans.get(DynamicAttributesTools.NAME, DynamicAttributesTools.class)

@@ -57,6 +57,10 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         this.datasource.addStateChangeListener(this::datasourceStateChanged);
         this.datasource.addItemChangeListener(this::datasourceItemChanged);
         this.datasource.addItemPropertyChangeListener(this::datasourceItemPropertyChanged);
+
+        if (datasource.getState() == Datasource.State.VALID) {
+            setState(BindingState.ACTIVE);
+        }
     }
 
     protected MetadataTools getMetadataTools() {

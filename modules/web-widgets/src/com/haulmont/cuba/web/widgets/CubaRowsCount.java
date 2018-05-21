@@ -19,7 +19,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
-public class CubaRowsCount extends CustomComponent {
+public class CubaRowsCount extends CustomComponent { // vaadin8 inherit from CssLayout
 
     protected Button prevButton;
     protected Button nextButton;
@@ -29,7 +29,7 @@ public class CubaRowsCount extends CustomComponent {
     protected Button countButton;
 
     public CubaRowsCount() {
-        HorizontalLayout layout = new HorizontalLayout();
+        HorizontalLayout layout = new HorizontalLayout(); // vaadin8 use CssLayout instead
         layout.setStyleName("c-paging");
         layout.setSpacing(false);
         layout.setMargin(new MarginInfo(false, false, false, true));
@@ -49,7 +49,7 @@ public class CubaRowsCount extends CustomComponent {
     }
 
     protected AbstractOrderedLayout createContentLayout() {
-        HorizontalLayout contentLayout = new HorizontalLayout();
+        HorizontalLayout contentLayout = new HorizontalLayout(); // vaadin8 use CssLayout instead
         contentLayout.setStyleName("c-paging-wrap");
         contentLayout.setSpacing(true);
         contentLayout.setMargin(false);

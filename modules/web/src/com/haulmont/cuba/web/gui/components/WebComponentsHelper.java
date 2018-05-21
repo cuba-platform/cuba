@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -31,10 +30,8 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.widgets.*;
-import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.*;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
@@ -42,9 +39,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
-import com.vaadin.v7.ui.Table;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -209,55 +204,6 @@ public class WebComponentsHelper {
         }
     }
 
-    public static FilteringMode convertFilterMode(com.haulmont.cuba.gui.components.LookupField.FilterMode filterMode) {
-        switch (filterMode) {
-            case NO:
-                return FilteringMode.OFF;
-            case STARTS_WITH:
-                return FilteringMode.STARTSWITH;
-            case CONTAINS:
-                return FilteringMode.CONTAINS;
-            default:
-                return FilteringMode.OFF;
-        }
-    }
-
-    public static AggregationContainer.Type convertAggregationType(AggregationInfo.Type function) {
-        switch (function) {
-            case COUNT:
-                return AggregationContainer.Type.COUNT;
-            case AVG:
-                return AggregationContainer.Type.AVG;
-            case MAX:
-                return AggregationContainer.Type.MAX;
-            case MIN:
-                return AggregationContainer.Type.MIN;
-            case SUM:
-                return AggregationContainer.Type.SUM;
-            case CUSTOM:
-                return AggregationContainer.Type.CUSTOM;
-            default:
-                throw new IllegalArgumentException("Unknown function: " + function);
-        }
-    }
-
-    public static Table.Align convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment alignment) {
-        if (alignment == null) {
-            return null;
-        }
-
-        switch (alignment) {
-            case LEFT:
-                return Table.Align.LEFT;
-            case CENTER:
-                return Table.Align.CENTER;
-            case RIGHT:
-                return Table.Align.RIGHT;
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
     public static Button createButton() {
         return createButton(null);
     }
@@ -285,14 +231,6 @@ public class WebComponentsHelper {
             }
         }
         return getControllerFrame(frame.getFrame());
-    }
-
-    public static void setLabelText(com.vaadin.ui.Label label, Object value, Formatter formatter) {
-        label.setValue(value == null
-                ? "" : String.class.isInstance(value)
-                        ? (String) value : formatter != null
-                                ? formatter.format(value) : value.toString()
-        );
     }
 
     public static com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {

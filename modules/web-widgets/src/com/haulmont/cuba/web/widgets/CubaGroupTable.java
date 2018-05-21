@@ -18,13 +18,11 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.GroupTableContainer;
-import com.haulmont.cuba.web.widgets.data.PropertyValueStringify;
 import com.haulmont.cuba.web.widgets.data.util.GroupTableContainerWrapper;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Table;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,6 +30,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import javax.annotation.Nullable;
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected KeyMapper groupIdMap = new KeyMapper();
@@ -77,14 +76,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         }
 
         super.setContainerDataSource(new GroupTableContainerWrapper(newDataSource));
-    }
-
-    @Override
-    protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        if (property instanceof PropertyValueStringify)
-            return ((PropertyValueStringify) property).getFormattedValue();
-
-        return super.formatPropertyValue(rowId, colId, property);
     }
 
     @Override

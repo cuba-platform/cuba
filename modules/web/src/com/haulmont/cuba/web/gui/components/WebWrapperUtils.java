@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
+import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -352,6 +353,42 @@ public final class WebWrapperUtils {
                 return com.vaadin.ui.Alignment.BOTTOM_LEFT;
             default:
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    public static com.vaadin.v7.ui.Table.Align convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment alignment) {
+        if (alignment == null) {
+            return null;
+        }
+
+        switch (alignment) {
+            case LEFT:
+                return com.vaadin.v7.ui.Table.Align.LEFT;
+            case CENTER:
+                return com.vaadin.v7.ui.Table.Align.CENTER;
+            case RIGHT:
+                return com.vaadin.v7.ui.Table.Align.RIGHT;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    public static AggregationContainer.Type convertAggregationType(AggregationInfo.Type function) {
+        switch (function) {
+            case COUNT:
+                return AggregationContainer.Type.COUNT;
+            case AVG:
+                return AggregationContainer.Type.AVG;
+            case MAX:
+                return AggregationContainer.Type.MAX;
+            case MIN:
+                return AggregationContainer.Type.MIN;
+            case SUM:
+                return AggregationContainer.Type.SUM;
+            case CUSTOM:
+                return AggregationContainer.Type.CUSTOM;
+            default:
+                throw new IllegalArgumentException("Unknown function: " + function);
         }
     }
 }

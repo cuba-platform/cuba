@@ -100,7 +100,7 @@ public class MainTabSheetActionHandler implements Action.Handler {
             }
         }
 
-        return actions.toArray(new com.vaadin.event.Action[actions.size()]);
+        return actions.toArray(new Action[0]);
     }
 
     @Override

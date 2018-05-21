@@ -28,15 +28,11 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.widgets.CubaTreeTable;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
-import com.haulmont.cuba.web.widgets.CubaTreeTable;
 import com.vaadin.v7.data.Item;
-import com.vaadin.server.Resource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,12 +42,11 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     protected String hierarchyProperty;
 
     public WebTreeTable() {
-        component = createTreeTableComponent();
-        initComponent(component);
+        component = createComponent();
     }
 
-    protected CubaTreeTable createTreeTableComponent() {
-        return new CubaTreeTableExt();
+    protected CubaTreeTable createComponent() {
+        return new CubaTreeTable();
     }
 
     @Override
@@ -85,15 +80,9 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     }
 
     @Override
-    protected CollectionDsWrapper createContainerDatasource(
-            CollectionDatasource datasource, Collection<MetaPropertyPath> columns,
-            CollectionDsListenersWrapper collectionDsListenersWrapper) {
-        return new TreeTableDsWrapper((HierarchicalDatasource) datasource, collectionDsListenersWrapper);
-    }
-
-    @Override
-    public void setIconProvider(IconProvider iconProvider) {
+    public void setIconProvider(IconProvider<? super E>  iconProvider) {
         this.iconProvider = iconProvider;
+        // do not change row header mode
         component.refreshRowCache();
     }
 
@@ -174,7 +163,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     }
 
     protected List<Object> getCollapsedItemIds() {
-        if (datasource == null) {
+        if (getDatasource() == null) {
             return Collections.emptyList();
         }
 
@@ -222,6 +211,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
             implements TreeTableContainer, com.vaadin.v7.data.Container.Sortable, AggregationContainer {
@@ -241,22 +231,12 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<Object, Column> entry : columns.entrySet()) {
+                for (Map.Entry<Object, Column<E>> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
                         properties.add((MetaPropertyPath) entry.getKey());
                     }
                 }
             }
-        }
-
-        @Override
-        protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, datasource.getMetaClass(), properties) {
-                @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                    return new TablePropertyWrapper(item, propertyPath);
-                }
-            };
         }
 
         @SuppressWarnings("unchecked")
@@ -400,20 +380,6 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
             if (datasource instanceof CollectionDatasource.Sortable) {
                 ((CollectionDatasource.Sortable) datasource).resetSortOrder();
             }
-        }
-    }
-
-    protected class CubaTreeTableExt extends CubaTreeTable {
-        @Override
-        public Resource getItemIcon(Object itemId) {
-            return WebTreeTable.this.getItemIcon(itemId);
-        }
-
-        @Override
-        protected boolean changeVariables(Map<String, Object> variables) {
-            boolean b = super.changeVariables(variables);
-            b = handleSpecificVariables(variables) || b;
-            return b;
         }
     }
 }

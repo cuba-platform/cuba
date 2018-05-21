@@ -45,6 +45,10 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
         this.datasource.addCollectionChangeListener(this::datasourceCollectionChanged);
 
         CollectionDsHelper.autoRefreshInvalid(datasource, true);
+
+        if (datasource.getState() == Datasource.State.VALID) {
+            setState(BindingState.ACTIVE);
+        }
     }
 
     protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> e) {

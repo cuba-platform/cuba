@@ -25,7 +25,7 @@ import java.util.Map;
 
 @SuppressWarnings("deprecation")
 public class TableItemWrapper implements Item {
-    protected Object item;
+    protected Object itemId;
     protected Map<Object, TableItemPropertyWrapper> propertyWrappers = new HashMap<>();
 
     protected TableDataContainer tableDataContainer;
@@ -34,12 +34,12 @@ public class TableItemWrapper implements Item {
         this.tableDataContainer = tableDataContainer;
     }
 
-    public Object getItem() {
-        return item;
+    public Object getItemId() {
+        return itemId;
     }
 
-    public void setItem(Object item) {
-        this.item = item;
+    public void setItemId(Object itemId) {
+        this.itemId = itemId;
     }
 
     public Map<Object, TableItemPropertyWrapper> getPropertyWrappers() {
@@ -67,15 +67,15 @@ public class TableItemWrapper implements Item {
     }
 
     public Class getPropertyType(Object propertyId) {
-        return tableDataContainer.getTableDataSource().getType(propertyId);
+        return tableDataContainer.getTableSource().getType(propertyId);
     }
 
     public Object getPropertyValue(Object propertyId) {
-        return tableDataContainer.getTableDataSource().getItemValue(item, propertyId);
+        return tableDataContainer.getTableSource().getItemValue(itemId, propertyId);
     }
 
     public void setPropertyValue(Object propertyId, Object newValue) {
-        tableDataContainer.getTableDataSource().setItemValue(item, propertyId, newValue);
+        tableDataContainer.getTableSource().setItemValue(itemId, propertyId, newValue);
     }
 
     public void addValueChangeListener(Property.ValueChangeListener propertyValueChangeListener) {

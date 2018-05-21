@@ -23,17 +23,22 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.data.TableDataSource;
+import com.haulmont.cuba.gui.components.data.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public interface Table<E extends Entity>
         extends
@@ -59,11 +64,19 @@ public interface Table<E extends Entity>
 
     Map<Object, Object> getAggregationResults();
 
-    void setTableDataSource(TableDataSource<E> tableDataSource);
+    void setTableSource(TableSource<E> tableSource);
+    TableSource<E> getTableSource();
 
     // todo convert to default method
     @Deprecated
     void setDatasource(CollectionDatasource datasource);
+
+    @Deprecated
+    @Override
+    default CollectionDatasource getDatasource() {
+        TableSource<E> tableSource = getTableSource();
+        return tableSource != null ? ((CollectionDatasourceTableAdapter) tableSource).getDatasource() : null;
+    }
 
     void setRequired(Column<E> column, boolean required, String message);
 
@@ -247,6 +260,7 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // todo rework with Event object
     interface ColumnCollapseListener {
         void columnCollapsed(Column collapsedColumn, boolean collapsed);
     }
@@ -336,6 +350,8 @@ public interface Table<E extends Entity>
      *     }
      * );
      * }</pre>
+     *
+     * todo document deprecation
      *
      * @param item entity item
      * @return datasource containing the item
@@ -540,7 +556,7 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class Column<T> implements HasXmlDescriptor, HasCaption, HasFormatter {
+    class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasFormatter {
 
         private static final Logger log = LoggerFactory.getLogger(Table.class);
 
@@ -559,7 +575,7 @@ public interface Table<E extends Entity>
         protected Integer maxTextLength;
         protected ColumnAlignment alignment;
 
-        protected Function<T, Object> valueProvider;
+        protected Function<T, Object> valueProvider; // todo
 
         protected Class type;
         protected Element element;
@@ -571,12 +587,34 @@ public interface Table<E extends Entity>
             this.id = id;
         }
 
+        public Column(String id) {
+            checkNotNullArgument(id);
+
+            this.id = id;
+        }
+
+        public Column(MetaPropertyPath propertyPath, String caption) {
+            checkNotNullArgument(propertyPath);
+
+            this.id = propertyPath;
+            this.caption = caption;
+            this.type = propertyPath.getRangeJavaClass();
+        }
+
+        public Column(String id, String caption) {
+            this.id = id;
+            this.caption = caption;
+        }
+
+        @Deprecated
         public Column(Object id, String caption) {
             this.id = id;
             this.caption = caption;
         }
 
-        public Column(Class<? extends Entity> entityClass, String propertyPath) {
+        // todo convert to Table instance method
+        @Deprecated
+        public Column(Class<T> entityClass, String propertyPath) {
             MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(entityClass);
             MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
 
@@ -601,6 +639,12 @@ public interface Table<E extends Entity>
             return null;
         }
 
+        @Nonnull
+        public MetaPropertyPath getBoundPropertyNN() {
+            return ((MetaPropertyPath) id);
+        }
+
+        @Nonnull
         public String getStringId() {
             if (id instanceof MetaPropertyPath) {
                 return ((MetaPropertyPath) id).toPathString();
@@ -650,11 +694,11 @@ public interface Table<E extends Entity>
             this.valueDescription = valueDescription;
         }
 
-        public Boolean isEditable() {
+        public boolean isEditable() {
             return editable;
         }
 
-        public void setEditable(Boolean editable) {
+        public void setEditable(boolean editable) {
             this.editable = editable;
             if (owner != null) {
                 log.warn("Changing editable for column in runtime is not supported");

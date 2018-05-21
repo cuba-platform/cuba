@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
@@ -42,6 +42,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -88,6 +89,9 @@ public class MetadataTools {
     protected DatatypeFormatter datatypeFormatter;
 
     @Inject
+    protected DatatypeRegistry datatypeRegistry;
+
+    @Inject
     protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
 
     @Inject
@@ -109,9 +113,11 @@ public class MetadataTools {
      * @return formatted value as string
      */
     public String format(@Nullable Object value, MetaProperty property) {
-        if (value == null)
+        checkNotNullArgument(property, "property is null");
+
+        if (value == null) {
             return "";
-        Objects.requireNonNull(property, "property is null");
+        }
 
         Range range = property.getRange();
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
@@ -122,7 +128,7 @@ public class MetadataTools {
             }
 
             if (categoryAttribute.getIsCollection() && value instanceof Collection) {
-                return DynamicAttributesUtils.getDynamicAttributeValueAsString(property, value);
+                return dynamicAttributesTools.getDynamicAttributeValueAsString(property, value);
             }
         }
 
@@ -139,6 +145,11 @@ public class MetadataTools {
             return messages.getMessage((Enum) value);
         } else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
+        } else if (value instanceof Collection) {
+            //noinspection unchecked
+            return ((Collection<Object>) value).stream()
+                    .map(this::format)
+                    .collect(Collectors.joining(", "));
         } else {
             return value.toString();
         }
@@ -157,8 +168,13 @@ public class MetadataTools {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof EnumClass && value instanceof Enum) {
             return messages.getMessage((Enum) value, userSessionSource.getLocale());
+        } else if (value instanceof Collection) {
+            //noinspection unchecked
+            return ((Collection<Object>) value).stream()
+                    .map(this::format)
+                    .collect(Collectors.joining(", "));
         } else {
-            Datatype datatype = Datatypes.get(value.getClass());
+            Datatype datatype = datatypeRegistry.get(value.getClass());
             if (datatype != null) {
                 return datatype.format(value, userSessionSource.getLocale());
             }
@@ -1097,10 +1113,11 @@ public class MetadataTools {
         try {
             return aClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create entity instance with constructor", e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected static Entity createInstanceWithId(Class<? extends Entity> entityClass, Object id) {
         Entity entity = createInstance(entityClass);
         if (entity instanceof BaseGenericIdEntity) {

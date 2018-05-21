@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component.BelongToFrame;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Table;
@@ -30,11 +31,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.components.WebAbstractTable;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.v7.data.Item;
 import com.vaadin.v7.ui.TableFieldFactory;
 import org.apache.commons.lang.StringUtils;
 
@@ -60,8 +58,8 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
 
         Table.Column columnConf = webTable.getColumnsInternal().get(propertyId);
 
-        Item item = container.getItem(itemId);
-        Entity entity = ((ItemWrapper) item).getItem();
+        TableDataContainer tableDataContainer = (TableDataContainer) container;
+        Entity entity = (Entity) tableDataContainer.getInternalItem(itemId);
         Datasource fieldDatasource = webTable.getItemDatasource(entity);
 
         com.haulmont.cuba.gui.components.Component columnComponent =
@@ -77,12 +75,12 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
             }
         }
 
-        if (!(columnComponent instanceof CheckBox)) {
+        if (!(columnComponent instanceof CheckBox)) { // todo get rid of concrete CheckBox class !
             columnComponent.setWidthFull();
         }
 
-        if (columnComponent instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
-            com.haulmont.cuba.gui.components.Component.BelongToFrame belongToFrame = (com.haulmont.cuba.gui.components.Component.BelongToFrame) columnComponent;
+        if (columnComponent instanceof BelongToFrame) {
+            BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
             if (belongToFrame.getFrame() == null) {
                 belongToFrame.setFrame(webTable.getFrame());
             }
@@ -101,11 +99,11 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
     }
 
     protected Component getComponentImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
-        com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
+        com.vaadin.ui.Component composition = columnComponent.unwrapComposition(com.vaadin.ui.Component.class);
         Component componentImpl = composition;
         if (composition instanceof com.vaadin.v7.ui.Field
                 && ((com.vaadin.v7.ui.Field) composition).isRequired()) {
-            VerticalLayout layout = new VerticalLayout();
+            VerticalLayout layout = new VerticalLayout(); // vaadin8 replace with CssLayout
             layout.setMargin(false);
             layout.setSpacing(false);
             layout.addComponent(composition);
@@ -127,7 +125,8 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
 
             if (propertyPath != null) {
                 MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                com.haulmont.cuba.gui.components.Component.Editable editable = (com.haulmont.cuba.gui.components.Component.Editable) dsComponent;
+                com.haulmont.cuba.gui.components.Component.Editable editable =
+                        (com.haulmont.cuba.gui.components.Component.Editable) dsComponent;
 
                 editable.setEditable(editable.isEditable()
                         && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));

@@ -29,6 +29,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
@@ -39,6 +40,7 @@ import com.vaadin.v7.data.util.ContainerOrderedWrapper;
 import com.vaadin.v7.ui.Field;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -69,6 +71,10 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
     protected Object focusColumn;
     protected Object focusItem;
     protected Runnable beforePaintListener;
+    protected CellValueFormatter customCellValueFormatter;
+
+    protected java.util.function.Function<Object, Resource> iconProvider = null;
+    protected SpecificVariablesHandler specificVariablesHandler;
 
     public CubaTable() {
         //noinspection Convert2Lambda
@@ -231,7 +237,21 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
     }
 
     @Override
+    public CellValueFormatter getCustomCellValueFormatter() {
+        return customCellValueFormatter;
+    }
+
+    @Override
+    public void setCustomCellValueFormatter(CellValueFormatter customCellValueFormatter) {
+        this.customCellValueFormatter = customCellValueFormatter;
+    }
+
+    @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
+        if (this.customCellValueFormatter != null) {
+            return customCellValueFormatter.getFormattedValue(rowId, colId, property);
+        }
+
         if (property instanceof PropertyValueStringify) {
             return ((PropertyValueStringify) property).getFormattedValue();
         }
@@ -378,7 +398,21 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
             markAsDirty();
         }
 
+        if (specificVariablesHandler != null) {
+            clientNeedsContentRefresh = specificVariablesHandler.handleSpecificVariables(variables) || clientNeedsContentRefresh;
+        }
+
         return clientNeedsContentRefresh;
+    }
+
+    @Override
+    public void setSpecificVariablesHandler(SpecificVariablesHandler handler) {
+        this.specificVariablesHandler = handler;
+    }
+
+    @Override
+    public SpecificVariablesHandler getSpecificVariablesHandler() {
+        return specificVariablesHandler;
     }
 
     @Override
@@ -389,6 +423,25 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
         if (items instanceof TableContainer) {
             ((TableContainer) items).resetSortOrder();
         }
+    }
+
+    @Override
+    public Resource getItemIcon(Object itemId) {
+        if (iconProvider != null) {
+            return iconProvider.apply(itemId);
+        }
+
+        return super.getItemIcon(itemId);
+    }
+
+    @Override
+    public Function<Object, Resource> getIconProvider() {
+        return iconProvider;
+    }
+
+    @Override
+    public void setIconProvider(Function<Object, Resource> iconProvider) {
+        this.iconProvider = iconProvider;
     }
 
     @Override

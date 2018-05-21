@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+// vaadin8 convert to bean
 public class Aggregations {
     private static final Aggregations instance;
 

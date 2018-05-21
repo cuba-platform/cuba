@@ -210,7 +210,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
                 action = new ShowInfoAction();
                 addAction(action);
             }
-            action.setDatasource(datasource);
         }
 
         collectionDsListenersWrapper.bind(datasource);

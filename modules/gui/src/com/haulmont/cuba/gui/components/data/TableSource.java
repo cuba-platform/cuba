@@ -18,17 +18,32 @@ package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.bali.events.Subscription;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface TableDataSource<I> {
+/**
+ * todo JavaDoc
+ *
+ * @param <I>
+ */
+public interface TableSource<I> {
     Collection<?> getItemIds();
 
+    @Nullable
     I getItem(Object itemId);
 
+    default I getItemNN(Object itemId) {
+        I item = getItem(itemId);
+        if (item == null) {
+            throw new IllegalArgumentException("Unable to find item with id " + itemId);
+        }
+        return item;
+    }
+
     Object getItemValue(Object itemId, Object propertyId);
-    void setItemValue(Object itemId, Object propertyId, Object newValue);
+    void setItemValue(Object itemId, Object propertyId, Object newValue); // vaadin8 todo is not required
 
     int size();
 
@@ -40,11 +55,16 @@ public interface TableDataSource<I> {
 
     boolean supportsProperty(Object propertyId);
 
-    Subscription addStateChangeListener(Consumer<TableDataSource.StateChangeEvent<I>> listener);
-    Subscription addValueChangeListener(Consumer<TableDataSource.ValueChangeEvent<I>> listener);
-    Subscription addItemSetChangeListener(Consumer<TableDataSource.ItemSetChangeEvent<I>> listener);
+    @Nullable
+    I getSelectedItem();
+    void setSelectedItem(@Nullable I item);
 
-    interface Ordered<T> extends TableDataSource<T> {
+    Subscription addStateChangeListener(Consumer<TableSource.StateChangeEvent<I>> listener);
+    Subscription addValueChangeListener(Consumer<TableSource.ValueChangeEvent<I>> listener);
+    Subscription addItemSetChangeListener(Consumer<TableSource.ItemSetChangeEvent<I>> listener);
+    Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<I>> listener);
+
+    interface Ordered<T> extends TableSource<T> {
         Object nextItemId(Object itemId);
 
         Object prevItemId(Object itemId);
@@ -66,15 +86,15 @@ public interface TableDataSource<I> {
     class StateChangeEvent<T> extends EventObject {
         protected BindingState state;
 
-        public StateChangeEvent(TableDataSource<T> source, BindingState state) {
+        public StateChangeEvent(TableSource<T> source, BindingState state) {
             super(source);
             this.state = state;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public TableDataSource<T> getSource() {
-            return (TableDataSource<T>) super.getSource();
+        public TableSource<T> getSource() {
+            return (TableSource<T>) super.getSource();
         }
 
         public BindingState getState() {
@@ -87,7 +107,7 @@ public interface TableDataSource<I> {
         private final T prevValue;
         private final T value;
 
-        public ValueChangeEvent(TableDataSource<T> source, T prevValue, T value) {
+        public ValueChangeEvent(TableSource<T> source, T prevValue, T value) {
             super(source);
             this.prevValue = prevValue;
             this.value = value;
@@ -95,8 +115,8 @@ public interface TableDataSource<I> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public TableDataSource<T> getSource() {
-            return (TableDataSource<T>) super.getSource();
+        public TableSource<T> getSource() {
+            return (TableSource<T>) super.getSource();
         }
 
         public T getPrevValue() {
@@ -110,14 +130,34 @@ public interface TableDataSource<I> {
 
     // todo
     class ItemSetChangeEvent<T> extends EventObject {
-        public ItemSetChangeEvent(TableDataSource<T> source) {
+        public ItemSetChangeEvent(TableSource<T> source) {
             super(source);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public TableDataSource<T> getSource() {
-            return (TableDataSource<T>) super.getSource();
+        public TableSource<T> getSource() {
+            return (TableSource<T>) super.getSource();
+        }
+    }
+
+    // todo
+    class SelectedItemChangeEvent<T> extends EventObject {
+        protected final T selectedItem;
+
+        public SelectedItemChangeEvent(TableSource<T> source, T selectedItem) {
+            super(source);
+            this.selectedItem = selectedItem;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public TableSource<T> getSource() {
+            return (TableSource<T>) super.getSource();
+        }
+
+        public T getSelectedItem() {
+            return selectedItem;
         }
     }
 }

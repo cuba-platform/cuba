@@ -206,12 +206,12 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public String getDescription() {
-        return null;
+        return null; // vaadin8 why ??
     }
 
     @Override
     public void setDescription(String description) {
-        //do nothing
+        // vaadin8 why ??
     }
 
     @Override

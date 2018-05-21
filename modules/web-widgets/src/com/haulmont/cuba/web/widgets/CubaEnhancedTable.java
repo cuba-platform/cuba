@@ -17,8 +17,13 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+import com.vaadin.v7.data.Property;
+
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
@@ -90,6 +95,16 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     void requestFocus(Object itemId, Object columnId);
 
+    Function<Object, Resource> getIconProvider();
+    void setIconProvider(Function<Object, Resource> iconProvider);
+
+    void setSpecificVariablesHandler(SpecificVariablesHandler handler);
+    SpecificVariablesHandler getSpecificVariablesHandler();
+
+    interface SpecificVariablesHandler {
+        boolean handleSpecificVariables(Map<String, Object> variables);
+    }
+
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }
@@ -106,5 +121,12 @@ public interface CubaEnhancedTable extends AggregationContainer {
     enum AggregationStyle {
         TOP,
         BOTTOM
+    }
+
+    void setCustomCellValueFormatter(CellValueFormatter cellValueFormatter);
+    CellValueFormatter getCustomCellValueFormatter();
+
+    interface CellValueFormatter {
+        String getFormattedValue(Object rowId, Object colId, Property<?> property);
     }
 }

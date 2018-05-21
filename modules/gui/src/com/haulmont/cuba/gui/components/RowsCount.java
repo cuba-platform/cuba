@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 /**
  * Component that makes a {@link CollectionDatasource} to load data by pages. Usually used inside {@link Table}.
- *
  */
 public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDescriptor {
 
@@ -33,12 +32,26 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
 
     String NAME = "rowsCount";
 
+    // todo JavaDoc
+    @Deprecated
     CollectionDatasource getDatasource();
+    // todo JavaDoc
+    @Deprecated
     void setDatasource(CollectionDatasource datasource);
 
     /**
      * @return a component that displays data from the same datasource, usually a {@link Table}. Can be null.
      */
+    @Deprecated
     ListComponent getOwner();
+    @Deprecated
     void setOwner(ListComponent owner);
+
+    RowsCountTarget getRowsCountTarget();
+    void setRowsCountTarget(RowsCountTarget target);
+
+    // vaadin8 extract RowsCountTarget interface
+    interface RowsCountTarget {
+        // todo
+    }
 }
