@@ -34,6 +34,12 @@ public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
     private static final Logger log = LoggerFactory.getLogger(WebRemoteProxyBeanCreator.class);
 
+    private static Class<? extends LocalServiceProxy> serviceProxyClass = LocalServiceProxy.class;
+
+    public static void setServiceProxyClass(Class<? extends LocalServiceProxy> serviceProxyClass) {
+        WebRemoteProxyBeanCreator.serviceProxyClass = serviceProxyClass;
+    }
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         String useLocal = AppContext.getProperty("cuba.useLocalServiceInvocation");
@@ -44,7 +50,7 @@ public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
             for (Map.Entry<String, String> entry : services.entrySet()) {
                 String name = entry.getKey();
                 String serviceInterface = entry.getValue();
-                BeanDefinition definition = new RootBeanDefinition(LocalServiceProxy.class);
+                BeanDefinition definition = new RootBeanDefinition(serviceProxyClass);
                 MutablePropertyValues propertyValues = definition.getPropertyValues();
                 propertyValues.add("serviceName", name);
                 propertyValues.add("serviceInterface", serviceInterface);
