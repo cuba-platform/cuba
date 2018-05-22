@@ -19,11 +19,12 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 
@@ -32,8 +33,8 @@ import javax.annotation.Nullable;
  */
 public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceLoader<T, K> {
 
-    private Metadata metadata;
-    private DataManager dataManager;
+    private final ApplicationContext applicationContext;
+
     private DataContext dataContext;
     private InstanceContainer<T> container;
     private K entityId;
@@ -41,9 +42,16 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
     private View view;
     private String viewName;
 
-    public StandardInstanceLoader(Metadata metadata, DataManager dataManager) {
-        this.metadata = metadata;
-        this.dataManager = dataManager;
+    public StandardInstanceLoader(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    protected DataManager getDataManager() {
+        return applicationContext.getBean(DataManager.NAME, DataManager.class);
+    }
+
+    protected ViewRepository getViewRepository() {
+        return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
     }
 
     @Nullable
@@ -70,13 +78,13 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
         loadContext.setId(entityId);
 
         if (view == null && viewName != null) {
-            this.view = metadata.getViewRepository().getView(container.getMetaClass(), viewName);
+            this.view = getViewRepository().getView(container.getMetaClass(), viewName);
         }
         if (view != null) {
             loadContext.setView(view);
         }
 
-        T entity = dataManager.load(loadContext);
+        T entity = getDataManager().load(loadContext);
 
         if (dataContext != null) {
             dataContext.merge(entity);

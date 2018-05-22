@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

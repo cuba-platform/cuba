@@ -17,10 +17,11 @@
 package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.model.impl.*;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -29,19 +30,20 @@ import javax.inject.Inject;
  *
  */
 @Component("cuba_DataContextFactory")
-public class DataContextFactory {
+public class DataContextFactory implements ApplicationContextAware {
 
     @Inject
     protected Metadata metadata;
 
-    @Inject
-    protected DataManager dataManager;
+    private ApplicationContext applicationContext;
 
-    @Inject
-    protected EntityStates entityStates;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     public DataContext createDataContext() {
-        return new StandardDataContext(metadata, dataManager, entityStates);
+        return new StandardDataContext(applicationContext);
     }
 
     public <T extends Entity> InstanceContainer<T> createInstanceContainer(Class<T> entityClass) {
@@ -53,10 +55,10 @@ public class DataContextFactory {
     }
 
     public <T extends Entity<K>, K> InstanceLoader<T, K> createInstanceLoader() {
-        return new StandardInstanceLoader<>(metadata, dataManager);
+        return new StandardInstanceLoader<>(applicationContext);
     }
 
     public <T extends Entity> CollectionLoader<T> createCollectionLoader() {
-        return new StandardCollectionLoader<>(metadata, dataManager);
+        return new StandardCollectionLoader<>(applicationContext);
     }
 }

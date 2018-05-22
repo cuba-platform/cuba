@@ -25,6 +25,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.model.DataContext;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.AnnotatedElement;
@@ -36,9 +37,7 @@ import java.util.*;
  */
 public class StandardDataContext implements DataContext {
 
-    protected final Metadata metadata;
-    protected final DataManager dataManager;
-    protected final EntityStates entityStates;
+    private ApplicationContext applicationContext;
 
     protected EventRouter eventRouter = new EventRouter();
 
@@ -54,10 +53,24 @@ public class StandardDataContext implements DataContext {
 
     protected StandardDataContext parentContext;
 
-    public StandardDataContext(Metadata metadata, DataManager dataManager, EntityStates entityStates) {
-        this.metadata = metadata;
-        this.dataManager = dataManager;
-        this.entityStates = entityStates;
+    public StandardDataContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    protected Metadata getMetadata() {
+        return applicationContext.getBean(Metadata.NAME, Metadata.class);
+    }
+
+    protected MetadataTools getMetadataTools() {
+        return applicationContext.getBean(MetadataTools.NAME, MetadataTools.class);
+    }
+
+    protected EntityStates getEntityStates() {
+        return applicationContext.getBean(EntityStates.NAME, EntityStates.class);
+    }
+
+    protected DataManager getDataManager() {
+        return applicationContext.getBean(DataManager.NAME, DataManager.class);
     }
 
     @Override
@@ -118,7 +131,7 @@ public class StandardDataContext implements DataContext {
         try {
             result = (T) internalMerge(entity);
             if (deep) {
-                metadata.getTools().traverseAttributes(entity, new MergingAttributeVisitor());
+                getMetadataTools().traverseAttributes(entity, new MergingAttributeVisitor());
             }
         } finally {
             disableListeners = false;
@@ -139,7 +152,7 @@ public class StandardDataContext implements DataContext {
 
         entity.addPropertyChangeListener(changeListener);
 
-        if (entityStates.isNew(entity)) {
+        if (getEntityStates().isNew(entity)) {
             modifiedInstances.add(entity);
         }
         return entity;
@@ -153,6 +166,8 @@ public class StandardDataContext implements DataContext {
      *                          if src.version < dst.version, do nothing            - should not happen
      */
     protected void copyState(Entity srcEntity, Entity dstEntity) {
+        EntityStates entityStates = getEntityStates();
+
         boolean srcNew = entityStates.isNew(srcEntity);
         boolean dstNew = entityStates.isNew(dstEntity);
         if (srcNew && !dstNew) {
@@ -167,7 +182,7 @@ public class StandardDataContext implements DataContext {
                 }
             }
         }
-        for (MetaProperty property : metadata.getClassNN(srcEntity.getClass()).getProperties()) {
+        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
             String name = property.getName();
             if ((!property.getRange().isClass() || property.getRange().getCardinality().isMany()) // local and collections
                     && !property.isReadOnly()                                                     // read-write
@@ -290,7 +305,7 @@ public class StandardDataContext implements DataContext {
 
     protected Set<Entity> commitToDataManager() {
         CommitContext commitContext = new CommitContext(modifiedInstances, removedInstances);
-        return dataManager.commit(commitContext);
+        return getDataManager().commit(commitContext);
     }
 
     protected Set<Entity> commitToParentContext() {
@@ -338,7 +353,7 @@ public class StandardDataContext implements DataContext {
 
         @Override
         public void visit(Entity e, MetaProperty property) {
-            if (!entityStates.isLoaded(e, property.getName()))
+            if (!getEntityStates().isLoaded(e, property.getName()))
                 return;
             Object value = e.getValue(property.getName());
             if (value != null) {

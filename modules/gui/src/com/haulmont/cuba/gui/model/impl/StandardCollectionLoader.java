@@ -19,11 +19,12 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContext;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -33,8 +34,8 @@ import java.util.List;
  */
 public class StandardCollectionLoader<T extends Entity> implements CollectionLoader<T> {
 
-    private Metadata metadata;
-    private DataManager dataManager;
+    private ApplicationContext applicationContext;
+
     private DataContext dataContext;
     private CollectionContainer<T> container;
     private String query;
@@ -44,9 +45,16 @@ public class StandardCollectionLoader<T extends Entity> implements CollectionLoa
     private View view;
     private String viewName;
 
-    public StandardCollectionLoader(Metadata metadata, DataManager dataManager) {
-        this.metadata = metadata;
-        this.dataManager = dataManager;
+    public StandardCollectionLoader(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    protected ViewRepository getViewRepository() {
+        return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
+    }
+
+    protected DataManager getDataManager() {
+        return applicationContext.getBean(DataManager.NAME, DataManager.class);
     }
 
     @Nullable
@@ -80,13 +88,13 @@ public class StandardCollectionLoader<T extends Entity> implements CollectionLoa
         loadContext.setSoftDeletion(softDeletion);
 
         if (view == null && viewName != null) {
-            this.view = metadata.getViewRepository().getView(container.getMetaClass(), viewName);
+            this.view = getViewRepository().getView(container.getMetaClass(), viewName);
         }
         if (view != null) {
             loadContext.setView(view);
         }
 
-        List<T> list = dataManager.loadList(loadContext);
+        List<T> list = getDataManager().loadList(loadContext);
 
         if (dataContext != null) {
             for (T entity : list) {
