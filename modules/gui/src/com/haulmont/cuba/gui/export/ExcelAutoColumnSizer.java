@@ -46,18 +46,30 @@ public class ExcelAutoColumnSizer
 
     private short currentWidth = WIDTH_MIN;
 
-    private FontMetrics getFontMetrics(HSSFFont hf){
+    private FontMetrics getFontMetrics(HSSFFont hf) {
         FontMetrics fm;
         Short pFont = new Short(hf.getIndex());
 
         fm = (FontMetrics) fontMetrics.get(pFont);
         if (fm == null) {
             int style;
-            if((hf.getBoldweight() == HSSFFont.BOLDWEIGHT_BOLD) || hf.getItalic()) { style = 0; if(hf.getBoldweight() == HSSFFont.BOLDWEIGHT_BOLD) style ^= Font.BOLD; if(hf.getItalic()) style ^= Font.ITALIC; } else { style = Font.PLAIN; }
+            if ((hf.getBold()) || hf.getItalic()) {
+                style = 0;
+                if (hf.getBold()) {
+                    style ^= Font.BOLD;
+                }
+                if (hf.getItalic()) {
+                    style ^= Font.ITALIC;
+                }
+            } else {
+                style = Font.PLAIN;
+            }
             Font f = new java.awt.Font(hf.getFontName(), style, hf.getFontHeightInPoints());
 
             if (graphics == null) {
-                BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY); graphics = i.createGraphics(); }
+                BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
+                graphics = i.createGraphics();
+            }
 
             fm = graphics.getFontMetrics(f);
             fontMetrics.put(pFont, fm);
