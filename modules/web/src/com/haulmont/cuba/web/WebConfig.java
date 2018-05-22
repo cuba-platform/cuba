@@ -292,8 +292,8 @@ public interface WebConfig extends Config {
     int getUiHeartbeatIntervalSec();
 
     /**
-     * @return If the it is enabled Web Client closes the UIs and the session after the
-     * {@link #getHttpSessionExpirationTimeoutSec()} expires after the last non-heartbeat request.
+     * @return true if Web Client closes the UIs and the session after the {@link #getHttpSessionExpirationTimeoutSec()}
+     * expires after the last non-heartbeat request.
      */
     @Property("cuba.web.closeIdleHttpSessions")
     @DefaultBoolean(false)
