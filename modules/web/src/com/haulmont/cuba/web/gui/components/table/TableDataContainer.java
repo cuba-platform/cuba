@@ -25,12 +25,28 @@ import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Container.ItemSetChangeNotifier;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.AbstractProperty;
 
 import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
-    protected static final Property.ValueChangeEvent VOID_VALUE_CHANGE_EVENT = () -> null;
+
+    protected static final Property.ValueChangeEvent VOID_VALUE_CHANGE_EVENT = () -> new AbstractProperty() {
+        @Override
+        public Object getValue() {
+            return null;
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException {
+        }
+
+        @Override
+        public Class getType() {
+            return Object.class;
+        }
+    };
 
     protected TableSource<I> tableSource;
     protected TableSourceEventsDelegate<I> dataEventsDelegate;

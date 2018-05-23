@@ -313,14 +313,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             setSelectedIds(Collections.emptyList());
         } else if (items.size() == 1) {
             E item = items.iterator().next();
-            if (tableSource.getItem(item.getId()) != null) {
+            if (tableSource.getItem(item.getId()) == null) {
                 throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
             }
             setSelectedIds(Collections.singletonList(item.getId()));
         } else {
             Set itemIds = new HashSet();
             for (Entity item : items) {
-                if (tableSource.getItem(item.getId()) != null) {
+                if (tableSource.getItem(item.getId()) == null) {
                     throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
                 }
                 itemIds.add(item.getId());
