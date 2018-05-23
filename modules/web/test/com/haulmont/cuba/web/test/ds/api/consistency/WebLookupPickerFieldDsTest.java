@@ -23,7 +23,7 @@ import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class WebLookupPickerFieldDsTest extends LookupPickerFieldDsTest {
 
@@ -41,13 +41,13 @@ public class WebLookupPickerFieldDsTest extends LookupPickerFieldDsTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                VaadinSession.getCurrent(); result = vaadinSession;
-                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory();
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
-                configuration.getConfig(ClientConfig.class); result = clientConfig;
-                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT";
+                VaadinSession.getCurrent(); result = vaadinSession; minTimes = 0;
+                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory(); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
+                configuration.getConfig(ClientConfig.class); result = clientConfig; minTimes = 0;
+                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT"; minTimes = 0;
             }
         };
     }

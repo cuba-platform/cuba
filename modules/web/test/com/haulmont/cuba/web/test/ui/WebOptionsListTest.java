@@ -24,7 +24,7 @@ import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 import java.util.Locale;
 
@@ -36,15 +36,15 @@ public class WebOptionsListTest extends OptionsListTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                vaadinSession.getLocale(); result = Locale.ENGLISH;
-                VaadinSession.getCurrent(); result = vaadinSession;
+                vaadinSession.getLocale(); result = Locale.ENGLISH; minTimes = 0;
+                VaadinSession.getCurrent(); result = vaadinSession; minTimes = 0;
 
-                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory();
+                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory(); minTimes = 0;
 
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
 

@@ -26,13 +26,11 @@ import com.haulmont.cuba.gui.components.LookupPickerFieldTest;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 import java.util.Locale;
 
 public class DesktopLookupPickerFieldTest extends LookupPickerFieldTest {
-    @Mocked({"checkSwingUIAccess"})
-    protected DesktopBackgroundWorker desktopBackgroundWorker;
 
     public DesktopLookupPickerFieldTest() {
         factory = new DesktopComponentsFactory();
@@ -42,10 +40,16 @@ public class DesktopLookupPickerFieldTest extends LookupPickerFieldTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new MockUp<DesktopBackgroundWorker>() {
+            @Mock
+            public void checkSwingUIAccess() {
+            }
+        };
+
+        new Expectations() {
             {
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop"; minTimes = 0;
             }
         };
 

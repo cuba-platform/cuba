@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -48,15 +48,15 @@ public class LookupPickerFieldTest extends AbstractComponentTestCase {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppBeans.get(PersistenceManagerClient.NAME); result = persistenceManagerService;
-                AppBeans.get(PersistenceManagerClient.class); result = persistenceManagerService;
-                AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class); result = persistenceManagerService;
+                AppBeans.get(PersistenceManagerClient.NAME); result = persistenceManagerService; minTimes = 0;
+                AppBeans.get(PersistenceManagerClient.class); result = persistenceManagerService; minTimes = 0;
+                AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class); result = persistenceManagerService; minTimes = 0;
 
-                persistenceManagerService.getMaxFetchUI(anyString); result = 10000;
+                persistenceManagerService.getMaxFetchUI(anyString); result = 10000; minTimes = 0;
 
-                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT";
+                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT"; minTimes = 0;
             }
         };
     }

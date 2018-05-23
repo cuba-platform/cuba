@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
-import sun.awt.CausedFocusEvent;
+//import sun.awt.CausedFocusEvent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -101,27 +101,29 @@ public class TableFocusManager {
     }
 
     public void processFocusEvent(FocusEvent e) {
-        if (e.getID() == FocusEvent.FOCUS_GAINED) {
-            if (e instanceof CausedFocusEvent) {
-                if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_FORWARD) {
-                    if (impl.getModel().getRowCount() > 0) {
-                        // if focus from cell editor
-                        if (e.getSource() == impl && impl.getSelectedRow() >= 0) {
-                            int selectedColumn = impl.getSelectedColumn();
-                            focusTo(impl.getSelectedRow(), selectedColumn >= 0 ? selectedColumn : 0);
-                        } else
-                            moveToStart(0, 0);
-                    } else
-                        impl.transferFocus();
-
-                } else if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_BACKWARD) {
-                    if (impl.getModel().getRowCount() > 0) {
-                        moveToEnd(impl.getRowCount() - 1, impl.getColumnCount() - 1);
-                    } else
-                        impl.transferFocusBackward();
-                }
-            }
-        }
+//TODO: CUBA 7 Rework TableFocusManager for Java 9
+//https://github.com/cuba-platform/cuba/issues/893
+//        if (e.getID() == FocusEvent.FOCUS_GAINED) {
+//            if (e instanceof CausedFocusEvent) {
+//                if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_FORWARD) {
+//                    if (impl.getModel().getRowCount() > 0) {
+//                        // if focus from cell editor
+//                        if (e.getSource() == impl && impl.getSelectedRow() >= 0) {
+//                            int selectedColumn = impl.getSelectedColumn();
+//                            focusTo(impl.getSelectedRow(), selectedColumn >= 0 ? selectedColumn : 0);
+//                        } else
+//                            moveToStart(0, 0);
+//                    } else
+//                        impl.transferFocus();
+//
+//                } else if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_BACKWARD) {
+//                    if (impl.getModel().getRowCount() > 0) {
+//                        moveToEnd(impl.getRowCount() - 1, impl.getColumnCount() - 1);
+//                    } else
+//                        impl.transferFocusBackward();
+//                }
+//            }
+//        }
     }
 
     /**

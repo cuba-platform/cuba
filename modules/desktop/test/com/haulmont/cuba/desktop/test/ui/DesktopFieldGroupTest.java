@@ -26,25 +26,27 @@ import com.haulmont.cuba.gui.components.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Expectations;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 public class DesktopFieldGroupTest extends FieldGroupTest {
-    @Mocked({"checkSwingUIAccess"})
-    protected DesktopBackgroundWorker desktopBackgroundWorker;
-
     @Override
     protected void initExpectations() {
         super.initExpectations();
-
-        new NonStrictExpectations() {
+        new MockUp<DesktopBackgroundWorker>() {
+            @Mock
+            public void checkSwingUIAccess() {
+            }
+        };
+        new Expectations() {
             {
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop"; minTimes = 0;
             }
         };
     }

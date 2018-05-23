@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Before;
 
 public class AbstractComponentTestCase extends CubaClientTestCase {
@@ -44,11 +44,11 @@ public class AbstractComponentTestCase extends CubaClientTestCase {
     }
 
     protected void setupGuiInfrastructure() {
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;  minTimes = 0;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
             }
         };
     }

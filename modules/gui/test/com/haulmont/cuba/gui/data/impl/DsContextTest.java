@@ -33,7 +33,7 @@ import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestPartEntity;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,20 +97,20 @@ public class DsContextTest extends CubaClientTestCase {
 
         dataService.commitCount = 0;
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                backgroundWorker.checkUIAccess(); result = null;
-                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+                backgroundWorker.checkUIAccess(); result = null; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
 
-                configuration.getConfig(ClientConfig.class); result = clientConfig;
+                configuration.getConfig(ClientConfig.class); result = clientConfig; minTimes = 0;
 
-                clientConfig.getCollectionDatasourceDbSortEnabled(); result = true;
+                clientConfig.getCollectionDatasourceDbSortEnabled(); result = true; minTimes = 0;
 
-                persistenceManager.getMaxFetchUI(anyString); result = 10000;
+                persistenceManager.getMaxFetchUI(anyString); result = 10000; minTimes = 0;
 
-                PersistenceHelper.isNew(any); result = false;
+                PersistenceHelper.isNew(any); result = false; minTimes = 0;
             }
         };
     }
@@ -205,10 +205,9 @@ public class DsContextTest extends CubaClientTestCase {
 
     @Test
     public void testNestedAggregationNewEntity() {
-        new NonStrictExpectations() {
-            @Mocked PersistenceHelper persistenceHelper;
+        new Expectations() {
             {
-                PersistenceHelper.isNew(any); result = true;
+                PersistenceHelper.isNew(any); result = true; minTimes = 0;
             }
         };
 

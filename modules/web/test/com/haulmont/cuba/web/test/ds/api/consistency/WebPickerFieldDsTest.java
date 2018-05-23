@@ -22,7 +22,7 @@ import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class WebPickerFieldDsTest extends PickerFieldDsTest {
 
@@ -37,11 +37,11 @@ public class WebPickerFieldDsTest extends PickerFieldDsTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                VaadinSession.getCurrent(); result = vaadinSession;
-                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory();
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                VaadinSession.getCurrent(); result = vaadinSession;  minTimes = 0;
+                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory(); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
     }

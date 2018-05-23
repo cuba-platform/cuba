@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.ds.api.consistency.LabelDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class WebLabelDsTest extends LabelDsTest {
 
@@ -36,10 +36,10 @@ public class WebLabelDsTest extends LabelDsTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                VaadinSession.getCurrent(); result = vaadinSession;
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                VaadinSession.getCurrent(); result = vaadinSession; minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
     }

@@ -23,7 +23,6 @@ import com.haulmont.cuba.testsupport.TestContainer;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import org.dom4j.Document;
 import org.junit.Before;
 import org.junit.ClassRule;

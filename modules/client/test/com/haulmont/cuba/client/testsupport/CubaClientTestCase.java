@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.FormatStringsRegistryImpl;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -156,9 +156,9 @@ public class CubaClientTestCase {
      * once in their @Before method.
      */
     protected void setupInfrastructure() {
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppContext.getProperty("cuba.confDir"); result = System.getProperty("user.dir");
+                AppContext.getProperty("cuba.confDir"); result = System.getProperty("user.dir"); minTimes = 0;
             }
         };
         viewRepository = new TestViewRepositoryClient(viewConfig);
@@ -170,12 +170,12 @@ public class CubaClientTestCase {
         security = new TestSecurity(userSessionSource, metadata, extendedEntities);
         formatStringsRegistry = new FormatStringsRegistryImpl();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                configuration.getConfig(GlobalConfig.class); result = globalConfig;
-                configuration.getConfig(ClientConfig.class); result = clientConfig;
-                globalConfig.getConfDir(); result = System.getProperty("user.dir");
-                clientConfig.getRemoteMessagesSearchEnabled(); result = false;
+                configuration.getConfig(GlobalConfig.class); result = globalConfig; minTimes = 0;
+                configuration.getConfig(ClientConfig.class); result = clientConfig; minTimes = 0;
+                globalConfig.getConfDir(); result = System.getProperty("user.dir"); minTimes = 0;
+                clientConfig.getRemoteMessagesSearchEnabled(); result = false; minTimes = 0;
             }
         };
 
@@ -189,63 +189,63 @@ public class CubaClientTestCase {
 
         messages.setConfiguration(configuration);
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppBeans.get(Metadata.NAME); result = metadata;
-                AppBeans.get(Metadata.class); result = metadata;
-                AppBeans.get(Metadata.NAME, Metadata.class); result = metadata;
+                AppBeans.get(Metadata.NAME); result = metadata; minTimes = 0;
+                AppBeans.get(Metadata.class); result = metadata; minTimes = 0;
+                AppBeans.get(Metadata.NAME, Metadata.class); result = metadata; minTimes = 0;
 
-                AppBeans.get(ViewRepository.NAME); result = viewRepository;
-                AppBeans.get(ViewRepository.class); result = viewRepository;
-                AppBeans.get(ViewRepository.NAME, ViewRepository.class); result = viewRepository;
+                AppBeans.get(ViewRepository.NAME); result = viewRepository; minTimes = 0;
+                AppBeans.get(ViewRepository.class); result = viewRepository; minTimes = 0;
+                AppBeans.get(ViewRepository.NAME, ViewRepository.class); result = viewRepository; minTimes = 0;
 
-                AppBeans.get(MetadataTools.NAME); result = metadata.getTools();
-                AppBeans.get(MetadataTools.class); result = metadata.getTools();
-                AppBeans.get(MetadataTools.NAME, MetadataTools.class); result = metadata.getTools();
+                AppBeans.get(MetadataTools.NAME); result = metadata.getTools(); minTimes = 0;
+                AppBeans.get(MetadataTools.class); result = metadata.getTools(); minTimes = 0;
+                AppBeans.get(MetadataTools.NAME, MetadataTools.class); result = metadata.getTools(); minTimes = 0;
 
-                AppBeans.get(DatatypeRegistry.NAME); result = metadata.getDatatypes();
-                AppBeans.get(DatatypeRegistry.class); result = metadata.getDatatypes();
-                AppBeans.get(DatatypeRegistry.NAME, DatatypeRegistry.class); result = metadata.getDatatypes();
+                AppBeans.get(DatatypeRegistry.NAME); result = metadata.getDatatypes(); minTimes = 0;
+                AppBeans.get(DatatypeRegistry.class); result = metadata.getDatatypes(); minTimes = 0;
+                AppBeans.get(DatatypeRegistry.NAME, DatatypeRegistry.class); result = metadata.getDatatypes(); minTimes = 0;
 
-                AppBeans.get(FormatStringsRegistry.NAME); result = formatStringsRegistry;
-                AppBeans.get(FormatStringsRegistry.class); result = formatStringsRegistry;
-                AppBeans.get(FormatStringsRegistry.NAME, FormatStringsRegistry.class); result = formatStringsRegistry;
+                AppBeans.get(FormatStringsRegistry.NAME); result = formatStringsRegistry; minTimes = 0;
+                AppBeans.get(FormatStringsRegistry.class); result = formatStringsRegistry; minTimes = 0;
+                AppBeans.get(FormatStringsRegistry.NAME, FormatStringsRegistry.class); result = formatStringsRegistry; minTimes = 0;
 
-                AppBeans.get(Configuration.NAME); result = configuration;
-                AppBeans.get(Configuration.class); result = configuration;
-                AppBeans.get(Configuration.NAME, Configuration.class); result = configuration;
+                AppBeans.get(Configuration.NAME); result = configuration; minTimes = 0;
+                AppBeans.get(Configuration.class); result = configuration; minTimes = 0;
+                AppBeans.get(Configuration.NAME, Configuration.class); result = configuration; minTimes = 0;
 
-                AppBeans.get(PersistenceManagerService.NAME); result = persistenceManager;
-                AppBeans.get(PersistenceManagerService.class); result = persistenceManager;
-                AppBeans.get(PersistenceManagerService.NAME, PersistenceManagerService.class); result = persistenceManager;
+                AppBeans.get(PersistenceManagerService.NAME); result = persistenceManager; minTimes = 0;
+                AppBeans.get(PersistenceManagerService.class); result = persistenceManager; minTimes = 0;
+                AppBeans.get(PersistenceManagerService.NAME, PersistenceManagerService.class); result = persistenceManager; minTimes = 0;
 
-                AppBeans.get(UserSessionSource.NAME); result = userSessionSource;
-                AppBeans.get(UserSessionSource.class); result = userSessionSource;
-                AppBeans.get(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource;
+                AppBeans.get(UserSessionSource.NAME); result = userSessionSource; minTimes = 0;
+                AppBeans.get(UserSessionSource.class); result = userSessionSource; minTimes = 0;
+                AppBeans.get(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource; minTimes = 0;
 
-                AppBeans.get(UuidSource.NAME); result = uuidSource;
-                AppBeans.get(UuidSource.class); result = uuidSource;
-                AppBeans.get(UuidSource.NAME, UuidSource.class); result = uuidSource;
+                AppBeans.get(UuidSource.NAME); result = uuidSource; minTimes = 0;
+                AppBeans.get(UuidSource.class); result = uuidSource; minTimes = 0;
+                AppBeans.get(UuidSource.NAME, UuidSource.class); result = uuidSource; minTimes = 0;
 
-                AppBeans.get(Security.NAME); result = security;
-                AppBeans.get(Security.class); result= security;
-                AppBeans.get(Security.NAME, Security.class); result = security;
+                AppBeans.get(Security.NAME); result = security; minTimes = 0;
+                AppBeans.get(Security.class); result= security; minTimes = 0;
+                AppBeans.get(Security.NAME, Security.class); result = security; minTimes = 0;
 
-                AppBeans.get(ExtendedEntities.NAME); result = extendedEntities;
-                AppBeans.get(ExtendedEntities.class); result = extendedEntities;
-                AppBeans.get(ExtendedEntities.NAME, ExtendedEntities.class); result = extendedEntities;
+                AppBeans.get(ExtendedEntities.NAME); result = extendedEntities; minTimes = 0;
+                AppBeans.get(ExtendedEntities.class); result = extendedEntities; minTimes = 0;
+                AppBeans.get(ExtendedEntities.NAME, ExtendedEntities.class); result = extendedEntities; minTimes = 0;
 
-                AppBeans.get(Messages.NAME); result = messages;
-                AppBeans.get(Messages.class); result = messages;
-                AppBeans.get(Messages.NAME, Messages.class); result = messages;
+                AppBeans.get(Messages.NAME); result = messages; minTimes = 0;
+                AppBeans.get(Messages.class); result = messages; minTimes = 0;
+                AppBeans.get(Messages.NAME, Messages.class); result = messages; minTimes = 0;
 
-                AppBeans.get(MessageTools.NAME); result = messageTools;
-                AppBeans.get(MessageTools.class); result = messageTools;
-                AppBeans.get(MessageTools.NAME, MessageTools.class); result = messageTools;
+                AppBeans.get(MessageTools.NAME); result = messageTools; minTimes = 0;
+                AppBeans.get(MessageTools.class); result = messageTools; minTimes = 0;
+                AppBeans.get(MessageTools.NAME, MessageTools.class); result = messageTools; minTimes = 0;
 
-                AppBeans.get(BeanValidation.NAME); result = beanValidation;
-                AppBeans.get(BeanValidation.class); result = beanValidation;
-                AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation;
+                AppBeans.get(BeanValidation.NAME); result = beanValidation; minTimes = 0;
+                AppBeans.get(BeanValidation.class); result = beanValidation; minTimes = 0;
+                AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation; minTimes = 0;
             }
         };
 

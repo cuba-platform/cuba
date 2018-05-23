@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -39,9 +39,9 @@ public class PickerFieldTest extends AbstractComponentTestCase {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT";
+                clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT"; minTimes = 0;
             }
         };
     }

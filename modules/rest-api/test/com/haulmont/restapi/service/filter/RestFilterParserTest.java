@@ -65,10 +65,9 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testParseSimpleFilter() throws Exception {
-        new StrictExpectations() {{
-            RandomStringUtils.randomAlphabetic(anyInt); result = "stringParamName";
-            RandomStringUtils.randomAlphabetic(anyInt); result = "intParamName";
-            RandomStringUtils.randomAlphabetic(anyInt); result = "booleanParamName";
+        new Expectations() {{
+            RandomStringUtils.randomAlphabetic(anyInt); returns("stringParamName",
+                    "intParamName", "booleanParamName");
         }};
 
         String data = readDataFromFile("data/restFilter1.json");
@@ -89,7 +88,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testEntityCondition() throws Exception {
-        new StrictExpectations() {{
+        new Expectations() {{
             RandomStringUtils.randomAlphabetic(anyInt); result = "paramName1";
         }};
 
@@ -106,10 +105,9 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testOrGroup() throws Exception {
-        new StrictExpectations() {{
-            RandomStringUtils.randomAlphabetic(anyInt); result = "stringParamName";
-            RandomStringUtils.randomAlphabetic(anyInt); result = "intParamName";
-            RandomStringUtils.randomAlphabetic(anyInt); result = "booleanParamName";
+        new Expectations() {{
+            RandomStringUtils.randomAlphabetic(anyInt); returns("stringParamName",
+                    "intParamName","booleanParamName");
         }};
 
         String data = readDataFromFile("data/restFilter3.json");
@@ -130,7 +128,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testEnumCondition() throws Exception {
-        new StrictExpectations() {{
+        new Expectations() {{
             RandomStringUtils.randomAlphabetic(anyInt); result = "paramName1";
         }};
 
@@ -148,7 +146,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testInOperator() throws Exception {
-        new StrictExpectations() {{
+        new Expectations() {{
             RandomStringUtils.randomAlphabetic(anyInt); result = "paramName1";
         }};
 
@@ -167,7 +165,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Test
     public void testStartsWithOperator() throws Exception {
-        new StrictExpectations() {{
+        new Expectations() {{
             RandomStringUtils.randomAlphabetic(anyInt); result = "paramName1";
         }};
 

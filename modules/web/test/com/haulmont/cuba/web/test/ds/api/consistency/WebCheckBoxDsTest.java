@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.test.ds.api.consistency;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ds.api.consistency.CheckBoxDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class WebCheckBoxDsTest extends CheckBoxDsTest {
 
@@ -30,10 +30,9 @@ public class WebCheckBoxDsTest extends CheckBoxDsTest {
     @Override
     protected void initExpectations() {
         super.initExpectations();
-
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
     }

@@ -22,15 +22,15 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.DateFieldTest;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Expectations;
 
+import javax.swing.*;
 import java.util.Locale;
 
 public class DesktopDateFieldTest extends DateFieldTest {
-    @Mocked({"checkSwingUIAccess"})
-    protected DesktopBackgroundWorker desktopBackgroundWorker;
-
     public DesktopDateFieldTest() {
         factory = new DesktopComponentsFactory();
     }
@@ -38,11 +38,15 @@ public class DesktopDateFieldTest extends DateFieldTest {
     @Override
     protected void initExpectations() {
         super.initExpectations();
-
-        new NonStrictExpectations() {
+        new MockUp<DesktopBackgroundWorker>() {
+            @Mock
+            public void checkSwingUIAccess() {
+            }
+        };
+        new Expectations() {
             {
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop"; minTimes = 0;
             }
         };
     }

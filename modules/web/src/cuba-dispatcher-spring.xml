@@ -39,7 +39,7 @@
     <bean id="cuba_Events" class="com.haulmont.cuba.core.sys.EventsImpl"/>
 
     <!-- Supports LastModified interface for MVC controllers classes -->
-    <bean class="com.haulmont.cuba.web.controllers.CachedAnnotationMethodHandlerAdapter"/>
+    <bean class="com.haulmont.cuba.web.controllers.CachedRequestMappingHandlerAdapter"/>
 
     <!-- Log all exceptions that occur in controllers-->
     <bean id="cuba_LoggingHandlerExceptionResolver"

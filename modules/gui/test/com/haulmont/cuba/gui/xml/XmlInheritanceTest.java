@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.junit.Assert;
@@ -46,15 +46,15 @@ public class XmlInheritanceTest extends CubaClientTestCase {
         resources = new ResourcesImpl(getClass().getClassLoader());
         screenXmlParser = new ScreenXmlParser();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppBeans.get(Resources.NAME); result = resources;
-                AppBeans.get(Resources.class); result = resources;
-                AppBeans.get(Resources.NAME, Resources.class); result = resources;
+                AppBeans.get(Resources.NAME); result = resources; minTimes = 0;
+                AppBeans.get(Resources.class); result = resources; minTimes = 0;
+                AppBeans.get(Resources.NAME, Resources.class); result = resources; minTimes = 0;
 
-                AppBeans.get(ScreenXmlParser.NAME); result = screenXmlParser;
-                AppBeans.get(ScreenXmlParser.class); result = screenXmlParser;
-                AppBeans.get(ScreenXmlParser.NAME, ScreenXmlParser.class); result = screenXmlParser;
+                AppBeans.get(ScreenXmlParser.NAME); result = screenXmlParser; minTimes = 0;
+                AppBeans.get(ScreenXmlParser.class); result = screenXmlParser; minTimes = 0;
+                AppBeans.get(ScreenXmlParser.NAME, ScreenXmlParser.class); result = screenXmlParser; minTimes = 0;
             }
         };
     }

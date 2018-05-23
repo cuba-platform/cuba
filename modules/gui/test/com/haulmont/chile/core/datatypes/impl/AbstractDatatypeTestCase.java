@@ -20,7 +20,7 @@ package com.haulmont.chile.core.datatypes.impl;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.sys.AppContext;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Ignore;
 
 import java.util.Locale;
@@ -37,10 +37,10 @@ public class AbstractDatatypeTestCase extends CubaClientTestCase {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.gui";
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("ru", ruLocale, "en_GB", enGbLocale);
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.gui"; minTimes = 0;
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("ru", ruLocale, "en_GB", enGbLocale); minTimes = 0;
             }
         };
         messages.init();

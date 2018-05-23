@@ -17,26 +17,26 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaModelImpl;
 import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
-import org.junit.Assert;
-import mockit.Mock;
-import mockit.MockUp;
+import mockit.Expectations;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class BaseGenericIdEntityTest {
 
@@ -44,10 +44,8 @@ public class BaseGenericIdEntityTest {
     @Mocked
     protected AppBeans appBeans;
 
-    @Mocked
     protected DynamicAttributes dynamicAttributes;
 
-    @Mocked
     protected Metadata metadata;
 
     @Mocked
@@ -55,20 +53,29 @@ public class BaseGenericIdEntityTest {
 
     @Before
     public void setUp() throws Exception {
-        dynamicAttributes = new MockUp<DynamicAttributes>() {
-            @SuppressWarnings("UnusedDeclaration")
-            @Mock
-            CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
+        dynamicAttributes = new DynamicAttributes() {
+            @Override
+            public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
+                return null;
+            }
+
+            @Override
+            public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
                 CategoryAttribute categoryAttribute = new CategoryAttribute();
                 categoryAttribute.setCode(code);
                 return categoryAttribute;
             }
-        }.getMockInstance();
+        };
 
-        metadata = new MockUp<Metadata>() {
-            @SuppressWarnings("UnusedDeclaration")
-            @Mock
-            Session getSession(){
+        metadata = new Metadata() {
+            @Override
+            public Session getSession() {
                 return new SessionImpl() {
                     @Override
                     public MetaClass getClassNN(String name) {
@@ -82,9 +89,28 @@ public class BaseGenericIdEntityTest {
                 };
             }
 
-            @SuppressWarnings({"UnusedDeclaration", "unchecked"})
-            @Mock
-            <T> T create(Class<T> entityClass) {
+            @Override
+            public ViewRepository getViewRepository() {
+                return null;
+            }
+
+            @Override
+            public ExtendedEntities getExtendedEntities() {
+                return null;
+            }
+
+            @Override
+            public MetadataTools getTools() {
+                return null;
+            }
+
+            @Override
+            public DatatypeRegistry getDatatypes() {
+                return null;
+            }
+
+             @Override
+            public <T> T create(Class<T> entityClass) {
                 if (User.class.equals(entityClass)) {
                     return (T) new User();
                 }
@@ -95,13 +121,65 @@ public class BaseGenericIdEntityTest {
                 }
                 throw new IllegalArgumentException("Add support for " + entityClass.getSimpleName() + " to Mock");
             }
-        }.getMockInstance();
 
-        new NonStrictExpectations() {
+            @Override
+            public Entity create(MetaClass metaClass) {
+                return null;
+            }
+
+            @Override
+            public Entity create(String entityName) {
+                return null;
+            }
+
+            @Override
+            public List<String> getRootPackages() {
+                return null;
+            }
+
+            @Override
+            public MetaModel getModel(String name) {
+                return null;
+            }
+
+            @Override
+            public Collection<MetaModel> getModels() {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public MetaClass getClass(String name) {
+                return null;
+            }
+
+            @Override
+            public MetaClass getClassNN(String name) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public MetaClass getClass(Class<?> clazz) {
+                return null;
+            }
+
+            @Override
+            public MetaClass getClassNN(Class<?> clazz) {
+                return null;
+            }
+
+            @Override
+            public Collection<MetaClass> getClasses() {
+                return null;
+            }
+        };
+
+        new Expectations() {
             {
-                AppBeans.get(DynamicAttributes.NAME); result = dynamicAttributes;
-                AppBeans.get(Metadata.NAME); result = metadata;
-                AppBeans.get(ReferenceToEntitySupport.class); result = referenceToEntitySupport;
+                AppBeans.get(DynamicAttributes.NAME); result = dynamicAttributes; minTimes = 0;
+                AppBeans.get(Metadata.NAME); result = metadata; minTimes = 0;
+                AppBeans.get(ReferenceToEntitySupport.class); result = referenceToEntitySupport; minTimes = 0;
             }
         };
     }

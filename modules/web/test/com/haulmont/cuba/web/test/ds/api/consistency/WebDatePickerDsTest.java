@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ds.api.consistency.DatePickerDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 import java.util.Locale;
 
@@ -34,10 +34,10 @@ public class WebDatePickerDsTest extends DatePickerDsTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
     }

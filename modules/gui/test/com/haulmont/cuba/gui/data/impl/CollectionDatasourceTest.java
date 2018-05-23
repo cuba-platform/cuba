@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,12 +45,12 @@ public class CollectionDatasourceTest extends CubaClientTestCase {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                backgroundWorker.checkUIAccess(); result = null;
-                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+                backgroundWorker.checkUIAccess(); result = null; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
             }
         };
     }

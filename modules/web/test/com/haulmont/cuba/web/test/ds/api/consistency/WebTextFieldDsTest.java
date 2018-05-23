@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.ds.api.consistency.TextFieldDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class WebTextFieldDsTest extends TextFieldDsTest {
 
@@ -36,9 +36,9 @@ public class WebTextFieldDsTest extends TextFieldDsTest {
     protected void initExpectations() {
         super.initExpectations();
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
     }

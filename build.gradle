@@ -136,6 +136,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     test {
         maxHeapSize = '256m'
+        systemProperties = [
+                'jdk.attach.allowAttachSelf' : 'true'
+        ]
     }
 
     javadoc {
@@ -214,33 +217,33 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 }
 
 // Jacoco
-configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
-    apply(plugin: 'jacoco')
-
-    jacoco {
-        toolVersion = "0.8.0"
-    }
-
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-            html.enabled = true
-        }
-
-        afterEvaluate {
-            // without enhanced-classes output
-            classDirectories = files(new File(project.buildDir, 'classes/java/main'))
-        }
-    }
-
-    if (rootProject.hasProperty('jacocoTeamcity')) {
-        jacocoTestReport.doLast {
-            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
-                    "includes='com.haulmont.cuba.*' " +
-                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
-        }
-    }
-}
+//configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
+//    apply(plugin: 'jacoco')
+//
+//    jacoco {
+//        toolVersion = "0.8.0"
+//    }
+//
+//    jacocoTestReport {
+//        reports {
+//            xml.enabled = true
+//            html.enabled = true
+//        }
+//
+//        afterEvaluate {
+//            // without enhanced-classes output
+//            classDirectories = files(new File(project.buildDir, 'classes/java/main'))
+//        }
+//    }
+//
+//    if (rootProject.hasProperty('jacocoTeamcity')) {
+//        jacocoTestReport.doLast {
+//            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
+//                    "includes='com.haulmont.cuba.*' " +
+//                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
+//        }
+//    }
+//}
 
 // configure web toolkit module
 configure(webToolkitModule) {
@@ -289,7 +292,7 @@ configure(globalModule) {
         compile(bom['org.apache.commons:commons-pool2'])
         compile(bom['org.apache.commons:commons-compress'])
 
-        compile(bom['dom4j:dom4j'])
+        compile(bom['org.dom4j:dom4j'])
         compile(bom['xml-apis:xml-apis']) // simplify version management with core
         compile(bom['javax.activation:activation']) // simplify version management with core
         compile(bom['com.sun.mail:javax.mail'])
@@ -298,14 +301,14 @@ configure(globalModule) {
         compile(bom['org.perf4j:perf4j'])
         compile(bom['com.google.code.findbugs:jsr305'])
         compile(bom['javax:javaee-api'])
+        compile(bom['javax.xml.bind:jaxb-api'])
+        compile(bom['org.glassfish.jaxb:jaxb-runtime'])
         compile(bom['antlr:antlr'])
         compile(bom['org.antlr:antlr-runtime'])
         compile(bom['com.google.guava:guava'])
 
-        compile(bom['org.eclipse.persistence:javax.persistence'])
-        compile(bom['org.eclipse.persistence:commonj.sdo'])
-        compile(bom['org.glassfish:javax.json'])
-        compile(bom['com.haulmont.thirdparty:eclipselink'])
+        compile(bom['org.eclipse.persistence:org.eclipse.persistence.jpa'])
+        compile(bom['org.eclipse.persistence:org.eclipse.persistence.oracle'])
 
         compile(bom['org.freemarker:freemarker'])
         compile(bom['aopalliance:aopalliance'])
@@ -426,10 +429,10 @@ configure(coreModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
-        jvmArgs '-XX:-UseSplitVerifier'
 
         systemProperties = [
-                'logback.configurationFile': System.getProperty('logback.configurationFile')
+                'logback.configurationFile': System.getProperty('logback.configurationFile'),
+                'jdk.attach.allowAttachSelf' : 'true'
         ]
     }
 
@@ -1021,41 +1024,41 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba
     }
 }
 
-apply plugin: 'jacoco'
-
-jacoco {
-    toolVersion = "0.8.0"
-}
-
-task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
-    description = 'Generates an aggregate report from all subprojects'
-
-    def jacocoProjects = subprojects.findAll { prj ->
-        return prj.project.extensions.findByName('jacoco') != null
-    }
-
-    dependsOn(jacocoProjects.jacocoTestReport)
-
-    additionalSourceDirs = generateSourceFiles(jacocoProjects)
-    sourceDirectories = generateSourceFiles(jacocoProjects)
-    classDirectories = generateClassDirs(jacocoProjects)
-    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
-
-    reports {
-        html {
-            enabled true
-            destination new File(rootProject.buildDir, 'reports/jacoco/project')
-        }
-        xml {
-            enabled true
-            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
-        }
-    }
-
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-    }
-}
+//apply plugin: 'jacoco'
+//
+//jacoco {
+//    toolVersion = "0.8.1"
+//}
+//
+//task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
+//    description = 'Generates an aggregate report from all subprojects'
+//
+//    def jacocoProjects = subprojects.findAll { prj ->
+//        return prj.project.extensions.findByName('jacoco') != null
+//    }
+//
+//    dependsOn(jacocoProjects.jacocoTestReport)
+//
+//    additionalSourceDirs = generateSourceFiles(jacocoProjects)
+//    sourceDirectories = generateSourceFiles(jacocoProjects)
+//    classDirectories = generateClassDirs(jacocoProjects)
+//    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
+//
+//    reports {
+//        html {
+//            enabled true
+//            destination new File(rootProject.buildDir, 'reports/jacoco/project')
+//        }
+//        xml {
+//            enabled true
+//            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
+//        }
+//    }
+//
+//    doFirst {
+//        executionData = files(executionData.findAll { it.exists() })
+//    }
+//}
 
 def generateSourceFiles(Collection projects) {
     def dirs = projects.collect { prj -> new File(prj.projectDir, 'src') }

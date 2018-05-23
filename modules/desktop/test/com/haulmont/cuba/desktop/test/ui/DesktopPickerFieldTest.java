@@ -22,15 +22,14 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.PickerFieldTest;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 import java.util.Locale;
 
 public class DesktopPickerFieldTest extends PickerFieldTest {
-    @Mocked({"checkSwingUIAccess"})
-    protected DesktopBackgroundWorker desktopBackgroundWorker;
-
     public DesktopPickerFieldTest() {
         factory = new DesktopComponentsFactory();
     }
@@ -39,11 +38,16 @@ public class DesktopPickerFieldTest extends PickerFieldTest {
     protected void initExpectations() {
         super.initExpectations();
 
+        new MockUp<DesktopBackgroundWorker>() {
+            @Mock
+            public void checkSwingUIAccess() {
+            }
+        };
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop";
+                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH); minTimes = 0;
+                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.desktop"; minTimes = 0;
             }
         };
     }

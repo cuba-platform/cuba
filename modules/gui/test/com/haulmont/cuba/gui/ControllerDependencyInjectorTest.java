@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -45,13 +45,13 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
     @Before
     public void setUp() throws Exception {
         setupInfrastructure();
-        new NonStrictExpectations() {
+        new Expectations() {
             {
                 AppContext.getApplicationContext();
-                result = applicationContext;
+                result = applicationContext; minTimes = 0;
 
                 applicationContext.getBeansOfType(Messages.class, true, true);
-                result = Collections.singletonMap(Messages.NAME, messages);
+                result = Collections.singletonMap(Messages.NAME, messages); minTimes = 0;
             }
         };
     }

@@ -25,7 +25,7 @@ import javax.persistence.Temporal;
 public class EclipseLinkCustomizer {
 
     public static void initTransientCompatibleAnnotations() {
-        TransientCompatibleAnnotations.getTransientCompatibleAnnotations().add(Temporal.class.getName());
+        TransientCompatibleAnnotations.addAnnotation(Temporal.class.getName());
 
         ExpressionOperator.addOperator(new CubaIsNullExpressionOperator());
     }

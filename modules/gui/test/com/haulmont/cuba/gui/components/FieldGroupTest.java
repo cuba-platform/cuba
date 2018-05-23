@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -59,15 +59,15 @@ public class FieldGroupTest extends CubaClientTestCase {
             }
         };
 
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
-                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
 
-                AppBeans.get(FieldGroupFieldFactory.NAME); result = fieldFactory;
-                AppBeans.get(FieldGroupFieldFactory.class); result = fieldFactory;
-                AppBeans.get(FieldGroupFieldFactory.NAME, FieldGroupFieldFactory.class); result = fieldFactory;
+                AppBeans.get(FieldGroupFieldFactory.NAME); result = fieldFactory; minTimes = 0;
+                AppBeans.get(FieldGroupFieldFactory.class); result = fieldFactory; minTimes = 0;
+                AppBeans.get(FieldGroupFieldFactory.NAME, FieldGroupFieldFactory.class); result = fieldFactory; minTimes = 0;
             }
         };
 

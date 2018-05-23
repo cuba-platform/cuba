@@ -25,13 +25,14 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 @Component(EclipseLinkDescriptorEventListener.NAME)
 public class EclipseLinkDescriptorEventListener implements DescriptorEventListener {
@@ -70,7 +71,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
     }
 
     @Override
-    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers) {
         return false;
     }
 
