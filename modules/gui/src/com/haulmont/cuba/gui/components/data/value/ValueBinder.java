@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -120,6 +121,7 @@ public class ValueBinder {
 
         protected Subscription sourceValueChangeSubscription;
         protected Subscription sourceStateChangeSupscription;
+        protected Subscription sourceInstanceChangeSubscription;
 
         public ValueBindingImpl(HasValue<V> component, ValueSource<V> source) {
             this.source = source;
@@ -142,15 +144,17 @@ public class ValueBinder {
                 this.componentValueChangeSubscription.remove();
                 this.componentValueChangeSubscription = null;
             }
-
             if (this.sourceValueChangeSubscription != null) {
                 this.sourceValueChangeSubscription.remove();
                 this.sourceValueChangeSubscription = null;
             }
-
             if (this.sourceStateChangeSupscription != null) {
                 this.sourceStateChangeSupscription.remove();
                 this.sourceStateChangeSupscription = null;
+            }
+            if (this.sourceInstanceChangeSubscription != null) {
+                this.sourceInstanceChangeSubscription.remove();
+                this.sourceInstanceChangeSubscription = null;
             }
 
             if (component instanceof Field) {
@@ -181,6 +185,9 @@ public class ValueBinder {
             // vaadin8 weak references on binding !
             this.sourceValueChangeSubscription = source.addValueChangeListener(this::sourceValueChanged);
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::valueSourceStateChanged);
+            if (source instanceof EntityValueSource) {
+                this.sourceInstanceChangeSubscription = ((EntityValueSource<Entity, V>) source).addInstanceChangeListener(this::sourceInstanceChanged);
+            }
         }
 
         protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {
@@ -201,6 +208,13 @@ public class ValueBinder {
         @SuppressWarnings("unchecked")
         protected void sourceValueChanged(@SuppressWarnings("unused") ValueSource.ValueChangeEvent event) {
             component.setValue((V) event.getValue());
+        }
+
+        protected void sourceInstanceChanged(@SuppressWarnings("unused") EntityValueSource.InstanceChangeEvent<Entity> event) {
+            if (source.getState() == BindingState.ACTIVE) {
+                // read value to component
+                component.setValue(source.getValue());
+            }
         }
     }
 }
