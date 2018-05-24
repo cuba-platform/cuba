@@ -650,6 +650,8 @@ configure(webModule) {
 
         themes(bom['com.vaadin:vaadin-themes'])
 
+        testCompile('cglib:cglib-nodep:3.2.6')
+
         testCompile(clientTestsModule)
         testCompile(guiModule.sourceSets.test.output)
         testRuntime(bom['javax.servlet:javax.servlet-api'])
