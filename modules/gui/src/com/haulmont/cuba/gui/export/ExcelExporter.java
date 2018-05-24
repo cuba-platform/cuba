@@ -91,6 +91,8 @@ public class ExcelExporter {
 
     protected final MetadataTools metadataTools;
 
+    protected boolean isRowNumberExceeded = false;
+
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -208,6 +210,10 @@ public class ExcelExporter {
                     .filter(selected::contains)
                     .collect(Collectors.toList());
             for (Entity item : ordered) {
+                if (checkIsRowNumberExceed(r)) {
+                    break;
+                }
+
                 createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
@@ -218,7 +224,7 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : ds.getRootItemIds()) {
-                    if (r >= MAX_ROW_COUNT) {
+                    if (checkIsRowNumberExceed(r)) {
                         break;
                     }
 
@@ -231,7 +237,7 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object item : ds.rootGroups()) {
-                    if (r >= MAX_ROW_COUNT) {
+                    if (checkIsRowNumberExceed(r)) {
                         break;
                     }
 
@@ -242,7 +248,7 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : datasource.getItemIds()) {
-                    if (r == MAX_ROW_COUNT) {
+                    if (checkIsRowNumberExceed(r)) {
                         break;
                     }
 
@@ -353,11 +359,15 @@ public class ExcelExporter {
                     .filter(selected::contains)
                     .collect(Collectors.toList());
             for (Entity item : ordered) {
+                if (checkIsRowNumberExceed(r)) {
+                    break;
+                }
+
                 createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
             }
         } else {
             for (Object itemId : datasource.getItemIds()) {
-                if (r == MAX_ROW_COUNT) {
+                if (checkIsRowNumberExceed(r)) {
                     break;
                 }
 
@@ -526,7 +536,13 @@ public class ExcelExporter {
                 createRow(table, columns, groupNumber, ++rowNumber, itemId);
             }
         }
-        sheet.groupRow(oldRowNumber + 1, rowNumber);
+
+        if (checkIsRowNumberExceed(rowNumber)) {
+            sheet.groupRow(oldRowNumber + 1, MAX_ROW_COUNT);
+        } else {
+            sheet.groupRow(oldRowNumber + 1, rowNumber);
+        }
+
         return rowNumber;
     }
 
@@ -635,7 +651,7 @@ public class ExcelExporter {
         }
 
         String childCountValue = "";
-        if (groupChildCount != null){
+        if (groupChildCount != null) {
             childCountValue = " (" + groupChildCount + ")";
         }
 
@@ -756,5 +772,13 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         }
+    }
+
+    protected boolean checkIsRowNumberExceed(int r) {
+        return isRowNumberExceeded = r >= MAX_ROW_COUNT;
+    }
+
+    public boolean isRowNumberExceeded() {
+        return isRowNumberExceeded;
     }
 }
