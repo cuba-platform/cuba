@@ -1863,6 +1863,7 @@
                 <xs:attribute name="stylename" type="buttonStylename"/>
                 <xs:attribute name="action" type="xs:string"/>
                 <xs:attribute name="invoke" type="xs:string"/>
+                <xs:attribute name="captionAsHtml" type="xs:boolean"/>
 
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="disableOnClick" type="xs:boolean"/>

@@ -174,4 +174,14 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     public void setUseResponsePending(boolean useResponsePending) {
         component.setUseResponsePending(useResponsePending);
     }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        component.setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
+    public boolean isCaptionAsHtml() {
+        return component.isCaptionAsHtml();
+    }
 }
