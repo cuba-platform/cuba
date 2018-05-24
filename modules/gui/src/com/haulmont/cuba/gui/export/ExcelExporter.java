@@ -778,7 +778,10 @@ public class ExcelExporter {
         return isRowNumberExceeded = r >= MAX_ROW_COUNT;
     }
 
-    public boolean isRowNumberExceeded() {
+    /**
+     * @return true if exported table contains more than 65536 records
+     */
+    public boolean isXlsMaxRowNumberExceeded() {
         return isRowNumberExceeded;
     }
 }
