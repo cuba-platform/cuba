@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
@@ -35,6 +36,11 @@ public interface InstanceContainer<T extends Entity> {
     void setItem(T entity);
 
     MetaClass getMetaClass();
+
+    @Nullable
+    View getView();
+
+    void setView(View view);
 
     class ItemPropertyChangeEvent<T extends Entity> extends EventObject {
         private final T item;
@@ -84,6 +90,17 @@ public interface InstanceContainer<T extends Entity> {
         @Nullable
         public Object getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return "ItemPropertyChangeEvent{" +
+                    "item=" + item +
+                    ", property='" + property + '\'' +
+                    ", prevValue=" + prevValue +
+                    ", value=" + value +
+                    ", source=" + source +
+                    '}';
         }
     }
 
@@ -139,6 +156,15 @@ public interface InstanceContainer<T extends Entity> {
         @Nullable
         public T getPrevItem() {
             return prevItem;
+        }
+
+        @Override
+        public String toString() {
+            return "ItemChangeEvent{" +
+                    "prevItem=" + prevItem +
+                    ", item=" + item +
+                    ", source=" + source +
+                    '}';
         }
     }
 

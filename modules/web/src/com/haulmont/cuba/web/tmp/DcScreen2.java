@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -53,7 +54,7 @@ public class DcScreen2 extends AbstractWindow {
     @Inject
     private DataManager dataManager;
 
-    private List<User> users;
+//    private List<User> users;
     private int index;
     private CollectionContainer<User> container;
     private boolean reverse;
@@ -72,8 +73,8 @@ public class DcScreen2 extends AbstractWindow {
         expand(table);
 
         MetaClass metaClass = metadata.getClassNN(User.class);
-        table.addColumn(new Table.Column(metaClass.getPropertyPath("login")));
-        table.addColumn(new Table.Column(metaClass.getPropertyPath("name")));
+        table.addColumn(new Table.Column<>(metaClass.getPropertyPath("login")));
+        table.addColumn(new Table.Column<>(metaClass.getPropertyPath("name")));
 
         container = dataContextFactory.createCollectionContainer(User.class);
 
@@ -90,8 +91,8 @@ public class DcScreen2 extends AbstractWindow {
 
 //        container.setItems(users);
 
-//        todo
-//        table.setContainer(container);
+        table.setTableSource(new CollectionContainerTableSource<>(container));
+
         textField1.setValueSource(new ContainerValueSource<>(container, "name"));
     }
 
@@ -117,7 +118,8 @@ public class DcScreen2 extends AbstractWindow {
     }
 
     public void nextUser() {
-        index = container.getItems().indexOf(container.getItem());
+        List<User> users = container.getItems();
+        index = users.indexOf(container.getItem());
         index++;
         if (index > users.size() - 1)
             index = 0;

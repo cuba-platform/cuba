@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -54,20 +55,20 @@ public class DcScreen3 extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        Table usersTable = componentsFactory.createComponent(Table.class);
+        Table<User> usersTable = componentsFactory.createComponent(Table.class);
         usersTable.setSizeFull();
         split.add(usersTable);
 
-        Table userRolesTable = componentsFactory.createComponent(Table.class);
+        Table<UserRole> userRolesTable = componentsFactory.createComponent(Table.class);
         userRolesTable.setSizeFull();
         split.add(userRolesTable);
 
         MetaClass userMetaClass = metadata.getClassNN(User.class);
-        usersTable.addColumn(new Table.Column(userMetaClass.getPropertyPath("login")));
-        usersTable.addColumn(new Table.Column(userMetaClass.getPropertyPath("name")));
+        usersTable.addColumn(new Table.Column<>(userMetaClass.getPropertyPath("login")));
+        usersTable.addColumn(new Table.Column<>(userMetaClass.getPropertyPath("name")));
 
         MetaClass userRoleMetaClass = metadata.getClassNN(UserRole.class);
-        userRolesTable.addColumn(new Table.Column(userRoleMetaClass.getPropertyPath("role.name")));
+        userRolesTable.addColumn(new Table.Column<>(userRoleMetaClass.getPropertyPath("role.name")));
 
         usersContainer = dataContextFactory.createCollectionContainer(User.class);
         userRolesContainer = dataContextFactory.createCollectionContainer(UserRole.class);
@@ -84,10 +85,8 @@ public class DcScreen3 extends AbstractWindow {
             userRolesContainer.setItems(user != null ? user.getUserRoles() : null);
         });
 
-//        todo
-//        usersTable.setContainer(usersContainer);
-//        todo
-//        userRolesTable.setContainer(userRolesContainer);
+        usersTable.setTableSource(new CollectionContainerTableSource<>(usersContainer));
+        userRolesTable.setTableSource(new CollectionContainerTableSource<>(userRolesContainer));
         
         textField1.setValueSource(new ContainerValueSource<>(usersContainer, "name"));
     }

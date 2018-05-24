@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import java.util.List;
  *
  */
 public class CollectionContainerImpl<T extends Entity> extends InstanceContainerImpl<T> implements CollectionContainer<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(CollectionContainerImpl.class);
 
     protected List<T> collection = new ArrayList<>();
 
@@ -44,9 +48,11 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
 
     @Override
     public List<T> getMutableItems() {
-        return new ObservableList<>(collection, this::fireCollectionChanged);
+        return new ObservableList<>(collection, () -> {
+            clearItemIfNotExists();
+            fireCollectionChanged();
+        });
     }
-
 
     @Override
     public void setItems(@Nullable Collection<T> entities) {
@@ -56,11 +62,8 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
             collection.addAll(entities);
             attachListener(collection);
         }
+        clearItemIfNotExists();
         fireCollectionChanged();
-        
-        if (item != null && !collection.contains(item)) {
-            setItem(null);
-        }
     }
 
     @Nullable
@@ -70,6 +73,14 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
                 .filter(entity -> entity.getId().equals(entityId))
                 .findAny()
                 .orElse(null);
+    }
+
+    @Override
+    public T getItemNN(Object entityId) {
+        T item = getItem(entityId);
+        if (item == null)
+            throw new IllegalArgumentException("Item with id='" + entityId + "' not found");
+        return item;
     }
 
     @Override
@@ -84,6 +95,7 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
 
     protected void fireCollectionChanged() {
         CollectionChangeEvent<T> collectionChangeEvent = new CollectionChangeEvent<>(this);
+        log.trace("collectionChanged: {}", collectionChangeEvent);
         //noinspection unchecked
         getEventRouter().fireEvent(CollectionChangeListener.class, CollectionChangeListener::collectionChanged, collectionChangeEvent);
     }
@@ -97,6 +109,12 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
     protected void detachListener(Collection<T> entities) {
         for (T entity : entities) {
             detachListener(entity);
+        }
+    }
+
+    protected void clearItemIfNotExists() {
+        if (item != null && !collection.contains(item)) {
+            setItem(null);
         }
     }
 }

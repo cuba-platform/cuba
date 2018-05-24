@@ -39,6 +39,8 @@ public interface CollectionContainer<T extends Entity> extends InstanceContainer
     @Nullable
     T getItem(Object entityId);
 
+    T getItemNN(Object entityId);
+
     /**
      *
      */
@@ -52,6 +54,13 @@ public interface CollectionContainer<T extends Entity> extends InstanceContainer
         @Override
         public CollectionContainer<T> getSource() {
             return (CollectionContainer) super.getSource();
+        }
+
+        @Override
+        public String toString() {
+            return "CollectionChangeEvent{" +
+                    "source=" + source +
+                    '}';
         }
     }
 

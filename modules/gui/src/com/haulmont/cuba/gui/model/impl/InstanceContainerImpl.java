@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,11 @@ import javax.annotation.Nullable;
  */
 public class InstanceContainerImpl<T extends Entity> implements InstanceContainer<T> {
 
-    private Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
 
     protected T item;
     protected MetaClass metaClass;
+    protected View view;
 
     protected EventRouter eventRouter;
     protected boolean listenersEnabled = true;
@@ -87,6 +89,17 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
         return metaClass;
     }
 
+    @Nullable
+    @Override
+    public View getView() {
+        return view;
+    }
+
+    @Override
+    public void setView(View view) {
+        this.view = view;
+    }
+
     @Override
     public void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
         getEventRouter().addListener(ItemPropertyChangeListener.class, listener);
@@ -116,6 +129,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
     protected void fireItemChanged(T prevItem) {
         ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
+        log.trace("itemChanged: {}", itemChangeEvent);
         //noinspection unchecked
         getEventRouter().fireEvent(ItemChangeListener.class, ItemChangeListener::itemChanged, itemChangeEvent);
     }
@@ -140,11 +154,10 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
                 return;
             }
 
-            log.trace("propertyChanged: item={}, property={}, value={}, prevValue={}",
-                    e.getItem(), e.getProperty(), e.getValue(), e.getPrevValue());
-
             ItemPropertyChangeEvent<T> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(InstanceContainerImpl.this,
                     (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+
+            log.trace("propertyChanged: {}", itemPropertyChangeEvent);
 
             getEventRouter().fireEvent(ItemPropertyChangeListener.class, ItemPropertyChangeListener::itemPropertyChanged,
                     itemPropertyChangeEvent);
