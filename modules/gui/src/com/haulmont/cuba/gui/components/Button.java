@@ -43,4 +43,15 @@ public interface Button extends Component, Component.HasCaption, Component.Belon
      * @param useResponsePending whether to use response pending
      */
     void setUseResponsePending(boolean useResponsePending);
+
+    /**
+     * Enable or disable HTML mode for caption.
+     *
+     * @param captionAsHtml pass true to enable HTML mode for caption.
+     */
+    void setCaptionAsHtml(boolean captionAsHtml);
+    /**
+     * @return true if caption is inserted to DOM as HTML
+     */
+    boolean isCaptionAsHtml();
 }

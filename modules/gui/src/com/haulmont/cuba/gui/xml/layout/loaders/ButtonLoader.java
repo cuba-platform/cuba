@@ -64,6 +64,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadStyleName(resultComponent, element);
 
         loadCaption(resultComponent, element);
+        loadCaptionAsHtml(resultComponent, element);
         loadDescription(resultComponent, element);
         loadAction(resultComponent, element);
         loadIcon(resultComponent, element);
@@ -79,6 +80,13 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadFocusable(resultComponent, element);
         loadDisableOnClick(resultComponent, element);
         loadResponsive(resultComponent, element);
+    }
+
+    protected void loadCaptionAsHtml(Button resultComponent, Element element) {
+        String captionAsHtml = element.attributeValue("captionAsHtml");
+        if (StringUtils.isNotEmpty(captionAsHtml)) {
+            resultComponent.setCaptionAsHtml(Boolean.parseBoolean(captionAsHtml));
+        }
     }
 
     protected void loadDisableOnClick(Button component, Element element) {

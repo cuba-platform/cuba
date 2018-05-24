@@ -49,6 +49,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected boolean disableOnClick = false;
     protected boolean useResponsePending = false;
 
+    protected boolean captionAsHtml = false; // just stub
+
     public DesktopButton() {
         impl = createImplementation();
         impl.addActionListener(new ValidationAwareActionListener() {
@@ -242,5 +244,15 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     @Override
     public void setUseResponsePending(boolean useResponsePending) {
         this.useResponsePending = useResponsePending;
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
+    }
+
+    @Override
+    public boolean isCaptionAsHtml() {
+        return captionAsHtml;
     }
 }
