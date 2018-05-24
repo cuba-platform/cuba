@@ -162,7 +162,7 @@ public class DbUpdaterEngine implements DbUpdater {
             boolean isSchemaByUser = DbmsSpecificFactory.getDbmsFeatures().isSchemaByUser();
             String schemaName = isSchemaByUser ?
                     dbMetaData.getUserName() : dbProperties.getCurrentSchemaProperty();
-            ResultSet tables = dbMetaData.getTables(null, schemaName, null, null);
+            ResultSet tables = dbMetaData.getTables(null, schemaName, "%", null);
             boolean found = false;
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
