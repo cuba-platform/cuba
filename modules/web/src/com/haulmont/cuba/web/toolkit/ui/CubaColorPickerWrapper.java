@@ -96,6 +96,12 @@ public class CubaColorPickerWrapper extends CustomField {
 
     public void setDefaultCaptionEnabled(boolean value) {
         field.setDefaultCaptionEnabled(value);
+
+        if (value) {
+            removeStyleName("color-maxwidth");
+        } else {
+            addStyleName("color-maxwidth");
+        }
     }
 
     public boolean isDefaultCaptionEnabled() {

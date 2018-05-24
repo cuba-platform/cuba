@@ -55,10 +55,6 @@
     margin-bottom: round($v-unit-size/4);
   }
 
-  .#{$primary-stylename}-button-color {
-    max-width: none;
-  }
-
   .c-color-picker-error > .v-colorpicker {
     @include valo-textfield-error-style;
 
@@ -74,5 +70,9 @@
       color: valo-font-color($bg);
       }
     }
+  }
+
+  .color-maxwidth .#{$primary-stylename}-button-color {
+    max-width: none;
   }
 }
