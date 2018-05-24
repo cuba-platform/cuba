@@ -21,7 +21,11 @@
     box-shadow: none;
   }
 
-  .#{$primary-stylename}-button-color {
+  .#{$primary-stylename} {
+    padding: 5px;
+  }
+
+  .color-maxwidth .#{$primary-stylename}-button-color {
     width: 100%;
     height: 100%;
     min-width: 13px;
@@ -30,9 +34,10 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    display: inline-table;
   }
 
-  .v-colorpicker > .v-button-wrap {
-    padding: 5px 0 5px 0;
+  .#{$primary-stylename} > .v-button-wrap {
+    height: 100%;
   }
 }
