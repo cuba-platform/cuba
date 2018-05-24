@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.ScheduledTaskExecuteException;
+import com.haulmont.cuba.core.global.RunTaskOnceException;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
@@ -434,7 +434,7 @@ public class Scheduling implements SchedulingAPI {
 
         Integer priority = getServerPriority(task, serverInfo.getServerId());
         if (priority == null) {
-            throw new ScheduledTaskExecuteException(task.toString());
+            throw new RunTaskOnceException(task.toString());
         }
 
         lastStartCache.put(task, timeSource.currentTimeMillis());

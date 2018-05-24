@@ -21,9 +21,9 @@ package com.haulmont.cuba.core.global;
  */
 @SupportedByClient
 @Logging(Logging.Type.NONE)
-public class ScheduledTaskExecuteException extends RuntimeException {
+public class RunTaskOnceException extends RuntimeException {
 
-    public ScheduledTaskExecuteException(String message){
+    public RunTaskOnceException(String message){
         super(message);
     }
 }
