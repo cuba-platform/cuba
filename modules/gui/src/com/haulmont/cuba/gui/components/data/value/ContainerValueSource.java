@@ -32,12 +32,14 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class ContainerValueSource<E extends Entity, V> extends EventPublisher implements EntityValueSource<E, V> {
+public class ContainerValueSource<E extends Entity, V> implements EntityValueSource<E, V> {
 
     private final InstanceContainer<E> container;
     private final MetaPropertyPath metaPropertyPath;
 
     protected BindingState state = BindingState.INACTIVE;
+
+    protected EventPublisher events = new EventPublisher();
 
     public ContainerValueSource(InstanceContainer<E> container, String property) {
         checkNotNullArgument(container);
@@ -111,26 +113,26 @@ public class ContainerValueSource<E extends Entity, V> extends EventPublisher im
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener) {
-        return subscribe(InstanceChangeEvent.class, (Consumer) listener);
+        return events.subscribe(InstanceChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
-        return subscribe(StateChangeEvent.class, (Consumer) listener);
+        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
-        return subscribe(ValueChangeEvent.class, (Consumer) listener);
+        return events.subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     public void setState(BindingState state) {
         if (this.state != state) {
             this.state = state;
 
-            publish(StateChangeEvent.class, new StateChangeEvent<>(this,  BindingState.ACTIVE));
+            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  BindingState.ACTIVE));
         }
     }
 
@@ -142,13 +144,13 @@ public class ContainerValueSource<E extends Entity, V> extends EventPublisher im
             setState(BindingState.INACTIVE);
         }
 
-        publish(InstanceChangeEvent.class, new InstanceChangeEvent(this, e.getPrevItem(), e.getItem()));
+        events.publish(InstanceChangeEvent.class, new InstanceChangeEvent(this, e.getPrevItem(), e.getItem()));
     }
 
     @SuppressWarnings("unchecked")
     protected void containerItemPropertyChanged(InstanceContainer.ItemPropertyChangeEvent e) {
         if (Objects.equals(e.getProperty(), metaPropertyPath.toPathString())) {
-            publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
+            events.publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
         }
     }
 }

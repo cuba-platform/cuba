@@ -16,12 +16,14 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  *
@@ -105,22 +107,9 @@ public interface InstanceContainer<T extends Entity> {
     }
 
     /**
-     * Listener to datasource item property value change events.
+     * Listener to container item property value change events.
      */
-    @FunctionalInterface
-    interface ItemPropertyChangeListener<T extends Entity> {
-        /**
-         * Property value of some datasource item changed. In case of {@link CollectionContainer} this method may be
-         * called for any item of collection if its property value changed.
-         */
-        void itemPropertyChanged(ItemPropertyChangeEvent<T> e);
-    }
-
-    // todo provide registration
-    void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
-
-    // todo remove
-    void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
+    Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<T>> listener);
 
     /**
      * Container item change event.
@@ -171,18 +160,6 @@ public interface InstanceContainer<T extends Entity> {
     /**
      * Listener to container item change events.
      */
-    @FunctionalInterface
-    interface ItemChangeListener<T extends Entity> {
-        /**
-         * Current item changed, that is now {@link InstanceContainer#getItem()} returns a different instance.
-         */
-        void itemChanged(ItemChangeEvent<T> e);
-    }
-
-    // todo provide registration
-    void addItemChangeListener(ItemChangeListener<T> listener);
-
-    // todo remove
-    void removeItemChangeListener(ItemChangeListener<T> listener);
+    Subscription addItemChangeListener(Consumer<ItemChangeEvent<T>> listener);
 
 }

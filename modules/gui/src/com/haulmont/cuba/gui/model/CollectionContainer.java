@@ -16,14 +16,14 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.EventObject;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 /**
  *
@@ -64,18 +64,6 @@ public interface CollectionContainer<T extends Entity> extends InstanceContainer
         }
     }
 
-    /**
-     *
-     */
-    @FunctionalInterface
-    interface CollectionChangeListener<T extends Entity> {
-        /**
-         * Enclosed collection changed.
-         */
-        void collectionChanged(CollectionChangeEvent<T> e);
-    }
-
-    void addCollectionChangeListener(CollectionChangeListener<T> listener);
-    void removeCollectionChangeListener(CollectionChangeListener<T> listener);
+    Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<T>> listener);
 
 }

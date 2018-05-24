@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -83,21 +85,16 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
         return item;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void addCollectionChangeListener(CollectionChangeListener<T> listener) {
-        getEventRouter().addListener(CollectionChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeCollectionChangeListener(CollectionChangeListener<T> listener) {
-        getEventRouter().removeListener(CollectionChangeListener.class, listener);
+    public Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<T>> listener) {
+        return events.subscribe(CollectionChangeEvent.class, (Consumer) listener);
     }
 
     protected void fireCollectionChanged() {
         CollectionChangeEvent<T> collectionChangeEvent = new CollectionChangeEvent<>(this);
         log.trace("collectionChanged: {}", collectionChangeEvent);
-        //noinspection unchecked
-        getEventRouter().fireEvent(CollectionChangeListener.class, CollectionChangeListener::collectionChanged, collectionChangeEvent);
+        events.publish(CollectionChangeEvent.class, collectionChangeEvent);
     }
 
     protected void attachListener(Collection<T> entities) {

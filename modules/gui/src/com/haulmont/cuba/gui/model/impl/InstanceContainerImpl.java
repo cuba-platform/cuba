@@ -16,7 +16,8 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  *
@@ -40,7 +42,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     protected MetaClass metaClass;
     protected View view;
 
-    protected EventRouter eventRouter;
+    protected EventPublisher events = new EventPublisher();
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
 
@@ -100,38 +102,22 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
         this.view = view;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
-        getEventRouter().addListener(ItemPropertyChangeListener.class, listener);
+    public Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<T>> listener) {
+        return events.subscribe(ItemPropertyChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
-        getEventRouter().removeListener(ItemPropertyChangeListener.class, listener);
-    }
-
-    @Override
-    public void addItemChangeListener(ItemChangeListener<T> listener) {
-        getEventRouter().addListener(ItemChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeItemChangeListener(ItemChangeListener<T> listener) {
-        getEventRouter().removeListener(ItemChangeListener.class, listener);
-    }
-
-    protected EventRouter getEventRouter() {
-        if (eventRouter == null) {
-            eventRouter = new EventRouter();
-        }
-        return eventRouter;
+    public Subscription addItemChangeListener(Consumer<ItemChangeEvent<T>> listener) {
+        return events.subscribe(ItemChangeEvent.class, (Consumer) listener);
     }
 
     protected void fireItemChanged(T prevItem) {
         ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
         log.trace("itemChanged: {}", itemChangeEvent);
-        //noinspection unchecked
-        getEventRouter().fireEvent(ItemChangeListener.class, ItemChangeListener::itemChanged, itemChangeEvent);
+        events.publish(ItemChangeEvent.class, itemChangeEvent);
     }
 
     protected void attachListener(Instance entity) {
@@ -159,8 +145,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
             log.trace("propertyChanged: {}", itemPropertyChangeEvent);
 
-            getEventRouter().fireEvent(ItemPropertyChangeListener.class, ItemPropertyChangeListener::itemPropertyChanged,
-                    itemPropertyChangeEvent);
+            events.publish(ItemPropertyChangeEvent.class, itemPropertyChangeEvent);
         }
     }
 

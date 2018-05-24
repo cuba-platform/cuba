@@ -27,9 +27,11 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="TRACE">
         <appender-ref ref="CONSOLE"/>
     </root>
+
+    <logger name="com.haulmont.cuba.gui.model.impl" level="TRACE"/>
 
     <!-- Begin CUBA -->
 
