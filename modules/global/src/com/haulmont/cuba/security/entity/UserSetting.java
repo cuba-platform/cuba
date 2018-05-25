@@ -17,10 +17,12 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.ClientType;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Record for user setting.
@@ -30,9 +32,15 @@ import javax.persistence.*;
 @Entity(name = "sec$UserSetting")
 @Table(name = "SEC_USER_SETTING")
 @SystemLevel
-public class UserSetting extends BaseUuidEntity {
+public class UserSetting extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = -4324101071593066529L;
+
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = 50)
+    private String createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
@@ -47,6 +55,26 @@ public class UserSetting extends BaseUuidEntity {
     @Lob
     @Column(name = "VALUE_")
     private String value;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public User getUser() {
         return user;

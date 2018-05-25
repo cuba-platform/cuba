@@ -17,9 +17,11 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * User access groups hierarchy.
@@ -27,9 +29,15 @@ import javax.persistence.*;
 @Entity(name = "sec$GroupHierarchy")
 @Table(name = "SEC_GROUP_HIERARCHY")
 @SystemLevel
-public class GroupHierarchy extends BaseUuidEntity {
+public class GroupHierarchy extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 8106113488822530560L;
+
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = 50)
+    private String createdBy;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
@@ -41,6 +49,26 @@ public class GroupHierarchy extends BaseUuidEntity {
 
     @Column(name = "HIERARCHY_LEVEL")
     private Integer level;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Group getGroup() {
         return group;
