@@ -23,8 +23,8 @@ import com.haulmont.cuba.gui.executors.WatchDog;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,10 +43,9 @@ public abstract class TasksWatchDog implements WatchDog {
     @Inject
     protected TimeSource timeSource;
 
-    private final Set<TaskHandlerImpl> watches;
+    private final Set<TaskHandlerImpl> watches = new LinkedHashSet<>();
 
     public TasksWatchDog() {
-        watches = new LinkedHashSet<>();
     }
 
     @Override
@@ -57,8 +56,9 @@ public abstract class TasksWatchDog implements WatchDog {
 
         long actual = timeSource.currentTimestamp().getTime();
 
-        List<TaskHandlerImpl> forRemove = new LinkedList<>();
-        for (TaskHandlerImpl task : watches) {
+        List<TaskHandlerImpl> forRemove = new ArrayList<>();
+        // copy watches since task.kill tries to remove task handler from watches
+        for (TaskHandlerImpl task : new ArrayList<>(watches)) {
             if (task.isCancelled() || task.isDone()) {
                 forRemove.add(task);
             } else {
@@ -93,10 +93,12 @@ public abstract class TasksWatchDog implements WatchDog {
             return;
         }
 
-        for (TaskHandlerImpl task : watches) {
+        // copy watches since task.kill tries to remove task handler from watches
+        ArrayList<TaskHandlerImpl> taskHandlers = new ArrayList<>(watches);
+        watches.clear();
+        for (TaskHandlerImpl task : taskHandlers) {
             task.kill();
         }
-        watches.clear();
     }
 
     @Override
