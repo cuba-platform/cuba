@@ -212,7 +212,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             field.setProperty(property.getName());
             CategoryAttribute attribute = property.getAttribute();
             if (attribute != null) {
-                field.setCaption(attribute.getName());
+                field.setCaption(attribute.getLocaleName());
                 if (StringUtils.isNotBlank(attribute.getWidth())) {
                     field.setWidth(attribute.getWidth());
                 } else {
