@@ -224,6 +224,13 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
                     .collect(Collectors.toList());
             exporter.exportDataGrid(dataGrid, columns, display, null, fileName, exportMode);
         }
+
+        if (exporter.isXlsMaxRowNumberExceeded()) {
+            listComponent.getFrame().showNotification(
+                    messages.getMainMessage("actions.warningExport.title"),
+                    messages.getMainMessage("actions.warningExport.message"),
+                    Frame.NotificationType.WARNING);
+        }
     }
 
     @Override

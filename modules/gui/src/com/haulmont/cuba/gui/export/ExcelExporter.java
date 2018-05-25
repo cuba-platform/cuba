@@ -59,6 +59,8 @@ public class ExcelExporter {
 
     private static final int SPACE_COUNT = 10;
 
+    public static final int MAX_ROW_COUNT = 65535;
+
     protected HSSFWorkbook wb;
 
     protected HSSFFont boldFont;
@@ -88,6 +90,8 @@ public class ExcelExporter {
     protected final UserSessionSource userSessionSource;
 
     protected final MetadataTools metadataTools;
+
+    protected boolean isRowNumberExceeded = false;
 
     public enum ExportMode {
         SELECTED_ROWS,
@@ -206,6 +210,10 @@ public class ExcelExporter {
                     .filter(selected::contains)
                     .collect(Collectors.toList());
             for (Entity item : ordered) {
+                if (checkIsRowNumberExceed(r)) {
+                    break;
+                }
+
                 createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
@@ -216,6 +224,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : ds.getRootItemIds()) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+
                     r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
                 }
             } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
@@ -225,6 +237,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object item : ds.rootGroups()) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+
                     r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
                 }
             } else {
@@ -232,6 +248,10 @@ public class ExcelExporter {
                     r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
                 for (Object itemId : datasource.getItemIds()) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+
                     createRow(table, columns, 0, ++r, itemId);
                 }
             }
@@ -339,10 +359,18 @@ public class ExcelExporter {
                     .filter(selected::contains)
                     .collect(Collectors.toList());
             for (Entity item : ordered) {
+                if (checkIsRowNumberExceed(r)) {
+                    break;
+                }
+
                 createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
             }
         } else {
             for (Object itemId : datasource.getItemIds()) {
+                if (checkIsRowNumberExceed(r)) {
+                    break;
+                }
+
                 createDataGridRow(dataGrid, columns, 0, ++r, itemId);
             }
         }
@@ -508,7 +536,13 @@ public class ExcelExporter {
                 createRow(table, columns, groupNumber, ++rowNumber, itemId);
             }
         }
-        sheet.groupRow(oldRowNumber + 1, rowNumber);
+
+        if (checkIsRowNumberExceed(rowNumber)) {
+            sheet.groupRow(oldRowNumber + 1, MAX_ROW_COUNT);
+        } else {
+            sheet.groupRow(oldRowNumber + 1, rowNumber);
+        }
+
         return rowNumber;
     }
 
@@ -516,6 +550,11 @@ public class ExcelExporter {
         if (startColumn >= columns.size()) {
             return;
         }
+
+        if (rowNumber > MAX_ROW_COUNT) {
+            return;
+        }
+
         HSSFRow row = sheet.createRow(rowNumber);
         Instance instance = table.getDatasource().getItem(itemId);
 
@@ -612,7 +651,7 @@ public class ExcelExporter {
         }
 
         String childCountValue = "";
-        if (groupChildCount != null){
+        if (groupChildCount != null) {
             childCountValue = " (" + groupChildCount + ")";
         }
 
@@ -733,5 +772,16 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         }
+    }
+
+    protected boolean checkIsRowNumberExceed(int r) {
+        return isRowNumberExceeded = r >= MAX_ROW_COUNT;
+    }
+
+    /**
+     * @return true if exported table contains more than 65536 records
+     */
+    public boolean isXlsMaxRowNumberExceeded() {
+        return isRowNumberExceeded;
     }
 }
