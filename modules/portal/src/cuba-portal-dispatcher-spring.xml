@@ -96,6 +96,7 @@
     <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
+        <property name="threadNamePrefix" value="cuba_portal_scheduler-"/>
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
