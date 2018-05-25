@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupComponent;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -118,9 +119,8 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
             }
 
             @Override
-            protected void performAction(Action action) {
-                // do action for table component
-                action.actionPerform(WebTree.this);
+            protected Component getActionEventTarget() {
+                return WebTree.this;
             }
         };
     }

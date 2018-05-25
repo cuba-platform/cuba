@@ -1062,9 +1062,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             @Override
-            protected void performAction(Action action) {
-                // do action for table component
-                action.actionPerform(WebAbstractTable.this);
+            protected com.haulmont.cuba.gui.components.Component getActionEventTarget() {
+                return WebAbstractTable.this;
             }
         };
     }

@@ -18,7 +18,9 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.widgets.CubaButton;
+import com.vaadin.shared.MouseEventDetails;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyChangeListener;
@@ -31,22 +33,23 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
     public WebButton() {
         component = new CubaButton();
-        component.addClickListener((com.vaadin.ui.Button.ClickListener) event -> {
-            beforeActionPerformed();
-            if (action != null) {
-                performAction(action);
-            }
-            afterActionPerformed();
-        });
-        component.setDescription(null);
-    }
-
-    protected void performAction(Action action) {
-        action.actionPerform(this);
+        component.setClickHandler(this::buttonClicked);
     }
 
     // override in descendants if needed
     protected void beforeActionPerformed() {
+    }
+
+    protected void buttonClicked(@SuppressWarnings("unused") MouseEventDetails mouseEventDetails) {
+        beforeActionPerformed();
+        if (action != null) {
+            action.actionPerform(getActionEventTarget());
+        }
+        afterActionPerformed();
+    }
+
+    protected Component getActionEventTarget() {
+        return this;
     }
 
     // override in descendants if needed
@@ -102,15 +105,15 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
                 actionPropertyChangeListener = evt -> {
                     if (Action.PROP_ICON.equals(evt.getPropertyName())) {
-                        setIcon(WebButton.this.action.getIcon());
+                        setIcon(this.action.getIcon());
                     } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
-                        setCaption(WebButton.this.action.getCaption());
+                        setCaption(this.action.getCaption());
                     } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
-                        setDescription(WebButton.this.action.getDescription());
+                        setDescription(this.action.getDescription());
                     } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
-                        setEnabled(WebButton.this.action.isEnabled());
+                        setEnabled(this.action.isEnabled());
                     } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
-                        setVisible(WebButton.this.action.isVisible());
+                        setVisible(this.action.isVisible());
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);
@@ -165,10 +168,12 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
         return component.isDisableOnClick();
     }
 
+    @Override
     public boolean isUseResponsePending() {
         return component.isUseResponsePending();
     }
 
+    @Override
     public void setUseResponsePending(boolean useResponsePending) {
         component.setUseResponsePending(useResponsePending);
     }

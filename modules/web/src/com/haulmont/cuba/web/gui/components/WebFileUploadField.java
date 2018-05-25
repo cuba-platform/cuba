@@ -107,7 +107,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     exportDisplay.show(value);
             }
         });
-        component.setClearButtonListener((Button.ClickListener) this::clearButtonClicked);
+        component.setClearButtonListener(this::clearButtonClicked);
     }
 
     protected void internalValueChanged(Object newValue) {
@@ -119,7 +119,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         }
     }
 
-    protected void clearButtonClicked(Button.ClickEvent clickEvent) {
+    protected void clearButtonClicked(@SuppressWarnings("unused") Button.ClickEvent clickEvent) {
         BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
         getEventRouter().fireEvent(BeforeValueClearListener.class, BeforeValueClearListener::beforeValueClearPerformed, beforeValueClearEvent);
 

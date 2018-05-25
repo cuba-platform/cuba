@@ -109,7 +109,7 @@ public class LogWindow extends CubaWindow {
 
         Messages messages = AppBeans.get(Messages.NAME);
         Button refreshBtn = new CubaButton(messages.getMessage(getClass(), "logWindow.refreshBtn"),
-                (Button.ClickListener) event -> label.setValue(writeLog())
+                event -> label.setValue(writeLog())
         );
 
         topLayout.addComponent(refreshBtn);

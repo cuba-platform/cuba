@@ -150,13 +150,13 @@ public class ExceptionDialog extends CubaWindow {
         mainLayout.addComponent(buttonsLayout);
 
         Button closeButton = new CubaButton(messages.getMainMessage("exceptionDialog.closeBtn"));
-        closeButton.addClickListener((Button.ClickListener) event ->
+        closeButton.addClickListener(event ->
                 this.close()
         );
         buttonsLayout.addComponent(closeButton);
 
         showStackTraceButton = new CubaButton(messages.getMainMessage("exceptionDialog.showStackTrace"));
-        showStackTraceButton.addClickListener((Button.ClickListener) event ->
+        showStackTraceButton.addClickListener(event ->
                 setStackTraceVisible(!isStackTraceVisible)
         );
         buttonsLayout.addComponent(showStackTraceButton);
@@ -183,7 +183,7 @@ public class ExceptionDialog extends CubaWindow {
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
                 Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
-                reportButton.addClickListener((Button.ClickListener) event -> {
+                reportButton.addClickListener(event -> {
                     sendSupportEmail(text, stackTrace);
                     reportButton.setEnabled(false);
                 });
@@ -196,7 +196,7 @@ public class ExceptionDialog extends CubaWindow {
         }
 
         Button logoutButton = new CubaButton(messages.getMainMessage("exceptionDialog.logout"));
-        logoutButton.addClickListener((Button.ClickListener) event ->
+        logoutButton.addClickListener(event ->
                 logoutPrompt()
         );
         buttonsLayout.addComponent(logoutButton);

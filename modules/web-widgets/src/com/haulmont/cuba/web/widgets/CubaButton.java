@@ -24,7 +24,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import java.util.function.Consumer;
+
 public class CubaButton extends com.vaadin.ui.Button {
+
+    protected Consumer<MouseEventDetails> clickHandler;
 
     public CubaButton() {
     }
@@ -50,12 +54,24 @@ public class CubaButton extends com.vaadin.ui.Button {
     @Override
     protected void fireClick(MouseEventDetails details) {
         try {
-            super.fireClick(details);
+            if (clickHandler != null) {
+                clickHandler.accept(details);
+            } else {
+                super.fireClick(details);
+            }
         } finally {
             if (getState(false).useResponsePending) {
                 getRpcProxy(CubaButtonClientRpc.class).onClickHandled();
             }
         }
+    }
+
+    public Consumer<MouseEventDetails> getClickHandler() {
+        return clickHandler;
+    }
+
+    public void setClickHandler(Consumer<MouseEventDetails> clickHandler) {
+        this.clickHandler = clickHandler;
     }
 
     public boolean isUseResponsePending() {
