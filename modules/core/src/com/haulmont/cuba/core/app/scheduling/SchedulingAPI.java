@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.RunTaskOnceException;
 
 import java.util.List;
 
@@ -74,4 +75,12 @@ public interface SchedulingAPI {
      * @return a list of active task instances in detached state
      */
     List<ScheduledTask> getActiveTasks();
+
+    /**
+     * Runs a task right now and only once.
+     *
+     * @param task task to execute
+     * @throws RunTaskOnceException if you try to execute task once from not permitted server
+     */
+    void runOnce(ScheduledTask task);
 }

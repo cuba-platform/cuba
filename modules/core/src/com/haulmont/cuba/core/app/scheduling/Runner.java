@@ -31,4 +31,13 @@ public interface Runner {
     String NAME = "cuba_SchedulingRunner";
 
     void runTask(ScheduledTask task, long now, @Nullable UserSession userSession);
+
+    /**
+     * Runs a task right now and only once.
+     *
+     * @param task        task to execute
+     * @param now         current time in milliseconds
+     * @param userSession user session
+     */
+    void runTaskOnce(ScheduledTask task, long now, @Nullable UserSession userSession);
 }
