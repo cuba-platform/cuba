@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package spec.cuba.web.menu
 
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu
+import com.haulmont.cuba.core.global.MessageTools
+import com.haulmont.cuba.gui.components.mainwindow.SideMenu
+import com.haulmont.cuba.gui.config.MenuConfig
 import com.haulmont.cuba.gui.config.MenuItem
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.web.gui.components.mainwindow.WebSideMenu
+import com.haulmont.cuba.web.sys.SideMenuBuilder
 
 import java.util.function.Consumer
 
 class SideMenuBuilderTest extends AbstractMenuBuilderSpecification {
 
-    def noActionMenuCommand = new Consumer<AppMenu.MenuItem>() {
-        @Override
-        void accept(AppMenu.MenuItem menuItem) {
-        }
-    }
-
-    def builder = new SideMenuBuilder() {
-        @Override
-        protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-            return noActionMenuCommand
-        }
-    }
+    def builder = new TestSideMenuBuilder()
 
     @Override
     void setup() {
@@ -117,5 +110,90 @@ class SideMenuBuilderTest extends AbstractMenuBuilderSpecification {
         menu.menuItems
 
         menu.menuItems[0].children.size() == 2
+    }
+
+    def "sidemenu builder should replace item from root menu if it has insertAfter or insertBefore"() {
+
+        given: "menu loads XML with separator and item in the root menu"
+
+        def menu = new WebSideMenu()
+        menu.frame = mainWindow
+
+        menuConfig.loadTestMenu('''
+<menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
+    <menu id="MAIN">
+        <menu id="A"
+              description="F">
+            <item id="A1"
+                  screen="sec$User.browse"/>
+            <item id="A2"
+                  screen="sec$User.browse"/>
+        </menu>
+        
+        <separator/>
+
+        <menu id="B">
+            <item id="B1"
+                  screen="sec$User.browse"/>
+        </menu>
+    </menu>
+    
+    <separator insertBefore="A2"/>
+    
+    <item id="B2"
+          screen="sec$User.browse" 
+          insertAfter="B1"/>
+</menu-config>
+'''.trim())
+
+        when: "we build UI menu structure"
+            builder.build(menu, menuConfig.rootItems)
+
+        then: "root menu should contains only one child"
+            menu.menuItems.size() == 1
+
+        and: "separator in the menu MAIN should be removed"
+
+            def children = menu.menuItems[0].children
+            children.size() == 2
+
+        and: "item B2 should be inserted after B1"
+
+            def childrenB = children[1].children
+
+            childrenB.size() == 2
+            childrenB[0].id == "B1"
+            childrenB[1].id == "B2"
+    }
+
+    static class TestSideMenuBuilder extends SideMenuBuilder {
+
+        static final noActionMenuCommand = new Consumer<SideMenu.MenuItem>() {
+            @Override
+            void accept(SideMenu.MenuItem menuItem) {
+            }
+        }
+
+        void setSession(UserSession userSession) {
+            this.@session = userSession
+        }
+
+        void setMenuConfig(MenuConfig menuConfig) {
+            this.@menuConfig = menuConfig
+        }
+
+        void setMessageTools(MessageTools messageTools) {
+            this.@messageTools = messageTools
+        }
+
+        @Override
+        void build(SideMenu menu, List<MenuItem> rootItems) {
+            super.build(menu, rootItems)
+        }
+
+        @Override
+        protected Consumer<SideMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
+            return noActionMenuCommand
+        }
     }
 }

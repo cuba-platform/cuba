@@ -17,18 +17,40 @@
 package com.haulmont.cuba.web.toolkit.ui.client.scrollboxlayout;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutState;
 
 import java.util.function.BiConsumer;
 
 public class CubaScrollBoxLayoutWidget extends CubaCssActionsLayoutWidget {
 
+    private static final int TIMEOUT = 250;
+
     protected int scrollTop = 0;
     protected int scrollLeft = 0;
 
     public BiConsumer<Integer, Integer> onScrollHandler;
+
+    protected String scrollChangeMode;
+
+    protected Timer scrollBoxStateTrigger = new Timer() {
+
+        @Override
+        public void run() {
+            if (isAttached()) {
+                updateScrollState();
+            }
+        }
+    };
+
+    protected void updateScrollState() {
+        if (onScrollHandler != null) {
+            onScrollHandler.accept(scrollTop, scrollLeft);
+        }
+    }
 
     protected CubaScrollBoxLayoutWidget() {
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN | Event.ONSCROLL);
@@ -45,13 +67,35 @@ public class CubaScrollBoxLayoutWidget extends CubaCssActionsLayoutWidget {
             int scrollLeft = element.getScrollLeft();
 
             if (this.scrollTop != scrollTop || this.scrollLeft != scrollLeft) {
-                if (onScrollHandler != null) {
-                    onScrollHandler.accept(scrollTop, scrollLeft);
-                }
 
                 this.scrollTop = scrollTop;
                 this.scrollLeft = scrollLeft;
+
+                if (CubaScrollBoxLayoutState.DEFERRED_MODE.equals(scrollChangeMode)) {
+                    updateScrollState();
+                } else {
+                    scrollBoxStateTrigger.cancel();
+                    scrollBoxStateTrigger.schedule(TIMEOUT);
+                }
             }
         }
+    }
+
+    public void setScrollChangeMode(String scrollChangeMode) {
+        this.scrollChangeMode = scrollChangeMode;
+    }
+
+    public void setScrollTop(int scrollTop) {
+        this.scrollTop = scrollTop;
+
+        scrollBoxStateTrigger.cancel();
+        getElement().setScrollTop(scrollTop);
+    }
+
+    public void setScrollLeft(int scrollLeft) {
+        this.scrollLeft = scrollLeft;
+
+        scrollBoxStateTrigger.cancel();
+        getElement().setScrollLeft(scrollLeft);
     }
 }

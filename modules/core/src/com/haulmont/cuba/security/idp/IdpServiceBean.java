@@ -17,14 +17,17 @@
 package com.haulmont.cuba.security.idp;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.app.UserSessions;
+import com.haulmont.cuba.security.auth.AbstractCredentials;
 import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
-import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.TrustedClientOnly;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.Logger;
@@ -39,12 +42,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service(IdpService.NAME)
+@TrustedClientOnly
 public class IdpServiceBean implements IdpService {
 
     private static final Logger log = LoggerFactory.getLogger(IdpServiceBean.class);
 
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected MessageTools messageTools;
 
     @Inject
     protected IdpSessionStore sessionStore;
@@ -60,11 +67,10 @@ public class IdpServiceBean implements IdpService {
 
     @Nonnull
     @Override
-    public IdpLoginResult login(String login, String password, Locale locale,
+    public IdpLoginResult login(Credentials credentials,
                                 @Nullable Map<String, Object> parameters) throws LoginException {
         log.debug("Authenticating CUBA user for IDP");
 
-        LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, password, locale, parameters);
         AuthenticationDetails sessionDetails = authenticationManager.authenticate(credentials);
         User user = sessionDetails.getSession().getUser();
 
@@ -72,9 +78,13 @@ public class IdpServiceBean implements IdpService {
         session.setLogin(user.getLogin());
         session.setEmail(user.getEmail());
 
-        Locale userLocale = locale;
-        if (user.getLanguage() != null && !globalConfig.getLocaleSelectVisible()) {
+        Locale userLocale = messageTools.getDefaultLocale();
+        if (user.getLanguage() != null) {
             userLocale = LocaleUtils.toLocale(user.getLanguage());
+        }
+        if (credentials instanceof AbstractCredentials
+                && ((AbstractCredentials) credentials).isOverrideLocale()) {
+            userLocale = ((AbstractCredentials) credentials).getLocale();
         }
 
         session.setLocale(userLocale.toLanguageTag());

@@ -209,17 +209,6 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
 
-        // instantiate embedded fields
-        Collection<MetaProperty> properties = datasource.getMetaClass().getProperties();
-        for (MetaProperty property : properties) {
-            if (!property.isReadOnly() && metadata.getTools().isEmbedded(property)) {
-                if (item.getValue(property.getName()) == null) {
-                    Entity defaultEmbeddedInstance = dataservice.newInstance(property.getRange().asClass());
-                    item.setValue(property.getName(), defaultEmbeddedInstance);
-                }
-            }
-        }
-
         if (target instanceof Tree) {
             String hierarchyProperty = ((Tree) target).getHierarchyProperty();
 
@@ -313,6 +302,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
+                            editedItem = AppBeans.get(GuiActionSupport.class).reloadEntityIfNeeded(editedItem, datasource);
                             if (addFirst && datasource instanceof CollectionDatasource.Ordered)
                                 ((CollectionDatasource.Ordered) datasource).includeItemFirst(editedItem);
                             else

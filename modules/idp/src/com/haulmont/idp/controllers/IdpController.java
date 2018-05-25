@@ -17,16 +17,16 @@
 package com.haulmont.idp.controllers;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.URLEncodeUtils;
-import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.idp.IdpConfig;
-import com.haulmont.idp.model.*;
+import com.haulmont.idp.model.AuthRequest;
+import com.haulmont.idp.model.AuthResponse;
+import com.haulmont.idp.model.IdpTicket;
+import com.haulmont.idp.model.LocalesInfo;
 import com.haulmont.idp.sys.IdpServiceLogoutCallbackInvoker;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -69,10 +69,10 @@ public class IdpController {
     protected IdpService idpService;
 
     @Inject
-    protected MessageTools messageTools;
+    protected IdpLoginManager idpLoginManager;
 
     @Inject
-    protected PasswordEncryption passwordEncryption;
+    protected MessageTools messageTools;
 
     @Inject
     protected IdpServiceLogoutCallbackInvoker logoutCallbackInvoker;
@@ -263,10 +263,7 @@ public class IdpController {
 
         IdpService.IdpLoginResult loginResult;
         try {
-            loginResult = idpService.login(auth.getUsername(),
-                    passwordEncryption.getPlainHash(auth.getPassword()),
-                    sessionLocale,
-                    ImmutableMap.of(ClientType.class.getName(), ClientType.WEB.name()));
+            loginResult = idpLoginManager.login(auth, sessionLocale);
         } catch (LoginException e) {
             // remove auth cookie
             Cookie cookie = new Cookie(CUBA_IDP_COOKIE_NAME, "");
@@ -329,5 +326,4 @@ public class IdpController {
                 .stream()
                 .anyMatch(pattern -> pattern.matcher(redirectUrl).matches());
     }
-
 }

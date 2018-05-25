@@ -20,6 +20,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -43,6 +44,7 @@ import com.vaadin.server.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -146,9 +148,17 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             final List elements = groupPropertiesElement.elements("property");
             final List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (final Object o : elements) {
-                final MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(((Element) o).attributeValue("id")
-                );
-                properties.add(property);
+                String id = ((Element) o).attributeValue("id");
+                final MetaPropertyPath property = DynamicAttributesUtils.isDynamicAttribute(id)
+                        ? DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), id)
+                        : datasource.getMetaClass().getPropertyPath(id);
+
+                if (property != null) {
+                    properties.add(property);
+                } else {
+                    LoggerFactory.getLogger(WebGroupTable.class)
+                            .warn("Ignored group property '{}'", id);
+                }
             }
             groupBy(properties.toArray());
         }

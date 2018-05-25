@@ -25,7 +25,7 @@ import java.net.URI;
 public class ControllerUtilsTest extends TestCase {
     public void testGetLocationWithoutParams() throws Exception {
         URI localUrl = new URI("http://localhost:8080/app?a");
-        assertEquals(ControllerUtils.getLocationWithoutParams(localUrl), "http://localhost:8080/app");
+        assertEquals(ControllerUtils.getLocationWithoutParams(localUrl), "http://localhost:8080/app/");
 
         URI externalUrl = new URI("http://ya.ru/app/sample/?param=value");
         assertEquals(ControllerUtils.getLocationWithoutParams(externalUrl), "http://ya.ru/app/sample/");

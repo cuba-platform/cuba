@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
@@ -203,13 +205,12 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected void initShortcuts() {
-        final String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
-        Action commitAction = new AbstractAction("commitAndClose", commitShortcut) {
-            @Override
-            public void actionPerform(Component component) {
-                commitAndClose();
-            }
-        };
+        Action commitAction = new BaseAction("commitAndClose")
+                    .withCaption(messages.getMainMessage("actions.OkClose"))
+                    .withShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut())
+                    .withHandler(e ->
+                            commitAndClose()
+                    );
         addAction(commitAction);
     }
 
@@ -282,22 +283,8 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @return property of the referred entity
      */
     protected MetaProperty getNullIndicatorProperty(MetaProperty embeddedMetaProperty) {
-//        EmbeddedMapping embeddedMapping = embeddedMetaProperty.getAnnotatedElement().getAnnotation(EmbeddedMapping.class);
-
-//        if (embeddedMapping == null)
+        // Unsupported for EclipseLink ORM
         return null;
-
-//        MetaClass meta = embeddedMetaProperty.getRange().asClass();
-//
-//        String attributeName = embeddedMapping.nullIndicatorAttributeName();
-//        String columnName = embeddedMapping.nullIndicatorColumnName();
-//
-//        if (!isEmpty(attributeName))
-//            return meta.getProperty(attributeName);
-//        else if (!isEmpty(columnName))
-//            return findPropertyByMappedColumn(meta, columnName);
-//        else
-//            return null;
     }
 
     /**
@@ -311,7 +298,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     /**
-     * Loads single item by id
+     * Loads single item by id.
      *
      * @param meta item's meta class
      * @param id   item's id
@@ -319,13 +306,16 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @return loaded item if found, null otherwise
      */
     protected Entity loadSingleItem(MetaClass meta, Object id, View view) {
+        String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
+        if (primaryKeyName == null) {
+            throw new IllegalStateException(String.format("Entity %s has no primary key", meta.getName()));
+        }
+
         LoadContext ctx = new LoadContext(meta);
         ctx.setLoadDynamicAttributes(true);
         ctx.setSoftDeletion(false);
         ctx.setView(view);
-        String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
-        if (primaryKeyName == null)
-            throw new IllegalStateException("Entity " + meta.getName() + " has no primary key");
+
         String query = String.format("select e from %s e where e.%s = :id", meta.getName(), primaryKeyName);
         LoadContext.Query q = ctx.setQueryString(query);
         q.setParameter("id", id);
@@ -341,7 +331,6 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected void createDataComponents(MetaClass metaClass, Entity item) {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         fieldGroup.setBorderVisible(true);
-        fieldGroup.setWidth("100%");
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
@@ -459,6 +448,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
         fieldGroup.setDatasource(embedDs);
         fieldGroup.bind();
+
+        createCustomFields(fieldGroup, customFields);
 
         for (String dateTimeField : dateTimeFields) {
             FieldGroup.FieldConfig field = fieldGroup.getField(dateTimeField);
@@ -583,7 +574,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setCustom(custom);
         field.setRequired(required);
         field.setEditable(!readOnly);
-        field.setWidth("100%");
+        field.setWidth("400px");
 
         if (requireTextArea(metaProperty, item)) {
             Element root = DocumentHelper.createElement("textArea");
@@ -653,12 +644,13 @@ public class EntityInspectorEditor extends AbstractWindow {
                     String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
                     field.setCaption(caption);
                     field.setMetaClass(propertyMeta);
+                    field.setWidth("400px");
 
                     PickerField.LookupAction lookupAction = field.addLookupAction();
                     //forwards lookup to the EntityInspectorBrowse window
                     lookupAction.setLookupScreen(EntityInspectorBrowse.SCREEN_NAME);
                     lookupAction.setLookupScreenOpenType(OPEN_TYPE);
-                    lookupAction.setLookupScreenParams(Collections.singletonMap("entity", (Object) propertyMeta.getName()));
+                    lookupAction.setLookupScreenParams(ParamsMap.of("entity", propertyMeta.getName()));
 
                     field.addClearAction();
                     //don't lets user to change parent
@@ -687,13 +679,13 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected void initNamePatternFields(Entity entity) {
         Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(entity.getMetaClass());
         for (MetaProperty property : properties) {
-            if (entity.getValue(property.getName()) == null) {
-                if (property.getType() == MetaProperty.Type.DATATYPE)
-                    try {
-                        entity.setValue(property.getName(), property.getJavaType().newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+            if (entity.getValue(property.getName()) == null
+                    && property.getType() == MetaProperty.Type.DATATYPE) {
+                try {
+                    entity.setValue(property.getName(), property.getJavaType().newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("Unable to set value of name pattern field", e);
+                }
             }
         }
     }
@@ -938,23 +930,47 @@ public class EntityInspectorEditor extends AbstractWindow {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    String viewName;
+                    MetaClass metaPropertyClass = metaProperty.getRange().asClass();
+                    String metaPropertyClassName = metaPropertyClass.getName();
+
                     if (metadata.getTools().isEmbedded(metaProperty)) {
-                        viewName = View.BASE;
-                    } else if (metaProperty.getRange().getCardinality().isMany()){
-                        viewName = View.LOCAL;
+                        View embeddedViewWithRelations = createEmbeddedView(metaPropertyClass);
+                        view.addProperty(metaProperty.getName(), embeddedViewWithRelations);
                     } else {
-                        viewName = View.MINIMAL;
+                        String viewName;
+                        if (metaProperty.getRange().getCardinality().isMany()) {
+                            viewName = View.LOCAL;
+                        } else {
+                            viewName = View.MINIMAL;
+                        }
+                        View propView = viewRepository.getView(metaPropertyClass, viewName);
+                        view.addProperty(metaProperty.getName(),
+                                new View(propView, metaPropertyClassName + ".entity-inspector-view", true));
                     }
-                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), viewName);
-                    view.addProperty(metaProperty.getName(),
-                            new View(propView, metaProperty.getRange().asClass().getName() + ".entity-inspector-view", true));
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");
             }
         }
         return view;
+    }
+
+    protected View createEmbeddedView(MetaClass metaPropertyClass) {
+        View propView = viewRepository.getView(metaPropertyClass, View.BASE);
+        View embeddedViewWithRelations = new View(propView, metaPropertyClass.getName() + ".entity-inspector-view", true);
+
+        // iterate embedded properties and add relations with MINIMAL view
+        for (MetaProperty embeddedNestedProperty : metaPropertyClass.getProperties()) {
+            if (embeddedNestedProperty.getRange().isClass() &&
+                    !embeddedNestedProperty.getRange().getCardinality().isMany()) {
+                View embeddedRelationView = viewRepository.getView(
+                        embeddedNestedProperty.getRange().asClass(), View.MINIMAL);
+
+                embeddedViewWithRelations.addProperty(embeddedNestedProperty.getName(), embeddedRelationView);
+            }
+        }
+
+        return embeddedViewWithRelations;
     }
 
     protected class CommitAction extends AbstractAction {

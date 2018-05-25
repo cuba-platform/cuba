@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
@@ -207,6 +208,16 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
                 this.app = App.getInstance();
             }
 
+            Connection connection = app.getConnection();
+            if (connection != null && !isUserSessionAlive(connection)) {
+                connection.logout();
+
+                Notification.show(
+                        messages.getMainMessage("app.sessionExpiredCaption"),
+                        messages.getMainMessage("app.sessionExpiredMessage"),
+                        Notification.Type.HUMANIZED_MESSAGE);
+            }
+
             setupUI();
         } catch (Exception e) {
             log.error("Unable to init ui", e);
@@ -217,6 +228,19 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         }
 
         processExternalLink(request);
+    }
+
+    protected boolean isUserSessionAlive(Connection connection) {
+        try {
+            UserSession session = connection.getSession();
+            if (session instanceof ClientUserSession
+                    && ((ClientUserSession) session).isAuthenticated()) {
+                userSessionService.getUserSession(session.getId());
+            }
+            return true;
+        } catch (NoUserSessionException e) {
+            return false;
+        }
     }
 
     protected void publishAppInitializedEvent(App app) {

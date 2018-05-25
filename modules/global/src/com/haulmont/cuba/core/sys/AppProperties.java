@@ -18,7 +18,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -180,8 +179,13 @@ public class AppProperties {
     }
 
     private void getValuesFromAppComponents(String key, List<String> values) {
+        List<AppComponent> components = appComponents.getComponents();
+        ListIterator<AppComponent> iterator = components.listIterator(components.size());
+
         int index;
-        for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
+        while (iterator.hasPrevious()) {
+            AppComponent component = iterator.previous();
+
             String compValue = component.getProperty(key);
             if (StringUtils.isNotEmpty(compValue)) {
                 index = 0;

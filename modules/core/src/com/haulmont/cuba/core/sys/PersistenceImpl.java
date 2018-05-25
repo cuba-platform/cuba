@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -34,6 +35,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.inject.Inject;
@@ -72,6 +74,9 @@ public class PersistenceImpl implements Persistence {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected MiddlewareStatisticsAccumulator statisticsAccumulator;
 
     @Inject @Named("entityManagerFactory")
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
@@ -250,6 +255,9 @@ public class PersistenceImpl implements Persistence {
         log.trace("registerSynchronizations for store '{}'", store);
         TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
         support.getInstanceContainerResourceHolder(store);
+
+        statisticsAccumulator.incStartedTransactionsCount();
+        TransactionSynchronizationManager.registerSynchronization(new StatisticsTransactionSynchronization());
     }
 
     protected TransactionSynchronization createSynchronization(String store) {
@@ -376,6 +384,16 @@ public class PersistenceImpl implements Persistence {
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             }
+        }
+    }
+
+    protected class StatisticsTransactionSynchronization extends TransactionSynchronizationAdapter {
+        @Override
+        public void afterCompletion(int status) {
+            if (status == TransactionSynchronization.STATUS_COMMITTED)
+                statisticsAccumulator.incCommittedTransactionsCount();
+            else
+                statisticsAccumulator.incRolledBackTransactionsCount();
         }
     }
 }

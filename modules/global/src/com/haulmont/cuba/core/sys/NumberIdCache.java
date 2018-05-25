@@ -18,64 +18,69 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Intermediate cache for generated ids of entities with long/integer PK.
+ * The cache size is determined by the {@code cuba.numberIdCacheSize} app property.
+ */
 @Component(NumberIdCache.NAME)
 public class NumberIdCache {
 
     public static final String NAME = "cuba_NumberIdCache";
 
     protected class Generator {
-        protected AtomicLong counter;
+        protected long counter;
         protected long sequenceValue;
+        protected String entityName;
+        protected NumberIdSequence sequence;
 
-        protected Generator(String entityName, NumberIdSequence sequence) {
-            sequenceValue = sequence.createLongId(entityName);
-            counter = new AtomicLong(sequenceValue);
+        public Generator(String entityName, NumberIdSequence sequence) {
+            this.entityName = entityName;
+            this.sequence = sequence;
+            createCounter();
         }
 
-        protected long getNext() {
-            long next = counter.incrementAndGet();
-            if (next > sequenceValue + cacheSize)
-                return -1;
+        protected void createCounter() {
+            sequenceValue = sequence.createLongId(entityName);
+            counter = sequenceValue;
+        }
+
+        public synchronized long getNext() {
+            long next = ++counter;
+            if (next > sequenceValue + config.getNumberIdCacheSize()) {
+                createCounter();
+                next = ++counter;
+            }
             return next;
         }
     }
 
     protected ConcurrentMap<String, Generator> cache = new ConcurrentHashMap<>();
 
-    protected int cacheSize;
-
     @Inject
-    protected void setConfig(GlobalConfig config) {
-        cacheSize = config.getNumberIdCacheSize();
-    }
+    protected GlobalConfig config;
 
+    /**
+     * Generates next id.
+     *
+     * @param entityName    entity name
+     * @param sequence      sequence provider
+     * @return  next id
+     */
     public Long createLongId(String entityName, NumberIdSequence sequence) {
-        Generator gen = getGenerator(entityName, sequence);
-        long next = gen.getNext();
-        if (next == -1) {
-            cache.remove(entityName);
-            gen = getGenerator(entityName, sequence);
-            next = gen.getNext();
-        }
-        return next;
+        Generator gen = cache.computeIfAbsent(entityName, s -> new Generator(entityName, sequence));
+        return gen.getNext();
     }
 
-    protected Generator getGenerator(String entityName, NumberIdSequence sequence) {
-        Generator gen = cache.get(entityName);
-        if (gen == null) {
-            gen = new Generator(entityName, sequence);
-            Generator existingGen = cache.putIfAbsent(entityName, gen);
-            if (existingGen != null) {
-                gen = existingGen;
-            }
-        }
-        return gen;
+    /**
+     * INTERNAL. Used by tests.
+     */
+    public void reset() {
+        cache.clear();
     }
 }

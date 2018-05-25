@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, VisibilityChangeNotifier {
-    public static final String BUTTONS_PANNEL_STYLENAME = "c-buttons-panel";
+    public static final String BUTTONS_PANEL_STYLENAME = "c-buttons-panel";
 
     protected List<VisibilityChangeListener> visibilityChangeListeners;
 
@@ -33,19 +33,19 @@ public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, Visi
         setSpacing(true);
         setMargin(false);
 
-        component.addStyleName(BUTTONS_PANNEL_STYLENAME);
+        component.addStyleName(BUTTONS_PANEL_STYLENAME);
     }
 
     @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
 
-        component.addStyleName(BUTTONS_PANNEL_STYLENAME);
+        component.addStyleName(BUTTONS_PANEL_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(BUTTONS_PANNEL_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(BUTTONS_PANEL_STYLENAME, ""));
     }
 
     @Override

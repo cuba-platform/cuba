@@ -281,6 +281,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
+                            editedItem = AppBeans.get(GuiActionSupport.class).reloadEntityIfNeeded(editedItem, datasource);
                             //noinspection unchecked
                             datasource.updateItem(editedItem);
                         }

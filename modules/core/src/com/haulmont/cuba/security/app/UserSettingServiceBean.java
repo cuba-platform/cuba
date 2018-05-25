@@ -212,9 +212,14 @@ public class UserSettingServiceBean implements UserSettingService {
         try (Transaction tx = persistence.createTransaction()) {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
             EntityManager em = persistence.getEntityManager();
-            Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
-            deleteSettingsQuery.setParameter(1, toUser);
-            deleteSettingsQuery.executeUpdate();
+            try {
+                em.setSoftDeletion(false);
+                Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
+                deleteSettingsQuery.setParameter(1, toUser);
+                deleteSettingsQuery.executeUpdate();
+            } finally {
+                em.setSoftDeletion(true);
+            }
             Query q = em.createQuery("select s from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             q.setParameter(1, fromUser);
             List<SearchFolder> fromUserFolders = q.getResultList();
@@ -286,9 +291,14 @@ public class UserSettingServiceBean implements UserSettingService {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
 
             EntityManager em = persistence.getEntityManager();
-            Query deleteFiltersQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
-            deleteFiltersQuery.setParameter(1, toUser);
-            deleteFiltersQuery.executeUpdate();
+            try {
+                em.setSoftDeletion(false);
+                Query deleteFiltersQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
+                deleteFiltersQuery.setParameter(1, toUser);
+                deleteFiltersQuery.executeUpdate();
+            } finally {
+                em.setSoftDeletion(true);
+            }
             Query q = em.createQuery("select f from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
             q.setParameter(1, fromUser);
             List<FilterEntity> fromUserFilters = q.getResultList();

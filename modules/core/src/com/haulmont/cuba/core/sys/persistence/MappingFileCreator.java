@@ -17,9 +17,12 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.app.OrmXmlPostProcessor;
 import com.haulmont.cuba.core.entity.annotation.Extends;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -73,42 +76,42 @@ class MappingFileCreator {
             }
         }
 
-        if (extendedClasses.isEmpty())
-            return false;
-
-        // search for higher order extensions
-        Map<Class, Class> classes = new HashMap<>();
-
-        for (Map.Entry<Class, Class> mappingEntry : extendedClasses.entrySet()) {
-            Class originalClass = mappingEntry.getKey();
-            Class extClass = mappingEntry.getValue();
-            Class lastExtClass = null;
-            Class aClass = extendedClasses.get(extClass);
-            while (aClass != null) {
-                lastExtClass = aClass;
-                aClass = extendedClasses.get(aClass);
-            }
-            if (lastExtClass != null) {
-                classes.put(originalClass, lastExtClass);
-            } else {
-                classes.put(originalClass, extClass);
-            }
-        }
-
         Map<Class<?>, List<Attr>> mappings = new LinkedHashMap<>();
-        for (Class aClass : persistentClasses) {
-            List<Attr> attrList = processClass(aClass, classes);
-            if (!attrList.isEmpty())
-                mappings.put(aClass, attrList);
-        }
 
-        if (mappings.isEmpty())
-            return false;
-        log.debug("Found " + mappings.size() + " entities containing extended associations");
+        if (!extendedClasses.isEmpty()) {
+            // search for higher order extensions
+            Map<Class, Class> classes = new HashMap<>();
+
+            for (Map.Entry<Class, Class> mappingEntry : extendedClasses.entrySet()) {
+                Class originalClass = mappingEntry.getKey();
+                Class extClass = mappingEntry.getValue();
+                Class lastExtClass = null;
+                Class aClass = extendedClasses.get(extClass);
+                while (aClass != null) {
+                    lastExtClass = aClass;
+                    aClass = extendedClasses.get(aClass);
+                }
+                if (lastExtClass != null) {
+                    classes.put(originalClass, lastExtClass);
+                } else {
+                    classes.put(originalClass, extClass);
+                }
+            }
+
+            for (Class aClass : persistentClasses) {
+                List<Attr> attrList = processClass(aClass, classes);
+                if (!attrList.isEmpty())
+                    mappings.put(aClass, attrList);
+            }
+        }
 
         Document doc = createDocument(mappings);
-        writeDocument(doc);
-        return true;
+        if (doc != null) {
+            writeDocument(doc);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private List<Attr> processClass(Class aClass, Map<Class, Class> extendedClasses) {
@@ -153,13 +156,16 @@ class MappingFileCreator {
             return null;
     }
 
+    @Nullable
     private Document createDocument(Map<Class<?>, List<Attr>> mappings) {
-        Document doc = DocumentHelper.createDocument();
-        Element rootEl = doc.addElement("entity-mappings", XMLNS);
-        Namespace xsi = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        rootEl.add(xsi);
-        rootEl.addAttribute(new QName("schemaLocation", xsi), SCHEMA_LOCATION);
-        rootEl.addAttribute("version", PERSISTENCE_VER);
+        if (mappings.isEmpty()) {
+            return postProcess(null);
+        }
+
+        Document doc = createEmptyDocument();
+        Element rootEl = doc.getRootElement();
+
+        log.debug("Found " + mappings.size() + " entities containing extended associations");
 
         for (Map.Entry<Class<?>, List<Attr>> entry : mappings.entrySet()) {
             if (entry.getKey().getAnnotation(MappedSuperclass.class) != null) {
@@ -184,7 +190,36 @@ class MappingFileCreator {
             }
         }
 
+        return postProcess(doc);
+    }
+
+    private Document createEmptyDocument() {
+        Document doc = DocumentHelper.createDocument();
+        Element rootEl = doc.addElement("entity-mappings", XMLNS);
+        Namespace xsi = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        rootEl.add(xsi);
+        rootEl.addAttribute(new QName("schemaLocation", xsi), SCHEMA_LOCATION);
+        rootEl.addAttribute("version", PERSISTENCE_VER);
         return doc;
+    }
+
+    @Nullable
+    private Document postProcess(@Nullable Document document) {
+        String postProcessorClassName = AppContext.getProperty("cuba.ormXmlPostProcessor");
+
+        if (!Strings.isNullOrEmpty(postProcessorClassName)) {
+            log.debug("Running orm.xml post-processor: " + postProcessorClassName);
+            if (document == null)
+                document = createEmptyDocument();
+            try {
+                Class processorClass = ReflectionHelper.loadClass(postProcessorClassName);
+                OrmXmlPostProcessor processor = (OrmXmlPostProcessor) processorClass.newInstance();
+                processor.process(document);
+            } catch (Exception e) {
+                throw new RuntimeException("Error post-processing orm.xml", e);
+            }
+        }
+        return document;
     }
 
     private void createAttributes(Map.Entry<Class<?>, List<Attr>> entry, Element entityEl) {

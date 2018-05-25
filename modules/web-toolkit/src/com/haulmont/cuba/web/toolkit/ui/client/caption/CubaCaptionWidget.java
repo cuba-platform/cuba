@@ -41,6 +41,7 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
 
     public static final String CUBA_CLASSNAME = "c-caption";
     public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+    public static final String CONTEXT_HELP_CLICKABLE_CLASSNAME = "c-context-help-button-clickable";
 
     protected Element contextHelpIndicatorElement;
 
@@ -187,6 +188,10 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
             if (contextHelpIndicatorElement == null) {
                 contextHelpIndicatorElement = DOM.createDiv();
                 contextHelpIndicatorElement.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                if (hasContextHelpIconListeners(owner.getState())) {
+                    contextHelpIndicatorElement.addClassName(CONTEXT_HELP_CLICKABLE_CLASSNAME);
+                }
 
                 DOM.insertChild(getElement(), contextHelpIndicatorElement, getContextHelpInsertPosition());
 

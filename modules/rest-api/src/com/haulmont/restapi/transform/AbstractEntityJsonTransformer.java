@@ -29,6 +29,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 
+import static com.haulmont.cuba.core.app.serialization.EntitySerializationAPI.ENTITY_NAME_PROP;
+
 /**
  * Class containing a basic functionality of standard JSON transformer. It doest the following transformations:
  * <ul>
@@ -112,7 +114,7 @@ public abstract class AbstractEntityJsonTransformer implements EntityJsonTransfo
             String attributeName = entry.getKey();
             JsonNode nestedJsonNode = entry.getValue();
             if (nestedJsonNode.isObject()) {
-                JsonNode childEntityNameNode = nestedJsonNode.get("_entityName");
+                JsonNode childEntityNameNode = nestedJsonNode.get(ENTITY_NAME_PROP);
                 if (childEntityNameNode != null) {
                     String childEntityNameValue = childEntityNameNode.asText();
                     EntityJsonTransformer childEntityTransformer = jsonTransformations.getTransformer(childEntityNameValue, this.version, this.direction);
@@ -135,7 +137,7 @@ public abstract class AbstractEntityJsonTransformer implements EntityJsonTransfo
             if (nestedJsonNode.isArray()) {
                 if (nestedJsonNode.size() > 0) {
                     JsonNode firstArrayElement = nestedJsonNode.get(0);
-                    JsonNode nestedEntityNameNode = firstArrayElement.get("_entityName");
+                    JsonNode nestedEntityNameNode = firstArrayElement.get(ENTITY_NAME_PROP);
                     if (nestedEntityNameNode != null) {
                         String nestedEntityNameValue = nestedEntityNameNode.asText();
                         EntityJsonTransformer nestedEntityTransformer = jsonTransformations.getTransformer(nestedEntityNameValue, this.version, this.direction);
@@ -164,11 +166,11 @@ public abstract class AbstractEntityJsonTransformer implements EntityJsonTransfo
     }
 
     protected void replaceEntityName(ObjectNode rootObjectNode) {
-        JsonNode entityName = rootObjectNode.get("_entityName");
+        JsonNode entityName = rootObjectNode.get(ENTITY_NAME_PROP);
         if (entityName != null) {
             String entityNameValue = entityName.asText();
             if (fromEntityName.equals(entityNameValue)) {
-                rootObjectNode.put("_entityName", toEntityName);
+                rootObjectNode.put(ENTITY_NAME_PROP, toEntityName);
             }
         }
     }

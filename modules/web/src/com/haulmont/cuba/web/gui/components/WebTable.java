@@ -36,7 +36,12 @@ import java.util.*;
 public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
     public WebTable() {
-        component = new CubaTable() {
+        component = createTableComponent();
+        initComponent(component);
+    }
+
+    protected CubaTable createTableComponent() {
+        return new CubaTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 return WebTable.this.getItemIcon(itemId);
@@ -49,7 +54,6 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
                 return b;
             }
         };
-        initComponent(component);
     }
 
     @Override

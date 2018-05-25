@@ -16,6 +16,9 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.CapsLockIndicator;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PasswordField;
 import org.apache.commons.lang.StringUtils;
 
@@ -35,6 +38,21 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
         String autocomplete = element.attributeValue("autocomplete");
         if (StringUtils.isNotEmpty(autocomplete)) {
             resultComponent.setAutocomplete(Boolean.parseBoolean(autocomplete));
+        }
+
+        String capsLockIndicator = element.attributeValue("capsLockIndicator");
+        if (StringUtils.isNotEmpty(capsLockIndicator)) {
+            context.addPostWrapTask((context, window) -> {
+                if (resultComponent.getCapsLockIndicator() == null) {
+                    Component bindComponent = resultComponent.getFrame().getComponent(capsLockIndicator);
+                    if (!(bindComponent instanceof CapsLockIndicator)) {
+                        throw new GuiDevelopmentException("Specify 'capsLockIndicator' attribute: id of " +
+                                "CapsLockIndicator component", context.getFullFrameId(), "componentId", resultComponent
+                                .getId());
+                    }
+                    resultComponent.setCapsLockIndicator((CapsLockIndicator) bindComponent);
+                }
+            });
         }
     }
 }

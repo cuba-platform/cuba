@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.haulmont.bali.util.StackTrace;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
@@ -35,6 +38,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -43,13 +47,16 @@ import javax.persistence.InheritanceType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
 
     private static final Logger log = LoggerFactory.getLogger(MetadataImpl.class);
 
-    protected Session session;
+    protected volatile Session session;
+
+    protected volatile List<String> rootPackages = Collections.emptyList();
 
     @Inject
     protected DatatypeRegistry datatypeRegistry;
@@ -75,7 +82,14 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected GlobalConfig config;
 
-    protected List<String> rootPackages = new ArrayList<>();
+    protected LoadingCache<Class<?>, List<Method>> postConstructMethodsCache =
+            CacheBuilder.newBuilder()
+                    .build(new CacheLoader<Class<?>, List<Method>>() {
+                        @Override
+                        public List<Method> load(@Nonnull Class<?> concreteClass) {
+                            return getPostConstructMethodsNotCached(concreteClass);
+                        }
+                    });
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
@@ -94,7 +108,7 @@ public class MetadataImpl implements Metadata {
         session = new CachingMetadataSession(metadataLoader.getSession());
         SessionImpl.setSerializationSupportSession(session);
 
-        log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.info("Metadata initialized in {} ms", System.currentTimeMillis() - startTime);
     }
 
     @Override
@@ -133,7 +147,7 @@ public class MetadataImpl implements Metadata {
             invokePostConstructMethods((Entity) obj);
             return obj;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create entity instance", e);
         }
     }
 
@@ -149,7 +163,6 @@ public class MetadataImpl implements Metadata {
             // create an instance of embedded ID
             Entity key = create(primaryKeyProperty.getRange().asClass());
             ((BaseGenericIdEntity) entity).setId(key);
-
         } else {
             if (!config.getEnableIdGenerationForEntitiesInAdditionalDataStores()
                     && !Stores.MAIN.equals(tools.getStoreName(metaClass))) {
@@ -166,16 +179,19 @@ public class MetadataImpl implements Metadata {
     }
 
     protected String getEntityNameForIdGeneration(MetaClass metaClass) {
-        MetaClass result = metaClass.getAncestors().stream()
-                .filter(mc -> {
-                    // use root of inheritance tree if the strategy is JOINED because ID is stored in the root table
-                    Class<?> javaClass = mc.getJavaClass();
-                    Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
-                    return inheritance != null && inheritance.strategy() == InheritanceType.JOINED;
-                })
-                .findFirst()
-                .orElse(metaClass);
-        return result.getName();
+        List<MetaClass> persistentAncestors = metaClass.getAncestors().stream()
+                .filter(mc -> tools.isPersistent(mc)) // filter out all mapped superclasses
+                .collect(Collectors.toList());
+        if (persistentAncestors.size() > 0) {
+            MetaClass root = persistentAncestors.get(persistentAncestors.size() - 1);
+            Class<?> javaClass = root.getJavaClass();
+            Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
+            if (inheritance == null || inheritance.strategy() != InheritanceType.TABLE_PER_CLASS) {
+                // use root of inheritance tree if the strategy is JOINED or SINGLE_TABLE because ID is stored in the root table
+                return root.getName();
+            }
+        }
+        return metaClass.getName();
     }
 
     protected void assignUuid(Entity entity) {
@@ -199,28 +215,64 @@ public class MetadataImpl implements Metadata {
     }
 
     protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
-        List<Method> postConstructMethods = new ArrayList<>(4);
-        List<String> methodNames = new ArrayList<>(4);
-        Class clazz = entity.getClass();
+        List<Method> postConstructMethods = postConstructMethodsCache.getUnchecked(entity.getClass());
+        if (!postConstructMethods.isEmpty()) {
+            ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
+            while (iterator.hasPrevious()) {
+                Method method = iterator.previous();
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                method.invoke(entity);
+            }
+        }
+    }
+
+    protected List<Method> getPostConstructMethodsNotCached(Class<?> clazz) {
+        List<Method> postConstructMethods = Collections.emptyList();
+        List<String> methodNames = Collections.emptyList();
+
         while (clazz != Object.class) {
             Method[] classMethods = clazz.getDeclaredMethods();
             for (Method method : classMethods) {
-                if (method.isAnnotationPresent(PostConstruct.class) && !methodNames.contains(method.getName())) {
+                if (method.isAnnotationPresent(PostConstruct.class)
+                        && !methodNames.contains(method.getName())) {
+                    if (postConstructMethods.isEmpty()) {
+                        postConstructMethods = new ArrayList<>();
+                    }
                     postConstructMethods.add(method);
+
+                    if (methodNames.isEmpty()) {
+                        methodNames = new ArrayList<>();
+                    }
                     methodNames.add(method.getName());
                 }
             }
+
+            Class[] interfaces = clazz.getInterfaces();
+            for (Class interfaceClazz : interfaces) {
+                Method[] interfaceMethods = interfaceClazz.getDeclaredMethods();
+                for (Method method : interfaceMethods) {
+                    if (method.isAnnotationPresent(PostConstruct.class)
+                            && method.isDefault()
+                            && !methodNames.contains(method.getName())) {
+                        if (postConstructMethods.isEmpty()) {
+                            postConstructMethods = new ArrayList<>();
+                        }
+                        postConstructMethods.add(method);
+
+                        if (methodNames.isEmpty()) {
+                            methodNames = new ArrayList<>();
+                        }
+                        methodNames.add(method.getName());
+                    }
+                }
+            }
+
             clazz = clazz.getSuperclass();
         }
 
-        ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
-        while (iterator.hasPrevious()) {
-            Method method = iterator.previous();
-            if (!method.isAccessible()) {
-                method.setAccessible(true);
-            }
-            method.invoke(entity);
-        }
+        return postConstructMethods;
     }
 
     @Override

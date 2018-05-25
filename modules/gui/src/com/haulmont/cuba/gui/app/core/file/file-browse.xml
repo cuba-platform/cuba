@@ -19,7 +19,7 @@
         class="com.haulmont.cuba.gui.app.core.file.FileBrowser"
         caption="msg://browseCaption"
         lookupComponent="filesTable"
-        focusComponent="genericFilter">
+        focusComponent="filesTable">
 
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">

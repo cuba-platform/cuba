@@ -274,8 +274,8 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       margin-left: round($v-unit-size / 2);
     }
 
-    .#{$primary-stylename}-submenu .#{$primary-stylename}-item {
-      padding-left: round($v-unit-size / 2) * 2;
+    & > * {
+      margin-left: round($v-unit-size / 2);
     }
   }
 

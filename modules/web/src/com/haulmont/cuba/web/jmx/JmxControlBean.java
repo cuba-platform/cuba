@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
@@ -35,11 +34,10 @@ import javax.inject.Inject;
 import javax.management.*;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.UnmarshalException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.getObjectName;
@@ -47,17 +45,17 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
+
+    public static final String JMX_PORT_SYSTEM_PROPERTY = "com.sun.management.jmxremote.port";
+
     protected static final String FIELD_RUN_ASYNC = "runAsync";
     protected static final String FIELD_TIMEOUT = "timeout";
+    public static final String RMI_SERVER_HOSTNAME_SYSTEM_PROPERTY = "java.rmi.server.hostname";
 
     private final Logger log = LoggerFactory.getLogger(JmxControlBean.class);
 
     @Inject
     protected DataService dataService;
-
-    @Inject
-    protected NodeIdentifier nodeIdentifier;
-
     @Inject
     protected Metadata metadata;
 
@@ -102,7 +100,19 @@ public class JmxControlBean implements JmxControlAPI {
 
     @Override
     public String getLocalNodeName() {
-        return nodeIdentifier.getNodeName();
+        String hostName;
+
+        try {
+            hostName = System.getProperty(RMI_SERVER_HOSTNAME_SYSTEM_PROPERTY,
+                    InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            log.warn("Unable to get local hostname", e);
+            hostName = "<unknown-host>";
+        }
+
+        String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY, "<unknown-port>");
+
+        return String.format("<local> (%s:%s)", hostName, jmxPort);
     }
 
     @Override
@@ -478,7 +488,7 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     /**
-     * Sorts domains alphabetically by name *
+     * Sorts domains alphabetically by name
      */
     protected static class DomainComparator implements Comparator<ManagedBeanDomain> {
         @Override
@@ -490,7 +500,7 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     /**
-     * Sorts mbeans alphabetically by name *
+     * Sorts mbeans alphabetically by name
      */
     protected static class MBeanComparator implements Comparator<ManagedBeanInfo> {
         @Override
@@ -502,7 +512,7 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     /**
-     * Sorts attributes alphabetically by name *
+     * Sorts attributes alphabetically by name
      */
     protected static class AttributeComparator implements Comparator<ManagedBeanAttribute> {
         @Override
@@ -514,7 +524,7 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     /**
-     * Sorts operations alphabetically by name *
+     * Sorts operations alphabetically by name
      */
     protected static class OperationComparator implements Comparator<ManagedBeanOperation> {
         @Override

@@ -103,31 +103,38 @@ public class MetaClassImpl extends MetadataObjectImpl implements MetaClass {
     @Override
     public MetaProperty getPropertyNN(String name) {
         MetaProperty property = getProperty(name);
-        if (property == null)
-            throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
+        if (property == null) {
+            throw new IllegalArgumentException(String.format("Property '%s' not found in %s", name, getName()));
+        }
         return property;
     }
 
     @Override
     public MetaPropertyPath getPropertyPath(String propertyPath) {
-        String[] properties = propertyPath.split("[.]");
-        List<MetaProperty> metaProperties = new ArrayList<>();
+        String[] properties = propertyPath.split("\\."); // split should not create java.util.regex.Pattern
 
-		MetaProperty currentProperty;
-		MetaClass currentClass = this;
+        // do not use ArrayList, leads to excessive memory allocation
+        MetaProperty[] metaProperties = new MetaProperty[properties.length];
 
-		for (String property : properties) {
-			if (currentClass == null) return null;
-			currentProperty = currentClass.getProperty(property);
-			if (currentProperty == null) return null;
+        MetaProperty currentProperty;
+        MetaClass currentClass = this;
 
-			final Range range = currentProperty.getRange();
-			currentClass = range.isClass() ? range.asClass() : null;
+        for (int i = 0; i < properties.length; i++) {
+            if (currentClass == null) {
+                return null;
+            }
+            currentProperty = currentClass.getProperty(properties[i]);
+            if (currentProperty == null) {
+                return null;
+            }
 
-            metaProperties.add(currentProperty);
-		}
+            Range range = currentProperty.getRange();
+            currentClass = range.isClass() ? range.asClass() : null;
 
-		return new MetaPropertyPath(this, metaProperties.toArray(new MetaProperty[metaProperties.size()]));
+            metaProperties[i] = currentProperty;
+        }
+
+		return new MetaPropertyPath(this, metaProperties);
     }
 
     @Override

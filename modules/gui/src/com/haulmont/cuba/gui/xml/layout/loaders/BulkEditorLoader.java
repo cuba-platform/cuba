@@ -123,6 +123,11 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
             resultComponent.setLoadDynamicAttributes(Boolean.parseBoolean(loadDynamicAttributes));
         }
 
+        String useConfirmDialog = element.attributeValue("useConfirmDialog");
+        if (StringUtils.isNotEmpty(useConfirmDialog)) {
+            resultComponent.setUseConfirmDialog(Boolean.parseBoolean(useConfirmDialog));
+        }
+
         context.addPostInitTask((context1, window) -> {
             // todo artamonov here we can use post wrap instead of post init
             if (resultComponent.getListComponent() == null) {

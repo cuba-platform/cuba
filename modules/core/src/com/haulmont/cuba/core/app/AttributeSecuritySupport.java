@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.app.events.SetupAttributeAccessEvent;
 import com.haulmont.cuba.core.entity.*;
@@ -144,6 +145,22 @@ public class AttributeSecuritySupport {
                     && !metaProperty.isReadOnly()
                     && !security.isEntityAttrUpdatePermitted(metaClass, metaProperty.getName())) {
                 entity.setValue(metaProperty.getName(), null);
+            }
+        }
+    }
+
+    /**
+     * Should be called after persisting a new entity.
+     *
+     * @param entity new entity
+     * @param view entity view
+     */
+    public void afterPersist(Entity entity, View view) {
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
+            setupAttributeAccess(genericIdEntity);
+            if (view != null) {
+                metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
             }
         }
     }
@@ -347,9 +364,21 @@ public class AttributeSecuritySupport {
     protected void setNullPropertyValue(Entity entity, MetaProperty property) {
         // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
         // which is the case when in-memory constraints exist
-        BaseEntityInternalAccess.setValue(entity, property.getName(), null);
-        if (property.getRange().isClass()) {
-            BaseEntityInternalAccess.setValueForHolder(entity, property.getName(), null);
+        Range range = property.getRange();
+        if (range.isClass()) {
+            Object nullValue = null;
+            if (range.getCardinality().isMany()) {
+                Class<?> propertyType = property.getJavaType();
+                if (List.class.isAssignableFrom(propertyType)) {
+                    nullValue = new ArrayList<>();
+                } else if (Set.class.isAssignableFrom(propertyType)) {
+                    nullValue = new LinkedHashSet<>();
+                }
+            }
+            BaseEntityInternalAccess.setValue(entity, property.getName(), nullValue);
+            BaseEntityInternalAccess.setValueForHolder(entity, property.getName(), nullValue);
+        } else {
+            BaseEntityInternalAccess.setValue(entity, property.getName(), null);
         }
     }
 

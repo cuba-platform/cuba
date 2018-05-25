@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.app.scheduled.MethodInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.RunTaskOnceException;
 
 import java.util.List;
 import java.util.Map;
@@ -69,4 +70,12 @@ public interface SchedulingService {
      * @param active true to activate
      */
     void setActive(Set<ScheduledTask> tasks, boolean active);
+
+    /**
+     * Runs a task right now and only once.
+     *
+     * @param task task to execute
+     * @throws RunTaskOnceException if you try to execute task once from not permitted server
+     */
+    void runOnce(ScheduledTask task);
 }

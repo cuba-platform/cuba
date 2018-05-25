@@ -41,6 +41,8 @@
         <class>com.haulmont.cuba.gui.components.filter.descriptor.DynamicAttributesConditionCreator</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor</class>
         <class>com.haulmont.cuba.gui.app.core.categories.ScreenAndComponent</class>
+
+        <class>com.haulmont.cuba.gui.components.ScreenComponentDescriptor</class>
     </metadata-model>
 
 </metadata>

@@ -103,6 +103,7 @@ public class LayoutLoaderConfig {
         loaders.put(SearchField.NAME, SearchFieldLoader.class);
         loaders.put(RelatedEntities.NAME, RelatedEntitiesLoader.class);
         loaders.put(BulkEditor.NAME, BulkEditorLoader.class);
+        loaders.put(CapsLockIndicator.NAME, CapsLockIndicatorLoader.class);
 
         /* Main window components */
 

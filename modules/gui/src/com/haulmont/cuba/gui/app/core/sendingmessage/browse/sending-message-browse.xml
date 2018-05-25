@@ -49,6 +49,7 @@
                         <column id="from"/>
                         <column id="caption"/>
                         <column id="status"/>
+                        <column id="bodyContentType"/>
                         <column id="dateSent">
                             <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
                                        format="msg://dateTimeWithSeconds"/>
@@ -76,6 +77,7 @@
                         <field id="from"/>
                         <field id="caption"/>
                         <field id="contentText" custom="true"/>
+                        <field id="bodyContentType"/>
                         <field id="status"/>
                         <field id="attachmentsName"/>
                         <field id="dateSent"/>

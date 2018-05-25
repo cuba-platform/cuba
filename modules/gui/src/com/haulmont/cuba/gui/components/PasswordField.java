@@ -32,6 +32,18 @@ public interface PasswordField extends TextInputField, TextInputField.MaxLengthL
      */
     void setAutocomplete(Boolean autocomplete);
 
+    /**
+     * Sets CapsLockIndicator component, that will be indicate when caps lock key is active.
+     *
+     * @param capsLockIndicator capsLockIndicator component
+     */
+    void setCapsLockIndicator(CapsLockIndicator capsLockIndicator);
+
+    /**
+     * @return capsLockIndicator component
+     */
+    CapsLockIndicator getCapsLockIndicator();
+
     @SuppressWarnings("unchecked")
     @Override
     String getValue();

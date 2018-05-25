@@ -646,6 +646,7 @@ create table SYS_SENDING_MESSAGE (
     ATTEMPTS_COUNT int,
     ATTEMPTS_MADE int,
     ATTACHMENTS_NAME varchar(max),
+    BODY_CONTENT_TYPE varchar(50),
     --
     primary key nonclustered (ID),
     constraint FK_SYS_SENDING_MESSAGE_CONTENT_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)
@@ -971,8 +972,14 @@ values ('a405db59-e674-4f63-8afe-269dda788fe8', current_timestamp, 0, 'anonymous
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10)^
 
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
+values ('cd541dd4-eeb7-cd5b-847e-d32236552fa9', current_timestamp, 0, 'Anonymous', 30)^
+
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', current_timestamp, 0, '60885987-1b61-4247-94c7-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
+values ('f01fb532-c2f0-dc18-b86c-450cf8a8d8c5', current_timestamp, 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'cd541dd4-eeb7-cd5b-847e-d32236552fa9')^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID,GLOBAL_DEFAULT)
 values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',

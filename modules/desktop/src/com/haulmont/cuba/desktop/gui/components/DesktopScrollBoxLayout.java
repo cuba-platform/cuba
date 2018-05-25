@@ -93,6 +93,14 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         }
         view.setPreferredSize(preferredSize);
 
+        JViewport viewport = impl.getViewport();
+        if (viewport != null) {
+            viewport.setPreferredSize(preferredSize);
+            for (java.awt.Component component : viewport.getComponents()) {
+                component.setPreferredSize(preferredSize);
+            }
+        }
+
         requestRepaint();
     }
 

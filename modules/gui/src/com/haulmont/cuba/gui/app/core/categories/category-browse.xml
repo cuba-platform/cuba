@@ -20,7 +20,7 @@
         messagesPack="com.haulmont.cuba.gui.app.core.categories"
         lookupComponent="categoryTable"
         caption="msg://categories"
-        focusComponent="categoriesFilter">
+        focusComponent="categoryTable">
     <dsContext>
         <collectionDatasource
                 id="categoriesDs"

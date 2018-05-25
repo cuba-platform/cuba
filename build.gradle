@@ -16,7 +16,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '6.9-SNAPSHOT'
+    ext.cubaVersion = '6.10-SNAPSHOT'
     ext.cubaVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : cubaVersion
     
     println("CUBA Platform Version ${ext.cubaVersion}")
@@ -279,6 +279,7 @@ configure(globalModule) {
         compile(bom['org.codehaus.groovy:groovy-all'])
 
         compile(bom['commons-lang:commons-lang'])
+        compile(bom['org.apache.commons:commons-lang3']) // simplify version management with reports and bpm
         compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['commons-io:commons-io'])
         compile(bom['commons-cli:commons-cli'])
@@ -289,6 +290,8 @@ configure(globalModule) {
         compile(bom['org.apache.commons:commons-compress'])
 
         compile(bom['dom4j:dom4j'])
+        compile(bom['xml-apis:xml-apis']) // simplify version management with core
+        compile(bom['javax.activation:activation']) // simplify version management with core
         compile(bom['com.sun.mail:javax.mail'])
         compile(bom['ch.qos.logback:logback-classic'])
         compile(bom['org.slf4j:log4j-over-slf4j'])
@@ -325,8 +328,12 @@ configure(globalModule) {
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
-        releaseTimeStampPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp"
-        releaseNumberPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.number"
+        releaseTimeStampPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.timestamp"
+        releaseNumberPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.number"
+    }
+    // do not use classes directory, because it will break Gradle task UP-TO-DATE caching
+    jar {
+        from new File(project.buildDir, 'release-number')
     }
 
     task enhance(type: CubaEnhancing)
@@ -615,6 +622,8 @@ configure(webModule) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
 
+        compile(bom['org.jsoup:jsoup']) // use the same version as core
+
         /* Vaadin addons */
         compile(bom['org.vaadin.addons:popupbutton']) {
             exclude(group: 'com.vaadin', module: 'vaadin-client')
@@ -865,6 +874,7 @@ configure(restApiModule) {
         compile(bom['org.json:json'])
 
         compile(bom['com.fasterxml.jackson.core:jackson-databind'])
+        compile(bom['com.fasterxml.jackson.core:jackson-annotations'])
         compile(bom['com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'])
 
         compile(bom['org.springframework.security:spring-security-core'])
@@ -873,6 +883,8 @@ configure(restApiModule) {
         compile(bom['org.springframework.security.oauth:spring-security-oauth2']) {
             exclude(group: 'org.springframework.security')
         }
+
+        compile(bom['io.swagger:swagger-models'])
 
         provided(bom['javax.servlet:javax.servlet-api'])
 
@@ -926,6 +938,10 @@ configure(idpModule) {
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
+
+        compile(bom['org.springframework.ldap:spring-ldap-core']) {
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        }
 
         compile(bom['org.springframework.security:spring-security-core'])
         compile(bom['org.springframework.security:spring-security-config'])
@@ -1072,9 +1088,22 @@ task aggregateJavadoc(type: Javadoc,
     exclude 'com/haulmont/cuba/core/app/cache/**'
     exclude 'com/haulmont/cuba/core/sys/jpql/antlr2/**'
     exclude 'com/haulmont/cuba/core/sys/utils/**'
-    exclude 'com/haulmont/cuba/desktop/sys/vcl/**'
     exclude 'com/haulmont/cuba/restapi/**'
+
+    exclude 'com/haulmont/cuba/gui/components/compatibility/**'
+    exclude 'com/haulmont/cuba/gui/xml/layout/loaders/**'
+
+    exclude 'com/haulmont/cuba/desktop/sys/**'
+    exclude 'com/haulmont/cuba/desktop/gui/components/**'
+    exclude 'com/haulmont/cuba/desktop/gui/data/**'
+    exclude 'com/haulmont/cuba/desktop/gui/executors/**'
+
     exclude 'com/haulmont/cuba/web/toolkit/**'
+    exclude 'com/haulmont/cuba/web/controllers/**'
+    exclude 'com/haulmont/cuba/web/gui/components/**'
+    exclude 'com/haulmont/cuba/web/gui/data/**'
+    exclude 'com/haulmont/cuba/web/gui/executors/**'
+
     exclude 'org/eclipse/**'
 
     subprojects.each { proj ->

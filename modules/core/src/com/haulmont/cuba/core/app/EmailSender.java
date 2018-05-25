@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailHeader;
@@ -102,9 +103,8 @@ public class EmailSender implements EmailSenderAPI {
             throws MessagingException {
         MimeBodyPart textBodyPart = new MimeBodyPart();
         MimeBodyPart contentBodyPart = new MimeBodyPart();
-        String bodyContentType = getContentBodyType(sendingMessage);
 
-        contentBodyPart.setContent(sendingMessage.getContentText(), bodyContentType);
+        contentBodyPart.setContent(sendingMessage.getContentText(), sendingMessage.getBodyContentType());
         textPart.addBodyPart(contentBodyPart);
         textBodyPart.setContent(textPart);
         content.addBodyPart(textBodyPart);
@@ -113,17 +113,6 @@ public class EmailSender implements EmailSenderAPI {
     protected void assignRecipient(SendingMessage sendingMessage, MimeMessage message) throws MessagingException {
         InternetAddress internetAddress = new InternetAddress(sendingMessage.getAddress().trim());
         message.setRecipient(Message.RecipientType.TO, internetAddress);
-    }
-
-    protected String getContentBodyType(SendingMessage sendingMessage) {
-        String text = sendingMessage.getContentText();
-        String bodyContentType;
-        if (text.trim().startsWith("<html>")) {
-            bodyContentType = "text/html; charset=UTF-8";
-        } else {
-            bodyContentType = "text/plain; charset=UTF-8";
-        }
-        return bodyContentType;
     }
 
     protected void assignFromAddress(SendingMessage sendingMessage, MimeMessage msg) throws MessagingException {

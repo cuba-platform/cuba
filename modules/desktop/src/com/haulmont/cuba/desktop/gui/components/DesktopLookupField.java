@@ -87,6 +87,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected OptionIconProvider optionIconProvider;
     // just stub
     protected OptionsStyleProvider optionsStyleProvider;
+    // just stub
+    private FilterPredicate filterPredicate;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -587,7 +589,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     protected void setSelectedItem(Object item) {
         comboBox.setSelectedItem(item);
-        if (!editable) {
+        if (impl == textField) {
             updateTextField();
         }
         updateMissingValueState();
@@ -775,6 +777,18 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public OptionsStyleProvider getOptionsStyleProvider() {
         return optionsStyleProvider;
+    }
+
+    // just stub
+    @Override
+    public void setFilterPredicate(FilterPredicate filterPredicate) {
+        this.filterPredicate = filterPredicate;
+    }
+
+    // just stub
+    @Override
+    public FilterPredicate getFilterPredicate() {
+        return filterPredicate;
     }
 
     protected class NullOption extends EntityWrapper {

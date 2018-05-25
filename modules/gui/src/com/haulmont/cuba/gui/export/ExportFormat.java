@@ -48,6 +48,7 @@ public final class ExportFormat implements Serializable {
     public static final ExportFormat GZ = new ExportFormat(" application/x-gzip", "gz");
     public static final ExportFormat JSON = new ExportFormat(" application/json", "json");
     public static final ExportFormat OCTET_STREAM = new ExportFormat("application/octet-stream", "");
+    public static final ExportFormat TEXT = new ExportFormat("text/plain", "");
 
     public static final List<ExportFormat> DEFAULT_FORMATS = Collections.unmodifiableList(
             Arrays.asList(HTML, HTM, PDF, XLS, XLSX, RTF, DOC, DOCX, XML, CSV, JPEG, JPG, PNG, RAR, GZ, ZIP, OCTET_STREAM, JSON));

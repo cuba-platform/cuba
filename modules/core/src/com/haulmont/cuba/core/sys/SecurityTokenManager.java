@@ -25,8 +25,12 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -42,6 +46,8 @@ import static org.apache.commons.lang.StringUtils.substring;
 @Component(SecurityTokenManager.NAME)
 public class SecurityTokenManager {
     public static final String NAME = "cuba_SecurityTokenManager";
+
+    private static final Logger log = LoggerFactory.getLogger(SecurityTokenManager.class);
 
     @Inject
     protected ServerConfig config;
@@ -66,10 +72,7 @@ public class SecurityTokenManager {
                 String[] filteredAttributes = new String[entries.size()];
                 int i = 0;
                 for (Map.Entry<String, Collection<Object>> entry : entries) {
-                    MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(entry.getKey());
-                    if (metadata.getTools().isOwningSide(metaProperty)) {
-                        jsonObject.put(entry.getKey(), entry.getValue());
-                    }
+                    jsonObject.put(entry.getKey(), entry.getValue());
                     filteredAttributes[i++] = entry.getKey();
                 }
                 setFilteredAttributes(securityState, filteredAttributes);
@@ -208,5 +211,16 @@ public class SecurityTokenManager {
             setFilteredData(securityState, ArrayListMultimap.create());
         }
         getFilteredData(securityState).putAll(property, ids);
+    }
+
+    @EventListener(AppContextInitializedEvent.class)
+    protected void applicationInitialized() {
+        if ("CUBA.Platform".equals(config.getKeyForSecurityTokenEncryption())) {
+            log.warn("\nWARNING:\n" +
+                    "=================================================================\n" +
+                    "'cuba.keyForSecurityTokenEncryption' app property is set to\n " +
+                    "default value. Use a unique value in production environments.\n" +
+                    "=================================================================");
+        }
     }
 }

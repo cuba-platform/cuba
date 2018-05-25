@@ -31,9 +31,15 @@ import java.util.Date;
 @Entity(name = "sys$ScheduledExecution")
 @Table(name = "SYS_SCHEDULED_EXECUTION")
 @SystemLevel
-public class ScheduledExecution extends BaseUuidEntity {
+public class ScheduledExecution extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = -3891325977986519747L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = 50)
+    protected String createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID")
@@ -50,6 +56,26 @@ public class ScheduledExecution extends BaseUuidEntity {
 
     @Column(name = "RESULT")
     protected String result;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public ScheduledTask getTask() {
         return task;

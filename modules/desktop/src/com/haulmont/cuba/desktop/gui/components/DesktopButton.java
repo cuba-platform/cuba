@@ -33,6 +33,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
@@ -47,6 +48,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected PropertyChangeListener actionPropertyChangeListener;
     protected boolean disableOnClick = false;
     protected boolean useResponsePending = false;
+
+    protected boolean captionAsHtml = false; // just stub
 
     public DesktopButton() {
         impl = createImplementation();
@@ -95,6 +98,15 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             if (this.action != null) {
                 this.action.removeOwner(this);
                 this.action.removePropertyChangeListener(actionPropertyChangeListener);
+                if (Objects.equals(this.action.getCaption(), getCaption())) {
+                    setCaption(null);
+                }
+                if (Objects.equals(this.action.getDescription(), getDescription())) {
+                    setDescription(null);
+                }
+                if (Objects.equals(this.action.getIcon(), getIcon())) {
+                    setIcon(null);
+                }
             }
 
             this.action = action;
@@ -232,5 +244,15 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     @Override
     public void setUseResponsePending(boolean useResponsePending) {
         this.useResponsePending = useResponsePending;
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
+    }
+
+    @Override
+    public boolean isCaptionAsHtml() {
+        return captionAsHtml;
     }
 }

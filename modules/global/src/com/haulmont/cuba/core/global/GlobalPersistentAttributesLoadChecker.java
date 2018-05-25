@@ -20,9 +20,11 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
@@ -44,6 +46,9 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
+
     protected enum PropertyLoadedState {
         YES,
         NO,
@@ -55,15 +60,16 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         if (isDynamicAttribute(property)) {
             @SuppressWarnings("unchecked")
-            Map<String, CategoryAttributeValue> dynamicAttributes =
+            Map<String, CategoryAttributeValue> entityDynamicAttributes =
                     ((BaseGenericIdEntity) entity).getDynamicAttributes();
 
-            if (dynamicAttributes == null) {
+            if (entityDynamicAttributes == null) {
                 return false;
             }
 
             String attributeCode = decodeAttributeCode(property);
-            return dynamicAttributes.containsKey(attributeCode);
+            return entityDynamicAttributes.containsKey(attributeCode) ||
+                    dynamicAttributes.getAttributeForMetaClass(metaClass, property) != null;
         }
 
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
@@ -101,21 +107,30 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
                 }
             }
 
-            if (entity instanceof FetchGroupTracker) {
-                FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
-                if (fetchGroup != null) {
-                    boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
-                    if (!inFetchGroup) {
-                        // definitely not loaded
-                        return PropertyLoadedState.NO;
-                    } else {
-                        // requires additional check specific for the tier
-                        return PropertyLoadedState.UNKNOWN;
-                    }
+            return isLoadedByFetchGroup(entity, property);
+        }
+
+        if (entity instanceof EmbeddableEntity) {
+            return isLoadedByFetchGroup(entity, property);
+        }
+
+        return PropertyLoadedState.UNKNOWN;
+    }
+
+    protected PropertyLoadedState isLoadedByFetchGroup(Object entity, String property) {
+        if (entity instanceof FetchGroupTracker) {
+            FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
+            if (fetchGroup != null) {
+                boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
+                if (!inFetchGroup) {
+                    // definitely not loaded
+                    return PropertyLoadedState.NO;
+                } else {
+                    // requires additional check specific for the tier
+                    return PropertyLoadedState.UNKNOWN;
                 }
             }
         }
-
         return PropertyLoadedState.UNKNOWN;
     }
 

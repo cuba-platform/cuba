@@ -25,11 +25,11 @@ import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
-import com.haulmont.cuba.core.config.type.Factory;
-import com.haulmont.cuba.core.config.type.UuidTypeFactory;
+import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -234,4 +234,28 @@ public interface GlobalConfig extends Config {
     @Property("cuba.enableIdGenerationForEntitiesInAdditionalDataStores")
     @DefaultBoolean(true)
     boolean getEnableIdGenerationForEntitiesInAdditionalDataStores();
+
+    /**
+     * @return true if REST doesn't check security token for entities with security constraints
+     */
+    @Property("cuba.rest.requiresSecurityToken")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getRestRequiresSecurityToken();
+
+    /**
+     * Whether {@code MetadataTools.deepCopy()} should copy non-persistent reference attributes.
+     */
+    @Property("cuba.deepCopyNonPersistentReferences")
+    @DefaultBoolean(true)
+    boolean getDeepCopyNonPersistentReferences();
+
+    /**
+     * Disable ESCAPE in queries with LIKE for specified data stores.
+     */
+    @Property("cuba.disableEscapingLikeForDataStores")
+    @Source(type = SourceType.DATABASE)
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    @Stringify(stringify = CommaSeparatedStringListStringify.class)
+    List<String> getDisableEscapingLikeForDataStores();
 }

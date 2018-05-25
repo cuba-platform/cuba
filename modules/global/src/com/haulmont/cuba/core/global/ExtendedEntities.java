@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.entity.annotation.ExtendedBy;
 import com.haulmont.cuba.core.entity.annotation.Extends;
 import org.springframework.stereotype.Component;
@@ -92,6 +93,8 @@ public class ExtendedEntities {
      * @return extended or original entity
      */
     public MetaClass getEffectiveMetaClass(MetaClass originalMetaClass) {
+        if (originalMetaClass instanceof KeyValueMetaClass)
+            return originalMetaClass;
         return metadata.getSession().getClassNN(getEffectiveClass(originalMetaClass));
     }
 

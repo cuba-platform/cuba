@@ -319,6 +319,15 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
     }
 
+    @Override
+    public void updateFieldContent(String text) {
+        super.updateFieldContent(text);
+
+        if (text == null || text.isEmpty()) {
+            valueBeforeEdit = valueBuilder.toString();
+        }
+    }
+
     public void updateTextState() {
         if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
             valueBeforeEdit = getText();
@@ -341,23 +350,35 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     public void handleInput(String inputType) {
         String newText = getText();
-        if (inputType != null) {
-            switch (inputType) {
-                case "deleteByCut":
-                    handleCut(newText);
-                    break;
-                case "insertFromPaste":
-                    handlePaste(newText);
-                    break;
-                default:
-                    Logger.getLogger("CubaMaskedFieldWidget").log(Level.WARNING, "Unknown inputType");
-            }
-        } else {
-            if (newText.length() < valueBuilder.length()) {
+
+        if (inputType == null) {
+            handleCutAndPaste();
+            return;
+        }
+
+        switch (inputType) {
+            case "deleteByCut":
                 handleCut(newText);
-            } else {
+                break;
+            case "insertFromPaste":
                 handlePaste(newText);
-            }
+                break;
+            case "insertText":
+            case "insertCompositionText": // in Chrome and Opera on Android when typing
+                handleInsertText(newText);
+                break;
+            default:
+                handleCutAndPaste();
+                Logger.getLogger("CubaMaskedFieldWidget").log(Level.WARNING, "Unknown inputType: " + inputType);
+        }
+    }
+
+    protected void handleCutAndPaste() {
+        String newText = getText();
+        if (newText.length() < valueBuilder.length()) {
+            handleCut(newText);
+        } else {
+            handlePaste(newText);
         }
     }
 
@@ -377,6 +398,25 @@ public class CubaMaskedFieldWidget extends VTextField {
             valueBuilder.replace(0, valueBuilder.length(), resultValue.toString());
             super.setText(resultValue.toString());
             setCursorPos(cursorPos);
+        }
+    }
+
+    protected void handleInsertText(String newText) {
+        int pasteLength = newText.length() - valueBuilder.length();
+        int pasteStart = getCursorPos() - pasteLength;
+
+        StringBuilder maskedPart = maskValue(newText.substring(pasteStart, pasteStart + pasteLength), pasteStart, pasteStart + pasteLength);
+        valueBuilder.replace(pasteStart, pasteStart + maskedPart.length(), maskedPart.toString());
+        super.setText(valueBuilder.toString());
+
+        if (maskedPart.length() == 0) {
+            return;
+        }
+
+        if (maskedPart.toString().charAt(0) == PLACE_HOLDER) {
+            setCursorPos(getNextPos(pasteStart - 1));
+        } else {
+            setCursorPos(getNextPos(pasteStart + pasteLength - 1));
         }
     }
 

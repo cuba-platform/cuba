@@ -2,15 +2,9 @@
 
 These instructions are for contributing code to the core framework.
 
-## Bug tracking
+## Reporting bugs
 
-We use our internal bug tracker system YouTrack available at https://youtrack.cuba-platform.com/issues. 
-It is read-only for external contributors. For external contributions and bug reports please use 
-[GitHub issues](https://github.com/cuba-platform/cuba/issues) and [pull-requests](https://github.com/cuba-platform/cuba/pulls).
-
-If you want to discuss your problem or ask something please use our forum: https://cuba-platform.com/support 
-
-Getting in touch with us early will also help us coordinate efforts so that not everyone ends up working on the same bug or feature at the same time.
+If you want to discuss your problem or ask something please use our forum: https://www.cuba-platform.com/discuss. Search through existing issues before adding a new one - there is a good chance someone has already faced the same problem. Comment on existing issues to let us know that it is relevant to you or to add more details.
 
 ## Submitting patches
 
@@ -120,7 +114,7 @@ Start the following command to run static code analysis:
 ### Code style
 
 1. Source code files (Java, XML and Groovy) must have copyright notice with Apache 2.0 license. It will be generated automatically if you use IntelliJ Idea IDE.
-1. Use default IntelliJ Idea code formatting optioons. You can reformat your code (reformat changed code only!) using Ctrl+Alt+L shortcut.
+1. Use default IntelliJ Idea code formatting options. You can reformat your code (reformat changed code only!) using Ctrl+Alt+L shortcut.
 1. Maximum line length - 120 symbols.
 1. Recommended method length - up to 50 lines.
 1. All public interfaces, classes and their public methods must have JavaDoc statement (excluding entities and simple gettters/settters).

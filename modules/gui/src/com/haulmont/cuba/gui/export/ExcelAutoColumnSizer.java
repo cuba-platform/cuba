@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- *  Calculates the width of a column, based on the values within it.
+ * Calculates the width of a column, based on the values within it.
  * <p> For each new value added to the column, call {@link #isNotificationRequired}.
  * If the result is true, call {@link #notifyCellValue}.
  */
-public class ExcelAutoColumnSizer
-{
+public class ExcelAutoColumnSizer {
+
     private static final short WIDTH_MIN = 40;
     private static final short WIDTH_MAX = 250;
 
@@ -53,11 +53,19 @@ public class ExcelAutoColumnSizer
         fm = (FontMetrics) fontMetrics.get(pFont);
         if (fm == null) {
             int style;
-            if((hf.getBoldweight() == HSSFFont.BOLDWEIGHT_BOLD) || hf.getItalic()) { style = 0; if(hf.getBoldweight() == HSSFFont.BOLDWEIGHT_BOLD) style ^= Font.BOLD; if(hf.getItalic()) style ^= Font.ITALIC; } else { style = Font.PLAIN; }
+            if (hf.getBold() || hf.getItalic()) {
+                style = 0;
+                if (hf.getBold()) style ^= Font.BOLD;
+                if (hf.getItalic()) style ^= Font.ITALIC;
+            } else {
+                style = Font.PLAIN;
+            }
             Font f = new java.awt.Font(hf.getFontName(), style, hf.getFontHeightInPoints());
 
             if (graphics == null) {
-                BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY); graphics = i.createGraphics(); }
+                BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
+                graphics = i.createGraphics();
+            }
 
             fm = graphics.getFontMetrics(f);
             fontMetrics.put(pFont, fm);

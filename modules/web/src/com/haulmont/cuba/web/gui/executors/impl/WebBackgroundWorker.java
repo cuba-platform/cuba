@@ -40,7 +40,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -216,6 +219,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     }
 
                     @Override
+                    public boolean isCancelled() {
+                        return future.isCancelled();
+                    }
+
+                    @Override
                     @Nonnull
                     public Map<String, Object> getParams() {
                         return params;
@@ -249,7 +257,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @ExecutedOnUIThread
         protected final void handleDone() {
             if (isCancelled()) {
-                // handle cancel from edt before execution start
+                // handle cancel from EDT before execution start
                 log.trace("Done statement is not processed because it is canceled task");
                 return;
             }
@@ -264,8 +272,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // do not allow to cancel task from done listeners and exception handler
             isClosed = true;
 
-            ui.getApp().removeBackgroundTask(future);
-            watchDog.removeTask(taskHandler);
+            unregister();
 
             try {
                 V result = future.get();
@@ -311,6 +318,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 return false;
             }
 
+            unregister();
+
             log.debug("Cancel task. User: {}", userLogin);
 
             boolean isCanceledNow = future.cancel(true);
@@ -328,6 +337,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
             }
 
             return isCanceledNow;
+        }
+
+        @ExecutedOnUIThread
+        protected void unregister() {
+            log.trace("Unregister task");
+
+            ui.getApp().removeBackgroundTask(future);
+            watchDog.removeTask(taskHandler);
         }
 
         @ExecutedOnUIThread

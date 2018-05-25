@@ -17,13 +17,16 @@
 
 package com.haulmont.cuba.gui;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -65,6 +68,7 @@ public class ScreensHelper {
 
     private Map<String, String> captionCache = new ConcurrentHashMap<>();
     private Map<String, Map<String, Object>> availableScreensCache = new ConcurrentHashMap<>();
+    private Map<String, List<ScreenComponentDescriptor>> screenComponentsCache = new ConcurrentHashMap<>();
 
     /**
      * Sorts window infos alphabetically, takes into account $ mark
@@ -99,6 +103,119 @@ public class ScreensHelper {
         }
 
         return null;
+    }
+
+    public List<ScreenComponentDescriptor> getScreenComponents(String screenId) {
+        String key = getScreenComponentsCacheKey(screenId, getUserLocale());
+        List<ScreenComponentDescriptor> screenComponents = screenComponentsCache.get(key);
+        if (screenComponents != null) {
+            return screenComponents;
+        }
+
+        List<ScreenComponentDescriptor> components = new ArrayList<>();
+
+        WindowInfo windowInfo = windowConfig.findWindowInfo(screenId);
+        if (windowInfo != null) {
+            String template = windowInfo.getTemplate();
+            try {
+                Element layoutElement = getRootLayoutElement(template);
+                if (layoutElement != null) {
+                    findScreenComponents(components, null, layoutElement);
+                }
+            } catch (FileNotFoundException e) {
+                log.error("Can't obtain screen's root layout: ", e);
+            }
+        }
+
+        components = Collections.unmodifiableList(components);
+        cacheScreenComponents(key, components);
+        return components;
+    }
+
+    public void findScreenComponents(List<ScreenComponentDescriptor> components,
+                                     @Nullable ScreenComponentDescriptor parent, Element root) {
+        List<Element> elements = isFrame(root) ? getFrameElements(root) : Dom4j.elements(root);
+        for (Element element : elements) {
+            if (isComponentElement(element)) {
+                //noinspection IncorrectCreateEntity
+                ScreenComponentDescriptor descriptor = new ScreenComponentDescriptor(element, parent);
+                components.add(descriptor);
+                findScreenComponents(components, descriptor, element);
+            }
+        }
+    }
+
+    protected List<Element> getFrameElements(Element frameElement) {
+        String src = frameElement.attributeValue("src");
+        if (Strings.isNullOrEmpty(src)) {
+            String screenId = frameElement.attributeValue("screen");
+            if (!Strings.isNullOrEmpty(screenId)) {
+                src = windowConfig.getWindowInfo(screenId).getTemplate();
+            }
+        }
+
+        if (!Strings.isNullOrEmpty(src)) {
+            try {
+                Element layoutElement = getRootLayoutElement(src);
+                if (layoutElement != null) {
+                    return Dom4j.elements(layoutElement);
+                }
+            } catch (FileNotFoundException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    protected boolean isFrame(Element element) {
+        return Frame.NAME.equals(element.getName());
+    }
+
+    protected boolean isComponentElement(Element element) {
+        Class<? extends ComponentLoader> loader = LayoutLoaderConfig.getWindowLoaders().getLoader(element.getName());
+        return !isExclusion(element) &&
+                (loader != null
+                        || isAction(element)
+                        || isTab(element)
+                        || isRow(element)
+                        || isField(element)
+                        || isFieldGroupColumn(element)
+                );
+    }
+
+    protected boolean isAction(Element element) {
+        return "action".equals(element.getName())
+                || "actions".equals(element.getName());
+    }
+
+    protected boolean isTab(Element element) {
+        return "tab".equals(element.getName());
+    }
+
+    protected boolean isRow(Element element) {
+        return "row".equals(element.getName())
+                || "rows".equals(element.getName());
+    }
+
+    protected boolean isField(Element element) {
+        return "field".equals(element.getName());
+    }
+
+    protected boolean isFieldGroupColumn(Element element) {
+        return "column".equals(element.getName())
+                && element.getParent() != null
+                && FieldGroup.NAME.equals(element.getParent().getName());
+    }
+
+    protected boolean isExclusion(Element element) {
+        return RowsCount.NAME.equals(element.getName())
+                || isTableRows(element);
+    }
+
+    protected boolean isTableRows(Element element) {
+        return "rows".equals(element.getName())
+                && element.getParent() != null
+                && StringUtils.containsIgnoreCase(element.getParent().getName(), Table.NAME);
     }
 
     protected enum ScreenType {
@@ -263,6 +380,16 @@ public class ScreensHelper {
     }
 
     @Nullable
+    protected Element getRootLayoutElement(String src) throws FileNotFoundException {
+        Element windowElement = getWindowElement(src);
+        if (windowElement != null) {
+            return windowElement.element("layout");
+        }
+
+        return null;
+    }
+
+    @Nullable
     public String getScreenCaption(WindowInfo windowInfo) throws FileNotFoundException {
         return getScreenCaption(windowInfo, getUserLocale());
     }
@@ -361,6 +488,11 @@ public class ScreensHelper {
             availableScreensCache.put(key, value);
     }
 
+    protected void cacheScreenComponents(String key, List<ScreenComponentDescriptor> value) {
+        if (!screenComponentsCache.containsKey(key))
+            screenComponentsCache.put(key, value);
+    }
+
     protected String getCaptionCacheKey(String src, Locale locale) {
         return src + locale.toString();
     }
@@ -369,8 +501,13 @@ public class ScreensHelper {
         return String.format("%s_%s_%s", className, locale.toString(), filterScreenType);
     }
 
+    protected String getScreenComponentsCacheKey(String screenId, Locale locale) {
+        return screenId + locale.toString();
+    }
+
     public void clearCache() {
         captionCache.clear();
         availableScreensCache.clear();
+        screenComponentsCache.clear();
     }
 }

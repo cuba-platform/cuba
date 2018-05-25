@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
@@ -45,6 +47,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main CUBA web-application servlet.
@@ -93,7 +96,6 @@ public class CubaApplicationServlet extends VaadinServlet {
 
             if (configuration.getConfig(GlobalConfig.class).getPerformanceTestMode()) {
                 System.setProperty(getPackageName() + ".disable-xsrf-protection", "true");
-                System.setProperty(getPackageName() + ".syncIdCheck", "false");
             }
 
             super.init(servletConfig);
@@ -109,10 +111,13 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected void servletInitialized() throws ServletException {
         super.servletInitialized();
 
-        getService().addSessionInitListener(event -> {
-            BootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
-            event.getSession().addBootstrapListener(bootstrapListener);
-        });
+        ApplicationContext applicationContext = AppContext.getApplicationContext();
+        List<BootstrapListener> bootstrapListeners = applicationContext.getBeansOfType(BootstrapListener.class)
+                .values().stream()
+                .sorted(AnnotationAwareOrderComparator.INSTANCE)
+                .collect(Collectors.toList());
+
+        getService().addSessionInitListener(event -> bootstrapListeners.forEach(event.getSession()::addBootstrapListener));
     }
 
     @Override
@@ -120,11 +125,17 @@ public class CubaApplicationServlet extends VaadinServlet {
         int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
         int sessionPingPeriod = sessionExpirationTimeout / 3;
 
-        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
+        if (webConfig.getUiHeartbeatIntervalSec() > 0) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(webConfig.getUiHeartbeatIntervalSec()));
+        } else if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
             if (sessionPingPeriod > 0) {
                 // configure Vaadin heartbeat according to web config
                 initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
             }
+        }
+
+        if (webConfig.getCloseIdleHttpSessions()) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
         }
 
         if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.PARAMETER_WIDGETSET))) {

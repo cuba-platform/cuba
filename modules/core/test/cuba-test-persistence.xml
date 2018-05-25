@@ -78,5 +78,17 @@
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_Root</class>
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_ManyToMany_First</class>
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToMany_First</class>
+
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdJoinedRoot</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdJoinedChild</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild</class>
+        <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableGrandChild</class>
+
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeFoo</class>
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeBar</class>
+        <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
+
+        <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
     </persistence-unit>
 </persistence>

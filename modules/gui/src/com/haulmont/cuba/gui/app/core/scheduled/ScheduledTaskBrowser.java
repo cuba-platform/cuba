@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.RunTaskOnceException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -27,11 +28,15 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
 
 public class ScheduledTaskBrowser extends AbstractWindow {
+
+    private static final Logger log = LoggerFactory.getLogger(ScheduledTaskBrowser.class);
 
     @Inject
     protected CollectionDatasource<ScheduledTask, UUID> tasksDs;
@@ -66,9 +71,11 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
         activateBtn.setEnabled(false);
 
-        final ShowExecutionsAction showExecutionsAction = new ShowExecutionsAction();
-        showExecutionsAction.setEnabled(false);
+        ShowExecutionsAction showExecutionsAction = new ShowExecutionsAction();
         tasksTable.addAction(showExecutionsAction);
+
+        ExecuteOnceAction executeOnceAction = new ExecuteOnceAction();
+        tasksTable.addAction(executeOnceAction);
 
         tasksDs.addItemChangeListener(e -> {
             ScheduledTask singleSelected = tasksTable.getSingleSelected();
@@ -88,6 +95,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             }
 
             showExecutionsAction.setEnabled(isSingleSelected);
+            executeOnceAction.setEnabled(isSingleSelected && enableEdit);
         });
     }
 
@@ -137,6 +145,33 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         @Override
         public boolean isApplicable() {
             return tasksTable.getSelected().size() == 1;
+        }
+    }
+
+    protected class ExecuteOnceAction extends ItemTrackingAction {
+        public ExecuteOnceAction() {
+            super("executeOnce");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            ScheduledTask task = tasksTable.getSingleSelected();
+            try {
+                if (task != null) {
+                    service.runOnce(task);
+                }
+            } catch (RunTaskOnceException e) {
+                log.error("Can't execute {}: not in permitted hosts or not a master.", e.getMessage());
+                showNotification(getMessage("errorNotification.caption"),
+                                 getMessage("errorNotification.message"),
+                                 NotificationType.ERROR);
+            }
+        }
+
+        @Override
+        public boolean isApplicable() {
+            return tasksTable.getSelected().size() == 1
+                    && !BooleanUtils.isTrue(tasksTable.getSingleSelected().getActive());
         }
     }
 }

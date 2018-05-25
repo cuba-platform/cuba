@@ -898,7 +898,7 @@ public class WebWindowManager extends WindowManager {
      * @param runIfOk     a closure to run after all screens are closed
      * @param runIfCancel a closure to run if there were modifications and a user canceled the operation
      */
-    public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
+    public void checkModificationsAndCloseAll(Runnable runIfOk, @Nullable Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
             if (!disableSavingScreenHistory) {
@@ -911,7 +911,12 @@ public class WebWindowManager extends WindowManager {
                 window.saveSettings();
             }
 
-            if (window.getDsContext() != null && window.getDsContext().isModified()) {
+            if (window instanceof WrappedWindow
+                    && ((WrappedWindow) window).getWrapper() instanceof Window.Committable) {
+                WrappedWindow wrappedWindow = (WrappedWindow) window;
+                modified = ((Window.Committable) wrappedWindow.getWrapper()).isModified();
+            } else if (window.getDsContext() != null
+                    && window.getDsContext().isModified()) {
                 modified = true;
             }
         }
@@ -1310,6 +1315,11 @@ public class WebWindowManager extends WindowManager {
         ui.addWindow(vWindow);
         vWindow.center();
         vWindow.focus();
+
+        if (ui.isTestMode()) {
+            messageLab.setCubaId("messageDialogLabel");
+            button.setCubaId("messageDialogOk");
+        }
     }
 
     @Override
@@ -1370,7 +1380,6 @@ public class WebWindowManager extends WindowManager {
         }
         ((CubaWindow) window).setCloseOnClickOutside(closeOnClickOutside);
 
-
         if (messageType.getMaximized() != null) {
             if (messageType.getMaximized()) {
                 window.setWindowMode(WindowMode.MAXIMIZED);
@@ -1395,6 +1404,7 @@ public class WebWindowManager extends WindowManager {
         for (Action action : actions) {
             Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
+            button.setEnabled(action.isEnabled());
             button.addClickListener(event -> {
                 try {
                     action.actionPerform(null);
@@ -1438,6 +1448,10 @@ public class WebWindowManager extends WindowManager {
 
         ui.addWindow(window);
         window.center();
+
+        if (ui.isTestMode()) {
+            messageLab.setCubaId("optionDialogLabel");
+        }
     }
 
     @Override

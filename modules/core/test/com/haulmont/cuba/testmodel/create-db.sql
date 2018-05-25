@@ -807,3 +807,104 @@ alter table TEST_DELETE_POLICY_ONE_TO_MANY_FIRST add constraint FK_TEST_DELETE_P
 create index IDX_TEST_DELETE_POLICY_ONE_TO_MANY_FIRST_ROOT on TEST_DELETE_POLICY_ONE_TO_MANY_FIRST (ROOT_ID)^
 alter table TEST_DELETE_POLICY_ROOT_DELETE_POLICY_MANY_TO_MANY_FIRST_LINK add constraint FK_DELPOLROODELPOLMANTOMANFIR_DELETE_POLICY__ROOT foreign key (DELETE_POLICY__ROOT_ID) references TEST_DELETE_POLICY_ROOT(ID)^
 alter table TEST_DELETE_POLICY_ROOT_DELETE_POLICY_MANY_TO_MANY_FIRST_LINK add constraint FK_DELPOLROODELPOLMANTOMANFIR_DELETE_POLICY__MANY_TO_MANY__FIRST foreign key (DELETE_POLICY__MANY_TO_MANY__FIRST_ID) references TEST_DELETE_POLICY_MANY_TO_MANY_FIRST(ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_NUMBER_ID_JOINED_ROOT (
+    ID bigint not null,
+    DTYPE varchar(10),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_NUMBER_ID_JOINED_CHILD (
+    ID bigint not null,
+    --
+    INFO varchar(255),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_NUMBER_ID_JOINED_CHILD add constraint FK_TEST_NUMBER_ID_JOINED_CHILD_ROOT
+    foreign key (ID) references TEST_NUMBER_ID_JOINED_ROOT(ID)^
+
+create table TEST_NUMBER_ID_SINGLE_TABLE_ROOT (
+    ID bigint not null,
+    DTYPE varchar(10),
+    --
+    NAME varchar(255),
+    INFO varchar(255),
+    DESCRIPTION varchar(255),
+    --
+    primary key (ID)
+)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_JPA_CASCADE_FOO (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    BAR_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JPA_CASCADE_BAR (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JPA_CASCADE_ITEM (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    FOO_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_CUSTOMER_W_NPERS_REF (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    TENANT integer,
+    ENTITY_ID bigint,
+    --
+    primary key (ID)
+)^

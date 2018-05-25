@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys
+package com.haulmont.cuba.core.global;
 
-import com.haulmont.bali.util.Dom4j
-import com.haulmont.cuba.core.global.Messages
-import com.haulmont.cuba.gui.config.MenuConfig
-import com.haulmont.cuba.gui.config.MenuItem
+/**
+ * Exception that is raised when you try to execute schedule task once from not permitted server.
+ */
+@SupportedByClient
+@Logging(Logging.Type.NONE)
+public class RunTaskOnceException extends RuntimeException {
 
-class TestMenuConfig extends MenuConfig {
-
-    void setMessages(Messages messages) {
-        this.@messages = messages
-    }
-
-    void loadTestMenu(String menuConfig) {
-        this.@rootItems.clear()
-
-        loadMenuItems(Dom4j.readDocument(menuConfig).rootElement, null)
-
-        this.@initialized = true
-    }
-
-    @Override
-    List<MenuItem> getRootItems() {
-        return this.@rootItems
+    public RunTaskOnceException(String message){
+        super(message);
     }
 }

@@ -56,9 +56,6 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     private static final Logger log = LoggerFactory.getLogger(EntitySerialization.class);
 
-    protected static final String ENTITY_NAME_PROP = "_entityName";
-    protected static final String INSTANCE_NAME_PROP = "_instanceName";
-
     @Inject
     protected MetadataTools metadataTools;
 
@@ -67,6 +64,9 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     @Inject
     protected DynamicAttributes dynamicAttributes;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     protected ThreadLocal<EntitySerializationContext> context =
             ThreadLocal.withInitial(EntitySerializationContext::new);
@@ -231,12 +231,14 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeFields(entity, jsonObject, view, cyclicReferences);
             }
 
-            if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
-                SecurityState securityState = getSecurityState(entity);
-                if (securityState != null) {
-                    byte[] securityToken = getSecurityToken(securityState);
-                    if (securityToken != null) {
-                        jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+            if (globalConfig.getRestRequiresSecurityToken()) {
+                if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
+                    SecurityState securityState = getSecurityState(entity);
+                    if (securityState != null) {
+                        byte[] securityToken = getSecurityToken(securityState);
+                        if (securityToken != null) {
+                            jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                        }
                     }
                 }
             }
@@ -245,9 +247,10 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
 
         protected void writeIdField(Entity entity, JsonObject jsonObject) {
-            MetaProperty primaryKeyProperty = entity instanceof AbstractNotPersistentEntity ?
-                    entity.getMetaClass().getProperty("id") :
-                    metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            if (primaryKeyProperty == null) {
+                primaryKeyProperty = entity.getMetaClass().getProperty("id");
+            }
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
             if (metadataTools.hasCompositePrimaryKey(entity.getMetaClass())) {
@@ -459,7 +462,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
 
-            if (entity instanceof BaseGenericIdEntity) {
+            if (globalConfig.getRestRequiresSecurityToken() && entity instanceof BaseGenericIdEntity) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
@@ -492,15 +495,15 @@ public class EntitySerialization implements EntitySerializationAPI {
                 MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(entity.getMetaClass(), propertyName);
                 MetaProperty metaProperty = metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null;
                 if (metaProperty != null) {
-                    if (propertyValue.isJsonNull()) {
-                        entity.setValue(propertyName, null);
-                        continue;
-                    }
-
                     if (entity instanceof BaseGenericIdEntity
                             && DynamicAttributesUtils.isDynamicAttribute(propertyName)
                             && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
                         fetchDynamicAttributes(entity);
+                    }
+
+                    if (propertyValue.isJsonNull()) {
+                        entity.setValue(propertyName, null);
+                        continue;
                     }
 
                     if (metaProperty.isReadOnly()) {
@@ -570,7 +573,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             Entity entity = metadata.create(metaClass);
             clearFields(entity);
             readFields(jsonObject, entity);
-            if (entity instanceof EmbeddableEntity) {
+            if (globalConfig.getRestRequiresSecurityToken() && entity instanceof EmbeddableEntity) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());

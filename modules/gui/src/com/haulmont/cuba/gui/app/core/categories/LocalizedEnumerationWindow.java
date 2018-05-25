@@ -27,9 +27,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 
 public class LocalizedEnumerationWindow extends AbstractWindow implements ListEditorWindowController {
 
@@ -120,8 +117,11 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             values = new ArrayList<>();
         }
 
-        valuesMap = values.stream()
-                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, ListEditor.ItemType.STRING, null)));
+        valuesMap = new LinkedHashMap<>();
+
+        for (Object value : values) {
+            valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING, null));
+        }
 
         if (!valuesMap.isEmpty()) {
             Map<String, String> localizedValues = LocaleHelper.getLocalizedValuesMap(enumerationLocales);

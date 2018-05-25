@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -40,7 +41,7 @@ import java.util.UUID;
 @Table(name = "SEC_ENTITY_LOG")
 @Listeners("cuba_EntityLogItemDetachListener")
 @SystemLevel
-public class EntityLogItem extends BaseUuidEntity {
+public class EntityLogItem extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 5859030306889056606L;
 
@@ -75,6 +76,12 @@ public class EntityLogItem extends BaseUuidEntity {
         }
     }
 
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = 50)
+    private String createdBy;
+
     @Column(name = "EVENT_TS")
     private Date eventTs;
 
@@ -103,6 +110,26 @@ public class EntityLogItem extends BaseUuidEntity {
     public void init() {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         entityRef = metadata.create(ReferenceToEntity.class);
+    }
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getEntity() {

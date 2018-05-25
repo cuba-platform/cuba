@@ -20,8 +20,7 @@
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         xmlns:views="http://schemas.haulmont.com/cuba/view.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+        elementFormDefault="qualified">
 
     <xs:import namespace="http://schemas.haulmont.com/cuba/view.xsd"
                schemaLocation="http://schemas.haulmont.com/cuba/view.xsd"/>
@@ -347,7 +346,6 @@
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.IntegerValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.LongValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.PatternValidator"/>
-                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.RangeValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.ScriptValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.StringValidator"/>
                 </xs:restriction>
@@ -1400,6 +1398,7 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="autocomplete" type="xs:boolean"/>
+                <xs:attribute name="capsLockIndicator" type="xs:string"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
@@ -1864,6 +1863,7 @@
                 <xs:attribute name="stylename" type="buttonStylename"/>
                 <xs:attribute name="action" type="xs:string"/>
                 <xs:attribute name="invoke" type="xs:string"/>
+                <xs:attribute name="captionAsHtml" type="xs:boolean"/>
 
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="disableOnClick" type="xs:boolean"/>
@@ -2627,10 +2627,22 @@
                 <xs:attribute name="includeProperties" type="xs:string"/>
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="loadDynamicAttributes" type="xs:boolean"/>
+                <xs:attribute name="useConfirmDialog" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <!-- CapsLockIndicator Component-->
+    <xs:complexType name="capsLockIndicatorComponent">
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attribute name="capsLockOnMessage" type="resourceString"/>
+        <xs:attribute name="capsLockOffMessage" type="resourceString"/>
     </xs:complexType>
 
     <!-- Datasources -->
@@ -2911,6 +2923,8 @@
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
                 <xs:element name="relatedEntities" type="relatedComponent"/>
                 <xs:element name="bulkEditor" type="bulkEditorComponent"/>
+
+                <xs:element name="capsLockIndicator" type="capsLockIndicatorComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

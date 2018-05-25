@@ -79,6 +79,7 @@
 @import "components/fileuploadwrapper/fileuploadwrapper";
 @import "components/suggestionfield/suggestionfield";
 @import "components/image/image";
+@import "components/capslockindicator/capslockindicator";
 
 // Application specific
 @import "app/log-control";
@@ -164,6 +165,7 @@
   @include halo-cuba-resizabletextarea;
   @include halo-cuba-fileupload-wrapper;
   @include halo-cuba-suggestionfield;
+  @include halo-cuba-capslockindicator;
 
   @include cuba-log-control;
   @include cuba-login-window;

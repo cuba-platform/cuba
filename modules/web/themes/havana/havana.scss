@@ -82,6 +82,7 @@
 @import "components/calendar/calendar";
 @import "components/colorpicker/colorpicker";
 @import "components/image/image";
+@import "components/capslockindicator/capslockindicator";
 
 // Application specific
 @import "app/app-window";
@@ -167,6 +168,7 @@
   @include havana-cuba-resizabletextarea;
   @include havana-cuba-fileupload-wrapper;
   @include havana-cuba-image;
+  @include havana-cuba-capslockindicator;
 
   @include cuba-login-window;
   @include cuba-menubar;

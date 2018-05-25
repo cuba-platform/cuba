@@ -28,7 +28,7 @@
         <vbox id="loginWrapper">
             <vbox id="loginMainBox"
                   stylename="c-login-panel" width="AUTO"
-                  margin="true" spacing="true" align="MIDDLE_CENTER">
+                  margin="true" align="MIDDLE_CENTER">
                 <hbox id="loginTitleBox" stylename="c-login-title"
                       spacing="true" align="MIDDLE_CENTER">
                     <embedded id="logoImage"
@@ -43,6 +43,10 @@
                            stylename="c-login-caption"
                            value="mainMsg://loginWindow.welcomeLabel"/>
                 </hbox>
+
+                <capsLockIndicator id="capsLockIndicator"
+                                   align="MIDDLE_CENTER"
+                                   stylename="c-login-capslockindicator"/>
 
                 <grid id="loginFormLayout"
                       stylename="c-login-form"
@@ -65,7 +69,8 @@
                                    align="MIDDLE_RIGHT" stylename="login-form-label"/>
 
                             <passwordField id="passwordField" stylename="c-login-password" autocomplete="true"
-                                           width="theme://cuba.web.LoginWindow.field.width"/>
+                                           width="theme://cuba.web.LoginWindow.field.width"
+                                           capsLockIndicator="capsLockIndicator"/>
                         </row>
                         <row id="localesRow">
                             <label id="localesSelectLabel" value="mainMsg://loginWindow.localesSelect"
@@ -83,7 +88,7 @@
                         <row id="submitRow">
                             <label id="submitSpacer"/>
 
-                            <button id="loginButton" action="submit"/>
+                            <button id="loginButton" action="submit" stylename="c-login-submit-button"/>
                         </row>
                     </rows>
                 </grid>

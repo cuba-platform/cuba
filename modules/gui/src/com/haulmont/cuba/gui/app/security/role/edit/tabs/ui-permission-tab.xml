@@ -34,13 +34,18 @@
 
         <groupDatasource id="uiPermissionTargetsDs"
                          class="com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget"
-                         allowCommit="false"
                          view="_local"
                          datasourceClass="com.haulmont.cuba.gui.app.security.ds.UiPermissionsDatasource">
         </groupDatasource>
+
+        <hierarchicalDatasource id="componentDescriptorsDs"
+                                allowCommit="false"
+                                class="com.haulmont.cuba.gui.components.ScreenComponentDescriptor"
+                                datasourceClass="com.haulmont.cuba.gui.app.security.ds.ScreenComponentsTreeDatasource"/>
     </dsContext>
 
     <assign name="filterFieldWidth" value="theme://cuba.gui.ui-permission-tab.filterFieldWidth.width"/>
+    <assign name="componentsTreeWidth" value="theme://cuba.gui.ui-permission-tab.componentsTreeWidth.width"/>
 
     <layout expand="contentPane">
         <!-- Filter -->
@@ -55,13 +60,22 @@
                 <textField id="componentTextField" width="${filterFieldWidth}"/>
                 <button id="addPermissionBtn" caption="msg://actions.Add" invoke="addUiPermission"/>
                 <button id="removePermissionBtn"/>
+                <button id="componentsTreeBtn"
+                        description="msg://componentsTree.show"
+                        icon="SITEMAP"
+                        invoke="changeComponentsTreeVisibility"/>
             </hbox>
         </hbox>
-        <hbox id="contentPane" spacing="true" margin="false,true,true,true" width="100%">
-            <split id="contentSplit" width="100%" height="100%" orientation="horizontal" pos="80">
+        <hbox id="contentPane" expand="contentSplit" spacing="true" margin="false,true,true,true" width="100%">
+            <split id="contentSplit" height="100%" orientation="horizontal" pos="80">
                 <!-- Table -->
-                <vbox height="100%" margin="false;true;false;false">
-                    <groupTable id="uiPermissionsTable" height="100%" width="100%">
+                <hbox height="100%"
+                      expand="uiPermissionsTable"
+                      margin="false;true;false;false"
+                      spacing="true"
+                      width="100%">
+                    <groupTable id="uiPermissionsTable"
+                                height="100%">
                         <columns>
                             <group>
                                 <column id="screen"/>
@@ -71,7 +85,7 @@
                         </columns>
                         <rows datasource="uiPermissionTargetsDs"/>
                     </groupTable>
-                </vbox>
+                </hbox>
                 <!-- Edit pane -->
                 <vbox margin="false;false;false;true" height="100%">
                     <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
@@ -89,6 +103,33 @@
                     </groupBox>
                 </vbox>
             </split>
+            <!-- Components Tree -->
+            <vbox id="componentsTreeBox"
+                  expand="componentsTree"
+                  height="100%"
+                  visible="false"
+                  width="${componentsTreeWidth}">
+                <hbox id="componentsTreeButtonsPanel"
+                      expand="componentsTreeCaptionLabel"
+                      spacing="true"
+                      width="100%">
+                    <label id="componentsTreeCaptionLabel"
+                           value="msg://componentsTree.caption"/>
+                    <linkButton id="collapseAllBtn"
+                                align="BOTTOM_RIGHT"
+                                caption="msg://collapseAll"
+                                invoke="collapseTree"/>
+                    <linkButton id="expandAllBtn"
+                                align="BOTTOM_RIGHT"
+                                caption="msg://expandAll"
+                                invoke="expandTree"/>
+                </hbox>
+                <tree id="componentsTree"
+                      width="100%">
+                    <treechildren captionProperty="caption"
+                                  datasource="componentDescriptorsDs"/>
+                </tree>
+            </vbox>
         </hbox>
     </layout>
 </window>

@@ -16,11 +16,13 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.config.type.TypeFactory;
 import org.apache.commons.lang.LocaleUtils;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class AvailableLocalesFactory extends TypeFactory {
 
@@ -29,11 +31,11 @@ public class AvailableLocalesFactory extends TypeFactory {
         if (string == null)
             return null;
 
-        return Arrays.stream(string.split(";"))
-                .map(item -> item.split("\\|"))
-                .collect(Collectors.toMap(
-                        parts -> parts[0],
-                        parts -> LocaleUtils.toLocale(parts[1])
-                ));
+        Map<String, Locale> result = new LinkedHashMap<>();
+        for (String item : Splitter.on(';').trimResults().omitEmptyStrings().split(string)) {
+            String[] parts = item.split("\\|");
+            result.put(parts[0], LocaleUtils.toLocale(parts[1]));
+        }
+        return result;
     }
 }

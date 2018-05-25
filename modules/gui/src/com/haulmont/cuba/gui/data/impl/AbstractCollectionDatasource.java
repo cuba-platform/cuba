@@ -668,7 +668,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                                     return !metadata.getTools().isLob(prop) ||
                                             persistenceManagerService.supportsLobSortingAndFiltering(storeName);
                                 }
-                                return true;
+                                return false;
                             })
                             .map(MetadataObject::getName)
                             .map(propName -> propertyPath.toString().concat(".").concat(propName))
@@ -700,12 +700,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+    public void addCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         getEventRouter().addListener(CollectionChangeListener.class, listener);
     }
 
     @Override
-    public void removeCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+    public void removeCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         getEventRouter().removeListener(CollectionChangeListener.class, listener);
     }
 

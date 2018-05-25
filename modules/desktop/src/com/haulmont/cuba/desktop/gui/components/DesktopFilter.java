@@ -72,6 +72,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         setWidth("100%");
 
         delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
+        delegate.setCaptionChangedListener(this::updateCaption);
     }
 
     @Override
@@ -210,6 +211,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setCaption(String caption) {
         delegate.setCaption(caption);
+
+        updateCaption(caption);
+    }
+
+    protected void updateCaption(String caption) {
+        ((HasCaption) delegate.getLayout()).setCaption(caption);
     }
 
     @Override

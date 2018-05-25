@@ -560,5 +560,14 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         @Override
         public void setUseResponsePending(boolean useResponsePending) {
         }
+
+        @Override
+        public void setCaptionAsHtml(boolean captionAsHtml) {
+        }
+
+        @Override
+        public boolean isCaptionAsHtml() {
+            return false;
+        }
     }
 }

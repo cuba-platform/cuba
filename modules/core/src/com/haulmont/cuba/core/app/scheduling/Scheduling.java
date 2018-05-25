@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.RunTaskOnceException;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
@@ -420,5 +421,23 @@ public class Scheduling implements SchedulingAPI {
             }
         }
         return false;
+    }
+
+    @Override
+    public void runOnce(ScheduledTask task) {
+        UserSession userSession;
+        try {
+            userSession = getUserSession(task);
+        } catch (LoginException e) {
+            throw new RuntimeException("Unable to obtain user session", e);
+        }
+
+        Integer priority = getServerPriority(task, serverInfo.getServerId());
+        if (priority == null) {
+            throw new RunTaskOnceException(task.toString());
+        }
+
+        lastStartCache.put(task, timeSource.currentTimeMillis());
+        runner.runTaskOnce(task, timeSource.currentTimeMillis(), userSession);
     }
 }

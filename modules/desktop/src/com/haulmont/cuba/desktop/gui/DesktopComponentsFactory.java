@@ -80,6 +80,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(MaskedField.NAME, DesktopMaskedField.class);
         classes.put(CurrencyField.NAME, DesktopCurrencyField.class);
+        classes.put(CapsLockIndicator.NAME, DesktopCapsLockIndicator.class);
 
         classes.put(SearchField.NAME, DesktopSearchField.class);
         classes.put(SearchPickerField.NAME, DesktopSearchPickerField.class);
@@ -89,6 +90,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(FileMultiUploadField.NAME, DesktopFileMultiUploadField.class);
         classes.put(TabSheet.NAME, DesktopTabSheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
+        classes.put(Image.NAME, DesktopImage.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBoxLayout.NAME, DesktopGroupBox.class);
         classes.put(ProgressBar.NAME, DesktopProgressBar.class);

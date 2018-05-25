@@ -34,6 +34,7 @@ import com.vaadin.shared.ui.Connect;
 public class CubaCheckBoxConnector extends CheckBoxConnector {
 
     public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+    public static final String CONTEXT_HELP_CLICKABLE_CLASSNAME = "c-context-help-button-clickable";
 
     @Override
     public boolean delegateCaptionHandling() {
@@ -62,6 +63,11 @@ public class CubaCheckBoxConnector extends CheckBoxConnector {
                 getWidget().contextHelpIcon = DOM.createSpan();
                 getWidget().contextHelpIcon.setInnerHTML("?");
                 getWidget().contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                if (hasContextHelpIconListeners()) {
+                    getWidget().contextHelpIcon.addClassName(CONTEXT_HELP_CLICKABLE_CLASSNAME);
+                }
+
                 Roles.getTextboxRole().setAriaHiddenState(getWidget().contextHelpIcon, true);
 
                 getWidget().getElement().appendChild(getWidget().contextHelpIcon);

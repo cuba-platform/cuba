@@ -128,26 +128,7 @@ public class ConnectionImpl extends EventRouter implements Connection {
     @Nullable
     protected String getUserRemoteAddress() {
         VaadinRequest currentRequest = VaadinService.getCurrentRequest();
-
-        String userRemoteAddress = null;
-
-        if (currentRequest != null) {
-            String xForwardedFor = currentRequest.getHeader("X_FORWARDED_FOR");
-            if (StringUtils.isNotBlank(xForwardedFor)) {
-                String[] strings = xForwardedFor.split(",");
-                String userAddressFromHeader = StringUtils.trimToEmpty(strings[strings.length - 1]);
-
-                if (StringUtils.isNotEmpty(userAddressFromHeader)) {
-                    userRemoteAddress = userAddressFromHeader;
-                } else {
-                    userRemoteAddress = currentRequest.getRemoteAddr();
-                }
-            } else {
-                userRemoteAddress = currentRequest.getRemoteAddr();
-            }
-        }
-
-        return userRemoteAddress;
+        return currentRequest != null ? currentRequest.getRemoteAddr() : null;
     }
 
     protected String makeClientInfo() {
@@ -315,7 +296,11 @@ public class ConnectionImpl extends EventRouter implements Connection {
         }
 
         if (session.isAuthenticated()) {
-            authenticationService.logout();
+            try {
+                authenticationService.logout();
+            } catch (NoUserSessionException e) {
+                log.debug("An attempt to perform logout for expired session: {}", session, e);
+            }
         }
 
         publishUserSessionFinishedEvent(session);

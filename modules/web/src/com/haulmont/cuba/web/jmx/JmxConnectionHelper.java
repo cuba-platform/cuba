@@ -32,7 +32,7 @@ import java.util.*;
 
 public final class JmxConnectionHelper {
 
-    protected final static UUID LOCAL_JMX_INSTANCE_ID = UUID.randomUUID();
+    protected final static UUID LOCAL_JMX_INSTANCE_ID = new UUID(0,0);
 
     private JmxConnectionHelper() {
     }

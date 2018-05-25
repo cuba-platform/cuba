@@ -279,4 +279,22 @@ public class DynamicAttributesGuiTools {
         filteringLookupAction.setLookupScreenParams(params);
         return filteringLookupAction;
     }
+
+    /**
+     * Reload dynamic attributes on the entity
+     */
+    @SuppressWarnings("unchecked")
+    public void reloadDynamicAttributes(BaseGenericIdEntity entity) {
+        MetaClass metaClass = entity.getMetaClass();
+        View view = new View(metaClass.getJavaClass(), false)
+                .addProperty(metadata.getTools().getPrimaryKeyName(metaClass));
+        LoadContext loadContext = new LoadContext(metaClass)
+                .setView(view)
+                .setLoadDynamicAttributes(true)
+                .setId(entity.getId());
+        BaseGenericIdEntity reloadedEntity = (BaseGenericIdEntity) dataManager.load(loadContext);
+        if (reloadedEntity != null) {
+            entity.setDynamicAttributes(reloadedEntity.getDynamicAttributes());
+        }
+    }
 }

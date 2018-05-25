@@ -57,8 +57,7 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
     @Override
     public void sendExceptionReport(String supportEmail, Map<String, Object> binding) {
         try {
-            Map<String, Object> map = new HashMap<>();
-            map.putAll(binding);
+            Map<String, Object> map = new HashMap<>(binding);
             map.put("toHtml", new MethodClosure(HtmlUtils.class, "convertToHtml"));
 
             String body = getExceptionReportBody(map);

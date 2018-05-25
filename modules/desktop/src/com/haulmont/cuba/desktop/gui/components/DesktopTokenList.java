@@ -117,17 +117,25 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     // stub
     protected String lookupInputPrompt;
 
+    protected String addButtonCaption;
+    protected String clearButtonCaption;
+
     public DesktopTokenList() {
         rootPanel = new TokenListImpl();
 
         impl = rootPanel.getImpl();
-        addButton = new DesktopButton();
 
         Messages messages = AppBeans.get(Messages.NAME);
-        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
+
+        addButton = new DesktopButton();
+
+        addButtonCaption = messages.getMessage(TokenList.class, "actions.Add");
+        addButton.setCaption(addButtonCaption);
 
         clearButton = new DesktopButton();
-        clearButton.setCaption(messages.getMessage(TokenList.class, "actions.Clear"));
+
+        clearButtonCaption = messages.getMessage(TokenList.class, "actions.Clear");
+        clearButton.setCaption(clearButtonCaption);
 
         lookupPickerField = new DesktopLookupPickerField();
         lookupPickerField.addValueChangeListener(lookupSelectListener);
@@ -487,6 +495,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     @Override
     public void setAddButtonCaption(String caption) {
+        addButtonCaption = caption;
         addButton.setCaption(caption);
     }
 
@@ -507,6 +516,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     @Override
     public void setClearButtonCaption(String caption) {
+        clearButtonCaption = caption;
         clearButton.setCaption(caption);
     }
 
@@ -852,7 +862,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
         @Override
         public String getCaption() {
-            return addButton.getCaption();
+            return addButtonCaption;
         }
 
         @Override
@@ -1043,7 +1053,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             clearButton.setAction(new AbstractAction("actions.Clear") {
                 @Override
                 public String getCaption() {
-                    return clearButton.getCaption();
+                    return clearButtonCaption;
                 }
 
                 @Override

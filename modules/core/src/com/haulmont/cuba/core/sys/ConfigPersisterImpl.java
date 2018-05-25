@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConfigPersisterImpl implements ConfigPersister {
+
     protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterImpl.class);
 
     @Override
@@ -51,7 +52,7 @@ public class ConfigPersisterImpl implements ConfigPersister {
 
     @Override
     public void setProperty(SourceType sourceType, String name, String value) {
-        log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
+        log.debug("Setting property '{}' to '{}', source={}", name, value, sourceType.name());
         switch (sourceType) {
             case SYSTEM:
                 System.setProperty(name, value);
@@ -67,7 +68,7 @@ public class ConfigPersisterImpl implements ConfigPersister {
         }
     }
 
-    private ConfigStorageAPI getConfigStorageAPI() {
+    protected ConfigStorageAPI getConfigStorageAPI() {
         return AppBeans.get(ConfigStorageAPI.NAME);
     }
 }

@@ -20,7 +20,7 @@
     background: $v-panel-background-color;
     border: valo-border();
     border-radius: $v-border-radius;
-    padding: $v-layout-margin-top $v-layout-margin-right*4 $v-layout-margin-bottom $v-layout-margin-left*4;
+    padding: round($v-unit-size/2) $v-layout-margin-right*4 round($v-unit-size/2) $v-layout-margin-left*4;
   }
 
   .c-login-main-layout {
@@ -55,5 +55,19 @@
     .c-cuba-word {
       color: #5b5857;
     }
+  }
+
+  .c-login-capslockindicator {
+    font-size: $v-font-size--small;
+    height: $v-unit-size;
+    line-height: $v-unit-size - round($v-unit-size/6);
+
+    span{
+      vertical-align: unset;
+    }
+  }
+
+  .c-login-submit-button {
+    margin-top: round($v-unit-size/3);
   }
 }
