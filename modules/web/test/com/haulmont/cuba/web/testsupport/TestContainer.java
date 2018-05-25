@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.testsupport;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Events;
@@ -169,8 +170,11 @@ public class TestContainer extends ExternalResource {
         }
 
         WebRemoteProxyBeanCreator.setServiceProxyClass(TestServiceProxy.class);
+
         initAppContext();
         LocalServiceDirectory.start();
+
+        TestServiceProxy.setDefault(DataService.class, new DataServiceProxy(this));
     }
 
     @Override

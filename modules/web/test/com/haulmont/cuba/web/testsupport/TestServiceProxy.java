@@ -31,6 +31,7 @@ public class TestServiceProxy extends LocalServiceProxy {
 
     private static final Logger log = LoggerFactory.getLogger(TestServiceProxy.class);
 
+    private static Map<Class, Object> defaults = new HashMap<>();
     private static Map<Class, Object> mocks = new HashMap<>();
 
     @Override
@@ -39,6 +40,17 @@ public class TestServiceProxy extends LocalServiceProxy {
                 getBeanClassLoader(),
                 new Class[]{getServiceInterface()},
                 new ServiceInvocationHandler(getServiceInterface()));
+    }
+
+
+    public static <T> void setDefault(Class<T> serviceInterface, @Nullable T defaultProxy) {
+        defaults.put(serviceInterface, defaultProxy);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T> T getDefault(Class<T> serviceInterface) {
+        return (T) defaults.get(serviceInterface);
     }
 
     public static <T> void mock(Class<T> serviceInterface, @Nullable T mock) {
@@ -59,11 +71,18 @@ public class TestServiceProxy extends LocalServiceProxy {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Object stub = mocks.get(serviceInterface);
-            if (stub != null) {
-                log.info("Invoking " + method + " on " + stub);
-                return method.invoke(stub, args);
+            Object mock = mocks.get(serviceInterface);
+            if (mock != null) {
+                log.info("Invoking " + method + " on " + mock);
+                return method.invoke(mock, args);
             }
+
+            Object defaultProxy = defaults.get(serviceInterface);
+            if (defaultProxy != null) {
+                log.info("Invoking " + method + " on " + defaultProxy);
+                return method.invoke(defaultProxy, args);
+            }
+
             log.info("Returning null from " + method);
             return null;
         }

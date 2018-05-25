@@ -16,9 +16,7 @@
 
 package spec.cuba.web
 
-import com.haulmont.cuba.client.testsupport.TestSupport
 import com.haulmont.cuba.core.app.ConfigStorageService
-import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.model.DataContextFactory
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
@@ -54,18 +52,6 @@ class WebSpec extends Specification {
         dataManager = cont.getBean(DataManager)
         dataContextFactory = cont.getBean(DataContextFactory)
         componentsFactory = cont.getBean(ComponentsFactory)
-
-        // default DataService setup
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> { CommitContext cc ->
-                def res = new HashSet()
-                res.addAll(cc.commitInstances)
-                res.addAll(cc.removeInstances)
-                res.collect { TestSupport.reserialize(it) }
-            }
-            loadList(_) >> []
-            loadValues(_) >> []
-        })
 
         // all the rest is required for web components
 
