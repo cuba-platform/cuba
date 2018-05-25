@@ -17,9 +17,11 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Configuration element of <code>EntityLog</code> bean.
@@ -27,16 +29,42 @@ import javax.persistence.*;
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")
 @SystemLevel
-public class LoggedAttribute extends BaseUuidEntity {
+public class LoggedAttribute extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = -615000337312303671L;
-                                     
+
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = 50)
+    private String createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ENTITY_ID")
     private LoggedEntity entity;
 
     @Column(name = "NAME")
     private String name;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public String getName() {
         return name;
