@@ -153,7 +153,7 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
 
     @Override
     public MetaClass getMetaClass() {
-        return container.getMetaClass();
+        return container.getEntityMetaClass();
     }
 
     @Override
@@ -162,8 +162,8 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
 
         return container.getView() != null ?
                 // if a view is specified - use view properties
-                metadataTools.getViewPropertyPaths(container.getView(), container.getMetaClass()) :
+                metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass()) :
                 // otherwise use all properties from meta-class
-                metadataTools.getPropertyPaths(container.getMetaClass());
+                metadataTools.getPropertyPaths(container.getEntityMetaClass());
     }
 }

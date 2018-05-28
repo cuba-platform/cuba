@@ -37,7 +37,7 @@ public interface InstanceContainer<T extends Entity> {
 
     void setItem(T entity);
 
-    MetaClass getMetaClass();
+    MetaClass getEntityMetaClass();
 
     @Nullable
     View getView();

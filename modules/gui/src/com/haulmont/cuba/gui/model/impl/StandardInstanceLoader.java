@@ -73,12 +73,12 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
             throw new IllegalStateException("entityId is null");
 
         @SuppressWarnings("unchecked")
-        LoadContext<T> loadContext = LoadContext.create(container.getMetaClass().getJavaClass());
+        LoadContext<T> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
         loadContext.setId(entityId);
 
         if (view == null && viewName != null) {
-            this.view = getViewRepository().getView(container.getMetaClass(), viewName);
+            this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
         }
         if (view != null) {
             loadContext.setView(view);

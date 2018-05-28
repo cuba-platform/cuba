@@ -45,7 +45,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         checkNotNullArgument(container);
         checkNotNullArgument(property);
 
-        MetaClass metaClass = container.getMetaClass();
+        MetaClass metaClass = container.getEntityMetaClass();
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
@@ -61,7 +61,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @Override
     public MetaClass getMetaClass() {
-        return container.getMetaClass();
+        return container.getEntityMetaClass();
     }
 
     @Override

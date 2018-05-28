@@ -39,15 +39,15 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     private static final Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
 
     protected T item;
-    protected MetaClass metaClass;
+    protected MetaClass entityMetaClass;
     protected View view;
 
     protected EventPublisher events = new EventPublisher();
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
 
-    public InstanceContainerImpl(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    public InstanceContainerImpl(MetaClass entityMetaClass) {
+        this.entityMetaClass = entityMetaClass;
     }
 
     @Nullable
@@ -74,7 +74,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
         if (item != null) {
             final MetaClass aClass = item.getMetaClass();
-            if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
+            if (!aClass.equals(entityMetaClass) && !entityMetaClass.getDescendants().contains(aClass)) {
                 throw new DevelopmentException(String.format("Invalid item's metaClass '%s'", aClass),
                         ParamsMap.of("datasource", toString(), "metaClass", aClass));
             }
@@ -87,8 +87,8 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     }
 
     @Override
-    public MetaClass getMetaClass() {
-        return metaClass;
+    public MetaClass getEntityMetaClass() {
+        return entityMetaClass;
     }
 
     @Nullable

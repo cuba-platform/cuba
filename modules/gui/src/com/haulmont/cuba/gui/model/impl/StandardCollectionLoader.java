@@ -76,7 +76,7 @@ public class StandardCollectionLoader<T extends Entity> implements CollectionLoa
             throw new IllegalStateException("query is null");
 
         @SuppressWarnings("unchecked")
-        LoadContext<T> loadContext = LoadContext.create(container.getMetaClass().getJavaClass());
+        LoadContext<T> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
         LoadContext.Query query = loadContext.setQueryString(this.query);
 
@@ -88,7 +88,7 @@ public class StandardCollectionLoader<T extends Entity> implements CollectionLoa
         loadContext.setSoftDeletion(softDeletion);
 
         if (view == null && viewName != null) {
-            this.view = getViewRepository().getView(container.getMetaClass(), viewName);
+            this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
         }
         if (view != null) {
             loadContext.setView(view);
