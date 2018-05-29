@@ -156,28 +156,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate, User author) {
-        Preconditions.checkNotNullArgument(entity);
-        Preconditions.checkNotNullArgument(view);
-        Preconditions.checkNotNullArgument(snapshotDate);
-
-        checkCompositePrimaryKey(entity);
-
-        Class viewEntityClass = view.getEntityClass();
-        Class entityClass = entity.getClass();
-
-        if (!viewEntityClass.isAssignableFrom(entityClass)) {
-            throw new IllegalStateException("View could not be used with this propertyValue");
-        }
-
-        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClass(entity.getClass()));
-
-        EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
-        snapshot.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-        snapshot.setEntityMetaClass(metaClass.getName());
-        snapshot.setViewXml(viewSerializationAPI.toJson(view, ViewSerializationOption.COMPACT_FORMAT));
-        snapshot.setSnapshotXml(entitySerializationAPI.toJson(entity));
-        snapshot.setSnapshotDate(snapshotDate);
-        snapshot.setAuthor(author);
+        EntitySnapshot snapshot = createEntitySnapshot(entity, view, snapshotDate, author);
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -335,5 +314,96 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         replaceClasses(document.getRootElement(), classMapping);
         replaceInXmlTree(document.getRootElement(), classMapping);
         return document.asXML();
+    }
+
+    @Override
+    public EntitySnapshot getLastEntitySnapshot(Entity entity) {
+        MetaClass metaClass = entity.getMetaClass();
+        View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
+        LoadContext<EntitySnapshot> lx = LoadContext.create(EntitySnapshot.class).setQuery(LoadContext
+                .createQuery(format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
+                                + " e.entity.%s = :entityId order by e.createTs desc",
+                        referenceToEntitySupport.getReferenceIdPropertyName(metaClass)))
+                .setParameter("metaClass", metaClass.getName())
+                .setParameter("entityId", entity.getId())
+                .setMaxResults(1))
+                .setView(view);
+        return dataManager.load(lx);
+    }
+
+    @Override
+    public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id) {
+        metaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
+        Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id).setView(View.LOCAL));
+
+        if (entity == null) {
+            return null;
+        }
+
+        checkCompositePrimaryKey(entity);
+
+        View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
+        EntitySnapshot resultEntity = null;
+
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery<EntitySnapshot> query = em.createQuery(
+                    format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
+                                    + " e.entity.%s = :entityId order by e.createTs desc",
+                            referenceToEntitySupport.getReferenceIdPropertyName(metaClass)), EntitySnapshot.class)
+                    .setParameter("metaClass", metaClass.getName())
+                    .setParameter("entityId", referenceToEntitySupport.getReferenceId(entity))
+                    .setMaxResults(1)
+                    .setView(view);
+            resultEntity = query.getFirstResult();
+        } finally {
+            tx.close();
+        }
+
+        return resultEntity;
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view) {
+        return createTempSnapshot(entity, view, timeSource.currentTimestamp());
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate) {
+        User user = userSessionSource.getUserSession().getUser();
+        return createTempSnapshot(entity, view, snapshotDate, user);
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate, User author) {
+        return createEntitySnapshot(entity, view, snapshotDate, author);
+    }
+
+    protected EntitySnapshot createEntitySnapshot(Entity entity, View view, Date snapshotDate, User author) {
+        Preconditions.checkNotNullArgument(entity);
+        Preconditions.checkNotNullArgument(view);
+        Preconditions.checkNotNullArgument(snapshotDate);
+
+        checkCompositePrimaryKey(entity);
+
+        Class viewEntityClass = view.getEntityClass();
+        Class entityClass = entity.getClass();
+
+        if (!viewEntityClass.isAssignableFrom(entityClass)) {
+            throw new IllegalStateException("View could not be used with this propertyValue");
+        }
+
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClass(entity.getClass()));
+
+        EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
+        snapshot.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        snapshot.setEntityMetaClass(metaClass.getName());
+        snapshot.setViewXml(viewSerializationAPI.toJson(view, ViewSerializationOption.COMPACT_FORMAT));
+        snapshot.setSnapshotXml(entitySerializationAPI.toJson(entity));
+        snapshot.setSnapshotDate(snapshotDate);
+        snapshot.setAuthor(author);
+
+        return snapshot;
     }
 }

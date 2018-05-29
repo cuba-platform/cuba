@@ -96,4 +96,53 @@ public interface EntitySnapshotService {
      * @param classMapping Map of [OldClass -&gt; NewClass] for migration
      */
     void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping);
+
+    /**
+     * Gets last added snapshot to the database for given entity.
+     *
+     * @param entity entity
+     * @return snapshot or null if there is no snapshots in database for the given entity
+     */
+    @Nullable
+    EntitySnapshot getLastEntitySnapshot(Entity entity);
+
+    /**
+     * Gets last added snapshot to the database for entity by id.
+     *
+     * @param metaClass entity meta class
+     * @param id        entity id
+     * @return snapshot or null if there is no snapshots in database for the given entity
+     */
+    @Nullable
+    EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id);
+
+    /**
+     * Creates not persistence snapshot for entity.
+     *
+     * @param entity entity
+     * @param view   view
+     * @return not persistence snapshot
+     */
+    EntitySnapshot createTempSnapshot(Entity entity, View view);
+
+    /**
+     * Creates not persistence snapshot for entity with a specific date.
+     *
+     * @param entity       entity
+     * @param view         entity view
+     * @param snapshotDate date
+     * @return not persistence snapshot
+     */
+    EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate);
+
+    /**
+     * Creates not persistence snapshot for Entity with a specific date and author.
+     *
+     * @param entity       entity
+     * @param view         entity view
+     * @param snapshotDate date
+     * @param author       author
+     * @return not persistence snapshot
+     */
+    EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate, User author);
 }

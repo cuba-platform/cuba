@@ -72,4 +72,29 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     public void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping) {
         snapshotAPI.migrateSnapshots(metaClass, id, classMapping);
     }
+
+    @Override
+    public EntitySnapshot getLastEntitySnapshot(Entity entity) {
+        return snapshotAPI.getLastEntitySnapshot(entity);
+    }
+
+    @Override
+    public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id) {
+        return snapshotAPI.getLastEntitySnapshot(metaClass, id);
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view) {
+        return snapshotAPI.createTempSnapshot(entity, view);
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate) {
+        return snapshotAPI.createTempSnapshot(entity, view, snapshotDate);
+    }
+
+    @Override
+    public EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate, User author) {
+        return snapshotAPI.createTempSnapshot(entity, view, snapshotDate, author);
+    }
 }
