@@ -160,7 +160,7 @@
     <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="1"/>
-        <property name="threadNamePrefix" value="cuba_web_backgroundWorkerScheduler-"/>
+        <property name="threadNamePrefix" value="cuba_web_backgroundScheduler-"/>
     </bean>
 
     <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
