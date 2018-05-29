@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.sys.WebJarResource;
+import com.haulmont.cuba.web.sys.WebJarResourceUtils;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
 import com.vaadin.server.*;
@@ -25,7 +26,6 @@ import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.webjars.WebJarAssetLocator;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -212,12 +212,10 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
     public CubaMultiUpload() {
         registerRpc(rpc);
 
-        WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
-
-        String swfuploadJs = webJarAssetLocator.getFullPath("swfupload", "swfupload.min.js");
+        String swfuploadJs = WebJarResourceUtils.getWebJarPath("swfupload", "swfupload.min.js");
         setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY, new ClassResource(swfuploadJs));
 
-        String swfuploadSwf = webJarAssetLocator.getFullPath("swfupload", "swfupload.swf");
+        String swfuploadSwf = WebJarResourceUtils.getWebJarPath("swfupload", "swfupload.swf");
         setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY, new ClassResource(swfuploadSwf));
     }
 

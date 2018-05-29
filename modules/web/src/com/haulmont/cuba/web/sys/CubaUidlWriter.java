@@ -27,7 +27,6 @@ import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.webjars.WebJarAssetLocator;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -42,14 +41,8 @@ public class CubaUidlWriter extends UidlWriter {
 
     private static final Logger log = LoggerFactory.getLogger(CubaUidlWriter.class);
 
-    // Thread safe
-    public static final WebJarAssetLocator webJarAssetLocator = new WebJarAssetLocator();
-
     protected static final String JAVASCRIPT_EXTENSION = ".js";
     protected static final String CSS_EXTENSION = ".css";
-    protected static final String VAADIN_PREFIX = "VAADIN/";
-    protected static final String VAADIN_WEBJARS_PREFIX = "/" + VAADIN_PREFIX + "webjars/";
-    protected static final String META_INF_PREFIX = "META-INF/resources/";
 
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
@@ -126,8 +119,8 @@ public class CubaUidlWriter extends UidlWriter {
             return staticResourcePath;
         }
 
-        return webJarAssetLocator.getFullPath(webJar, resource)
-                .replace(META_INF_PREFIX, VAADIN_PREFIX);
+        String webJarPath = WebJarResourceUtils.getWebJarPath(webJar, resource);
+        return WebJarResourceUtils.translateToWebPath(webJarPath);
     }
 
     protected String getWebJarStaticResourcePath(String overridePath, String resource) {
@@ -140,7 +133,7 @@ public class CubaUidlWriter extends UidlWriter {
         }
 
         String resourcePath = overridePath + resource;
-        String path = VAADIN_WEBJARS_PREFIX + resourcePath;
+        String path = CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX + resourcePath;
 
         URL resourceUrl = null;
         try {
@@ -174,13 +167,13 @@ public class CubaUidlWriter extends UidlWriter {
         }
 
         if (StringUtils.isEmpty(webJarVersion)) {
-            String msg = String.format("Could not load WebJar version property value: %s. And default version is also not set",
+            String msg = String.format("Unable to load WebJar version property value: %s. Default version is not set",
                     propertyName);
 
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
-        return uri.replace("${" + propertyName + "}", webJarVersion);
+        return StringUtils.replace(uri, "${" + propertyName + "}", webJarVersion);
     }
 }
