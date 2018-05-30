@@ -21,12 +21,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.webjars.MultipleMatchesException;
 import org.webjars.WebJarAssetLocator;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * Utility class for WebJar resources management.
  */
+@ThreadSafe
 public final class WebJarResourceUtils {
 
     // Thread safe
