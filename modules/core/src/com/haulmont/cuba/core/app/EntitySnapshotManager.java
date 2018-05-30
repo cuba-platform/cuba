@@ -19,10 +19,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationOption;
@@ -318,7 +315,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot getLastEntitySnapshot(Entity entity) {
-        MetaClass metaClass = entity.getMetaClass();
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         LoadContext<EntitySnapshot> lx = LoadContext.create(EntitySnapshot.class).setQuery(LoadContext
                 .createQuery(format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
@@ -333,35 +330,32 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id) {
-        metaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
-        Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id).setView(View.LOCAL));
-
-        if (entity == null) {
-            return null;
-        }
-
-        checkCompositePrimaryKey(entity);
-
+        MetaClass originalMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
-        EntitySnapshot resultEntity = null;
 
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
+            //noinspection unchecked
+            Entity entity = (Entity) em.find(originalMetaClass.getJavaClass(), id);
+            if (entity == null) {
+                return null;
+            }
+
+            checkCompositePrimaryKey(entity);
+
             TypedQuery<EntitySnapshot> query = em.createQuery(
                     format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
                                     + " e.entity.%s = :entityId order by e.createTs desc",
-                            referenceToEntitySupport.getReferenceIdPropertyName(metaClass)), EntitySnapshot.class)
-                    .setParameter("metaClass", metaClass.getName())
+                            referenceToEntitySupport.getReferenceIdPropertyName(originalMetaClass)), EntitySnapshot.class)
+                    .setParameter("metaClass", originalMetaClass.getName())
                     .setParameter("entityId", referenceToEntitySupport.getReferenceId(entity))
                     .setMaxResults(1)
                     .setView(view);
-            resultEntity = query.getFirstResult();
+            return query.getFirstResult();
         } finally {
             tx.close();
         }
-
-        return resultEntity;
     }
 
     @Override

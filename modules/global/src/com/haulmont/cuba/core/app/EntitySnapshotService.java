@@ -98,7 +98,7 @@ public interface EntitySnapshotService {
     void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping);
 
     /**
-     * Gets last added snapshot to the database for given entity.
+     * Get the last added to the database snapshot for the given entity. This method always starts a new transaction.
      *
      * @param entity entity
      * @return snapshot or null if there is no snapshots in database for the given entity
@@ -107,7 +107,8 @@ public interface EntitySnapshotService {
     EntitySnapshot getLastEntitySnapshot(Entity entity);
 
     /**
-     * Gets last added snapshot to the database for entity by id.
+     * Get the last added to the database snapshot for the given entity by id. This method always starts a new
+     * transaction.
      *
      * @param metaClass entity meta class
      * @param id        entity id
@@ -117,7 +118,7 @@ public interface EntitySnapshotService {
     EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id);
 
     /**
-     * Creates not persistence snapshot for entity.
+     * Creates non-persistent snapshot for entity.
      *
      * @param entity entity
      * @param view   view
@@ -126,7 +127,7 @@ public interface EntitySnapshotService {
     EntitySnapshot createTempSnapshot(Entity entity, View view);
 
     /**
-     * Creates not persistence snapshot for entity with a specific date.
+     * Creates non-persistent snapshot for entity with a specific date.
      *
      * @param entity       entity
      * @param view         entity view
@@ -136,7 +137,7 @@ public interface EntitySnapshotService {
     EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate);
 
     /**
-     * Creates not persistence snapshot for Entity with a specific date and author.
+     * Creates non-persistent snapshot for entity with a specific date and author.
      *
      * @param entity       entity
      * @param view         entity view
