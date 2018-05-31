@@ -378,7 +378,18 @@ public class Param {
     }
 
     protected Object loadEntity(String id) {
-        LoadContext ctx = new LoadContext(javaClass).setId(UUID.fromString(id));
+        Metadata metadata = AppBeans.get(Metadata.class);
+        MetaProperty pkProp = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
+        Object objectId = null;
+        if (pkProp != null) {
+            Datatype<Object> datatype = pkProp.getRange().asDatatype();
+            try {
+                objectId = datatype.parse(id);
+            } catch (ParseException e) {
+                throw new RuntimeException("Error parsing entity ID", e);
+            }
+        }
+        LoadContext ctx = new LoadContext(javaClass).setId(objectId);
         DataService dataService = AppBeans.get(DataService.NAME);
         return dataService.load(ctx);
     }
