@@ -133,7 +133,7 @@ public class DataManagerBean implements DataManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Set<Entity> commit(CommitContext context) {
+    public EntitySet commit(CommitContext context) {
         Map<String, CommitContext> storeToContextMap = new TreeMap<>();
         Set<Entity> toRepeat = new HashSet<>();
         for (Entity entity : context.getCommitInstances()) {
@@ -206,7 +206,7 @@ public class DataManagerBean implements DataManager {
             }
         }
 
-        return result;
+        return EntitySet.of(result);
     }
 
     protected void adjustState(Entity committedEntity) {

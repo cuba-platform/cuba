@@ -41,7 +41,7 @@ public class TestDataSupplier implements DataSupplier {
     CommitValidator commitValidator;
 
     @Override
-    public Set<Entity> commit(CommitContext context) {
+    public EntitySet commit(CommitContext context) {
         commitCount++;
 
         if (commitValidator != null)
@@ -51,7 +51,7 @@ public class TestDataSupplier implements DataSupplier {
         for (Entity entity : context.getCommitInstances()) {
             result.add(entity);
         }
-        return result;
+        return EntitySet.of(result);
     }
 
     @Override

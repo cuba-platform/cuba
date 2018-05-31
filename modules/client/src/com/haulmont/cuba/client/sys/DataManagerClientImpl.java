@@ -22,8 +22,8 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -92,8 +92,8 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
-    public Set<Entity> commit(CommitContext context) {
-        return dataService.commit(context);
+    public EntitySet commit(CommitContext context) {
+        return EntitySet.of(dataService.commit(context));
     }
 
     @Override

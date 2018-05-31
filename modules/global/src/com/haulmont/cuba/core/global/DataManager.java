@@ -112,7 +112,7 @@ public interface DataManager {
      * @param context   {@link com.haulmont.cuba.core.global.CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
-    Set<Entity> commit(CommitContext context);
+    EntitySet commit(CommitContext context);
 
     /**
      * Commits the entity to the data store.

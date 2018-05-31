@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
 public class GenericDataSupplier implements DataSupplier {
 
@@ -86,7 +85,7 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
-    public Set<Entity> commit(CommitContext context) {
+    public EntitySet commit(CommitContext context) {
         return getDataManager().commit(context);
     }
 
