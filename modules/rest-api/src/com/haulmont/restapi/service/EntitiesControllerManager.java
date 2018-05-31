@@ -200,7 +200,7 @@ public class EntitiesControllerManager {
 
         return searchEntities(entityName,
                 searchEntitiesRequest.getFilter().toString(),
-                searchEntitiesRequest.getViewName(),
+                searchEntitiesRequest.getView(),
                 searchEntitiesRequest.getLimit(),
                 searchEntitiesRequest.getOffset(),
                 searchEntitiesRequest.getSort(),
@@ -460,7 +460,7 @@ public class EntitiesControllerManager {
 
     protected class SearchEntitiesRequestDTO {
         protected JsonObject filter;
-        protected String viewName;
+        protected String view;
         protected Integer limit;
         protected Integer offset;
         protected String sort;
@@ -476,8 +476,8 @@ public class EntitiesControllerManager {
             return filter;
         }
 
-        public String getViewName() {
-            return viewName;
+        public String getView() {
+            return view;
         }
 
         public Integer getLimit() {
@@ -512,8 +512,8 @@ public class EntitiesControllerManager {
             this.filter = filter;
         }
 
-        public void setViewName(String viewName) {
-            this.viewName = viewName;
+        public void setView(String view) {
+            this.view = view;
         }
 
         public void setLimit(Integer limit) {
