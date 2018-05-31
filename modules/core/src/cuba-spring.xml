@@ -203,6 +203,7 @@
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
         <property name="statisticsAccumulator" ref="cuba_MiddlewareStatisticsAccumulator"/>
+        <property name="threadNamePrefix" value="cuba_core_scheduler-"/>
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
