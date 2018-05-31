@@ -75,7 +75,7 @@ class EntitySnapshotApiTest extends Specification {
             secondSnapshot.getId() == lastSnapshot1.getId()
     }
 
-    def "Create non-persist snapshot"() {
+    def "Create non-persistent snapshot"() {
         when:
             View view = cont.metadata().getViewRepository().getView(Role.class, View.LOCAL)
             def snapshot = snapshotApi.createTempSnapshot(role, view)
@@ -89,17 +89,13 @@ class EntitySnapshotApiTest extends Specification {
 
     private List<EntitySnapshot> getSnapshotsList() {
         def tx = cont.persistence().createTransaction()
-        def items
         try {
             EntityManager em = cont.persistence().getEntityManager()
             TypedQuery<EntitySnapshot> query = em.createQuery(
                     'select e from sys$EntitySnapshot e', EntitySnapshot.class)
-            items = query.getResultList()
-
-            tx.commit()
+            return query.getResultList()
         } finally {
-            tx.end()
+            tx.close()
         }
-        return items
     }
 }
