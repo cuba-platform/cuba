@@ -252,7 +252,8 @@ public class AttributeSecuritySupport {
                 SecurityState state = getOrCreateSecurityState(entity);
                 addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
-            if (hasOldAttributeAccessListeners(event) || handled) {
+            if (config.getUseSpringApplicationEventsToSetupAttributeAccess() && hasOldAttributeAccessListeners(event)
+                    || handled) {
                 securityTokenManager.writeSecurityToken(entity);
             }
         }
