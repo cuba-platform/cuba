@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.core.config;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
@@ -37,23 +39,24 @@ public class ConfigDefaultMethod extends ConfigMethod {
     @Override
     public Object invoke(ConfigHandler handler, Object[] args, Object proxy) {
         try {
-            // hack to invoke default method of an interface reflectively
-            Constructor<MethodHandles.Lookup> lookupConstructor =
-                    MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, Integer.TYPE);
-            if (!lookupConstructor.isAccessible()) {
-                lookupConstructor.setAccessible(true);
-            }
-            //TODO: CUBA 7 Config default methods should work for JAVA 8 and 10
-            //TODO: https://github.com/cuba-platform/cuba/issues/895
-//            return MethodHandles.lookup()
-//                    .findSpecial(configInterface, configMethod.getName(), MethodType.methodType(configMethod.getReturnType(),
-//                            configMethod.getParameterTypes()), configInterface)
-//                    .bindTo(proxy)
-//                    .invokeWithArguments(args);
-            return lookupConstructor.newInstance(configInterface, MethodHandles.Lookup.PRIVATE)
-                    .unreflectSpecial(configMethod, configInterface)
+            if (SystemUtils.IS_JAVA_1_8) {
+                // hack to invoke default method of an interface reflectively
+                Constructor<MethodHandles.Lookup> lookupConstructor =
+                        MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, Integer.TYPE);
+                if (!lookupConstructor.isAccessible()) {
+                    lookupConstructor.setAccessible(true);
+                }
+                return lookupConstructor.newInstance(configInterface, MethodHandles.Lookup.PRIVATE)
+                        .unreflectSpecial(configMethod, configInterface)
+                        .bindTo(proxy)
+                        .invokeWithArguments(args);
+            } else {
+                return MethodHandles.lookup()
+                    .findSpecial(configInterface, configMethod.getName(), MethodType.methodType(configMethod.getReturnType(),
+                            configMethod.getParameterTypes()), configInterface)
                     .bindTo(proxy)
                     .invokeWithArguments(args);
+            }
         } catch (Throwable throwable) {
             throw new RuntimeException("Error invoking default method of config interface", throwable);
         }
@@ -77,5 +80,4 @@ public class ConfigDefaultMethod extends ConfigMethod {
             return new ConfigDefaultMethod(configInterface, configMethod);
         }
     };
-
 }
