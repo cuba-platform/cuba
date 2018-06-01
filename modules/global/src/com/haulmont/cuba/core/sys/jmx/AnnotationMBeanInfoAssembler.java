@@ -200,7 +200,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
             return metric.getDescription();
         }
 
-        return null;
+        return "";
     }
 
     /**
@@ -226,7 +226,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
         if (mo != null && StringUtils.hasText(mo.getDescription())) {
             return mo.getDescription();
         }
-        return null; // no operation description by default
+        return ""; // no operation description by default
     }
 
     /**
