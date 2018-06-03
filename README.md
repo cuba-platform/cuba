@@ -1,4 +1,4 @@
-<h1 align="center"> <a href="https://www.cuba-platform.com/"><img src="https://github.com/funxies/cuba/blob/master/img/Cuba_Logo.png" alt="CUBA Platform" width="600" align="center"></a>
+<h1 align="center"> <a href="https://www.cuba-platform.com/"><img src="https://github.com/cuba-platform/cuba/blob/master/img/Cuba_Logo.png" alt="CUBA Platform" width="600" align="center"></a>
 </h1>  
 
 <h4 align="center">Java RAD framework for enterprise web applications</h4>
