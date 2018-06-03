@@ -34,15 +34,15 @@ import spock.lang.Specification
 class WebSpec extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    TestContainer cont = TestContainer.Common.INSTANCE
 
-    protected Metadata metadata
-    protected MetadataTools metadataTools
-    protected ViewRepository viewRepository
-    protected EntityStates entityStates
-    protected DataManager dataManager
-    protected DataContextFactory dataContextFactory
-    protected ComponentsFactory componentsFactory
+    Metadata metadata
+    MetadataTools metadataTools
+    ViewRepository viewRepository
+    EntityStates entityStates
+    DataManager dataManager
+    DataContextFactory dataContextFactory
+    ComponentsFactory componentsFactory
 
     void setup() {
         metadata = cont.getBean(Metadata)

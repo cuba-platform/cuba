@@ -8,6 +8,8 @@
     <layout expand="spacer" spacing="true">
         <textField id="textField1"/>
         <textField id="textField2"/>
+        <textField id="textField3"/>
+        <textField id="textField4"/>
         <button caption="Change" invoke="changeName"/>
         <label id="spacer"/>
     </layout>

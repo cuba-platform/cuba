@@ -112,7 +112,16 @@ public class MetaPropertyPath implements Serializable {
         if (metaProperties.length < 1) {
             throw new RuntimeException("Empty property path at metaclass " + metaClass.getName() + " - possibly wrong property name");
         }
-        return getTypeClass(metaProperties[metaProperties.length - 1]);
+        Range range = metaProperties[metaProperties.length - 1].getRange();
+        if (range.isDatatype()) {
+            return range.asDatatype().getJavaClass();
+        } else if (range.isClass()) {
+            return range.asClass().getJavaClass();
+        } else if (range.isEnum()) {
+            return range.asEnumeration().getJavaClass();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -143,21 +152,16 @@ public class MetaPropertyPath implements Serializable {
         return pathString;
     }
 
+    /**
+     * Length of the path, i.e. how many properties it contains.
+     */
+    public int length() {
+        return metaProperties.length;
+    }
+
     @Override
     public String toString() {
         return pathString;
     }
 
-    private Class getTypeClass(MetaProperty metaProperty) {
-        Range range = metaProperty.getRange();
-        if (range.isDatatype()) {
-            return range.asDatatype().getJavaClass();
-        } else if (range.isClass()) {
-            return range.asClass().getJavaClass();
-        } else if (range.isEnum()) {
-            return range.asEnumeration().getJavaClass();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
 }

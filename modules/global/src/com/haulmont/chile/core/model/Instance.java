@@ -75,9 +75,7 @@ public interface Instance extends Serializable {
      * <br> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
      * {@code car.driver.name}.
      * <br> In the example above this method first gets value of {@code car.driver} attribute, and if it is not
-     * null and is an {@link Instance}, sets value of {@code name} attribute in it. If the value returned from
-     * {@code getValueEx("car.driver")} is null or is not an {@link Instance}, this method throws
-     * {@link IllegalStateException}.
+     * null and is an {@link Instance}, sets value of {@code name} attribute in it.
      * <br> An implementor should first read a current value of the attribute, and then call an appropriate setter
      * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.

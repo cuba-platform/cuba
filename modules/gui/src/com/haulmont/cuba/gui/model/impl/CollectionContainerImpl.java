@@ -44,6 +44,19 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
     }
 
     @Override
+    public void setItem(@Nullable T item) {
+        if (item != null) {
+            T existingItem = collection.stream()
+                    .filter(item::equals)
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("CollectionContainer does not contain " + item));
+            super.setItem(existingItem);
+        } else {
+            super.setItem(null);
+        }
+    }
+
+    @Override
     public List<T> getItems() {
         return Collections.unmodifiableList(collection);
     }

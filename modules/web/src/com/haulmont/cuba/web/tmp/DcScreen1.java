@@ -37,6 +37,10 @@ public class DcScreen1 extends AbstractWindow {
     private TextField<String> textField1;
     @Inject
     private TextField<String> textField2;
+    @Inject
+    private TextField<String> textField3;
+    @Inject
+    private TextField<String> textField4;
 
     @Inject
     private DataContextFactory dataContextFactory;
@@ -49,10 +53,13 @@ public class DcScreen1 extends AbstractWindow {
 
         textField1.setValueSource(new ContainerValueSource<>(container, "name"));
         textField2.setValueSource(new ContainerValueSource<>(container, "name"));
+        textField3.setValueSource(new ContainerValueSource<>(container, "group.name"));
+        textField4.setValueSource(new ContainerValueSource<>(container, "group.name"));
 
         InstanceLoader<User, UUID> loader = dataContextFactory.createInstanceLoader();
         loader.setContainer(container);
         loader.setEntityId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+        loader.setView("user.edit");
         loader.load();
     }
 

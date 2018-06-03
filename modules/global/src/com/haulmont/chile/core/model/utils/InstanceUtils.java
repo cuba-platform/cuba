@@ -181,8 +181,6 @@ public final class InstanceUtils {
             if (instance != null) {
                 String property = properties[properties.length - 1];
                 instance.setValue(property, value);
-            } else {
-                throw new IllegalStateException(String.format("Can't find property '%s' value", intermediatePath));
             }
         } else {
             instance.setValue(properties[0], value);

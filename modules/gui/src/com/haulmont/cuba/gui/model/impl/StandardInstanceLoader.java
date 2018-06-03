@@ -87,7 +87,7 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
         T entity = getDataManager().load(loadContext);
 
         if (dataContext != null) {
-            dataContext.merge(entity);
+            entity = dataContext.merge(entity);
         }
         container.setItem(entity);
     }

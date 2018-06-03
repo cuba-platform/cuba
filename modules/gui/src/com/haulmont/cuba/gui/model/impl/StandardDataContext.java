@@ -86,14 +86,8 @@ public class StandardDataContext implements DataContext {
         this.parentContext = (StandardDataContext) parentContext;
 
         for (Entity entity : this.parentContext.getAll()) {
-            Entity entityCopy;
-            try {
-                entityCopy = entity.getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("Cannot create a copy of " + entity, e);
-            }
-            copyState(entity, entityCopy);
-            merge(entityCopy);
+            Entity copy = copyGraph(entity, new HashMap<>());
+            merge(copy);
         }
     }
 
@@ -206,12 +200,91 @@ public class StandardDataContext implements DataContext {
             }
         }
         if (!srcNew && dstNew) {
-            if (dstEntity instanceof BaseGenericIdEntity) {
-                BaseEntityInternalAccess.setNew((BaseGenericIdEntity) dstEntity, false);
-                BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) dstEntity, true);
-            } else if (dstEntity instanceof AbstractNotPersistentEntity) {
-                BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, false);
+            copySystemState(dstEntity);
+        }
+    }
+
+    /**
+     * Creates a deep copy of the given graph.
+     *
+     * @param srcEntity source entity
+     * @param copied    map of already copied instances to their copies
+     * @return          copy of the given graph
+     */
+    @SuppressWarnings("unchecked")
+    protected Entity copyGraph(Entity srcEntity, Map<Entity, Entity> copied) {
+        Entity existingCopy = copied.get(srcEntity);
+        if (existingCopy != null)
+            return existingCopy;
+
+        EntityStates entityStates = getEntityStates();
+        boolean srcNew = entityStates.isNew(srcEntity);
+
+        Entity dstEntity;
+        try {
+            dstEntity = srcEntity.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Cannot create an instance of " + srcEntity.getClass(), e);
+        }
+        copyIdAndVersion(srcEntity, dstEntity);
+
+        copied.put(srcEntity, dstEntity);
+
+        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
+            String name = property.getName();
+            if (!property.isReadOnly()
+                    && (srcNew || entityStates.isLoaded(srcEntity, name))) {
+                AnnotatedElement annotatedElement = property.getAnnotatedElement();
+                if (annotatedElement instanceof Field) {
+                    Field field = (Field) annotatedElement;
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(srcEntity);
+                        Object newValue;
+                        if (value != null) {
+                            if (!property.getRange().isClass()) {
+                                newValue = value;
+                            } else if (!property.getRange().getCardinality().isMany()) {
+                                newValue = copyGraph((Entity) value, copied);
+                            } else {
+                                Collection dstCollection = value instanceof List ? new ArrayList() : new LinkedHashSet();
+                                for (Object item : (Collection) value) {
+                                    dstCollection.add(copyGraph((Entity) item, copied));
+                                }
+                                newValue = dstCollection;
+                            }
+                            if (newValue != null) {
+                                field.set(dstEntity, newValue);
+                            }
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Error copying state of attribute " + name, e);
+                    }
+                }
             }
+        }
+        copySystemState(dstEntity);
+        return dstEntity;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void copyIdAndVersion(Entity srcEntity, Entity dstEntity) {
+        if (dstEntity instanceof BaseGenericIdEntity)
+            ((BaseGenericIdEntity) dstEntity).setId(srcEntity.getId());
+        else if (dstEntity instanceof AbstractNotPersistentEntity)
+            ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getId());
+
+        if (dstEntity instanceof Versioned) {
+            ((Versioned) dstEntity).setVersion(((Versioned) srcEntity).getVersion());
+        }
+    }
+
+    protected void copySystemState(Entity dstEntity) {
+        if (dstEntity instanceof BaseGenericIdEntity) {
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) dstEntity, false);
+            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) dstEntity, true);
+        } else if (dstEntity instanceof AbstractNotPersistentEntity) {
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, false);
         }
     }
 
@@ -240,16 +313,29 @@ public class StandardDataContext implements DataContext {
     @Override
     public void remove(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (contains(entity)) {
-            modifiedInstances.remove(entity);
-            removedInstances.add(entity);
-            entity.removePropertyChangeListener(changeListener);
+        Map<Object, Entity> entityMap = content.get(entity.getClass());
+        if (entityMap != null) {
+            Entity mergedEntity = entityMap.get(entity.getId());
+            if (mergedEntity != null) {
+                modifiedInstances.remove(entity);
+                removedInstances.add(entity);
+                entityMap.remove(entity.getId());
+                entity.removePropertyChangeListener(changeListener);
+            }
         }
     }
 
     @Override
     public void evict(Entity entity) {
-
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Map<Object, Entity> entityMap = content.get(entity.getClass());
+        if (entityMap != null) {
+            Entity mergedEntity = entityMap.get(entity.getId());
+            if (mergedEntity != null) {
+                entityMap.remove(entity.getId());
+                entity.removePropertyChangeListener(changeListener);
+            }
+        }
     }
 
     @Override
@@ -270,6 +356,9 @@ public class StandardDataContext implements DataContext {
         eventRouter.fireEvent(PostCommitListener.class, PostCommitListener::postCommit, postCommitEvent);
 
         mergeCommitted(committed);
+
+        modifiedInstances.clear();
+        removedInstances.clear();
     }
 
     @Override
@@ -311,7 +400,9 @@ public class StandardDataContext implements DataContext {
     protected Set<Entity> commitToParentContext() {
         HashSet<Entity> committedEntities = new HashSet<>();
         for (Entity entity : modifiedInstances) {
-            committedEntities.add(parentContext.merge(entity));
+            Entity merged = parentContext.merge(entity, false);
+            parentContext.modifiedInstances.add(merged);
+            committedEntities.add(merged);
         }
         for (Entity entity : removedInstances) {
             parentContext.remove(entity);

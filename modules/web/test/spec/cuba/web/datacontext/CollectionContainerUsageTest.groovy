@@ -216,7 +216,7 @@ class CollectionContainerUsageTest extends WebSpec {
         modified.containsAll(foo1, foo2)
     }
 
-    def "remove item in memory only"() {
+    def "remove item and save it"() {
 
         def modified = []
         DataContext context = dataContextFactory.createDataContext()
@@ -247,7 +247,7 @@ class CollectionContainerUsageTest extends WebSpec {
         modified.contains(foo1)
     }
 
-    def "remove item and save it"() {
+    def "remove item in memory only"() {
 
         def modified = []
         DataContext context = dataContextFactory.createDataContext()

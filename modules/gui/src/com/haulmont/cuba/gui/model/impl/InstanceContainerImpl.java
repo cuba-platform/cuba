@@ -65,7 +65,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     }
 
     @Override
-    public void setItem(T item) {
+    public void setItem(@Nullable T item) {
         T prevItem = this.item;
 
         if (this.item != null) {
@@ -130,6 +130,14 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
         if (entity != null) {
             entity.removePropertyChangeListener(listener);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "InstanceContainerImpl{" +
+                "entity=" + entityMetaClass +
+                ", view=" + view +
+                '}';
     }
 
     protected class ItemListener implements Instance.PropertyChangeListener {

@@ -17,6 +17,7 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataContext
@@ -55,9 +56,7 @@ class DataContextTest extends Specification {
 
         when: "merging instance first time"
 
-        User user1 = new User()
-        user1.setLogin("u1")
-        user1.setName("User 1")
+        User user1 = new User(login: 'u1', name: 'User 1')
 
         User mergedUser1 = context.merge(user1)
 
@@ -70,10 +69,7 @@ class DataContextTest extends Specification {
 
         when: "merging another instance with the same id"
 
-        User user11 = new User()
-        user11.setLogin("u11")
-        user11.setName("User 11")
-        user11.setId(user1.getId())
+        User user11 = new User(id: user1.id, login: 'u11', name: 'User 11')
 
         User mergedUser11 = context.merge(user11)
 
@@ -90,30 +86,19 @@ class DataContextTest extends Specification {
         when: "merging graph containing different instances with same ids"
 
         // an object being merged
-        User user1 = createDetached(User)
-        user1.login = "u1"
-        user1.name = "User 1"
-        user1.userRoles = new ArrayList<>()
-
-        Role role1 = createDetached(Role)
-        role1.name = "Role 1"
-
-        UserRole user1Role1 = createDetached(UserRole)
-        user1Role1.user = user1
-        user1Role1.role = role1
-
+        User user1 = new User(login: 'u1', name: 'User 1', userRoles: [])
+        makeDetached(user1)
+        Role role1 = new Role(name: 'Role1')
+        makeDetached(role1)
+        UserRole user1Role1 = new UserRole(user: user1, role: role1)
+        makeDetached(user1Role1)
         user1.userRoles.add(user1Role1)
 
         // somewhere in the object graph another object with the same id
-        User user11 = createDetached(User)
-        user11.login = "u11"
-        user11.name = "User 11"
-        user11.id = user1.id
-
-        UserRole user11Role1 = createDetached(UserRole)
-        user11Role1.user = user11
-        user11Role1.role = role1
-
+        User user11 = new User(id: user1.id, login: 'u11', name: 'User 11')
+        makeDetached(user11)
+        UserRole user11Role1 = new UserRole(user: user11, role: role1)
+        makeDetached(user11Role1)
         user1.getUserRoles().add(user11Role1)
 
         //  user1
@@ -446,6 +431,55 @@ class DataContextTest extends Specification {
         dst.userRoles != null
     }
 
+    def "child context has correct object graph"() throws Exception {
+
+        DataContext context = factory.createDataContext()
+
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            commit(_) >> Collections.emptySet()
+        })
+
+        when: "merge instance into parent context"
+
+        User user1 = makeSaved(new User(login: 'u1', name: 'User 1', userRoles: []))
+        Role role1 = makeSaved(new Role(name: 'Role 1'))
+        UserRole user1Role1 = makeSaved(new UserRole(user: user1, role: role1))
+        user1.userRoles.add(user1Role1)
+
+        context.merge(user1)
+
+        then:
+
+        !context.hasChanges()
+
+        when:
+
+        DataContext childContext = factory.createDataContext()
+        childContext.setParent(context)
+
+        def childUser = childContext.find(User, user1.id)
+        def childRole = childContext.find(Role, role1.id)
+        def childUserRole = childContext.find(UserRole, user1Role1.id)
+
+        then:
+
+        childUser == user1
+        !childUser.is(user1)
+        childUser.userRoles[0] == childUserRole
+
+        childRole == role1
+        !childRole.is(role1)
+
+        childUserRole == user1Role1
+        !childUserRole.is(user1Role1)
+
+        childUserRole.user?.is(childUser)
+        childUserRole.role?.is(childRole)
+
+        !context.hasChanges()
+        !childContext.hasChanges()
+    }
+
     def "parent context"() throws Exception {
 
         DataContext context = factory.createDataContext()
@@ -515,9 +549,69 @@ class DataContextTest extends Specification {
         modified.contains(user1Role1)
     }
 
+    def "remove"() {
+        DataContext context = factory.createDataContext()
+
+        User user1 = new User(login: 'u1', name: 'User 1')
+        makeDetached(user1)
+        context.merge(user1)
+
+        when:
+
+        context.remove(user1)
+
+        then:
+
+        context.find(User, user1.id) == null
+
+        when:
+
+        def removed = []
+        context.addPreCommitListener { e -> removed.addAll(e.removedInstances) }
+        context.commit()
+
+        then:
+
+        removed.contains(user1)
+    }
+
+    def "evict"() {
+        DataContext context = factory.createDataContext()
+
+        User user1 = new User(login: 'u1', name: 'User 1')
+        makeDetached(user1)
+        context.merge(user1)
+
+        when:
+
+        context.evict(user1)
+
+        then:
+
+        context.find(User, user1.id) == null
+
+        when:
+
+        def removed = []
+        context.addPreCommitListener { e -> removed.addAll(e.removedInstances) }
+        context.commit()
+
+        then:
+
+        removed.isEmpty()
+    }
+
     private <T> T createDetached(Class<T> entityClass) {
         def entity = metadata.create(entityClass)
         entityStates.makeDetached(entity)
         entity
+    }
+
+    private void makeDetached(def entity) {
+        entityStates.makeDetached(entity)
+    }
+
+    private static <T> T makeSaved(T entity) {
+        TestServiceProxy.getDefault(DataService).commit(new CommitContext().addInstanceToCommit(entity))[0] as T
     }
 }

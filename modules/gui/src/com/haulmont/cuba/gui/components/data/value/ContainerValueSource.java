@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.value;
 
+import com.google.common.base.Joiner;
 import com.haulmont.bali.events.EventPublisher;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
@@ -25,8 +26,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.model.DataContextFactory;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -41,6 +44,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     protected EventPublisher events = new EventPublisher();
 
+    @SuppressWarnings("unchecked")
     public ContainerValueSource(InstanceContainer<E> container, String property) {
         checkNotNullArgument(container);
         checkNotNullArgument(property);
@@ -49,14 +53,63 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        if (metaPropertyPath == null)
+            throw new IllegalArgumentException(String.format(
+                    "Could not resolve property path '%s' in '%s'", property, metaClass));
 
         this.metaPropertyPath = metaPropertyPath;
         this.container = container;
 
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
+
+        InstanceContainer parentCont = container;
+        for (int i = 1; i < this.metaPropertyPath.length(); i++) {
+            MetaPropertyPath intermediatePath = new MetaPropertyPath(this.metaPropertyPath.getMetaClass(),
+                    Arrays.copyOf(this.metaPropertyPath.getMetaProperties(), i));
+            String pathToTarget = Joiner.on('.').join(
+                    Arrays.copyOfRange(this.metaPropertyPath.getPath(), i, this.metaPropertyPath.length()));
+
+            InstanceContainer propertyCont = AppBeans.get(DataContextFactory.class).createInstanceContainer(
+                    intermediatePath.getRangeJavaClass());
+
+            parentCont.addItemChangeListener(e -> {
+                InstanceContainer.ItemChangeEvent event = (InstanceContainer.ItemChangeEvent) e;
+                if (event.getItem() != null) {
+                    setState(BindingState.ACTIVE);
+                } else {
+                    setState(BindingState.INACTIVE);
+                }
+                propertyCont.setItem(event.getItem() != null ?
+                        event.getItem().getValueEx(intermediatePath.getMetaProperty().getName()) : null);
+            });
+
+            parentCont.addItemPropertyChangeListener(e -> {
+                InstanceContainer.ItemPropertyChangeEvent event = (InstanceContainer.ItemPropertyChangeEvent) e;
+                if (Objects.equals(event.getProperty(), intermediatePath.getMetaProperty().getName())) {
+                    Entity entity = (Entity) event.getValue();
+                    Entity prevEntity = (Entity) event.getPrevValue();
+                    propertyCont.setItem(entity);
+
+                    V prevValue = prevEntity != null ? prevEntity.getValueEx(pathToTarget) : null;
+                    V value = entity != null ? entity.getValueEx(pathToTarget) : null;
+                    events.publish(ValueChangeEvent.class,
+                            new ValueChangeEvent<>(this, prevValue, value));
+                }
+            });
+
+            if (i == this.metaPropertyPath.length() - 1) {
+                propertyCont.addItemPropertyChangeListener(e -> {
+                    InstanceContainer.ItemPropertyChangeEvent event = (InstanceContainer.ItemPropertyChangeEvent) e;
+                    if (Objects.equals(event.getProperty(), this.metaPropertyPath.getMetaProperty().getName())) {
+                        events.publish(ValueChangeEvent.class,
+                                new ValueChangeEvent<>(this, (V) event.getPrevValue(), (V) event.getValue()));
+                    }
+                });
+            }
+
+            parentCont = propertyCont;
+        }
     }
 
     @Override
