@@ -51,8 +51,8 @@
                 (ur.role.id in (?))
             </custom>
         </filter>
-        <!-- vaadin8 groupTable-->
-        <table id="usersTable" presentations="true" multiselect="true" width="100%">
+
+        <groupTable id="usersTable" presentations="true" multiselect="true" width="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -84,6 +84,6 @@
                 <column id="changePasswordAtNextLogon"/>
             </columns>
             <rows datasource="usersDs"/>
-        </table>
+        </groupTable>
     </layout>
 </window>

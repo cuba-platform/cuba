@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 
 public interface EntityOptionsSource<E extends Entity> extends OptionsSource<E> {
-    MetaClass getMetaClass();
+    MetaClass getEntityMetaClass();
 
     void setSelectedItem(E item);
 }

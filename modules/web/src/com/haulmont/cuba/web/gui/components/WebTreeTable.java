@@ -37,6 +37,7 @@ import com.vaadin.v7.data.Item;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("deprecation")
 public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTable, E> implements TreeTable<E> {
 
     protected String hierarchyProperty;
@@ -241,12 +242,6 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean isCaption(Object itemId) {
-            return treeTableDatasource && ((TreeTableDatasource) datasource).isCaption(itemId);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
         public String getCaption(Object itemId) {
             if (treeTableDatasource) {
                 return ((TreeTableDatasource) datasource).getCaption(itemId);
@@ -276,16 +271,18 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         public void sort(Object[] propertyId, boolean[] ascending) {
             List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<>();
             for (int i = 0; i < propertyId.length; i++) {
-                final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
+                MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
 
-                final CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
+                CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
                         new CollectionDatasource.Sortable.SortInfo<>();
                 info.setPropertyPath(propertyPath);
                 info.setOrder(ascending[i] ? CollectionDatasource.Sortable.Order.ASC : CollectionDatasource.Sortable.Order.DESC);
 
                 infos.add(info);
             }
-            ((CollectionDatasource.Sortable) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
+
+            ((CollectionDatasource.Sortable) datasource)
+                    .sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[0]));
         }
 
         @Override

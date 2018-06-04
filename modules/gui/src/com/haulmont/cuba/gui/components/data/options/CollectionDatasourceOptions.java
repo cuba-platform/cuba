@@ -112,7 +112,7 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
     }
 
     @Override
-    public MetaClass getMetaClass() {
+    public MetaClass getEntityMetaClass() {
         return datasource.getMetaClass();
     }
 

@@ -104,10 +104,10 @@ public class AttributeAccessSupport {
         }
 
         if (reset) {
-            component.setVisible(security.isEntityAttrReadPermitted(entityValueSource.getMetaClass(), propertyPath.toString()));
+            component.setVisible(security.isEntityAttrReadPermitted(entityValueSource.getEntityMetaClass(), propertyPath.toString()));
 
             if (component instanceof Editable) {
-                ((Editable) component).setEditable(security.isEntityAttrUpdatePermitted(entityValueSource.getMetaClass(), propertyPath.toString()));
+                ((Editable) component).setEditable(security.isEntityAttrUpdatePermitted(entityValueSource.getEntityMetaClass(), propertyPath.toString()));
             }
             if (component instanceof Field) {
                 ((Field) component).setRequired(propertyPath.getMetaProperty().isMandatory());
@@ -156,7 +156,7 @@ public class AttributeAccessSupport {
 
     protected SecurityState getSecurityState(Entity entity) {
         if (entity instanceof BaseGenericIdEntity) {
-            return BaseEntityInternalAccess.getSecurityState((BaseGenericIdEntity) entity);
+            return BaseEntityInternalAccess.getSecurityState(entity);
         } else {
             return null;
         }

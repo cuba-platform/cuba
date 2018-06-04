@@ -74,10 +74,6 @@ public class TableItemWrapper implements Item {
         return tableDataContainer.getTableSource().getItemValue(itemId, propertyId);
     }
 
-    public void setPropertyValue(Object propertyId, Object newValue) {
-        tableDataContainer.getTableSource().setItemValue(itemId, propertyId, newValue);
-    }
-
     public void addValueChangeListener(Property.ValueChangeListener propertyValueChangeListener) {
         tableDataContainer.addValueChangeListener(propertyValueChangeListener);
     }

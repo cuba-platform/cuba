@@ -17,13 +17,14 @@
 package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Item;
 
 import java.util.Collection;
 
 @SuppressWarnings("deprecation")
-public class SortableDataContainer<I> extends TableDataContainer<I> implements Container.Sortable {
+public class SortableDataContainer<I> extends TableDataContainer<I> implements Container.Sortable, TableSortableContainer {
 
     public SortableDataContainer(TableSource.Sortable<I> tableDataSource, TableSourceEventsDelegate<I> dataEventsDelegate) {
         super(tableDataSource, dataEventsDelegate);
@@ -31,10 +32,10 @@ public class SortableDataContainer<I> extends TableDataContainer<I> implements C
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        getSortableDataSource().sort(propertyId, ascending);
+        getSortableTableSource().sort(propertyId, ascending);
     }
 
-    protected TableSource.Sortable getSortableDataSource() {
+    protected TableSource.Sortable getSortableTableSource() {
         return (TableSource.Sortable) tableSource;
     }
 
@@ -45,32 +46,32 @@ public class SortableDataContainer<I> extends TableDataContainer<I> implements C
 
     @Override
     public Object nextItemId(Object itemId) {
-        return getSortableDataSource().nextItemId(itemId);
+        return getSortableTableSource().nextItemId(itemId);
     }
 
     @Override
     public Object prevItemId(Object itemId) {
-        return getSortableDataSource().prevItemId(itemId);
+        return getSortableTableSource().prevItemId(itemId);
     }
 
     @Override
     public Object firstItemId() {
-        return getSortableDataSource().firstItemId();
+        return getSortableTableSource().firstItemId();
     }
 
     @Override
     public Object lastItemId() {
-        return getSortableDataSource().lastItemId();
+        return getSortableTableSource().lastItemId();
     }
 
     @Override
     public boolean isFirstId(Object itemId) {
-        return getSortableDataSource().isFirstId(itemId);
+        return getSortableTableSource().isFirstId(itemId);
     }
 
     @Override
     public boolean isLastId(Object itemId) {
-        return getSortableDataSource().isLastId(itemId);
+        return getSortableTableSource().isLastId(itemId);
     }
 
     @Override
@@ -81,5 +82,10 @@ public class SortableDataContainer<I> extends TableDataContainer<I> implements C
     @Override
     public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void resetSortOrder() {
+        getSortableTableSource().resetSortOrder();
     }
 }

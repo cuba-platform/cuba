@@ -53,7 +53,6 @@ import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.*;
-import com.haulmont.cuba.web.widgets.data.DataGridContainer;
 import com.vaadin.contextmenu.Menu;
 import com.vaadin.contextmenu.MenuItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -2570,8 +2569,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected class SortableDataGridDsWrapper
-            extends SortableDataGridIndexedCollectionDsWrapper
-            implements DataGridContainer {
+            extends SortableDataGridIndexedCollectionDsWrapper {
 
         public SortableDataGridDsWrapper(CollectionDatasource.Indexed datasource,
                                          Collection<MetaPropertyPath> properties,
@@ -2606,13 +2604,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 }
             }
             return ids;
-        }
-
-        @Override
-        public void resetSortOrder() {
-            if (datasource instanceof CollectionDatasource.Sortable) {
-                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
-            }
         }
     }
 

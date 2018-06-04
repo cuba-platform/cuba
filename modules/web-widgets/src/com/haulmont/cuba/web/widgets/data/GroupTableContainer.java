@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.widgets.data;
 
 import java.util.Collection;
 
-public interface GroupTableContainer extends TableContainer {
+public interface GroupTableContainer extends TableSortableContainer {
     void groupBy(Object[] properties);
 
     boolean isGroup(Object id);

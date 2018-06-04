@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * @param <V>
  */
 public interface EntityValueSource<E extends Entity, V> extends ValueSource<V> {
-    MetaClass getMetaClass();
+    MetaClass getEntityMetaClass();
     MetaPropertyPath getMetaPropertyPath();
 
     E getItem();

@@ -36,11 +36,8 @@ public class TableItemPropertyWrapper implements Property, Property.ValueChangeN
 
     @Override
     public void setValue(Object newValue) throws ReadOnlyException {
-        if (readOnly) {
-            throw new ReadOnlyException();
-        }
-
-        itemWrapper.setPropertyValue(propertyId, newValue);
+        // Table does not support setting new value with Vaadin API
+        throw new ReadOnlyException();
     }
 
     @Override

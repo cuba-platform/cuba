@@ -205,9 +205,8 @@ public class ValueBinder {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        protected void sourceValueChanged(@SuppressWarnings("unused") ValueSource.ValueChangeEvent event) {
-            component.setValue((V) event.getValue());
+        protected void sourceValueChanged(ValueSource.ValueChangeEvent<V> event) {
+            component.setValue(event.getValue());
         }
 
         protected void sourceInstanceChanged(@SuppressWarnings("unused") EntityValueSource.InstanceChangeEvent<Entity> event) {

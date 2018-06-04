@@ -82,4 +82,9 @@ public class SortableCollectionDatasourceTableAdapter<E extends Entity<K>, K>
 
         getSortableDatasource().sort(new SortInfo[] {info});
     }
+
+    @Override
+    public void resetSortOrder() {
+        getSortableDatasource().resetSortOrder();
+    }
 }

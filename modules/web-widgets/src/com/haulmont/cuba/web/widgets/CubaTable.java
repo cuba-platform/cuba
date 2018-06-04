@@ -21,8 +21,7 @@ import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableState;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
-import com.haulmont.cuba.web.widgets.data.PropertyValueStringify;
-import com.haulmont.cuba.web.widgets.data.TableContainer;
+import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
@@ -44,7 +43,7 @@ import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer, CubaEnhancedTable {
+public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableContainer, CubaEnhancedTable {
 
     protected List<Object> editableColumns;
 
@@ -252,10 +251,6 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
             return customCellValueFormatter.getFormattedValue(rowId, colId, property);
         }
 
-        if (property instanceof PropertyValueStringify) {
-            return ((PropertyValueStringify) property).getFormattedValue();
-        }
-
         return super.formatPropertyValue(rowId, colId, property);
     }
 
@@ -420,8 +415,8 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableContainer,
         sortContainerPropertyId = null;
         sortAscending = true;
 
-        if (items instanceof TableContainer) {
-            ((TableContainer) items).resetSortOrder();
+        if (items instanceof TableSortableContainer) {
+            ((TableSortableContainer) items).resetSortOrder();
         }
     }
 

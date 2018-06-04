@@ -60,7 +60,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     private void addGroupColumn(String colKey) {
         if (groupColumns == null) {
-            groupColumns = new HashSet<String>();
+            groupColumns = new HashSet<>();
         }
         groupColumns.add(colKey);
     }
@@ -131,7 +131,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         // CAUTION This method copied from VScrollTable
         // Added grouping support
 
-        final int oldIndex = getColIndexByKey(columnKey);
+        int oldIndex = getColIndexByKey(columnKey);
 
         // Change header order
         tHead.moveCell(oldIndex, newIndex);
@@ -166,7 +166,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
         }
 
-        final String oldKeyOnNewIndex = visibleColOrder[newIndex];
+        String oldKeyOnNewIndex = visibleColOrder[newIndex];
         if (showRowHeaders) {
             newIndex--; // columnOrder don't have rowHeader
         }
@@ -183,7 +183,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
 
         // finally we can build the new columnOrder for server
-        final String[] newOrder = new String[columnOrder.length];
+        String[] newOrder = new String[columnOrder.length];
         for (int i = 0, j = 0; j < newOrder.length; i++) {
             if (j == newIndex) {
                 newOrder[j] = columnKey;
@@ -542,7 +542,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             private void calcAndSetWidthForSpannedCell() {
-                final int cells = tHead.getVisibleCellCount();
+                int cells = tHead.getVisibleCellCount();
                 for (int i = 0; i < groupColIndex; i++) {
                     int w = CubaGroupTableWidget.this.getColWidth(getColKeyByIndex(i));
                     if (w < 0) {

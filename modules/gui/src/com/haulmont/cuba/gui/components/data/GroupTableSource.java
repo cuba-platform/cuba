@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,23 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-package com.haulmont.cuba.gui.data;
 
-import com.haulmont.cuba.core.entity.Entity;
+package com.haulmont.cuba.gui.components.data;
+
+import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * CollectionDatasource which supports a grouping of items by the list of properties
- *
- * @param <T> type of entity
- * @param <K> type of entity ID
- */
-public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+public interface GroupTableSource<I> extends TableSource.Sortable<I> {
     /**
      * Perform grouping by the list of properties
      */
@@ -52,23 +46,23 @@ public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatas
     /**
      * @return the list of nested items
      */
-    List<T> getOwnChildItems(GroupInfo groupId);
+    List<I> getOwnChildItems(GroupInfo groupId);
 
     /**
      * @return the list of items from all nested group levels
      */
-    List<T> getChildItems(GroupInfo groupId);
+    List<I> getChildItems(GroupInfo groupId);
 
     /**
      * @return the parent group of passed item
      */
     @Nullable
-    GroupInfo getParentGroup(T entity);
+    GroupInfo getParentGroup(I item);
 
     /**
      * @return the path through all parent groups
      */
-    List<GroupInfo> getGroupPath(T entity);
+    List<GroupInfo> getGroupPath(I item);
 
     /**
      * @return a group property
@@ -83,7 +77,7 @@ public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatas
     /**
      * @return item ids that are contained in the selected group
      */
-    Collection<K> getGroupItemIds(GroupInfo groupId);
+    Collection<?> getGroupItemIds(GroupInfo groupId);
 
     /**
      * @return a count of items that are contained in the selected group

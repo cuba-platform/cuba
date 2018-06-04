@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -25,18 +26,9 @@ import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class GroupDelegate<T extends Entity<K>, K> {
@@ -114,10 +106,10 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         groupItems = new HashMap<>();
         itemGroups = new HashMap<>();
 
-        final Collection<K> itemIds = datasource.getItemIds();
-        for (final K id : itemIds) {
-            final T item = datasource.getItem(id);
-            GroupInfo<MetaPropertyPath> groupInfo = groupItems(0, null, roots, item, new LinkedMap());
+        Collection<K> itemIds = datasource.getItemIds();
+        for (K id : itemIds) {
+            T item = datasource.getItem(id);
+            GroupInfo<MetaPropertyPath> groupInfo = groupItems(0, null, roots, item, new LinkedMap<>());
 
             if (groupInfo == null) {
                 throw new IllegalStateException("Item group cannot be NULL");
@@ -129,8 +121,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     }
 
     protected GroupInfo<MetaPropertyPath> groupItems(int propertyIndex, GroupInfo parent, List<GroupInfo> children,
-                                                     T item, final LinkedMap groupValues) {
-        final MetaPropertyPath property = (MetaPropertyPath) groupProperties[propertyIndex++];
+                                                     T item, LinkedMap<MetaPropertyPath, Object> groupValues) {
+        MetaPropertyPath property = (MetaPropertyPath) groupProperties[propertyIndex++];
         Object itemValue = getValueByProperty(item, property);
         groupValues.put(property, itemValue);
 
@@ -159,16 +151,16 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
     protected void doGroupSort(CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>[] sortInfo) {
         if (hasGroups()) {
-            final MetaPropertyPath propertyPath = sortInfo[0].getPropertyPath();
-            final boolean asc = CollectionDatasource.Sortable.Order.ASC.equals(sortInfo[0].getOrder());
+            MetaPropertyPath propertyPath = sortInfo[0].getPropertyPath();
+            boolean asc = CollectionDatasource.Sortable.Order.ASC.equals(sortInfo[0].getOrder());
 
-            final int index = Arrays.asList(groupProperties).indexOf(propertyPath);
+            int index = ArrayUtils.indexOf(groupProperties, propertyPath);
             if (index > -1) {
                 if (index == 0) { // Sort roots
                     roots.sort(new GroupInfoComparator(asc));
                 } else {
-                    final Object parentProperty = groupProperties[index - 1];
-                    for (final Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
+                    Object parentProperty = groupProperties[index - 1];
+                    for (Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
                         Object property = entry.getKey().getProperty();
                         if (property.equals(parentProperty)) {
                             entry.getValue().sort(new GroupInfoComparator(asc));
@@ -176,8 +168,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                     }
                 }
             } else {
-                final Set<GroupInfo> groups = parents.keySet();
-                for (final GroupInfo groupInfo : groups) {
+                Set<GroupInfo> groups = parents.keySet();
+                for (GroupInfo groupInfo : groups) {
                     List<K> items = groupItems.get(groupInfo);
                     if (items != null) {
                         items.sort(new EntityByIdComparator<>(propertyPath, datasource, asc));
@@ -207,6 +199,14 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         return Collections.emptyList();
     }
 
+    // return collection as is
+    public List<GroupInfo> getChildrenInternal(GroupInfo groupId) {
+        if (hasChildren(groupId)) {
+            return children.get(groupId);
+        }
+        return Collections.emptyList();
+    }
+
     public Object getGroupProperty(GroupInfo groupId) {
         if (containsGroup(groupId)) {
             return groupId.getProperty();
@@ -225,13 +225,13 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         if (containsGroup(group)) {
             List<K> itemIds;
             if ((itemIds = groupItems.get(group)) == null) {
-                itemIds = new LinkedList<>();
-                final List<GroupInfo> children = getChildren(group);
-                for (final GroupInfo child : children) {
+                itemIds = new ArrayList<>();
+                List<GroupInfo> children = getChildrenInternal(group);
+                for (GroupInfo child : children) {
                     itemIds.addAll(getGroupItemIds(child));
                 }
             }
-            return Collections.unmodifiableList(itemIds);
+            return ImmutableList.copyOf(itemIds);
         }
         return Collections.emptyList();
     }
@@ -241,8 +241,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
             List<K> itemIds;
             if ((itemIds = groupItems.get(groupId)) == null) {
                 int count = 0;
-                final List<GroupInfo> children = getChildren(groupId);
-                for (final GroupInfo child : children) {
+                List<GroupInfo> children = getChildrenInternal(groupId);
+                for (GroupInfo child : children) {
                     count += getGroupItemsCount(child);
                 }
                 return count;
@@ -279,7 +279,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         }
     }
 
-    public List<Entity> getOwnChildItems(GroupInfo groupId) {
+    public List<T> getOwnChildItems(GroupInfo groupId) {
         if (groupItems == null) {
             return Collections.emptyList();
         }
@@ -293,28 +293,25 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         return Collections.emptyList();
     }
 
-    public List<Entity> getChildItems(GroupInfo groupId) {
+    public List<T> getChildItems(GroupInfo groupId) {
         if (groupItems == null) {
             return Collections.emptyList();
         }
 
         if (containsGroup(groupId)) {
-            List<Entity> entities = new ArrayList<>();
+            List<T> entities = new ArrayList<>();
 
             // if current group contains other groups
             if (hasChildren(groupId)) {
-                List<GroupInfo> children = getChildren(groupId);
+                List<GroupInfo> children = getChildrenInternal(groupId);
                 for (GroupInfo childGroup : children) {
                     entities.addAll(getChildItems(childGroup));
                 }
             }
 
-            // if current group contains only items
-            List<K> idsList = groupItems.get(groupId);
-            if (CollectionUtils.isNotEmpty(idsList)) {
-                entities.addAll(idsList.stream()
-                        .map(id -> datasource.getItem(id))
-                        .collect(Collectors.toList()));
+            for (K id : groupItems.getOrDefault(groupId, Collections.emptyList())) {
+                T item = datasource.getItem(id);
+                entities.add(item);
             }
 
             return entities;
@@ -322,9 +319,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         return Collections.emptyList();
     }
 
-    @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
-    public GroupInfo getParentGroup(Entity entity) {
-        K id = (K) entity.getId();
+    public GroupInfo getParentGroup(T entity) {
+        K id = entity.getId();
         if (!datasource.containsItem(id)) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -335,9 +331,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         return itemGroups.get(entity.getId());
     }
 
-    @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
-    public List<GroupInfo> getGroupPath(Entity entity) {
-        K id = (K) entity.getId();
+    public List<GroupInfo> getGroupPath(T entity) {
+        K id = entity.getId();
         if (!datasource.containsItem(id)) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -350,12 +345,12 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         if (groupInfo == null) {
             return Collections.emptyList();
         }
-        List<GroupInfo> parentGroups = new LinkedList<>();
+        LinkedList<GroupInfo> parentGroups = new LinkedList<>();
         parentGroups.add(groupInfo);
 
         GroupInfo parent = parents.get(groupInfo);
         while (parent != null) {
-            parentGroups.add(0, parent);
+            parentGroups.addFirst(parent);
             parent = parents.get(parent);
         }
 

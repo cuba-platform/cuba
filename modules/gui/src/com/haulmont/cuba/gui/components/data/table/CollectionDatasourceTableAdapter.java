@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -117,12 +116,6 @@ public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements
     }
 
     @Override
-    public void setItemValue(Object itemId, Object propertyId, Object newValue) {
-        // vaadin8 todo
-        throw new NotImplementedException("todo");
-    }
-
-    @Override
     public int size() {
         return datasource.size();
     }
@@ -170,7 +163,7 @@ public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements
     }
 
     @Override
-    public MetaClass getMetaClass() {
+    public MetaClass getEntityMetaClass() {
         return datasource.getMetaClass();
     }
 

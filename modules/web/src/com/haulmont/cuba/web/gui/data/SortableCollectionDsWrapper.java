@@ -30,6 +30,8 @@ import java.util.List;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.Order;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
+// for removal
+@Deprecated
 public class SortableCollectionDsWrapper extends CollectionDsWrapper implements Container.Sortable {
 
     public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,

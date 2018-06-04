@@ -23,10 +23,10 @@ public class GroupInfo<P> {
     private LinkedMap groupingValues;
     private P groupProperty;
 
+    @SuppressWarnings("unchecked")
     public GroupInfo(LinkedMap groupingValues) {
         this.groupingValues = new LinkedMap(groupingValues);
-        //noinspection unchecked
-        groupProperty = (P) groupingValues.get(groupingValues.size() - 1);
+        this.groupProperty = (P) groupingValues.get(groupingValues.size() - 1);
     }
 
     public Object getPropertyValue(P propertyPath) {
@@ -49,9 +49,9 @@ public class GroupInfo<P> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
+        StringBuilder sb = new StringBuilder("{");
         for (int groupIndex = 0; groupIndex < groupingValues.size(); groupIndex++) {
-            final Object value = groupingValues.getValue(groupIndex);
+            Object value = groupingValues.getValue(groupIndex);
             sb.append("[")
                     .append(groupingValues.get(groupIndex))
                     .append(":")

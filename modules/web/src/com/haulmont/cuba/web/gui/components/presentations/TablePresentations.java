@@ -69,6 +69,8 @@ public class TablePresentations extends VerticalLayout {
 
         this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
 
+        setMargin(false);
+
         setSizeUndefined();
         setStyleName(TABLE_PREFS_STYLENAME);
         setParent((HasComponents) WebComponentsHelper.unwrap(component));
@@ -243,18 +245,18 @@ public class TablePresentations extends VerticalLayout {
         menuBar.removeItems();
         presentationsMenuMap = new HashMap<>();
 
-        final Presentations p = table.getPresentations();
+        Presentations p = table.getPresentations();
 
-        for (final Object presId : p.getPresentationIds()) {
-            final MenuBar.MenuItem item = menuBar.addItem(
+        for (Object presId : p.getPresentationIds()) {
+            MenuBar.MenuItem item = menuBar.addItem(
                     defaultString(p.getCaption(presId)),
                     selectedItem -> table.applyPresentation(presId)
             );
-            final Presentation current = p.getCurrent();
+            Presentation current = p.getCurrent();
             if (current != null && presId.equals(current.getId())) {
                 setCurrentItemStyle(item);
             }
-            final Presentation defaultPresentation = p.getDefault();
+            Presentation defaultPresentation = p.getDefault();
             if (defaultPresentation != null && presId.equals(defaultPresentation.getId())) {
                 setDefaultItemStyle(item);
             }

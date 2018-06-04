@@ -18,8 +18,8 @@ package com.haulmont.cuba.web.widgets.data;
 
 import com.vaadin.v7.data.Container;
 
-import java.util.Map;
 import java.util.Collection;
+import java.util.Map;
 
 public interface AggregationContainer extends Container {
 
@@ -41,7 +41,7 @@ public interface AggregationContainer extends Container {
     Map<Object, Object> aggregate(Context context);
 
     class Context {
-        private final Collection itemIds;
+        private Collection itemIds;
 
         public Context(Collection itemIds) {
             this.itemIds = itemIds;

@@ -18,6 +18,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.table.GroupDatasourceTableAdapter;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
@@ -25,12 +29,26 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * todo JavaDoc
+ *
+ * @param <E>
+ */
 public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
 
+    @Deprecated
     @Override
-    GroupDatasource getDatasource();
+    default GroupDatasource getDatasource() {
+        TableSource<E> tableSource = getTableSource();
+        if (tableSource == null) {
+            return null;
+        }
+
+        CollectionDatasourceTableAdapter adapter = (CollectionDatasourceTableAdapter) tableSource;
+        return (GroupDatasource) adapter.getDatasource();
+    }
 
     /**
      * Performs grouping by the given {@code properties}.

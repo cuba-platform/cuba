@@ -24,7 +24,7 @@ import java.util.Collection;
 
 // todo JavaDoc
 public interface EntityTableSource<E extends Entity> extends TableSource<E> {
-    MetaClass getMetaClass();
+    MetaClass getEntityMetaClass();
 
     // todo rename
     Collection<MetaPropertyPath> getAutowiredProperties();

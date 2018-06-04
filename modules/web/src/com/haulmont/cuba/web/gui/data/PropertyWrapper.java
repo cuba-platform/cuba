@@ -24,22 +24,18 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import com.haulmont.cuba.web.widgets.data.PropertyValueStringify;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 
 import java.text.ParseException;
 
-public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify, UnsubscribableDsWrapper {
+public class PropertyWrapper extends AbstractPropertyWrapper implements UnsubscribableDsWrapper {
 
     protected MetaPropertyPath propertyPath;
-
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected Datasource.ItemChangeListener dsItemChangeListener;
     protected WeakItemChangeListener weakItemChangeListener;
@@ -145,10 +141,6 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
         return propertyPath.getRangeJavaClass();
     }
 
-    @Override
-    public String getFormattedValue() {
-        return metadataTools.format(getValue(), propertyPath.getMetaProperty());
-    }
 
     @SuppressWarnings("unchecked")
     @Override

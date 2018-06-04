@@ -43,7 +43,6 @@ public interface TableSource<I> {
     }
 
     Object getItemValue(Object itemId, Object propertyId);
-    void setItemValue(Object itemId, Object propertyId, Object newValue); // vaadin8 todo is not required
 
     int size();
 
@@ -80,6 +79,8 @@ public interface TableSource<I> {
 
     interface Sortable<T> extends Ordered<T> {
         void sort(Object[] propertyId, boolean[] ascending);
+
+        void resetSortOrder();
     }
 
     // todo

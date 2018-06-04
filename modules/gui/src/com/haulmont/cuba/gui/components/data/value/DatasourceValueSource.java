@@ -81,7 +81,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
     }
 
     @Override
-    public MetaClass getMetaClass() {
+    public MetaClass getEntityMetaClass() {
         return datasource.getMetaClass();
     }
 

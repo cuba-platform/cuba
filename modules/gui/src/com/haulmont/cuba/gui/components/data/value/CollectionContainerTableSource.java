@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -81,12 +80,6 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     public Object getItemValue(Object itemId, Object propertyId) {
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
         return container.getItem(itemId).getValueEx(propertyPath.toPathString());
-    }
-
-    @Override
-    public void setItemValue(Object itemId, Object propertyId, Object newValue) {
-        // vaadin8 todo
-        throw new NotImplementedException("todo");
     }
 
     @Override
@@ -151,7 +144,7 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     }
 
     @Override
-    public MetaClass getMetaClass() {
+    public MetaClass getEntityMetaClass() {
         return container.getEntityMetaClass();
     }
 

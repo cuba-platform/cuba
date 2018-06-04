@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.widgets.data.util;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
-import com.haulmont.cuba.web.widgets.data.TableContainer;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Item;
@@ -26,27 +25,25 @@ import com.vaadin.v7.data.util.ContainerHierarchicalWrapper;
 
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
-        implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable {
+        implements TreeTableContainer, AggregationContainer, Container.Ordered {
 
     protected Set<Object> expanded; // Contains expanded items ids
 
     protected LinkedList<Object> inline; // Contains visible (including children of expanded items) items ids inline
 
-    protected Hashtable<Object, String> captions;
+    protected Map<Object, String> captions;
 
     protected Object first;
 
-    protected boolean treeTableContainer;
-
-    public TreeTableContainerWrapper(Container toBeWrapped) {
+    public TreeTableContainerWrapper(TreeTableContainer toBeWrapped) {
         super(toBeWrapped);
-        treeTableContainer = toBeWrapped instanceof TreeTableContainer;
 
         inline = new LinkedList<>();
         expanded = new HashSet<>();
-        captions = new Hashtable<>();
+        captions = new HashMap<>();
     }
 
     @Override
@@ -58,10 +55,11 @@ public class TreeTableContainerWrapper
         if (inline == null || expanded == null || captions == null) {
             inline = new LinkedList<>();
             expanded = new HashSet<>();
-            captions = new Hashtable<>();
+            captions = new HashMap<>();
         } else {
             inline.clear();
-            final Set<Object> s = new HashSet<>();
+
+            Set<Object> s = new HashSet<>();
             s.addAll(expanded);
             s.addAll(captions.keySet());
             for (Object o : s) {
@@ -110,14 +108,14 @@ public class TreeTableContainerWrapper
     @Override
     public boolean setParent(Object itemId, Object newParentId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            throw new IllegalArgumentException("Item id cannot be NULL");
         }
 
         if (!_container().containsId(itemId)) {
             return false;
         }
 
-        final Object oldParentId = getParent(itemId);
+        Object oldParentId = getParent(itemId);
 
         if ((newParentId == null && oldParentId == null)
                 || (newParentId != null && newParentId.equals(oldParentId))) {
@@ -126,7 +124,7 @@ public class TreeTableContainerWrapper
 
         boolean b = super.setParent(itemId, newParentId);
         if (b) {
-            final LinkedList<Object> inlineList = new LinkedList<>();
+            LinkedList<Object> inlineList = new LinkedList<>();
             inlineList.add(itemId);
             inlineList.addAll(getInlineChildren(itemId));
 
@@ -208,56 +206,27 @@ public class TreeTableContainerWrapper
     }
 
     @Override
-    public boolean isCaption(Object itemId) {
-        if (itemId != null) {
-            if (!treeTableContainer) {
-                return captions.containsKey(itemId);
-            } else {
-                return ((TreeTableContainer) _container()).isCaption(itemId);
-            }
-        }
-        throw new NullPointerException("Item id cannot be NULL");
-    }
-
-    @Override
     public String getCaption(Object itemId) {
         if (itemId != null) {
-            if (!treeTableContainer) {
-                return captions.get(itemId);
-            } else {
-                return ((TreeTableContainer) _container()).getCaption(itemId);
-            }
+            return captions.get(itemId);
         }
-        throw new NullPointerException("Item id cannot be NULL");
+        throw new IllegalArgumentException("Item id cannot be NULL");
     }
 
     @Override
     public boolean setCaption(Object itemId, String caption) {
         if (itemId != null) {
-            if (!treeTableContainer) {
-                if (caption != null) {
-                    captions.put(itemId, caption);
-                } else {
-                    captions.remove(itemId);
-                }
-                return true;
-            } else {
-                return ((TreeTableContainer) _container()).setCaption(itemId, caption);
-            }
+            return _container().setCaption(itemId, caption);
         }
-        throw new NullPointerException("Item id cannot be NULL");
+        throw new IllegalArgumentException("Item id cannot be NULL");
     }
 
     @Override
     public int getLevel(Object itemId) {
         if (itemId != null) {
-            if (!treeTableContainer) {
-                return getItemLevel(itemId);
-            } else {
-                return ((TreeTableContainer) _container()).getLevel(itemId);
-            }
+            return _container().getLevel(itemId);
         }
-        throw new NullPointerException("Item id cannot be NULL");
+        throw new IllegalArgumentException("Item id cannot be NULL");
     }
 
     protected int getItemLevel(Object itemId) {
@@ -272,14 +241,14 @@ public class TreeTableContainerWrapper
 
     public boolean isExpanded(Object itemId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            throw new IllegalArgumentException("Item id cannot be NULL");
         }
         return expanded.contains(itemId);
     }
 
     public boolean setExpanded(Object itemId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            throw new IllegalArgumentException("Item id cannot be NULL");
         }
 
         if (areChildrenAllowed(itemId)) {
@@ -301,28 +270,25 @@ public class TreeTableContainerWrapper
         return false;
     }
 
-    public boolean setCollapsed(Object itemId) {
+    public void setCollapsed(Object itemId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            throw new IllegalArgumentException("Item id cannot be NULL");
         }
 
         if (areChildrenAllowed(itemId)) {
             if (!isExpanded(itemId)) {
-                return true;
+                return;
             }
 
             if (containsInline(itemId)) {
-                final List<Object> inlineChildren = getInlineChildren(itemId);
+                List<Object> inlineChildren = getInlineChildren(itemId);
                 if (inlineChildren != null) {
                     inline.removeAll(inlineChildren);
                 }
             }
 
             expanded.remove(itemId);
-
-            return true;
         }
-        return false;
     }
 
     public void expandAll() {
@@ -331,7 +297,7 @@ public class TreeTableContainerWrapper
             expandAll(rootItemIds());
         } else {
             if (_children() != null) {
-                for (final Object itemId : _children().keySet()) {
+                for (Object itemId : _children().keySet()) {
                     setExpanded(itemId);
                 }
             }
@@ -339,7 +305,7 @@ public class TreeTableContainerWrapper
     }
 
     protected void expandAll(Collection itemIds) {
-        for (final Object itemId : itemIds) {
+        for (Object itemId : itemIds) {
             if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
                 setExpanded(itemId);
                 expandAll(getChildren(itemId));
@@ -368,7 +334,7 @@ public class TreeTableContainerWrapper
 
     protected LinkedList<Object> getInlineChildren(Object itemId) {
         if (areChildrenAllowed(itemId)) {
-            final LinkedList<Object> inlineChildren = new LinkedList<>();
+            LinkedList<Object> inlineChildren = new LinkedList<>();
             if (isExpanded(itemId)) {
                 makeInlineElements(inlineChildren, getChildren(itemId));
             }
@@ -377,9 +343,9 @@ public class TreeTableContainerWrapper
         return null;
     }
 
-    private void makeInlineElements(final List<Object> inline, final Collection elements) {
+    private void makeInlineElements(List<Object> inline, Collection elements) {
         if (elements != null) {
-            for (final Object e : elements) {
+            for (Object e : elements) {
                 inline.add(e);
                 if (areChildrenAllowed(e) && isExpanded(e)) {
                     makeInlineElements(inline, getChildren(e));
@@ -415,19 +381,13 @@ public class TreeTableContainerWrapper
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        if (_container() instanceof Sortable) {
-            ((Sortable) _container()).sort(propertyId, ascending);
-            updateHierarchicalWrapper();
-        } else
-            throw new IllegalStateException("Wrapped container is not Sortable: " + _container().getClass());
+        _container().sort(propertyId, ascending);
+        updateHierarchicalWrapper();
     }
 
     @Override
     public Collection getSortableContainerPropertyIds() {
-        if (_container() instanceof Sortable)
-            return ((Sortable) _container()).getSortableContainerPropertyIds();
-        else
-            throw new IllegalStateException("Wrapped container is not Sortable: " + _container().getClass());
+        return _container().getSortableContainerPropertyIds();
     }
 
     @Override
@@ -479,8 +439,11 @@ public class TreeTableContainerWrapper
 
     @Override
     public void resetSortOrder() {
-        if (_container() instanceof TableContainer) {
-            ((TableContainer) _container()).resetSortOrder();
-        }
+        _container().resetSortOrder();
+    }
+
+    @Override
+    protected TreeTableContainer _container() {
+        return (TreeTableContainer) super._container();
     }
 }

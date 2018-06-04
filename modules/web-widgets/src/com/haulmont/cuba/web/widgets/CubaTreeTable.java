@@ -22,8 +22,7 @@ import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.widgets.client.treetable.CubaTreeTableState;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
-import com.haulmont.cuba.web.widgets.data.PropertyValueStringify;
-import com.haulmont.cuba.web.widgets.data.TableContainer;
+import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
 import com.haulmont.cuba.web.widgets.data.util.TreeTableContainerWrapper;
 import com.vaadin.event.Action;
@@ -48,6 +47,7 @@ import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@SuppressWarnings("deprecation")
 public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
@@ -77,6 +77,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected Runnable beforePaintListener;
     protected Function<Object, Resource> iconProvider;
     protected SpecificVariablesHandler specificVariablesHandler;
+
+    protected CellValueFormatter customCellValueFormatter;
 
     public CubaTreeTable() {
         //noinspection Convert2Lambda
@@ -235,12 +237,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         if (isContextMenuEnabled() != contextMenuEnabled) {
             getState(true).contextMenuEnabled = contextMenuEnabled;
         }
-    }
-
-    @Override
-    public boolean isCaption(Object itemId) {
-        return items instanceof TreeTableContainer
-                && ((TreeTableContainer) items).isCaption(itemId);
     }
 
     @Override
@@ -416,8 +412,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        if (property instanceof PropertyValueStringify) {
-            return ((PropertyValueStringify) property).getFormattedValue();
+        if (this.customCellValueFormatter != null) {
+            return customCellValueFormatter.getFormattedValue(rowId, colId, property);
         }
 
         return super.formatPropertyValue(rowId, colId, property);
@@ -430,7 +426,7 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
             newDataSource = new HierarchicalContainer();
         }
 
-        super.setContainerDataSource(new TreeTableContainerWrapper(newDataSource));
+        super.setContainerDataSource(new TreeTableContainerWrapper((TreeTableContainer) newDataSource));
     }
 
     public void expandAll() {
@@ -497,8 +493,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         sortContainerPropertyId = null;
         sortAscending = true;
 
-        if (items instanceof TableContainer) {
-            ((TableContainer) items).resetSortOrder();
+        if (items instanceof TableSortableContainer) {
+            ((TableSortableContainer) items).resetSortOrder();
         }
     }
 
@@ -930,13 +926,12 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     @Override
     public void setCustomCellValueFormatter(CellValueFormatter cellValueFormatter) {
-        // todo
+        this.customCellValueFormatter = cellValueFormatter;
     }
 
     @Override
     public CellValueFormatter getCustomCellValueFormatter() {
-        // todo
-        return null;
+        return customCellValueFormatter;
     }
 
     @Override

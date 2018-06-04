@@ -32,7 +32,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         extends AbstractTreeDatasource<T, K>
         implements TreeTableDatasource<T, K> {
 
-    private class TreeTableNodeComparator<T extends Entity> implements Comparator<Node<T>> {
+    protected static class TreeTableNodeComparator<T extends Entity> implements Comparator<Node<T>> {
         private final EntityComparator<T> entityComparator;
 
         private TreeTableNodeComparator(MetaPropertyPath propertyPath, boolean asc) {
@@ -59,15 +59,15 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
 
         data.clear();
         for (Node<T> node : tree.toList()) {
-            final T entity = node.getData();
-            final K id = entity.getId();
+            T entity = node.getData();
+            K id = entity.getId();
 
             data.put(id, entity);
         }
     }
 
-    private void sort(List<Node<T>> nodesList) {
-        Collections.sort(nodesList, createEntityNodeComparator());
+    protected void sort(List<Node<T>> nodesList) {
+        nodesList.sort(createEntityNodeComparator());
         for (Node<T> n :nodesList) {
             if (n.getNumberOfChildren() > 0) {
                 sort(n.getChildren());

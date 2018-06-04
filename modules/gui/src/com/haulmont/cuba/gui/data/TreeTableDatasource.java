@@ -27,7 +27,5 @@ import com.haulmont.cuba.core.entity.Entity;
 public interface TreeTableDatasource <T extends Entity<K>, K>
         extends HierarchicalDatasource<T, K> {
 
-    boolean isCaption(K itemId);
-
     String getCaption(K itemId);
 }

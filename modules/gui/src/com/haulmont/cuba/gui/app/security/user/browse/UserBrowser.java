@@ -140,7 +140,7 @@ public class UserBrowser extends AbstractLookup {
 
     protected void initTimeZoneColumn() {
         usersTable.addGeneratedColumn("timeZone", entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
+            Label<String> label = componentsFactory.createComponent(Label.class);
             if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
                 label.setValue(messages.getMainMessage("timeZone.auto"));
             } else if (entity.getTimeZone() != null) {

@@ -113,7 +113,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     }
 
     @Override
-    public MetaClass getMetaClass() {
+    public MetaClass getEntityMetaClass() {
         return container.getEntityMetaClass();
     }
 
