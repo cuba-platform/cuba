@@ -8,6 +8,7 @@ out
 *.ipr
 *.iws
 *.ids
+.idea
 
 modules/*/test-home/
 modules/*/build/

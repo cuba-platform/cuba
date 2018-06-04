@@ -339,7 +339,11 @@ configure(globalModule) {
         from new File(project.buildDir, 'release-number')
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     task filterDummyEntities {
         ext.srcFile1 = file('src/base-persistence.xml')
@@ -418,13 +422,14 @@ configure(coreModule) {
         jdbc(bom['org.postgresql:postgresql'])
         jdbc(bom['org.hsqldb:hsqldb'])
 
-        testCompile(bom['org.apache.commons:commons-dbcp2'])
-        testRuntime(bom['javax.servlet:javax.servlet-api'])
-        testRuntime(bom['org.hsqldb:hsqldb'])
-    	testRuntime(bom['org.postgresql:postgresql'])
+        testCompile(coreTestsModule)
     }
 
-    task enhanceTestModel(type: CubaTestEnhancing)
+    entitiesEnhancing {
+        test {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -494,23 +499,6 @@ configure(coreTestsModule) {
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
-    buildDir = file('../build/core-tests')
-
-    sourceSets {
-        main {
-            java {
-                srcDir '.'
-
-                include 'com/haulmont/cuba/core/CubaTestCase.java'
-                include 'com/haulmont/cuba/testsupport/*.java'
-                include '*'
-            }
-            resources {
-                srcDir '.'
-            }
-        }
-    }
-
     dependencies {
         compile(coreModule)
 
@@ -546,19 +534,6 @@ configure(clientTestsModule) {
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
-    buildDir = file('../build/client-tests')
-
-    sourceSets {
-        main {
-            java {
-                srcDir '.'
-            }
-            resources {
-                srcDir '.'
-            }
-        }
-    }
-
     dependencies {
         compile(clientModule)
 
@@ -582,10 +557,14 @@ configure(guiModule) {
 
         compile(bom['org.apache.poi:poi'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -653,12 +632,16 @@ configure(webModule) {
 
         themes(bom['com.vaadin:vaadin-themes'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
         testCompile(guiModule.sourceSets.test.output)
         testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     jar {
         with copySpec {
@@ -848,7 +831,7 @@ configure(desktopModule) {
 
         compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
         testCompile(guiModule.sourceSets.test.output)
         testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
@@ -891,7 +874,7 @@ configure(restApiModule) {
 
         provided(bom['javax.servlet:javax.servlet-api'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
     }
 }
 
@@ -919,7 +902,7 @@ configure(portalModule) {
 
         provided(bom['javax.servlet:javax.servlet-api'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
     }
 
     test {
@@ -950,7 +933,7 @@ configure(idpModule) {
         compile(bom['org.springframework.security:spring-security-config'])
         compile(bom['org.springframework.security:spring-security-web'])
 
-        testCompile(clientModule.sourceSets.test.output)
+        testCompile(clientTestsModule)
 
         provided(bom['javax.servlet:javax.servlet-api'])
     }
