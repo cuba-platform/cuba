@@ -170,15 +170,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 final Table.Column column = columns.get(entry.getKey());
                 GroupAggregationCells cells;
                 if ((cells = groupAggregationCells.get(column)) != null) {
-                    String value = cells.getValue(groupContext.getGroupId());
-                    String cellText = getFormattedValue(column, value);
-                    entry.setValue(cellText);
-
-                    String groupValue = cells.getValue(groupContext.getGroupId());
-                    if (groupValue != null) {
-                        String groupCellText = getFormattedValue(column, groupValue);
-                        entry.setValue(groupCellText);
-                    }
+                    String value = getFormattedValue(column, entry.getValue());
+                    cells.cells.put(groupContext.getGroupId(), value);
                 }
             }
 
