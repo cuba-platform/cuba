@@ -52,15 +52,15 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
     @Nullable
     @Override
-    public T getItem() {
+    public T getItemOrNull() {
         return item;
     }
 
     @Override
-    public T getItemNN() {
-        T item = getItem();
+    public T getItem() {
+        T item = getItemOrNull();
         if (item == null)
-            throw new IllegalStateException("Item is null");
+            throw new IllegalStateException("Current item is null");
         return item;
     }
 
@@ -115,7 +115,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     }
 
     protected void fireItemChanged(T prevItem) {
-        ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
+        ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItemOrNull());
         log.trace("itemChanged: {}", itemChangeEvent);
         events.publish(ItemChangeEvent.class, itemChangeEvent);
     }

@@ -124,12 +124,12 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @Override
     public E getItem() {
-        return container.getItem();
+        return container.getItemOrNull();
     }
 
     @Override
     public V getValue() {
-        E item = container.getItem();
+        E item = container.getItemOrNull();
         if (item != null) {
             // todo implement getValueEx with metaPropertyPath
             return item.getValueEx(metaPropertyPath.toPathString());
@@ -139,7 +139,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @Override
     public void setValue(V value) {
-        E item = container.getItem();
+        E item = container.getItemOrNull();
         if (item != null) {
             // todo implement setValueEx with metaPropertyPath
             item.setValueEx(metaPropertyPath.toPathString(), value);
@@ -160,7 +160,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @Override
     public BindingState getState() {
-        return container.getItem() == null ? BindingState.INACTIVE : BindingState.ACTIVE;
+        return container.getItemOrNull() == null ? BindingState.INACTIVE : BindingState.ACTIVE;
     }
 
     @SuppressWarnings("unchecked")

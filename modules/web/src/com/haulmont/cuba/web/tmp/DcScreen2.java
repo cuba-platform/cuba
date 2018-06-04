@@ -119,7 +119,8 @@ public class DcScreen2 extends AbstractWindow {
 
     public void nextUser() {
         List<User> users = container.getItems();
-        index = users.indexOf(container.getItem());
+        User current = container.getItemOrNull();
+        index = current == null ? -1 : users.indexOf(current);
         index++;
         if (index > users.size() - 1)
             index = 0;
@@ -143,7 +144,7 @@ public class DcScreen2 extends AbstractWindow {
     }
 
     public void removeUser() {
-        User user = container.getItem();
+        User user = container.getItemOrNull();
         if (user != null) {
             container.getMutableItems().remove(user);
             dataContext.remove(user);

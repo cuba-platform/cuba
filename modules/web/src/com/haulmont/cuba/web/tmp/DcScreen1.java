@@ -64,6 +64,6 @@ public class DcScreen1 extends AbstractWindow {
     }
 
     public void changeName() {
-        container.getItemNN().setName("User-" + System.currentTimeMillis());
+        container.getItem().setName("User-" + System.currentTimeMillis());
     }
 }

@@ -105,7 +105,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         then: "container has no current item"
 
-        container.item == null
+        container.itemOrNull == null
     }
 
     def "filter items in-place"() {
@@ -129,7 +129,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         then: "container has no current item"
 
-        container.item == null
+        container.itemOrNull == null
     }
 
     def "table doesn't track container's item"() {
@@ -235,7 +235,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         then:
 
-        container.item == null
+        container.itemOrNull == null
 
         when:
 
@@ -265,7 +265,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         then:
 
-        container.item == null
+        container.itemOrNull == null
 
         when:
 

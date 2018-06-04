@@ -33,20 +33,21 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class CollectionContainerImpl<T extends Entity> extends InstanceContainerImpl<T> implements CollectionContainer<T> {
+public class CollectionContainerImpl<E extends Entity>
+        extends InstanceContainerImpl<E> implements CollectionContainer<E> {
 
     private static final Logger log = LoggerFactory.getLogger(CollectionContainerImpl.class);
 
-    protected List<T> collection = new ArrayList<>();
+    protected List<E> collection = new ArrayList<>();
 
     public CollectionContainerImpl(MetaClass metaClass) {
         super(metaClass);
     }
 
     @Override
-    public void setItem(@Nullable T item) {
+    public void setItem(@Nullable E item) {
         if (item != null) {
-            T existingItem = collection.stream()
+            E existingItem = collection.stream()
                     .filter(item::equals)
                     .findAny()
                     .orElseThrow(() -> new IllegalArgumentException("CollectionContainer does not contain " + item));
@@ -57,12 +58,12 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
     }
 
     @Override
-    public List<T> getItems() {
+    public List<E> getItems() {
         return Collections.unmodifiableList(collection);
     }
 
     @Override
-    public List<T> getMutableItems() {
+    public List<E> getMutableItems() {
         return new ObservableList<>(collection, () -> {
             clearItemIfNotExists();
             fireCollectionChanged();
@@ -70,7 +71,7 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
     }
 
     @Override
-    public void setItems(@Nullable Collection<T> entities) {
+    public void setItems(@Nullable Collection<E> entities) {
         detachListener(collection);
         collection.clear();
         if (entities != null) {
@@ -83,7 +84,7 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
 
     @Nullable
     @Override
-    public T getItem(Object entityId) {
+    public E getItemOrNull(Object entityId) {
         return collection.stream()
                 .filter(entity -> entity.getId().equals(entityId))
                 .findAny()
@@ -91,8 +92,8 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
     }
 
     @Override
-    public T getItemNN(Object entityId) {
-        T item = getItem(entityId);
+    public E getItem(Object entityId) {
+        E item = getItemOrNull(entityId);
         if (item == null)
             throw new IllegalArgumentException("Item with id='" + entityId + "' not found");
         return item;
@@ -100,24 +101,24 @@ public class CollectionContainerImpl<T extends Entity> extends InstanceContainer
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<T>> listener) {
+    public Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener) {
         return events.subscribe(CollectionChangeEvent.class, (Consumer) listener);
     }
 
     protected void fireCollectionChanged() {
-        CollectionChangeEvent<T> collectionChangeEvent = new CollectionChangeEvent<>(this);
+        CollectionChangeEvent<E> collectionChangeEvent = new CollectionChangeEvent<>(this);
         log.trace("collectionChanged: {}", collectionChangeEvent);
         events.publish(CollectionChangeEvent.class, collectionChangeEvent);
     }
 
-    protected void attachListener(Collection<T> entities) {
-        for (T entity : entities) {
+    protected void attachListener(Collection<E> entities) {
+        for (E entity : entities) {
             attachListener(entity);
         }
     }
 
-    protected void detachListener(Collection<T> entities) {
-        for (T entity : entities) {
+    protected void detachListener(Collection<E> entities) {
+        for (E entity : entities) {
             detachListener(entity);
         }
     }

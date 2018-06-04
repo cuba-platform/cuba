@@ -201,7 +201,7 @@ class CompositionTest extends WebSpec {
 
         orderScreen.orderCnt.item == order1
         orderScreen.linesCnt.items.size() == 2
-        orderScreen.linesCnt.item == null
+        orderScreen.linesCnt.itemOrNull == null
 
         when: "open edit screen for orderLine11"
 

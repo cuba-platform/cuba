@@ -28,18 +28,18 @@ import java.util.function.Consumer;
 /**
  *
  */
-public interface CollectionContainer<T extends Entity> extends InstanceContainer<T> {
+public interface CollectionContainer<E extends Entity> extends InstanceContainer<E> {
 
-    List<T> getItems();
+    List<E> getItems();
 
-    List<T> getMutableItems();
+    List<E> getMutableItems();
 
-    void setItems(@Nullable Collection<T> entities);
+    void setItems(@Nullable Collection<E> entities);
+
+    E getItem(Object entityId);
 
     @Nullable
-    T getItem(Object entityId);
-
-    T getItemNN(Object entityId);
+    E getItemOrNull(Object entityId);
 
     /**
      *
@@ -64,6 +64,6 @@ public interface CollectionContainer<T extends Entity> extends InstanceContainer
         }
     }
 
-    Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<T>> listener);
+    Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener);
 
 }

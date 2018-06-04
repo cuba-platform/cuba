@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.KeyValueCollectionContainer;
+import com.haulmont.cuba.gui.model.KeyValueCollectionLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -32,25 +32,20 @@ import java.util.List;
 /**
  *
  */
-public class StandardCollectionLoader<E extends Entity> implements CollectionLoader<E> {
+public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoader {
 
     private ApplicationContext applicationContext;
 
     private DataContext dataContext;
-    private CollectionContainer<E> container;
+    private KeyValueCollectionContainer container;
     private String query;
     private int maxResults;
     private boolean softDeletion;
-    private boolean cacheable;
-    private View view;
-    private String viewName;
 
-    public StandardCollectionLoader(ApplicationContext applicationContext) {
+    private String storeName = Stores.MAIN;
+
+    public StandardKeyValueCollectionLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    protected ViewRepository getViewRepository() {
-        return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
     }
 
     protected DataManager getDataManager() {
@@ -75,29 +70,25 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (query == null)
             throw new IllegalStateException("query is null");
 
-        @SuppressWarnings("unchecked")
-        LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
+        ValueLoadContext loadContext = ValueLoadContext.create();
+        loadContext.setStoreName(storeName);
+        loadContext.setIdName(container.getIdName());
+        for (MetaProperty property : container.getEntityMetaClass().getProperties()) {
+            loadContext.addProperty(property.getName());
+        }
 
-        LoadContext.Query query = loadContext.setQueryString(this.query);
-
-        query.setCacheable(cacheable);
+        ValueLoadContext.Query query = loadContext.setQueryString(this.query);
 
         if (maxResults > 0)
             query.setMaxResults(maxResults);
 
         loadContext.setSoftDeletion(softDeletion);
 
-        if (view == null && viewName != null) {
-            this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
-        }
-        if (view != null) {
-            loadContext.setView(view);
-        }
+        List<KeyValueEntity> list = getDataManager().loadValues(loadContext);
 
-        List<E> list = getDataManager().loadList(loadContext);
-
+        // TODO merge KeyValueEntity ???
         if (dataContext != null) {
-            for (E entity : list) {
+            for (KeyValueEntity entity : list) {
                 dataContext.merge(entity);
             }
         }
@@ -105,12 +96,12 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public CollectionContainer<E> getContainer() {
+    public KeyValueCollectionContainer getContainer() {
         return container;
     }
 
     @Override
-    public void setContainer(CollectionContainer<E> container) {
+    public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
     }
 
@@ -145,29 +136,12 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public boolean isCacheable() {
-        return cacheable;
+    public String getStoreName() {
+        return storeName;
     }
 
     @Override
-    public void setCacheable(boolean cacheable) {
-        this.cacheable = cacheable;
-    }
-
-    @Override
-    public View getView() {
-        return view;
-    }
-
-    @Override
-    public void setView(View view) {
-        this.view = view;
-    }
-
-    @Override
-    public void setView(String viewName) {
-        if (this.view != null)
-            throw new IllegalStateException("view is already set");
-        this.viewName = viewName;
+    public void setStoreName(String name) {
+        storeName = name != null ? name : Stores.MAIN;
     }
 }

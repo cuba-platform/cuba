@@ -48,12 +48,11 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
     }
 
-    @SuppressWarnings("unchecked")
-    protected void containerItemChanged(CollectionContainer.ItemChangeEvent event) {
-        events.publish(SelectedItemChangeEvent.class, new SelectedItemChangeEvent<>(this, (E) event.getItem()));
+    protected void containerItemChanged(CollectionContainer.ItemChangeEvent<E> event) {
+        events.publish(SelectedItemChangeEvent.class, new SelectedItemChangeEvent<>(this, event.getItem()));
     }
 
-    protected void containerCollectionChanged(@SuppressWarnings("unused") CollectionContainer.CollectionChangeEvent<E> e) {
+    protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<E> e) {
         events.publish(ItemSetChangeEvent.class, new ItemSetChangeEvent<>(this));
     }
 
@@ -70,18 +69,18 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     @Nullable
     @Override
     public E getItem(Object itemId) {
-        return container.getItem(itemId);
+        return container.getItemOrNull(itemId);
     }
 
     @Override
     public E getItemNN(Object itemId) {
-        return container.getItemNN(itemId);
+        return container.getItem(itemId);
     }
 
     @Override
     public Object getItemValue(Object itemId, Object propertyId) {
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-        return container.getItemNN(itemId).getValueEx(propertyPath.toPathString());
+        return container.getItem(itemId).getValueEx(propertyPath.toPathString());
     }
 
     @Override
@@ -119,7 +118,7 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     @Nullable
     @Override
     public E getSelectedItem() {
-        return container.getItem();
+        return container.getItemOrNull();
     }
 
     @Override

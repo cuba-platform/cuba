@@ -28,14 +28,14 @@ import java.util.function.Consumer;
 /**
  *
  */
-public interface InstanceContainer<T extends Entity> {
+public interface InstanceContainer<E extends Entity> {
+
+    E getItem();
 
     @Nullable
-    T getItem();
+    E getItemOrNull();
 
-    T getItemNN();
-
-    void setItem(@Nullable T entity);
+    void setItem(@Nullable E entity);
 
     MetaClass getEntityMetaClass();
 
@@ -109,7 +109,7 @@ public interface InstanceContainer<T extends Entity> {
     /**
      * Listener to container item property value change events.
      */
-    Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<T>> listener);
+    Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<E>> listener);
 
     /**
      * Container item change event.
@@ -160,6 +160,6 @@ public interface InstanceContainer<T extends Entity> {
     /**
      * Listener to container item change events.
      */
-    Subscription addItemChangeListener(Consumer<ItemChangeEvent<T>> listener);
+    Subscription addItemChangeListener(Consumer<ItemChangeEvent<E>> listener);
 
 }
