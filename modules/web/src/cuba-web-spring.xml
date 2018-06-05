@@ -30,6 +30,7 @@
 
     <context:component-scan base-package="com.haulmont.cuba">
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.sys\.AppFront*"/>
+        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.widgets\..*"/>
         <!--exclude dispatcher-->
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.controllers\..*"/>
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.restapi\..*"/>
@@ -109,7 +110,6 @@
                 <entry key="cuba_ScheduledTasksService" value="com.haulmont.cuba.core.app.SchedulingService"/>
                 <entry key="cuba_EntityLogService" value="com.haulmont.cuba.core.app.EntityLogService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
-                <entry key="cuba_ObjectsCacheManagerService" value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerService"/>
                 <entry key="cuba_DomainDescriptionService" value="com.haulmont.cuba.core.app.DomainDescriptionService"/>
                 <entry key="cuba_RelatedEntitiesService" value="com.haulmont.cuba.core.app.RelatedEntitiesService"/>
                 <entry key="cuba_EntitySqlGenerationService" value="com.haulmont.cuba.core.app.EntitySqlGenerationService"/>
