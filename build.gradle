@@ -424,6 +424,7 @@ configure(coreModule) {
         jdbc(bom['org.hsqldb:hsqldb'])
 
         testCompile(coreTestsModule)
+        testCompile(bom['org.hsqldb:hsqldb'])
     }
 
     entitiesEnhancing {
