@@ -853,6 +853,8 @@ configure(desktopModule) {
     // vaadin8
     compileJava.enabled = false
     test.enabled = false
+    compileTestGroovy.enabled = false
+    compileTestJava.enabled = false
 }
 
 configure(restApiModule) {
