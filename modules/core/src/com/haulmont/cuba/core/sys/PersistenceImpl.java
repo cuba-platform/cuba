@@ -19,13 +19,11 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
-import com.haulmont.cuba.security.global.UserSession;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +60,9 @@ public class PersistenceImpl implements Persistence {
     protected EntityManagerContextHolder contextHolder = new EntityManagerContextHolder();
 
     @Inject
+    private BeanLocator beanLocator;
+
+    @Inject
     protected PersistenceTools tools;
 
     @Inject
@@ -71,9 +72,6 @@ public class PersistenceImpl implements Persistence {
 
     @Inject @Named("transactionManager")
     protected PlatformTransactionManager transactionManager;
-
-    @Inject
-    protected UserSessionSource userSessionSource;
 
     @Inject
     protected MiddlewareStatisticsAccumulator statisticsAccumulator;
@@ -167,7 +165,7 @@ public class PersistenceImpl implements Persistence {
         if (Stores.isMain(store))
             emf = this.jpaEmf;
         else
-            emf = AppBeans.get("entityManagerFactory_" + store);
+            emf = beanLocator.get("entityManagerFactory_" + store);
 
         javax.persistence.EntityManager jpaEm = EntityManagerFactoryUtils.doGetTransactionalEntityManager(emf, null, true);
 
@@ -195,8 +193,7 @@ public class PersistenceImpl implements Persistence {
     }
 
     protected EntityManager createEntityManager(javax.persistence.EntityManager jpaEm) {
-        UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
-        return new EntityManagerImpl(jpaEm, userSession);
+        return (EntityManager) beanLocator.getPrototype(EntityManager.NAME, jpaEm);
     }
 
     @Override
@@ -217,9 +214,9 @@ public class PersistenceImpl implements Persistence {
     @Override
     public DataSource getDataSource(String store) {
         if (Stores.isMain(store))
-            return (DataSource) AppBeans.get("cubaDataSource");
+            return (DataSource) beanLocator.get("cubaDataSource");
         else
-            return (DataSource) AppBeans.get("cubaDataSource_" + store);
+            return (DataSource) beanLocator.get("cubaDataSource_" + store);
     }
 
     @Override
@@ -242,7 +239,7 @@ public class PersistenceImpl implements Persistence {
     public void dispose() {
         jpaEmf.close();
         for (String store : Stores.getAdditional()) {
-            EntityManagerFactory emf = AppBeans.get("entityManagerFactory_" + store);
+            EntityManagerFactory emf = beanLocator.get("entityManagerFactory_" + store);
             emf.close();
         }
     }
@@ -347,7 +344,7 @@ public class PersistenceImpl implements Persistence {
         if (Stores.isMain(store))
             return jpaEmf;
         else
-            return AppBeans.get("entityManagerFactory_" + store);
+            return beanLocator.get("entityManagerFactory_" + store);
     }
 
     protected PlatformTransactionManager getTransactionManager(String store) {
@@ -355,7 +352,7 @@ public class PersistenceImpl implements Persistence {
         if (Stores.isMain(store))
             tm = this.transactionManager;
         else
-            tm = AppBeans.get("transactionManager_" + store, PlatformTransactionManager.class);
+            tm = beanLocator.get("transactionManager_" + store, PlatformTransactionManager.class);
         return tm;
     }
 

@@ -28,39 +28,48 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.*;
 
+@Component(EntityManager.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class EntityManagerImpl implements EntityManager {
 
     protected javax.persistence.EntityManager delegate;
 
-    protected UserSession userSession;
+    @Inject
+    protected BeanLocator beanLocator;
+    @Inject
     protected Metadata metadata;
+    @Inject
     protected EntityListenerManager entityListenerMgr;
+    @Inject
     protected PersistenceImplSupport support;
+    @Inject
+    protected AuditInfoProvider auditInfoProvider;
+    @Inject
+    protected TimeSource timeSource;
 
     protected boolean softDeletion = true;
 
     private static final Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
 
-    protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession) {
+    protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager) {
         this.delegate = jpaEntityManager;
-        this.userSession = userSession;
-        this.metadata = AppBeans.get(Metadata.NAME);
-        this.entityListenerMgr = AppBeans.get(EntityListenerManager.NAME);
-        this.support = AppBeans.get(PersistenceImplSupport.NAME);
     }
 
     @Override
@@ -137,9 +146,8 @@ public class EntityManagerImpl implements EntityManager {
             entity = internalMerge(entity);
         }
         if (entity instanceof SoftDelete && softDeletion) {
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             ((SoftDelete) entity).setDeleteTs(timeSource.currentTimestamp());
-            ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
+            ((SoftDelete) entity).setDeletedBy(auditInfoProvider.getCurrentUserLogin());
         } else {
             delegate.remove(entity);
             if (entity instanceof BaseGenericIdEntity) {
@@ -214,8 +222,9 @@ public class EntityManagerImpl implements EntityManager {
         return reference;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> TypedQuery<T> createQueryInstance(boolean isNative, Class<T> resultClass) {
-        return new QueryImpl<>(this, isNative, resultClass);
+        return (TypedQuery<T>) beanLocator.getPrototype(Query.NAME,this, isNative, resultClass);
     }
 
     @Override

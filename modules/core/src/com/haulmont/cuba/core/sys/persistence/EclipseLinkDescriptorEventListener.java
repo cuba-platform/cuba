@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AuditInfoProvider;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -46,7 +46,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
     protected Persistence persistence;
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected AuditInfoProvider auditInfoProvider;
 
     @Inject
     protected TimeSource timeSource;
@@ -162,7 +162,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
         Date ts = timeSource.currentTimestamp();
 
         if (entity instanceof Creatable) {
-            ((Creatable) entity).setCreatedBy(userSessionSource.getUserSession().getUser().getLogin());
+            ((Creatable) entity).setCreatedBy(auditInfoProvider.getCurrentUserLogin());
             ((Creatable) entity).setCreateTs(ts);
         }
         if (entity instanceof Updatable) {
@@ -179,7 +179,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
         Entity entity = (Entity) event.getObject();
         if (!((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) && (entity instanceof Updatable)) {
             Updatable updatable = (Updatable) event.getObject();
-            updatable.setUpdatedBy(userSessionSource.getUserSession().getUser().getLogin());
+            updatable.setUpdatedBy(auditInfoProvider.getCurrentUserLogin());
             updatable.setUpdateTs(timeSource.currentTimestamp());
         }
     }

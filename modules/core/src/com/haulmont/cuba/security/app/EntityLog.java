@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.AuditInfoProvider;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 import com.haulmont.cuba.security.entity.*;
@@ -62,7 +63,7 @@ public class EntityLog implements EntityLogAPI {
     @Inject
     protected MetadataTools metadataTools;
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected AuditInfoProvider auditInfoProvider;
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
     @Inject
@@ -416,8 +417,9 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected User findUser(EntityManager em) {
-        if (AppContext.isStarted())
-            return em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
+        UUID currentUserId = auditInfoProvider.getCurrentUserId();
+        if (AppContext.isStarted() && currentUserId != null)
+            return em.getReference(User.class, currentUserId);
         else {
             String login = serverConfig.getJmxUserLogin();
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.loginLowerCase = ?1", User.class);

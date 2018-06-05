@@ -31,6 +31,8 @@ import java.sql.Connection;
  */
 public interface EntityManager {
 
+    String NAME = "cuba_EntityManager";
+
     /**
      * Make an instance managed and persistent.
      *
