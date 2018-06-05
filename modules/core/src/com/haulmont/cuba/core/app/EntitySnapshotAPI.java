@@ -122,14 +122,14 @@ public interface EntitySnapshotAPI {
 
     /**
      * Get the last added to the database snapshot for the given entity by id. This method always starts a new
-     * transaction. It can be used for entities with composite key if they implement {@link HasUuid} interface.
+     * transaction.
      *
-     * @param metaClass entity meta class
-     * @param id        entity id
+     * @param metaClass   entity meta class
+     * @param referenceId reference id for which snapshot refers
      * @return snapshot or null if there is no snapshots in database for the given entity
      */
     @Nullable
-    EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id);
+    EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object referenceId);
 
     /**
      * Creates non-persistent snapshot for entity. It can be used for entities with composite key if they implement

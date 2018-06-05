@@ -332,26 +332,12 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     @Override
-    public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id) {
-        MetaClass originalMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
-        Object referenceId;
-
-        if (id instanceof Entity) {
-            if (!HasUuid.class.isAssignableFrom(originalMetaClass.getJavaClass())) {
-                throw new UnsupportedOperationException(
-                        format("Entity %s has no persistent UUID attribute", originalMetaClass.getJavaClass()));
-            }
-
-            Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id).setView(View.LOCAL));
-            if (entity == null) {
-                return null;
-            }
-
-            checkCompositePrimaryKey(entity);
-            referenceId = referenceToEntitySupport.getReferenceId(entity);
-        } else {
-            referenceId = id;
+    public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object referenceId) {
+        if (referenceId instanceof Entity) {
+            throw new IllegalArgumentException(format("Reference id can not be an entity: %s", referenceId.getClass()));
         }
+
+        MetaClass originalMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
 
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         Transaction tx = persistence.createTransaction();

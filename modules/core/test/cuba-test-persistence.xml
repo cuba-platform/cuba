@@ -27,7 +27,6 @@
         <class>com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.EntityKey</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity</class>
-        <class>com.haulmont.cuba.testmodel.primary_keys.CompositeKeyUuidEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.JoinedLongIdBase</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.JoinedLongIdFoo</class>

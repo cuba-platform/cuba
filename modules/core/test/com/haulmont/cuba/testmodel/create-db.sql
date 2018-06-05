@@ -908,14 +908,3 @@ create table TEST_CUSTOMER_W_NPERS_REF (
     --
     primary key (ID)
 )^
-
-------------------------------------------------------------------------------------------------------------------------
-
-create table TEST_COMPOSITE_KEY_UUID (
-    TENANT integer not null,
-    ENTITY_ID bigint not null,
-    UUID varchar(36) not null,
-    NAME varchar(50),
-    EMAIL varchar(100),
-    primary key (TENANT, ENTITY_ID)
-)^

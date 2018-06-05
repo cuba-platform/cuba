@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.testmodel.primary_keys.CompositeKeyUuidEntity
-import com.haulmont.cuba.testmodel.primary_keys.EntityKey
 import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
 import org.junit.ClassRule
@@ -39,7 +37,6 @@ class EntitySnapshotApiTest extends Specification {
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private EntitySnapshotAPI snapshotApi
-    private CompositeKeyUuidEntity entity
     private Role role
     private User user
 
@@ -55,9 +52,6 @@ class EntitySnapshotApiTest extends Specification {
             user.setLogin("test")
             user.setName("test-name")
             em.persist(user)
-
-            entity = createNonPersistenceCompKeyEntity(1)
-            em.persist(entity)
         }
 
         snapshotApi = AppBeans.get(EntitySnapshotAPI.class)
@@ -66,7 +60,6 @@ class EntitySnapshotApiTest extends Specification {
     void cleanup() {
         def runner = new QueryRunner(cont.persistence().getDataSource())
         runner.update("delete from SYS_ENTITY_SNAPSHOT")
-        runner.update("delete from TEST_COMPOSITE_KEY_UUID")
 
         if (role != null) {
             cont.deleteRecord("SEC_ROLE", role.getId())
@@ -113,8 +106,10 @@ class EntitySnapshotApiTest extends Specification {
     }
 
     def "Create non-persistent snapshot"() {
+        View viewRole = cont.metadata().getViewRepository().getView(Role.class, View.LOCAL)
+        Date snapshotDate = new Date(100)
+
         when:
-            View viewRole = cont.metadata().getViewRepository().getView(Role.class, View.LOCAL)
             def snapshot = snapshotApi.createTempSnapshot(role, viewRole)
 
             snapshot.getSnapshotXml().contains('testRole') == true
@@ -122,73 +117,23 @@ class EntitySnapshotApiTest extends Specification {
             def items = getSnapshotsList()
             items.size() == 0
 
-        // cases for entity with composite key
-        View view = cont.metadata().getViewRepository().getView(CompositeKeyUuidEntity.class, View.LOCAL)
-        Date snapshotDate = new Date(100)
-
         when:
-            EntitySnapshot snapshot1 = snapshotApi.createTempSnapshot(entity, view)
-            snapshot1.getSnapshotXml().contains('compositeKeyUuidEntity') == true
+            EntitySnapshot snapshot2 = snapshotApi.createTempSnapshot(role, viewRole, snapshotDate)
+            snapshot2.getSnapshotXml().contains('testRole') == true
         then:
-            def snapshots = snapshotApi.getSnapshots(entity.getMetaClass(), entity.getId())
-            snapshots.size() == 0
+            def snapshots2 = snapshotApi.getSnapshots(role.getMetaClass(), role.getId())
 
-        when:
-            EntitySnapshot snapshot2 = snapshotApi.createTempSnapshot(entity, view, snapshotDate)
-            snapshot2.getSnapshotXml().contains('compositeKeyUuidEntity') == true
-        then:
-            def snapshots2 = snapshotApi.getSnapshots(entity.getMetaClass(), entity.getId())
             snapshots2.size() == 0
-        and:
             snapshot2.getSnapshotDate() == snapshotDate
 
-
         when:
-            EntitySnapshot snapshot3 = snapshotApi.createTempSnapshot(entity, view, snapshotDate, user)
-            snapshot3.getSnapshotXml().contains('compositeKeyUuidEntity') == true
+            EntitySnapshot snapshot3 = snapshotApi.createTempSnapshot(role, viewRole, snapshotDate, user)
+            snapshot3.getSnapshotXml().contains('testRole') == true
         then:
-            def snapshots3 = snapshotApi.getSnapshots(entity.getMetaClass(), entity.getId())
+            def snapshots3 = snapshotApi.getSnapshots(role.getMetaClass(), role.getId())
+
             snapshots3.size() == 0
-        and:
             snapshot3.getAuthor() == user
-    }
-
-    def "Get last added EntitySnapshot for the Entity with composite key"() {
-        when:
-            // create two snapshot
-            View view = cont.metadata().getViewRepository().getView(CompositeKeyUuidEntity.class, View.LOCAL)
-            snapshotApi.createSnapshot(entity, view)
-
-            entity.setName("changedName")
-
-            snapshotApi.createSnapshot(entity, view)
-        then:
-            // get last snapshot using composite key as id
-            EntitySnapshot snapshot1 = snapshotApi.getLastEntitySnapshot(entity.getMetaClass(), entity.getId())
-            snapshot1.getSnapshotXml().contains("changedName") == true
-
-            // get last snapshot using reference id as id
-            EntitySnapshot snapshot2 = snapshotApi.getLastEntitySnapshot(entity.getMetaClass(), entity.getUuid())
-            snapshot2.getSnapshotXml().contains("changedName") == true
-
-        when:
-            // create two snapshot for non-persistence entity
-            def entity = createNonPersistenceCompKeyEntity(2)
-            entity.setName("nonPersistence")
-
-            snapshotApi.createSnapshot(entity, view)
-
-            entity.setName("changedNonPersistence")
-
-            snapshotApi.createSnapshot(entity, view)
-        then:
-            // get snapshot for non persistence entity using compositeKey
-            EntitySnapshot snapshot3 = snapshotApi.getLastEntitySnapshot(entity.getMetaClass(), entity.getId())
-            snapshot3 == null // because it needs reference id that stored in EntitySnapshot for this entity
-
-            // get snapshot non persistence entity using reference id
-            EntitySnapshot snapshot4 = snapshotApi.getLastEntitySnapshot(entity.getMetaClass(), entity.getUuid())
-            snapshot4.getSnapshotXml().contains("changedNonPersistence") == true
     }
 
     private List<EntitySnapshot> getSnapshotsList() {
@@ -201,18 +146,5 @@ class EntitySnapshotApiTest extends Specification {
         } finally {
             tx.close()
         }
-    }
-
-    private CompositeKeyUuidEntity createNonPersistenceCompKeyEntity(int id) {
-        def compKey = cont.metadata().create(EntityKey.class)
-        compKey.setTenant(1)
-        compKey.setEntityId(id)
-
-        def entity = cont.metadata().create(CompositeKeyUuidEntity.class)
-        entity.setId(compKey)
-        entity.setUuid(UUID.randomUUID())
-        entity.setName('compositeKeyUuidEntity')
-
-        return entity
     }
 }
