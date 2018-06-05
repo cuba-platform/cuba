@@ -1,6 +1,7 @@
 /.gradle/
 /build/
 /deploy/
+/classes/
 /.shelf/
 /test-home/
 out
