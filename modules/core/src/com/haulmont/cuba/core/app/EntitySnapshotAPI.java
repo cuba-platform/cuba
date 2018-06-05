@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.core.entity.HasUuid;
 
 import javax.annotation.Nullable;
 import java.util.Date;
@@ -111,6 +112,7 @@ public interface EntitySnapshotAPI {
 
     /**
      * Get the last added to the database snapshot for the given entity. This method always starts a new transaction.
+     * It can be used for entities with composite key if they implement {@link HasUuid} interface.
      *
      * @param entity entity
      * @return snapshot or null if there is no snapshots in database for the given entity
@@ -120,7 +122,7 @@ public interface EntitySnapshotAPI {
 
     /**
      * Get the last added to the database snapshot for the given entity by id. This method always starts a new
-     * transaction.
+     * transaction. It can be used for entities with composite key if they implement {@link HasUuid} interface.
      *
      * @param metaClass entity meta class
      * @param id        entity id
@@ -130,7 +132,8 @@ public interface EntitySnapshotAPI {
     EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id);
 
     /**
-     * Creates non-persistent snapshot for entity.
+     * Creates non-persistent snapshot for entity. It can be used for entities with composite key if they implement
+     * {@link HasUuid} interface.
      *
      * @param entity entity
      * @param view   view
@@ -139,7 +142,8 @@ public interface EntitySnapshotAPI {
     EntitySnapshot createTempSnapshot(Entity entity, View view);
 
     /**
-     * Creates non-persistent snapshot for entity with a specific date.
+     * Creates non-persistent snapshot for entity with a specific date. It can be used for entities with composite
+     * key if they implement {@link HasUuid} interface.
      *
      * @param entity       entity
      * @param view         entity view
@@ -149,7 +153,8 @@ public interface EntitySnapshotAPI {
     EntitySnapshot createTempSnapshot(Entity entity, View view, Date snapshotDate);
 
     /**
-     * Creates non-persistent snapshot for entity with a specific date and author.
+     * Creates non-persistent snapshot for entity with a specific date and author. It can be used for entities with
+     * composite key if they implement {@link HasUuid} interface.
      *
      * @param entity       entity
      * @param view         entity view

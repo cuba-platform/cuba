@@ -315,14 +315,17 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot getLastEntitySnapshot(Entity entity) {
+        checkCompositePrimaryKey(entity);
+
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
+
         LoadContext<EntitySnapshot> lx = LoadContext.create(EntitySnapshot.class).setQuery(LoadContext
                 .createQuery(format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
                                 + " e.entity.%s = :entityId order by e.createTs desc",
                         referenceToEntitySupport.getReferenceIdPropertyName(metaClass)))
                 .setParameter("metaClass", metaClass.getName())
-                .setParameter("entityId", entity.getId())
+                .setParameter("entityId", referenceToEntitySupport.getReferenceId(entity))
                 .setMaxResults(1))
                 .setView(view);
         return dataManager.load(lx);
@@ -331,25 +334,35 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Override
     public EntitySnapshot getLastEntitySnapshot(MetaClass metaClass, Object id) {
         MetaClass originalMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
-        View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
+        Object referenceId;
 
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            //noinspection unchecked
-            Entity entity = (Entity) em.find(originalMetaClass.getJavaClass(), id);
+        if (id instanceof Entity) {
+            if (!HasUuid.class.isAssignableFrom(originalMetaClass.getJavaClass())) {
+                throw new UnsupportedOperationException(
+                        format("Entity %s has no persistent UUID attribute", originalMetaClass.getJavaClass()));
+            }
+
+            Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id).setView(View.LOCAL));
             if (entity == null) {
                 return null;
             }
 
             checkCompositePrimaryKey(entity);
+            referenceId = referenceToEntitySupport.getReferenceId(entity);
+        } else {
+            referenceId = id;
+        }
 
+        View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
             TypedQuery<EntitySnapshot> query = em.createQuery(
                     format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
                                     + " e.entity.%s = :entityId order by e.createTs desc",
                             referenceToEntitySupport.getReferenceIdPropertyName(originalMetaClass)), EntitySnapshot.class)
                     .setParameter("metaClass", originalMetaClass.getName())
-                    .setParameter("entityId", referenceToEntitySupport.getReferenceId(entity))
+                    .setParameter("entityId", referenceId)
                     .setMaxResults(1)
                     .setView(view);
             return query.getFirstResult();
