@@ -32,6 +32,9 @@ import java.util.Date;
  * <br>Consider use of {@link TypedQuery} instead of this interface.
  */
 public interface Query {
+
+    String NAME = "cuba_Query";
+
     /**
      * Get the query string.
      *

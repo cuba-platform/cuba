@@ -43,8 +43,12 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
@@ -52,23 +56,32 @@ import java.util.function.Consumer;
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
  */
+@Component(com.haulmont.cuba.core.Query.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class QueryImpl<T> implements TypedQuery<T> {
 
     private final Logger log = LoggerFactory.getLogger(QueryImpl.class);
 
+    @Inject
     protected Metadata metadata;
+    @Inject
+    protected PersistenceImplSupport support;
+    @Inject
+    protected FetchGroupManager fetchGroupMgr;
+    @Inject
+    protected EntityFetcher entityFetcher;
+    @Inject
+    protected QueryCacheManager queryCacheMgr;
+    @Inject
+    protected QueryTransformerFactory queryTransformerFactory;
+
     protected javax.persistence.EntityManager emDelegate;
     protected JpaQuery query;
     protected EntityManagerImpl entityManager;
-    protected PersistenceImplSupport support;
     protected boolean isNative;
     protected String queryString;
     protected String transformedQueryString;
     protected Class resultClass;
-    protected FetchGroupManager fetchGroupMgr;
-    protected EntityFetcher entityFetcher;
-    protected QueryCacheManager queryCacheMgr;
-    protected QueryTransformerFactory queryTransformerFactory;
     protected Set<Param> params = new HashSet<>();
     protected LockModeType lockMode;
     protected List<View> views = new ArrayList<>();
@@ -87,13 +100,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.macroHandlers = AppBeans.getAll(QueryMacroHandler.class).values();
         //noinspection unchecked
         this.resultClass = resultClass;
-
-        this.metadata = AppBeans.get(Metadata.NAME);
-        this.fetchGroupMgr = AppBeans.get(FetchGroupManager.NAME);
-        this.entityFetcher = AppBeans.get(EntityFetcher.NAME);
-        this.support = AppBeans.get(PersistenceImplSupport.NAME);
-        this.queryCacheMgr = AppBeans.get(QueryCacheManager.NAME);
-        this.queryTransformerFactory = AppBeans.get(QueryTransformerFactory.NAME);
     }
 
     protected JpaQuery<T> getQuery() {
