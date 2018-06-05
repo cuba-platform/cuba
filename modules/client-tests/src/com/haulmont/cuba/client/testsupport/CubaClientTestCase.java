@@ -254,13 +254,13 @@ public class CubaClientTestCase {
                 AppBeans.get(MessageTools.class); result = messageTools; minTimes = 0;
                 AppBeans.get(MessageTools.NAME, MessageTools.class); result = messageTools; minTimes = 0;
 
-                AppBeans.get(BeanValidation.NAME); result = beanValidation;
-                AppBeans.get(BeanValidation.class); result = beanValidation;
-                AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation;
+                AppBeans.get(BeanValidation.NAME); result = beanValidation; minTimes = 0;
+                AppBeans.get(BeanValidation.class); result = beanValidation; minTimes = 0;
+                AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation; minTimes = 0;
 
-                AppBeans.get(EntityStates.NAME); result = entityStates;
-                AppBeans.get(EntityStates.class); result = entityStates;
-                AppBeans.get(EntityStates.NAME, BeanValidation.class); result = entityStates;
+                AppBeans.get(EntityStates.NAME); result = entityStates; minTimes = 0;
+                AppBeans.get(EntityStates.class); result = entityStates; minTimes = 0;
+                AppBeans.get(EntityStates.NAME, BeanValidation.class); result = entityStates; minTimes = 0;
             }
         };
 
