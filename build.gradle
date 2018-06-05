@@ -509,7 +509,7 @@ configure(coreTestsModule) {
     }
 
     task sourceJar(type: Jar) {
-        from file('.')
+        from file('src')
         include 'com/haulmont/cuba/core/CubaTestCase*.class'
         include 'com/haulmont/cuba/core/CubaTestCase*.java'
         include 'com/haulmont/cuba/testsupport/*'
@@ -543,7 +543,7 @@ configure(clientTestsModule) {
     }
 
     task sourceJar(type: Jar) {
-        from file('.')
+        from file('src')
         classifier = 'sources'
     }
 
@@ -605,7 +605,7 @@ configure(webWidgetsModule) {
         compile(bom['com.vaadin:vaadin-context-menu'])
 
         /* WebJar dependencies */
-        compile(bom['org.webjars:webjars-locator'])
+        compile(bom['org.webjars:webjars-locator-core'])
         compile(bom['org.webjars:jquery'])
         compile(bom['org.webjars:jquery-ui'])
         compile(bom['org.webjars.bower:jquery-file-upload'])
@@ -760,8 +760,8 @@ configure(webToolkitModule) {
         // Strict
         strict = true
         // Debug flags:
-        printCompilerClassPath = true
-        logLevel = 'INFO'
+        // printCompilerClassPath = true
+        // logLevel = 'INFO'
         // Parallel thread count
         workers = 2
 
@@ -848,6 +848,9 @@ configure(desktopModule) {
     configurations.archives.artifacts.removeAll {
         it.file =~ 'tar' || it.file =~ 'zip'
     }
+
+    // vaadin8
+    compileJava.enabled = false
 }
 
 configure(restApiModule) {
