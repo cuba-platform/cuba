@@ -18,18 +18,23 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.webjars.MultipleMatchesException;
 import org.webjars.WebJarAssetLocator;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for WebJar resources management.
  */
 @ThreadSafe
 public final class WebJarResourceUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(WebJarResourceUtils.class);
 
     // Thread safe
     public static final WebJarAssetLocator locator = new WebJarAssetLocator(
@@ -122,6 +127,9 @@ public final class WebJarResourceUtils {
         final SortedMap<String, String> fullPathTail = pathIndex.tailMap(reversePartialPath);
 
         if (fullPathTail.size() == 0) {
+            if (log.isTraceEnabled()) {
+                printNotFoundTraceInfo(pathIndex, partialPath);
+            }
             throwNotFoundException(partialPath);
         }
 
@@ -129,6 +137,9 @@ public final class WebJarResourceUtils {
                 .entrySet().iterator();
         final Map.Entry<String, String> fullPathEntry = fullPathTailIter.next();
         if (!fullPathEntry.getKey().startsWith(reversePartialPath)) {
+            if (log.isTraceEnabled()) {
+                printNotFoundTraceInfo(pathIndex, partialPath);
+            }
             throwNotFoundException(partialPath);
         }
         final String fullPath = fullPathEntry.getValue();
@@ -158,6 +169,24 @@ public final class WebJarResourceUtils {
         }
 
         return fullPath;
+    }
+
+    private static void printNotFoundTraceInfo(SortedMap<String, String> pathIndex, String partialPath) {
+        String fullPathIndexLog = locator.getFullPathIndex().entrySet().stream()
+                .map(p -> p.getKey() + " : " + p.getValue())
+                .collect(Collectors.joining("\n"));
+        String pathIndexLog = pathIndex.entrySet().stream()
+                .map(p -> p.getKey() + " : " + p.getValue())
+                .collect(Collectors.joining("\n"));
+
+        log.trace("Unable to find WebJar resource: {}\n " +
+                        "ClassLoader: {}" +
+                        "WebJar full path index:\n {}\n" +
+                        "Path index: \n{}",
+                partialPath,
+                WebJarResourceUtils.class.getClassLoader(),
+                fullPathIndexLog,
+                pathIndexLog);
     }
 
     // CAUTION: copied from WebJarAssetLocator
