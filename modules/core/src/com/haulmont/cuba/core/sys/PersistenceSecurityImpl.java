@@ -327,6 +327,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @SuppressWarnings("unchecked")
     protected boolean calculateFilteredData(Entity entity, Set<EntityId> handled, boolean checkPermitted) {
+        if (referenceToEntitySupport.getReferenceId(entity) == null) {
+            return false;
+        }
         MetaClass metaClass = entity.getMetaClass();
         if (!isPermittedInMemory(entity) && checkPermitted) {
             return true;
