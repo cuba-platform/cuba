@@ -324,6 +324,7 @@ public class PersistenceImpl implements Persistence {
             if (context != null) {
                 List<Consumer<Integer>> list = context.getAttribute(RUN_AFTER_COMPLETION_ATTR);
                 if (list != null && !list.isEmpty()) {
+                    contextHolder.remove(store);
                     for (Consumer<Integer> consumer : list) {
                         consumer.accept(status);
                     }
