@@ -223,7 +223,10 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                             try {
                                 remove(selected);
                             } finally {
-                                target.requestFocus();
+                                if (target instanceof Component.Focusable) {
+                                    ((Component.Focusable) target).focus();
+                                }
+
                                 Set<Entity> filtered = new HashSet<>(selected);
                                 filtered.retainAll(target.getDatasource().getItems());
                                 //noinspection unchecked
@@ -232,7 +235,9 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                         }),
                         new DialogAction(Type.CANCEL).withHandler(event -> {
                             // move focus to owner
-                            target.requestFocus();
+                            if (target instanceof Component.Focusable) {
+                                ((Component.Focusable) target).focus();
+                            }
                         })
                 }
         );
@@ -242,7 +247,9 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         doRemove(selected, autocommit);
 
         // move focus to owner
-        target.requestFocus();
+        if (target instanceof Component.Focusable) {
+            ((Component.Focusable) target).focus();
+        }
 
         afterRemove(selected);
         if (afterRemoveHandler != null) {

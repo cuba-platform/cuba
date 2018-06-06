@@ -593,8 +593,8 @@ public class WebWindow implements Window, Component.Wrapper,
         this.focusComponentId = componentId;
         if (componentId != null) {
             Component focusComponent = getComponent(componentId);
-            if (focusComponent != null) {
-                focusComponent.requestFocus();
+            if (focusComponent instanceof Focusable) {
+                ((Focusable) focusComponent).focus();
             } else {
                 log.error("Can't find focus component: {}", componentId);
             }
@@ -995,10 +995,6 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setVisible(boolean visible) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void requestFocus() {
     }
 
     @Override

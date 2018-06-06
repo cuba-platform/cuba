@@ -119,6 +119,11 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

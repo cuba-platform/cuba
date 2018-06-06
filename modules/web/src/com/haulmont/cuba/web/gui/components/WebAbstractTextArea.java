@@ -43,6 +43,11 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     protected boolean trimming = true;
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
         // Vaadin TextField does not permit `null` value
 

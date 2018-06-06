@@ -95,6 +95,11 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }
@@ -265,7 +270,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         WebButton button = new PopupButtonActionButton() {
             @Override
             protected void beforeActionPerformed() {
-                WebPopupButton.this.requestFocus();
+                WebPopupButton.this.focus();
             }
         };
         button.setAction(new PopupActionWrapper(action));

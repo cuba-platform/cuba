@@ -292,6 +292,11 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

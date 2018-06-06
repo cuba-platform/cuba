@@ -170,6 +170,11 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return delegate.getDisplayValuesField().getTabIndex();
     }

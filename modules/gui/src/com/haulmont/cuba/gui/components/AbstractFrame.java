@@ -148,11 +148,6 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, O
     }
 
     @Override
-    public void requestFocus() {
-        frame.requestFocus();
-    }
-
-    @Override
     public float getHeight() {
         return frame.getHeight();
     }

@@ -330,17 +330,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
-    public void requestFocus() {
-        Iterator<com.vaadin.ui.Component> componentIterator = getComponentContent().iterator();
-        if (componentIterator.hasNext()) {
-            com.vaadin.ui.Component component = componentIterator.next();
-            if (component instanceof com.vaadin.ui.Component.Focusable) {
-                ((com.vaadin.ui.Component.Focusable) component).focus();
-            }
-        }
-    }
-
-    @Override
     public void setSpacing(boolean enabled) {
         getComponentContent().setSpacing(enabled);
     }

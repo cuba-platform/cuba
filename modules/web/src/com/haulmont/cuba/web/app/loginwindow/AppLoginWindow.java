@@ -122,7 +122,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        loginField.requestFocus();
+        loginField.focus();
 
         initPoweredByLink();
 
@@ -211,7 +211,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             passwordField.setValue(authInfo.getPassword());
             rememberMeCheckBox.setValue(authInfo.getRememberMe());
 
-            localesSelect.requestFocus();
+            localesSelect.focus();
 
             authInfoThreadLocal.set(null);
 

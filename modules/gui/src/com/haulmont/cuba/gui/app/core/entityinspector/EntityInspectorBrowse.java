@@ -470,7 +470,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     ParamsMap.of("metaClass", selectedMeta.getName()));
             window.addCloseListener(actionId -> {
                 entitiesDs.refresh();
-                entitiesTable.requestFocus();
+                entitiesTable.focus();
             });
         }
     }
@@ -493,7 +493,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     ParamsMap.of("item", item));
             window.addCloseListener(actionId -> {
                 entitiesDs.refresh();
-                entitiesTable.requestFocus();
+                entitiesTable.focus();
             });
         }
     }

@@ -428,8 +428,10 @@ public class WebWindowManager extends WindowManager {
             String focusComponentId = window.getFocusComponent();
             if (focusComponentId != null) {
                 com.haulmont.cuba.gui.components.Component focusComponent = window.getComponent(focusComponentId);
-                if (focusComponent != null && focusComponent.isEnabledRecursive() && focusComponent.isVisibleRecursive()) {
-                    focusComponent.requestFocus();
+                if (focusComponent instanceof com.haulmont.cuba.gui.components.Component.Focusable
+                        && focusComponent.isEnabledRecursive()
+                        && focusComponent.isVisibleRecursive()) {
+                    ((com.haulmont.cuba.gui.components.Component.Focusable) focusComponent).focus();
                     focused = true;
                 }
             }

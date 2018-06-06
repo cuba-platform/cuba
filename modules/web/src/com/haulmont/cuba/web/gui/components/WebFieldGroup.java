@@ -712,7 +712,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     }
 
     @Override
-    public void requestFocus() {
+    public void focusFirstField() {
         for (FieldConfig fc : getColumnOrderedFields()) {
             Component component = fc.getComponent();
             if (component != null
@@ -721,17 +721,17 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                     && component instanceof Focusable
                     && ((Focusable) component).isFocusable()) {
 
-                component.requestFocus();
+                ((Focusable) component).focus();
                 break;
             }
         }
     }
 
     @Override
-    public void requestFocus(String fieldId) {
+    public void focusField(String fieldId) {
         FieldConfig field = getFieldNN(fieldId);
         Component componentField = field.getComponentNN();
-        componentField.requestFocus();
+        ((Focusable) componentField).focus();
     }
 
     /**

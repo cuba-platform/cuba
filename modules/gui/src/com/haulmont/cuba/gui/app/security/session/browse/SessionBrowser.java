@@ -115,7 +115,7 @@ public class SessionBrowser extends AbstractLookup {
             String result = window.getResult();
             if (!StringUtils.isBlank(result)) {
                 showNotification(result, NotificationType.TRAY);
-                sessionsTable.requestFocus();
+                sessionsTable.focus();
             }
         });
     }
@@ -146,6 +146,6 @@ public class SessionBrowser extends AbstractLookup {
             }
         }
         sessionsTable.getDatasource().refresh();
-        sessionsTable.requestFocus();
+        sessionsTable.focus();
     }
 }

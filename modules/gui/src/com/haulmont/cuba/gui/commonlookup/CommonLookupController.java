@@ -113,7 +113,7 @@ public class CommonLookupController extends AbstractLookup {
         rowsCount.setOwner(entitiesTable);
         entitiesTable.setRowsCount(rowsCount);
 
-        entitiesTable.requestFocus();
+        entitiesTable.focus();
     }
 
     @SuppressWarnings("unchecked")

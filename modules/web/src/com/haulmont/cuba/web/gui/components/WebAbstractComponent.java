@@ -273,13 +273,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     @Override
-    public void requestFocus() {
-        if (component instanceof com.vaadin.ui.Component.Focusable) {
-            ((com.vaadin.ui.Component.Focusable) component).focus();
-        }
-    }
-
-    @Override
     public float getHeight() {
         return getComposition().getHeight();
     }

@@ -102,7 +102,7 @@ public class ChangePasswordDialog extends AbstractWindow {
         super.ready();
 
         if (currentPasswordField.isVisibleRecursive() && currentPasswordField.isEnabledRecursive()) {
-            currentPasswordField.requestFocus();
+            currentPasswordField.focus();
         }
 
         if (!cancelEnabled) {

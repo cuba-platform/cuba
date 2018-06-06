@@ -272,6 +272,11 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

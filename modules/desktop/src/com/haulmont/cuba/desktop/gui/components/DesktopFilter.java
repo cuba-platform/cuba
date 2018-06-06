@@ -303,7 +303,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
-    public void requestFocus() {
+    public void focus() {
         delegate.requestFocus();
     }
 

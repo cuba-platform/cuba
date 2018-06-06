@@ -234,7 +234,7 @@ public class EntityLogBrowser extends AbstractWindow {
                     }
 
                     lookupWindow.addCloseListener(actionId ->
-                            pickerField.requestFocus());
+                            pickerField.focus());
                 }
             }
         };
@@ -483,7 +483,7 @@ public class EntityLogBrowser extends AbstractWindow {
         enableControls();
 
         entityNameField.setEditable(true);
-        entityNameField.requestFocus();
+        entityNameField.focus();
     }
 
     public void reloadConfiguration() {
@@ -495,7 +495,7 @@ public class EntityLogBrowser extends AbstractWindow {
         enableControls();
 
         loggedEntityTable.setEnabled(false);
-        cancelBtn.requestFocus();
+        cancelBtn.focus();
     }
 
     protected boolean allowLogProperty(MetaProperty metaProperty, CategoryAttribute categoryAttribute) {
@@ -549,7 +549,7 @@ public class EntityLogBrowser extends AbstractWindow {
             loggedEntityDs.refresh();
             disableControls();
             loggedEntityTable.setEnabled(true);
-            loggedEntityTable.requestFocus();
+            loggedEntityTable.focus();
 
             logService.invalidateCache();
         }
@@ -566,7 +566,7 @@ public class EntityLogBrowser extends AbstractWindow {
             loggedEntityDs.refresh();
             disableControls();
             loggedEntityTable.setEnabled(true);
-            loggedEntityTable.requestFocus();
+            loggedEntityTable.focus();
         }
     }
 }

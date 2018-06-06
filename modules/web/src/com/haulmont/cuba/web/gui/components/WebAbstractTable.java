@@ -347,6 +347,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
     }

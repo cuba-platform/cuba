@@ -453,6 +453,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public void setLookupSelectHandler(Runnable selectHandler) {
         setEnterPressAction(new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
             @Override

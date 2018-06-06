@@ -352,7 +352,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     }
 
                     // move focus to owner
-                    pickerField.requestFocus();
+                    pickerField.focus();
 
                     afterCloseLookup(actionId);
                     if (afterLookupCloseHandler != null) {
@@ -694,7 +694,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
 
                 // move focus to owner
-                pickerField.requestFocus();
+                pickerField.focus();
 
                 afterWindowClosed(editor);
             });

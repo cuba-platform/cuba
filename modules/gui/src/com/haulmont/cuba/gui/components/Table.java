@@ -931,10 +931,6 @@ public interface Table<E extends Entity>
         }
 
         @Override
-        public void requestFocus() {
-        }
-
-        @Override
         public float getHeight() {
             return -1;
         }

@@ -280,7 +280,7 @@ public class EntityCombinedScreen extends AbstractLookup {
     protected void disableEditControls() {
         this.editing = false;
         initEditComponents(false);
-        getTable().requestFocus();
+        ((Focusable) getTable()).focus();
     }
 
     /**

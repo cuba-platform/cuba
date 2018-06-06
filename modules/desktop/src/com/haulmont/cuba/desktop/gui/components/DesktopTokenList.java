@@ -43,7 +43,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import net.miginfocom.layout.CC;
@@ -1337,11 +1336,11 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
-    public void requestFocus() {
+    public void focus() {
         if (simple) {
-            addButton.requestFocus();
+            addButton.focus();
         } else {
-            lookupPickerField.requestFocus();
+            lookupPickerField.focus();
         }
     }
 }

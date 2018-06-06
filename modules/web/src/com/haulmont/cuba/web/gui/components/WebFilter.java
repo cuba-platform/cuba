@@ -328,8 +328,18 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     }
 
     @Override
-    public void requestFocus() {
+    public void focus() {
         delegate.requestFocus();
+    }
+
+    @Override
+    public int getTabIndex() {
+        return 0;
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        // filter does not support tab index
     }
 
     @Override

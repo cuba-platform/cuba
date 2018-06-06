@@ -44,6 +44,11 @@ public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Bool
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

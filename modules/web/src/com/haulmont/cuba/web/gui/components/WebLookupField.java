@@ -25,7 +25,10 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
-import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.OptionsBinding;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -468,6 +471,11 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
     @Override
     public FilterPredicate getFilterPredicate() {
         return filterPredicate;
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

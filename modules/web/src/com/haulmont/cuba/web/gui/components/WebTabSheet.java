@@ -138,6 +138,11 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }
@@ -383,7 +388,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     @Override
     public void removeTab(String name) {
-        final Tab tab = tabs.get(name);
+        Tab tab = tabs.get(name);
         if (tab == null) {
             throw new IllegalStateException(String.format("Can't find tab '%s'", name));
         }
@@ -510,7 +515,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     context.executeInitTasks();
                 }
                 // Fire GUI listener
-                fireTabChanged(new SelectedTabChangeEvent(WebTabSheet.this, getTab()));
+                fireTabChanged(new SelectedTabChangeEvent(WebTabSheet.this, getSelectedTab()));
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {

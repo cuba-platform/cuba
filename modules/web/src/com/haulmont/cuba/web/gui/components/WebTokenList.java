@@ -1107,7 +1107,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
             }
         }
         lookupPickerField.setValue(null);
-        lookupPickerField.requestFocus();
+        lookupPickerField.focus();
 
         if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
             for (Object obj : getDatasource().getItems()) {
@@ -1162,11 +1162,11 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     @Override
-    public void requestFocus() {
+    public void focus() {
         if (simple) {
-            addButton.requestFocus();
+            addButton.focus();
         } else {
-            lookupPickerField.requestFocus();
+            lookupPickerField.focus();
         }
     }
 }

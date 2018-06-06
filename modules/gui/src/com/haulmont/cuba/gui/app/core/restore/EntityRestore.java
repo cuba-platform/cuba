@@ -250,10 +250,10 @@ public class EntityRestore extends AbstractWindow {
                                 new DialogAction(Type.OK).withHandler(event -> {
                                     restoreService.restoreEntities(entityList);
                                     entitiesTable.refresh();
-                                    entitiesTable.requestFocus();
+                                    entitiesTable.focus();
                                 }),
                                 new DialogAction(Type.CANCEL, Status.PRIMARY).withHandler(event -> {
-                                    entitiesTable.requestFocus();
+                                    entitiesTable.focus();
                                 })
                         }
                 );

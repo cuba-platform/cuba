@@ -176,10 +176,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     @Override
-    public void requestFocus() {
-    }
-
-    @Override
     public void applySettings(Element element) {
         if (!isSettingsEnabled()) {
             return;

@@ -660,6 +660,11 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return dateField.getTabIndex();
     }

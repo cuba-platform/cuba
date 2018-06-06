@@ -152,10 +152,6 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     }
 
     @Override
-    public void requestFocus() {
-    }
-
-    @Override
     public void expand(Component childComponent, String height, String width) {
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(childComponent);
         WebComponentsHelper.expand(component, expandedComponent, height, width);

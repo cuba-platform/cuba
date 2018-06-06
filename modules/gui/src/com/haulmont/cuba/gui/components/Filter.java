@@ -24,7 +24,7 @@ import java.util.List;
 
 public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComponents,
         Component.HasXmlDescriptor, HasSettings, Component.HasCaption,
-        Component.HasIcon, Collapsable {
+        Component.HasIcon, Collapsable, Component.Focusable {
 
     String NAME = "filter";
 

@@ -31,7 +31,6 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -296,7 +295,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         if (editorCloseListener == null) {
             window.addCloseListener(actionId -> {
                 // move focus to owner
-                target.requestFocus();
+                if (target instanceof Component.Focusable) {
+                    ((Component.Focusable) target).focus();
+                }
 
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     Entity editedItem = window.getItem();

@@ -231,7 +231,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
             Category category = categories.iterator().next();
             categoryLookup.setVisible(false);
             categoryLabel.setVisible(false);
-            attributeLookup.requestFocus();
+            attributeLookup.focus();
             categoriesMap.put(category.getName(), category);
             categoryLookup.setOptionsMap(categoriesMap);
             categoryLookup.setValue(category);

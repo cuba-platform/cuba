@@ -83,10 +83,10 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         if (isNew) {
             okBtn.setEnabled(false);
             uploadField.addFileUploadSucceedListener(new FileUploadListener());
-            uploadField.requestFocus();
+            uploadField.focus();
         } else {
             uploadField.setVisible(false);
-            nameField.requestFocus();
+            nameField.focus();
         }
     }
 
@@ -126,7 +126,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
 
             okBtn.setEnabled(true);
 
-            nameField.requestFocus();
+            nameField.focus();
 
             needSave = true;
         }

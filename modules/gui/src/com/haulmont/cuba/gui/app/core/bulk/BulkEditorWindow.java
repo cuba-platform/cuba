@@ -284,7 +284,12 @@ public class BulkEditorWindow extends AbstractWindow {
         }
 
         if (!dataFields.isEmpty()) {
-            dataFields.values().iterator().next().requestFocus();
+            dataFields.values().stream()
+                    .filter(f -> f instanceof Focusable)
+                    .findFirst()
+                    .ifPresent(f ->
+                            ((Focusable) f).focus()
+                    );
         }
     }
 

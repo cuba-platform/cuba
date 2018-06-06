@@ -291,6 +291,11 @@ public class WebTimeField extends WebV8AbstractField<CubaMaskedTextField, String
     }*/
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

@@ -216,10 +216,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     }
 
     @Override
-    public void requestFocus() {
-    }
-
-    @Override
     public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
         MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
                 marginInfo.hasLeft());

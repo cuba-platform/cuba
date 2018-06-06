@@ -149,6 +149,11 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

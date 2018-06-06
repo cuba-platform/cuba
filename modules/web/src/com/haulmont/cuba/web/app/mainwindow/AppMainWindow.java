@@ -60,7 +60,7 @@ public class AppMainWindow extends AbstractMainWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        mainMenu.requestFocus();
+        mainMenu.focus();
 
         initLogoImage(logoImage);
         initLayoutAnalyzerContextMenu(logoImage);

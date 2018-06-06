@@ -84,7 +84,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
                         if (mbi.getObjectName() != null) { // otherwise it's a fake root node
                             Window editor = openEditor("jmxConsoleInspectMbean", mbi, OpenType.THIS_TAB);
                             editor.addCloseListener(actionId -> {
-                                mbeansTable.requestFocus();
+                                mbeansTable.focus();
                             });
                         } else {
                             // expand / collapse fake root node

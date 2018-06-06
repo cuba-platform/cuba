@@ -376,9 +376,9 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     }
 
     @Override
-    public void requestFocus() {
-        super.requestFocus();
-        uploadButton.requestFocus();
+    public void focus() {
+        super.focus();
+        uploadButton.focus();
     }
 
     @Override

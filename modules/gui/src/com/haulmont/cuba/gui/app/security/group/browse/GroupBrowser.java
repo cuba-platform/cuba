@@ -201,7 +201,7 @@ public class GroupBrowser extends AbstractWindow {
                         }, OpenType.DIALOG, lookupParams);
 
                         lookupWindow.addCloseListener(actionId -> {
-                            usersTable.requestFocus();
+                            usersTable.focus();
                         });
                     }
                 });

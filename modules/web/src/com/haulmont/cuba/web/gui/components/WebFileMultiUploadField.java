@@ -319,6 +319,11 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

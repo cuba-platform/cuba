@@ -151,6 +151,11 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

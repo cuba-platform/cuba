@@ -240,7 +240,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         target.getDatasource().refresh();
                     }
-                    target.requestFocus();
+                    if (target instanceof Component.Focusable){
+                        ((Component.Focusable) target).focus();
+                    }
 
                     Consumer<BulkEditorCloseEvent> afterEditorCloseHandler =
                             bulkEditorIntegration.getAfterEditorCloseHandler();
@@ -275,7 +277,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         if (editorCloseListener == null) {
             window.addCloseListener(actionId -> {
                 // move focus to owner
-                target.requestFocus();
+                if (target instanceof Component.Focusable){
+                    ((Component.Focusable) target).focus();
+                }
 
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     Entity editedItem = window.getItem();

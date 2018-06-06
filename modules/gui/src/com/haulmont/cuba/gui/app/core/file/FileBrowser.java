@@ -84,7 +84,7 @@ public class FileBrowser extends AbstractLookup {
                                 ((DatasourceImplementation) filesDs).setModified(modified);
                             }
 
-                            filesTable.requestFocus();
+                            filesTable.focus();
                         }
                     });
                 });

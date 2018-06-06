@@ -339,9 +339,16 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
             //noinspection unchecked
             owner.getDatasource().updateItem(item);
 
-            // focus owner
-            owner.requestFocus();
+            if (owner instanceof Focusable) {
+                // focus owner
+                ((Focusable) owner).focus();
+            }
         }
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

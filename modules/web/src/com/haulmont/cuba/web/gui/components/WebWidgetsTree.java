@@ -132,4 +132,9 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
     public void setCaptionProperty(String captionProperty) {
         //do nothing
     }
+
+    @Override
+    public void focus() {
+        component.focus();
+    }
 }

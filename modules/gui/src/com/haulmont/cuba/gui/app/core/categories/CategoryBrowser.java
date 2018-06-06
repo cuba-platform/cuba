@@ -105,7 +105,7 @@ public class CategoryBrowser extends AbstractLookup {
             Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
             editor.addCloseListener(actionId -> {
                 categoriesDs.refresh();
-                categoryTable.requestFocus();
+                categoryTable.focus();
             });
         }
     }
@@ -129,7 +129,7 @@ public class CategoryBrowser extends AbstractLookup {
                 Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
                 editor.addCloseListener(actionId -> {
                     categoriesDs.refresh();
-                    categoryTable.requestFocus();
+                    categoryTable.focus();
                 });
             }
         }

@@ -56,7 +56,7 @@ public class AttributeEditor {
             checkBox = componentsFactory.createComponent(CheckBox.class);
             checkBox.setFrame(frame);
             if (requestFocus) {
-                checkBox.requestFocus();
+                checkBox.focus();
             }
             if (value != null) {
                 checkBox.setValue((Boolean) value);
@@ -80,7 +80,7 @@ public class AttributeEditor {
             textField.setFrame(frame);
 
             if (requestFocus) {
-                textField.requestFocus();
+                textField.focus();
             }
             if (value != null) {
                 textField.setValue(value.toString());

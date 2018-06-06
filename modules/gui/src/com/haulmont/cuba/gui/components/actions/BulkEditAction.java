@@ -175,7 +175,9 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 target.getDatasource().refresh();
             }
-            target.requestFocus();
+            if (target instanceof Component.Focusable) {
+                ((Component.Focusable) target).focus();
+            }
         });
     }
 

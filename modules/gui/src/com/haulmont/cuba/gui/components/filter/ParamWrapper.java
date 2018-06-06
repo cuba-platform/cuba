@@ -232,10 +232,6 @@ public class ParamWrapper implements Component, HasValue<Object> {
     }
 
     @Override
-    public void requestFocus() {
-    }
-
-    @Override
     public float getHeight() {
         return 0;
     }

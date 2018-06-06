@@ -78,17 +78,17 @@ public class LockEditor extends AbstractEditor {
             nameTypeOptionsGroup.setVisible(false);
             entityNameLookupField.setVisible(false);
             nameField.setEditable(false);
-            timeoutSecField.requestFocus();
+            timeoutSecField.focus();
         } else {
             nameTypeOptionsGroup.setOptionsEnum(LockDescriptorNameType.class);
             nameTypeOptionsGroup.addValueChangeListener(e -> {
                 if (LockDescriptorNameType.ENTITY.equals(e.getValue())) {
                     nameField.setVisible(false);
                     entityNameLookupField.setVisible(true);
-                    entityNameLookupField.requestFocus();
+                    entityNameLookupField.focus();
                 } else {
                     nameField.setVisible(true);
-                    nameField.requestFocus();
+                    nameField.focus();
                     entityNameLookupField.setVisible(false);
                 }
             });

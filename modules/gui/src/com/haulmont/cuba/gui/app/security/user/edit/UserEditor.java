@@ -511,7 +511,7 @@ public class UserEditor extends AbstractEditor<User> {
             }, OpenType.THIS_TAB, ParamsMap.of("windowOpener", "sec$User.edit"));
 
             roleLookupWindow.addCloseListener(actionId -> {
-                rolesTable.requestFocus();
+                rolesTable.focus();
             });
 
             Component lookupComponent = roleLookupWindow.getLookupComponent();
@@ -540,7 +540,7 @@ public class UserEditor extends AbstractEditor<User> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     rolesDs.refresh();
                 }
-                rolesTable.requestFocus();
+                rolesTable.focus();
             });
         }
     }
@@ -595,7 +595,7 @@ public class UserEditor extends AbstractEditor<User> {
 
             Window editor = openEditor(substitution, OpenType.DIALOG, ParamsMap.empty(), substitutionsDs);
             editor.addCloseListener(actionId -> {
-                substTable.requestFocus();
+                substTable.focus();
             });
         }
     }
@@ -612,7 +612,7 @@ public class UserEditor extends AbstractEditor<User> {
             if (substitutionsDs.getItem() != null) {
                 Window editor = openEditor(substitutionsDs.getItem(), OpenType.DIALOG, ParamsMap.empty(), substitutionsDs);
                 editor.addCloseListener(actionId -> {
-                    substTable.requestFocus();
+                    substTable.focus();
                 });
             }
         }

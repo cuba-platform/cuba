@@ -58,7 +58,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         component.addAttachListener(this::handleAttach);
     }
 
-    protected void handleAttach(ClientConnector.AttachEvent attachEvent) {
+    protected void handleAttach(@SuppressWarnings("unused") ClientConnector.AttachEvent attachEvent) {
         AppUI appUi = (AppUI) component.getUI();
         if (appUi == null || !appUi.isTestMode()) {
             return;
@@ -297,6 +297,11 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
     @Override
     public boolean hasMenuItems() {
         return component.hasMenuItems();
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

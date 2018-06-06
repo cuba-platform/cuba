@@ -110,7 +110,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
         );
         editor.addCloseListener(actionId -> {
             // move focus to component
-            table.requestFocus();
+            table.focus();
 
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 Entity editorItem = editor.getItem();

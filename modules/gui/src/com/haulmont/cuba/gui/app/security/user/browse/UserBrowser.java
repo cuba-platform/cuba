@@ -177,7 +177,7 @@ public class UserBrowser extends AbstractLookup {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     usersDs.refresh();
                 }
-                usersTable.requestFocus();
+                usersTable.focus();
             });
         }
     }
@@ -191,7 +191,7 @@ public class UserBrowser extends AbstractLookup {
                     ParamsMap.of("users", selected)
             );
             copySettingsWindow.addCloseListener(actionId ->
-                    usersTable.requestFocus()
+                    usersTable.focus()
             );
         }
     }
@@ -207,7 +207,7 @@ public class UserBrowser extends AbstractLookup {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     usersDs.updateItem(dataSupplier.reload(selectedUser, usersDs.getView()));
                 }
-                usersTable.requestFocus();
+                usersTable.focus();
             });
         }
     }
@@ -222,7 +222,7 @@ public class UserBrowser extends AbstractLookup {
                     Set<User> users = usersTable.getSelected();
                     resetPasswords(users, sendEmails, generatePasswords);
                 }
-                usersTable.requestFocus();
+                usersTable.focus();
             });
         }
     }
@@ -251,7 +251,7 @@ public class UserBrowser extends AbstractLookup {
                 Window newPasswordsWindow = openWindow("sec$User.newPasswords", OpenType.DIALOG,
                         ParamsMap.of("passwords", userPasswords));
                 newPasswordsWindow.addCloseListener(actionId ->
-                        usersTable.requestFocus()
+                        usersTable.focus()
                 );
             } else {
                 showNotification(

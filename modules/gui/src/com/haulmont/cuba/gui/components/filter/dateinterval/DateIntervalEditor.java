@@ -117,10 +117,10 @@ public class DateIntervalEditor extends AbstractWindow {
         switch (intervalValue.getType()) {
             case LAST:
             case NEXT:
-                numberField.requestFocus();
+                numberField.focus();
                 break;
             case PREDEFINED:
-                predefinedIntervalsLookup.requestFocus();
+                predefinedIntervalsLookup.focus();
                 break;
         }
     }

@@ -433,9 +433,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (paramEditComponentToFocus != null)
             requestFocusToParamEditComponent();
         else if (filtersPopupDisplayed)
-            filtersPopupButton.requestFocus();
+            filtersPopupButton.focus();
         else if (filtersLookupDisplayed) {
-            filtersLookup.requestFocus();
+            filtersLookup.focus();
         }
         updateWindowCaption();
     }
@@ -2001,9 +2001,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (paramEditComponentToFocus != null) {
             requestFocusToParamEditComponent();
         } else if (filtersLookupDisplayed) {
-            filtersLookup.requestFocus();
+            filtersLookup.focus();
         } else if (filtersPopupDisplayed) {
-            filtersPopupButton.requestFocus();
+            filtersPopupButton.focus();
         }
     }
 
@@ -2011,7 +2011,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (paramEditComponentToFocus instanceof ParamEditor) {
             ((ParamEditor) paramEditComponentToFocus).requestFocus();
         } else if (paramEditComponentToFocus instanceof TextField) {
-            ((TextField) paramEditComponentToFocus).requestFocus();
+            ((TextField) paramEditComponentToFocus).focus();
         }
     }
 
@@ -2217,7 +2217,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         initialConditions = conditions.toConditionsList();
                         fillConditionsLayout(ConditionsFocusType.NONE);
                     }
-                    settingsBtn.requestFocus();
+                    settingsBtn.focus();
                 });
             } else {
                 if (saveWithValues) {
@@ -2276,7 +2276,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     initialConditions = conditions.toConditionsList();
                     fillConditionsLayout(ConditionsFocusType.NONE);
                 }
-                settingsBtn.requestFocus();
+                settingsBtn.focus();
             });
         }
 
@@ -2324,7 +2324,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 } else {
                     requestFocusToParamEditComponent();
                 }
-                settingsBtn.requestFocus();
+                settingsBtn.focus();
             });
         }
 
@@ -2376,10 +2376,10 @@ public class FilterDelegateImpl implements FilterDelegate {
                     new Action[]{
                             new DialogAction(Type.YES).withHandler(event -> {
                                 removeFilterEntity();
-                                settingsBtn.requestFocus();
+                                settingsBtn.focus();
                             }),
                             new DialogAction(Type.NO, Status.PRIMARY).withHandler(event -> {
-                                settingsBtn.requestFocus();
+                                settingsBtn.focus();
                             })
                     });
         }

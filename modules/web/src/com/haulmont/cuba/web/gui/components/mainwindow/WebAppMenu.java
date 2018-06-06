@@ -53,7 +53,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         component.addAttachListener(this::handleAttach);
     }
 
-    protected void handleAttach(ClientConnector.AttachEvent event) {
+    protected void handleAttach(@SuppressWarnings("unused") ClientConnector.AttachEvent event) {
         AppUI appUi = (AppUI) component.getUI();
         if (appUi == null || !appUi.isTestMode()) {
             return;
@@ -236,6 +236,11 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
     @Override
     public void setMenuItemShortcutCaption(MenuItem menuItem, String shortcut) {
         component.setShortcut(((MenuItemImpl) menuItem).getDelegateItem(), shortcut);
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

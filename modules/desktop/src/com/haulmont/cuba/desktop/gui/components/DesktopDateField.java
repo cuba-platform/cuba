@@ -295,7 +295,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
-    public void requestFocus() {
+    public void focus() {
         SwingUtilities.invokeLater(() -> {
             datePicker.requestFocus();
         });

@@ -117,8 +117,33 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * Throws exception if field is not found or field does not have component.
      *
      * @param fieldId field id
+     * @deprecated Use {@link #focusField(String)} instead.
      */
-    void requestFocus(String fieldId);
+    @Deprecated
+    default void requestFocus(String fieldId) {
+        focusField(fieldId);
+    }
+
+    /**
+     * @deprecated Use {@link #focusFirstField()} instead.
+     */
+    @Deprecated
+    default void requestFocus() {
+        focusFirstField();
+    }
+
+    /**
+     * Focus the first enabled, visible and editable field.
+     */
+    void focusFirstField();
+
+    /**
+     * Request focus on field. <br>
+     * Throws exception if field is not found or field does not have component.
+     *
+     * @param fieldId field id
+     */
+    void focusField(String fieldId);
 
     /**
      * @return default datasource for declarative fields

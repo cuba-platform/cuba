@@ -127,7 +127,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         commit.setEnabled(editable);
 
         if (!editable) {
-            commitBtn.requestFocus();
+            commitBtn.focus();
         }
     }
 
@@ -204,7 +204,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
             componentForAdding.setEditable(editable);
             if (editable) {
-                componentForAdding.requestFocus();
+                if (componentForAdding instanceof Component.Focusable) {
+                    ((Component.Focusable) componentForAdding).focus();
+                }
             }
 
             if (itemType != ListEditor.ItemType.ENTITY) {

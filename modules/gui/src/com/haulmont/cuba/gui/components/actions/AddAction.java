@@ -215,10 +215,12 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
         Window lookupWindow = target.getFrame().openLookup(getWindowId(), itemsHandler, getOpenType(), params);
-        lookupWindow.addCloseListener(actionId -> {
-            // move focus to owner
-            target.requestFocus();
-        });
+        if (target instanceof Component.Focusable) {
+            lookupWindow.addCloseListener(actionId -> {
+                // move focus to owner
+                ((Component.Focusable) target).focus();
+            });
+        }
     }
 
     protected Map<String, Object> prepareWindowParams() {

@@ -340,6 +340,11 @@ public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPicke
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return ((Component.Focusable) component.getField()).getTabIndex();
     }
@@ -381,7 +386,7 @@ public class WebPickerField<V extends Entity> extends WebAbstractField<CubaPicke
 
         @Override
         protected void beforeActionPerformed() {
-            WebPickerField.this.requestFocus();
+            WebPickerField.this.focus();
         }
     }
 

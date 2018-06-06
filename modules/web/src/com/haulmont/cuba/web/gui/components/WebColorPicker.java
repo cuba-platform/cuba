@@ -36,7 +36,7 @@ public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, C
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         setCaptions();
     }
 
@@ -305,6 +305,11 @@ public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, C
     @Override
     public boolean isHistoryVisible() {
         return component.isHistoryVisible();
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

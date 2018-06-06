@@ -144,7 +144,7 @@ public class SettingsWindow extends AbstractWindow {
                             ParamsMap.of("currentPasswordRequired", true));
                     passwordDialog.addCloseListener(actionId -> {
                         // move focus back to window
-                        changePasswordBtn.requestFocus();
+                        changePasswordBtn.focus();
                     });
                 }));
 

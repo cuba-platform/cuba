@@ -429,7 +429,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
-        public void requestFocus() {
+        public void focus() {
         }
 
         @Override

@@ -285,7 +285,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         String entityNameValue = entityName.getValue();
         if (StringUtils.isBlank(entityNameValue)) {
             showNotification(getMessage("notification.entityIsEmpty"), NotificationType.HUMANIZED);
-            entityName.requestFocus();
+            entityName.focus();
             return;
         }
 

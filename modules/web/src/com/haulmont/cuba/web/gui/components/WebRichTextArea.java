@@ -36,7 +36,7 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         component.setLocaleMap(loadLabels());
     }
 
@@ -81,6 +81,11 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
         }
 
         return labels;
+    }
+
+    @Override
+    public void focus() {
+        component.focus();
     }
 
     @Override

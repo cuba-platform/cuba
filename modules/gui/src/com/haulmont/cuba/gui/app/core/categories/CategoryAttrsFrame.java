@@ -260,7 +260,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                         categoryAttrsTable.getDatasource());
                 editor.addCloseListener(actionId -> {
                     categoryAttrsTable.getDatasource().refresh();
-                    categoryAttrsTable.requestFocus();
+                    categoryAttrsTable.focus();
                     // restore selection from ds
                     categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
                 });
@@ -291,7 +291,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     categoryAttrsTable.getDatasource());
             editor.addCloseListener(actionId -> {
                 categoryAttrsTable.getDatasource().refresh();
-                categoryAttrsTable.requestFocus();
+                categoryAttrsTable.focus();
                 // restore selection from ds
                 categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
             });

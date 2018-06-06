@@ -183,7 +183,7 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
 
     @Override
     public void focus() {
-        uploadButton.requestFocus();
+        uploadButton.focus();
     }
 
     public void setCaption(String caption) {

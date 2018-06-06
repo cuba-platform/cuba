@@ -183,10 +183,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     }
 
     @Override
-    public void requestFocus() {
-    }
-
-    @Override
     public Component getOwnComponent(String id) {
         Preconditions.checkNotNullArgument(id);
 

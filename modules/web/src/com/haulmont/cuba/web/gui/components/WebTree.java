@@ -269,6 +269,11 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
         getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
+    @Override
+    public void focus() {
+        component.focus();
+    }
+
     public class TreeCollectionDsListenersWrapper extends CollectionDsListenersWrapper {
 
         @SuppressWarnings("unchecked")

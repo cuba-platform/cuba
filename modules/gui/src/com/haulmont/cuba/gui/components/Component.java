@@ -126,10 +126,6 @@ public interface Component {
         return isEnabled();
     }
 
-    /** Set focus to this component */
-    // vaadin8 move to Focusable
-    void requestFocus();
-
     /** Get component height in {@link #getHeightUnits()} */
     float getHeight();
 
@@ -163,6 +159,18 @@ public interface Component {
     /** Width units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE} */
     @Deprecated
     int getWidthUnits();
+
+    /**
+     * Set focus to this component
+     *
+     * @deprecated Use {@link Focusable#focus()} instead.
+     */
+    @Deprecated
+    default void requestFocus() {
+        if (this instanceof Focusable) {
+            ((Focusable) this).focus();
+        }
+    }
 
     /**
      * Gets the width property units.
@@ -323,6 +331,9 @@ public interface Component {
      * Focusable means that component can be focused by TAB button.
      */
     interface Focusable extends Component {
+        /** Set focus to this component */
+        void focus();
+
         /**
          * Is component focusable?
          */

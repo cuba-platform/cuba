@@ -307,6 +307,11 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

@@ -219,6 +219,11 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V> im
     }
 
     @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
     public int getTabIndex() {
         return component.getTabIndex();
     }

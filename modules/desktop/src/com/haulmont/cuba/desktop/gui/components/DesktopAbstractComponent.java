@@ -265,8 +265,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
     }
 
-    @Override
-    public void requestFocus() {
+    public void focus() {
         SwingUtilities.invokeLater(() ->
                 impl.requestFocus()
         );
