@@ -256,6 +256,7 @@ public class AbstractViewRepository implements ViewRepository {
                 Set<String> keySet = new HashSet<>(viewMap.keySet());
                 keySet.remove(View.LOCAL);
                 keySet.remove(View.MINIMAL);
+                keySet.remove(View.BASE);
                 return keySet;
             } else {
                 return Collections.emptyList();
