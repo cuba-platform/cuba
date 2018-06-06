@@ -24,7 +24,9 @@ import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.Expectations;
+import org.junit.Ignore;
 
+@Ignore
 public class WebLookupPickerFieldDsTest extends LookupPickerFieldDsTest {
 
     @Mocked

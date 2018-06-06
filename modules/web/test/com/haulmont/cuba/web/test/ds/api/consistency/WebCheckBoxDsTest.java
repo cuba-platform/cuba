@@ -20,7 +20,9 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ds.api.consistency.CheckBoxDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import mockit.Expectations;
+import org.junit.Ignore;
 
+@Ignore
 public class WebCheckBoxDsTest extends CheckBoxDsTest {
 
     public WebCheckBoxDsTest() {

@@ -24,9 +24,11 @@ import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.Expectations;
+import org.junit.Ignore;
 
 import java.util.Locale;
 
+@Ignore
 public class WebLookupFieldDsTest extends LookupFieldDsTest {
 
     @Mocked

@@ -21,9 +21,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ds.api.consistency.DatePickerDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import mockit.Expectations;
+import org.junit.Ignore;
 
 import java.util.Locale;
 
+@Ignore
 public class WebDatePickerDsTest extends DatePickerDsTest {
 
     public WebDatePickerDsTest() {
