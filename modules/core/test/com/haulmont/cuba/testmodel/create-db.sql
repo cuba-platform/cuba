@@ -908,3 +908,25 @@ create table TEST_CUSTOMER_W_NPERS_REF (
     --
     primary key (ID)
 )^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_LOCAL_DATE_TIME_ENTITY (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    OFFSET_DATE_TIME timestamp with time zone,
+    OFFSET_TIME time with time zone,
+    LOCAL_DATE date,
+    LOCAL_TIME time,
+    LOCAL_DATE_TIME timestamp,
+    --
+    primary key (ID)
+)^

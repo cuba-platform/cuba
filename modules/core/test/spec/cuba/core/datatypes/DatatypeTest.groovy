@@ -19,6 +19,7 @@ package spec.cuba.core.datatypes
 import com.haulmont.chile.core.datatypes.DatatypeRegistry
 import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.testmodel.localdatetime.LocalDateTimeEntity
 import com.haulmont.cuba.testmodel.numberformat.TestNumberValuesEntity
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -26,10 +27,12 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.text.ParseException
+import java.time.*
 
 class DatatypeTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private Locale savedLocale
@@ -60,6 +63,11 @@ class DatatypeTest extends Specification {
         datatypes.get(java.sql.Time.class).class == TimeDatatype
         datatypes.get(UUID.class).class == UUIDDatatype
         datatypes.get(byte[].class).class == ByteArrayDatatype
+        datatypes.get(LocalDate.class).class == LocalDateDatatype
+        datatypes.get(LocalTime.class).class == LocalTimeDatatype
+        datatypes.get(LocalDateTime.class).class == LocalDateTimeDatatype
+        datatypes.get(OffsetDateTime.class).class == OffsetDateTimeDatatype
+        datatypes.get(OffsetTime.class).class == OffsetTimeDatatype
     }
 
     def "not supported types"() {
@@ -219,7 +227,7 @@ class DatatypeTest extends Specification {
         intDatatype2.format(0.1) == '0'
         intDatatype2.format(12345.6789123) == '12,346'
         intDatatype2.parse('12345') == 12345
-        intDatatype2.parse('12345')  instanceof Integer
+        intDatatype2.parse('12345') instanceof Integer
     }
 
     def "adaptive Long datatype"() {
@@ -244,7 +252,7 @@ class DatatypeTest extends Specification {
         longDatatype2.format(0.1) == '0'
         longDatatype2.format(12345.6789123) == '12,346'
         longDatatype2.parse('12345') == 12345
-        longDatatype2.parse('12345')  instanceof Long
+        longDatatype2.parse('12345') instanceof Long
     }
 
     def "adaptive percent datatype"() {
@@ -268,5 +276,40 @@ class DatatypeTest extends Specification {
         then:
 
         thrown(ParseException)
+    }
+
+    def "LocalDate/LocalDateTime/LocalTime/OffsetDateTime/OffsetTime datatypes"() {
+        def metaClass = cont.metadata().getClassNN(LocalDateTimeEntity.class)
+
+        def localDateDatatype = metaClass.getPropertyNN('localDate').getRange().asDatatype()
+        def localTimeDatatype = metaClass.getPropertyNN('localTime').getRange().asDatatype()
+        def localDateTimeDatatype = metaClass.getPropertyNN('localDateTime').getRange().asDatatype()
+        def offsetDateTimeDatatype = metaClass.getPropertyNN('offsetDateTime').getRange().asDatatype()
+        def offsetTimeDatatype = metaClass.getPropertyNN('offsetTime').getRange().asDatatype()
+
+        expect:
+
+        localDateDatatype.getJavaClass() == LocalDate
+        localDateDatatype.format(LocalDate.of(1987, 10, 01)) == '1987-10-01'
+        localDateDatatype.parse('1987-10-01') == LocalDate.of(1987, 10, 01)
+
+        localTimeDatatype.getJavaClass() == LocalTime
+        localTimeDatatype.format(LocalTime.of(10, 20, 40)) == '10:20:40'
+        localTimeDatatype.parse('10:20:40') == LocalTime.of(10, 20, 40)
+
+        localDateTimeDatatype.getJavaClass() == LocalDateTime
+        localDateTimeDatatype.format(LocalDateTime.of(1987,10,01, 10, 20, 40)) == '1987-10-01 10:20:40.000'
+        localDateTimeDatatype.parse('1987-10-01 10:20:40.000') == LocalDateTime.of(1987,10,01, 10, 20, 40)
+
+        offsetTimeDatatype.getJavaClass() == OffsetTime
+        offsetTimeDatatype.format(OffsetTime.of(LocalTime.of(10, 20, 40), ZoneOffset.of('Z'))) == '10:20:40 +0000'
+        offsetTimeDatatype.parse('10:20:40 +0000') == OffsetTime.of(LocalTime.of(10, 20, 40), ZoneOffset.of('Z'))
+
+        offsetDateTimeDatatype.getJavaClass() == OffsetDateTime
+        def offsetDateTime = OffsetDateTime.of(LocalDate.of(1987, 10, 01),
+                LocalTime.of(10, 20, 40),
+                ZoneOffset.of('Z'))
+        offsetDateTimeDatatype.format(offsetDateTime) == '1987-10-01 10:20:40.000 +0000'
+        offsetDateTimeDatatype.parse('1987-10-01 10:20:40.000 +0000') == offsetDateTime
     }
 }

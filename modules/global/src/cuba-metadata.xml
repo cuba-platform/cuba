@@ -45,13 +45,33 @@
                   default="true"
                   format="yyyy-MM-dd HH:mm:ss.SSS"/>
 
+        <datatype id="localDateTime" class="com.haulmont.chile.core.datatypes.impl.LocalDateTimeDatatype"
+                  default="true"
+                  format="yyyy-MM-dd HH:mm:ss.SSS"/>
+
+        <datatype id="offsetDateTime" class="com.haulmont.chile.core.datatypes.impl.OffsetDateTimeDatatype"
+                  default="true"
+                  format="yyyy-MM-dd HH:mm:ss.SSS Z"/>
+
         <datatype id="date" class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
+                  default="true"
+                  format="yyyy-MM-dd"/>
+
+        <datatype id="localDate" class="com.haulmont.chile.core.datatypes.impl.LocalDateDatatype"
                   default="true"
                   format="yyyy-MM-dd"/>
 
         <datatype id="time" class="com.haulmont.chile.core.datatypes.impl.TimeDatatype"
                   default="true"
                   format="HH:mm:ss"/>
+
+        <datatype id="localTime" class="com.haulmont.chile.core.datatypes.impl.LocalTimeDatatype"
+                  default="true"
+                  format="HH:mm:ss"/>
+
+        <datatype id="offsetTime" class="com.haulmont.chile.core.datatypes.impl.OffsetTimeDatatype"
+                  default="true"
+                  format="HH:mm:ss Z"/>
 
         <datatype id="uuid" class="com.haulmont.chile.core.datatypes.impl.UUIDDatatype"
                   default="true"/>

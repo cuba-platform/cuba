@@ -23,14 +23,24 @@ import com.haulmont.chile.core.datatypes.impl.DateDatatype
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype
 import com.haulmont.chile.core.datatypes.impl.DoubleDatatype
 import com.haulmont.chile.core.datatypes.impl.IntegerDatatype
+import com.haulmont.chile.core.datatypes.impl.LocalDateDatatype
+import com.haulmont.chile.core.datatypes.impl.LocalDateTimeDatatype
+import com.haulmont.chile.core.datatypes.impl.LocalTimeDatatype
 import com.haulmont.chile.core.datatypes.impl.LongDatatype
+import com.haulmont.chile.core.datatypes.impl.OffsetDateTimeDatatype
+import com.haulmont.chile.core.datatypes.impl.OffsetTimeDatatype
 import com.haulmont.chile.core.datatypes.impl.StringDatatype
 import com.haulmont.chile.core.datatypes.impl.TimeDatatype
 import com.haulmont.chile.core.datatypes.impl.UUIDDatatype
 import org.dom4j.Element
 import spock.lang.Specification
 
-import java.sql.Time;
+import java.sql.Time
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime;
 
 /**
  *
@@ -52,6 +62,11 @@ class DatatypeTest extends Specification {
         def stringDatatype = new StringDatatype()
         def timeDatatype = new TimeDatatype(element)
         def uuidDatatype = new UUIDDatatype()
+        def localDateDatatype = new LocalDateDatatype(element)
+        def localDateTimeDatatype = new LocalDateTimeDatatype(element)
+        def localTimeDatatype = new LocalTimeDatatype(element)
+        def offsetDateTimeDatatype = new OffsetDateTimeDatatype(element)
+        def offsetTimeDatatype = new OffsetTimeDatatype(element)
 
         expect:
 
@@ -66,6 +81,11 @@ class DatatypeTest extends Specification {
         stringDatatype.getJavaClass() == String
         timeDatatype.getJavaClass() == Time
         uuidDatatype.getJavaClass() == UUID
+        localDateDatatype.getJavaClass() == LocalDate
+        localDateTimeDatatype.getJavaClass() == LocalDateTime
+        localTimeDatatype.getJavaClass() == LocalTime
+        offsetDateTimeDatatype.getJavaClass() == OffsetDateTime
+        offsetTimeDatatype.getJavaClass() == OffsetTime
     }
 
     def "deprecated method still works"() {
