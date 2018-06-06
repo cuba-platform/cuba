@@ -24,7 +24,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Collection;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -75,6 +77,16 @@ public class ViewRepositoryTest {
         assertNotNull(minView.getProperty("login"));
         assertNull(minView.getProperty("email"));
         assertNull(minView.getProperty("userRoles"));
+
+        View baseView = repository.getView(User.class, View.BASE);
+        assertNotNull(baseView.getProperty("name"));
+        assertNotNull(baseView.getProperty("login"));
+        assertNotNull(localView.getProperty("email"));
+
+        Collection<String> definedViews = repository.getViewNames(User.class);
+        assertFalse(definedViews.contains(View.LOCAL));
+        assertFalse(definedViews.contains(View.MINIMAL));
+        assertFalse(definedViews.contains(View.BASE));
     }
 
     @Test
