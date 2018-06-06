@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -108,17 +107,6 @@ public interface Frame
      * @return true if the validation was successful, false if there were any problems
      */
     boolean validateAll();
-
-    /**
-     * @return {@link DialogParams} that will be used for opening next window in modal mode.
-     * <br> If called in {@code init()}
-     * method of a screen, which is being opened in {@link WindowManager.OpenType#DIALOG} mode, affects the current
-     * screen itself.
-     *
-     * @deprecated Use {@link WindowManager.OpenType} or {@link Window#getDialogOptions()} from screen controller
-     */
-    @Deprecated
-    DialogParams getDialogParams();
 
     /**
      * Open a simple screen.

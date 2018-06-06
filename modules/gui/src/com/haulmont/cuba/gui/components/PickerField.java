@@ -23,9 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManager.OpenMode;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -213,7 +211,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
         protected String lookupScreen;
         protected OpenType lookupScreenOpenType = OpenType.THIS_TAB;
-        protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
 
         protected Supplier<Map<String, Object>> lookupScreenParamsSupplier;
@@ -270,23 +267,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             this.lookupScreenOpenType = lookupScreenOpenType;
         }
 
-        @Deprecated
-        @Nullable
-        public DialogParams getLookupScreenDialogParams() {
-            return lookupScreenDialogParams;
-        }
-
-        /**
-         * Set lookup screen geometry when opening it in {@link OpenType#DIALOG} mode.
-         * Doesn't affect other modes.
-         *
-         * @deprecated Use {@link #setLookupScreenOpenType(OpenType)}
-         */
-        @Deprecated
-        public void setLookupScreenDialogParams(DialogParams lookupScreenDialogParams) {
-            this.lookupScreenDialogParams = lookupScreenDialogParams;
-        }
-
         @Nullable
         public Map<String, Object> getLookupScreenParams() {
             return lookupScreenParams;
@@ -325,13 +305,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
 
                 OpenType openType = getLookupScreenOpenType();
-                DialogParams dialogParams = getLookupScreenDialogParams();
 
                 Map<String, Object> screenParams = prepareScreenParams();
-
-                if (openType.getOpenMode() == OpenMode.DIALOG && dialogParams != null) {
-                    wm.getDialogParams().copyFrom(dialogParams);
-                }
 
                 Window lookupWindow = wm.openLookup(
                         windowConfig.getWindowInfo(windowAlias),
@@ -550,7 +525,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
         protected String editScreen;
         protected OpenType editScreenOpenType = OpenType.THIS_TAB;
-        protected DialogParams editScreenDialogParams;
         protected Map<String, Object> editScreenParams;
 
         protected Supplier<Map<String, Object>> editScreenParamsSupplier;
@@ -596,23 +570,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             this.editScreenOpenType = editScreenOpenType;
         }
 
-        @Deprecated
-        @Nullable
-        public DialogParams getEditScreenDialogParams() {
-            return editScreenDialogParams;
-        }
-
-        /**
-         * Set edit screen geometry when opening it in {@link OpenType#DIALOG} mode.
-         * Doesn't affect other modes.
-         *
-         * @deprecated Use {@link #setEditScreenOpenType(OpenType)}
-         */
-        @Deprecated
-        public void setEditScreenDialogParams(DialogParams editScreenDialogParams) {
-            this.editScreenDialogParams = editScreenDialogParams;
-        }
-
         @Nullable
         public Map<String, Object> getEditScreenParams() {
             return editScreenParams;
@@ -656,13 +613,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
 
             OpenType openType = getEditScreenOpenType();
-            DialogParams dialogParams = getEditScreenDialogParams();
 
             Map<String, Object> screenParams = prepareScreenParams();
-
-            if (openType.getOpenMode() == OpenMode.DIALOG && dialogParams != null) {
-                wm.getDialogParams().copyFrom(dialogParams);
-            }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 wm.showNotification(

@@ -448,12 +448,6 @@ public class WebWindow implements Window, Component.Wrapper,
         return dialogOptions;
     }
 
-    @Deprecated
-    @Override
-    public DialogParams getDialogParams() {
-        return getWindowManager().getDialogParams();
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override

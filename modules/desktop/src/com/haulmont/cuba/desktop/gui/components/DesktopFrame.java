@@ -24,7 +24,6 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -282,12 +281,6 @@ public class DesktopFrame
 
     private DesktopWindowManager getWindowManager() {
         return DesktopComponentsHelper.getTopLevelFrame((Frame) this).getWindowManager();
-    }
-
-    @Deprecated
-    @Override
-    public DialogParams getDialogParams() {
-        return getWindowManager().getDialogParams();
     }
 
     @Override

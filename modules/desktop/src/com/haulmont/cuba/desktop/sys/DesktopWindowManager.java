@@ -604,7 +604,7 @@ public class DesktopWindowManager extends WindowManager {
                 if (!dialog.isResizable()) {
                     dialog.setFixedWidth(dim.width);
                 }
-            } else if (openType.getWidth() == DialogParams.AUTO_SIZE_PX) {
+            } else if (openType.getWidth() == Component.AUTO_SIZE_PX) {
                 window.setWidth(AUTO_SIZE);
             } else {
                 if (openType.getWidthUnit() != null && openType.getWidthUnit() != SizeUnit.PIXELS) {
@@ -616,7 +616,7 @@ public class DesktopWindowManager extends WindowManager {
                 }
             }
 
-            if (openType.getHeight() != null && openType.getHeight() != DialogParams.AUTO_SIZE_PX) {
+            if (openType.getHeight() != null && openType.getHeight() != Component.AUTO_SIZE_PX) {
                 if (openType.getHeightUnit() != null && openType.getHeightUnit() != SizeUnit.PIXELS) {
                     throw new UnsupportedOperationException("Dialog size can be set only in pixels");
                 }
@@ -1456,13 +1456,9 @@ public class DesktopWindowManager extends WindowManager {
 
         int width = 500;
         SizeUnit unit = null;
-        DialogParams dialogParams = getDialogParams();
         if (messageType != null && messageType.getWidth() != null) {
             width = messageType.getWidth().intValue();
             unit = messageType.getWidthUnit();
-        } else if (dialogParams.getWidth() != null) {
-            width = dialogParams.getWidth().intValue();
-            unit = dialogParams.getWidthUnit();
         }
 
         LC lc = new LC();

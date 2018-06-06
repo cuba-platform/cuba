@@ -270,7 +270,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                     selectedItemFound = true;
             }
             // In case of a predefined custom condition parameter value may be of type which is not contained in
-            // the metamodel, hence not in MetadataHelper.getAllEnums(). So we just add it here.
+            // the meta model, hence not in MetadataHelper.getAllEnums(). So we just add it here.
             if (selectedItem != null && !selectedItemFound) {
                 items.put(getEnumClassName((Class) selectedItem), selectedItem);
             }
@@ -508,21 +508,27 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     }
 
     public void getJoinClauseHelp() {
-        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.join"),
-                messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+                messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width("600px"));
     }
 
     public void getWhereClauseHelp() {
-        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.where"),
-                messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+                messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width("600px"));
     }
 
     public void getParamWhereClauseHelp() {
-        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.entityParamWhere"),
-                messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
+                messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width("600px"));
     }
 
 

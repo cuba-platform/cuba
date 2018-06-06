@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
@@ -281,9 +280,6 @@ public class WebWindowManager extends WindowManager {
                               final boolean multipleOpen) {
         OpenType targetOpenType = type.copy();
 
-        // for backward compatibility only
-        copyDialogParamsToOpenType(targetOpenType);
-
         overrideOpenTypeParams(targetOpenType, window.getDialogOptions());
 
         boolean forciblyDialog = false;
@@ -447,8 +443,6 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Component showWindowNewTab(final Window window, final boolean multipleOpen) {
-        getDialogParams().reset();
-
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs(window);
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -605,8 +599,6 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Component showWindowThisTab(final Window window, final String caption, final String description) {
-        getDialogParams().reset();
-
         WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
         Layout layout;
@@ -804,8 +796,6 @@ public class WebWindowManager extends WindowManager {
                 vWindow.setPositionY(openType.getPositionY());
             }
         }
-
-        getDialogParams().reset();
 
         ui.addWindow(vWindow);
 
@@ -1234,13 +1224,9 @@ public class WebWindowManager extends WindowManager {
 
         float width;
         SizeUnit unit;
-        DialogParams dialogParams = getDialogParams();
         if (messageType.getWidth() != null) {
             width = messageType.getWidth();
             unit = messageType.getWidthUnit();
-        } else if (dialogParams.getWidth() != null) {
-            width = dialogParams.getWidth();
-            unit = dialogParams.getWidthUnit();
         } else {
             SizeWithUnit size = SizeWithUnit.parseStringSize(
                     app.getThemeConstants().get("cuba.web.WebWindowManager.messageDialog.width"));
@@ -1257,8 +1243,6 @@ public class WebWindowManager extends WindowManager {
         if (!hasModalWindow()) {
             if (messageType.getModal() != null) {
                 modal = messageType.getModal();
-            } else if (dialogParams.getModal() != null) {
-                modal = dialogParams.getModal();
             }
         }
         vWindow.setModal(modal);
@@ -1278,8 +1262,6 @@ public class WebWindowManager extends WindowManager {
                 vWindow.setWindowMode(WindowMode.NORMAL);
             }
         }
-
-        dialogParams.reset();
 
         ui.addWindow(vWindow);
         vWindow.center();
@@ -1319,9 +1301,6 @@ public class WebWindowManager extends WindowManager {
         if (messageType.getWidth() != null) {
             width = messageType.getWidth();
             unit = messageType.getWidthUnit();
-        } else if (getDialogParams().getWidth() != null) {
-            width = getDialogParams().getWidth();
-            unit = getDialogParams().getWidthUnit();
         } else {
             SizeWithUnit size = SizeWithUnit.parseStringSize(
                     app.getThemeConstants().get("cuba.web.WebWindowManager.optionDialog.width"));
@@ -1332,8 +1311,6 @@ public class WebWindowManager extends WindowManager {
         if (messageType.getModal() != null) {
             log.warn("MessageType.modal is not supported for showOptionDialog");
         }
-
-        getDialogParams().reset();
 
         window.setWidth(width, unit != null
                 ? WebWrapperUtils.toVaadinUnit(unit)

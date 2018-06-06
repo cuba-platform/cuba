@@ -512,12 +512,9 @@ public abstract class WindowManager {
 
     protected ScreenViewsLoader screenViewsLoader = AppBeans.get(ScreenViewsLoader.NAME);
 
-    private DialogParams dialogParams;
-
     protected List<WindowCloseListener> listeners = new ArrayList<>();
 
     protected WindowManager() {
-        dialogParams = createDialogParams();
         defaultDataSupplier = new GenericDataSupplier();
     }
 
@@ -1045,16 +1042,6 @@ public abstract class WindowManager {
         return map;
     }
 
-    @Deprecated
-    protected DialogParams createDialogParams() {
-        return new DialogParams();
-    }
-
-    @Deprecated
-    public DialogParams getDialogParams() {
-        return dialogParams;
-    }
-
     protected void fireListeners(Window window, boolean anyOpenWindowExist) {
         for (WindowCloseListener wcl : listeners) {
             wcl.onWindowClose(window, anyOpenWindowExist);
@@ -1068,32 +1055,6 @@ public abstract class WindowManager {
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen);
 
     protected abstract void showFrame(Component parent, Frame frame);
-
-    @Deprecated
-    protected void copyDialogParamsToOpenType(OpenType mutableOpenType) {
-        DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getCloseable() != null && mutableOpenType.getCloseable() == null) {
-            mutableOpenType.closeable(dialogParams.getCloseable());
-        }
-        if (dialogParams.getModal() != null && mutableOpenType.getModal() == null) {
-            mutableOpenType.setModal(dialogParams.getModal());
-        }
-        if (dialogParams.getResizable() != null && mutableOpenType.getResizable() == null) {
-            mutableOpenType.setResizable(dialogParams.getResizable());
-        }
-        if (dialogParams.getWidth() != null && mutableOpenType.getWidth() == null) {
-            mutableOpenType.setWidth(dialogParams.getWidth());
-        }
-        if (dialogParams.getWidthUnit() != null && mutableOpenType.getWidthUnit() == null) {
-            mutableOpenType.setWidthUnit(dialogParams.getWidthUnit());
-        }
-        if (dialogParams.getHeight() != null && mutableOpenType.getHeight() == null) {
-            mutableOpenType.setHeight(dialogParams.getHeight());
-        }
-        if (dialogParams.getHeightUnit() != null && mutableOpenType.getHeightUnit() == null) {
-            mutableOpenType.setHeightUnit(dialogParams.getHeightUnit());
-        }
-    }
 
     protected OpenType overrideOpenTypeParams(OpenType mutableOpenType, DialogOptions dialogOptions) {
         if (BooleanUtils.isTrue(dialogOptions.getForceDialog())) {

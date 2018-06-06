@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 
 import javax.annotation.Nullable;
@@ -34,15 +33,6 @@ public interface EntityLinkField<V> extends Field<V>, Component.Focusable {
 
     WindowManager.OpenType getScreenOpenType();
     void setScreenOpenType(WindowManager.OpenType openType);
-
-    @Deprecated
-    @Nullable
-    DialogParams getScreenDialogParams();
-    /**
-     * @deprecated Use {@link #setScreenOpenType(WindowManager.OpenType)}
-     */
-    @Deprecated
-    void setScreenDialogParams(@Nullable DialogParams dialogParams);
 
     @Nullable
     Map<String, Object> getScreenParams();

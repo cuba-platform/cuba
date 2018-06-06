@@ -27,9 +27,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManager.OpenMode;
 import com.haulmont.cuba.gui.components.EntityLinkField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -55,7 +53,6 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
 
     protected String screen;
     protected WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
-    protected DialogParams screenDialogParams;
     protected ScreenCloseListener screenCloseListener;
     protected Map<String, Object> screenParams;
 
@@ -208,18 +205,6 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
         this.screenOpenType = screenOpenType;
     }
 
-    @Deprecated
-    @Override
-    public DialogParams getScreenDialogParams() {
-        return screenDialogParams;
-    }
-
-    @Deprecated
-    @Override
-    public void setScreenDialogParams(DialogParams screenDialogParams) {
-        this.screenDialogParams = screenDialogParams;
-    }
-
     @Override
     public Map<String, Object> getScreenParams() {
         return screenParams;
@@ -261,10 +246,6 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
             throw new IllegalStateException("Please specify Frame for EntityLinkField");
         } else {
             wm = window.getWindowManager();
-        }
-
-        if (screenOpenType.getOpenMode() == OpenMode.DIALOG && screenDialogParams != null) {
-            wm.getDialogParams().copyFrom(screenDialogParams);
         }
 
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {

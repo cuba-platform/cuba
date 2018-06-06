@@ -776,12 +776,6 @@ public class DesktopWindow implements Window, Component.Disposable,
         delegate.validate();
     }
 
-    @Deprecated
-    @Override
-    public DialogParams getDialogParams() {
-        return getWindowManager().getDialogParams();
-    }
-
     @Override
     public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openWindow(windowAlias, openType, params);

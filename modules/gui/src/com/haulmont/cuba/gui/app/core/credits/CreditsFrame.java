@@ -18,6 +18,8 @@
 package com.haulmont.cuba.gui.app.core.credits;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
@@ -45,7 +47,10 @@ public class CreditsFrame extends AbstractFrame {
 
     @Override
     public void init(final Map<String, Object> params) {
-        getDialogParams().setResizable(true);
+        DialogOptions dialogOptions = ComponentsHelper.getWindow(this).getDialogOptions();
+        if (dialogOptions != null) {
+            dialogOptions.setResizable(true);
+        }
 
         StringBuilder acknowledgements = new StringBuilder();
 

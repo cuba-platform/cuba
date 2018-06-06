@@ -31,7 +31,6 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.ExtFlowLayout;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -89,8 +88,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
 
     protected Map<String, Object> lookupScreenParams;
-
-    protected DialogParams lookupScreenDialogParams;
 
     protected boolean lookup = false;
 
@@ -417,18 +414,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     @Override
     public Map<String, Object> getLookupScreenParams() {
         return lookupScreenParams;
-    }
-
-    @Override
-    public void setLookupScreenDialogParams(DialogParams dialogparams) {
-        this.lookupScreenDialogParams = dialogparams;
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public DialogParams getLookupScreenDialogParams() {
-        return lookupScreenDialogParams;
     }
 
     @Override
@@ -894,18 +879,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             }
 
             WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(DesktopTokenList.this).getWindowManager();
-            if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
-                DialogParams dialogParams = wm.getDialogParams();
-
-                dialogParams.setResizable(true);
-                if (lookupScreenDialogParams != null) {
-                    dialogParams.setWidth(lookupScreenDialogParams.getWidth());
-                    dialogParams.setHeight(lookupScreenDialogParams.getHeight());
-                } else {
-                    dialogParams.setWidth("800px");
-                    dialogParams.setHeight("600px");
-                }
-            }
 
             Window.Lookup lookupWindow = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                 @Override

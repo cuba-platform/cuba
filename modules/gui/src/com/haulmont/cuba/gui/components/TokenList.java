@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -72,15 +71,6 @@ public interface TokenList<V> extends Field<V>, Component.BelongToFrame, Compone
     void setLookupScreenParams(Map<String, Object> params);
     @Nullable
     Map<String, Object> getLookupScreenParams();
-
-    /**
-     * @deprecated Use {@link #setLookupOpenMode(WindowManager.OpenType)}
-     */
-    @Deprecated
-    void setLookupScreenDialogParams(DialogParams dialogparams);
-    @Deprecated
-    @Nullable
-    DialogParams getLookupScreenDialogParams();
 
     boolean isClearEnabled();
     void setClearEnabled(boolean clearEnabled);

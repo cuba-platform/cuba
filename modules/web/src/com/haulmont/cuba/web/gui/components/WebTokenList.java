@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -36,7 +35,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
@@ -81,7 +79,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     protected String lookupScreen;
     protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
     protected Map<String, Object> lookupScreenParams;
-    protected DialogParams lookupScreenDialogParams;
 
     protected TokenStyleGenerator tokenStyleGenerator;
 
@@ -142,7 +139,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
                     lookupAction.setLookupScreenOpenType(lookupOpenMode);
                     lookupAction.setLookupScreenParams(lookupScreenParams);
-                    lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
                 }
             }
             component.refreshComponent();
@@ -400,7 +396,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
                 }
                 lookupAction.setLookupScreenOpenType(lookupOpenMode);
                 lookupAction.setLookupScreenParams(lookupScreenParams);
-                lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
             } else {
                 lookupPickerField.removeAction(lookupAction);
             }
@@ -447,21 +442,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     @Override
     public Map<String, Object> getLookupScreenParams() {
         return lookupScreenParams;
-    }
-
-    @Override
-    public void setLookupScreenDialogParams(DialogParams dialogParams) {
-        this.lookupScreenDialogParams = dialogParams;
-        if (lookupAction != null) {
-            lookupAction.setLookupScreenDialogParams(dialogParams);
-        }
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public DialogParams getLookupScreenDialogParams() {
-        return lookupScreenDialogParams;
     }
 
     @Override
@@ -784,20 +764,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
                     }
 
                     WindowManager wm = App.getInstance().getWindowManager();
-                    if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
-                        if (lookupScreenDialogParams != null) {
-                            wm.getDialogParams().setWidth(lookupScreenDialogParams.getWidth());
-                            wm.getDialogParams().setHeight(lookupScreenDialogParams.getHeight());
-                        } else {
-                            ThemeConstants theme = App.getInstance().getThemeConstants();
-                            String width = theme.get("cuba.web.WebTokenList.lookupDialog.width");
-                            String height = theme.get("cuba.web.WebTokenList.lookupDialog.height");
-
-                            wm.getDialogParams().setWidth(width);
-                            wm.getDialogParams().setHeight(height);
-                        }
-                        wm.getDialogParams().setResizable(true);
-                    }
 
                     Window.Lookup lookup = wm.openLookup(windowInfo, items -> {
                         if (lookupPickerField.isRefreshOptionsOnLookupClose()) {

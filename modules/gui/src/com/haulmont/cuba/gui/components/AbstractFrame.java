@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -427,15 +426,6 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, O
 
         NotificationType notificationType = NotificationType.valueOf(clientConfig.getValidationNotificationType());
         showNotification(messages.getMainMessage("validationFail.caption"), buffer.toString(), notificationType);
-    }
-
-    /**
-     * @deprecated Use {@link WindowManager.OpenType} or {@link Window#getDialogOptions()} from screen controller
-     */
-    @Deprecated
-    @Override
-    public DialogParams getDialogParams() {
-        return frame.getDialogParams();
     }
 
     @Override

@@ -29,7 +29,9 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.springframework.context.annotation.Scope;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Action used in {@link BulkEditor} visual component.
@@ -149,14 +151,16 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
             return;
         }
 
+        OpenType openType = this.openType;
+
         if (openType.getOpenMode() == OpenMode.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             ThemeConstants theme = themeManager.getConstants();
 
-            target.getFrame().getDialogParams()
-                    .setWidth(theme.get("cuba.gui.BulkEditAction.editorDialog.width"))
-                    .setHeight(theme.get("cuba.gui.BulkEditAction.editorDialog.height"))
-                    .setResizable(true);
+            openType = openType.copy()
+                .width(theme.get("cuba.gui.BulkEditAction.editorDialog.width"))
+                .height(theme.get("cuba.gui.BulkEditAction.editorDialog.height"))
+                .resizable(true);
         }
 
         Map<String, Object> params = ParamsMap.of()
