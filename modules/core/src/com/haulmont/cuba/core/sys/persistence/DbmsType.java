@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * INTERNAL.

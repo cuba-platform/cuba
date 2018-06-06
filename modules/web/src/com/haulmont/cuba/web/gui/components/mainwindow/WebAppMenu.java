@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.widgets.CubaMenuBar;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

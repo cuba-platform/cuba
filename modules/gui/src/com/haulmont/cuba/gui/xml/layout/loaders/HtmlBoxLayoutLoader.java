@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {

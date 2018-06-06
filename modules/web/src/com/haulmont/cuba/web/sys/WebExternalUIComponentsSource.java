@@ -30,8 +30,8 @@ import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 /**
  * Class registers external components that are supplied in separate jars or defined in 'cuba-ui-component.xml'

@@ -24,7 +24,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopContainer;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Component.HasContextHelp;
 import com.haulmont.cuba.gui.components.Field;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class DesktopContainerHelper {
 

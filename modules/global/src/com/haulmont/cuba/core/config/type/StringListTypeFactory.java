@@ -17,19 +17,23 @@
 
 package com.haulmont.cuba.core.config.type;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StringListTypeFactory extends TypeFactory {
     @Override
     public Object build(String string) {
-        List<String> stringList = new ArrayList<>();
+        List<String> stringList = Collections.emptyList();
         if (StringUtils.isNotEmpty(string)) {
             String[] elements = string.split("\\|");
             for (String element : elements) {
                 if (StringUtils.isNotEmpty(element)) {
+                    if (stringList.isEmpty()) {
+                        stringList = new ArrayList<>();
+                    }
                     stringList.add(element);
                 }
             }

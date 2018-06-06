@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
 import com.vaadin.ui.Button;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;

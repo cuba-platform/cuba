@@ -20,7 +20,7 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.v7.ui.TwinColSelect;
 import com.vaadin.v7.ui.AbstractSelect;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("serial")
 public class CubaTwinColSelect extends TwinColSelect {

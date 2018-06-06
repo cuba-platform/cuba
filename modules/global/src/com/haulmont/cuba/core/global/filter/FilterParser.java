@@ -21,8 +21,8 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.global.TemplateHelper;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 

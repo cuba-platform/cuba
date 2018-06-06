@@ -20,7 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.TextArea;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.prompt.PromptSupport;
 
 import javax.swing.*;

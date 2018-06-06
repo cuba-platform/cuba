@@ -18,7 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;

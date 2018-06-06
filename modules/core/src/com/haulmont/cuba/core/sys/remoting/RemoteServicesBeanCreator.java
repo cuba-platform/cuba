@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -60,7 +60,7 @@ public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, Appl
             Object service = entry.getValue();
 
             List<Class> serviceInterfaces = new ArrayList<>();
-            List<Class> interfaces = ClassUtils.getAllInterfaces(service.getClass());
+            List<Class<?>> interfaces = ClassUtils.getAllInterfaces(service.getClass());
             for (Class intf : interfaces) {
                 if (intf.getName().endsWith("Service"))
                     serviceInterfaces.add(intf);

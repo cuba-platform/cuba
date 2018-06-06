@@ -282,7 +282,6 @@ configure(globalModule) {
     dependencies {
         compile(bom['org.codehaus.groovy:groovy-all'])
 
-        compile(bom['commons-lang:commons-lang'])
         compile(bom['org.apache.commons:commons-lang3']) // simplify version management with reports and bpm
         compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['commons-io:commons-io'])
@@ -581,10 +580,9 @@ configure(webWidgetsModule) {
     dependencies {
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
+        compile(bom['com.google.guava:guava'])
         compile(bom['com.google.code.findbugs:jsr305'])
         compile(bom['org.apache.commons:commons-collections4'])
-        compile(bom['commons-lang:commons-lang'])
-        compile(bom['com.google.guava:guava'])
         compile(bom['org.slf4j:slf4j-api'])
 
         /* Vaadin */

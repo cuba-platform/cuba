@@ -16,7 +16,7 @@
  */
 package com.haulmont.bali.util;
 
-import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;

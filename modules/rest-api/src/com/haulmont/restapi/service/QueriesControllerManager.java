@@ -34,7 +34,7 @@ import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;

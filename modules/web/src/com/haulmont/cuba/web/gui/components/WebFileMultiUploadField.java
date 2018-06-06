@@ -32,7 +32,7 @@ import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;

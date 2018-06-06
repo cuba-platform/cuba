@@ -16,7 +16,7 @@
  */
 package com.haulmont.chile.core.model.utils;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;

@@ -18,7 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.config.type.TypeFactory;
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;

@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.jmx;
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigStorageCommon;
 import com.haulmont.cuba.security.app.Authenticated;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

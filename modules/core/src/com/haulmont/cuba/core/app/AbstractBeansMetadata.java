@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetClassAware;
@@ -77,7 +77,7 @@ public abstract class AbstractBeansMetadata {
             Object bean = AppBeans.get(beanName);
 
             @SuppressWarnings("unchecked")
-            List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
+            List<Class<?>> classes = ClassUtils.getAllInterfaces(bean.getClass());
             for (Class aClass : classes) {
                 if (aClass.getName().startsWith("org.springframework."))
                     continue;

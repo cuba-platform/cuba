@@ -35,7 +35,7 @@ import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.v7.event.ItemClickEvent;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.Tree;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;

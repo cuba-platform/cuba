@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.Expectations;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

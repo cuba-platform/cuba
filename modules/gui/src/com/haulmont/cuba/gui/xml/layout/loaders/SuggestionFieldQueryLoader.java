@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import groovy.text.GStringTemplateEngine;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.io.IOException;

@@ -21,7 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.*;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;

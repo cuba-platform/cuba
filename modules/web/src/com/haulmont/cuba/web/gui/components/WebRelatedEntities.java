@@ -31,7 +31,7 @@ import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

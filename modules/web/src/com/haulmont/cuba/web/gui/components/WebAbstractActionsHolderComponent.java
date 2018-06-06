@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;

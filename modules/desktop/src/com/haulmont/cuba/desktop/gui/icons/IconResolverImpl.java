@@ -17,7 +17,7 @@
 package com.haulmont.cuba.desktop.gui.icons;
 
 import com.haulmont.cuba.desktop.App;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;

@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaButton;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 

@@ -20,7 +20,7 @@ package com.haulmont.cuba.client.testsupport;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class TestViewRepositoryClient extends AbstractViewRepository {
 

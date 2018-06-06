@@ -18,7 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;

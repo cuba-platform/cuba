@@ -19,7 +19,7 @@ package com.haulmont.chile.core.datatypes.impl;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.util.Locale;

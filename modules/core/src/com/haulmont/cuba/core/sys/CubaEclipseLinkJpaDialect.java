@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;

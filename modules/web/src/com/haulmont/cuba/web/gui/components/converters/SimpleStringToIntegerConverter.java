@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.gui.components.converters;
 
 import com.vaadin.v7.data.util.converter.Converter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 

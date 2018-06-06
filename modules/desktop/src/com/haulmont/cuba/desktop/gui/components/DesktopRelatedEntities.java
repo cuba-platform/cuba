@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.components.security.RelatedEntitiesSecurity;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

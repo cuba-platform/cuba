@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.components.ClasspathResource;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WebClasspathResource extends WebAbstractStreamSettingsResource implements WebResource, ClasspathResource {
 

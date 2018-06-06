@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.VaadinSession;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 import java.util.Objects;

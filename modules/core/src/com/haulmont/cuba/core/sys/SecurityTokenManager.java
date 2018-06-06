@@ -40,8 +40,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.*;
-import static org.apache.commons.lang.StringUtils.rightPad;
-import static org.apache.commons.lang.StringUtils.substring;
+import static org.apache.commons.lang3.StringUtils.rightPad;
+import static org.apache.commons.lang3.StringUtils.substring;
 
 @Component(SecurityTokenManager.NAME)
 public class SecurityTokenManager {

@@ -35,7 +35,7 @@ import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import net.miginfocom.layout.CC;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;

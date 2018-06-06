@@ -34,7 +34,7 @@ import com.haulmont.cuba.web.widgets.CubaGroupTable;
 import com.haulmont.cuba.web.widgets.CubaGroupTable.GroupAggregationContext;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
 

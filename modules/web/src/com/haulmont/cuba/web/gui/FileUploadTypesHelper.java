@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.core.global.FileTypesHelper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class FileUploadTypesHelper {
 

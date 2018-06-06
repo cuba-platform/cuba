@@ -16,8 +16,8 @@
 
 package com.haulmont.bali.util;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class HtmlUtils {
 
@@ -31,7 +31,7 @@ public final class HtmlUtils {
      * @return Converted string.
      */
     public static String convertToHtml(String text) {
-        String html = StringEscapeUtils.escapeHtml(text);
+        String html = StringEscapeUtils.escapeHtml4(text);
         html = StringUtils.replace(html, "\n", "<br/>");
         html = StringUtils.replace(html, " ", "&nbsp;");
         html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");

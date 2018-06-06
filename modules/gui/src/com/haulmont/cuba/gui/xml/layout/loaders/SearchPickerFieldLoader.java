@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.SearchPickerField;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class SearchPickerFieldLoader extends SearchFieldLoader {

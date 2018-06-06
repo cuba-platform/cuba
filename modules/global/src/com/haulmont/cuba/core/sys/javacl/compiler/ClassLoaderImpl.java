@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core.sys.javacl.compiler;
 
 import com.haulmont.cuba.core.sys.javacl.ProxyClassLoader;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.tools.JavaFileObject;
 import java.io.ByteArrayInputStream;

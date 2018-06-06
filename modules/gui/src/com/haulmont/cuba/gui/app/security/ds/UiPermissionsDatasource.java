@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.security.entity.Permission;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.UUID;

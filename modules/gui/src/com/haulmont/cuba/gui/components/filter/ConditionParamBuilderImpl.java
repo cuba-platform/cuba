@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;

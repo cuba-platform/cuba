@@ -47,9 +47,9 @@ import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.dom4j.Element;
 

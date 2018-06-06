@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.Stores;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Factory for obtaining implementations of DBMS-specific objects, particularly {@link DbmsFeatures},

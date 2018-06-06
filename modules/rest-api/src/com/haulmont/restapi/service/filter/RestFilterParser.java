@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

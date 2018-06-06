@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.log;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
 import java.util.Date;
@@ -47,7 +47,7 @@ public class LogItem {
     }
 
     public String getStacktrace() {
-        return throwable != null ? ExceptionUtils.getFullStackTrace(throwable) : "";
+        return throwable != null ? ExceptionUtils.getStackTrace(throwable) : "";
     }
 
     @Nullable

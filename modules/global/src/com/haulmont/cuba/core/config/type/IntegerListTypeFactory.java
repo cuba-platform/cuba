@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.config.type;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +31,19 @@ public class IntegerListTypeFactory extends TypeFactory {
 
     @Override
     public Object build(String string) {
-        List<Integer> integerList = new ArrayList<>();
+        List<Integer> integerList = Collections.emptyList();
         if (StringUtils.isNotEmpty(string)) {
             String[] elements = string.split(" ");
             for (String element : elements) {
                 if (StringUtils.isNotEmpty(element)) {
                     try {
                         Integer value = Integer.parseInt(element);
+                        if (integerList.isEmpty()) {
+                            integerList = new ArrayList<>();
+                        }
                         integerList.add(value);
                     } catch (NumberFormatException e) {
-                        log.debug("Invalid integer list property: " + string);
+                        log.debug("Invalid integer list property: {}", string);
                         return Collections.emptyList();
                     }
                 }

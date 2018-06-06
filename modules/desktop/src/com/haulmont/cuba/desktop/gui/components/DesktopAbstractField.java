@@ -35,7 +35,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.validation.constraints.NotNull;

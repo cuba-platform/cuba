@@ -18,7 +18,7 @@
 package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.core.app.ServerConfig;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TokenList;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class TokenListLoader extends AbstractFieldLoader<TokenList> {

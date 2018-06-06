@@ -38,7 +38,7 @@ import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.AbstractField;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;

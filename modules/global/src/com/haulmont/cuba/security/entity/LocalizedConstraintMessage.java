@@ -19,7 +19,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;

@@ -41,8 +41,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;

@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.sys.serialization;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.io.*;
 

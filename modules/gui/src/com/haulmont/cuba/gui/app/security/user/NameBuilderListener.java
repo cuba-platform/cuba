@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.global.UserUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 

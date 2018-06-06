@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.config.EnumStore;
 import com.haulmont.cuba.core.config.EnumStoreMode;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;

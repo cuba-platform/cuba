@@ -20,7 +20,7 @@ package com.haulmont.cuba.gui.app.security.session.browse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;

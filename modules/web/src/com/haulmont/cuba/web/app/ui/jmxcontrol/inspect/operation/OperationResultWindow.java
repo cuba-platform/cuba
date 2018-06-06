@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.vaadin.v7.shared.ui.label.ContentMode;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.inject.Inject;
 import javax.management.MBeanException;
@@ -109,7 +109,7 @@ public class OperationResultWindow extends AbstractWindow {
             msg = String.format("%s: \n%s\n%s",
                     exception.getClass().getName(),
                     exception.getMessage(),
-                    ExceptionUtils.getFullStackTrace(exception));
+                    ExceptionUtils.getStackTrace(exception));
         } else {
             msg = "";
         }

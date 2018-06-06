@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Collections;

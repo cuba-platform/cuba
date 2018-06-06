@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -340,7 +340,7 @@ public class EntityListenerManager {
             if (AppBeans.containsBean(name)) {
                 Object bean = AppBeans.get(name);
                 log.trace("listener bean found: {}", bean);
-                List<Class> interfaces = ClassUtils.getAllInterfaces(bean.getClass());
+                List<Class<?>> interfaces = ClassUtils.getAllInterfaces(bean.getClass());
                 for (Class intf : interfaces) {
                     if (intf.equals(type.getListenerInterface())) {
                         log.trace("listener implements {}", type.getListenerInterface());
@@ -351,7 +351,7 @@ public class EntityListenerManager {
                 try {
                     Class aClass = Thread.currentThread().getContextClassLoader().loadClass(name);
                     log.trace("listener class found: {}", aClass);
-                    List<Class> interfaces = ClassUtils.getAllInterfaces(aClass);
+                    List<Class<?>> interfaces = ClassUtils.getAllInterfaces(aClass);
                     for (Class intf : interfaces) {
                         if (intf.equals(type.getListenerInterface())) {
                             log.trace("listener implements {}", type.getListenerInterface());
@@ -374,7 +374,7 @@ public class EntityListenerManager {
     protected List<String> getDeclaredListeners(Class<? extends Entity> entityClass) {
         List<String> listeners = new ArrayList<>();
 
-        List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+        List<Class<?>> superclasses = ClassUtils.getAllSuperclasses(entityClass);
         Collections.reverse(superclasses);
         for (Class superclass : superclasses) {
             Set<String> set = dynamicListeners.get(superclass);

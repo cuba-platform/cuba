@@ -41,8 +41,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -628,7 +628,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 Config config = configuration.getConfig(configClass);
 
                 try {
-                    String shortcutValue = (String) MethodUtils.invokeMethod(config, methodName, null);
+                    String shortcutValue = (String) MethodUtils.invokeMethod(config, methodName, (Object[]) null);
                     if (StringUtils.isNotEmpty(shortcutValue)) {
                         return shortcutValue;
                     }

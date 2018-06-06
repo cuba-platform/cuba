@@ -24,7 +24,7 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.sql.Time;

@@ -37,7 +37,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$PropertyConditionDescriptor")
 @SystemLevel

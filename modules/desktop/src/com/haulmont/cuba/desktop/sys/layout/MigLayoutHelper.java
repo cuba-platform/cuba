@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.UnitValue;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MigLayoutHelper {
 

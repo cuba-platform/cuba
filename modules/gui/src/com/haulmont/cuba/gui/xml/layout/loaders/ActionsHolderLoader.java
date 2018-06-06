@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public abstract class ActionsHolderLoader<T extends ActionsHolder> extends AbstractComponentLoader<T> {

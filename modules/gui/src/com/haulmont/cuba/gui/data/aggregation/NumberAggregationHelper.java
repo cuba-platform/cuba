@@ -16,8 +16,8 @@
  */
 package com.haulmont.cuba.gui.data.aggregation;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

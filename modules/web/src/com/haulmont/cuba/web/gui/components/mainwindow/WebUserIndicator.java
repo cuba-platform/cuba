@@ -38,7 +38,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 

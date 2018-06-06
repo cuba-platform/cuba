@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 

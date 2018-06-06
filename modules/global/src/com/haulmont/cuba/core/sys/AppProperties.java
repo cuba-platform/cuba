@@ -19,9 +19,9 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.haulmont.bali.datastruct.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrLookup;
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrLookup;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 import javax.annotation.Nullable;
 import java.util.*;

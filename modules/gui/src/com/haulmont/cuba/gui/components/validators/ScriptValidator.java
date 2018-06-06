@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.HashMap;

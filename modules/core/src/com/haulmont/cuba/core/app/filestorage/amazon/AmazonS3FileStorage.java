@@ -26,7 +26,7 @@ import com.haulmont.cuba.core.app.filestorage.amazon.util.HttpUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;

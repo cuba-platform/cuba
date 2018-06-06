@@ -21,7 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.VaadinSession;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.util.Locale;

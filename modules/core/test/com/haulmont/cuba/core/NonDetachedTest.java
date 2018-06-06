@@ -26,7 +26,7 @@ import com.haulmont.cuba.testmodel.sales.Customer;
 import com.haulmont.cuba.testmodel.sales.Order;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;

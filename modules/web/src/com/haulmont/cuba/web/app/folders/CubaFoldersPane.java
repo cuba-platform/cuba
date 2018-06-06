@@ -58,8 +58,8 @@ import com.vaadin.ui.*;
 import com.vaadin.v7.event.ItemClickEvent;
 import com.vaadin.v7.ui.Tree;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

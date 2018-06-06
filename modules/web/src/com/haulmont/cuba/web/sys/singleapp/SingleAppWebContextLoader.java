@@ -31,7 +31,7 @@ import com.haulmont.idp.sys.CubaIdpServlet;
 import com.haulmont.idp.sys.SingleAppIdpServlet;
 import com.haulmont.restapi.sys.CubaRestApiServlet;
 import com.haulmont.restapi.sys.SingleAppRestApiServlet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

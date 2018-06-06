@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

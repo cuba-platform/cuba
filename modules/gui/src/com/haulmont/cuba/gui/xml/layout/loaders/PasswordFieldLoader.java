@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PasswordField;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
     @Override

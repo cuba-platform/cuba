@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.entity.Entity;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nullable;
 import java.util.Map;

@@ -23,8 +23,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.type.TypeFactory;
 import com.haulmont.cuba.core.config.type.TypeStringify;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
@@ -307,6 +307,7 @@ public final class ConfigUtil {
         for (Annotation annotation : annotated.getAnnotations()) {
             Class annotationType = annotation.annotationType();
             if (name.equals(ClassUtils.getShortClassName(annotationType))) {
+                @SuppressWarnings("unchecked")
                 Method method = annotationType.getMethod("value");
                 return method.invoke(annotation);
             }

@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.sys.CubaMailSender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestMailSender;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

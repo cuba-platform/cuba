@@ -55,10 +55,10 @@ import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.slf4j.Logger;
@@ -82,7 +82,7 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
 import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml;
 
 public class DesktopWindowManager extends WindowManager {
 

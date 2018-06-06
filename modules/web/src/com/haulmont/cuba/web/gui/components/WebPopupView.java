@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> implements PopupView {
     protected Component popupContent;

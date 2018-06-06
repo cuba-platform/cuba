@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.widgets.CubaFileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

@@ -28,7 +28,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.vaadin.v7.ui.themes.BaseTheme.BUTTON_LINK;
 

@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.widgets.renderers;
 
 import com.vaadin.v7.ui.Grid;
 import elemental.json.JsonValue;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 public class CubaCheckBoxRenderer extends Grid.AbstractRenderer<Boolean> {
 

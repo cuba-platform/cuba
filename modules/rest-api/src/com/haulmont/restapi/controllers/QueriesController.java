@@ -18,7 +18,7 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.service.QueriesControllerManager;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

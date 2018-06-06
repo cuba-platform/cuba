@@ -16,7 +16,7 @@ import com.haulmont.idp.IdpAuthConfig;
 import com.haulmont.idp.IdpAuthMode;
 import com.haulmont.idp.IdpConfig;
 import com.haulmont.idp.model.AuthRequest;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.ldap.core.LdapTemplate;

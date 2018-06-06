@@ -27,8 +27,8 @@ import com.haulmont.cuba.web.widgets.client.split.SplitPanelDockMode;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractSplitPanel;
 import com.vaadin.ui.VerticalSplitPanel;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;

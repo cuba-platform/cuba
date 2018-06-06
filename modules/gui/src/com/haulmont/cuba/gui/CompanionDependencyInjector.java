@@ -31,8 +31,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +60,7 @@ public class CompanionDependencyInjector {
     public void inject() {
         Map<AnnotatedElement, Class> toInject = new HashMap<>();
 
-        @SuppressWarnings("unchecked")
-        List<Class> classes = ClassUtils.getAllSuperclasses(companion.getClass());
+        List<Class<?>> classes = ClassUtils.getAllSuperclasses(companion.getClass());
         classes.add(0, companion.getClass());
         Collections.reverse(classes);
 
@@ -83,7 +82,7 @@ public class CompanionDependencyInjector {
         }
     }
 
-    private List<Field> getAllFields(List<Class> classes) {
+    private List<Field> getAllFields(List<Class<?>> classes) {
         List<Field> list = new ArrayList<>();
 
         for (Class c : classes) {
@@ -221,7 +220,7 @@ public class CompanionDependencyInjector {
             try {
                 ((Field) element).set(companion, value);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("CDI - Unable to assign value to field " + ((Field) element).getName(), e);
             }
         } else {
             Object[] params = new Object[1];
@@ -230,7 +229,8 @@ public class CompanionDependencyInjector {
             try {
                 ((Method) element).invoke(companion, params);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("CDI - Unable to assign value through setter "
+                        + ((Method) element).getName(), e);
             }
         }
     }

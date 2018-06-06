@@ -29,7 +29,7 @@ import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.TrustedClientOnly;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

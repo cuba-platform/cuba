@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor> {

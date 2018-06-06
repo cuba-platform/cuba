@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;

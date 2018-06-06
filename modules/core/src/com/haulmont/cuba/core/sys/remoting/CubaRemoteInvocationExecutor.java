@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.sys.remoting.discovery.StaticServerSelector;
 import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.support.RemoteInvocation;

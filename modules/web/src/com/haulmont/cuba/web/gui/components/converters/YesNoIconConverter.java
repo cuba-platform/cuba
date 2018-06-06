@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components.converters;
 
 import com.vaadin.v7.data.util.converter.StringToBooleanConverter;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Locale;
 

@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.app.security.entity.AssignableTarget;
 import com.haulmont.cuba.gui.app.security.entity.EntityPermissionTarget;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;

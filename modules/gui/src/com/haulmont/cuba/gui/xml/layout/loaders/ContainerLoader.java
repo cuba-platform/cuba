@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.components.ExpandingLayout;
 import com.haulmont.cuba.gui.components.HasSpacing;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;

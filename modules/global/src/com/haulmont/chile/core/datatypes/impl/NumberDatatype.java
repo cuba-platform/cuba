@@ -19,7 +19,7 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.text.*;

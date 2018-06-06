@@ -33,14 +33,14 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.AbstractProperty;
 import com.vaadin.v7.ui.CheckBox;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class TablePresentations extends VerticalLayout {
 

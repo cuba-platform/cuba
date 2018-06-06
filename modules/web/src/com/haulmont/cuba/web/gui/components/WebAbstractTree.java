@@ -30,7 +30,7 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;

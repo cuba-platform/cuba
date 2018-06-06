@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 

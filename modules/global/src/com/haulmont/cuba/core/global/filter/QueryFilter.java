@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;

@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.FileDescriptorResource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.vaadin.server.StreamResource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
         implements WebResource, FileDescriptorResource {

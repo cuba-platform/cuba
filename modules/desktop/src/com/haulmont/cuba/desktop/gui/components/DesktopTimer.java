@@ -20,7 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.compatibility.TimerListenerWrapper;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

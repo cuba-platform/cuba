@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Formatter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

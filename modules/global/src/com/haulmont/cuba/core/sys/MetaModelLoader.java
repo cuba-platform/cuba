@@ -30,9 +30,9 @@ import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.annotation.MetaAnnotation;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.validation.groups.UiComponentChecks;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * INTERNAL.
@@ -467,7 +467,7 @@ public class MetaModelLoader {
 
         Class<?> aClass = field.getDeclaringClass();
         //noinspection unchecked
-        List<Class> allInterfaces = ClassUtils.getAllInterfaces(aClass);
+        List<Class<?>> allInterfaces = ClassUtils.getAllInterfaces(aClass);
         for (Class intf : allInterfaces) {
             Method[] methods = intf.getDeclaredMethods();
             for (Method method : methods) {

@@ -44,9 +44,9 @@ import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.ui.ComboBox;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,7 +258,7 @@ public class ServerLogWindow extends AbstractWindow {
             }
 
             // transform to XHTML
-            value = StringEscapeUtils.escapeHtml(value);
+            value = StringEscapeUtils.escapeHtml4(value);
             value = StringUtils.replace(value, " ", "&nbsp;");
 
             // highlight log

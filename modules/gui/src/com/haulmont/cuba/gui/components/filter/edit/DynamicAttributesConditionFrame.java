@@ -37,8 +37,8 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.inject.Inject;
 import java.util.*;

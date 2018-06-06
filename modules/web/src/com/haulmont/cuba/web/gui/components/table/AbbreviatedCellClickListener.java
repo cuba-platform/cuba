@@ -29,7 +29,7 @@ import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.haulmont.cuba.web.gui.components.WebAbstractTable.MAX_TEXT_LENGTH_GAP;
 

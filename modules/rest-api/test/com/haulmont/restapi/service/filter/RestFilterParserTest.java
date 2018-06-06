@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.core.global.filter.OpManagerImpl;
 import com.haulmont.restapi.service.filter.testmodel.TestEnum;
 import mockit.*;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -23,7 +23,7 @@ import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.components.Link;
 import com.haulmont.cuba.gui.icons.Icons;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;

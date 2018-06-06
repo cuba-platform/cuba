@@ -27,9 +27,9 @@ import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -129,11 +129,11 @@ public class LogWindow extends CubaWindow {
             sb.append(" ");
             sb.append(item.getLevel().name());
             sb.append("</b>&nbsp;");
-            sb.append(StringEscapeUtils.escapeHtml(item.getMessage()));
+            sb.append(StringEscapeUtils.escapeHtml4(item.getMessage()));
             if (item.getStacktrace() != null) {
                 sb.append(" ");
 
-                String htmlMessage = StringEscapeUtils.escapeHtml(item.getStacktrace());
+                String htmlMessage = StringEscapeUtils.escapeHtml4(item.getStacktrace());
                 htmlMessage = StringUtils.replace(htmlMessage, "\n", "<br/>");
                 htmlMessage = StringUtils.replace(htmlMessage, " ", "&nbsp;");
                 htmlMessage = StringUtils.replace(htmlMessage, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");

@@ -15,7 +15,7 @@
  */
 package com.haulmont.cuba.gui.components.sys;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;

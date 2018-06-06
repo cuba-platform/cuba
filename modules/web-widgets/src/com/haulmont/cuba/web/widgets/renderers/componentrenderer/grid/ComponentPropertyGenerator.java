@@ -18,7 +18,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.sort.SortOrder;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
  * A property value generator taylored to the needs of the typed {@link ComponentGrid}.

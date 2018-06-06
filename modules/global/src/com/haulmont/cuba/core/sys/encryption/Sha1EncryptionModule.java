@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.sys.encryption;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKeyFactory;

@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.security.idp;
 
 import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.cuba.web.security.HttpRequestFilter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 

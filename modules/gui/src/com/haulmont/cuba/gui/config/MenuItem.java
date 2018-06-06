@@ -20,7 +20,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;

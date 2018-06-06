@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.bali.util.URLEncodeUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;

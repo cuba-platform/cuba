@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public interface SourceCodeEditor extends Field<String>, Component.Focusable {
     String NAME = "sourceCodeEditor";

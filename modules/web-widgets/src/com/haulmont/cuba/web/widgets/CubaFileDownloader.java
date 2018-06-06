@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.downloader.CubaFileDownloaderClientRPC;
 import com.vaadin.server.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.UUID;

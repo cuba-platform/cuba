@@ -17,7 +17,7 @@
 package com.haulmont.bali.util;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;

@@ -24,7 +24,7 @@ import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.security.LoginProvider;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;

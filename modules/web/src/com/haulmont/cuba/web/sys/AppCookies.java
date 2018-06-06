@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import java.io.IOException;

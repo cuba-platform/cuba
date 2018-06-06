@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.WindowManager;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;

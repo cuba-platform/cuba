@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.settings;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 

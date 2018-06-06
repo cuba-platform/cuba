@@ -31,9 +31,9 @@ import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -111,7 +111,7 @@ public class PermissionConfig {
             String caption = menuConfig.getItemCaption(id)
                     .replaceAll("<.+?>", "")
                     .replaceAll("&gt;", "");
-            caption = StringEscapeUtils.unescapeHtml(caption);
+            caption = StringEscapeUtils.unescapeHtml4(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
                 Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("category:" + id, caption, id));

@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.core.sys;
 
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.shared.MouseEventDetails;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyChangeListener;
 import java.util.Objects;

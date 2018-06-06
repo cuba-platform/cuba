@@ -24,7 +24,7 @@ import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V> implements ResizableTextArea<V> {

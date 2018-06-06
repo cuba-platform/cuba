@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.vaadin.v7.data.Property;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.haulmont.cuba.web.gui.components.WebAbstractTable.MAX_TEXT_LENGTH_GAP;
 

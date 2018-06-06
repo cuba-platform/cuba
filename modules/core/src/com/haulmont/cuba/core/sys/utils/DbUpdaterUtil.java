@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
 import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
 import org.apache.commons.cli.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

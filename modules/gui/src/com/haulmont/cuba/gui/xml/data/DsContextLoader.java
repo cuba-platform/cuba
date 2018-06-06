@@ -30,7 +30,7 @@ import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;

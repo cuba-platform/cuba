@@ -33,7 +33,7 @@ import com.haulmont.cuba.web.widgets.CubaDateField;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.ui.Layout;
 import com.vaadin.v7.data.Property;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;

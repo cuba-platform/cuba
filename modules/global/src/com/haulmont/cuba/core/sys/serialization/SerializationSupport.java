@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.serialization;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;

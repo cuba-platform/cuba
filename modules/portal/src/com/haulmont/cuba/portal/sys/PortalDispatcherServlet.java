@@ -19,8 +19,8 @@ package com.haulmont.cuba.portal.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;

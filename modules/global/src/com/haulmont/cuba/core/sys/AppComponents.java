@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.base.Splitter;
 import com.haulmont.bali.util.Dom4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;

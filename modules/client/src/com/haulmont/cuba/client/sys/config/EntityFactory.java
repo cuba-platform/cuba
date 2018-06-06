@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.config.type.TypeFactory;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;

@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 import java.lang.reflect.Method;
 
-import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
+import static org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod;
 
 public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerator {
     private FieldGroup fieldGroup;

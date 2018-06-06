@@ -19,7 +19,7 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.components.Window;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;

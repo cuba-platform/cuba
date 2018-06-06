@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.testmodel.many2many.Many2ManyA;
 import com.haulmont.cuba.testmodel.many2many.Many2ManyB;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;

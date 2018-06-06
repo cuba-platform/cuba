@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

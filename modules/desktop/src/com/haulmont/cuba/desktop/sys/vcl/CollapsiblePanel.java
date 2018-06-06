@@ -19,7 +19,7 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 import com.haulmont.cuba.desktop.App;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;

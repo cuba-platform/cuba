@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.gui.components.MaskedField.ValueMode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MaskedFieldLoader extends AbstractTextFieldLoader<MaskedField> {
     @Override

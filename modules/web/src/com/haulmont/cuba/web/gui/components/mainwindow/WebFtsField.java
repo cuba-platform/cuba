@@ -34,7 +34,7 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsField {
 

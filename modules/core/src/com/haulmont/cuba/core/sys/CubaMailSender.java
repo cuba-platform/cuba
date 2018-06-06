@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.app.EmailerConfig;
 import com.haulmont.cuba.core.global.Configuration;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import org.springframework.stereotype.Component;

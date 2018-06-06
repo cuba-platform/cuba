@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.TimeZone;
 

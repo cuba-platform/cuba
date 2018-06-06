@@ -77,7 +77,7 @@ public class DataManagerCommitConstraintTest {
             constraintUpdate.setGroovyScript("import com.haulmont.cuba.core.Persistence\n" +
                     "import com.haulmont.cuba.core.global.AppBeans\n" +
                     "import com.haulmont.cuba.security.entity.User\n" +
-                    "import org.apache.commons.lang.BooleanUtils\n" +
+                    "import org.apache.commons.lang3.BooleanUtils\n" +
                     "\n" +
                     "Persistence persistence = AppBeans.get(Persistence.class)\n" +
                     "User user = {E}\n" +
@@ -111,7 +111,7 @@ public class DataManagerCommitConstraintTest {
             constraintCreate.setGroovyScript("import com.haulmont.cuba.core.Persistence\n" +
                     "import com.haulmont.cuba.core.global.AppBeans\n" +
                     "import com.haulmont.cuba.security.entity.User\n" +
-                    "import org.apache.commons.lang.BooleanUtils\n" +
+                    "import org.apache.commons.lang3.BooleanUtils\n" +
                     "import com.haulmont.cuba.core.global.PersistenceHelper\n" +
                     "\n" +
                     "Persistence persistence = AppBeans.get(Persistence.class)\n" +

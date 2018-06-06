@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

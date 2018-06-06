@@ -29,7 +29,7 @@ import com.haulmont.restapi.transform.EntityJsonTransformer;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
 import com.haulmont.restapi.transform.StandardEntityJsonTransformer;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

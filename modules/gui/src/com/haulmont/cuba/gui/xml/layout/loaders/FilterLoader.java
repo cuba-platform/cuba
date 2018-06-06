@@ -24,8 +24,8 @@ import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class FilterLoader extends AbstractComponentLoader<Filter> {

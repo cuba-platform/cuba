@@ -22,7 +22,7 @@ import com.google.gson.JsonPrimitive;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.data.EntitiesSearchResult;
 import com.haulmont.restapi.service.EntitiesControllerManager;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

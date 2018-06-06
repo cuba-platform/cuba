@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;

@@ -34,7 +34,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

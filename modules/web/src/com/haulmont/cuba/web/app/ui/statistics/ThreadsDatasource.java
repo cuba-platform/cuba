@@ -25,7 +25,7 @@ import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.management.openmbean.CompositeData;
 import java.util.*;

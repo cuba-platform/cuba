@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.entity;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ObjectArrays;
 import com.haulmont.bali.util.Preconditions;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;

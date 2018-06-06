@@ -23,7 +23,7 @@ import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
 import com.haulmont.cuba.gui.components.KeyCombination;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.text.StyleContext;

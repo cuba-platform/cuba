@@ -20,7 +20,7 @@ package com.haulmont.cuba.web.jmx;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.support.MBeanServerConnectionFactoryBean;
 
 import javax.annotation.Nullable;
