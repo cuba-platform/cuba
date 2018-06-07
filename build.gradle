@@ -880,9 +880,7 @@ configure(restApiModule) {
         compile(bom['org.springframework.security:spring-security-core'])
         compile(bom['org.springframework.security:spring-security-web'])
         compile(bom['org.springframework.security:spring-security-config'])
-        compile(bom['org.springframework.security.oauth:spring-security-oauth2']) {
-            exclude(group: 'org.springframework.security')
-        }
+        compile(bom['org.springframework.security.oauth:spring-security-oauth2'])
 
         compile(bom['io.swagger:swagger-models'])
 
