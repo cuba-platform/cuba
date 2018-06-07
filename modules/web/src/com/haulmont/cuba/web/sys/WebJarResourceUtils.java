@@ -35,10 +35,23 @@ public final class WebJarResourceUtils {
     private static final Logger log = LoggerFactory.getLogger(WebJarResourceUtils.class);
 
     // Thread safe
-    public static final WebJarAssetLocator locator = new WebJarAssetLocator(
-            WebJarAssetLocator.getFullPathIndex(Pattern.compile(".*"),
-                    WebJarResourceUtils.class.getClassLoader())
-    ); // use web application class loader instead of shared
+    public static final WebJarAssetLocator locator = new WebJarAssetLocator(getInitialIndex());
+
+    // called during initialization
+    private static SortedMap<String, String> getInitialIndex() {
+        // use web application class loader instead of shared
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        String assetsPath = getAssetsPath();
+
+        log.debug("Loading WebJAR index with class loader {} from {}", contextClassLoader, assetsPath);
+
+        SortedMap<String, String> fullPathIndex = WebJarAssetLocator.getFullPathIndex(Pattern.compile(".*"), contextClassLoader);
+        SortedMap<String, String> index = filterPathIndexByPrefix(fullPathIndex, getAssetsPath());
+
+        log.debug("Loaded {} WebJAR paths", index.size());
+
+        return index;
+    }
 
     public static final String WEBJARS_PATH_PREFIX = "META-INF/resources/webjars";
     public static final String UBERJAR_WEBJARS_PATH_PREFIX = "LIB-INF/shared/META-INF/resources/webjars";
@@ -58,12 +71,7 @@ public final class WebJarResourceUtils {
     public static String getWebJarPath(String webjar, String partialPath) {
         SortedMap<String, String> index = locator.getFullPathIndex();
 
-        String searchPath;
-        if (isUberJar()) {
-            searchPath = UBERJAR_WEBJARS_PATH_PREFIX + "/" + webjar + "/";
-        } else {
-            searchPath = WEBJARS_PATH_PREFIX + "/" + webjar + "/";
-        }
+        String searchPath = getAssetsPath() + "/" + webjar + "/";
 
         return getFullPath(filterPathIndexByPrefix(index, searchPath), partialPath);
     }
@@ -100,6 +108,13 @@ public final class WebJarResourceUtils {
 
     private static boolean isUberJar() {
         return Boolean.parseBoolean(AppContext.getProperty("cuba.uberJar"));
+    }
+
+    private static String getAssetsPath() {
+        if (isUberJar()) {
+            return UBERJAR_WEBJARS_PATH_PREFIX;
+        }
+        return WEBJARS_PATH_PREFIX;
     }
 
     // CAUTION: copied from WebJarAssetLocator
