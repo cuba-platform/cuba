@@ -56,14 +56,15 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
             if (securityContext.getSession() != null) {
                 return true;
-            } else {
+            } else if (AppContext.isStarted()) {
                 try {
                     getUserSessionFromMiddleware(securityContext.getSessionId());
                     return true;
                 } catch (Exception e) {
                     return false;
                 }
-            }
+            } else
+                return false;
         }
     }
 
