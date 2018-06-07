@@ -34,8 +34,20 @@ public final class WebJarResourceUtils {
 
     private static final Logger log = LoggerFactory.getLogger(WebJarResourceUtils.class);
 
-    // Thread safe
-    public static final WebJarAssetLocator locator = new WebJarAssetLocator(getInitialIndex());
+    private static volatile WebJarAssetLocator locator;
+
+    private static final Object lock = new Object();
+
+    public static WebJarAssetLocator getLocator() {
+        if (locator == null) {
+            synchronized (lock) {
+                if (locator == null) {
+                    locator = new WebJarAssetLocator(getInitialIndex());
+                }
+            }
+        }
+        return locator;
+    }
 
     // called during initialization
     private static SortedMap<String, String> getInitialIndex() {
@@ -69,7 +81,7 @@ public final class WebJarResourceUtils {
      * @return a fully qualified path to the resource
      */
     public static String getWebJarPath(String webjar, String partialPath) {
-        SortedMap<String, String> index = locator.getFullPathIndex();
+        SortedMap<String, String> index = getLocator().getFullPathIndex();
 
         String searchPath = getAssetsPath() + "/" + webjar + "/";
 
@@ -81,7 +93,7 @@ public final class WebJarResourceUtils {
      * @return a fully qualified path to the resource.
      */
     public static String getWebJarPath(String partialPath) {
-        return locator.getFullPath(partialPath);
+        return getLocator().getFullPath(partialPath);
     }
 
     /**
@@ -193,7 +205,7 @@ public final class WebJarResourceUtils {
                 .collect(Collectors.joining("\n"));
 
         log.trace("Unable to find WebJar resource: {}\n " +
-                        "ClassLoader: {}" +
+                        "ClassLoader: {}\n" +
                         "WebJar full path index:\n {}\n" +
                         "Path index: \n{}",
                 partialPath,

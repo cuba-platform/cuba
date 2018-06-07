@@ -27,7 +27,6 @@ import org.eclipse.jetty.xml.XmlConfiguration;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +127,8 @@ public class CubaJettyServer {
 
     protected Server createServer() throws Exception {
         ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
-        ClassLoader sharedClassLoader = new URLClassLoader(pathsToURLs(serverClassLoader, SHARED_CLASS_PATH_IN_JAR), serverClassLoader);
+        ClassLoader sharedClassLoader = new UberJarURLClassLoader("Shared",
+                pathsToURLs(serverClassLoader, SHARED_CLASS_PATH_IN_JAR), serverClassLoader);
         Server server;
         if (jettyConfUrl != null) {
             XmlConfiguration xmlConfiguration = new XmlConfiguration(jettyConfUrl);
@@ -147,33 +147,33 @@ public class CubaJettyServer {
                     coreContextPath = contextPath + "-core";
                 }
             }
-            handlers.add(createAppContext(serverClassLoader, sharedClassLoader, CORE_PATH_IN_JAR, coreContextPath));
+            handlers.add(createAppContext("Core", serverClassLoader, sharedClassLoader, CORE_PATH_IN_JAR, coreContextPath));
         }
         if (hasWebApp(serverClassLoader)) {
-            handlers.add(createAppContext(serverClassLoader, sharedClassLoader, WEB_PATH_IN_JAR, contextPath));
+            handlers.add(createAppContext("Web", serverClassLoader, sharedClassLoader, WEB_PATH_IN_JAR, contextPath));
         }
         if (hasPortalApp(serverClassLoader)) {
             String portalContextPath = contextPath;
             if (isSingleJar(serverClassLoader)) {
                 portalContextPath = this.portalContextPath;
             }
-            handlers.add(createAppContext(serverClassLoader, sharedClassLoader, PORTAL_PATH_IN_JAR, portalContextPath));
+            handlers.add(createAppContext("Portal", serverClassLoader, sharedClassLoader, PORTAL_PATH_IN_JAR, portalContextPath));
         }
         if (hasFrontApp(serverClassLoader)) {
             handlers.add(createFrontAppContext(serverClassLoader, sharedClassLoader));
         }
 
         HandlerCollection handlerCollection = new HandlerCollection();
-        handlerCollection.setHandlers(handlers.toArray(new Handler[handlers.size()]));
+        handlerCollection.setHandlers(handlers.toArray(new Handler[0]));
         server.setHandler(handlerCollection);
 
         return server;
     }
 
-
-    protected WebAppContext createAppContext(ClassLoader serverClassLoader, ClassLoader sharedClassLoader,
+    protected WebAppContext createAppContext(String name, ClassLoader serverClassLoader, ClassLoader sharedClassLoader,
                                              String appPathInJar, String contextPath) throws URISyntaxException {
-        ClassLoader appClassLoader = new URLClassLoader(pathsToURLs(serverClassLoader, getAppClassesPath(appPathInJar)), sharedClassLoader);
+        ClassLoader appClassLoader = new UberJarURLClassLoader(name,
+                pathsToURLs(serverClassLoader, getAppClassesPath(appPathInJar)), sharedClassLoader);
 
         WebAppContext appContext = new WebAppContext();
         appContext.setConfigurations(new Configuration[]{new WebXmlConfiguration(), createEnvConfiguration()});
@@ -185,9 +185,9 @@ public class CubaJettyServer {
         return appContext;
     }
 
-
     protected WebAppContext createFrontAppContext(ClassLoader serverClassLoader, ClassLoader sharedClassLoader) throws URISyntaxException {
-        ClassLoader frontClassLoader = new URLClassLoader(pathsToURLs(serverClassLoader, getAppClassesPath(FRONT_PATH_IN_JAR)), sharedClassLoader);
+        ClassLoader frontClassLoader = new UberJarURLClassLoader("Front",
+                pathsToURLs(serverClassLoader, getAppClassesPath(FRONT_PATH_IN_JAR)), sharedClassLoader);
 
         WebAppContext frontContext = new WebAppContext();
         frontContext.setConfigurations(new Configuration[]{new WebXmlConfiguration()});
