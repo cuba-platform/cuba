@@ -1,5 +1,5 @@
 language: java
-jdk: oraclejdk8
+jdk: openjdk8
 
 before_install:
   - git clone https://github.com/cuba-platform/cuba-gradle-plugin.git $TRAVIS_BUILD_DIR/../cuba-gradle-plugin
@@ -21,4 +21,4 @@ cache:
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+      - openjdk-8-jdk
