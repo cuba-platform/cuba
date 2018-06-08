@@ -62,7 +62,7 @@ public class DataContextFactory implements ApplicationContextAware {
         return new KeyValueCollectionContainerImpl();
     }
 
-    public <E extends Entity<K>, K> InstanceLoader<E, K> createInstanceLoader() {
+    public <E extends Entity> InstanceLoader<E> createInstanceLoader() {
         return new StandardInstanceLoader<>(applicationContext);
     }
 

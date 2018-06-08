@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,17 @@
 
 package com.haulmont.cuba.gui.model;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.View;
+import org.dom4j.Element;
 
-/**
- *
- */
-public interface InstanceLoader<E extends Entity> extends DataLoader {
+public interface ScreenData {
 
-    InstanceContainer<E> getContainer();
+    String NAME = "cuba_ScreenData";
 
-    void setContainer(InstanceContainer<E> container);
+    DataContext getDataContext();
 
-    Object getEntityId();
+    <T extends InstanceContainer> T getContainer(String id);
 
-    void setEntityId(Object entityId);
+    <T extends DataLoader> T getLoader(String id);
 
-    View getView();
-
-    void setView(View view);
-
-    void setView(String viewName);
+    void load(Element element);
 }

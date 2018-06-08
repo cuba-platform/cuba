@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContextFactory;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -50,11 +51,19 @@ public class DcScreen3 extends AbstractWindow {
     @Inject
     private ComponentsFactory componentsFactory;
 
+    private ScreenData screenData;
+
     private CollectionContainer<User> usersContainer;
     private CollectionContainer<UserRole> userRolesContainer;
 
     @Override
     public void init(Map<String, Object> params) {
+
+        usersContainer = screenData.getContainer("usersCont");
+
+        CollectionLoader<User> usersLoader = screenData.getLoader("usersLoader");
+
+
         Table<User> usersTable = componentsFactory.createComponent(Table.class);
         usersTable.setSizeFull();
         split.add(usersTable);

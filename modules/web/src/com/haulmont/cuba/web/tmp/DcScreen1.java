@@ -56,7 +56,7 @@ public class DcScreen1 extends AbstractWindow {
         textField3.setValueSource(new ContainerValueSource<>(container, "group.name"));
         textField4.setValueSource(new ContainerValueSource<>(container, "group.name"));
 
-        InstanceLoader<User, UUID> loader = dataContextFactory.createInstanceLoader();
+        InstanceLoader<User> loader = dataContextFactory.createInstanceLoader();
         loader.setContainer(container);
         loader.setEntityId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
         loader.setView("user.edit");

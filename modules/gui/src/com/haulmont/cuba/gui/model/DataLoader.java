@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.cuba.core.global.View;
+
 import javax.annotation.Nullable;
 
 /**
@@ -23,10 +25,18 @@ import javax.annotation.Nullable;
  */
 public interface DataLoader {
 
+    void load();
+
     @Nullable
     DataContext getDataContext();
 
     void setDataContext(DataContext dataContext);
 
-    void load();
+    String getQuery();
+
+    void setQuery(String query);
+
+    boolean isSoftDeletion();
+
+    void setSoftDeletion(boolean softDeletion);
 }

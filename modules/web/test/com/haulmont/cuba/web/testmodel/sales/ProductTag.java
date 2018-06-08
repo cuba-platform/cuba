@@ -19,26 +19,17 @@ package com.haulmont.cuba.web.testmodel.sales;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-@Entity(name = "test$Product")
-@Table(name = "TEST_PRODUCT")
+@Entity(name = "test$Producttag")
+@Table(name = "TEST_PRODUCT_TAG")
 @NamePattern("%s|name")
-public class Product extends StandardEntity {
+public class ProductTag extends StandardEntity {
 
     @Column(name = "NAME")
     private String name;
-
-    @Column(name = "PRICE")
-    private BigDecimal price;
-
-    @ManyToMany
-    @JoinTable(name = "PRODUCT_TAG_LINK",
-            joinColumns = @JoinColumn(name = "PRODUCT_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<ProductTag> tags;
 
     public String getName() {
         return name;
@@ -46,21 +37,5 @@ public class Product extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public List<ProductTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<ProductTag> tags) {
-        this.tags = tags;
     }
 }

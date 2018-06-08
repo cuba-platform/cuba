@@ -31,14 +31,15 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceLoader<T, K> {
+public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<E> {
 
     private final ApplicationContext applicationContext;
 
     private DataContext dataContext;
-    private InstanceContainer<T> container;
-    private K entityId;
-    private boolean softDeletion;
+    private InstanceContainer<E> container;
+    private String query;
+    private Object entityId;
+    private boolean softDeletion = true;
     private View view;
     private String viewName;
 
@@ -73,7 +74,7 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
             throw new IllegalStateException("entityId is null");
 
         @SuppressWarnings("unchecked")
-        LoadContext<T> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
+        LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
         loadContext.setId(entityId);
 
@@ -84,7 +85,7 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
             loadContext.setView(view);
         }
 
-        T entity = getDataManager().load(loadContext);
+        E entity = getDataManager().load(loadContext);
 
         if (dataContext != null) {
             entity = dataContext.merge(entity);
@@ -93,22 +94,32 @@ public class StandardInstanceLoader<T extends Entity<K>, K> implements InstanceL
     }
 
     @Override
-    public InstanceContainer<T> getContainer() {
+    public InstanceContainer<E> getContainer() {
         return container;
     }
 
     @Override
-    public void setContainer(InstanceContainer<T> container) {
+    public void setContainer(InstanceContainer<E> container) {
         this.container = container;
     }
 
     @Override
-    public K getEntityId() {
+    public String getQuery() {
+        return query;
+    }
+
+    @Override
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    @Override
+    public Object getEntityId() {
         return entityId;
     }
 
     @Override
-    public void setEntityId(K entityId) {
+    public void setEntityId(Object entityId) {
         this.entityId = entityId;
     }
 

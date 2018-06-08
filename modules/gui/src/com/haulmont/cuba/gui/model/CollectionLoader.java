@@ -28,17 +28,27 @@ public interface CollectionLoader<E extends Entity> extends DataLoader {
 
     void setContainer(CollectionContainer<E> container);
 
-    String getQuery();
+    /**
+     * The position of the first instance to load, numbered from 0.
+     * Returns 0 if {@link #setFirstResult(int)} was not called.
+     */
+    int getFirstResult();
 
-    void setQuery(String query);
+    /**
+     * Sets the position of the first instance to load, numbered from 0.
+     */
+    void setFirstResult(int firstResult);
 
+    /**
+     * The maximum number of instances to load.
+     * Returns {@code Integer.MAX_VALUE} if {@link #setMaxResults} was not called.
+     */
     int getMaxResults();
 
+    /**
+     * Sets the maximum number of instances to load.
+     */
     void setMaxResults(int maxResults);
-
-    boolean isSoftDeletion();
-
-    void setSoftDeletion(boolean softDeletion);
 
     boolean isCacheable();
 

@@ -1,0 +1,39 @@
+<data>
+    <collection id="usersCont"
+                class="com.haulmont.cuba.security.entity.User" view="user.browse">
+
+        <loader id="usersLoader"
+                firstResult="0" maxResults="100"
+                cacheable="false" softDeletion="true">
+            <query>
+                select u from sec$User u
+                where u.group = :{params.group}
+                order by u.name
+            </query>
+        </loader>
+    </collection>
+
+    <collection id="rolesCont"
+                class="com.haulmont.cuba.security.entity.Role" view="_base">
+
+        <loader id="rolesLoader">
+            <query>
+                select r from sec$Role r, sec$UserRole ur
+                where ur.role = r and ur.user = :{containers.usersCont}
+            </query>
+        </loader>
+    </collection>
+
+    <instance id="userCont"
+              class="com.haulmont.cuba.security.entity.User" view="user.edit">
+
+        <loader>
+            <query>
+                select u from sec$User u
+                where u.id = :{containers.usersCont}
+            </query>
+        </loader>
+
+        <collection id="substCont" property="substitutions"/>
+    </instance>
+</data>

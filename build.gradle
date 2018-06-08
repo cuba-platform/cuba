@@ -659,6 +659,9 @@ configure(webModule) {
         main {
             enabled = true
         }
+        test {
+            enabled = true
+        }
     }
 
     task enhanceTestModel(type: CubaTestEnhancing)

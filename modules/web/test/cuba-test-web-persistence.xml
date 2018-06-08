@@ -27,5 +27,6 @@
         <class>com.haulmont.cuba.web.testmodel.sales.Order</class>
         <class>com.haulmont.cuba.web.testmodel.sales.OrderLine</class>
         <class>com.haulmont.cuba.web.testmodel.sales.Product</class>
+        <class>com.haulmont.cuba.web.testmodel.sales.ProductTag</class>
     </persistence-unit>
 </persistence>

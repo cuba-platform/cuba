@@ -39,8 +39,9 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     private DataContext dataContext;
     private CollectionContainer<E> container;
     private String query;
-    private int maxResults;
-    private boolean softDeletion;
+    private int firstResult = 0;
+    private int maxResults = Integer.MAX_VALUE;
+    private boolean softDeletion = true;
     private boolean cacheable;
     private View view;
     private String viewName;
@@ -82,7 +83,9 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
 
         query.setCacheable(cacheable);
 
-        if (maxResults > 0)
+        if (firstResult > 0)
+            query.setFirstResult(firstResult);
+        if (maxResults < Integer.MAX_VALUE)
             query.setMaxResults(maxResults);
 
         loadContext.setSoftDeletion(softDeletion);
@@ -122,6 +125,16 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     @Override
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    @Override
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    @Override
+    public void setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
     }
 
     @Override

@@ -39,8 +39,9 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     private DataContext dataContext;
     private KeyValueCollectionContainer container;
     private String query;
-    private int maxResults;
-    private boolean softDeletion;
+    private int firstResult = 0;
+    private int maxResults = Integer.MAX_VALUE;
+    private boolean softDeletion = true;
 
     private String storeName = Stores.MAIN;
 
@@ -143,5 +144,15 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     @Override
     public void setStoreName(String name) {
         storeName = name != null ? name : Stores.MAIN;
+    }
+
+    @Override
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    @Override
+    public void setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
     }
 }

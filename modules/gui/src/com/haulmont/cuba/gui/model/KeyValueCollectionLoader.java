@@ -25,19 +25,29 @@ public interface KeyValueCollectionLoader extends DataLoader {
 
     void setContainer(KeyValueCollectionContainer container);
 
-    String getQuery();
-
-    void setQuery(String query);
-
-    int getMaxResults();
-
-    void setMaxResults(int maxResults);
-
-    boolean isSoftDeletion();
-
-    void setSoftDeletion(boolean softDeletion);
-
     String getStoreName();
 
     void setStoreName(String name);
+
+    /**
+     * The position of the first instance to load, numbered from 0.
+     * Returns 0 if {@link #setFirstResult(int)} was not called.
+     */
+    int getFirstResult();
+
+    /**
+     * Sets the position of the first instance to load, numbered from 0.
+     */
+    void setFirstResult(int firstResult);
+
+    /**
+     * The maximum number of instances to load.
+     * Returns {@code Integer.MAX_VALUE} if {@link #setMaxResults} was not called.
+     */
+    int getMaxResults();
+
+    /**
+     * Sets the maximum number of instances to load.
+     */
+    void setMaxResults(int maxResults);
 }
