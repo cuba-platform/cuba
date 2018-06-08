@@ -70,39 +70,41 @@ class EntitySnapshotApiTest extends Specification {
         }
     }
 
-    def "Get last added EntitySnapshot for the Entity"() {
+    def "Get last EntitySnapshot for the Entity"() {
+        Date date = new Date(100)
+
         when:
             // create first snapshot
             View viewRole = cont.metadata().getViewRepository().getView(Role.class, View.LOCAL)
-            snapshotApi.createSnapshot(role, viewRole)
+            def snapshot = snapshotApi.createSnapshot(role, viewRole) // used current date
 
             // change entity and create last snapshot
             role.setName('lastRole')
 
-            def secondSnapshot = snapshotApi.createSnapshot(role, viewRole)
+            snapshotApi.createSnapshot(role, viewRole, date)
         then:
-            // it should return last added snapshot
+            // it should return snapshot by the last date
             def lastSnapshot = snapshotApi.getLastEntitySnapshot(role)
-            secondSnapshot.getId() == lastSnapshot.getId()
+            snapshot.getId() == lastSnapshot.getId()
 
             def lastSnapshot1 = snapshotApi.getLastEntitySnapshot(role.getMetaClass(), role.getId())
-            secondSnapshot.getId() == lastSnapshot1.getId()
+            snapshot.getId() == lastSnapshot1.getId()
 
         // cases for non persistence entity
         when:
             def nonPersistRole = cont.metadata().create(Role)
             nonPersistRole.setName("nonPersistenceRole")
 
-            snapshotApi.createSnapshot(nonPersistRole, viewRole)
+            snapshotApi.createSnapshot(nonPersistRole, viewRole) // used current  date
 
             nonPersistRole.setName("changedNonPersistenceRole")
-            snapshotApi.createSnapshot(nonPersistRole, viewRole)
+            snapshotApi.createSnapshot(nonPersistRole, viewRole, date)
         then:
             def snapshot1 = snapshotApi.getLastEntitySnapshot(nonPersistRole)
-            snapshot1.getSnapshotXml().contains("changedNonPersistenceRole") == true
+            snapshot1.getSnapshotXml().contains("nonPersistenceRole") == true
 
             def snapshot2 = snapshotApi.getLastEntitySnapshot(nonPersistRole.getMetaClass(), nonPersistRole.getId())
-            snapshot2.getSnapshotXml().contains("changedNonPersistenceRole") == true
+            snapshot2.getSnapshotXml().contains("nonPersistenceRole") == true
     }
 
     def "Create non-persistent snapshot"() {

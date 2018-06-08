@@ -99,7 +99,7 @@ public interface EntitySnapshotService {
     void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping);
 
     /**
-     * Get the last added to the database snapshot for the given entity. This method always starts a new transaction.
+     * Get the last snapshot for the given entity. This method always starts a new transaction.
      * It can be used for entities with composite key if they implement {@link HasUuid} interface.
      *
      * @param entity entity
@@ -109,8 +109,7 @@ public interface EntitySnapshotService {
     EntitySnapshot getLastEntitySnapshot(Entity entity);
 
     /**
-     * Get the last added to the database snapshot for the given entity by id. This method always starts a new
-     * transaction.
+     * Get the last snapshot for the given entity by id. This method always starts a new transaction.
      *
      * @param metaClass   entity meta class
      * @param referenceId reference id for which snapshot refers

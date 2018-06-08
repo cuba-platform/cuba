@@ -322,7 +322,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
         LoadContext<EntitySnapshot> lx = LoadContext.create(EntitySnapshot.class).setQuery(LoadContext
                 .createQuery(format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
-                                + " e.entity.%s = :entityId order by e.createTs desc",
+                                + " e.entity.%s = :entityId order by e.snapshotDate desc",
                         referenceToEntitySupport.getReferenceIdPropertyName(metaClass)))
                 .setParameter("metaClass", metaClass.getName())
                 .setParameter("entityId", referenceToEntitySupport.getReferenceId(entity))
@@ -345,7 +345,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             EntityManager em = persistence.getEntityManager();
             TypedQuery<EntitySnapshot> query = em.createQuery(
                     format("select e from sys$EntitySnapshot e where e.entityMetaClass = :metaClass and"
-                                    + " e.entity.%s = :entityId order by e.createTs desc",
+                                    + " e.entity.%s = :entityId order by e.snapshotDate desc",
                             referenceToEntitySupport.getReferenceIdPropertyName(originalMetaClass)), EntitySnapshot.class)
                     .setParameter("metaClass", originalMetaClass.getName())
                     .setParameter("entityId", referenceId)
