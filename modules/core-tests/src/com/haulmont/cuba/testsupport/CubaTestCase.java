@@ -14,15 +14,14 @@
  * limitations under the License.
  *
  */
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.testsupport;
 
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.testsupport.TestContainer;
-import com.haulmont.cuba.testsupport.TestContext;
-import com.haulmont.cuba.testsupport.TestDataSource;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.StringUtils;
 
@@ -99,11 +98,11 @@ public abstract class CubaTestCase extends TestCase {
                 cont.setAppComponents(getTestAppComponents());
                 cont.setAppPropertiesFiles(getTestAppProperties());
                 cont.setSpringConfig(getTestSpringConfig());
-                ((CommonTestContainer) cont).before();
+                cont.before();
                 initialized = true;
             }
 
-            ((CommonTestContainer) cont).setupContext();
+            cont.setupContext();
 
             persistence = AppBeans.get(Persistence.class);
             metadata = AppBeans.get(Metadata.class);
