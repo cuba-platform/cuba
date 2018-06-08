@@ -115,6 +115,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="timeFieldResolution">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SEC"/>
+            <xs:enumeration value="MIN"/>
+            <xs:enumeration value="HOUR"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="tokenListType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="LOOKUP"/>
@@ -1476,6 +1484,7 @@
                 </xs:sequence>
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
                 <xs:attribute name="timeFormat" type="xs:string"/>
+                <xs:attribute name="resolution" type="timeFieldResolution"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

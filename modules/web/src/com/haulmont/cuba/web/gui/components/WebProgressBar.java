@@ -46,11 +46,6 @@ public class WebProgressBar extends WebAbstractViewComponent<com.vaadin.ui.Progr
     }
 
     @Override
-    protected Double convertToModel(Float componentRawValue) throws ConversionException {
-        return componentRawValue != null ? componentRawValue.doubleValue() : null;
-    }
-
-    @Override
     protected Float convertToPresentation(Double modelValue) throws ConversionException {
         return modelValue != null ? modelValue.floatValue() : DEFAULT_VALUE;
     }

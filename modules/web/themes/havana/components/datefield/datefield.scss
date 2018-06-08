@@ -20,7 +20,7 @@
     white-space: nowrap;
     outline: none;
 
-    .c-maskedfield {
+    .c-timefield {
       margin-left: 5px;
     }
   }
@@ -32,11 +32,11 @@
       display: table-row;
 
       .#{$primary-stylename},
-      .c-maskedfield {
+      .c-timefield {
         display: table-cell;
       }
 
-      .v-ie9 & .c-maskedfield {
+      .v-ie9 & .c-timefield {
         float: right;
       }
     }

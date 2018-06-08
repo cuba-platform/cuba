@@ -42,6 +42,7 @@
 @import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
+@import "components/timefield/timefield";
 @import "components/currencyfield/currencyfield";
 @import "components/datepicker/datepicker";
 @import "components/grouptable/grouptable";
@@ -166,6 +167,7 @@
   @include halo-cuba-fileupload-wrapper;
   @include halo-cuba-suggestionfield;
   @include halo-cuba-capslockindicator;
+  @include halo-cuba-timefield;
 
   @include cuba-log-control;
   @include cuba-login-window;

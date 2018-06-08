@@ -46,6 +46,7 @@
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
+@import "components/timefield/timefield";
 @import "components/treetable/treetable";
 @import "components/popupview/popupview";
 @import "components/fieldgroup/fieldgroup";
@@ -169,6 +170,7 @@
   @include havana-cuba-fileupload-wrapper;
   @include havana-cuba-image;
   @include havana-cuba-capslockindicator;
+  @include havana-cuba-timefield;
 
   @include cuba-login-window;
   @include cuba-menubar;

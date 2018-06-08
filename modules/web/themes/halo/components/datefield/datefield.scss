@@ -15,37 +15,39 @@
  *
  */
 
+$c-default-datefield-width: 120px;
+
 @mixin halo-datefield($primary-stylename : c-datefield) {
   .#{$primary-stylename}-layout {
     white-space: nowrap;
     outline: none;
 
-    .c-maskedfield {
+    .c-timefield {
       margin-left: $v-layout-spacing-horizontal/2;
     }
   }
 
-  .#{$primary-stylename}-composition.v-has-width {
-    display: inline-table !important;
+  .#{$primary-stylename}-layout.v-has-width {
+    display: inline-table;
 
-    .#{$primary-stylename}-layout {
-      display: table-row;
+    .#{$primary-stylename} {
+      width: 100%;
+    }
 
-      .#{$primary-stylename},
-      .c-maskedfield {
-        display: table-cell;
-      }
+    .#{$primary-stylename},
+    .c-timefield {
+      display: table-cell;
+    }
 
-      .v-ie9 & .c-maskedfield {
-        float: right;
-      }
+    .v-ie9 & .c-timefield {
+      float: right;
     }
   }
 
-  .#{$primary-stylename}-composition {
+  .#{$primary-stylename}-layout {
     &.borderless {
       .v-datefield,
-      .c-maskedfield,
+      .c-timefield,
       [class*="textfield"],
       [class*="button"] {
         @include valo-textfield-borderless-style;
@@ -54,7 +56,7 @@
 
     &.tiny {
       .v-datefield,
-      .c-maskedfield {
+      .c-timefield {
         @include valo-datefield-style($unit-size: $v-unit-size--tiny, $bevel: null, $shadow: null, $border: null, $background-color: null, $states: normal);
         font-size: $v-font-size--tiny;
       }
@@ -62,7 +64,7 @@
 
     &.small {
       .v-datefield,
-      .c-maskedfield {
+      .c-timefield {
         @include valo-datefield-style($unit-size: $v-unit-size--small, $bevel: null, $shadow: null, $border: null, $background-color: null, $states: normal);
         font-size: $v-font-size--small;
       }
@@ -95,7 +97,7 @@
   }
 
   .#{$primary-stylename}-composition-error {
-    .c-maskedfield,
+    .c-timefield,
     .v-datefield-textfield {
       @include valo-textfield-error-style;
     }
@@ -108,5 +110,15 @@
 
   .#{$primary-stylename} .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-focused {
     border-color: $v-focus-color;
+  }
+
+  .#{$primary-stylename}.v-datefield-day,
+  .#{$primary-stylename}.v-datefield-month,
+  .#{$primary-stylename}.v-datefield-year {
+    width: $c-default-datefield-width;
+  }
+
+  .#{$primary-stylename}.v-datefield-popup {
+    @include valo-datefield-popup-style;
   }
 }

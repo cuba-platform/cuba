@@ -18,9 +18,9 @@
 package com.haulmont.cuba.web.widgets.client.datefield;
 
 import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.v7.shared.ui.datefield.PopupDateFieldState;
+import com.vaadin.shared.ui.datefield.LocalDateFieldState;
 
-public class CubaDateFieldState extends PopupDateFieldState {
+public class CubaDateFieldState extends LocalDateFieldState {
     @NoLayout
     public String dateMask = "";
 }

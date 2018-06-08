@@ -59,8 +59,6 @@ public class CubaMaskedFieldWidget extends VTextField {
     protected boolean shiftPressed = false;
     protected int shiftPressPos = -1;
 
-    protected boolean isTimeMask = false;
-
     protected String valueBeforeEdit;
 
     public CubaMaskedFieldWidget() {
@@ -121,10 +119,6 @@ public class CubaMaskedFieldWidget extends VTextField {
         this.maskedMode = maskedMode;
     }
 
-    public void setTimeMask(boolean isTimeMask) {
-        this.isTimeMask = isTimeMask;
-    }
-
     public boolean isSendNullRepresentation() {
         return sendNullRepresentation;
     }
@@ -170,24 +164,22 @@ public class CubaMaskedFieldWidget extends VTextField {
         valueBuilder = maskValue(value);
         String text = valueBuilder.toString();
         if (text.equals(nullRepresentation) || valueBuilder.length() == 0) {
-            getElement().addClassName(EMPTY_FIELD_CLASS);
+            getElement().addClassName(getEmptyFieldClass());
         } else {
-            getElement().removeClassName(EMPTY_FIELD_CLASS);
+            getElement().removeClassName(getEmptyFieldClass());
         }
 
         super.setText(text);
     }
 
-    protected void valueChange(boolean blurred) {
+    protected String getEmptyFieldClass() {
+        return EMPTY_FIELD_CLASS;
+    }
+
+    public void valueChange(boolean blurred) {
         String newText = getValue();
 
         if (!newText.equals(valueBeforeEdit)) {
-            if (isTimeMask) {
-                newText = (newText.endsWith("__") && !newText.startsWith("__"))
-                        ? newText.replaceAll("__", "00")
-                        : newText;
-            }
-
             if (validateText(newText)) {
                 valueBeforeEdit = newText;
                 setValue(newText);
@@ -298,6 +290,13 @@ public class CubaMaskedFieldWidget extends VTextField {
         for (int i = 0; i < maskTest.size(); i++) {
             Mask mask = maskTest.get(i);
             if (mask != null) {
+                // If text.length() equals to current char index,
+                // this means that a text is shorter,
+                // but this doesn't mean that it's incorrect
+                if (text.length() <= i) {
+                    return true;
+                }
+
                 if (!mask.isValid(text.charAt(i))) {
                     return false;
                 }

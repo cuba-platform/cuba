@@ -21,7 +21,32 @@ import java.util.Date;
 public interface TimeField extends Field<Date>, Buffered, Component.Focusable {
     String NAME = "timeField";
 
+    enum Resolution {
+        SEC,
+        MIN,
+        HOUR
+    }
+
+    /**
+     * Return resolution of the TimeField.
+     *
+     * @return Resolution
+     */
+    Resolution getResolution();
+    /**
+     * Set resolution of the TimeField.
+     *
+     * @param resolution resolution
+     */
+    void setResolution(Resolution resolution);
+
+    @Deprecated
     boolean getShowSeconds();
+
+    /**
+     * @deprecated Use either {@link #setResolution(Resolution)} or {@link #setFormat(String)}
+     */
+    @Deprecated
     void setShowSeconds(boolean showSeconds);
 
     String getFormat();

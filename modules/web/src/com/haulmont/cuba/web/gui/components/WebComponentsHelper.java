@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -30,16 +31,17 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.*;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -352,26 +354,55 @@ public class WebComponentsHelper {
             return false;
     }
 
-    public static Resolution convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {
+    public static DateResolution convertDateResolution(DatePicker.Resolution resolution) {
+        switch (resolution) {
+            case YEAR:
+                return DateResolution.YEAR;
+            case MONTH:
+                return DateResolution.MONTH;
+            case DAY:
+            default:
+                return DateResolution.DAY;
+        }
+    }
+
+    public static DateResolution convertDateTimeResolution(DateField.Resolution resolution) {
+        switch (resolution) {
+            case YEAR:
+                return DateResolution.YEAR;
+            case MONTH:
+                return DateResolution.MONTH;
+            case DAY:
+            case HOUR:
+            case MIN:
+            case SEC:
+            default:
+                return DateResolution.DAY;
+        }
+    }
+
+    public static TimeResolution convertTimeResolution(TimeField.Resolution resolution) {
         switch (resolution) {
             case SEC:
-                return Resolution.SECOND;
-
+                return TimeResolution.SECOND;
             case HOUR:
-                return Resolution.HOUR;
-
-            case DAY:
-                return Resolution.DAY;
-
-            case MONTH:
-                return Resolution.MONTH;
-
-            case YEAR:
-                return Resolution.YEAR;
-
+                return TimeResolution.HOUR;
             case MIN:
             default:
-                return Resolution.MINUTE;
+                return TimeResolution.MINUTE;
+        }
+    }
+
+    public static TimeResolution convertTimeResolution(DateField.Resolution resolution) {
+        switch (resolution) {
+            case HOUR:
+                return TimeResolution.HOUR;
+            case MIN:
+                return TimeResolution.MINUTE;
+            case SEC:
+                return TimeResolution.SECOND;
+            default:
+                throw new IllegalArgumentException("Can't be converted to TimeResolution: " + resolution);
         }
     }
 

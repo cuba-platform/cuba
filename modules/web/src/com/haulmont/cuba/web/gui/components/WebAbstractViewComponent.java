@@ -105,11 +105,6 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
     protected abstract void setValueToPresentation(P value);
 
     @SuppressWarnings("unchecked")
-    protected V convertToModel(P componentRawValue) throws ConversionException {
-        return (V) componentRawValue;
-    }
-
-    @SuppressWarnings("unchecked")
     protected P convertToPresentation(V modelValue) throws ConversionException {
         return (P) modelValue;
     }

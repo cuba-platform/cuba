@@ -62,20 +62,7 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
         Preconditions.checkNotNullArgument(resolution);
 
         this.resolution = resolution;
-        DateResolution vResolution;
-        switch (resolution) {
-            case MONTH:
-                vResolution = com.vaadin.shared.ui.datefield.DateResolution.MONTH;
-                break;
-            case YEAR:
-                vResolution = com.vaadin.shared.ui.datefield.DateResolution.YEAR;
-                break;
-            case DAY:
-            default:
-                vResolution = com.vaadin.shared.ui.datefield.DateResolution.DAY;
-                break;
-        }
-
+        DateResolution vResolution = WebComponentsHelper.convertDateResolution(resolution);
         component.setResolution(vResolution);
     }
 
@@ -113,100 +100,6 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
             component.setValue(internalValue);
         } finally {
             updatingInstance = false;
-        }
-    }*/
-
-/*  todo
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null))
-            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
-
-        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null)))
-            return;
-
-        if (this.datasource != null) {
-            metaProperty = null;
-            metaPropertyPath = null;
-
-            component.setPropertyDataSource(null);
-
-            //noinspection unchecked
-            this.datasource.removeItemChangeListener(weakItemChangeListener);
-            weakItemChangeListener = null;
-
-            //noinspection unchecked
-            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
-            weakItemPropertyChangeListener = null;
-
-            this.datasource = null;
-
-            if (itemWrapper != null) {
-                itemWrapper.unsubscribe();
-            }
-
-            disableBeanValidator();
-        }
-
-        if (datasource != null) {
-            //noinspection unchecked
-            this.datasource = datasource;
-
-            MetaClass metaClass = datasource.getMetaClass();
-            resolveMetaPropertyPath(metaClass, property);
-
-            component.addValueChangeListener(event -> {
-                if (!checkRange(component.getValue())) {
-                    return;
-                }
-
-                updateInstance();
-            });
-
-            itemChangeListener = e -> {
-                if (updatingInstance) {
-                    return;
-                }
-                Date value = getEntityValue(e.getItem());
-                setValueToFields(value);
-                fireValueChanged(value);
-            };
-
-            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
-            //noinspection unchecked
-            datasource.addItemChangeListener(weakItemChangeListener);
-
-            itemPropertyChangeListener = e -> {
-                if (updatingInstance) {
-                    return;
-                }
-                if (e.getProperty().equals(metaPropertyPath.toString())) {
-                    setValueToFields((Date) e.getValue());
-                    fireValueChanged(e.getValue());
-                }
-            };
-
-            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
-            //noinspection unchecked
-            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
-
-            if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-                if (property.equals(metaPropertyPath.toString())) {
-                    Date value = getEntityValue(datasource.getItem());
-                    setValueToFields(value);
-                    fireValueChanged(value);
-                }
-            }
-
-            initRequired(metaPropertyPath);
-
-            if (metaProperty.isReadOnly()) {
-                setEditable(false);
-            }
-
-            initBeanValidator();
-            setDateRangeByProperty(metaProperty);
         }
     }*/
 
@@ -248,12 +141,12 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
 
     @Override
     protected LocalDate convertToPresentation(Date modelValue) throws ConversionException {
-        return DateTimeUtils.asLocalDate(modelValue);
+        return modelValue != null ? DateTimeUtils.asLocalDate(modelValue) : null;
     }
 
     @Override
     public Date getRangeStart() {
-        return DateTimeUtils.asDate(component.getRangeStart());
+        return component.getRangeStart() != null ? DateTimeUtils.asDate(component.getRangeStart()) : null;
     }
 
     @Override
@@ -263,7 +156,7 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
 
     @Override
     public Date getRangeEnd() {
-        return DateTimeUtils.asDate(component.getRangeEnd());
+        return component.getRangeEnd() != null ? DateTimeUtils.asDate(component.getRangeEnd()) : null;
     }
 
     @Override

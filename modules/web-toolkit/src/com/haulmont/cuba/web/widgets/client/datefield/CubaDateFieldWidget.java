@@ -21,7 +21,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedFieldWidget;
 import com.vaadin.client.ui.ShortcutActionHandler;
-import com.vaadin.v7.client.ui.VPopupCalendar;
+import com.vaadin.client.ui.VPopupCalendar;
 
 public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
@@ -54,8 +54,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         super.buildDate(forceValid);
         // Update valueBeforeEdit and send onChange
         // in case of selecting date using Calendar popup
-//        vaadin8
-//        getImpl().valueChange(false);
+        getImpl().valueChange(false);
     }
 
     @Override
@@ -63,10 +62,10 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         return (CubaMaskedFieldWidget) super.getImpl();
     }
 
-//    vaadin8
-    /*@Override
+    @Override
     protected CubaMaskedFieldWidget createImpl() {
-        CubaMaskedFieldWidget cubaMaskedFieldWidget = new CubaMaskedFieldWidget() {
+
+        return new CubaMaskedFieldWidget() {
 
             @Override
             protected boolean validateText(String text) {
@@ -90,7 +89,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
             @Override
             public void valueChange(boolean blurred) {
                 String newText = getText();
-                if (!prompting && newText != null
+                if (newText != null
                         && !newText.equals(valueBeforeEdit)) {
                     if (validateText(newText)) {
                         if (!newText.equals(nullRepresentation)) {
@@ -105,10 +104,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
                 }
             }
         };
-        cubaMaskedFieldWidget.setImmediate(isImmediate());
-
-        return cubaMaskedFieldWidget;
-    }*/
+    }
 
     @Override
     public void onBrowserEvent(Event event) {
@@ -131,7 +127,6 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
     }
 
     public void updateTextState() {
-//        vaadin8
-//        getImpl().updateTextState();
+        getImpl().updateTextState();
     }
 }

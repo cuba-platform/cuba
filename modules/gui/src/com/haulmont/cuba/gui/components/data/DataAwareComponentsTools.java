@@ -17,9 +17,13 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.HasRange;
 import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.collections4.MapUtils;
@@ -27,6 +31,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -46,6 +51,9 @@ public class DataAwareComponentsTools {
     protected UserSessionSource sessionSource;
 
     @Inject
+    protected MessageTools messageTools;
+
+    @Inject
     protected TimeSource timeSource;
 
     /**
@@ -58,7 +66,7 @@ public class DataAwareComponentsTools {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Map<String, Object> annotations = metaProperty.getAnnotations();
 
-        String caseConversionAnnotation = com.haulmont.cuba.core.entity.annotation.CaseConversion.class.getName();
+        String caseConversionAnnotation = CaseConversion.class.getName();
         //noinspection unchecked
         Map<String, Object> caseConversion = (Map<String, Object>) annotations.get(caseConversionAnnotation);
         if (MapUtils.isNotEmpty(caseConversion)) {
@@ -98,6 +106,7 @@ public class DataAwareComponentsTools {
     public void setupDateRange(HasRange component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
 
+        // FIXME: gg, replace with LocalDateTime?
         if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
             Date currentTimestamp = timeSource.currentTimestamp();
 
@@ -122,5 +131,24 @@ public class DataAwareComponentsTools {
 
             component.setRangeStart(calendar.getTime());
         }
+    }
+
+    // TODO: gg, extract to interfaces?
+    public void setupDateFormat(DateField component, EntityValueSource valueSource) {
+        MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
+
+        TemporalType tt = null;
+        if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
+            tt = TemporalType.DATE;
+        } else if (metaProperty.getAnnotations() != null) {
+            tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+        }
+
+        component.setResolution(tt == TemporalType.DATE
+                ? DateField.Resolution.DAY
+                : DateField.Resolution.MIN);
+
+        String formatStr = messageTools.getDefaultDateFormat(tt);
+        component.setDateFormat(formatStr);
     }
 }

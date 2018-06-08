@@ -16,120 +16,131 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.DateTimeUtils;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaDateField;
-import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
+import com.haulmont.cuba.web.widgets.CubaTimeField;
+import com.vaadin.data.HasValue;
+import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.Layout;
-import com.vaadin.v7.data.Property;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Consumer;
 
-public class WebDateField<V extends Date> extends WebAbstractField<CubaDateFieldWrapper, V> implements DateField<V> {
+public class WebDateField<V extends Date> extends WebAbstractViewComponent<Layout, LocalDateTime, V>
+        implements DateField<V>, InitializingBean {
+
+    protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
+    protected List<Validator> validators; // lazily initialized list
 
     protected Resolution resolution;
 
     protected boolean updatingInstance;
 
     protected CubaDateField dateField;
-    protected WebTimeField timeField;
-
-    protected Layout innerLayout;
+    protected CubaTimeField timeField;
 
     protected String dateTimeFormat;
+    // TODO: gg, why we have this?
     protected String dateFormat;
     protected String timeFormat;
 
     protected TimeZone timeZone;
 
-    protected UserSession userSession;
+    protected boolean editable = true;
 
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
-    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
-
-    protected Datasource.ItemChangeListener itemChangeListener;
-    protected WeakItemChangeListener weakItemChangeListener;
-
-    protected boolean buffered = false;
-    protected boolean updateTimeFieldResolution = false;
+    protected ThemeConstants theme;
 
     public WebDateField() {
-        innerLayout = new com.vaadin.ui.CssLayout();
-        innerLayout.setPrimaryStyleName("c-datefield-layout");
+        component = new com.vaadin.ui.CssLayout();
+        component.setPrimaryStyleName("c-datefield-layout");
+
+        if (App.isBound()) {
+            theme = App.getInstance().getThemeConstants();
+        }
 
         dateField = new CubaDateField();
-        dateField.setValidationVisible(false);
-        dateField.setInvalidAllowed(true);
+        timeField = new CubaTimeField();
 
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        userSession = sessionSource.getUserSession();
-
-        Locale locale = userSession.getLocale();
-        dateField.setDateFormat(Datatypes.getFormatStringsNN(locale).getDateFormat());
-        dateField.setResolution(com.vaadin.v7.shared.ui.datefield.Resolution.DAY);
-
-        timeField = new WebTimeField();
-
-        CubaMaskedTextField vTimeField = (CubaMaskedTextField) timeField.getComponent();
-//        vaadin8
-//        vTimeField.setInvalidAllowed(false);
-//        vTimeField.setInvalidCommitted(true);
+        setWidthAuto();
 
         dateField.addValueChangeListener(createDateValueChangeListener());
         timeField.addValueChangeListener(createTimeValueChangeListener());
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        UserSessionSource userSessionSource = applicationContext.getBean(UserSessionSource.class);
+        Locale locale = userSessionSource.getLocale();
+
+        dateField.setDateFormat(Datatypes.getFormatStringsNN(locale).getDateFormat());
+        dateField.setResolution(DateResolution.DAY);
+
+        timeField.setTimeFormat(Datatypes.getFormatStringsNN(locale).getTimeFormat());
+
         setResolution(Resolution.MIN);
-
-        component = new CubaDateFieldWrapper(this, innerLayout);
     }
 
-    protected Property.ValueChangeListener createDateValueChangeListener() {
-        return e -> {
-            if (!checkRange(constructDate())) {
+    protected HasValue.ValueChangeListener<LocalDate> createDateValueChangeListener() {
+        return event ->
+                componentValueChanged(event.isUserOriginated());
+    }
+
+    protected HasValue.ValueChangeListener<LocalTime> createTimeValueChangeListener() {
+        return event ->
+                componentValueChanged(event.isUserOriginated());
+    }
+
+    protected void componentValueChanged(boolean isUserOriginated) {
+        if (isUserOriginated) {
+            V value;
+
+            try {
+                value = constructModelValue();
+
+                if (!checkRange(value)) {
+                    return;
+                }
+
+                LocalDateTime presentationValue = convertToPresentation(value);
+                setValueToPresentation(presentationValue);
+            } catch (ConversionException ce) {
+                LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
+
+                setValidationError(ce.getLocalizedMessage());
                 return;
             }
 
-            updateInstance();
+            V oldValue = internalValue;
+            internalValue = value;
 
-            if (component != null) {
-                // Repaint error state
-                component.markAsDirty();
+            if (!fieldValueEquals(value, oldValue)) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
+                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
             }
-        };
-    }
-
-    protected ValueChangeListener createTimeValueChangeListener() {
-        return event -> {
-            if (!checkRange(constructDate())) {
-                return;
-            }
-            if (!updateTimeFieldResolution) {
-                updateInstance();
-            }
-        };
-    }
-
-    public CubaDateField getDateField() {
-        return dateField;
-    }
-
-    public WebTimeField getTimeField() {
-        return timeField;
+        }
     }
 
     @Override
@@ -140,28 +151,41 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
     @Override
     public void setResolution(Resolution resolution) {
         this.resolution = resolution;
-        __setResolution(resolution);
+        setResolutionInternal(resolution);
         updateLayout();
+    }
+
+    protected void setResolutionInternal(Resolution resolution) {
+        dateField.setResolution(WebComponentsHelper.convertDateTimeResolution(resolution));
+
+        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            timeField.setResolution(WebComponentsHelper.convertTimeResolution(resolution));
+        } else {
+            // Set time field value to zero in case of resolution without time.
+            // If we don't set value to zero then after changing resolution back to
+            // resolution with time, we will get some value in time field
+            timeField.setValue(null);
+        }
     }
 
     @Override
     public void setRangeStart(Date value) {
-        dateField.setRangeStart(value);
+        dateField.setRangeStart(DateTimeUtils.asLocalDate(value));
     }
 
     @Override
     public Date getRangeStart() {
-        return dateField.getRangeStart();
+        return dateField.getRangeStart() != null ? DateTimeUtils.asDate(dateField.getRangeStart()) : null;
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        dateField.setRangeEnd(value);
+        dateField.setRangeEnd(DateTimeUtils.asLocalDate(value));
     }
 
     @Override
     public Date getRangeEnd() {
-        return dateField.getRangeEnd();
+        return dateField.getRangeEnd() != null ? DateTimeUtils.asDate(dateField.getRangeEnd()) : null;
     }
 
     protected boolean checkRange(Date value) {
@@ -193,17 +217,7 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
                     Frame.NotificationType.TRAY);
         }
 
-        updatingInstance = true;
-        try {
-            dateField.setValue((Date) internalValue);
-            if (internalValue == null) {
-                timeField.setValue(null);
-            } else {
-                timeField.setValue(extractTime((Date) internalValue));
-            }
-        } finally {
-            updatingInstance = false;
-        }
+        setValueToPresentation(DateTimeUtils.asLocalDateTime(internalValue));
     }
 
     @Override
@@ -213,18 +227,19 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
 
     @Override
     public void setDateFormat(String dateFormat) {
+        Preconditions.checkNotNullArgument(dateFormat);
+
         dateTimeFormat = dateFormat;
+
         StringBuilder date = new StringBuilder(dateFormat);
         StringBuilder time = new StringBuilder(dateFormat);
         int timeStartPos = findTimeStartPos(dateFormat);
         if (timeStartPos >= 0) {
             time.delete(0, timeStartPos);
             date.delete(timeStartPos, dateFormat.length());
+
             timeFormat = StringUtils.trimToEmpty(time.toString());
-            timeField.setFormat(timeFormat);
-            setResolution(resolution);
-        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            setResolution(Resolution.DAY);
+            timeField.setTimeFormat(timeFormat);
         }
 
         this.dateFormat = StringUtils.trimToEmpty(date.toString());
@@ -241,27 +256,22 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         TimeZone prevTimeZone = this.timeZone;
         Date value = getValue();
         this.timeZone = timeZone;
-        dateField.setTimeZone(timeZone);
+        dateField.setZoneId(timeZone.toZoneId());
         if (value != null && !Objects.equals(prevTimeZone, timeZone)) {
-            setValueToFields(value);
+            setValueToPresentation(DateTimeUtils.asLocalDateTime(value));
         }
     }
 
-    public void updateLayout() {
-        innerLayout.removeAllComponents();
-        innerLayout.addComponent(dateField);
+    protected void updateLayout() {
+        component.removeAllComponents();
+        component.addComponent(dateField);
 
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            innerLayout.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
-            innerLayout.addStyleName("c-datefield-withtime");
+            component.addComponent(timeField);
+            component.addStyleName("c-datefield-withtime");
         } else {
-            innerLayout.removeStyleName("c-datefield-withtime");
+            component.removeStyleName("c-datefield-withtime");
         }
-    }
-
-    @Override
-    protected void attachListener(CubaDateFieldWrapper component) {
-        // do nothing
     }
 
     protected int findTimeStartPos(String dateTimeFormat) {
@@ -277,38 +287,60 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         return positions.isEmpty() ? -1 : Collections.min(positions);
     }
 
-    protected void __setResolution(Resolution resolution) {
-        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            timeField.setResolution(resolution);
-            // while changing resolution, timeField loses its value, so we need to set it again
-            updateTimeFieldResolution = true;
-            Date value = dateField.getValue();
+    @Override
+    protected void setValueToPresentation(LocalDateTime value) {
+        updatingInstance = true;
+        try {
             if (value == null) {
+                dateField.setValue(null);
                 timeField.setValue(null);
             } else {
-                timeField.setValue(extractTime(value));
+                dateField.setValue(value.toLocalDate());
+                timeField.setValue(value.toLocalTime());
             }
-            updateTimeFieldResolution = false;
-        } else {
-            dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
+        } finally {
+            updatingInstance = false;
         }
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public V getValue() {
-        return (V) constructDate();
+    protected V constructModelValue() {
+        LocalDate dateFieldValue = dateField.getValue();
+        if (dateFieldValue == null) {
+            return null;
+        }
+
+        LocalTime timeValue = timeField.getValue() != null
+                ? timeField.getValue()
+                : LocalTime.MIDNIGHT;
+        LocalDateTime resultDateTime = LocalDateTime.of(dateFieldValue, timeValue);
+
+        Date resultDate = DateTimeUtils.asDate(resultDateTime);
+
+        ValueSource<V> valueSource = getValueSource();
+        if (valueSource instanceof EntityValueSource) {
+            MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+            if (metaProperty != null) {
+                Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+                if (javaClass.equals(java.sql.Date.class)) {
+                    return (V) new java.sql.Date(resultDate.getTime());
+                }
+            }
+        }
+
+        return (V) resultDate;
     }
 
     @Override
-    public void setValue(V value) {
-        setValueToFields((Date) value);
-        updateInstance();
+    protected LocalDateTime convertToPresentation(V modelValue) throws ConversionException {
+        return modelValue != null ? DateTimeUtils.asLocalDateTime(modelValue) : null;
     }
 
     @Override
     public void commit() {
-        if (updatingInstance) {
+        // VAADIN8: gg, implement
+        /*if (updatingInstance) {
             return;
         }
 
@@ -327,49 +359,42 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         }
 
         Object newValue = getValue();
-        fireValueChanged(newValue);
+        fireValueChanged(newValue);*/
+//        super.commit();
     }
 
     @Override
     public void discard() {
-        if (getDatasource() != null && getDatasource().getItem() != null) {
+        // VAADIN8: gg, implement
+        /*if (getDatasource() != null && getDatasource().getItem() != null) {
             Date value = getEntityValue(getDatasource().getItem());
             setValueToFields(value);
             fireValueChanged(value);
-        }
+        }*/
     }
 
     @Override
     public boolean isBuffered() {
-        return buffered;
+        // VAADIN8: gg, implement
+        return false;
     }
 
     @Override
     public void setBuffered(boolean buffered) {
-        this.buffered = buffered;
+        // VAADIN8: gg, implement
+//        this.buffered = buffered;
     }
 
     @Override
     public boolean isModified() {
-        return dateField.isModified();
+        // VAADIN8: gg, implement
+//        return dateField.isModified();
+        return false;
     }
 
     protected void setModified(boolean modified) {
-        dateField.setModified(modified);
-    }
-
-    protected void setValueToFields(Date value) {
-        updatingInstance = true;
-        try {
-            dateField.setValueIgnoreReadOnly(value);
-            if (value == null) {
-                timeField.setValue(null);
-            } else {
-                timeField.setValue(extractTime(value));
-            }
-        } finally {
-            updatingInstance = false;
-        }
+        // VAADIN8: gg,
+//        dateField.setModified(modified);
     }
 
     @Override
@@ -393,275 +418,49 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
         }
     }
 
-    protected boolean isHourUsed() {
-        return resolution != null && resolution.ordinal() <= Resolution.HOUR.ordinal();
-    }
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
 
-    protected boolean isMinUsed() {
-        return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
-    }
+        if (valueSource instanceof EntityValueSource) {
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-    protected void updateInstance() {
-        if (updatingInstance) {
-            return;
+            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
+            dataAwareComponentsTools.setupDateFormat(this, entityValueSource);
         }
-
-        updatingInstance = true;
-        try {
-            if (getDatasource() != null && getMetaPropertyPath() != null) {
-                Date value = constructDate();
-
-                if (!isBuffered()) {
-                    if (getDatasource().getItem() != null) {
-                        InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
-                        setModified(false);
-                    }
-                } else {
-                    setModified(true);
-                }
-            }
-        } finally {
-            updatingInstance = false;
-        }
-
-        Object newValue = getValue();
-        fireValueChanged(newValue);
-    }
-
-    // todo vaadin8
-    /*@Override
-    public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null))
-            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
-
-        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null)))
-            return;
-
-        if (this.datasource != null) {
-            metaProperty = null;
-            metaPropertyPath = null;
-
-            component.setPropertyDataSource(null);
-
-            //noinspection unchecked
-            this.datasource.removeItemChangeListener(weakItemChangeListener);
-            weakItemChangeListener = null;
-
-            //noinspection unchecked
-            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
-            weakItemPropertyChangeListener = null;
-
-            this.datasource = null;
-
-            if (itemWrapper != null) {
-                itemWrapper.unsubscribe();
-            }
-
-            timeZone = null;
-
-            disableBeanValidator();
-        }
-
-        if (datasource != null) {
-            //noinspection unchecked
-            this.datasource = datasource;
-
-            MetaClass metaClass = datasource.getMetaClass();
-            resolveMetaPropertyPath(metaClass, property);
-
-            if (metaProperty.getRange().isDatatype()
-                    && metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)
-                    && timeZone == null) {
-                MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-                Boolean ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(metaProperty, IgnoreUserTimeZone.class);
-                if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
-                    timeZone = userSession.getTimeZone();
-                    dateField.setTimeZone(timeZone);
-                }
-            }
-
-            itemChangeListener = e -> {
-                if (updatingInstance) {
-                    return;
-                }
-                Date value = getEntityValue(e.getItem());
-                setValueToFields(value);
-                fireValueChanged(value);
-            };
-            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
-            //noinspection unchecked
-            datasource.addItemChangeListener(weakItemChangeListener);
-
-            itemPropertyChangeListener = e -> {
-                if (updatingInstance) {
-                    return;
-                }
-                if (!isBuffered() && e.getProperty().equals(metaPropertyPath.toString())) {
-                    setValueToFields((Date) e.getValue());
-                    fireValueChanged(e.getValue());
-                }
-            };
-
-            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
-            //noinspection unchecked
-            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
-
-            if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-                if (property.equals(metaPropertyPath.toString())) {
-                    Date value = getEntityValue(datasource.getItem());
-                    setValueToFields(value);
-                    fireValueChanged(value);
-                }
-            }
-
-            initRequired(metaPropertyPath);
-            initDateFormat(metaProperty);
-
-            if (metaProperty.isReadOnly()) {
-                setEditable(false);
-            }
-
-            initBeanValidator();
-            setDateRangeByProperty(metaProperty);
-        }
-    }*/
-
-    protected void initDateFormat(MetaProperty metaProperty) {
-        TemporalType tt = null;
-        if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
-            tt = TemporalType.DATE;
-        } else if (metaProperty.getAnnotations() != null) {
-            tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-        }
-
-        setResolution(tt == TemporalType.DATE
-                ? DateField.Resolution.DAY
-                : Resolution.MIN);
-
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        String formatStr = messageTools.getDefaultDateFormat(tt);
-        setDateFormat(formatStr);
-    }
-
-    protected void setDateRangeByProperty(MetaProperty metaProperty) {
-        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-            Date currentTimestamp = timeSource.currentTimestamp();
-
-            Calendar calendar = Calendar.getInstance(userSession.getLocale());
-            calendar.setTime(currentTimestamp);
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
-
-            setRangeEnd(calendar.getTime());
-        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-            Date currentTimestamp = timeSource.currentTimestamp();
-
-            Calendar calendar = Calendar.getInstance(userSession.getLocale());
-            calendar.setTime(currentTimestamp);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
-                calendar.add(Calendar.DATE, 1);
-            }
-
-            setRangeStart(calendar.getTime());
-        }
-    }
-
-    protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, getMetaPropertyPath().getPath());
-    }
-
-    protected void fireValueChanged(Object value) {
-        Object oldValue = internalValue;
-
-        if (!Objects.equals(oldValue, value)) {
-            internalValue = (V) value;
-
-            if (hasValidationError()) {
-                setValidationError(null);
-            }
-
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
-        }
-    }
-
-    protected Date constructDate() {
-        final Date datePickerDate = dateField.getValue();
-        if (datePickerDate == null) {
-            return null;
-        }
-
-        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
-        if (timeZone != null) {
-            dateCalendar.setTimeZone(timeZone);
-        }
-        dateCalendar.setTime(datePickerDate);
-        if (timeField.getValue() == null) {
-            dateCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            dateCalendar.set(Calendar.MINUTE, 0);
-            dateCalendar.set(Calendar.SECOND, 0);
-        } else {
-            Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
-            timeCalendar.setTime(timeField.<Date>getValue());
-
-            dateCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
-            dateCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
-            dateCalendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
-        }
-
-        Date resultDate = dateCalendar.getTime();
-
-        if (getMetaProperty() != null) {
-            Class javaClass = getMetaProperty().getRange().asDatatype().getJavaClass();
-            if (javaClass.equals(java.sql.Date.class)) {
-                return new java.sql.Date(resultDate.getTime());
-            } else if (javaClass.equals(Time.class)) {
-                return new Time(resultDate.getTime());
-            } else {
-                return resultDate;
-            }
-        } else {
-            return resultDate;
-        }
-    }
-
-    protected Date extractTime(Date date) {
-        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
-        if (timeZone != null) {
-            dateCalendar.setTimeZone(timeZone);
-        }
-        dateCalendar.setTime(date);
-
-        Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
-        timeCalendar.setTimeInMillis(0);
-
-        timeCalendar.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
-        timeCalendar.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
-        timeCalendar.set(Calendar.SECOND, dateCalendar.get(Calendar.SECOND));
-
-        return timeCalendar.getTime();
     }
 
     @Override
-    protected void setEditableToComponent(boolean editable) {
-        timeField.setEditable(editable);
-        dateField.setReadOnly(!editable);
+    public boolean isEditable() {
+        return editable;
+    }
 
-        component.setCompositionReadOnly(!editable);
+    @Override
+    public void setEditable(boolean editable) {
+        if (this.editable == editable) {
+            return;
+        }
+
+        this.editable = editable;
+
+        boolean parentEditable = true;
+        if (parent instanceof ChildEditableController) {
+            parentEditable = ((ChildEditableController) parent).isEditable();
+        }
+        boolean finalEditable = parentEditable && editable;
+
+        setEditableToComponent(finalEditable);
+    }
+
+    protected void setEditableToComponent(boolean editable) {
+        timeField.setReadOnly(!editable);
+        dateField.setReadOnly(!editable);
     }
 
     @Override
     public void focus() {
-        component.focus();
+        dateField.focus();
     }
 
     @Override
@@ -673,5 +472,133 @@ public class WebDateField<V extends Date> extends WebAbstractField<CubaDateField
     public void setTabIndex(int tabIndex) {
         dateField.setTabIndex(tabIndex);
         timeField.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public boolean isRequired() {
+        return dateField.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        dateField.setRequiredIndicatorVisible(required);
+        timeField.setRequiredIndicatorVisible(required);
+    }
+
+    @Override
+    public String getRequiredMessage() {
+        // VAADIN8: gg, implement
+        return "";
+    }
+
+    @Override
+    public void setRequiredMessage(String msg) {
+        // VAADIN8: gg, implement
+    }
+
+    @Override
+    public void addValidator(Validator validator) {
+        if (validators == null) {
+            validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
+        }
+        if (!validators.contains(validator)) {
+            validators.add(validator);
+        }
+    }
+
+    @Override
+    public void removeValidator(Validator validator) {
+        if (validators != null) {
+            validators.remove(validator);
+        }
+    }
+
+    @Override
+    public Collection<Validator> getValidators() {
+        if (validators == null) {
+            return Collections.emptyList();
+        }
+
+        return Collections.unmodifiableCollection(validators);
+    }
+
+    @Override
+    public boolean isValid() {
+        try {
+            validate();
+            return true;
+        } catch (ValidationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        if (hasValidationError()) {
+            setValidationError(null);
+        }
+
+        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
+            return;
+        }
+
+        if (isEmpty()) {
+            if (isRequired()) {
+                throw new RequiredValueMissingException(getRequiredMessage(), this);
+            } else {
+                // vaadin8 rework this PL-10701
+                return;
+            }
+        }
+
+        V value = getValue();
+        triggerValidators(value);
+    }
+
+    protected void triggerValidators(V value) throws ValidationFailedException {
+        if (validators != null) {
+            try {
+                for (Validator validator : validators) {
+                    validator.validate(value);
+                }
+            } catch (ValidationException e) {
+                setValidationError(e.getDetailsMessage());
+
+                throw new ValidationFailedException(e.getDetailsMessage(), this, e);
+            }
+        }
+    }
+
+    @Override
+    public String getContextHelpText() {
+        // VAADIN8: gg, implement
+        return null;
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        // VAADIN8: gg, implement
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        // VAADIN8: gg, implement
+        return false;
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        // VAADIN8: gg, implement
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        // VAADIN8: gg, implement
+        return null;
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        // VAADIN8: gg, implement
     }
 }

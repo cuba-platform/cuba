@@ -33,6 +33,12 @@ public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
     public void loadComponent() {
         super.loadComponent();
 
+        final String resolution = element.attributeValue("resolution");
+        if (StringUtils.isNotEmpty(resolution)) {
+            TimeField.Resolution res = TimeField.Resolution.valueOf(resolution);
+            resultComponent.setResolution(res);
+        }
+
         String timeFormat = element.attributeValue("timeFormat");
         if (StringUtils.isNotEmpty(timeFormat)) {
             timeFormat = loadResourceString(timeFormat);

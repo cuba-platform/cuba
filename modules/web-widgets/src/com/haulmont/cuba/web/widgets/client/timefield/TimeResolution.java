@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,24 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.widgets.client.textfield;
+package com.haulmont.cuba.web.widgets.client.timefield;
 
-import com.vaadin.shared.annotations.NoLayout;
-
-public class CubaMaskedTextFieldState extends CubaTextFieldState {
-    {
-        primaryStyleName = "c-maskedfield";
-    }
-
-    @NoLayout
-    public String mask = "";
-
-    @NoLayout
-    public boolean maskedMode = false;
-
-    @NoLayout
-    public boolean sendNullRepresentation = true;
+public enum TimeResolution {
+    SECOND,
+    MINUTE,
+    HOUR
 }

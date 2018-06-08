@@ -113,6 +113,10 @@ public class DateTimeUtils {
      * @return the local date-time, not null
      */
     public static LocalDateTime asLocalDateTime(Date date, ZoneId zoneId) {
+        if (date instanceof java.sql.Date) {
+            LocalDate localDate = ((java.sql.Date) date).toLocalDate();
+            return LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+        }
         return date.toInstant().atZone(zoneId).toLocalDateTime();
     }
 
@@ -213,13 +217,45 @@ public class DateTimeUtils {
     }
 
     /**
-     * Returns a date with zero time.
+     * Returns a date without time.
      *
      * @param date the date object, not null
      * @return the date, not null
      */
-    public static Date getDateWithoutTime(Date date) {
-        return asDate(asLocalDate(date));
+    public static Date extractDate(Date date) {
+        return extractDate(date, getDefaultTimeZone());
+    }
+
+    /**
+     * Returns a date without time.
+     *
+     * @param date   the date object, not null
+     * @param zoneId the time zone id, not null
+     * @return the date, not null
+     */
+    public static Date extractDate(Date date, ZoneId zoneId) {
+        return asDate(asLocalDate(date, zoneId), zoneId);
+    }
+
+    /**
+     * Returns a date with "zero" date.
+     *
+     * @param date the date object, not null
+     * @return the date, not null
+     */
+    public static Date extractTime(Date date) {
+        return extractTime(date, getDefaultTimeZone());
+    }
+
+    /**
+     * Returns a date with "zero" date.
+     *
+     * @param date   the date object, not null
+     * @param zoneId the time zone id, not null
+     * @return the date, not null
+     */
+    public static Date extractTime(Date date, ZoneId zoneId) {
+        return asDate(asLocalTime(date, zoneId), zoneId);
     }
 
     /**
