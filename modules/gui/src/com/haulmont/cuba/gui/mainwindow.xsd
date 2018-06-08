@@ -18,46 +18,19 @@
 
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/mainwindow.xsd"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:cuba="http://schemas.haulmont.com/cuba/window.xsd"
            xmlns="http://schemas.haulmont.com/cuba/mainwindow.xsd"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
-
-    <xs:simpleType name="align">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="TOP_RIGHT"/>
-            <xs:enumeration value="TOP_LEFT"/>
-            <xs:enumeration value="TOP_CENTER"/>
-            <xs:enumeration value="MIDDLE_RIGHT"/>
-            <xs:enumeration value="MIDDLE_LEFT"/>
-            <xs:enumeration value="MIDDLE_CENTER"/>
-            <xs:enumeration value="BOTTOM_RIGHT"/>
-            <xs:enumeration value="BOTTOM_LEFT"/>
-            <xs:enumeration value="BOTTOM_CENTER"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="componentSize">
-        <xs:union>
-            <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-            </xs:simpleType>
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="AUTO"/>
-                    <xs:enumeration value="100%"/>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:union>
-    </xs:simpleType>
 
     <xs:complexType name="baseMainElement">
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="icon" type="xs:string"/>
         <xs:attribute name="caption" type="xs:string"/>
         <xs:attribute name="description" type="xs:string"/>
-        <xs:attribute name="width" type="componentSize"/>
-        <xs:attribute name="height" type="componentSize"/>
-        <xs:attribute name="align" type="align"/>
+        <xs:attribute name="width" type="cuba:componentSize"/>
+        <xs:attribute name="height" type="cuba:componentSize"/>
+        <xs:attribute name="align" type="cuba:align"/>
         <xs:attribute name="stylename" type="xs:string"/>
         <xs:attribute name="enable" type="xs:boolean"/>
         <xs:attribute name="visible" type="xs:boolean"/>
