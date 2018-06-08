@@ -24,9 +24,11 @@ import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.Expectations;
+import org.junit.Ignore;
 
 import java.util.Locale;
 
+@Ignore
 public class WebDateFieldTest extends DateFieldTest {
 
     @Mocked

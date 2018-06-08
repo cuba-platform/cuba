@@ -29,11 +29,13 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.GridLayout;
 import mockit.Mocked;
 import mockit.Expectations;
+import org.junit.Ignore;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+@Ignore
 public class WebFieldGroupTest extends FieldGroupTest {
     @Mocked
     protected VaadinSession vaadinSession;
