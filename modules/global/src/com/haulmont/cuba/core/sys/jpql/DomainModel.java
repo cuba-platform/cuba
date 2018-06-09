@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -31,10 +32,12 @@ import java.util.stream.Collectors;
 public class DomainModel {
     protected Map<String, JpqlEntityModel> entities = new HashMap<>();
     protected ExtendedEntities extendedEntities;
+    protected Metadata metadata;
 
-    public DomainModel(ExtendedEntities extendedEntities, JpqlEntityModel... initialEntities) {
+    public DomainModel(ExtendedEntities extendedEntities, Metadata metadata, JpqlEntityModel... initialEntities) {
         this(initialEntities);
         this.extendedEntities = extendedEntities;
+        this.metadata = metadata;
     }
 
     public DomainModel(JpqlEntityModel... initialEntities) {
@@ -59,6 +62,9 @@ public class DomainModel {
 
     public JpqlEntityModel getEntityByName(String requiredEntityName) throws UnknownEntityNameException {
         if (extendedEntities != null) {
+            if (metadata.getSession().getClass(requiredEntityName) == null) {
+                throw new UnknownEntityNameException(requiredEntityName);
+            }
             MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(requiredEntityName);
             requiredEntityName = effectiveMetaClass.getName();
         }

@@ -56,7 +56,7 @@ public class DomainModelBuilder {
 
     public DomainModel produce() {
         Collection<MetaClass> classes = metadata.getSession().getClasses();
-        DomainModel result = new DomainModel(extendedEntities);
+        DomainModel result = new DomainModel(extendedEntities, metadata);
 
         EntityBuilder builder = new EntityBuilder();
         for (MetaClass aClass : classes) {
