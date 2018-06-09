@@ -1017,6 +1017,7 @@
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="format" type="xs:string"/>
         <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="useUserTimezone" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="validatorType" mixed="true">

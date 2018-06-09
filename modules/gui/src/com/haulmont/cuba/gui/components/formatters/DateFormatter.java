@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -85,6 +86,17 @@ public class DateFormatter implements Formatter<Date> {
                 format = messages.getMainMessage(format.substring(6, format.length()));
             }
             DateFormat df = new SimpleDateFormat(format);
+
+            if (Boolean.parseBoolean(element.attributeValue("useUserTimezone"))) {
+                UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                if (userSessionSource.checkCurrentUserSession()) {
+                    UserSession userSession = userSessionSource.getUserSession();
+                    if (userSession.getTimeZone() != null) {
+                        df.setTimeZone(userSession.getTimeZone());
+                    }
+                }
+            }
+
             return df.format(value);
         }
     }
