@@ -302,6 +302,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
         com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
 
+        tab.setCaption(name);
+
         if (getDebugId() != null) {
             this.component.setTestId(tabControl,
                     AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
