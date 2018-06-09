@@ -1368,7 +1368,7 @@
                 <xs:attribute name="resizableDirection" type="resizableDirection"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
-                <xs:attribute name="wordwrap" type="xs:boolean"/>
+                <xs:attribute name="wordWrap" type="xs:boolean"/>
                 <xs:attribute name="textChangeEventMode" type="textChangeEventMode"/>
                 <xs:attribute name="textChangeTimeout" type="xs:int"/>
             </xs:extension>

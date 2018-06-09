@@ -49,15 +49,23 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
             resultComponent.setRows(Integer.parseInt(rows));
         }
 
-        String wordwrap = element.attributeValue("wordwrap");
-        if (StringUtils.isNotEmpty(wordwrap)) {
-            resultComponent.setWordwrap(Boolean.parseBoolean(wordwrap));
-        }
+        loadWordWrap();
 
         String datatypeAttribute = element.attributeValue("datatype");
         if (StringUtils.isNotEmpty(datatypeAttribute)) {
             Datatype datatype = Datatypes.get(datatypeAttribute);
             resultComponent.setDatatype(datatype);
+        }
+    }
+
+    protected void loadWordWrap() {
+        String wordWrap = element.attributeValue("wordwrap");
+        if (wordWrap == null || wordWrap.isEmpty()) {
+            wordWrap = element.attributeValue("wordWrap");
+        }
+
+        if (StringUtils.isNotEmpty(wordWrap)) {
+            resultComponent.setWordWrap(Boolean.parseBoolean(wordWrap));
         }
     }
 }

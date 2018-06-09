@@ -152,13 +152,13 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     }
 
     @Override
-    public boolean isWordwrap() {
+    public boolean isWordWrap() {
         return component.isWordWrap();
     }
 
     @Override
-    public void setWordwrap(boolean wordwrap) {
-        component.setWordWrap(wordwrap);
+    public void setWordWrap(boolean wordWrap) {
+        component.setWordWrap(wordWrap);
     }
 
     @Override

@@ -181,13 +181,13 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     }
 
     @Override
-    public boolean isWordwrap() {
+    public boolean isWordWrap() {
         return impl.getLineWrap();
     }
 
     @Override
-    public void setWordwrap(boolean wordwrap) {
-        impl.setLineWrap(wordwrap);
+    public void setWordWrap(boolean wordWrap) {
+        impl.setLineWrap(wordWrap);
     }
 
     @Override

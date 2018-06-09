@@ -35,8 +35,17 @@ public interface TextArea<V> extends TextInputField<V>,
     int getColumns();
     void setColumns(int columns);
 
-    boolean isWordwrap();
-    void setWordwrap(boolean wordwrap);
+    /**
+     * @return whether word wrapping is enabled or not
+     */
+    boolean isWordWrap();
+
+    /**
+     * Sets whether word wrapping is enabled or not.
+     *
+     * @param wordWrap wordWrap
+     */
+    void setWordWrap(boolean wordWrap);
 
     Datatype<V> getDatatype();
     void setDatatype(Datatype<V> datatype);
