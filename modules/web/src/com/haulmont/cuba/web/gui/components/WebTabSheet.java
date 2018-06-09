@@ -440,8 +440,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             return null;
         }
 
-        final String name = tabMapping.get(component).getName();
-        return tabs.get(name);
+        ComponentDescriptor tabDescriptor = tabMapping.get(component);
+        if (tabDescriptor == null) {
+            return null;
+        }
+
+        return tabs.get(tabDescriptor.getName());
     }
 
     @Override
