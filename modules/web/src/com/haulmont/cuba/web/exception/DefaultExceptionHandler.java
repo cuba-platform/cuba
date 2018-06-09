@@ -36,6 +36,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean handle(ErrorEvent event, App app) {
         // Copied from com.vaadin.server.DefaultErrorHandler.doDefault()
@@ -45,6 +46,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         //noinspection ThrowableResultOfMethodCallIgnored
         if (t instanceof SocketException
                 || ExceptionUtils.getRootCause(t) instanceof SocketException) {
+            // Most likely client browser closed socket
+            return true;
+        }
+
+        // if it is UberJar or deployed to Jetty
+        if (ExceptionUtils.getThrowableList(t).stream()
+                .anyMatch(o -> o.getClass().getName().equals("org.eclipse.jetty.io.EofException"))) {
             // Most likely client browser closed socket
             return true;
         }
