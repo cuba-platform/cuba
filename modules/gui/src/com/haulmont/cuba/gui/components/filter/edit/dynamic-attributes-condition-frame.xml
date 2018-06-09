@@ -41,7 +41,7 @@
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="mainMsg://filter.conditionFrame.defaultValue" align="MIDDLE_LEFT"/>
-                    <hbox id="defaultValueLayout" width="100%"/>
+                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT" width="100%"/>
                 </row>
                 <row>
                     <label id="categoryLabel" value="mainMsg://filter.dynamicAttributesConditionFrame.category" align="MIDDLE_LEFT"/>
