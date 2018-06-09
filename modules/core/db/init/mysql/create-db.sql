@@ -986,14 +986,14 @@ values ('608859871b61424794c7dff348347f93', current_timestamp, 0, 'admin', 'admi
 'Administrator', '0fa2b1a51d684d699fbddff348347f93', 1)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
-values ('a405db59e6744f638afe269dda788fe8', now(), 0, 'system', 'system', null,
-'System', '0fa2b1a51d684d699fbddff348347f93', true)^
+values ('a405db59e6744f638afe269dda788fe8', now(), 0, 'anonymous', 'anonymous', null,
+'Anonymous', '0fa2b1a51d684d699fbddff348347f93', true)^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061b26f4de2a5bedff348347f93', current_timestamp, 0, 'Administrators', 10)^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
-values ('cd541dd4eeb7cd5b847ed32236552fa9', current_timestamp, 0, 'System', 30)^
+values ('cd541dd4eeb7cd5b847ed32236552fa9', current_timestamp, 0, 'Anonymous', 30)^
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a96d04ef4a7c0dff348347f93', current_timestamp, 0, '608859871b61424794c7dff348347f93', '0c018061b26f4de2a5bedff348347f93')^
