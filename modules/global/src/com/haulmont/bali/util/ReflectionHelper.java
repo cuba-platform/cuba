@@ -114,7 +114,10 @@ public final class ReflectionHelper {
             try {
                 method = c.getMethod(name, paramTypes);
             } catch (NoSuchMethodException e1) {
-                //
+                Class superclass = c.getSuperclass();
+                if (superclass != null) {
+                    method = findMethod(superclass, name, params);
+                }
             }
         }
         if (method != null)
