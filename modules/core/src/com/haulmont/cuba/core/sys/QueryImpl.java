@@ -242,10 +242,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (rebuildParser) {
             parser = queryTransformerFactory.parser(result);
         }
-        String nestedEntityName = parser.getEntityNameIfSecondaryReturnedInsteadOfMain();
-        String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
+        String nestedEntityName = parser.getOriginalEntityName();
+        String nestedEntityPath = parser.getOriginalEntityPath();
         if (nestedEntityName != null) {
-            if (parser.isCollectionSecondaryEntitySelect()) {
+            if (parser.isCollectionOriginalEntitySelect()) {
                 throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
             QueryTransformer transformer = queryTransformerFactory.transformer(result);

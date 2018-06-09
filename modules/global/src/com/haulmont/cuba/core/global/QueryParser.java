@@ -64,7 +64,7 @@ public interface QueryParser {
      * Example: select g from sec$User u join u.group g -&gt; sec$Group
      */
     @Nullable
-    String getEntityNameIfSecondaryReturnedInsteadOfMain();
+    String getOriginalEntityName();
 
     /**
      * @return Entity path if not main entity name is returned, otherwise null
@@ -72,14 +72,14 @@ public interface QueryParser {
      * Example: select g from sec$User u join u.group g -&gt; g
      */
     @Nullable
-    String getEntityPathIfSecondaryReturnedInsteadOfMain();
+    String getOriginalEntityPath();
 
     /**
      * @return true if not main entity selected and it's path with collection
      * Example: select u.group from sec$User u -&gt; false
      * Example: select u.userRoles from sec$User u -&gt; true
      */
-    boolean isCollectionSecondaryEntitySelect();
+    boolean isCollectionOriginalEntitySelect();
 
     boolean isParameterInCondition(String parameterName);
 

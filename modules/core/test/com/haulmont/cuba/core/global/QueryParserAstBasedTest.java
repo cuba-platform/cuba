@@ -265,74 +265,74 @@ public class QueryParserAstBasedTest {
         QueryParserAstBased parser = new QueryParserAstBased(model,
                 "select h.group from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
         );
-        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("h.group", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$Group", parser.getOriginalEntityName());
+        assertEquals("h.group", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select g.group from sec$GroupHierarchy h join h.group g"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select g from sec$GroupHierarchy h join fetch h.group g"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
         );
-        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("h.parent.other", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$GroupHierarchy", parser.getOriginalEntityName());
+        assertEquals("h.parent.other", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select h.parent.other.group from sec$GroupHierarchy h where h.userGroup = :par"
         );
-        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("h.parent.other.group", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$Group", parser.getOriginalEntityName());
+        assertEquals("h.parent.other.group", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select g from sec$GroupHierarchy h join h.group g where h.userGroup = :par"
         );
-        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("g", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$Group", parser.getOriginalEntityName());
+        assertEquals("g", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select p from sec$GroupHierarchy h join h.parent p g where h.userGroup = :par"
         );
-        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("p", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$GroupHierarchy", parser.getOriginalEntityName());
+        assertEquals("p", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select h.parent.other.createdBy from sec$GroupHierarchy h where h.userGroup = :par"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select c from sec$GroupHierarchy h, sec$Constraint c where h.userGroup = :par"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select c.group from sec$GroupHierarchy h, sec$Constraint c where h.userGroup = :par"
         );
-        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertEquals("c.group", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertEquals("sec$GroupHierarchy", parser.getOriginalEntityName());
+        assertEquals("c.group", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select u.group, u.login from sec$User u where u.name like :mask"
         );
-        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
-        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getOriginalEntityName());
+        assertNull(parser.getOriginalEntityPath());
     }
 
     @Test
