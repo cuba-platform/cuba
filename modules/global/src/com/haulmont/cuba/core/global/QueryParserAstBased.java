@@ -167,13 +167,13 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
-    public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+    public String getOriginalEntityName() {
         EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
         return entityNameAndAlias != null ? entityNameAndAlias.entityName : null;
     }
 
     @Override
-    public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
+    public String getOriginalEntityPath() {
         EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
         return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
     }
@@ -191,7 +191,7 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
-    public boolean isCollectionSecondaryEntitySelect() {
+    public boolean isCollectionOriginalEntitySelect() {
         EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
         return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
     }

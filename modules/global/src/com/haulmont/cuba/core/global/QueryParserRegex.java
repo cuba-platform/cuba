@@ -151,17 +151,17 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
-    public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+    public String getOriginalEntityName() {
         return null;
     }
 
     @Override
-    public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
+    public String getOriginalEntityPath() {
         return null;
     }
 
     @Override
-    public boolean isCollectionSecondaryEntitySelect() {
+    public boolean isCollectionOriginalEntitySelect() {
         return false;
     }
 
