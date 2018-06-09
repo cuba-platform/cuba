@@ -2249,7 +2249,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public void actionPerform(Component component) {
             WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
-            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG);
+            Map<String, Object> params = ParamsMap.of(
+                    "existingNames",
+                    filterEntities.stream()
+                            .map(FilterEntity::getName)
+                            .collect(Collectors.toList())
+            );
+
+            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     String filterName = window.getFilterName();
