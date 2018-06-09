@@ -245,7 +245,7 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.anonymousLogin")
     @Source(type = SourceType.DATABASE)
-    @Default("anonymous")
+    @Default("system")
     String getAnonymousLogin();
 
     /**
