@@ -58,6 +58,11 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     /**
+     * If true and table is aggregatable will export aggregation row to excel document.
+     */
+    protected boolean exportAggregation = true;
+
+    /**
      * Creates an action with default id.
      * @param target    component containing this action
      */
@@ -212,6 +217,8 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
      */
     protected void export(ExportMode exportMode) {
         ExcelExporter exporter = new ExcelExporter();
+        exporter.setExportAggregation(exportAggregation);
+
         if (listComponent instanceof Table) {
             Table<Entity> table = (Table<Entity>) listComponent;
             exporter.exportTable(table, table.getNotCollapsedColumns(), false, display, null, fileName, exportMode);
@@ -241,5 +248,13 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
     @Override
     public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
         beforeActionPerformedHandler = handler;
+    }
+
+    public boolean isExportAggregation() {
+        return exportAggregation;
+    }
+
+    public void setExportAggregation(boolean exportAggregation) {
+        this.exportAggregation = exportAggregation;
     }
 }
