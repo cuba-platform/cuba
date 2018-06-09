@@ -26,7 +26,10 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
@@ -626,6 +629,10 @@ public class ExcelExporter {
                 DataGrid.ColumnGeneratorEvent event =
                         new DataGrid.ColumnGeneratorEvent(dataGrid, instance, column.getId());
                 cellValue = generator.getValue(event);
+
+                if (cellValue == null && Boolean.class.equals(generator.getType())) {
+                    cellValue = false;
+                }
             }
 
             formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
@@ -646,8 +653,17 @@ public class ExcelExporter {
 
     protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
                                    int sizersIndex, int notificationRequired, int level, @Nullable Integer groupChildCount) {
+
         if (cellValue == null) {
-            return;
+            if (metaPropertyPath != null
+                    && metaPropertyPath.getRange().isDatatype()) {
+                Class javaClass = metaPropertyPath.getRange().asDatatype().getJavaClass();
+                if (Boolean.class.equals(javaClass)) {
+                    cellValue = false;
+                }
+            } else {
+                return;
+            }
         }
 
         String childCountValue = "";
