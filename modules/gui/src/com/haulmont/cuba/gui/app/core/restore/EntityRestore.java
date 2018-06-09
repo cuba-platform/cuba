@@ -135,11 +135,14 @@ public class EntityRestore extends AbstractWindow {
 
                     metaProperties.add(metaProperty);
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
+                    String propertyCaption = getPropertyCaption(metaClass, metaProperty);
                     if (!metadataTools.isSystem(metaProperty)) {
-                        column.setCaption(getPropertyCaption(metaClass, metaProperty));
+                        column.setCaption(propertyCaption);
                         nonSystemPropertyColumns.add(column);
                     } else {
                         column.setCaption(metaProperty.getName());
+                        String description = String.format("%s (%s)", metaProperty.getName(), propertyCaption);
+                        column.setDescription(description);
                         systemPropertyColumns.add(column);
                     }
 
