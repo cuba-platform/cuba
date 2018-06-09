@@ -2393,11 +2393,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public void setClickListener(String columnId, CellClickListener clickListener) {
+    public void setClickListener(String columnId, CellClickListener<? super E> clickListener) {
         component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
-            ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
-            Entity entity = wrapper.getItem();
-            clickListener.onClick(entity, columnId1.toString());
+//            TableItemWrapper wrapper = (TableItemWrapper) component.getItem(itemId);
+//            Object itemId2 = wrapper.getItemId();
+            TableSource<E> tableSource = getTableSource();
+            if (tableSource == null) {
+                return;
+            }
+
+            E item = tableSource.getItem(itemId);
+            clickListener.onClick(item, columnId1.toString());
         });
     }
 

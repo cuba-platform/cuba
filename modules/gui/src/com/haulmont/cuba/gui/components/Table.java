@@ -456,7 +456,7 @@ public interface Table<E extends Entity>
      * @param columnId id of column
      * @param clickListener click listener
      */
-    void setClickListener(String columnId, CellClickListener clickListener);
+    void setClickListener(String columnId, CellClickListener<? super E> clickListener);
 
     /**
      * Remove click listener.
@@ -468,12 +468,12 @@ public interface Table<E extends Entity>
     /**
      * Lightweight click listener for table cells.
      */
-    interface CellClickListener {
+    interface CellClickListener<T extends Entity> {
         /**
          * @param item row item
          * @param columnId id of column
          */
-        void onClick(Entity item, String columnId);
+        void onClick(T item, String columnId);
     }
 
     /**

@@ -2210,7 +2210,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setClickListener(String columnId, CellClickListener clickListener) {
+    public void setClickListener(String columnId, CellClickListener<? super E> clickListener) {
     }
 
     @Override
