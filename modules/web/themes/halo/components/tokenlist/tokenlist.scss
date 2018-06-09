@@ -41,7 +41,7 @@
     }
   }
 
-  .#{$primary-stylename}.v-disabled .#{$primary-stylename}-label-close{
+  .#{$primary-stylename}.v-disabled .#{$primary-stylename}-label-content {
     @include opacity($v-disabled-opacity);
   }
 
