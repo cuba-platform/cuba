@@ -30,10 +30,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.security.user.browse.UserRemoveAction;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
@@ -78,7 +75,10 @@ public class GroupBrowser extends AbstractWindow {
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
     @Inject
-    private CollectionDatasource<Constraint, UUID> constraintsDs;
+    protected CollectionDatasource<Constraint, UUID> constraintsDs;
+
+    @Inject
+    protected CollectionDatasource<SessionAttribute, UUID> attributesDs;
 
     @Inject
     protected Tree<Group> groupsTree;
@@ -122,41 +122,128 @@ public class GroupBrowser extends AbstractWindow {
     protected GroupPropertyCreateAction attributeCreateAction;
     protected GroupPropertyCreateAction constraintCreateAction;
     protected GroupPropertyCreateAction userCreateAction;
+    @Inject
+    private DataManager dataManager;
 
     public interface Companion {
-        void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree, Consumer<UserGroupChangedEvent> userGroupChangedHandler);
+        void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
+                             Consumer<UserGroupChangedEvent> userGroupChangedHandler);
     }
 
     @Override
-    public void init(final Map<String, Object> params) {
-        CreateAction createAction = new CreateAction(groupsTree);
-        createAction.setAfterCommitHandler(entity -> {
-            groupsTree.expandTree();
+    public void init(Map<String, Object> params) {
+        super.init(params);
+
+        initUsersTableActions();
+
+        initGroupTreeActions();
+
+        initLazyTabs();
+
+        initGroupsImport();
+
+        initDragAndDrop();
+    }
+
+    protected void initGroupsImport() {
+        importUpload.addFileUploadSucceedListener(event -> {
+            File file = fileUploadingAPI.getFile(importUpload.getFileId());
+            if (file == null) {
+                String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
+                throw new RuntimeException(errorMsg);
+            }
+            importGroups(file);
         });
+    }
+
+    protected void initLazyTabs() {
+        tabsheet.addSelectedTabChangeListener(event -> {
+            if ("constraintsTab".equals(event.getSelectedTab().getName())) {
+                initConstraintsTab();
+            } else if ("attributesTab".equals(event.getSelectedTab().getName())) {
+                initAttributesTab();
+            }
+        });
+    }
+
+    protected void initDragAndDrop() {
+        Companion companion = getCompanion();
+        if (companion != null) {
+            companion.initDragAndDrop(usersTable, groupsTree, (event) -> {
+                if (event.getUsers().size() == 1) {
+                    if (moveSelectedUsersToGroup(event)) {
+                        showNotification(formatMessage("userMovedToGroup",
+                                event.getUsers().get(0).getLogin(), event.getGroup().getName()));
+                    }
+                } else {
+                    showOptionDialog(
+                            messages.getMainMessage("dialogs.Confirmation"),
+                            formatMessage("dialogs.moveToGroup.message", event.getGroup().getName(), event.getUsers().size()),
+                            MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new DialogAction(Type.OK).withHandler(dialogEvent -> {
+                                        if (moveSelectedUsersToGroup(event)) {
+                                            showNotification(formatMessage("usersMovedToGroup", event.getGroup().getName()));
+                                        }
+                                    }),
+                                    new DialogAction(Type.CANCEL, Action.Status.PRIMARY)
+                            }
+                    );
+                }
+            });
+        }
+    }
+
+    protected void initUsersTableActions() {
+        userCreateAction = new GroupPropertyCreateAction(usersTable);
+        userCreateAction.setAfterCommitHandler(entity ->
+                usersTable.getDatasource().refresh()
+        );
+        usersTable.addAction(userCreateAction);
+
+        usersTable.addAction(new UserRemoveAction(usersTable, userManagementService));
+
+        Action moveToGroupAction = new ItemTrackingAction("moveToGroup")
+                .withIcon("icons/move.png")
+                .withCaption(getMessage("moveToGroup"))
+                .withHandler(event -> {
+                    Set<User> selected = usersTable.getSelected();
+                    if (!selected.isEmpty()) {
+                        moveUsersToGroup(selected);
+                    }
+                });
+
+        moveToGroupAction.setEnabled(security.isEntityOpPermitted(User.class, EntityOp.UPDATE));
+
+        usersTable.addAction(moveToGroupAction);
+    }
+
+    protected void initGroupTreeActions() {
+        CreateAction createAction = new CreateAction(groupsTree);
+        createAction.setAfterCommitHandler(entity ->
+                groupsTree.expandTree()
+        );
         groupsTree.addAction(createAction);
         createAction.setCaption(getMessage("action.create"));
 
         createAction.setOpenType(OpenType.DIALOG);
 
         EditAction groupEditAction = new EditAction(groupsTree);
-        groupEditAction.setAfterCommitHandler(entity -> {
-            groupsTree.expandTree();
-        });
+        groupEditAction.setAfterCommitHandler(entity ->
+                groupsTree.expandTree()
+        );
         groupEditAction.setOpenType(OpenType.DIALOG);
         groupsTree.addAction(groupEditAction);
 
         groupCreateButton.addAction(createAction);
         groupCreateButton.addAction(groupCopyAction);
 
-        userCreateAction = new GroupPropertyCreateAction(usersTable);
-        userCreateAction.setAfterCommitHandler(entity -> {
-            usersTable.getDatasource().refresh();
-        });
-
         groupsTree.addAction(new RemoveAction(groupsTree) {
             @Override
             protected boolean isApplicable() {
-                if (target != null && target.getDatasource() != null && target.getSingleSelected() != null) {
+                if (target != null
+                        && target.getDatasource() != null
+                        && target.getSingleSelected() != null) {
                     @SuppressWarnings("unchecked")
                     HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) target.getDatasource();
                     UUID selectedItemId = (UUID) target.getSingleSelected().getId();
@@ -166,62 +253,8 @@ public class GroupBrowser extends AbstractWindow {
                 return false;
             }
         });
-        usersTable.addAction(userCreateAction);
 
-        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService);
-        usersTable.addAction(removeAction);
-
-        Action moveToGroupAction = new ItemTrackingAction("moveToGroup")
-                .withIcon("icons/move.png")
-                .withCaption(getMessage("moveToGroup"))
-                .withHandler(event -> {
-                    Set<User> selected = usersTable.getSelected();
-                    if (!selected.isEmpty()) {
-                        Map<String, Object> lookupParams = ParamsMap.of("exclude", groupsTree.getSelected().iterator().next(),
-                                "excludeChildren", false);
-
-                        Lookup lookupWindow = openLookup(Group.class, items -> {
-                            if (items.size() == 1) {
-                                Group group = (Group) items.iterator().next();
-                                List<UUID> usersForModify = new ArrayList<>();
-                                for (User user : selected) {
-                                    usersForModify.add(user.getId());
-                                }
-                                userManagementService.moveUsersToGroup(usersForModify, group.getId());
-
-                                if (selected.size() == 1) {
-                                    User user = selected.iterator().next();
-                                    showNotification(formatMessage("userMovedToGroup", user.getLogin(), group.getName()));
-                                } else {
-                                    showNotification(formatMessage("usersMovedToGroup", group.getName()));
-                                }
-
-                                usersTable.getDatasource().refresh();
-                            }
-                        }, OpenType.DIALOG, lookupParams);
-
-                        lookupWindow.addCloseListener(actionId -> {
-                            usersTable.focus();
-                        });
-                    }
-                });
-
-        MetaClass userMetaClass = metadata.getSession().getClass(User.class);
-        moveToGroupAction.setEnabled(security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE));
-
-        usersTable.addAction(moveToGroupAction);
-
-        tabsheet.addListener(newTab -> {
-            if ("constraintsTab".equals(newTab.getName())) {
-                initConstraintsTab();
-            } else if ("attributesTab".equals(newTab.getName())) {
-                initAttributesTab();
-            }
-        });
-
-        final boolean hasPermissionsToCreateGroup =
-                security.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
-                        EntityOp.CREATE);
+        final boolean hasPermissionsToCreateGroup = security.isEntityOpPermitted(Group.class, EntityOp.CREATE);
 
         // enable actions if group is selected
         groupsDs.addItemChangeListener(e -> {
@@ -251,70 +284,73 @@ public class GroupBrowser extends AbstractWindow {
 
         groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
         groupCopyAction.setEnabled(hasPermissionsToCreateGroup);
+    }
 
-        importUpload.addFileUploadSucceedListener(event -> {
-            File file = fileUploadingAPI.getFile(importUpload.getFileId());
-            if (file == null) {
-                String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
-                throw new RuntimeException(errorMsg);
-            }
-            byte[] fileBytes;
-            try (InputStream is = new FileInputStream(file)) {
-                fileBytes = IOUtils.toByteArray(is);
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to import file", e);
-            }
+    protected void importGroups(File file) {
+        byte[] fileBytes;
+        try (InputStream is = new FileInputStream(file)) {
+            fileBytes = IOUtils.toByteArray(is);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to import file", e);
+        }
 
-            try {
-                fileUploadingAPI.deleteFile(importUpload.getFileId());
-            } catch (FileStorageException e) {
-                log.error("Unable to delete temp file", e);
-            }
+        try {
+            fileUploadingAPI.deleteFile(importUpload.getFileId());
+        } catch (FileStorageException e) {
+            log.warn("Unable to delete temp file", e);
+        }
 
-            try {
-                Collection<Entity> importedEntities;
-                if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
-                    importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createGroupsImportView());
-                } else {
-                    importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createGroupsImportView());
-                }
-                long importedGroupsCount = importedEntities.stream().filter(entity -> entity instanceof Group).count();
-                showNotification(importedGroupsCount + " groups imported", NotificationType.HUMANIZED);
-                groupsDs.refresh();
-            } catch (Exception e) {
-                showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
+        try {
+            Collection<Entity> importedEntities;
+            if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
+                importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createGroupsImportView());
+            } else {
+                importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createGroupsImportView());
             }
-        });
-
-        Companion companion = getCompanion();
-        if (companion != null) {
-            companion.initDragAndDrop(usersTable, groupsTree, (event) -> {
-                if (event.getUsers().size() == 1) {
-                    if (moveSelectedUsersToGroup(event)) {
-                        showNotification(formatMessage("userMovedToGroup",
-                                event.getUsers().get(0).getLogin(), event.getGroup().getName()));
-                    }
-                } else {
-                    showOptionDialog(
-                            messages.getMainMessage("dialogs.Confirmation"),
-                            formatMessage("dialogs.moveToGroup.message", event.getGroup().getName(), event.getUsers().size()),
-                            MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new DialogAction(Type.OK).withHandler(dialogEvent -> {
-                                        if (moveSelectedUsersToGroup(event)) {
-                                            showNotification(formatMessage("usersMovedToGroup", event.getGroup().getName()));
-                                        }
-                                    }),
-                                    new DialogAction(Type.CANCEL, Action.Status.PRIMARY)
-                            }
-                    );
-                }
-            });
+            long importedGroupsCount = importedEntities.stream()
+                    .filter(entity -> entity instanceof Group)
+                    .count();
+            showNotification(importedGroupsCount + " groups imported", NotificationType.HUMANIZED);
+            groupsDs.refresh();
+        } catch (Exception e) {
+            showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
+            log.error("Groups import failed", e);
         }
     }
 
+    protected void moveUsersToGroup(Set<User> selected) {
+        Map<String, Object> lookupParams = ParamsMap.of(
+                "exclude", groupsTree.getSelected().iterator().next(),
+                "excludeChildren", false);
+
+        Lookup lookupWindow = openLookup(Group.class, items -> {
+            if (items.size() == 1) {
+                Group group = (Group) items.iterator().next();
+                List<UUID> usersForModify = new ArrayList<>();
+                for (User user : selected) {
+                    usersForModify.add(user.getId());
+                }
+                userManagementService.moveUsersToGroup(usersForModify, group.getId());
+
+                if (selected.size() == 1) {
+                    User user = selected.iterator().next();
+                    showNotification(formatMessage("userMovedToGroup", user.getLogin(), group.getName()));
+                } else {
+                    showNotification(formatMessage("usersMovedToGroup", group.getName()));
+                }
+
+                usersTable.getDatasource().refresh();
+            }
+        }, OpenType.DIALOG, lookupParams);
+
+        lookupWindow.addCloseListener(actionId ->
+                usersTable.requestFocus()
+        );
+    }
+
     protected boolean moveSelectedUsersToGroup(UserGroupChangedEvent event) {
-        List<UUID> userIds = event.getUsers().stream().map(BaseUuidEntity::getId)
+        List<UUID> userIds = event.getUsers().stream()
+                .map(BaseUuidEntity::getId)
                 .collect(Collectors.toList());
 
         if (userManagementService.moveUsersToGroup(userIds, event.getGroup().getId()) != 0) {
@@ -394,8 +430,45 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
+        constraintsDs.refresh();
+
+        BaseAction moveToGroupAction = new ItemTrackingAction("moveToGroup")
+                .withCaption(getMessage("actions.constraint.moveToGroup"))
+                .withIcon("icons/move.png")
+                .withHandler(e ->
+                        moveConstraintToGroup(constraintsTable.getSingleSelected())
+                );
+        if (!security.isEntityAttrUpdatePermitted(metadata.getClass(Constraint.class), "group")) {
+            moveToGroupAction.setEnabled(false);
+        }
+        constraintsTable.addAction(moveToGroupAction);
+
         constraintsTabInitialized = true;
-        constraintsTable.refresh();
+    }
+
+    protected void moveConstraintToGroup(Constraint constraint) {
+        Map<String, Object> lookupParams = ParamsMap.of(
+                "exclude", groupsTree.getSelected().iterator().next(),
+                "excludeChildren", false);
+
+        Lookup lookupWindow = openLookup(Group.class, items -> {
+            if (items.isEmpty()) {
+                return;
+            }
+            Group group = (Group) items.iterator().next();
+
+            constraint.setGroup(group);
+
+            dataManager.commit(constraint);
+
+            constraintsDs.refresh();
+
+            showNotification(formatMessage("notification.constraintMovedToGroup", group.getName()));
+        }, OpenType.DIALOG, lookupParams);
+
+        lookupWindow.addCloseListener(actionId ->
+                getComponentNN("constraintsTable").requestFocus()
+        );
     }
 
     protected void initAttributesTab() {
@@ -408,7 +481,7 @@ public class GroupBrowser extends AbstractWindow {
         attributesTable.addAction(attributeCreateAction);
 
         attributesTabInitialized = true;
-        attributesTable.refresh();
+        attributesDs.refresh();
     }
 
     protected class ConstraintLocalizationEditAction extends ItemTrackingAction {
@@ -491,9 +564,7 @@ public class GroupBrowser extends AbstractWindow {
     protected void export(ExportFormat exportFormat) {
         Set<Group> selected = groupsTree.getSelected();
         View view = viewRepository.getView(Group.class, "group.export");
-        if (view == null) {
-            throw new DevelopmentException("View 'group.export' for sec$Group was not found");
-        }
+
         if (!selected.isEmpty()) {
             try {
                 if (exportFormat == ExportFormat.ZIP) {
