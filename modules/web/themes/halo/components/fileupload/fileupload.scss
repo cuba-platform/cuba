@@ -64,6 +64,11 @@
     height: 100%;
 
     @include box-defaults;
+
+    // hide caret of input
+    .v-ie & {
+      -ms-user-select: none;
+    }
   }
 
   .#{$primary-stylename}.v-disabled input {

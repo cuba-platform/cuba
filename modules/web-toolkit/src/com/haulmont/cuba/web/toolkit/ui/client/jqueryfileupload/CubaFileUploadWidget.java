@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VButton;
@@ -76,7 +77,9 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
 
         Element inputElement = Document.get().createFileInputElement();
         inputElement.setAttribute("name", "files[]");
-        inputElement.setAttribute("title", " ");
+        if (!BrowserInfo.get().isIE() && !BrowserInfo.get().isEdge()) {
+            inputElement.setAttribute("title", " ");
+        }
         listenToFocusEvents(inputElement);
 
         getElement().appendChild(inputElement);
