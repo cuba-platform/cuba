@@ -18,6 +18,9 @@
 package com.haulmont.bali.util;
 
 import org.junit.Test;
+import org.springframework.util.Assert;
+
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -40,10 +43,26 @@ public class ReflectionHelperTest {
         }
     }
 
+    @Test
+    public void testFindMethod() throws Exception {
+        Method method = ReflectionHelper.findMethod(MyParamExt.class, "parentPrivateMethod");
+        assertNotNull(method);
+
+        method = ReflectionHelper.findMethod(MyParamExt.class, "privateMethod");
+        assertNotNull(method);
+
+        method = ReflectionHelper.findMethod(MyParamExt.class, "noSuchMethod");
+        Assert.isNull(method, "Should be null");
+    }
+
     public static class MyParam {
+        private void parentPrivateMethod() {
+        }
     }
 
     public static class MyParamExt extends MyParam {
+        private void privateMethod() {
+        }
     }
 
     public static class MyObject {
