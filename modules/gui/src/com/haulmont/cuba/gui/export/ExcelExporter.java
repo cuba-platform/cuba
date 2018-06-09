@@ -88,6 +88,8 @@ public class ExcelExporter {
 
     protected String falseStr;
 
+    protected boolean exportAggregation = true;
+
     protected final Messages messages;
 
     protected final UserSessionSource userSessionSource;
@@ -220,12 +222,14 @@ public class ExcelExporter {
                 createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
+            if (table.isAggregatable() && exportAggregation) {
+                if(table.getAggregationStyle() == Table.AggregationStyle.TOP) {
+                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
+                }
+            }
             if (table instanceof TreeTable) {
                 TreeTable treeTable = (TreeTable) table;
                 HierarchicalDatasource ds = treeTable.getDatasource();
-                if (table.isAggregatable()) {
-                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
-                }
                 for (Object itemId : ds.getRootItemIds()) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
@@ -236,9 +240,7 @@ public class ExcelExporter {
             } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
                     && ((GroupDatasource) datasource).hasGroups()) {
                 GroupDatasource ds = (GroupDatasource) datasource;
-                if (table.isAggregatable()) {
-                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
-                }
+
                 for (Object item : ds.rootGroups()) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
@@ -247,15 +249,17 @@ public class ExcelExporter {
                     r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
                 }
             } else {
-                if (table.isAggregatable()) {
-                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
-                }
                 for (Object itemId : datasource.getItemIds()) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
                     }
 
                     createRow(table, columns, 0, ++r, itemId);
+                }
+            }
+            if (table.isAggregatable() && exportAggregation) {
+                if(table.getAggregationStyle() == Table.AggregationStyle.BOTTOM) {
+                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
                 }
             }
         }
@@ -799,5 +803,13 @@ public class ExcelExporter {
      */
     public boolean isXlsMaxRowNumberExceeded() {
         return isRowNumberExceeded;
+    }
+
+    public void setExportAggregation(boolean exportAggregation) {
+        this.exportAggregation = exportAggregation;
+    }
+
+    public boolean getExportAggregation() {
+        return exportAggregation;
     }
 }
