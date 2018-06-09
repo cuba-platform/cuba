@@ -21,11 +21,13 @@ import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.tree.TreeToQueryCapable;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeVisitorAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class TreeToQuery implements TreeVisitorAction {
     private QueryBuilder sb = new QueryBuilder();
@@ -49,7 +51,7 @@ public class TreeToQuery implements TreeVisitorAction {
 
         if (node.getType() == JPA2Lexer.HAVING ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_SIMPLE_CONDITION
-                        && !parentNodeHasPreviousLparen(node) ||
+                        && !parentNodeHasPreviousLparen(node) && !isDecimal(node) ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY && node.getType() != JPA2Lexer.T_ORDER_BY_FIELD ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && (node.childIndex == 0 || node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN) ||
@@ -102,6 +104,19 @@ public class TreeToQuery implements TreeVisitorAction {
 
     private boolean parentNodeHasPreviousLparen(CommonTree node) {
         return (node.childIndex == 0 && node.parent.childIndex > 0 && node.parent.parent.getChild(node.parent.childIndex - 1).getType() == JPA2Lexer.LPAREN);
+    }
+
+    private boolean isDecimal(CommonTree node) {
+        if (node instanceof CommonTree) {
+            if (Objects.equals(".", node.getText())) {
+                return true;
+            }
+            if (node.getType() == JPA2Lexer.INT_NUMERAL && node.childIndex > 0) {
+                Tree prevNode = node.parent.getChild(node.childIndex - 1);
+                return prevNode != null && Objects.equals(".", prevNode.getText());
+            }
+        }
+        return false;
     }
 
     private boolean isGroupByItem(CommonTree node) {
