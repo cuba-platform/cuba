@@ -128,6 +128,7 @@
                                 <button action="constraintsTable.edit"/>
                                 <button action="constraintsTable.remove"/>
                                 <button action="constraintsTable.localizationEdit"/>
+                                <button action="constraintsTable.moveToGroup"/>
                             </buttonsPanel>
                             <rowsCount/>
                             <actions>
@@ -136,6 +137,7 @@
                                 <action id="remove"/>
                                 <action id="refresh"/>
                                 <action id="localizationEdit"/>
+                                <action id="moveToGroup"/>
                             </actions>
                             <columns>
                                 <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
