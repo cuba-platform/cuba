@@ -24,10 +24,7 @@ import com.haulmont.cuba.core.app.EntityRestoreService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -66,6 +63,9 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected EntityRestoreService restoreService;
+
+    @Inject
+    protected ExtendedEntities extendedEntities;
 
     protected GroupDatasource entitiesDs;
 
@@ -135,14 +135,12 @@ public class EntityRestore extends AbstractWindow {
 
                     metaProperties.add(metaProperty);
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
-                    String propertyCaption = getPropertyCaption(metaClass, metaProperty);
                     if (!metadataTools.isSystem(metaProperty)) {
-                        column.setCaption(propertyCaption);
+                        column.setCaption(getPropertyCaption(metaClass, metaProperty));
                         nonSystemPropertyColumns.add(column);
                     } else {
                         column.setCaption(metaProperty.getName());
-                        String description = String.format("%s (%s)", metaProperty.getName(), propertyCaption);
-                        column.setDescription(description);
+                        column.setDescription(getSystemAttributeDescription(metaClass, metaProperty));
                         systemPropertyColumns.add(column);
                     }
 
@@ -225,6 +223,17 @@ public class EntityRestore extends AbstractWindow {
                 ((FilterImplementation)filter).loadFiltersAndApplyDefault();
             }
         }
+    }
+
+    protected String getSystemAttributeDescription(MetaClass metaClass, MetaProperty metaProperty) {
+        String localizedCaption = getPropertyCaption(metaClass, metaProperty);
+
+        Class originalClass = extendedEntities.getOriginalClass(metaClass);
+        Class<?> ownClass = originalClass != null ? originalClass : metaClass.getJavaClass();
+        String key = ownClass.getSimpleName() + "." + metaProperty.getName();
+
+        return key.equals(localizedCaption) ?
+                null : String.format("%s (%s)", metaProperty.getName(), localizedCaption);
     }
 
     protected View buildView(MetaClass metaClass, List<MetaProperty> props) {
