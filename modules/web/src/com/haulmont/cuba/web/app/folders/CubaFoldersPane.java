@@ -234,25 +234,27 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     protected void setupUpdateTimer() {
-        int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
+        if (webConfig.getFoldersPaneEnabled()) {
+            int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
-        timer = new FoldersPaneTimer();
-        timer.setRepeating(true);
-        timer.setDelay(period);
-        timer.addActionListener(createAppFolderUpdater());
-        timer.start();
+            timer = new FoldersPaneTimer();
+            timer.setRepeating(true);
+            timer.setDelay(period);
+            timer.addActionListener(createAppFolderUpdater());
+            timer.start();
 
-        if (this.isAttached()) {
-            AppUI ui = AppUI.getCurrent();
-            stopExistingFoldersPaneTimer(ui);
-            ui.addTimer(timer);
-        } else if (frame != null) {
-            com.haulmont.cuba.gui.components.Window window = ComponentsHelper.getWindowImplementation(frame);
-            if (window == null) {
-                throw new IllegalStateException("Null window for CubaFoldersPane");
+            if (this.isAttached()) {
+                AppUI ui = AppUI.getCurrent();
+                stopExistingFoldersPaneTimer(ui);
+                ui.addTimer(timer);
+            } else if (frame != null) {
+                com.haulmont.cuba.gui.components.Window window = ComponentsHelper.getWindowImplementation(frame);
+                if (window == null) {
+                    throw new IllegalStateException("Null window for CubaFoldersPane");
+                }
+                AbstractComponent topLevelFrame = window.unwrapComposition(AbstractComponent.class);
+                timer.extend(topLevelFrame);
             }
-            AbstractComponent topLevelFrame = window.unwrapComposition(AbstractComponent.class);
-            timer.extend(topLevelFrame);
         }
     }
 
