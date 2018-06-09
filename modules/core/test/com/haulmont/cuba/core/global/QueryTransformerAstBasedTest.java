@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
-import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModelImpl;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
@@ -562,6 +562,25 @@ public class QueryTransformerAstBasedTest {
         assertTransformsToSame(model, "select p.name as name from Player p");
     }
 
+//    @Test
+//    public void getResult_noChangesMade_Extract() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        builder.startNewEntity("Player");
+//        builder.addSingleValueAttribute(Date.class, "createTs");
+//        builder.addStringAttribute("createTs");
+//        DomainModel model = new DomainModel(builder.produce());
+//        assertTransformsToSame(model, "select extract(HOUR from p.createTs) as hours, p.name as name from Player p");
+//    }
+
+    @Test
+    public void getResult_noChangesMade_Decimal() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        builder.startNewEntity("Player");
+        builder.addSingleValueAttribute(Date.class, "createTs");
+        builder.addStringAttribute("createTs");
+        DomainModel model = new DomainModel(builder.produce());
+        assertTransformsToSame(model, "select p.createTs as hours, p.name as name from Player p where p.version * 1.12 = 5");
+    }
 
     @Test
     public void addJoinAsId() throws RecognitionException {
