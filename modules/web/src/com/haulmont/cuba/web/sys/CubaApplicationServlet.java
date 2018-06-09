@@ -364,7 +364,16 @@ public class CubaApplicationServlet extends VaadinServlet {
         return super.isAllowedVAADINResourceUrl(request, resourceUrl);
     }
 
+    @SuppressWarnings("unchecked")
     public void handleServerError(HttpServletRequest req, HttpServletResponse resp, Throwable exception) throws IOException {
+        // if it is UberJar or deployed to Jetty
+        if (ExceptionUtils.getThrowableList(exception).stream()
+                .anyMatch(o -> o.getClass().getName().equals("org.eclipse.jetty.io.EofException"))) {
+            // Most likely client browser closed socket
+            log.trace("org.eclipse.jetty.io.EofException on write response to client. Most likely client (browser) closed socket.");
+            return;
+        }
+
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         resp.setContentType("text/html");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());

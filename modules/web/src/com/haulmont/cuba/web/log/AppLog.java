@@ -85,7 +85,7 @@ public class AppLog {
         log(new LogItem(LogLevel.ERROR, message, null));
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unchecked"})
     public void log(ErrorEvent event) {
         Throwable t = event.getThrowable();
 
@@ -109,6 +109,16 @@ public class AppLog {
             // Most likely client browser closed socket
             LogItem item = new LogItem(LogLevel.WARNING,
                     "ClientAbortException on write response to client. Most likely client (browser) closed socket.", null);
+            log(item);
+            return;
+        }
+
+        // if it is UberJar or deployed to Jetty
+        if (ExceptionUtils.getThrowableList(t).stream()
+                .anyMatch(o -> o.getClass().getName().equals("org.eclipse.jetty.io.EofException"))) {
+            // Most likely client browser closed socket
+            LogItem item = new LogItem(LogLevel.WARNING,
+                    "org.eclipse.jetty.io.EofException on write response to client. Most likely client (browser) closed socket.", null);
             log(item);
             return;
         }
