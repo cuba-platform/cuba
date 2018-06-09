@@ -18,12 +18,14 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +38,9 @@ public class SaveFilterWindow extends AbstractWindow {
 
     @Inject
     protected ThemeConstants theme;
+
+    @WindowParam(name = "existingNames")
+    protected List<String> existingNames;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -51,6 +56,10 @@ public class SaveFilterWindow extends AbstractWindow {
     public void commit() {
         if (Strings.isNullOrEmpty(filterName.getValue())) {
             showNotification(messages.getMainMessage("filter.saveFilter.fillName"), NotificationType.WARNING);
+            return;
+        }
+        if (existingNames != null && existingNames.contains(filterName.getValue())) {
+            showNotification(messages.getMainMessage("filter.saveFilter.suchNameAlreadyExists"), NotificationType.WARNING);
             return;
         }
         close(Window.COMMIT_ACTION_ID);
