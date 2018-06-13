@@ -29,21 +29,40 @@ public interface UserSettingService {
 
     String NAME = "cuba_UserSettingService";
 
-    /** Load settings for the current user and null client type. Returns null if no such setting found. */
+    /**
+     * Load settings for the current user and null client type. Returns null if no such setting found.
+     */
     String loadSetting(String name);
 
-    /** Load settings for the current user. Returns null if no such setting found. */
+    /**
+     * Load settings for the current user. Returns null if no such setting found.
+     */
     String loadSetting(ClientType clientType, String name);
 
-    /** Save settings for the current user and null client type */
+    /**
+     * Save settings for the current user and null client type
+     */
     void saveSetting(String name, String value);
 
-    /** Save settings for the current user */
+    /**
+     * Save settings for the current user
+     */
     void saveSetting(ClientType clientType, String name, String value);
 
-    /** Delete settings for the current user */
+    /**
+     * Delete settings for the current user
+     */
     void deleteSettings(ClientType clientType, String name);
 
-    /** Copy user settings to another user */
+    /**
+     * Copy user settings to another user
+     */
     void copySettings(User fromUser, User toUser);
+
+    /**
+     * Delete all settings of screens (settings of tables, filters etc) for the current user.
+     *
+     * @param clientType client type
+     */
+    void deleteAllScreensSettings(ClientType clientType);
 }

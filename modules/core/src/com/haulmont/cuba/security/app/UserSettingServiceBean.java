@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService {
@@ -163,6 +160,24 @@ public class UserSettingServiceBean implements UserSettingService {
                 }
                 em.persist(newSetting);
             }
+
+            tx.commit();
+        }
+    }
+
+    @Override
+    public void deleteAllScreensSettings(ClientType clientType) {
+        List<String> exclude = Arrays.asList("appWindowMode", "appWindowTheme", "userDefaultScreen");
+
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            Query deleteQuery = em.createQuery("delete from sec$UserSetting e where e.user.id = ?1 and e.clientType =" +
+                    " ?2" +
+                    " and e.name not in ?3");
+            deleteQuery.setParameter(1, userSessionSource.getUserSession().getUser().getId());
+            deleteQuery.setParameter(2, clientType.getId());
+            deleteQuery.setParameter(3, exclude);
+            deleteQuery.executeUpdate();
 
             tx.commit();
         }

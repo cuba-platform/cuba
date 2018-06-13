@@ -64,6 +64,9 @@
                     <row>
                         <button id="changePasswordBtn" icon="icons/change-pass.png"/>
                     </row>
+                    <row>
+                        <button id="resetScreensSettingsBtn" icon="icons/gear.png"/>
+                    </row>
                 </rows>
             </grid>
         </groupBox>
