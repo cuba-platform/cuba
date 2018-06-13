@@ -63,7 +63,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         impl.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                adjustViewPreferredSize();
+                adjustViewPreferredSize(true);
             }
         });
 
@@ -71,6 +71,10 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     private void adjustViewPreferredSize() {
+        adjustViewPreferredSize(false);
+    }
+
+    private void adjustViewPreferredSize(boolean onResize) {
         JComponent view = DesktopComponentsHelper.getComposition(content);
         Dimension minimumSize = view.getMinimumSize();
         Dimension preferredSize = null;
@@ -93,11 +97,17 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         }
         view.setPreferredSize(preferredSize);
 
-        JViewport viewport = impl.getViewport();
-        if (viewport != null) {
-            viewport.setPreferredSize(preferredSize);
-            for (java.awt.Component component : viewport.getComponents()) {
-                component.setPreferredSize(preferredSize);
+        if (onResize) {
+            ScrollBarPolicy scrollBarPolicy = getScrollBarPolicy();
+
+            if (scrollBarPolicy != ScrollBarPolicy.BOTH && preferredSize.width > 0 && preferredSize.height > 0) {
+                JViewport viewport = impl.getViewport();
+                if (viewport != null) {
+                    //setting of the same preferred size has side-effects
+                    if (!viewport.getViewSize().equals(preferredSize)) {
+                        viewport.setViewSize(preferredSize);
+                    }
+                }
             }
         }
 
