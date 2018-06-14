@@ -17,8 +17,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.web.sys.WebJarResource;
-import com.haulmont.cuba.web.sys.WebJarResourceUtils;
+import com.haulmont.cuba.web.sys.WebJarResourceResolver;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
 import com.vaadin.server.*;
@@ -212,10 +213,12 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
     public CubaMultiUpload() {
         registerRpc(rpc);
 
-        String swfuploadJs = WebJarResourceUtils.getWebJarPath("swfupload", "swfupload.min.js");
+        WebJarResourceResolver resolver = AppBeans.get(WebJarResourceResolver.NAME);
+
+        String swfuploadJs = resolver.getWebJarPath("swfupload", "swfupload.min.js");
         setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY, new ClassResource(swfuploadJs));
 
-        String swfuploadSwf = WebJarResourceUtils.getWebJarPath("swfupload", "swfupload.swf");
+        String swfuploadSwf = resolver.getWebJarPath("swfupload", "swfupload.swf");
         setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY, new ClassResource(swfuploadSwf));
     }
 

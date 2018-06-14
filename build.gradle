@@ -636,7 +636,6 @@ configure(webModule) {
         }
 
         /* WebJar dependencies */
-        compile(bom['org.webjars:webjars-locator'])
         compile(bom['org.webjars:jquery'])
         compile(bom['org.webjars:jquery-ui'])
         compile(bom['org.webjars.bower:jquery-file-upload'])
