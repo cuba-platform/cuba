@@ -166,7 +166,7 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
     @Override
-    public void deleteAllScreensSettings(ClientType clientType) {
+    public void deleteAllScreenSettings(ClientType clientType) {
         List<String> exclude = Arrays.asList("appWindowMode", "appWindowTheme", "userDefaultScreen");
 
         try (Transaction tx = persistence.createTransaction()) {

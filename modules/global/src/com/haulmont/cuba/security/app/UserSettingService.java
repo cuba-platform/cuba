@@ -52,5 +52,5 @@ public interface UserSettingService {
      *
      * @param clientType client type
      */
-    void deleteAllScreensSettings(ClientType clientType);
+    void deleteAllScreenSettings(ClientType clientType);
 }

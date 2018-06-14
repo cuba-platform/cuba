@@ -80,7 +80,7 @@ public class SettingsWindow extends AbstractWindow {
     protected Button changePasswordBtn;
 
     @Inject
-    private Button resetScreensSettingsBtn;
+    private Button resetScreenSettingsBtn;
 
     @Inject
     protected OptionsGroup<String, String> modeOptions;
@@ -179,16 +179,16 @@ public class SettingsWindow extends AbstractWindow {
                         cancel()
                 ));
 
-        resetScreensSettingsBtn.setAction(new BaseAction("resetScreensSettings")
-                .withCaption(getMessage("resetScreensSettings"))
+        resetScreenSettingsBtn.setAction(new BaseAction("resetScreenSettings")
+                .withCaption(getMessage("resetScreenSettings"))
                 .withHandler(buttonEvent ->
-                        showOptionDialog(getMessage("resetScreensSettings"),
-                                getMessage("resetScreensSettings.description"),
+                        showOptionDialog(getMessage("resetScreenSettings"),
+                                getMessage("resetScreenSettings.description"),
                                 MessageType.CONFIRMATION,
                                 new Action[]{
                                         new DialogAction(DialogAction.Type.YES).withHandler(event -> {
-                                            userSettingService.deleteAllScreensSettings(ClientType.WEB);
-                                            showNotification(getMessage("resetScreensSettings.notification"));
+                                            userSettingService.deleteAllScreenSettings(ClientType.WEB);
+                                            showNotification(getMessage("resetScreenSettings.notification"));
                                         }),
                                         new DialogAction(DialogAction.Type.NO)
                                 })
