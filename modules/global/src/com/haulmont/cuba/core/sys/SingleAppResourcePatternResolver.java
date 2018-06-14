@@ -48,6 +48,11 @@ public class SingleAppResourcePatternResolver extends PathMatchingResourcePatter
     private boolean foundInDependencies(Resource resource) {
         try {
             String url = resource.getURL().toString();
+            if (url.contains("META-INF/resources/webjars/")) {
+                // WebJAR resources could be loaded from shared dependencies
+                return true;
+            }
+
             Matcher matcher = JAR_NAME_PATTERN.matcher(url);
             if (matcher.find()) {
                 String jarName = matcher.group(1);
