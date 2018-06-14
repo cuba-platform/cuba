@@ -39,6 +39,8 @@ public class CubaBootstrapListener implements BootstrapListener {
 
     @Inject
     protected WebConfig webConfig;
+    @Inject
+    protected WebJarResourceResolver webJarResourceResolver;
 
     @Override
     public void modifyBootstrapFragment(BootstrapFragmentResponse response) {
@@ -59,13 +61,13 @@ public class CubaBootstrapListener implements BootstrapListener {
     }
 
     protected String getWebJarResource(String resourceName) {
-        String fullPath = WebJarResourceUtils.getWebJarPath(resourceName);
-        return "./" + WebJarResourceUtils.translateToWebPath(fullPath);
+        String fullPath = webJarResourceResolver.getWebJarPath(resourceName);
+        return "./" + webJarResourceResolver.translateToWebPath(fullPath);
     }
 
     protected String getWebJarResource(String webjar, String resourceName) {
-        String fullPath = WebJarResourceUtils.getWebJarPath(webjar, resourceName);
-        return "./" + WebJarResourceUtils.translateToWebPath(fullPath);
+        String fullPath = webJarResourceResolver.getWebJarPath(webjar, resourceName);
+        return "./" + webJarResourceResolver.translateToWebPath(fullPath);
     }
 
     protected void includeScript(String src, BootstrapPageResponse response, Element head) {

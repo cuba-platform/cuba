@@ -67,6 +67,7 @@ public class CubaVaadinServletService extends VaadinServletService
     protected boolean performanceTestMode;
 
     protected Events events;
+    protected Messages messages;
 
     public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
@@ -79,6 +80,8 @@ public class CubaVaadinServletService extends VaadinServletService
         webAuthConfig = configuration.getConfig(WebAuthConfig.class);
         testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
         performanceTestMode = configuration.getConfig(GlobalConfig.class).getPerformanceTestMode();
+
+        this.messages = AppBeans.get(Messages.NAME);
 
         ServletContext sc = servlet.getServletContext();
         String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
@@ -122,8 +125,6 @@ public class CubaVaadinServletService extends VaadinServletService
 
             if (AppContext.isStarted()) {
                 try {
-                    Messages messages = AppBeans.get(Messages.NAME);
-
                     msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
                     msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
 

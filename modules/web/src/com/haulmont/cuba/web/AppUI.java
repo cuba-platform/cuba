@@ -35,7 +35,7 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.sys.WebJarResourceResolver;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
@@ -102,6 +102,9 @@ public class AppUI extends CubaUI
 
     @Inject
     protected IconResolver iconResolver;
+
+    @Inject
+    protected WebJarResourceResolver webJarResourceResolver;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -518,5 +521,15 @@ public class AppUI extends CubaUI
     @Override
     public Resource createVersionedResource(String value) {
         return iconResolver.getIconResource(value);
+    }
+
+    @Override
+    public String getWebJarPath(String webjar, String partialPath) {
+        return webJarResourceResolver.getWebJarPath(webjar, partialPath);
+    }
+
+    @Override
+    public String translateToWebPath(String fullWebJarPath) {
+        return webJarResourceResolver.translateToWebPath(fullWebJarPath);
     }
 }

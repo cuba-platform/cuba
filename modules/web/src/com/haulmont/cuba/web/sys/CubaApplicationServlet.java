@@ -510,14 +510,14 @@ public class CubaApplicationServlet extends VaadinServlet {
             return null;
         }
 
-        if (pathInfo.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX)) {
+        if (pathInfo.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PATH_PREFIX)) {
             // handled in CubaWebJarsHandler
             return null;
         }
 
         String servletPrefixedPath = request.getServletPath() + pathInfo;
 
-        if (servletPrefixedPath.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX)) {
+        if (servletPrefixedPath.startsWith(CubaWebJarsHandler.VAADIN_WEBJARS_PATH_PREFIX)) {
             // handled in CubaWebJarsHandler
             return null;
         }

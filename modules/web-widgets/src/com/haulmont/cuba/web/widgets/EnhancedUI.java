@@ -20,4 +20,8 @@ import com.vaadin.server.Resource;
 
 public interface EnhancedUI {
     Resource createVersionedResource(String value);
+
+    String getWebJarPath(String webjar, String partialPath);
+
+    String translateToWebPath(String fullWebJarPath);
 }

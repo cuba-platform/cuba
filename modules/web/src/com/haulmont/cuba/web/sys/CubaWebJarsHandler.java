@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.VaadinRequest;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -36,25 +38,28 @@ import static org.apache.commons.io.IOUtils.copy;
 
 public class CubaWebJarsHandler implements RequestHandler {
 
-    protected static final String VAADIN_WEBJARS_PREFIX = "/VAADIN/webjars/";
+    public static final String VAADIN_WEBJARS_PATH_PREFIX = "/" + WebJarResourceResolver.VAADIN_PREFIX;
 
     private final Logger log = LoggerFactory.getLogger(CubaWebJarsHandler.class);
 
+    protected WebJarResourceResolver resolver;
     protected ServletContext servletContext;
 
     public CubaWebJarsHandler(ServletContext servletContext) {
         this.servletContext = servletContext;
+
+        this.resolver = AppBeans.get(WebJarResourceResolver.NAME);
     }
 
     @Override
     public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
         String path = request.getPathInfo();
-
-        if (StringUtils.isEmpty(path) || StringUtils.isNotEmpty(path) && !path.startsWith(VAADIN_WEBJARS_PREFIX)) {
+        if (StringUtils.isEmpty(path)
+                || !path.startsWith(VAADIN_WEBJARS_PATH_PREFIX)) {
             return false;
         }
 
-        log.trace("WebJar resource requested: {}", path.replace(VAADIN_WEBJARS_PREFIX, ""));
+        log.trace("WebJar resource requested: {}", path.replace(VAADIN_WEBJARS_PATH_PREFIX, ""));
 
         String errorMessage = checkResourcePath(path);
         if (StringUtils.isNotEmpty(errorMessage)) {
@@ -159,12 +164,13 @@ public class CubaWebJarsHandler implements RequestHandler {
         return resourceUrl;
     }
 
+    @Nullable
     protected URL getClassPathResourceUrl(String path) {
-        String classpathPath = WebJarResourceUtils.translateToClassPath(path);
+        String classpathPath = resolver.translateToWebJarPath(path);
 
         log.trace("Load WebJar resource from classpath: {}", classpathPath);
 
-        return this.getClass().getResource(classpathPath);
+        return resolver.getResource(classpathPath);
     }
 
     protected int getCacheTime(String filename) {
