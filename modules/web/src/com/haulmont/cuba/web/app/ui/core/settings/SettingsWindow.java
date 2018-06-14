@@ -181,15 +181,25 @@ public class SettingsWindow extends AbstractWindow {
 
         resetScreensSettingsBtn.setAction(new BaseAction("resetScreensSettings")
                 .withCaption(getMessage("resetScreensSettings"))
-                .withDescription(getMessage("resetScreensSettings.description"))
-                .withHandler(actionPerformedEvent -> {
-                    if (getWindowManager().getOpenWindows().size() > 1) {
-                        showNotification(getMessage("resetScreensSettings.warningNotification"), NotificationType.WARNING);
-                    } else {
-                        userSettingService.deleteAllScreensSettings(ClientType.WEB);
-                        showNotification(getMessage("resetScreensSettings.notification"));
-                    }
-                }));
+                .withHandler(buttonEvent ->
+                        showOptionDialog(getMessage("resetScreensSettings"),
+                                getMessage("resetScreensSettings.description"),
+                                MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new BaseAction("reset")
+                                                .withCaption(getMessage("resetSettings"))
+                                                .withHandler(event -> {
+                                            if (getWindowManager().getOpenWindows().size() > 1) {
+                                                showNotification(getMessage("resetScreensSettings.warningNotification"),
+                                                        NotificationType.WARNING);
+                                            } else {
+                                                userSettingService.deleteAllScreensSettings(ClientType.WEB);
+                                                showNotification(getMessage("resetScreensSettings.notification"));
+                                            }
+                                        }),
+                                        new BaseAction("actions.Cancel")
+                                })
+                ));
 
         initDefaultScreenField();
     }
