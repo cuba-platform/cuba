@@ -24,7 +24,7 @@
     <dsContext/>
 
     <layout expand="buttons">
-        <groupBox id="groupBox">
+        <groupBox id="groupBox" settingsEnabled="false">
             <grid id="grid" spacing="true" width="100%">
                 <columns>
                     <column flex="0"/>
@@ -65,7 +65,7 @@
                         <button id="changePasswordBtn" icon="icons/change-pass.png"/>
                     </row>
                     <row>
-                        <button id="resetScreensSettingsBtn" icon="icons/gear.png"/>
+                        <button id="resetScreensSettingsBtn" icon="icons/trash.png"/>
                     </row>
                 </rows>
             </grid>

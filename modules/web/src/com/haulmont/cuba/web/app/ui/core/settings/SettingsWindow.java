@@ -183,8 +183,12 @@ public class SettingsWindow extends AbstractWindow {
                 .withCaption(getMessage("resetScreensSettings"))
                 .withDescription(getMessage("resetScreensSettings.description"))
                 .withHandler(actionPerformedEvent -> {
-                    userSettingService.deleteAllScreensSettings(ClientType.WEB);
-                    showNotification(getMessage("resetScreensSettings.notification"));
+                    if (getWindowManager().getOpenWindows().size() > 1) {
+                        showNotification(getMessage("resetScreensSettings.warningNotification"), NotificationType.WARNING);
+                    } else {
+                        userSettingService.deleteAllScreensSettings(ClientType.WEB);
+                        showNotification(getMessage("resetScreensSettings.notification"));
+                    }
                 }));
 
         initDefaultScreenField();

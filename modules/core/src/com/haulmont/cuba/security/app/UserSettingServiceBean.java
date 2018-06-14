@@ -171,9 +171,8 @@ public class UserSettingServiceBean implements UserSettingService {
 
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            Query deleteQuery = em.createQuery("delete from sec$UserSetting e where e.user.id = ?1 and e.clientType =" +
-                    " ?2" +
-                    " and e.name not in ?3");
+            Query deleteQuery = em.createQuery("delete from sec$UserSetting e where" +
+                    " e.user.id = ?1 and e.clientType =?2 and e.name not in ?3");
             deleteQuery.setParameter(1, userSessionSource.getUserSession().getUser().getId());
             deleteQuery.setParameter(2, clientType.getId());
             deleteQuery.setParameter(3, exclude);
