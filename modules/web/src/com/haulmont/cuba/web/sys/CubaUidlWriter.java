@@ -119,8 +119,10 @@ public class CubaUidlWriter extends UidlWriter {
             return staticResourcePath;
         }
 
-        String webJarPath = WebJarResourceUtils.getWebJarPath(webJar, resource);
-        return WebJarResourceUtils.translateToWebPath(webJarPath);
+        WebJarResourceResolver resolver = AppBeans.get(WebJarResourceResolver.NAME);
+
+        String webJarPath = resolver.getWebJarPath(webJar, resource);
+        return resolver.translateToWebPath(webJarPath);
     }
 
     protected String getWebJarStaticResourcePath(String overridePath, String resource) {
@@ -133,7 +135,7 @@ public class CubaUidlWriter extends UidlWriter {
         }
 
         String resourcePath = overridePath + resource;
-        String path = CubaWebJarsHandler.VAADIN_WEBJARS_PREFIX + resourcePath;
+        String path = CubaWebJarsHandler.VAADIN_WEBJARS_PATH_PREFIX + resourcePath;
 
         URL resourceUrl = null;
         try {
