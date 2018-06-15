@@ -35,7 +35,7 @@ import java.util.*;
 /**
  * @deprecated Use {@link CubaFileUpload}
  */
-@WebJarResource("swfobject:swfobject.js")
+@WebJarResource("swfobject:src/swfobject.js")
 @Deprecated
 public class CubaMultiUpload extends CubaAbstractUploadComponent implements LegacyComponent {
 
@@ -215,11 +215,16 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
 
         WebJarResourceResolver resolver = AppBeans.get(WebJarResourceResolver.NAME);
 
-        String swfuploadJs = resolver.getWebJarPath("swfupload", "swfupload.min.js");
-        setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY, new ClassResource(swfuploadJs));
+        setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY,
+                getComponentResource(resolver.getWebJarPath("swfupload", "swfupload.min.js")));
 
-        String swfuploadSwf = resolver.getWebJarPath("swfupload", "swfupload.swf");
-        setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY, new ClassResource(swfuploadSwf));
+        setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY,
+                getComponentResource(resolver.getWebJarPath("swfupload", "swfupload.swf")));
+    }
+
+    protected Resource getComponentResource(String resource) {
+        String resourcePath = "/META-INF/resources/webjars/" + resource;
+        return new ClassResource(CubaMultiUpload.class, resourcePath);
     }
 
     public Resource getButtonImage() {
