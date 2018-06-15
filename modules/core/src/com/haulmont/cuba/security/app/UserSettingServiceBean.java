@@ -169,12 +169,17 @@ public class UserSettingServiceBean implements UserSettingService {
     public void deleteScreenSettings(ClientType clientType, List<String> screens) {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            Query deleteQuery = em.createQuery("delete from sec$UserSetting e where" +
-                    " e.user.id = ?1 and e.clientType =?2 and e.name in ?3");
-            deleteQuery.setParameter(1, userSessionSource.getUserSession().getUser().getId());
-            deleteQuery.setParameter(2, clientType.getId());
-            deleteQuery.setParameter(3, screens);
-            deleteQuery.executeUpdate();
+            TypedQuery<UserSetting> selectQuery = em.createQuery(
+                    "select e from sec$UserSetting e where e.user.id = ?1 and e.clientType=?2",
+                    UserSetting.class);
+            selectQuery.setParameter(1, userSessionSource.getUserSession().getUser().getId());
+            selectQuery.setParameter(2, clientType.getId());
+            List<UserSetting> userSettings = selectQuery.getResultList();
+            for (UserSetting userSetting : userSettings) {
+                if (screens.contains(userSetting.getName())) {
+                    em.remove(userSetting);
+                }
+            }
 
             tx.commit();
         }
