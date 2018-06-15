@@ -28,6 +28,8 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -45,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SettingsWindow extends AbstractWindow {
 
@@ -105,6 +108,9 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected WebConfig webConfig;
+
+    @Inject
+    protected WindowConfig windowConfig;
 
     @Inject
     protected UserSettingService userSettingService;
@@ -187,7 +193,7 @@ public class SettingsWindow extends AbstractWindow {
                                 MessageType.CONFIRMATION,
                                 new Action[]{
                                         new DialogAction(DialogAction.Type.YES).withHandler(event -> {
-                                            userSettingService.deleteAllScreenSettings(ClientType.WEB);
+                                            userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
                                             showNotification(getMessage("resetScreenSettings.notification"));
                                         }),
                                         new DialogAction(DialogAction.Type.NO)
@@ -285,5 +291,10 @@ public class SettingsWindow extends AbstractWindow {
     protected void saveLocaleSettings() {
         String userLocale = appLangField.getValue();
         userManagementService.saveOwnLocale(userLocale);
+    }
+
+    protected List<String> getAllWindowIds(){
+        List<WindowInfo> windows = (List<WindowInfo>) windowConfig.getWindows();
+        return windows.stream().map(WindowInfo::getId).collect(Collectors.toList());
     }
 }
