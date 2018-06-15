@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
@@ -31,10 +34,12 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 
 import javax.inject.Inject;
@@ -72,27 +77,12 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
 
     @Inject
     protected Resources resources;
-
     @Inject
     protected WebComponentsFactory webComponentsFactory;
 
-    protected volatile boolean initialized;
-
-    @Override
-    public void checkInitialized() {
-        if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    log.debug("Init external UI components");
-
-                    init();
-                    initialized = true;
-                }
-            }
-        }
-    }
-
-    protected void init() {
+    @EventListener
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
+    public void init(@SuppressWarnings("unused") AppContextInitializedEvent event) {
         try {
             // register component from app components
             _registerAppComponents();
@@ -107,8 +97,15 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     }
 
     protected void _registerAppComponents() {
-        String configName = AppContext.getProperty(WEB_COMPONENTS_CONFIG_XML_PROP);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        String configNames = AppContext.getProperty(WEB_COMPONENTS_CONFIG_XML_PROP);
+
+        if (Strings.isNullOrEmpty(configNames)) {
+            return;
+        }
+
+        log.debug("Loading UI components from {}", configNames);
+
+        StringTokenizer tokenizer = new StringTokenizer(configNames);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
@@ -117,7 +114,7 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
                     stream = resource.getInputStream();
                     _registerComponent(stream);
                 } catch (ClassNotFoundException | IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to load components config " + location, e);
                 } finally {
                     IOUtils.closeQuietly(stream);
                 }

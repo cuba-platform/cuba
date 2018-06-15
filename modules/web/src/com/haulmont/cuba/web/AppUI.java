@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window.TopLevelWindow;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
-import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -87,9 +86,6 @@ public class AppUI extends CubaUI
 
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
-
-    @Inject
-    protected ExternalUIComponentsSource externalUIComponentsSource;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -188,8 +184,6 @@ public class AppUI extends CubaUI
 
             initInternalComponents();
 
-            externalUIComponentsSource.checkInitialized();
-
             if (!App.isBound()) {
                 App app = createApplication();
                 app.init(request.getLocale());
@@ -240,7 +234,7 @@ public class AppUI extends CubaUI
         events.publish(new AppInitializedEvent(app));
     }
 
-    protected void showCriticalExceptionMessage(Exception exception) {
+    protected void showCriticalExceptionMessage(@SuppressWarnings("unused") Exception exception) {
         String initErrorCaption = messages.getMainMessage("app.initErrorCaption");
         String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
 

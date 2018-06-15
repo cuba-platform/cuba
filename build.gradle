@@ -284,6 +284,7 @@ configure(globalModule) {
 
         compile(bom['org.apache.commons:commons-lang3']) // simplify version management with reports and bpm
         compile(bom['org.apache.commons:commons-collections4'])
+        compile(bom['org.apache.commons:commons-text'])
         compile(bom['commons-io:commons-io'])
         compile(bom['commons-cli:commons-cli'])
         compile(bom['commons-codec:commons-codec'])
