@@ -23,7 +23,6 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -39,6 +38,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.App;
@@ -74,6 +74,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -169,10 +170,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected DataGridIndexedCollectionDsWrapper containerDatasource;
 
     public WebDataGrid() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
-
         shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
             @Override
             protected ShortcutListener attachShortcut(String actionId, KeyCombination keyCombination) {
@@ -224,6 +221,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         initHeaderRows(component);
         initFooterRows(component);
         initEditor(component);
+    }
+
+    @Inject
+    public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
+        this.showIconsForPopupMenuActions = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
     }
 
     protected void initComponent(CubaGrid component) {

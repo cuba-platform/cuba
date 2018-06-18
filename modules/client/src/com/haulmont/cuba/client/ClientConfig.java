@@ -327,11 +327,6 @@ public interface ClientConfig extends Config {
     @DefaultBoolean(false)
     boolean getManualScreenSettingsSaving();
 
-    @Property("cuba.gui.showIconsForPopupMenuActions")
-    @Source(type = SourceType.DATABASE)
-    @DefaultBoolean(false)
-    boolean getShowIconsForPopupMenuActions();
-
     @Property("cuba.gui.lookupFieldPageLength")
     @Source(type = SourceType.DATABASE)
     @DefaultInt(10)

@@ -16,14 +16,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
@@ -31,6 +30,7 @@ import com.vaadin.ui.Button;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
@@ -75,10 +75,11 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         component.setContent(vPopupComponent);
 
         component.setDescription(null);
+    }
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        showActionIcons = clientConfig.getShowIconsForPopupMenuActions();
+    @Inject
+    public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
+        this.showActionIcons = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
     }
 
     protected CubaPopupButtonLayout createActionsContainer() {

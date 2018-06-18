@@ -25,4 +25,5 @@ public interface ThemeConstantsManager {
 
     String getThemeValue(String key);
     int getThemeValueInt(String key);
+    boolean getThemeValueBoolean(String key);
 }

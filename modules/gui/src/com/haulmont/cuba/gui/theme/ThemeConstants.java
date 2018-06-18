@@ -50,4 +50,14 @@ public class ThemeConstants {
 
         return Integer.parseInt(value);
     }
+
+    public boolean getBoolean(String key) {
+        String value = properties.get(key);
+
+        if (value == null) {
+            throw new IllegalArgumentException("Null value for theme key " + key);
+        }
+
+        return Boolean.parseBoolean(value);
+    }
 }

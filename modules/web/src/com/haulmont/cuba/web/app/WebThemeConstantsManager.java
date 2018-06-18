@@ -39,4 +39,9 @@ public class WebThemeConstantsManager implements ThemeConstantsManager {
     public int getThemeValueInt(String key) {
         return getConstants().getInt(key);
     }
+
+    @Override
+    public boolean getThemeValueBoolean(String key) {
+        return getConstants().getBoolean(key);
+    }
 }

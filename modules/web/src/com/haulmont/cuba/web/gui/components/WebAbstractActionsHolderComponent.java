@@ -17,13 +17,11 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
@@ -31,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -43,10 +42,10 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         & com.vaadin.event.Action.ShortcutNotifier>
         extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.SecuredActionsHolder {
 
-    protected final List<Action> actionList = new ArrayList<>();
+    protected final List<Action> actionList = new ArrayList<>(5);
 
     protected VerticalLayout contextMenuPopup;
-    protected final List<ContextMenuButton> contextMenuButtons = new LinkedList<>();
+    protected final List<ContextMenuButton> contextMenuButtons = new ArrayList<>(5);
 
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -54,10 +53,6 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected boolean showIconsForPopupMenuActions;
 
     protected WebAbstractActionsHolderComponent() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
-
         contextMenuPopup = new VerticalLayout();
         contextMenuPopup.setSpacing(false);
         contextMenuPopup.setMargin(false);
@@ -96,6 +91,11 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
                 return WebAbstractActionsHolderComponent.this.getActions();
             }
         };
+    }
+
+    @Inject
+    public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
+        this.showIconsForPopupMenuActions = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
     }
 
     @Override
