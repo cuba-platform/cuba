@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, String, V> implements Label<V> {
 
-    @Inject
     protected MetadataTools metadataTools;
 
     protected Formatter<? super V> formatter;
@@ -36,6 +35,11 @@ public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, S
     public WebLabel() {
         component = new CubaLabel();
         component.setSizeUndefined();
+    }
+
+    @Inject
+    public void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
     }
 
     @Override
