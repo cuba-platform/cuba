@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.haulmont.bali.util.StackTrace;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
@@ -82,6 +84,7 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected GlobalConfig config;
 
+    // stores methods in the execution order, all methods are accessible
     protected LoadingCache<Class<?>, List<Method>> postConstructMethodsCache =
             CacheBuilder.newBuilder()
                     .build(new CacheLoader<Class<?>, List<Method>>() {
@@ -216,15 +219,9 @@ public class MetadataImpl implements Metadata {
 
     protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
         List<Method> postConstructMethods = postConstructMethodsCache.getUnchecked(entity.getClass());
-        if (!postConstructMethods.isEmpty()) {
-            ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
-            while (iterator.hasPrevious()) {
-                Method method = iterator.previous();
-                if (!method.isAccessible()) {
-                    method.setAccessible(true);
-                }
-                method.invoke(entity);
-            }
+        // methods are store in the correct execution order
+        for (Method method : postConstructMethods) {
+            method.invoke(entity);
         }
     }
 
@@ -272,7 +269,14 @@ public class MetadataImpl implements Metadata {
             clazz = clazz.getSuperclass();
         }
 
-        return postConstructMethods;
+        for (Method method : postConstructMethods) {
+            if (!method.isAccessible()) {
+                method.setAccessible(true);
+            }
+        }
+
+        return postConstructMethods.isEmpty() ?
+                Collections.emptyList() : ImmutableList.copyOf(Lists.reverse(postConstructMethods));
     }
 
     @Override
