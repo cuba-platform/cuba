@@ -45,7 +45,6 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected final List<Action> actionList = new ArrayList<>(5);
 
     protected VerticalLayout contextMenuPopup;
-    protected final List<ContextMenuButton> contextMenuButtons = new ArrayList<>(5);
 
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -125,9 +124,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             contextMenuButton.setStyleName("c-cm-button");
             contextMenuButton.setAction(action);
 
-            contextMenuButtons.add(contextMenuButton);
-
-            Component newVButton = WebComponentsHelper.unwrap(contextMenuButton);
+            Component newVButton = contextMenuButton.unwrap(com.vaadin.ui.Component.class);
 
             int visibleActionsIndex = 0;
             int i = 0;
@@ -161,18 +158,21 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     public void removeAction(@Nullable Action action) {
         if (actionList.remove(action)) {
             ContextMenuButton actionButton = null;
-            for (ContextMenuButton button : contextMenuButtons) {
-                if (button.getAction() == action) {
-                    actionButton = button;
-                    break;
+
+            for (Component component : contextMenuPopup) {
+                if (component instanceof ContextMenuButton) {
+                    ContextMenuButton button = (ContextMenuButton) component;
+                    if (button.getAction() == action) {
+                        actionButton = button;
+                        break;
+                    }
                 }
             }
 
             if (actionButton != null) {
                 actionButton.setAction(null);
-                contextMenuButtons.remove(actionButton);
 
-                contextMenuPopup.removeComponent(WebComponentsHelper.unwrap(actionButton));
+                contextMenuPopup.removeComponent(actionButton.unwrap(com.vaadin.ui.Component.class));
             }
 
             shortcutsDelegate.removeAction(action);
