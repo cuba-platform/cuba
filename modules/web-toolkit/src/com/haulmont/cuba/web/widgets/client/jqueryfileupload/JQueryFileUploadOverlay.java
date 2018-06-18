@@ -28,7 +28,6 @@ import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VUI;
 import com.vaadin.client.ui.VWindow;
 import com.vaadin.client.ui.window.WindowConnector;
-import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
 import java.util.HashMap;

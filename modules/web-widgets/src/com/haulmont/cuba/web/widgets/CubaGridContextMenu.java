@@ -16,10 +16,10 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.v7.contextmenu.GridContextMenu;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.GridContextMenu;
 import com.vaadin.event.ContextClickEvent.ContextClickListener;
 import com.vaadin.shared.ui.grid.GridConstants;
-import com.vaadin.v7.ui.Grid;
+import com.vaadin.ui.Grid;
 
 import static com.vaadin.event.ContextClickEvent.ContextClickNotifier;
 import static com.vaadin.ui.Grid.*;

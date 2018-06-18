@@ -18,7 +18,7 @@
 package com.haulmont.cuba.web.widgets.client.tabsheet;
 
 import com.vaadin.shared.annotations.NoLayout;
-import fi.jasoft.dragdroplayouts.client.ui.tabsheet.DDTabSheetState;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.DDTabSheetState;
 
 public class CubaTabSheetState extends DDTabSheetState {
 

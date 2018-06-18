@@ -24,7 +24,7 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.v7.event.FieldEvents;
-import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

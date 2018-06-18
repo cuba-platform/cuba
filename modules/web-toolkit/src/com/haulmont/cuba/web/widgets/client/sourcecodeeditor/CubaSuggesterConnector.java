@@ -18,9 +18,9 @@ package com.haulmont.cuba.web.widgets.client.sourcecodeeditor;
 
 import com.google.gwt.core.client.GWT;
 import com.vaadin.shared.ui.Connect;
-import org.vaadin.aceeditor.SuggestionExtension;
-import org.vaadin.aceeditor.client.SuggestPopup;
-import org.vaadin.aceeditor.client.SuggesterConnector;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.SuggestionExtension;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggestPopup;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggesterConnector;
 
 @SuppressWarnings("serial")
 @Connect(SuggestionExtension.class)

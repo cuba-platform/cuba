@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.sourcecodeeditor;
 
-import org.vaadin.aceeditor.client.AceEditorState;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorState;
 
 public class CubaSourceCodeEditorState extends AceEditorState {
 

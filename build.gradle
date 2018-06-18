@@ -596,19 +596,20 @@ configure(webWidgetsModule) {
         compile(bom['com.vaadin:vaadin-push'])
 
         /* Vaadin addons */
-        compile(bom['org.vaadin.addons:popupbutton']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-client')
-            exclude(group: 'com.vaadin', module: 'vaadin-server')
-        }
-        compile(bom['org.vaadin.addons:aceeditor'])
-        compile(bom['org.vaadin.addons:dragdroplayouts'])
-        compile(bom['com.vaadin:vaadin-context-menu'])
+        /* The following add-ons are embedded into Platform
+            com.vaadin:vaadin-context-menu:2.1.0
+            org.vaadin.addons:aceeditor:0.8.15
+            org.vaadin.addons:popupbutton:3.0.0
+            org.vaadin.addons:dragdroplayouts:1.4.2.cuba.0
+        */
 
         /* WebJar dependencies */
         compile(bom['org.webjars:jquery'])
         compile(bom['org.webjars:jquery-ui'])
         compile(bom['org.webjars.bower:jquery-file-upload'])
         compile(bom['org.webjars.npm:object-fit-images'])
+        compile(bom['org.webjars.bower:ace-builds'])
+        compile(bom['org.webjars:diff-match-patch'])
     }
 
     jar {

@@ -29,6 +29,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.VDDTabSheet;
 import com.haulmont.cuba.web.widgets.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.WidgetUtil;
@@ -36,7 +37,6 @@ import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.client.ui.dd.VDragAndDropManager;
 import com.vaadin.client.ui.dd.VDragEvent;
 import com.vaadin.shared.ui.tabsheet.TabState;
-import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
 public class CubaTabSheetWidget extends VDDTabSheet {
 

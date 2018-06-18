@@ -20,12 +20,12 @@ package com.haulmont.cuba.web.widgets.client.tabsheet;
 import com.haulmont.cuba.web.widgets.CubaTabSheet;
 import com.haulmont.cuba.web.widgets.client.action.RemoteAction;
 import com.haulmont.cuba.web.widgets.client.action.StaticActionOwner;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.DDTabsheetConnector;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
 import com.vaadin.shared.ui.Connect;
-import fi.jasoft.dragdroplayouts.client.ui.tabsheet.DDTabsheetConnector;
 
 @Connect(CubaTabSheet.class)
 public class CubaTabSheetConnector extends DDTabsheetConnector {

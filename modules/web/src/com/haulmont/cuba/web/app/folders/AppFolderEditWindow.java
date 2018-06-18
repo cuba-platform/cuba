@@ -31,7 +31,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaSourceCodeEditor;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang3.StringUtils;
-import org.vaadin.aceeditor.AceMode;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.AceMode;
 
 import java.lang.reflect.Constructor;
 import java.util.List;

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.sourcecodeeditor;
 
 import com.google.gwt.dom.client.Style;
-import org.vaadin.aceeditor.client.SuggestPopup;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggestPopup;
 
 public class CubaSuggestPopup extends SuggestPopup {
 

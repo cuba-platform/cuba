@@ -26,6 +26,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.client.Tools;
+import com.haulmont.cuba.web.widgets.client.addons.popupbutton.PopupButtonConnector;
+import com.haulmont.cuba.web.widgets.client.addons.popupbutton.PopupButtonServerRpc;
 import com.haulmont.cuba.web.widgets.client.jqueryfileupload.CubaFileUploadWidget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
@@ -34,8 +36,6 @@ import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VUpload;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import com.vaadin.shared.ui.Connect;
-import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
-import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonServerRpc;
 
 import static com.haulmont.cuba.web.widgets.client.popupbutton.CubaPopupButtonWidget.SELECTED_ITEM_STYLE;
 

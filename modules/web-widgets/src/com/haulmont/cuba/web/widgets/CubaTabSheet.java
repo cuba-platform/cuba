@@ -27,7 +27,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.TabSheet;
-import fi.jasoft.dragdroplayouts.DDTabSheet;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
 import java.util.function.BiConsumer;

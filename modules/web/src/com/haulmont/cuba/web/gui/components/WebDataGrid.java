@@ -53,8 +53,8 @@ import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.*;
-import com.vaadin.contextmenu.Menu;
-import com.vaadin.contextmenu.MenuItem;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.Menu;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
@@ -399,7 +399,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected void initContextMenu() {
-        contextMenu = new CubaGridContextMenu(component);
+        // VAADIN8: gg,
+        /*contextMenu = new CubaGridContextMenu(component);
 
         contextMenu.addGridBodyContextMenuListener(event -> {
             if (!component.getSelectedRows().contains(event.getItemId())) {
@@ -412,7 +413,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 //noinspection unchecked
                 setSelected((E) datasource.getItem(event.getItemId()));
             }
-        });
+        });*/
     }
 
     protected void refreshActionsState() {
@@ -1514,7 +1515,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
             if (menuItemWrapper != null) {
                 menuItemWrapper.setAction(null);
-                contextMenu.removeItem(menuItemWrapper.getMenuItem());
+                // VAADIN8: gg,
+//                contextMenu.removeItem(menuItemWrapper.getMenuItem());
             }
 
             shortcutsDelegate.removeAction(action);

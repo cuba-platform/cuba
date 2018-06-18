@@ -27,8 +27,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
-import com.vaadin.contextmenu.ContextMenu;
-import com.vaadin.contextmenu.MenuItem;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.ContextMenu;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.vaadin.ui.AbstractComponent;
 
 import javax.inject.Inject;

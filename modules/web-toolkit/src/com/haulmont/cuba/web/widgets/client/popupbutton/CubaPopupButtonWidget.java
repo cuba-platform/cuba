@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.popupbutton;
 
-import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
+import com.haulmont.cuba.web.widgets.client.addons.popupbutton.VPopupButton;
 
 public class CubaPopupButtonWidget extends VPopupButton {
 

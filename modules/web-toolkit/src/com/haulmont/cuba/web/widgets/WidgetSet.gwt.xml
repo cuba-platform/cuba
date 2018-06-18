@@ -19,12 +19,6 @@
     <!-- Inherit DefaultWidgetSet -->
     <inherits name="com.vaadin.v7.Vaadin7WidgetSet"/>
 
-    <!-- Add-ons -->
-    <inherits name="org.vaadin.aceeditor.AceEditorWidgetSet"/>
-    <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
-    <inherits name="fi.jasoft.dragdroplayouts.DragDropLayoutsWidgetSet"/>
-    <inherits name="com.vaadin.contextmenu.WidgetSet"/>
-
     <replace-with class="com.haulmont.cuba.web.widgets.client.tooltip.CubaTooltip">
         <when-type-is class="com.vaadin.client.VTooltip"/>
     </replace-with>

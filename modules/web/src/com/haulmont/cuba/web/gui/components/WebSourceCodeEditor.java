@@ -23,10 +23,10 @@ import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.web.widgets.CubaSourceCodeEditor;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.AceMode;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.Suggestion;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.SuggestionExtension;
 import org.apache.commons.lang3.StringUtils;
-import org.vaadin.aceeditor.AceMode;
-import org.vaadin.aceeditor.Suggestion;
-import org.vaadin.aceeditor.SuggestionExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -229,7 +229,7 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
         component.setTabIndex(tabIndex);
     }
 
-    protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
+    protected class SourceCodeEditorSuggester implements com.haulmont.cuba.web.widgets.addons.aceeditor.Suggester {
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {
             if (suggester == null) {

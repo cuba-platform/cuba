@@ -16,10 +16,10 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.addons.aceeditor.AceEditor;
 import com.haulmont.cuba.web.widgets.client.sourcecodeeditor.CubaSourceCodeEditorClientRpc;
 import com.haulmont.cuba.web.widgets.client.sourcecodeeditor.CubaSourceCodeEditorState;
 import com.vaadin.server.ErrorMessage;
-import org.vaadin.aceeditor.AceEditor;
 
 public class CubaSourceCodeEditor extends AceEditor {
 

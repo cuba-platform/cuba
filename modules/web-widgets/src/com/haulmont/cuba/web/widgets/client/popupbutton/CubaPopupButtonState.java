@@ -17,8 +17,8 @@
 
 package com.haulmont.cuba.web.widgets.client.popupbutton;
 
+import com.haulmont.cuba.web.widgets.client.addons.popupbutton.PopupButtonState;
 import com.vaadin.shared.annotations.NoLayout;
-import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonState;
 
 public class CubaPopupButtonState extends PopupButtonState {
 

@@ -31,8 +31,8 @@ import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.hascontexthelp.HasContextHelpServerRpc;
-import org.vaadin.aceeditor.client.AceEditorConnector;
-import org.vaadin.aceeditor.client.AceEditorWidget;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorConnector;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorWidget;
 
 @Connect(CubaSourceCodeEditor.class)
 public class CubaSourceCodeEditorConnector extends AceEditorConnector implements HasContextHelpConnector {

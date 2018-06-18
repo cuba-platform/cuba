@@ -33,13 +33,13 @@ import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
-import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;

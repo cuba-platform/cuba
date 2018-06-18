@@ -103,8 +103,20 @@
 @import "app/report-templates";
 @import "app/localized-frame";
 
+// Add-ons
+@import "addons/aceeditor/ace-gwt";
+@import "addons/aceeditor/suggestionpopup";
+@import "addons/popupbutton/popupbutton";
+@import "addons/dragdroplayouts/dragdroplayouts";
+
 @mixin halo {
   @include valo;
+
+  // Add-ons
+  @include addon-aceeditor;
+  @include addon-aceeditor-suggestpopup;
+  @include addon-popupbutton;
+  @include addon-dragdroplayouts;
 
   @include halo-common;
 
