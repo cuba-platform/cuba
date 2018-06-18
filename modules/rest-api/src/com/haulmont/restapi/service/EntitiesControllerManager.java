@@ -115,7 +115,7 @@ public class EntitiesControllerManager {
 
         restControllerUtils.applyAttributesSecurity(entity);
 
-        String json = entitySerializationAPI.toJson(entity, null, serializationOptions.toArray(new EntitySerializationOption[0]));
+        String json = entitySerializationAPI.toJson(entity, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
         json = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.TO_VERSION, json);
         return json;
     }
