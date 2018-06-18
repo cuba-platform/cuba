@@ -50,7 +50,7 @@ public class CubaPickerField extends com.vaadin.v7.ui.CustomField implements Act
         initLayout();
     }
 
-    public CubaPickerField(com.vaadin.v7.ui.AbstractField field) {
+    public CubaPickerField(com.vaadin.ui.AbstractComponent field) {
         init();
 
         this.field = field;

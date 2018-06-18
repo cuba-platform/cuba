@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.widgets.CComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -43,7 +44,18 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebLookupPickerField() {
+
+        CComboBox selectComponent = component;
+        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
+            @Override
+            public void setRequired(boolean required) {
+                super.setRequired(required);
+                selectComponent.setEmptySelectionAllowed(!required);
+            }
+        };
+        pickerField = new WebPickerField(picker); // vaadin8 fix this
     }
+
 /* vaadin8
     @Override
     protected void createComponent() {
@@ -298,8 +310,7 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
 
     @Override
     public void setRequired(boolean required) {
-//        vaadin8
-//        component.setNullSelectionAllowed(!required);
+        component.setEmptySelectionAllowed(!required);
         pickerField.setRequired(required);
     }
 

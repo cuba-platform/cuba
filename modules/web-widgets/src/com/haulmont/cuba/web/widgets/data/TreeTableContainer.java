@@ -19,8 +19,5 @@ package com.haulmont.cuba.web.widgets.data;
 import com.vaadin.v7.data.Container;
 
 public interface TreeTableContainer extends TableSortableContainer, Container.Hierarchical {
-    String getCaption(Object itemId);
-    boolean setCaption(Object itemId, String caption);
-
     int getLevel(Object itemId);
 }

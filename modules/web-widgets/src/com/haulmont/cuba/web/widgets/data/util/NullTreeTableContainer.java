@@ -26,9 +26,10 @@ import com.vaadin.v7.data.util.ContainerHierarchicalWrapper;
 import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class TreeTableContainerWrapper
-        extends ContainerHierarchicalWrapper
+public class NullTreeTableContainer extends ContainerHierarchicalWrapper
         implements TreeTableContainer, AggregationContainer, Container.Ordered {
+
+    public static final String ERROR_MESSAGE = "Wrapped container is not TreeTableContainer";
 
     protected Set<Object> expanded; // Contains expanded items ids
 
@@ -38,7 +39,7 @@ public class TreeTableContainerWrapper
 
     protected Object first;
 
-    public TreeTableContainerWrapper(TreeTableContainer toBeWrapped) {
+    public NullTreeTableContainer(Container toBeWrapped) {
         super(toBeWrapped);
 
         inline = new LinkedList<>();
@@ -206,37 +207,8 @@ public class TreeTableContainerWrapper
     }
 
     @Override
-    public String getCaption(Object itemId) {
-        if (itemId != null) {
-            return captions.get(itemId);
-        }
-        throw new IllegalArgumentException("Item id cannot be NULL");
-    }
-
-    @Override
-    public boolean setCaption(Object itemId, String caption) {
-        if (itemId != null) {
-            return _container().setCaption(itemId, caption);
-        }
-        throw new IllegalArgumentException("Item id cannot be NULL");
-    }
-
-    @Override
     public int getLevel(Object itemId) {
-        if (itemId != null) {
-            return _container().getLevel(itemId);
-        }
-        throw new IllegalArgumentException("Item id cannot be NULL");
-    }
-
-    protected int getItemLevel(Object itemId) {
-        if (rootItemIds().size() == _container().size()) //no children;
-            return -1;
-        Object parentId;
-        if ((parentId = getParent(itemId)) == null) {
-            return 0;
-        }
-        return getItemLevel(parentId) + 1;
+        throw new IllegalArgumentException(ERROR_MESSAGE);
     }
 
     public boolean isExpanded(Object itemId) {
@@ -270,27 +242,6 @@ public class TreeTableContainerWrapper
         return false;
     }
 
-    public void setCollapsed(Object itemId) {
-        if (itemId == null) {
-            throw new IllegalArgumentException("Item id cannot be NULL");
-        }
-
-        if (areChildrenAllowed(itemId)) {
-            if (!isExpanded(itemId)) {
-                return;
-            }
-
-            if (containsInline(itemId)) {
-                List<Object> inlineChildren = getInlineChildren(itemId);
-                if (inlineChildren != null) {
-                    inline.removeAll(inlineChildren);
-                }
-            }
-
-            expanded.remove(itemId);
-        }
-    }
-
     public void expandAll() {
         collapseAll();
         if (_hierarchical()) {
@@ -313,23 +264,10 @@ public class TreeTableContainerWrapper
         }
     }
 
-    public boolean isAllCollapsed() {
-        return expanded.isEmpty();
-    }
-
     public void collapseAll() {
         expanded.clear();
         inline.clear();
         makeInlineElements(inline, rootItemIds());
-    }
-
-    protected void collapseAll(Collection itemIds) {
-        for (final Object itemId : itemIds) {
-            if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
-                setCollapsed(itemId);
-                collapseAll(getChildren(itemId));
-            }
-        }
     }
 
     protected LinkedList<Object> getInlineChildren(Object itemId) {
@@ -381,69 +319,41 @@ public class TreeTableContainerWrapper
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        _container().sort(propertyId, ascending);
-        updateHierarchicalWrapper();
+        throw new IllegalArgumentException(ERROR_MESSAGE);
     }
 
     @Override
     public Collection getSortableContainerPropertyIds() {
-        return _container().getSortableContainerPropertyIds();
+        throw new IllegalArgumentException(ERROR_MESSAGE);
     }
 
     @Override
     public Collection getAggregationPropertyIds() {
-        if (_container() instanceof AggregationContainer) {
-            return ((AggregationContainer) _container()).getAggregationPropertyIds();
-        }
-        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
-                + _container().getClass());
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }
 
     @Override
     public Type getContainerPropertyAggregation(Object propertyId) {
-        if (_container() instanceof AggregationContainer) {
-            return ((AggregationContainer) _container()).getContainerPropertyAggregation(propertyId);
-        }
-        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
-                + _container().getClass());
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }
 
     @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
-        if (_container() instanceof AggregationContainer) {
-            ((AggregationContainer) _container()).addContainerPropertyAggregation(propertyId, type);
-        } else {
-            throw new IllegalStateException("Wrapped container is not AggregationContainer: "
-                    + _container().getClass());
-        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }
 
     @Override
     public void removeContainerPropertyAggregation(Object propertyId) {
-        if (_container() instanceof AggregationContainer) {
-            ((AggregationContainer) _container()).removeContainerPropertyAggregation(propertyId);
-        } else {
-            throw new IllegalStateException("Wrapped container is not AggregationContainer: "
-                    + _container().getClass());
-        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }
 
     @Override
     public Map<Object, Object> aggregate(Context context) {
-        if (_container() instanceof AggregationContainer) {
-            return ((AggregationContainer) _container()).aggregate(context);
-        }
-        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
-                + _container().getClass());
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }
 
     @Override
     public void resetSortOrder() {
-        _container().resetSortOrder();
-    }
-
-    @Override
-    protected TreeTableContainer _container() {
-        return (TreeTableContainer) super._container();
+        throw new IllegalArgumentException(ERROR_MESSAGE);
     }
 }

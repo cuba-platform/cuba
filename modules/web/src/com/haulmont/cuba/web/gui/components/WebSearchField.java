@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.widgets.CComboBox;
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,7 +56,7 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
 
 //    vaadin8
 //    @Override
-    protected void createComponent() {
+    protected CComboBox createComponent() {
         /* vaadin8
         this.component = new CubaSearchSelect() {
             @Override
@@ -81,6 +82,8 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
         };*/
 
         getSearchComponent().setFilterHandler(this::executeSearch);
+
+        return null;
     }
 
     protected void executeSearch(final String newFilter) {

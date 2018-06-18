@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.widgets.data;
 
 import com.vaadin.v7.data.Container;
 
+@SuppressWarnings("deprecation")
 public interface TableSortableContainer extends Container.Sortable {
 
     void resetSortOrder();

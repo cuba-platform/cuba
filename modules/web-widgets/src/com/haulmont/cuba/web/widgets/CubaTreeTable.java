@@ -24,7 +24,7 @@ import com.haulmont.cuba.web.widgets.client.treetable.CubaTreeTableState;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
-import com.haulmont.cuba.web.widgets.data.util.TreeTableContainerWrapper;
+import com.haulmont.cuba.web.widgets.data.util.NullTreeTableContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
@@ -40,6 +40,7 @@ import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.ContainerOrderedWrapper;
 import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Field;
 
 import java.util.*;
@@ -240,16 +241,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     }
 
     @Override
-    public String getCaption(Object itemId) {
-        return ((TreeTableContainer) items).getCaption(itemId);
-    }
-
-    @Override
-    public boolean setCaption(Object itemId, String caption) {
-        return ((TreeTableContainer) items).setCaption(itemId, caption);
-    }
-
-    @Override
     public int getLevel(Object itemId) {
         return ((TreeTableContainer) items).getLevel(itemId);
     }
@@ -257,7 +248,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
 
-        if (Page.getCurrent().getWebBrowser().isIE() && variables.containsKey("clickEvent")) {
+        if (Page.getCurrent().getWebBrowser().isIE()
+                && variables.containsKey("clickEvent")) {
             focus();
         }
 
@@ -422,11 +414,14 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     public void setContainerDataSource(Container newDataSource) {
         disableContentRefreshing();
-        if (newDataSource == null) {
-            newDataSource = new HierarchicalContainer();
+
+        if (newDataSource == null || newDataSource instanceof IndexedContainer) { // if it is just created
+            newDataSource = new NullTreeTableContainer(new HierarchicalContainer());
+        } else if (!(newDataSource instanceof Container.Hierarchical)) {
+            throw new IllegalArgumentException("CubaTreeTable supports only Container.Hierarchical");
         }
 
-        super.setContainerDataSource(new TreeTableContainerWrapper((TreeTableContainer) newDataSource));
+        super.setContainerDataSource(newDataSource);
     }
 
     public void expandAll() {

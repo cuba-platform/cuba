@@ -17,14 +17,16 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.table.HierarchicalDatasourceTableAdapter;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface TreeTable<E extends Entity> extends Table<E> {
 
     String NAME = "treeTable";
-
-    String getHierarchyProperty();
-    void setDatasource(HierarchicalDatasource datasource);
 
     void expandAll();
     void expand(Object itemId);
@@ -45,5 +47,19 @@ public interface TreeTable<E extends Entity> extends Table<E> {
     boolean isExpanded(Object itemId);
 
     @Override
-    HierarchicalDatasource getDatasource();
+    @Deprecated
+    default HierarchicalDatasource getDatasource() {
+        TableSource<E> tableSource = getTableSource();
+        if (tableSource == null) {
+            return null;
+        }
+
+        HierarchicalDatasourceTableAdapter adapter = (HierarchicalDatasourceTableAdapter) tableSource;
+        return (HierarchicalDatasource) adapter.getDatasource();
+    }
+
+    @Deprecated
+    default void setDatasource(HierarchicalDatasource datasource) {
+        setDatasource((CollectionDatasource) datasource);
+    }
 }

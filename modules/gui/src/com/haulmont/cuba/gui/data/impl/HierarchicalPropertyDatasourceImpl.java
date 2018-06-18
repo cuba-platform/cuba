@@ -41,36 +41,39 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         this.hierarchyPropertyName = hierarchyPropertyName;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<K> getChildren(K itemId) {
         if (hierarchyPropertyName != null) {
-            final Entity item = getItem(itemId);
-            if (item == null)
+            Entity item = getItem(itemId);
+            if (item == null) {
                 return Collections.emptyList();
+            }
 
             List<K> res = new ArrayList<>();
 
             Collection<K> ids = getItemIds();
             for (K id : ids) {
-                Entity<K> currentItem = getItem(id);
+                Entity<K> currentItem = getItemNN(id);
                 Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     res.add(currentItem.getId());
             }
 
             if (StringUtils.isNotBlank(sortPropertyName)) {
-                Collections.sort(res, new Comparator<K>() {
-                    @Override
-                    public int compare(K o1, K o2) {
-                        Entity item1 = getItem(o1);
-                        Entity item2 = getItem(o2);
-                        Object value1 = item1.getValue(sortPropertyName);
-                        Object value2 = item2.getValue(sortPropertyName);
-                        if ((value1 instanceof Comparable) && (value2 instanceof Comparable))
-                            return ((Comparable) value1).compareTo(value2);
+                res.sort((o1, o2) -> {
+                    Entity item1 = getItemNN(o1);
+                    Entity item2 = getItemNN(o2);
 
-                        return 0;
+                    Object value1 = item1.getValue(sortPropertyName);
+                    Object value2 = item2.getValue(sortPropertyName);
+
+                    if ((value1 instanceof Comparable)
+                            && (value2 instanceof Comparable)) {
+                        return ((Comparable) value1).compareTo(value2);
                     }
+
+                    return 0;
                 });
             }
 
@@ -93,6 +96,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<K> getRootItemIds() {
         Collection<K> ids = getItemIds();
@@ -110,6 +114,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isRoot(K itemId) {
         Instance item = getItem(itemId);

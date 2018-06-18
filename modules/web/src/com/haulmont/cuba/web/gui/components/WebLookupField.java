@@ -79,7 +79,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
     protected Locale locale;
 
     public WebLookupField() {
-        this.component = new CComboBox<>();
+        this.component = createComponent();
 
         attachValueChangeListener(component);
         setNewOptionAllowed(false);
@@ -104,6 +104,10 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
                                 setValue(null);
                             }
                         }));
+    }
+
+    protected CComboBox<V> createComponent() {
+        return new CComboBox<>();
     }
 
     @Override
