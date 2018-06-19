@@ -20,7 +20,6 @@ package com.haulmont.cuba.desktop.app;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-
 import org.springframework.stereotype.Component;
 
 @Component(ThemeConstantsManager.NAME)
@@ -28,20 +27,5 @@ public class DesktopThemeConstantsManager implements ThemeConstantsManager {
     @Override
     public ThemeConstants getConstants() {
         return App.getInstance().getThemeConstants();
-    }
-
-    @Override
-    public String getThemeValue(String key) {
-        return getConstants().get(key);
-    }
-
-    @Override
-    public int getThemeValueInt(String key) {
-        return getConstants().getInt(key);
-    }
-
-    @Override
-    public boolean getThemeValueBoolean(String key) {
-        return getConstants().getBoolean(key);
     }
 }

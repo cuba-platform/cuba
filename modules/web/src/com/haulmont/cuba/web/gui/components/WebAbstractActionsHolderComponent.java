@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.vaadin.event.ShortcutListener;
@@ -94,7 +95,8 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
 
     @Inject
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
-        this.showIconsForPopupMenuActions = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
+        ThemeConstants theme = themeConstantsManager.getConstants();
+        this.showIconsForPopupMenuActions = theme.getBoolean("cuba.gui.showIconsForPopupMenuActions", false);
     }
 
     @Override

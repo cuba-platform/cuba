@@ -23,7 +23,19 @@ public interface ThemeConstantsManager {
 
     ThemeConstants getConstants();
 
-    String getThemeValue(String key);
-    int getThemeValueInt(String key);
-    boolean getThemeValueBoolean(String key);
+    /**
+     * @deprecated Get constants explicitly instead.
+     */
+    @Deprecated
+    default String getThemeValue(String key) {
+        return getConstants().get(key);
+    }
+
+    /**
+     * @deprecated Get constants explicitly instead.
+     */
+    @Deprecated
+    default int getThemeValueInt(String key) {
+        return getConstants().getInt(key);
+    }
 }

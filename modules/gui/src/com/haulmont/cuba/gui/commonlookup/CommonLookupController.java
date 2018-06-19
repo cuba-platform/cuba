@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -59,9 +60,13 @@ public class CommonLookupController extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        getDialogOptions().setWidth(themeConstantsManager.getThemeValue("cuba.gui.commonLookup.width"))
-                .setHeight(themeConstantsManager.getThemeValue("cuba.gui.commonLookup.height"))
+
+        ThemeConstants theme = themeConstantsManager.getConstants();
+        getDialogOptions()
+                .setWidth(theme.get("cuba.gui.commonLookup.width"))
+                .setHeight(theme.get("cuba.gui.commonLookup.height"))
                 .setResizable(true);
+
         setCaption(messageTools.getEntityCaption(metaClass));
         initView();
         initDatasource();

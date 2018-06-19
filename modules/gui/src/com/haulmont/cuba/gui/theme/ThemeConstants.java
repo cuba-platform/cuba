@@ -22,7 +22,6 @@ import java.util.Map;
 
 /**
  * Theme defaults for application UI, components and screens.
- *
  */
 public class ThemeConstants {
 
@@ -51,11 +50,33 @@ public class ThemeConstants {
         return Integer.parseInt(value);
     }
 
+    public int getInt(String key, int defaultValue) {
+        String value = properties.get(key);
+        if (value != null && value.endsWith("px")) {
+            value = value.substring(0, value.length() - 2);
+        }
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        return Integer.parseInt(value);
+    }
+
     public boolean getBoolean(String key) {
         String value = properties.get(key);
 
         if (value == null) {
             throw new IllegalArgumentException("Null value for theme key " + key);
+        }
+
+        return Boolean.parseBoolean(value);
+    }
+
+    public boolean getBoolean(String key, boolean defaultValue) {
+        String value = properties.get(key);
+        if (value == null) {
+            return defaultValue;
         }
 
         return Boolean.parseBoolean(value);

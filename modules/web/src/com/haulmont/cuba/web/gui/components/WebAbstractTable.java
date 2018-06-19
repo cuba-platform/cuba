@@ -53,14 +53,13 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.Presentation;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.components.table.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
@@ -878,9 +877,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         setClientCaching(component);
 
         int defaultRowHeaderWidth = 16;
-        ThemeConstants theme = App.getInstance().getThemeConstants();
+        ThemeConstantsManager themeConstantsManager =
+                applicationContext.getBean(ThemeConstantsManager.NAME, ThemeConstantsManager.class);
+        ThemeConstants theme = themeConstantsManager.getConstants();
         if (theme != null) {
-            defaultRowHeaderWidth = theme.getInt("cuba.web.Table.defaultRowHeaderWidth");
+            defaultRowHeaderWidth = theme.getInt("cuba.web.Table.defaultRowHeaderWidth", 16);
         }
 
         component.setColumnWidth(ROW_HEADER_PROPERTY_ID, defaultRowHeaderWidth);

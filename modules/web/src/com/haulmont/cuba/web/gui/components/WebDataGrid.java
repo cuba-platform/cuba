@@ -225,7 +225,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Inject
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
-        this.showIconsForPopupMenuActions = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
+        ThemeConstants theme = themeConstantsManager.getConstants();
+        this.showIconsForPopupMenuActions = theme.getBoolean("cuba.gui.showIconsForPopupMenuActions", false);
     }
 
     protected void initComponent(CubaGrid component) {

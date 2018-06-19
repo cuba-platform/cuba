@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
@@ -79,7 +80,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Inject
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
-        this.showActionIcons = themeConstantsManager.getThemeValueBoolean("cuba.gui.showIconsForPopupMenuActions");
+        ThemeConstants theme = themeConstantsManager.getConstants();
+        this.showActionIcons = theme.getBoolean("cuba.gui.showIconsForPopupMenuActions", false);
     }
 
     protected CubaPopupButtonLayout createActionsContainer() {
