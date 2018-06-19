@@ -82,7 +82,7 @@ public class SideMenuBuilder {
 
     protected void removeExtraSeparators(SideMenu menuBar) {
         List<SideMenu.MenuItem> menuItems = menuBar.getMenuItems();
-        for (SideMenu.MenuItem item : menuItems.toArray(new SideMenu.MenuItem[menuItems.size()])) {
+        for (SideMenu.MenuItem item : menuItems.toArray(new SideMenu.MenuItem[0])) {
             removeExtraSeparators(item);
             if (isMenuItemEmpty(item)) {
                 menuBar.removeMenuItem(item);
@@ -97,7 +97,7 @@ public class SideMenuBuilder {
         // SideMenu does not support separator elements
         if (item.hasChildren()) {
             SideMenu.MenuItem[] menuItems =
-                    item.getChildren().toArray(new SideMenu.MenuItem[item.getChildren().size()]);
+                    item.getChildren().toArray(new SideMenu.MenuItem[0]);
 
             for (SideMenu.MenuItem child : menuItems) {
                 removeExtraSeparators(child);
@@ -174,10 +174,7 @@ public class SideMenuBuilder {
     }
 
     protected Consumer<SideMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-        MenuCommand command = new MenuCommand(item);
-
-        return event ->
-                command.execute();
+        return new MenuCommandExecutor(item);
     }
 
     protected boolean isMenuItemEmpty(SideMenu.MenuItem menuItem) {
@@ -233,6 +230,20 @@ public class SideMenuBuilder {
             if (command != null) {
                 command.accept(menuItem);
             }
+        }
+    }
+
+    public static class MenuCommandExecutor implements Consumer<SideMenu.MenuItem> {
+        private final MenuItem item;
+
+        public MenuCommandExecutor(MenuItem item) {
+            this.item = item;
+        }
+
+        @Override
+        public void accept(SideMenu.MenuItem menuItem) {
+            MenuCommand command = new MenuCommand(item);
+            command.execute();
         }
     }
 }

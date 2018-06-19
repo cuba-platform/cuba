@@ -353,7 +353,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
             this.command = command;
 
             if (command != null) {
-                delegateItem.setCommand(event -> this.command.accept(this));
+                delegateItem.setCommand(this::menuSelected);
             } else {
                 delegateItem.setCommand(null);
             }
@@ -427,6 +427,10 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         protected void setSeparator(boolean separator) {
             this.separator = separator;
+        }
+
+        protected void menuSelected(@SuppressWarnings("unused") MenuBar.MenuItem event) {
+            this.command.accept(this);
         }
     }
 }

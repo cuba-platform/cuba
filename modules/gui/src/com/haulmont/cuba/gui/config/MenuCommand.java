@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -43,31 +42,29 @@ import java.util.function.Consumer;
 public class MenuCommand {
 
     protected MenuItem item;
-
     protected MenuItemCommand command;
 
     public MenuCommand(MenuItem item) {
         this.item = item;
-
-        createCommand();
+        this.command = createCommand(item);
     }
 
-    protected void createCommand() {
+    protected MenuItemCommand createCommand(MenuItem item) {
         Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
 
         if (StringUtils.isNotEmpty(item.getScreen())) {
-            command = new ScreenCommand(item.getScreen(), item.getDescriptor(), params);
-            return;
+            return new ScreenCommand(item.getScreen(), item.getDescriptor(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getRunnableClass())) {
-            command = new RunnableClassCommand(item.getRunnableClass(), params);
-            return;
+            return new RunnableClassCommand(item.getRunnableClass(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getBean())) {
-            command = new BeanCommand(item.getBean(), item.getBeanMethod(), params);
+            return new BeanCommand(item.getBean(), item.getBeanMethod(), params);
         }
+
+        return null;
     }
 
     public void execute() {
@@ -84,7 +81,8 @@ public class MenuCommand {
 
     protected Map<String, Object> loadParams(Element descriptor, String screen) {
         Map<String, Object> params = new HashMap<>();
-        for (Element element : Dom4j.elements(descriptor, "param")) {
+
+        for (Element element : descriptor.elements("param")) {
             String value = element.attributeValue("value");
             EntityLoadInfo info = EntityLoadInfo.parse(value);
             if (info == null) {
@@ -94,8 +92,9 @@ public class MenuCommand {
                 } else {
                     if (value.startsWith("${") && value.endsWith("}")) {
                         String property = AppContext.getProperty(value.substring(2, value.length() - 1));
-                        if (!StringUtils.isEmpty(property))
+                        if (!StringUtils.isEmpty(property)) {
                             value = property;
+                        }
                     }
                     params.put(element.attributeValue("name"), value);
                 }
@@ -127,7 +126,7 @@ public class MenuCommand {
         String getDescription();
     }
 
-    protected class ScreenCommand implements MenuItemCommand {
+    protected static class ScreenCommand implements MenuItemCommand {
 
         protected String screen;
         protected Element descriptor;
@@ -147,8 +146,6 @@ public class MenuCommand {
                 openType = OpenType.valueOf(openTypeStr);
             }
 
-            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-
             if (openType.getOpenMode() == OpenMode.DIALOG) {
                 String resizable = descriptor.attributeValue("resizable");
                 if (StringUtils.isNotEmpty(resizable)) {
@@ -159,7 +156,10 @@ public class MenuCommand {
             WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screen);
 
             final String id = windowInfo.getId();
-            if (id.endsWith(Window.CREATE_WINDOW_SUFFIX) || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+
+            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+            if (id.endsWith(Window.CREATE_WINDOW_SUFFIX)
+                    || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
                 Entity entityItem;
                 if (params.containsKey("item")) {
                     entityItem = (Entity) params.get("item");
@@ -188,7 +188,7 @@ public class MenuCommand {
         }
     }
 
-    protected class BeanCommand implements MenuItemCommand {
+    protected static class BeanCommand implements MenuItemCommand {
 
         protected String bean;
         protected String beanMethod;
@@ -210,9 +210,9 @@ public class MenuCommand {
                     return;
                 }
 
-                MethodUtils.invokeMethod(beanInstance, beanMethod, null);
+                MethodUtils.invokeMethod(beanInstance, beanMethod, (Object[]) null);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to execute bean method", e);
             }
         }
 
@@ -222,7 +222,7 @@ public class MenuCommand {
         }
     }
 
-    protected class RunnableClassCommand implements MenuItemCommand {
+    protected static class RunnableClassCommand implements MenuItemCommand {
 
         protected String runnableClass;
         protected Map<String, Object> params;
@@ -232,6 +232,7 @@ public class MenuCommand {
             this.params = params;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             Class<?> clazz = AppBeans.get(Scripting.class).loadClass(runnableClass);
@@ -239,21 +240,22 @@ public class MenuCommand {
                 throw new IllegalStateException(String.format("Can't load class: %s", runnableClass));
             }
 
-            if (!Runnable.class.isAssignableFrom(clazz) && !Consumer.class.isAssignableFrom(clazz)) {
-                throw new IllegalStateException(String.format("Class \"%s\" should implement Runnable or Consumer<Map<String, Object>>", runnableClass));
+            if (!Runnable.class.isAssignableFrom(clazz)
+                    && !Consumer.class.isAssignableFrom(clazz)) {
+                throw new IllegalStateException(String.format("Class \"%s\" must implement Runnable or Consumer<Map<String, Object>>", runnableClass));
             }
 
+            Object classInstance;
             try {
-                Object classInstance = clazz.newInstance();
-
-                if (classInstance instanceof Consumer) {
-                    ((Consumer) classInstance).accept(params);
-                    return;
-                }
-
-                ((Runnable) classInstance).run();
+                classInstance = clazz.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
+            }
+
+            if (classInstance instanceof Consumer) {
+                ((Consumer) classInstance).accept(params);
+            } else {
+                ((Runnable) classInstance).run();
             }
         }
 

@@ -483,7 +483,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
             this.command = command;
 
             if (command != null) {
-                delegateItem.setCommand(event -> this.command.accept(this));
+                delegateItem.setCommand(this::menuSelected);
             } else {
                 delegateItem.setCommand(null);
             }
@@ -563,6 +563,11 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
                 throw new IllegalArgumentException("Unable to find parent for menu item with id: " + id);
             }
             return ((MenuItemWrapper) delegateItem.getParent()).getMenuItem();
+        }
+
+        @SuppressWarnings("unused")
+        protected void menuSelected(CubaSideMenu.MenuItemTriggeredEvent event) {
+            this.command.accept(this);
         }
     }
 }

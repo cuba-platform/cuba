@@ -103,7 +103,7 @@ public class MenuBuilder {
             done = true;
             if (item.hasChildren()) {
                 AppMenu.MenuItem[] children =
-                        item.getChildren().toArray(new AppMenu.MenuItem[item.getChildren().size()]);
+                        item.getChildren().toArray(new AppMenu.MenuItem[0]);
 
                 for (int i = 0; i < children.length; i++) {
                     AppMenu.MenuItem child = children[i];
@@ -191,10 +191,7 @@ public class MenuBuilder {
     }
 
     protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-        MenuCommand menuCommand = new MenuCommand(item);
-
-        return menuItem ->
-                menuCommand.execute();
+        return new MenuCommandExecutor(item);
     }
 
     protected boolean isMenuItemEmpty(AppMenu.MenuItem menuItem) {
@@ -231,6 +228,20 @@ public class MenuBuilder {
     protected void assignIcon(AppMenu.MenuItem menuItem, MenuItem conf) {
         if (conf.getIcon() != null) {
             menuItem.setIcon(conf.getIcon());
+        }
+    }
+
+    public static class MenuCommandExecutor implements Consumer<AppMenu.MenuItem> {
+        private final MenuItem item;
+
+        public MenuCommandExecutor(MenuItem item) {
+            this.item = item;
+        }
+
+        @Override
+        public void accept(AppMenu.MenuItem menuItem) {
+            MenuCommand command = new MenuCommand(item);
+            command.execute();
         }
     }
 }
