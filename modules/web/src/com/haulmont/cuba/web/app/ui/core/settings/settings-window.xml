@@ -65,7 +65,7 @@
                         <button id="changePasswordBtn" icon="icons/change-pass.png"/>
                     </row>
                     <row>
-                        <button id="resetScreenSettingsBtn" icon="icons/trash.png"/>
+                        <button id="resetScreenSettingsBtn" icon="icons/trash.png" stylename="danger"/>
                     </row>
                 </rows>
             </grid>

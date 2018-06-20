@@ -187,18 +187,7 @@ public class SettingsWindow extends AbstractWindow {
 
         resetScreenSettingsBtn.setAction(new BaseAction("resetScreenSettings")
                 .withCaption(getMessage("resetScreenSettings"))
-                .withHandler(buttonEvent ->
-                        showOptionDialog(getMessage("resetScreenSettings"),
-                                getMessage("resetScreenSettings.description"),
-                                MessageType.CONFIRMATION,
-                                new Action[]{
-                                        new DialogAction(DialogAction.Type.YES).withHandler(event -> {
-                                            userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
-                                            showNotification(getMessage("resetScreenSettings.notification"));
-                                        }),
-                                        new DialogAction(DialogAction.Type.NO)
-                                })
-                ));
+                .withHandler(buttonEvent -> showResetScreenSettingsDialog()));
 
         initDefaultScreenField();
     }
@@ -293,8 +282,20 @@ public class SettingsWindow extends AbstractWindow {
         userManagementService.saveOwnLocale(userLocale);
     }
 
-    protected List<String> getAllWindowIds(){
-        List<WindowInfo> windows = (List<WindowInfo>) windowConfig.getWindows();
-        return windows.stream().map(WindowInfo::getId).collect(Collectors.toList());
+    protected void showResetScreenSettingsDialog() {
+        showOptionDialog(getMessage("resetScreenSettings"),
+                getMessage("resetScreenSettings.description"),
+                MessageType.CONFIRMATION,
+                new Action[]{
+                        new DialogAction(DialogAction.Type.YES).withHandler(event -> {
+
+                            Set<WindowInfo> windows = (Set<WindowInfo>) windowConfig.getWindows();
+                            Set<String> windowIds = windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
+
+                            userSettingService.deleteScreenSettings(ClientType.WEB, windowIds);
+                            showNotification(getMessage("resetScreenSettings.notification"));
+                        }),
+                        new DialogAction(DialogAction.Type.NO)
+                });
     }
 }

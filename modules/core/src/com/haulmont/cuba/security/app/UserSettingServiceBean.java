@@ -166,7 +166,7 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
     @Override
-    public void deleteScreenSettings(ClientType clientType, List<String> screens) {
+    public void deleteScreenSettings(ClientType clientType, Set<String> screens) {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             TypedQuery<UserSetting> selectQuery = em.createQuery(

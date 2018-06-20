@@ -19,7 +19,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.security.entity.User;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Service providing current user settings functionality:
@@ -53,7 +53,7 @@ public interface UserSettingService {
      * Delete settings of screens (settings of tables, filters etc) for the current user.
      *
      * @param clientType client type
-     * @param screens list of window ids, whose settings must be deleted
+     * @param screens set of window ids, whose settings must be deleted
      */
-    void deleteScreenSettings(ClientType clientType, List<String> screens);
+    void deleteScreenSettings(ClientType clientType, Set<String> screens);
 }
