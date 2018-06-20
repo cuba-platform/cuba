@@ -192,8 +192,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     protected Object[] getNewColumnOrder(Object[] newGroupProperties) {
-        //noinspection unchecked
-        List<Object> allProps = new ArrayList<>(containerDatasource.getContainerPropertyIds());
+        List<Object> allProps = Arrays.asList(component.getVisibleColumns());
         List<Object> newGroupProps = Arrays.asList(newGroupProperties);
 
         allProps.removeAll(newGroupProps);
@@ -231,6 +230,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         Preconditions.checkNotNullArgument(properties);
         validateProperties(properties);
 
+        if (uselessGrouping(properties)) {
+            return;
+        }
+
         component.groupBy(properties);
         component.setColumnOrder(getNewColumnOrder(properties));
     }
@@ -239,12 +242,20 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     public void groupByColumns(String... columnIds) {
         Preconditions.checkNotNullArgument(columnIds);
 
+        if (uselessGrouping(columnIds)) {
+            return;
+        }
+
         groupBy(collectPropertiesByColumns(columnIds).toArray());
     }
 
     @Override
     public void ungroupByColumns(String... columnIds) {
         Preconditions.checkNotNullArgument(columnIds);
+
+        if (uselessGrouping(columnIds)) {
+            return;
+        }
 
         Object[] remainingGroups = CollectionUtils
                 .removeAll(component.getGroupProperties(), collectPropertiesByColumns(columnIds))
@@ -256,6 +267,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     @Override
     public void ungroup() {
         groupBy(new Object[]{});
+    }
+
+    protected boolean uselessGrouping(Object[] newGroupProperties) {
+        return (newGroupProperties == null || newGroupProperties.length == 0) &&
+                component.getGroupProperties().isEmpty();
     }
 
     @Override
