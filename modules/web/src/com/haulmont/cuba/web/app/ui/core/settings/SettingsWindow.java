@@ -288,14 +288,15 @@ public class SettingsWindow extends AbstractWindow {
                 MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.YES).withHandler(event -> {
-
-                            Set<WindowInfo> windows = (Set<WindowInfo>) windowConfig.getWindows();
-                            Set<String> windowIds = windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
-
-                            userSettingService.deleteScreenSettings(ClientType.WEB, windowIds);
+                            userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
                             showNotification(getMessage("resetScreenSettings.notification"));
                         }),
                         new DialogAction(DialogAction.Type.NO)
                 });
+    }
+
+    protected Set<String> getAllWindowIds() {
+        Set<WindowInfo> windows = (Set<WindowInfo>) windowConfig.getWindows();
+        return windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
     }
 }
