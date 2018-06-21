@@ -23,4 +23,8 @@ public class IllegalConcurrentAccessException extends RuntimeException {
     public IllegalConcurrentAccessException() {
         super("UI Shared state was accessed from a background thread");
     }
+
+    public IllegalConcurrentAccessException(String message) {
+        super(message);
+    }
 }

@@ -45,6 +45,9 @@ public class UserSettingServiceBean implements UserSettingService {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected Security security;
+
     @Override
     public String loadSetting(String name) {
         return loadSetting(null, name);
@@ -83,6 +86,7 @@ public class UserSettingServiceBean implements UserSettingService {
             } else {
                 us.setValue(value);
             }
+
             tx.commit();
         }
     }
@@ -91,8 +95,8 @@ public class UserSettingServiceBean implements UserSettingService {
     public void deleteSettings(ClientType clientType, String name) {
         try (Transaction tx = persistence.createTransaction()) {
             UserSetting us = findUserSettings(clientType, name);
-            EntityManager em = persistence.getEntityManager();
-            if(us!=null){
+            if (us!=null){
+                EntityManager em = persistence.getEntityManager();
                 em.remove(us);
             }
             tx.commit();
@@ -103,7 +107,6 @@ public class UserSettingServiceBean implements UserSettingService {
     public void copySettings(User fromUser, User toUser) {
         MetaClass metaClass = metadata.getClassNN(UserSetting.class);
 
-        Security security = AppBeans.get(Security.NAME);
         if (!security.isEntityOpPermitted(metaClass, EntityOp.CREATE)) {
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
         }
@@ -189,7 +192,8 @@ public class UserSettingServiceBean implements UserSettingService {
             Query delete = em.createQuery("delete from sec$Presentation p where p.user.id=?1");
             delete.setParameter(1, toUser);
             delete.executeUpdate();
-            Query selectQuery = em.createQuery("select p from sec$Presentation p where p.user.id=?1");
+            TypedQuery<Presentation> selectQuery = em.createQuery("select p from sec$Presentation p where p.user.id = ?1",
+                    Presentation.class);
             selectQuery.setParameter(1, fromUser);
             List<Presentation> presentations = selectQuery.getResultList();
             for (Presentation presentation : presentations) {
@@ -207,21 +211,26 @@ public class UserSettingServiceBean implements UserSettingService {
         }
     }
 
-
     protected void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
         try (Transaction tx = persistence.createTransaction()) {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
             EntityManager em = persistence.getEntityManager();
             try {
                 em.setSoftDeletion(false);
-                Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
+                Query deleteSettingsQuery = em.createQuery(
+                        String.format("delete from %s s where s.user.id = ?1", effectiveMetaClass.getName())
+                );
+
                 deleteSettingsQuery.setParameter(1, toUser);
                 deleteSettingsQuery.executeUpdate();
             } finally {
                 em.setSoftDeletion(true);
             }
-            Query q = em.createQuery("select s from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
+            TypedQuery<SearchFolder> q = em.createQuery(
+                    String.format("select s from %s s where s.user.id = ?1", effectiveMetaClass.getName()),
+                    SearchFolder.class);
             q.setParameter(1, fromUser);
+
             List<SearchFolder> fromUserFolders = q.getResultList();
             Map<SearchFolder, SearchFolder> copiedFolders = new HashMap<>();
             for (SearchFolder searchFolder : fromUserFolders) {
@@ -287,19 +296,25 @@ public class UserSettingServiceBean implements UserSettingService {
 
     protected Map<UUID, FilterEntity> copyFilters(User fromUser, User toUser) {
         Map<UUID, FilterEntity> filtersMap = new HashMap<>();
+
         try (Transaction tx = persistence.createTransaction()) {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
 
             EntityManager em = persistence.getEntityManager();
             try {
                 em.setSoftDeletion(false);
-                Query deleteFiltersQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
+                Query deleteFiltersQuery = em.createQuery(
+                        String.format("delete from %s f where f.user.id = ?1", effectiveMetaClass.getName())
+                );
                 deleteFiltersQuery.setParameter(1, toUser);
                 deleteFiltersQuery.executeUpdate();
             } finally {
                 em.setSoftDeletion(true);
             }
-            Query q = em.createQuery("select f from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
+
+            TypedQuery<FilterEntity> q = em.createQuery(
+                    String.format("select f from %s f where f.user.id = ?1", effectiveMetaClass.getName()),
+                    FilterEntity.class);
             q.setParameter(1, fromUser);
             List<FilterEntity> fromUserFilters = q.getResultList();
 
@@ -313,6 +328,7 @@ public class UserSettingServiceBean implements UserSettingService {
                 filtersMap.put(filter.getId(), newFilter);
                 em.persist(newFilter);
             }
+
             tx.commit();
             return filtersMap;
         }

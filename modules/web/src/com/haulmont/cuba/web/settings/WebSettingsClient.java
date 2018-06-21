@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.settings;
 
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.vaadin.server.VaadinSession;
@@ -25,9 +26,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * User settings provider for web application. Caches settings in HTTP session.
@@ -67,15 +68,23 @@ public class WebSettingsClient implements SettingsClient {
 
     public void clearCache() {
         VaadinSession session = VaadinSession.getCurrent();
+        if (session == null || !session.hasLock()) {
+            throw new IllegalConcurrentAccessException("Illegal access to settings client from background thread");
+        }
+
         session.setAttribute(SettingsClient.NAME, null);
     }
 
     protected Map<String, Optional<String>> getCache() {
         VaadinSession session = VaadinSession.getCurrent();
+        if (session == null || !session.hasLock()) {
+            throw new IllegalConcurrentAccessException("Illegal access to settings client from background thread");
+        }
+
         @SuppressWarnings("unchecked")
         Map<String, Optional<String>> settings = (Map<String, Optional<String>>) session.getAttribute(SettingsClient.NAME);
         if (settings == null) {
-            settings = new ConcurrentHashMap<>();
+            settings = new HashMap<>();
             session.setAttribute(SettingsClient.NAME, settings);
         }
         return settings;
