@@ -171,7 +171,7 @@ public class WebWindowManager extends WindowManager {
             webWindow = ((Window.Wrapper) window).getWrappedWindow();
         }
         window.setCaption(caption);
-        window.setDebugId(description);
+        window.setDescription(description);
 
         WindowOpenInfo openInfo = windowOpenMode.get(webWindow);
         String formattedCaption;
