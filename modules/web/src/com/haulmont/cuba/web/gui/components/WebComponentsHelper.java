@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.DateField;
@@ -27,7 +26,6 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.widgets.*;
@@ -54,6 +52,7 @@ import java.util.stream.Collectors;
 
 public class WebComponentsHelper {
 
+    @Deprecated
     protected static final Map<String, Class<? extends FontIcon>> fontIcons = new ConcurrentHashMap<>();
 
     static {
@@ -61,6 +60,10 @@ public class WebComponentsHelper {
         registerFontIcon("font-awesome-icon", FontAwesome.class);
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconResolver} instead.
+     */
+    @Deprecated
     public static Resource getResource(String resURL) {
         if (StringUtils.isEmpty(resURL)) return null;
 
@@ -71,13 +74,10 @@ public class WebComponentsHelper {
         } else if (resURL.startsWith("theme:")) {
             String resourceId = resURL.substring("theme:".length());
 
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            WebConfig webConfig = configuration.getConfig(WebConfig.class);
-
-            if (webConfig.getUseFontIcons()) {
+            ThemeConstants themeConstants = App.getInstance().getThemeConstants();
+            if (isFontIconsEnabled(themeConstants)) {
                 String fontIcon;
 
-                ThemeConstants themeConstants = App.getInstance().getThemeConstants();
                 String iconKey = "cuba.web." + StringUtils.replace(resourceId, "/", ".");
                 fontIcon = themeConstants.get(iconKey);
 
@@ -102,6 +102,10 @@ public class WebComponentsHelper {
         } else {
             return new VersionedThemeResource(resURL);
         }
+    }
+
+    protected static boolean isFontIconsEnabled(ThemeConstants themeConstants) {
+        return themeConstants.getBoolean("cuba.web.useFontIcons", true);
     }
 
     @SuppressWarnings("unchecked")
@@ -254,13 +258,14 @@ public class WebComponentsHelper {
      * @param container any {@link Action.Container}
      * @param actions   map of actions
      */
+    @Deprecated
     public static void setActions(Action.Container container,
                                   Map<Action, Runnable> actions) {
         container.addActionHandler(new Action.Handler() {
             @Override
             public Action[] getActions(Object target, Object sender) {
                 Set<Action> shortcuts = actions.keySet();
-                return shortcuts.toArray(new Action[shortcuts.size()]);
+                return shortcuts.toArray(new Action[0]);
             }
 
             @Override
@@ -424,16 +429,13 @@ public class WebComponentsHelper {
             return null;
         }
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
-
-        if (webConfig.getUseFontIcons()) {
+        ThemeConstants themeConstants = App.getInstance().getThemeConstants();
+        if (isFontIconsEnabled(themeConstants)) {
             String fontIcon;
 
             if (StringUtils.contains(iconName, ":")) {
                 fontIcon = iconName;
             } else {
-                ThemeConstants themeConstants = App.getInstance().getThemeConstants();
                 String iconKey = "cuba.web." + StringUtils.replace(iconName, "/", ".");
                 fontIcon = themeConstants.get(iconKey);
             }

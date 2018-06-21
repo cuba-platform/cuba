@@ -235,13 +235,6 @@ public interface WebConfig extends Config {
     boolean getRememberMeEnabled();
 
     /**
-     * @return true if PNG icon names are converted to font icons if there is a mapping png -&gt; FontAwesome in -theme.properties
-     */
-    @Property("cuba.web.useFontIcons")
-    @DefaultBoolean(true)
-    boolean getUseFontIcons();
-
-    /**
      * Sets the page length for Table implementation - count of rows for first rendering of Table.
      * After first partial rendering Table will request rest of rows from the server.<br>
      *

@@ -19,8 +19,7 @@ package com.haulmont.cuba.web.gui.icons;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
 import static com.haulmont.cuba.web.gui.icons.IconProvider.LOWEST_PLATFORM_PRECEDENCE;
 
 @Component
@@ -44,15 +44,15 @@ public class FontAwesomeIconProvider implements IconProvider {
     protected static final LoadingCache<String, Resource> iconsCache = CacheBuilder.newBuilder()
             .build(new CacheLoader<String, Resource>() {
                 @Override
-                public Resource load(@Nonnull String iconPath) throws Exception {
-                    return getIcon(iconPath);
+                public Resource load(@Nonnull String iconPath) {
+                    return getIconNonCached(iconPath);
                 }
             });
 
     @Inject
-    protected WebConfig webConfig;
+    protected ThemeConstantsManager themeConstantsManager;
 
-    protected static Resource getIcon(String iconName) {
+    protected static Resource getIconNonCached(String iconName) {
         Resource resource = null;
 
         try {
@@ -68,7 +68,7 @@ public class FontAwesomeIconProvider implements IconProvider {
 
     @Override
     public Resource getIconResource(String iconPath) {
-        Preconditions.checkNotEmptyString(iconPath, "Icon path should not be empty");
+        checkNotEmptyString(iconPath, "Icon path should not be empty");
 
         String iconName = iconPath.contains(":") ? iconPath.split(":")[1] : iconPath;
 
@@ -77,7 +77,7 @@ public class FontAwesomeIconProvider implements IconProvider {
 
     @Override
     public boolean canProvide(String iconPath) {
-        if (iconPath == null || iconPath.isEmpty() || !webConfig.getUseFontIcons()) {
+        if (iconPath == null || iconPath.isEmpty() || !isFontIconsEnabled()) {
             return false;
         }
 
@@ -88,5 +88,9 @@ public class FontAwesomeIconProvider implements IconProvider {
         }
 
         return false;
+    }
+
+    protected boolean isFontIconsEnabled() {
+        return themeConstantsManager.getConstants().getBoolean("cuba.web.useFontIcons", true);
     }
 }
