@@ -47,7 +47,12 @@ public class EmailValidatorTest extends TestCase {
                 "my.ema-il@123qwe.co.uk",
                 "i.van-petrov23@mail2cuba.com",
                 "other.email-with-dash@example.com",
-                "i.van-petrov23@mail-2-cuba.com"
+                "i.van-petrov23@mail-2-cuba.com",
+                "admin@test.mg.gov.com",
+                "admin@tes-t.mg.gov.com",
+                "admin@tes-t.mg.g-o-v.com",
+                "admin@te-st.m-g.gov.com",
+                "admin@t-est.m-g.go-v.com"
         };
 
         for (String validEmail : validEmails) {
@@ -75,6 +80,10 @@ public class EmailValidatorTest extends TestCase {
                 ".email@test.com",
                 "email.@test.com",
                 ".email.@test.com",
+                "admin@test-.mg.gov.com",
+                "admin@tes-t.-mg.g--ov.com",
+                "admin@te-st.m-g.-gov-.com",
+                "admin@t-est.m-g-.go-v.com"
         };
 
         for (String invalidEmail : invalidEmails) {
