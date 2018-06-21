@@ -22,7 +22,7 @@ import org.dom4j.Element;
 public class EmailValidator extends PatternValidator {
 
     private static String EMAIL_NAME = "([a-zA-Z[0-9]][a-zA-Z[0-9]\u005F\u002E\u002D]*[a-z||A-Z||0-9]|[a-zA-Z[0-9]])";
-    private static String EMAIL_DOMAIN = "((?<=@)[a-zA-Z0-9а-яА-Я]+(?:[a-zA-Z0-9а-яА-Я]*|[\u002D]{0,1}(?=[a-zA-Z0-9а-яА-Я]+))*[a-zA-Z0-9а-яА-Я]*(?=\\.)(?:\\.[a-zA-Z0-9а-яА-Я]+|)(?=\\.))";
+    private static String EMAIL_DOMAIN = "((?:[a-zA-Z0-9а-яА-Я](?>\u002D[a-zA-Z0-9а-яА-Я]|[a-zA-Z0-9а-яА-Я])*+\\.?)+)";
     private static String EMAIL_DOMAIN_ZONE = "([a-zA-Z[0-9]]{2,8})";
 
     public static final String EMAIL_PATTERN = EMAIL_NAME + "@" + EMAIL_DOMAIN + "\\." + EMAIL_DOMAIN_ZONE;
