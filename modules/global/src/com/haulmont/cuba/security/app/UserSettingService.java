@@ -19,6 +19,8 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.security.entity.User;
 
+import java.util.Set;
+
 /**
  * Service providing current user settings functionality:
  * an application can save/load some "setting" (plain or XML string) for current user.
@@ -46,4 +48,12 @@ public interface UserSettingService {
 
     /** Copy user settings to another user */
     void copySettings(User fromUser, User toUser);
+
+    /**
+     * Delete settings of screens (settings of tables, filters etc) for the current user.
+     *
+     * @param clientType client type
+     * @param screens set of window ids, whose settings must be deleted
+     */
+    void deleteScreenSettings(ClientType clientType, Set<String> screens);
 }

@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService {
@@ -162,6 +159,26 @@ public class UserSettingServiceBean implements UserSettingService {
                     newSetting.setValue(currSetting.getValue());
                 }
                 em.persist(newSetting);
+            }
+
+            tx.commit();
+        }
+    }
+
+    @Override
+    public void deleteScreenSettings(ClientType clientType, Set<String> screens) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery<UserSetting> selectQuery = em.createQuery(
+                    "select e from sec$UserSetting e where e.user.id = ?1 and e.clientType=?2",
+                    UserSetting.class);
+            selectQuery.setParameter(1, userSessionSource.getUserSession().getUser().getId());
+            selectQuery.setParameter(2, clientType.getId());
+            List<UserSetting> userSettings = selectQuery.getResultList();
+            for (UserSetting userSetting : userSettings) {
+                if (screens.contains(userSetting.getName())) {
+                    em.remove(userSetting);
+                }
             }
 
             tx.commit();

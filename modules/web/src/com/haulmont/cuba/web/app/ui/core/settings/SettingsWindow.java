@@ -28,6 +28,9 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -39,12 +42,14 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.security.ExternalUserCredentials;
+import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.vaadin.ui.ComboBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SettingsWindow extends AbstractWindow {
 
@@ -80,6 +85,9 @@ public class SettingsWindow extends AbstractWindow {
     protected Button changePasswordBtn;
 
     @Inject
+    private Button resetScreenSettingsBtn;
+
+    @Inject
     protected OptionsGroup modeOptions;
 
     @Inject
@@ -104,7 +112,13 @@ public class SettingsWindow extends AbstractWindow {
     protected WebConfig webConfig;
 
     @Inject
+    protected WindowConfig windowConfig;
+
+    @Inject
     protected UserSettingService userSettingService;
+
+    @Inject
+    protected SettingsClient settingsClient;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -174,6 +188,19 @@ public class SettingsWindow extends AbstractWindow {
                 .withCaption(messages.getMainMessage("actions.Cancel"))
                 .withHandler(event ->
                         cancel()
+                ));
+
+        resetScreenSettingsBtn.setAction(new BaseAction("resetScreenSettings")
+                .withCaption(getMessage("resetScreenSettings"))
+                .withHandler(buttonEvent ->
+                        showOptionDialog(getMessage("resetScreenSettings"),
+                                getMessage("resetScreenSettings.description"),
+                                MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new DialogAction(DialogAction.Type.YES)
+                                                .withHandler(event -> resetScreenSettings()),
+                                        new DialogAction(DialogAction.Type.NO)
+                                })
                 ));
 
         initDefaultScreenField();
@@ -267,5 +294,16 @@ public class SettingsWindow extends AbstractWindow {
     protected void saveLocaleSettings() {
         String userLocale = appLangField.getValue();
         userManagementService.saveOwnLocale(userLocale);
+    }
+
+    protected void resetScreenSettings() {
+        userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
+        ((WebSettingsClient) settingsClient).clearCache();
+        showNotification(getMessage("resetScreenSettings.notification"));
+    }
+
+    protected Set<String> getAllWindowIds() {
+        List<WindowInfo> windows = (List<WindowInfo>) windowConfig.getWindows();
+        return windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
     }
 }
