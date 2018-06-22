@@ -192,7 +192,16 @@ public class SettingsWindow extends AbstractWindow {
 
         resetScreenSettingsBtn.setAction(new BaseAction("resetScreenSettings")
                 .withCaption(getMessage("resetScreenSettings"))
-                .withHandler(buttonEvent -> showResetScreenSettingsDialog()));
+                .withHandler(buttonEvent ->
+                        showOptionDialog(getMessage("resetScreenSettings"),
+                                getMessage("resetScreenSettings.description"),
+                                MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new DialogAction(DialogAction.Type.YES)
+                                                .withHandler(event -> resetScreenSettings()),
+                                        new DialogAction(DialogAction.Type.NO)
+                                })
+                ));
 
         initDefaultScreenField();
     }
@@ -287,18 +296,10 @@ public class SettingsWindow extends AbstractWindow {
         userManagementService.saveOwnLocale(userLocale);
     }
 
-    protected void showResetScreenSettingsDialog() {
-        showOptionDialog(getMessage("resetScreenSettings"),
-                getMessage("resetScreenSettings.description"),
-                MessageType.CONFIRMATION,
-                new Action[]{
-                        new DialogAction(DialogAction.Type.YES).withHandler(event -> {
-                            userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
-                            ((WebSettingsClient) settingsClient).clearCache();
-                            showNotification(getMessage("resetScreenSettings.notification"));
-                        }),
-                        new DialogAction(DialogAction.Type.NO)
-                });
+    protected void resetScreenSettings() {
+        userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
+        ((WebSettingsClient) settingsClient).clearCache();
+        showNotification(getMessage("resetScreenSettings.notification"));
     }
 
     protected Set<String> getAllWindowIds() {
