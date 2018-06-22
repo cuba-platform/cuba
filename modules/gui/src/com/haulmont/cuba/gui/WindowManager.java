@@ -768,6 +768,11 @@ public abstract class WindowManager {
     }
 
     protected boolean isOpenAsNewTab(OpenType openType) {
+        if (getOpenWindows().isEmpty()
+                && openType.getOpenMode() == OpenMode.THIS_TAB) {
+            return true;
+        }
+
         return openType.getOpenMode() == OpenMode.NEW_TAB;
     }
 
