@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -41,6 +42,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.security.ExternalUserCredentials;
+import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.vaadin.ui.ComboBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -114,6 +116,9 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected UserSettingService userSettingService;
+
+    @Inject
+    protected SettingsClient settingsClient;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -289,6 +294,7 @@ public class SettingsWindow extends AbstractWindow {
                 new Action[]{
                         new DialogAction(DialogAction.Type.YES).withHandler(event -> {
                             userSettingService.deleteScreenSettings(ClientType.WEB, getAllWindowIds());
+                            ((WebSettingsClient) settingsClient).clearCache();
                             showNotification(getMessage("resetScreenSettings.notification"));
                         }),
                         new DialogAction(DialogAction.Type.NO)
