@@ -768,6 +768,7 @@ public abstract class WindowManager {
     }
 
     protected boolean isOpenAsNewTab(OpenType openType) {
+        // todo check only if there are no opened tabbed windows
         if (getOpenWindows().isEmpty()
                 && openType.getOpenMode() == OpenMode.THIS_TAB) {
             return true;
