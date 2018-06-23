@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.collect.Lists;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -192,7 +193,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     protected Object[] getNewColumnOrder(Object[] newGroupProperties) {
-        List<Object> allProps = Arrays.asList(component.getVisibleColumns());
+        List<Object> allProps = Lists.newArrayList(component.getVisibleColumns()); // mutable list
         List<Object> newGroupProps = Arrays.asList(newGroupProperties);
 
         allProps.removeAll(newGroupProps);
