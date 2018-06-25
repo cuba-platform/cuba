@@ -107,16 +107,6 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, O
     }
 
     @Override
-    public String getDebugId() {
-        return frame.getDebugId();
-    }
-
-    @Override
-    public void setDebugId(String id) {
-        frame.setDebugId(id);
-    }
-
-    @Override
     public boolean isEnabled() {
         return frame.isEnabled();
     }

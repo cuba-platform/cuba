@@ -1663,8 +1663,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        if (id != null) {
-            componentComposition.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_composition"));
+        AppUI ui = AppUI.getCurrent();
+        if (id != null && ui != null) {
+            componentComposition.setId(ui.getTestIdManager().getTestId(id + "_composition"));
         }
     }
 

@@ -186,15 +186,6 @@ public class ParamWrapper implements Component, HasValue<Object> {
     }
 
     @Override
-    public String getDebugId() {
-        return null;
-    }
-
-    @Override
-    public void setDebugId(String id) {
-    }
-
-    @Override
     public boolean isEnabled() {
         return false;
     }

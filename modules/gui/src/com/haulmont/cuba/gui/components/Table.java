@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -879,16 +878,6 @@ public interface Table<E extends Entity>
         @Override
         public void setParent(Component parent) {
             this.parent = parent;
-        }
-
-        @Override
-        public String getDebugId() {
-            return null;
-        }
-
-        @Override
-        public void setDebugId(String id) {
-            throw new UnsupportedOperationException();
         }
 
         @Override

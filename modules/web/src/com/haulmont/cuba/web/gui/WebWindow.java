@@ -916,8 +916,11 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setId(String id) {
         this.id = id;
 
-        if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(debugId)) {
-            setDebugId(id);
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null
+                && ui.isTestMode()
+                && StringUtils.isEmpty(debugId)) {
+            getComponent().setId(ui.getTestIdManager().getTestId("window_" + id));
         }
     }
 
@@ -928,20 +931,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void setParent(Component parent) {
-    }
-
-    @Override
-    public String getDebugId() {
-        return debugId;
-    }
-
-    @Override
-    public void setDebugId(String debugId) {
-        this.debugId = debugId;
-
-        if (debugId != null) {
-            component.setId(AppUI.getCurrent().getTestIdManager().getTestId("window_" + debugId));
-        }
     }
 
     @Override

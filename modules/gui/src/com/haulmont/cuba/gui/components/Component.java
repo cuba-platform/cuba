@@ -64,10 +64,6 @@ public interface Component {
      */
     void setParent(Component parent);
 
-    String getDebugId();
-    /** INTERNAL. Managed by debug Id system. */
-    void setDebugId(String id);
-
     /**
      * Is the component enabled?
      * vaadin8 add JavaDoc

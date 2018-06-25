@@ -38,7 +38,7 @@ import java.util.*;
 
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
-            DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon {
+            DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon, HasDebugId {
 
     public static final String SWING_PROPERTY_CLASS = "cubaClass";
     public static final String SWING_PROPERTY_ID = "cubaId";

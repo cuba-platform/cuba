@@ -1394,8 +1394,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        if (id != null) {
-            componentComposition.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_composition"));
+        AppUI ui = AppUI.getCurrent();
+        if (id != null && ui != null) {
+            componentComposition.setId(ui.getTestIdManager().getTestId(id + "_composition"));
         }
     }
 

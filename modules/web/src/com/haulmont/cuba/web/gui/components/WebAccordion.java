@@ -334,8 +334,9 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         super.setDebugId(id);
 
         String debugId = getDebugId();
-        if (debugId != null) {
-            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+        AppUI ui = AppUI.getCurrent();
+        if (debugId != null && ui != null) {
+            TestIdManager testIdManager = ui.getTestIdManager();
 
             for (Map.Entry<com.vaadin.ui.Component, ComponentDescriptor> tabEntry : tabMapping.entrySet()) {
                 com.vaadin.ui.Component tabComponent = tabEntry.getKey();

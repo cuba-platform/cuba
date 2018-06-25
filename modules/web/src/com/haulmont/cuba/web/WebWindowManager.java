@@ -1505,7 +1505,8 @@ public class WebWindowManager extends WindowManager {
     public void initDebugIds(final Frame frame) {
         if (ui.isTestMode()) {
             ComponentsHelper.walkComponents(frame, (component, name) -> {
-                if (component.getDebugId() == null) {
+                if (component instanceof HasDebugId
+                        && ((HasDebugId) component).getDebugId() == null) {
                     Frame componentFrame = null;
                     if (component instanceof BelongToFrame) {
                         componentFrame = ((BelongToFrame) component).getFrame();

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasDebugId;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
@@ -42,7 +43,7 @@ import java.util.Objects;
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         extends EventPublisher
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption {
+                   Component.HasCaption, HasDebugId {
 
     @Deprecated
     public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
