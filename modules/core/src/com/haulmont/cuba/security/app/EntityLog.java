@@ -709,7 +709,7 @@ public class EntityLog implements EntityLogAPI {
         if (value == null)
             return "";
         else if (value instanceof Instance) {
-            return ((Instance) value).getInstanceName();
+            return metadataTools.getInstanceName((Instance) value);
         } else if (value instanceof Date) {
             Datatype datatype = metaProperty.getRange().asDatatype();
             return datatype.format(value);

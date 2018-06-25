@@ -22,6 +22,7 @@ import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListen
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
+import com.haulmont.cuba.core.global.MetadataTools;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -54,6 +55,10 @@ public abstract class AbstractInstance implements Instance {
         }
     }
 
+    /**
+     * @deprecated Use {@link MetadataTools#getInstanceName(com.haulmont.chile.core.model.Instance)} instead.
+     */
+    @Deprecated
     @Override
     public String getInstanceName() {
         return InstanceUtils.getInstanceName(this);

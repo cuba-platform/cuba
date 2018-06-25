@@ -16,34 +16,20 @@
  */
 package com.haulmont.chile.core.model.utils;
 
-import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Utility class to work with {@link Instance}s.
  */
 public final class InstanceUtils {
-
-    private static final Pattern INSTANCE_NAME_SPLIT_PATTERN = Pattern.compile("[,;]");
 
     private InstanceUtils() {
     }
@@ -90,7 +76,7 @@ public final class InstanceUtils {
         }
         elements.add(buffer.toString());
 
-        return elements.toArray(new String[elements.size()]);
+        return elements.toArray(new String[0]);
     }
 
     /**
@@ -204,97 +190,15 @@ public final class InstanceUtils {
     }
 
     /**
+     * @deprecated Use {@link MetadataTools#getInstanceName(com.haulmont.chile.core.model.Instance)} instead.
      * @return Instance name as defined by {@link com.haulmont.chile.core.annotations.NamePattern}
      * or <code>toString()</code>.
      * @param instance  instance
      */
+    @Deprecated
     public static String getInstanceName(Instance instance) {
-        checkNotNullArgument(instance, "instance is null");
-
-        NamePatternRec rec = parseNamePattern(instance.getMetaClass());
-        if (rec == null) {
-            return instance.toString();
-        } else {
-            if (rec.methodName != null) {
-                try {
-                    Method method = instance.getClass().getMethod(rec.methodName);
-                    Object result = method.invoke(instance);
-                    return (String) result;
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException("Error getting instance name", e);
-                }
-            }
-
-            // lazy initialized messages, used only for enum values
-            Messages messages = null;
-
-            Object[] values = new Object[rec.fields.length];
-            for (int i = 0; i < rec.fields.length; i++) {
-                Object value = instance.getValue(rec.fields[i]);
-                if (value == null) {
-                    values[i] = "";
-                } else if (value instanceof Instance) {
-                    values[i] = getInstanceName((Instance) value);
-                } else if (value instanceof EnumClass) {
-                    if (messages == null) {
-                        messages = AppBeans.get(Messages.NAME);
-                    }
-
-                    values[i] = messages.getMessage((Enum)value);
-                } else {
-                    values[i] = value;
-                }
-            }
-
-            return String.format(rec.format, values);
-        }
-    }
-
-    /**
-     * Parse a name pattern defined by {@link NamePattern} annotation.
-     * @param metaClass entity meta-class
-     * @return record containing the name pattern properties, or null if the @NamePattern is not defined for the meta-class
-     */
-    @Nullable
-    public static NamePatternRec parseNamePattern(MetaClass metaClass) {
-        Map attributes = (Map) metaClass.getAnnotations().get(NamePattern.class.getName());
-        if (attributes == null)
-            return null;
-        String pattern = (String) attributes.get("value");
-        if (StringUtils.isBlank(pattern))
-            return null;
-
-        int pos = pattern.indexOf("|");
-        if (pos < 0)
-            throw new DevelopmentException("Invalid name pattern: " + pattern);
-
-        String format = StringUtils.substring(pattern, 0, pos);
-        String trimmedFormat = format.trim();
-        String methodName = trimmedFormat.startsWith("#") ? trimmedFormat.substring(1) : null;
-        String fieldsStr = StringUtils.substring(pattern, pos + 1);
-        String[] fields = INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr);
-        return new NamePatternRec(format, methodName, fields);
-    }
-
-    public static class NamePatternRec {
-        /**
-         * Name pattern string format
-         */
-        public final String format;
-        /**
-         * Formatting method name or null
-         */
-        public final String methodName;
-        /**
-         * Array of property names
-         */
-        public final String[] fields;
-
-        public NamePatternRec(String format, String methodName, String[] fields) {
-            this.fields = fields;
-            this.format = format;
-            this.methodName = methodName;
-        }
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME, MetadataTools.class);
+        return metadataTools.getInstanceName(instance);
     }
 
     /**

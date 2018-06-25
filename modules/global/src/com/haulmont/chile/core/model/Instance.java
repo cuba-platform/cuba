@@ -17,6 +17,7 @@
 package com.haulmont.chile.core.model;
 
 import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -34,7 +35,9 @@ public interface Instance extends Serializable {
     /**
      * @return Instance name as defined by {@link com.haulmont.chile.core.annotations.NamePattern}
      * or {@code toString()}.
+     * @deprecated Use {@link MetadataTools#getInstanceName(com.haulmont.chile.core.model.Instance)} instead.
      */
+    @Deprecated
     String getInstanceName();
 
     /**

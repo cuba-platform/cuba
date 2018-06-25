@@ -41,7 +41,10 @@ import javax.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -52,6 +55,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 @Component(MetadataTools.NAME)
 public class MetadataTools {
+
+    private static final Pattern INSTANCE_NAME_SPLIT_PATTERN = Pattern.compile("[,;]");
 
     public static final String NAME = "cuba_MetadataTools";
 
@@ -144,7 +149,7 @@ public class MetadataTools {
         } else if (range.isEnum()) {
             return messages.getMessage((Enum) value);
         } else if (value instanceof Instance) {
-            return ((Instance) value).getInstanceName();
+            return getInstanceName((Instance) value);
         } else if (value instanceof Collection) {
             //noinspection unchecked
             return ((Collection<Object>) value).stream()
@@ -165,7 +170,7 @@ public class MetadataTools {
         if (value == null) {
             return "";
         } else if (value instanceof Instance) {
-            return ((Instance) value).getInstanceName();
+            return getInstanceName((Instance) value);
         } else if (value instanceof EnumClass && value instanceof Enum) {
             return messages.getMessage((Enum) value, userSessionSource.getLocale());
         } else if (value instanceof Collection) {
@@ -180,6 +185,85 @@ public class MetadataTools {
             }
 
             return value.toString();
+        }
+    }
+
+    /**
+     * @param instance instance
+     * @return Instance name as defined by {@link com.haulmont.chile.core.annotations.NamePattern}
+     * or <code>toString()</code>.
+     */
+    public String getInstanceName(Instance instance) {
+        checkNotNullArgument(instance, "instance is null");
+
+        NamePatternRec rec = parseNamePattern(instance.getMetaClass());
+        if (rec == null) {
+            return instance.toString();
+        } else {
+            if (rec.methodName != null) {
+                try {
+                    Method method = instance.getClass().getMethod(rec.methodName);
+                    Object result = method.invoke(instance);
+                    return (String) result;
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException("Error getting instance name", e);
+                }
+            }
+
+            Object[] values = new Object[rec.fields.length];
+            for (int i = 0; i < rec.fields.length; i++) {
+                Object value = instance.getValue(rec.fields[i]);
+                values[i] = format(value);
+            }
+
+            return String.format(rec.format, values);
+        }
+    }
+
+    /**
+     * Parse a name pattern defined by {@link NamePattern} annotation.
+     * @param metaClass entity meta-class
+     * @return record containing the name pattern properties, or null if the @NamePattern is not defined for the meta-class
+     */
+    @Nullable
+    public NamePatternRec parseNamePattern(MetaClass metaClass) {
+        Map attributes = (Map) metaClass.getAnnotations().get(NamePattern.class.getName());
+        if (attributes == null)
+            return null;
+        String pattern = (String) attributes.get("value");
+        if (StringUtils.isBlank(pattern))
+            return null;
+
+        int pos = pattern.indexOf("|");
+        if (pos < 0)
+            throw new DevelopmentException("Invalid name pattern: " + pattern);
+
+        String format = StringUtils.substring(pattern, 0, pos);
+        String trimmedFormat = format.trim();
+        String methodName = trimmedFormat.startsWith("#") ? trimmedFormat.substring(1) : null;
+        String fieldsStr = StringUtils.substring(pattern, pos + 1);
+        String[] fields = INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr);
+        return new NamePatternRec(format, methodName, fields);
+    }
+
+    public static class NamePatternRec {
+        /**
+         * Name pattern string format
+         */
+        public final String format;
+        /**
+         * Formatting method name or null
+         */
+        public final String methodName;
+        /**
+         * Array of property names
+         */
+        public final String[] fields;
+
+        public NamePatternRec(String format, String methodName, String[] fields) {
+            this.fields = fields;
+            this.format = format;
+            this.methodName = methodName;
         }
     }
 

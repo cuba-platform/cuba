@@ -35,6 +35,7 @@ import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.desktop.sys.vcl.UserSelectionHandler;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
@@ -458,15 +459,6 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
-    }
-
-    @Override
-    public boolean isMultiSelect() {
-        return false;
-    }
-
-    @Override
-    public void setMultiSelect(boolean multiselect) {
     }
 
     @Override

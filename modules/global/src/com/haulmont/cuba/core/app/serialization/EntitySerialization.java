@@ -114,12 +114,13 @@ public class EntitySerialization implements EntitySerializationAPI {
         return createGsonForSerialization(null, options).toJson(object);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Entity entityFromJson(String json,
-                                 @Nullable MetaClass metaClass,
-                                 EntitySerializationOption... options) {
+    public <T extends Entity> T entityFromJson(String json,
+                                               @Nullable MetaClass metaClass,
+                                               EntitySerializationOption... options) {
         context.remove();
-        return createGsonForDeserialization(metaClass, options).fromJson(json, Entity.class);
+        return (T) createGsonForDeserialization(metaClass, options).fromJson(json, Entity.class);
     }
 
     @Override
@@ -209,8 +210,9 @@ public class EntitySerialization implements EntitySerializationAPI {
                 if (serializeInstanceName) {
                     String instanceName = null;
                     try {
-                        instanceName = entity.getInstanceName();
+                        instanceName = metadataTools.getInstanceName(entity);
                     } catch (Exception ignored) {
+                        // todo trace logging
                     }
                     jsonObject.addProperty(INSTANCE_NAME_PROP, instanceName);
                 }

@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -176,9 +178,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         if (committed && !close) {
             if (showSaveNotification) {
                 Entity entity = ((Editor) frame).getItem();
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
                 frame.showNotification(
                         messages.formatMainMessage("info.EntitySave",
-                                messages.getTools().getEntityCaption(entity.getMetaClass()), entity.getInstanceName()),
+                                messages.getTools().getEntityCaption(entity.getMetaClass()),
+                                metadataTools.getInstanceName(entity)),
                         NotificationType.TRAY);
             }
             postInit();

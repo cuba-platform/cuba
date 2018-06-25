@@ -84,7 +84,8 @@ public class ScreenHistorySupport {
                         return;
                     }
                     if (StringUtils.isBlank(caption))
-                        caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
+                        caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " +
+                                metadata.getTools().getInstanceName(entity);
                     entityId = (UUID) entity.getId();
                 }
             }

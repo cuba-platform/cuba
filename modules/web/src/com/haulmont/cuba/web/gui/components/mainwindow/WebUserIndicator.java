@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Action;
@@ -34,12 +33,13 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.vaadin.server.Sizeable.Unit;
@@ -53,9 +53,22 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
     protected Formatter<User> userNameFormatter;
 
+    protected MetadataTools metadataTools;
+    protected BeanLocator beanLocator;
+
     public WebUserIndicator() {
         component = new com.vaadin.ui.CssLayout();
         component.setPrimaryStyleName(USER_INDICATOR_STYLENAME);
+    }
+
+    @Inject
+    public void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 
     @Override
@@ -121,14 +134,14 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         if (userNameFormatter != null) {
             return userNameFormatter.format(user);
         } else {
-            return InstanceUtils.getInstanceName(user);
+            return metadataTools.getInstanceName(user);
         }
     }
 
     protected List<UserSubstitution> getUserSubstitutions() {
-        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-        DataService dataService = AppBeans.get(DataService.NAME);
-        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+        TimeSource timeSource = beanLocator.get(TimeSource.NAME);
+        DataService dataService = beanLocator.get(DataService.NAME);
+        UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
 
         LoadContext<UserSubstitution> ctx = new LoadContext<>(UserSubstitution.class);
         LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
@@ -142,7 +155,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     protected void revertToCurrentUser() {
-        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+        UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         UserSession us = uss.getUserSession();
 
         userComboBox.select(us.getCurrentOrSubstitutedUser());
@@ -216,7 +229,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
-            UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+            UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
 
             User newUser = (User) event.getProperty().getValue();
             UserSession userSession = uss.getUserSession();
@@ -229,7 +242,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             if (!oldUser.equals(newUser)) {
                 String newUserName = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
 
-                Messages messages = AppBeans.get(Messages.NAME);
+                Messages messages = beanLocator.get(Messages.NAME);
 
                 getFrame().showOptionDialog(
                         messages.getMainMessage("substUserSelectDialog.title"),
