@@ -219,7 +219,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     if (datasource.getState() == State.VALID) {
                         final Entity item = datasource.getItem();
                         if (elements.length > 1) {
-                            String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
+                            String[] valuePath = ArrayUtils.subarray(elements, 1, elements.length);
                             String propertyName = InstanceUtils.formatValuePath(valuePath);
                             Object value = InstanceUtils.getValueEx(item, propertyName);
                             map.put(name, value);
@@ -242,7 +242,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         if (value == null && elements.length > 1) {
                             Instance instance = (Instance) windowParams.get(elements[0]);
                             if (instance != null) {
-                                String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
+                                String[] valuePath = ArrayUtils.subarray(elements, 1, elements.length);
                                 String propertyName = InstanceUtils.formatValuePath(valuePath);
                                 value = InstanceUtils.getValueEx(instance, propertyName);
                             }
@@ -261,7 +261,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         if (value instanceof String && info.isCaseInsensitive()) {
                             value = makeCaseInsensitive((String) value);
                         }
-                        if (java.sql.Date.class.equals(info.getJavaClass()) && value != null && value instanceof Date) {
+                        if (java.sql.Date.class.equals(info.getJavaClass()) && value instanceof Date) {
                             value = new java.sql.Date(((Date)value).getTime());
                         }
                         if (refreshOnComponentValueChange) {

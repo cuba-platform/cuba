@@ -29,7 +29,7 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +112,7 @@ public class WindowConfig {
         this.activeScreenAgents = screenAgents;
 
         String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
@@ -133,7 +133,7 @@ public class WindowConfig {
 
     @SuppressWarnings("unchecked")
     protected void loadConfig(Element rootElem) {
-        for (Element element : (List<Element>) rootElem.elements("include")) {
+        for (Element element : rootElem.elements("include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
                 String incXml = resources.getResourceAsString(fileName);
@@ -144,7 +144,7 @@ public class WindowConfig {
                 loadConfig(Dom4j.readDocument(incXml).getRootElement());
             }
         }
-        for (Element element : (List<Element>) rootElem.elements("screen")) {
+        for (Element element : rootElem.elements("screen")) {
             String id = element.attributeValue("id");
             if (StringUtils.isBlank(id)) {
                 log.warn("Invalid window config: 'id' attribute not defined");

@@ -22,8 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.List;
-
 public class SettingsImpl implements Settings {
 
     protected final String name;
@@ -71,7 +69,7 @@ public class SettingsImpl implements Settings {
         if (componentsRoot == null) {
             componentsRoot = root.addElement("components");
         }
-        for (Element e : ((List<Element>) componentsRoot.elements())) {
+        for (Element e : componentsRoot.elements()) {
             if (componentId.equals(e.attributeValue("name"))) {
                 return e;
             }

@@ -255,7 +255,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 selectedItem = metadata.getClass(javaClass);
             }
             entitySelect.setOptionsMap(items);
-            entitySelect.setValue((MetaClass) selectedItem);
+            entitySelect.setValue(selectedItem);
 
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
             if (param != null && Param.Type.ENUM.equals(param.getType())) {

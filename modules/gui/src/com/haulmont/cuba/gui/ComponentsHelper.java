@@ -389,7 +389,7 @@ public abstract class ComponentsHelper {
         if (elements.length > 1) {
             String id = elements[elements.length - 1];
 
-            String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
+            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
             Component component = frame.getComponent(ValuePathHelper.format(subPath));
             if (component != null) {
                 if (component instanceof ActionsHolder) {

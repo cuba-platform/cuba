@@ -364,7 +364,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     public void addItemFirst(T item) {
         checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
-            LinkedMap tmpMap = (LinkedMap) data.clone();
+            LinkedMap tmpMap = data.clone();
             data.clear();
             data.put(item.getId(), item);
             data.putAll(tmpMap);
@@ -416,7 +416,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     public void includeItemFirst(T item) {
         checkNotNullArgument(item, "item is null");
         internalIncludeItem(item, () -> {
-            LinkedMap tmpMap = (LinkedMap) data.clone();
+            LinkedMap tmpMap = data.clone();
             data.clear();
             data.put(item.getId(), item);
             data.putAll(tmpMap);
@@ -610,7 +610,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 return;
             }
             try {
-                final Collection<T> entities = dataSupplier.loadList(context);
+                Collection<T> entities = dataSupplier.loadList(context);
 
                 afterLoadData(params, context, entities);
             } catch (Throwable e) {

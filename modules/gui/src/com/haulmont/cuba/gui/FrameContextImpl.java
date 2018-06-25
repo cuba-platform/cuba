@@ -75,7 +75,7 @@ public class FrameContextImpl implements FrameContext {
         Component component = frame.getComponent(property);
         while (component == null && path.length > 1) {
             // in case of property contains a drill-down part
-            path = (String[]) ArrayUtils.subarray(path, 0, path.length - 1);
+            path = ArrayUtils.subarray(path, 0, path.length - 1);
             component = frame.getComponent(ValuePathHelper.format(path));
         }
 
@@ -98,7 +98,7 @@ public class FrameContextImpl implements FrameContext {
             return (T) value;
         } else {
             final java.util.List<String> propertyPath = Arrays.asList(elements).subList(path.length, elements.length);
-            final String[] properties = propertyPath.toArray(new String[propertyPath.size()]);
+            final String[] properties = propertyPath.toArray(new String[0]);
 
             if (value instanceof Instance) {
                 //noinspection RedundantTypeArguments

@@ -118,7 +118,7 @@ public abstract class CubaTestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         TestContext.getInstance().unbind(AppContext.getProperty("cuba.dataSourceJndiName"));
-        ((CommonTestContainer) cont).cleanupContext();
+        cont.cleanupContext();
         super.tearDown();
     }
 

@@ -157,7 +157,7 @@ public class EntitySqlGenerator {
             } else if (value instanceof EnumClass) {
                 value = ((EnumClass) value).getId();
             } else if (value instanceof Enum) {
-                value = BaseEntityInternalAccess.getValue((BaseGenericIdEntity) entity, fieldName);
+                value = BaseEntityInternalAccess.getValue(entity, fieldName);
             }
 
             value = persistence.getDbTypeConverter().getSqlObject(value);

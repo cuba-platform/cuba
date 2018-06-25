@@ -26,15 +26,16 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -142,7 +143,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
         Document doc = readXmlDocument(resource);
         final Element rootElement = doc.getRootElement();
 
-        for (Element element : (List<Element>) rootElement.elements()) {
+        for (Element element : rootElement.elements()) {
             String elementName = element.getName();
             if ("lookAndFeel".equals(elementName)) {
                 String lookAndFeel = element.getTextTrim();
@@ -224,7 +225,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
         if (element.attributeValue("component") != null) {
             String className = element.attributeValue("component");
             try {
-                components = Collections.singletonList((Class) Class.forName(className));
+                components = Collections.singletonList(Class.forName(className));
             } catch (ClassNotFoundException e) {
                 log.error("Unknown component class: " + className);
             }
@@ -232,7 +233,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
             Element componentsElement = element.element(componentsSubTag);
             if (componentsElement != null) {
                 String componentsStr = componentsElement.getTextTrim();
-                StrTokenizer tokenizer = new StrTokenizer(componentsStr);
+                StringTokenizer tokenizer = new StringTokenizer(componentsStr);
                 components = new ArrayList<>();
                 for (String className : tokenizer.getTokenArray()) {
                     try {
@@ -245,7 +246,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
         }
 
         List<ComponentDecorator> decorators = new ArrayList<>();
-        for (Element childElement : (List<Element>) element.elements()) {
+        for (Element childElement : element.elements()) {
             if (!componentsSubTag.equals(childElement.getName())) {
                 ComponentDecorator decorator = loadDecorator(childElement);
                 if (decorator != null) {
@@ -349,8 +350,8 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
                 log.error("Compound border should have two child borders");
                 return null;
             }
-            final Element child1 = (Element) element.elements().get(0);
-            final Element child2 = (Element) element.elements().get(1);
+            final Element child1 = element.elements().get(0);
+            final Element child2 = element.elements().get(1);
             if (!BORDER_TAG.equals(child1.getName()) || !BORDER_TAG.equals(child2.getName())) {
                 log.error("Compound border should have two child borders");
                 return null;
@@ -368,7 +369,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     }
 
     private void loadUIDefaults(Map<String, Object> uiDefaults, Element rootElement) {
-        for (Element element : (List<Element>) rootElement.elements()) {
+        for (Element element : rootElement.elements()) {
             String propertyName = element.attributeValue("property");
 
             Object value = loadUIValue(element);

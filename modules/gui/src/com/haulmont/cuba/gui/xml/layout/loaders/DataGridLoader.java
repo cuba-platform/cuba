@@ -248,7 +248,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
     protected List<Column> loadColumns(DataGrid component, Element columnsElement, CollectionDatasource ds) {
         List<Column> columns = new ArrayList<>();
         //noinspection unchecked
-        for (Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
+        for (Element columnElement : columnsElement.elements("column")) {
             columns.add(loadColumn(component, columnElement, ds));
         }
         return columns;

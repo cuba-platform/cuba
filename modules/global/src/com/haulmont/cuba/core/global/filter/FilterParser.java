@@ -18,15 +18,11 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.TemplateHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 public class FilterParser {
     protected final Condition root;
@@ -34,7 +30,7 @@ public class FilterParser {
     public FilterParser(Element element) {
         if (element.elements().isEmpty())
             throw new IllegalArgumentException("filter element is empty");
-        Element rootElem = (Element) element.elements().get(0);
+        Element rootElem = element.elements().get(0);
         root = createCondition(rootElem);
         parse(rootElem, root.getConditions());
     }

@@ -566,7 +566,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         Set<String> propertyNames = new HashSet<>();
 
-        for (Element propElem : (List<Element>) viewElem.elements("property")) {
+        for (Element propElem : viewElem.elements("property")) {
             String propertyName = propElem.attributeValue("name");
 
             if (propertyNames.contains(propertyName)) {

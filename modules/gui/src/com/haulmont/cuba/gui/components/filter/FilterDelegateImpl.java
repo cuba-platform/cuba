@@ -1061,7 +1061,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String componentPath = ComponentsHelper.getFilterComponentPath(filter);
         String[] strings = ValuePathHelper.parse(componentPath);
-        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
+        String name = ValuePathHelper.format(ArrayUtils.subarray(strings, 1, strings.length));
 
         Element e = settings.get(name).element("defaultFilter");
         if (e != null) {

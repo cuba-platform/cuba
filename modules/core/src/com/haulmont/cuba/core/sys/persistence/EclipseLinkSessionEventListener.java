@@ -78,7 +78,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                     public void notifyListeners(DescriptorEvent event) {
                         if (hasAnyListeners()) {
                             for (int index = 0; index < getEventListeners().size(); index++) {
-                                DescriptorEventListener listener = (DescriptorEventListener)getEventListeners().get(index);
+                                DescriptorEventListener listener = getEventListeners().get(index);
                                 notifyListener(listener, event);
                             }
                         }

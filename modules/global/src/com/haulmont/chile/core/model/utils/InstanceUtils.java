@@ -173,7 +173,7 @@ public final class InstanceUtils {
      */
     public static void setValueEx(Instance instance, String[] properties, Object value) {
         if (properties.length > 1) {
-            String[] subarray = (String[]) ArrayUtils.subarray(properties, 0, properties.length - 1);
+            String[] subarray = ArrayUtils.subarray(properties, 0, properties.length - 1);
             String intermediatePath = formatValuePath(subarray);
 
             instance = instance.getValueEx(intermediatePath);

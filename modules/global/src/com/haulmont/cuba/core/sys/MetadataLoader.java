@@ -457,7 +457,7 @@ public class MetadataLoader {
             Map<String, Object> metaAnnotations = metaClass.getAnnotations();
 
             MetaProperty[] properties = (MetaProperty[]) metaAnnotations.get(OnDelete.class.getName());
-            properties = (MetaProperty[]) ArrayUtils.add(properties, metaProperty);
+            properties = ArrayUtils.add(properties, metaProperty);
             metaAnnotations.put(OnDelete.class.getName(), properties);
         }
 
@@ -466,7 +466,7 @@ public class MetadataLoader {
             Map<String, Object> metaAnnotations = metaProperty.getRange().asClass().getAnnotations();
 
             MetaProperty[] properties = (MetaProperty[]) metaAnnotations.get(OnDeleteInverse.class.getName());
-            properties = (MetaProperty[]) ArrayUtils.add(properties, metaProperty);
+            properties = ArrayUtils.add(properties, metaProperty);
             metaAnnotations.put(OnDeleteInverse.class.getName(), properties);
         }
     }

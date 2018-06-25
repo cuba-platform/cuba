@@ -154,7 +154,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         int col = 0;
 
         //noinspection unchecked
-        for (Element subElement : (Collection<Element>) element.elements()) {
+        for (Element subElement : element.elements()) {
             ComponentLoader componentLoader = loader.createComponent(subElement);
             pendingLoadComponents.add(componentLoader);
 

@@ -41,7 +41,7 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];
-            String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
+            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
 
             // using this.frame to look up the component inside the actual frame
             Component holder = this.frame.getComponent(ValuePathHelper.format(subPath));
