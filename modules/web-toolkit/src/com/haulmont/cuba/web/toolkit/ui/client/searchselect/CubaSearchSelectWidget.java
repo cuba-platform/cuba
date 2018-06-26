@@ -36,6 +36,8 @@ public class CubaSearchSelectWidget extends VFilterSelect {
 
     protected boolean keyboardNavigation = false;
 
+    protected int tabIndex = 0;
+
     public CubaSearchSelectWidget() {
         this.filterOptionsOnPaste = false;
     }
@@ -99,6 +101,17 @@ public class CubaSearchSelectWidget extends VFilterSelect {
         keyboardNavigation = false;
 
         updateEditState();
+    }
+
+    @Override
+    public void updateReadOnly() {
+        super.updateReadOnly();
+
+        tb.setTabIndex(readonly ? -1 : tabIndex);
+    }
+
+    public void updateTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
     }
 
     @Override

@@ -42,6 +42,10 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
         getWidget().getImpl().setMask(getState().dateMask);
+
+        if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
+            getWidget().updateTabIndex(getState().tabIndex);
+        }
     }
 
     @Override
@@ -63,5 +67,8 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
                 }
             }
         }
+
+        // set read only manually, cause tabIndex in maskedField sets after dateField
+        getWidget().setReadonly(getState().readOnly);
     }
 }

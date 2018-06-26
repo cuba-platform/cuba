@@ -146,6 +146,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
         if (!useCustomField) {
             getField().setReadOnly(readOnly || fieldReadOnly);
+
+            ((CubaTextField) getField()).setReadOnlyFocusable(!readOnly && fieldReadOnly);
         }
     }
 

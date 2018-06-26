@@ -18,6 +18,9 @@
 package com.haulmont.cuba.web.toolkit.ui.client.searchselect;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -39,6 +42,23 @@ public class CubaSearchSelectConnector extends ComboBoxConnector {
         super.performSelection(selectedKey);
 
         getWidget().updateEditState();
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
+        // update read only, cause tabIndex on the TextBox sets after updateReadOnly
+        getWidget().updateReadOnly();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
+            getWidget().updateTabIndex(getState().tabIndex);
+        }
     }
 
     @Override

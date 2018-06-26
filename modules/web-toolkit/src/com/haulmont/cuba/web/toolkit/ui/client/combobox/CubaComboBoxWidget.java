@@ -40,6 +40,7 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean enabled = true;
+    protected int tabIndex = 0;
 
     public CubaComboBoxWidget() {
         // handle shortcuts
@@ -168,6 +169,17 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
         } else {
             removeStyleName(CUBA_DISABLED_OR_READONLY);
         }
+    }
+
+    @Override
+    public void updateReadOnly() {
+        super.updateReadOnly();
+
+        tb.setTabIndex(readonly ? -1 : tabIndex);
+    }
+
+    public void setTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
     }
 
     @Override
