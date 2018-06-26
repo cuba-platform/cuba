@@ -29,6 +29,8 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
 
     protected static final String EMPTY_FIELD_CLASS = "c-datefield-empty";
 
+    protected int tabIndex;
+
     public CubaDateFieldWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -55,6 +57,17 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         // Update valueBeforeEdit and send onChange
         // in case of selecting date using Calendar popup
         getImpl().valueChange(false);
+    }
+
+    @Override
+    public void setReadonly(boolean readonly) {
+        super.setReadonly(readonly);
+
+        getImpl().setTabIndex(readonly ? -1 : tabIndex);
+    }
+
+    protected void updateTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
     }
 
     @Override

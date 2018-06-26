@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.combobox;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.v7.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
@@ -48,6 +49,18 @@ public class CubaComboBoxConnector extends ComboBoxConnector {
                     getWidget().getShortcutActionHandler().updateActionMap(childUidl);
                 }
             }
+        }
+
+        // update read only, cause tabIndex on the TextBox sets after updateReadOnly
+        getWidget().updateReadOnly();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
+            getWidget().setTabIndex(getState().tabIndex);
         }
     }
 }
