@@ -128,6 +128,14 @@ public class DataManagerSecurityTest {
             list = ds.loadList(loadContext);
             assertTrue("Permission did not take effect when calling DataService", list.isEmpty());
 
+            loadContext = LoadContext.create(Server.class)
+                    .setQuery(new LoadContext.Query("select s from sys$Server s"));
+            list = dm.secure().loadList(loadContext);
+            assertTrue(list.isEmpty());
+
+            list = dm.secure().load(Server.class).list();
+            assertTrue(list.isEmpty());
+
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }

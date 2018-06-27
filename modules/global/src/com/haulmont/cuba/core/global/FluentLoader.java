@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.sys.AppContext;
 
 import javax.persistence.TemporalType;
 import java.util.*;
@@ -35,7 +36,8 @@ public class FluentLoader<E extends Entity<K>, K> {
 
     FluentLoader(Class<E> entityClass, DataManager dataManager) {
         this.entityClass = entityClass;
-        this.dataManager = dataManager;
+        this.dataManager = AppContext.getSecurityContextNN().isAuthorizationRequired() ?
+                dataManager.secure() : dataManager;
     }
 
     LoadContext<E> createLoadContext() {
