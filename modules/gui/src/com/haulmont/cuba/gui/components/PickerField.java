@@ -181,7 +181,8 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
         protected Datasource getPropertyDatasource() {
             if (pickerField.getDatasource() == null
                     || pickerField.getMetaPropertyPath() == null
-                    || pickerField.getMetaPropertyPath().getMetaProperty().getType() != MetaProperty.Type.COMPOSITION)
+                    || pickerField.getMetaPropertyPath().getMetaProperty().getType() != MetaProperty.Type.COMPOSITION
+                    || pickerField.getDatasource().getDsContext() == null)
                 return null;
 
             for (Datasource datasource : pickerField.getDatasource().getDsContext().getAll()) {
