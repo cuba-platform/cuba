@@ -2657,6 +2657,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setClickListener(String columnId, final CellClickListener clickListener) {
+        checkNotNullArgument(getColumn(columnId), String.format("column with id '%s' not found", columnId));
+
         component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
             ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
             Entity entity = wrapper.getItem();
