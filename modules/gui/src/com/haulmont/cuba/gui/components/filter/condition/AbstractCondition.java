@@ -33,8 +33,8 @@ import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescr
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Class that encapsulates common filter condition behaviour.
- *
  */
 @MetaClass(name = "sec$AbstractCondition")
 @SystemLevel

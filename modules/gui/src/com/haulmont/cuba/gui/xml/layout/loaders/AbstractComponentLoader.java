@@ -747,14 +747,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 try {
                     return (Formatter) constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
-                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e.toString(),
+                    throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e.toString(),
                             context.getFullFrameId());
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    return (Formatter) aClass.newInstance();
+                    return (Formatter) aClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e1) {
-                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e1.toString(),
+                    throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e1.toString(),
                             context.getFullFrameId());
                 }
             }
@@ -785,7 +785,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             loader.setFactory(factory);
             loader.setElement(element);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
+            throw new GuiDevelopmentException("Loader instantiate error: " + e, context.getFullFrameId());
         }
 
         return loader;

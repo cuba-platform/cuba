@@ -20,8 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrLookup;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -79,7 +78,7 @@ public class AppProperties {
 
         List<String> list = new ArrayList<>(namesSet);
         list.sort(Comparator.naturalOrder());
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     /**
@@ -168,12 +167,9 @@ public class AppProperties {
     }
 
     private String handleInterpolation(String value) {
-        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                String property = getSystemOrAppProperty(key);
-                return property != null ? property : System.getProperty(key);
-            }
+        StringSubstitutor substitutor = new StringSubstitutor(key -> {
+            String property = getSystemOrAppProperty(key);
+            return property != null ? property : System.getProperty(key);
         });
         return substitutor.replace(value);
     }

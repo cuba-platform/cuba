@@ -28,9 +28,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class AbstractViewRepositoryTest extends CubaClientTestCase {
 

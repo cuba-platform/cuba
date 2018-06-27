@@ -322,13 +322,10 @@ public class BeanProcessor {
         try {
             return c.newInstance();
 
-        } catch (InstantiationException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new SQLException(
                 "Cannot create " + c.getName() + ": " + e.getMessage());
 
-        } catch (IllegalAccessException e) {
-            throw new SQLException(
-                "Cannot create " + c.getName() + ": " + e.getMessage());
         }
     }
 

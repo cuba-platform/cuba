@@ -45,7 +45,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
@@ -223,7 +223,7 @@ public class App implements ConnectionListener {
         if (StringUtils.isBlank(homeDir)) {
             homeDir = getDefaultHomeDir();
         }
-        homeDir = StrSubstitutor.replaceSystemProperties(homeDir);
+        homeDir = StringSubstitutor.replaceSystemProperties(homeDir);
         System.setProperty(DesktopAppContextLoader.HOME_DIR_SYS_PROP, homeDir);
 
         File file = new File(homeDir);

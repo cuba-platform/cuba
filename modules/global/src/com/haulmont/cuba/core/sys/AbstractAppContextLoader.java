@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +56,7 @@ public abstract class AbstractAppContextLoader {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
         }
 
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        StringTokenizer tokenizer = new StringTokenizer(configProperty);
         String[] locations = tokenizer.getTokenArray();
         replaceLocationsFromConf(locations);
 

@@ -378,11 +378,11 @@ public class BulkEditorWindow extends AbstractWindow {
                         propView = viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL);
                         //in some cases JPA loads extended entities as instance of base class which leads to ClassCastException
                         //loading property lazy prevents this from happening
-                        view.addProperty(metaProperty.getName(), propView, true);
+                        view.addProperty(metaProperty.getName(), propView);
                     } else {
                         // build view for embedded property
                         propView = createEmbeddedView(metaProperty.getRange().asClass(), metaProperty.getName());
-                        view.addProperty(metaProperty.getName(), propView, false);
+                        view.addProperty(metaProperty.getName(), propView);
                     }
                     break;
                 default:
@@ -418,7 +418,7 @@ public class BulkEditorWindow extends AbstractWindow {
                     }
                     //in some cases JPA loads extended entities as instance of base class which leads to ClassCastException
                     //loading property lazy prevents this from happening
-                    view.addProperty(metaProperty.getName(), propView, true);
+                    view.addProperty(metaProperty.getName(), propView);
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");

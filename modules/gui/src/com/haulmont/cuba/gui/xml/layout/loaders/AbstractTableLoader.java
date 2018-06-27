@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -452,7 +453,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 }
 
                 try {
-                    AggregationStrategy customStrategy = (AggregationStrategy) aggregationClass.newInstance();
+                    Constructor<?> constructor = aggregationClass.getDeclaredConstructor();
+                    AggregationStrategy customStrategy = (AggregationStrategy) constructor.newInstance();
                     aggregation.setStrategy(customStrategy);
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to instantiate strategy for aggregation", e);

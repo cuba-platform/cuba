@@ -105,7 +105,7 @@ public class AceEditorConnector extends AbstractHasComponentsConnector
     protected AceEditorClientRpc clientRpc = new AceEditorClientRpc() {
 		@Override
 		public void diff(TransportDiff ad) {
-			VConsole.log("diff!!!");
+//			VConsole.log("diff!!!");
 			ClientSideDocDiff diff = ClientSideDocDiff.fromTransportDiff(ad);
 			shadow = diff.applyTo(shadow);
 			
@@ -349,7 +349,7 @@ public class AceEditorConnector extends AbstractHasComponentsConnector
 	}
 
     protected void sendToServer(SendCond send, boolean immediately) {
-    	VConsole.log("sendToServer: send=" + send + ", immediately="+immediately);
+//    	VConsole.log("sendToServer: send=" + send + ", immediately="+immediately);
     	if (send==SendCond.NO) {
     		return;
     	}

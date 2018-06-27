@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -103,7 +103,7 @@ public class AbstractViewRepository implements ViewRepository {
         if (!StringUtils.isBlank(configName)) {
             Element rootElem = DocumentHelper.createDocument().addElement("views");
 
-            StrTokenizer tokenizer = new StrTokenizer(configName);
+            StringTokenizer tokenizer = new StringTokenizer(configName);
             for (String fileName : tokenizer.getTokenArray()) {
                 addFile(rootElem, fileName);
             }
@@ -338,8 +338,9 @@ public class AbstractViewRepository implements ViewRepository {
                     if (metadata.getTools().isPersistent(relatedProperty)) {
                         addPersistentAttributeToMinimalView(metaClass, visited, info, view, relatedProperty);
                     } else {
-                        log.warn("Transient attribute '" + relatedPropertyName
-                                + "' is listed in 'related' properties of another transient attribute '" + metaProperty.getName() + "'");
+                        log.warn(
+                                "Transient attribute '{}' is listed in 'related' properties of another transient attribute '{}'",
+                                relatedPropertyName, metaProperty.getName());
                     }
                 }
             }

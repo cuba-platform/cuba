@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.sys.servlet.events.ServletContextDestroyedEvent;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -132,7 +132,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         // get properties from web.xml
         String appProperties = sc.getInitParameter(APP_PROPS_PARAM);
         if (appProperties != null) {
-            StrTokenizer tokenizer = new StrTokenizer(appProperties);
+            StringTokenizer tokenizer = new StringTokenizer(appProperties);
             for (String str : tokenizer.getTokenArray()) {
                 int i = str.indexOf("=");
                 if (i < 0)
@@ -153,11 +153,11 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         final Properties properties = new Properties();
 
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-        StrTokenizer tokenizer = new StrTokenizer(propsConfigName);
+        StringTokenizer tokenizer = new StringTokenizer(propsConfigName);
         tokenizer.setQuoteChar('"');
         for (String str : tokenizer.getTokenArray()) {
             log.trace("Processing properties location: {}", str);
-            str = StrSubstitutor.replaceSystemProperties(str);
+            str = StringSubstitutor.replaceSystemProperties(str);
             InputStream stream = null;
             try {
                 if (ResourceUtils.isUrl(str) || str.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
@@ -177,7 +177,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                     log.trace("Resource {} not found, ignore it", str);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to read properties from stream", e);
             } finally {
                 IOUtils.closeQuietly(stream);
             }

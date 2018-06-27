@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
+import org.apache.commons.text.TextStringBuilder;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -41,7 +41,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -334,7 +333,7 @@ public abstract class AbstractMessages implements Messages {
 
     @Nullable
     protected String searchMessage(String packs, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
-        StrTokenizer tokenizer = new StrTokenizer(packs);
+        StringTokenizer tokenizer = new StringTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
@@ -355,8 +354,8 @@ public abstract class AbstractMessages implements Messages {
             }
         }
         if (log.isTraceEnabled()) {
-            String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
-            log.trace("Resource '" + makeCacheKey(packName, key, locale, locale) + "' not found");
+            String packName = new TextStringBuilder().appendWithSeparators(list, ",").toString();
+            log.trace("Resource '{}' not found", makeCacheKey(packName, key, locale, locale));
         }
         return null;
     }
@@ -505,49 +504,43 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected Properties loadPropertiesFromFile(String packPath, Locale locale, Locale truncatedLocale) {
-        final String fileName = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
+        String fileName = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
         try {
-            return filePropertiesCache.get(fileName, new Callable<Properties>() {
-                @Override
-                public Properties call() throws Exception {
-                    File file = new File(fileName);
-                    if (file.exists()) {
-                        try (FileInputStream stream = new FileInputStream(file);
-                             InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name())) {
-                            Properties properties = new Properties();
-                            properties.load(reader);
-                            return properties;
-                        }
+            return filePropertiesCache.get(fileName, () -> {
+                File file = new File(fileName);
+                if (file.exists()) {
+                    try (FileInputStream stream = new FileInputStream(file);
+                         InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                        Properties properties = new Properties();
+                        properties.load(reader);
+                        return properties;
                     }
-                    return PROPERTIES_NOT_FOUND;
                 }
+                return PROPERTIES_NOT_FOUND;
             });
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to load properties from file", e);
         }
     }
 
     protected Properties loadPropertiesFromResource(String packPath, Locale locale, Locale truncatedLocale) {
-        final String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
+        String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
         try {
-            return resourcePropertiesCache.get(name, new Callable<Properties>() {
-                @Override
-                public Properties call() throws Exception {
-                    InputStream stream = getClass().getResourceAsStream(name);
-                    if (stream != null) {
-                        try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name())) {
-                            Properties properties = new Properties();
-                            properties.load(reader);
-                            return properties;
-                        } finally {
-                            IOUtils.closeQuietly(stream);
-                        }
+            return resourcePropertiesCache.get(name, () -> {
+                InputStream stream = getClass().getResourceAsStream(name);
+                if (stream != null) {
+                    try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                        Properties properties = new Properties();
+                        properties.load(reader);
+                        return properties;
+                    } finally {
+                        IOUtils.closeQuietly(stream);
                     }
-                    return PROPERTIES_NOT_FOUND;
                 }
+                return PROPERTIES_NOT_FOUND;
             });
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to load properties from resource", e);
         }
     }
 

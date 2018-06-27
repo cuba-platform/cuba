@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -128,7 +130,7 @@ public abstract class AbstractScripting implements Scripting {
             pool = new GenericKeyedObjectPool<>(
                     new BaseKeyedPooledObjectFactory<String, Script>() {
                         @Override
-                        public Script create(String key) throws Exception {
+                        public Script create(String key) {
                             return createScript(key);
                         }
 
@@ -248,11 +250,14 @@ public abstract class AbstractScripting implements Scripting {
             Class scriptClass = loadClass(name);
             if (scriptClass != null && groovy.lang.Script.class.isAssignableFrom(scriptClass)) {
                 try {
-                    Script script = (Script) scriptClass.newInstance();
+                    @SuppressWarnings("unchecked")
+                    Constructor constructor = scriptClass.getDeclaredConstructor();
+                    Script script = (Script) constructor.newInstance();
                     script.setBinding(binding);
                     //noinspection unchecked
                     return (T) script.run();
-                } catch (InstantiationException | IllegalAccessException e1) {
+                } catch (InstantiationException | IllegalAccessException
+                        | NoSuchMethodException | InvocationTargetException e1) {
                     throw new RuntimeException("Error instantiating Script object", e1);
                 }
             }
