@@ -1853,7 +1853,7 @@
     <xs:complexType name="treeComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
-                <xs:sequence>
+                <xs:all>
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
                     <xs:element name="treechildren" minOccurs="0">
@@ -1863,7 +1863,7 @@
                             <xs:attribute name="hierarchyProperty" type="xs:string"/>
                         </xs:complexType>
                     </xs:element>
-                </xs:sequence>
+                </xs:all>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
 
