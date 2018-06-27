@@ -29,7 +29,7 @@ import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -42,6 +42,8 @@ import java.sql.Time;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
+
+import static com.haulmont.cuba.gui.components.DateField.Resolution;
 
 public abstract class AbstractComponentGenerationStrategy implements ComponentGenerationStrategy {
 
@@ -213,21 +215,19 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         setDatasource(dateField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
-        final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+        String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
-        DateField.Resolution dateResolution = DateField.Resolution.MIN;
-
         if (StringUtils.isNotEmpty(resolution)) {
-            dateResolution = DateField.Resolution.valueOf(resolution);
+            Resolution dateResolution = Resolution.valueOf(resolution);
             dateField.setResolution(dateResolution);
-        }
 
-        if (dateFormat == null) {
-            if (dateResolution == DateField.Resolution.DAY) {
-                dateFormat = "msg://dateFormat";
-            } else if (dateResolution == DateField.Resolution.MIN) {
-                dateFormat = "msg://dateTimeFormat";
+            if (dateFormat == null) {
+                if (dateResolution == Resolution.DAY) {
+                    dateFormat = "msg://dateFormat";
+                } else if (dateResolution == Resolution.MIN) {
+                    dateFormat = "msg://dateTimeFormat";
+                }
             }
         }
 
@@ -326,6 +326,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 if (mpp.getMetaProperty().getType() == MetaProperty.Type.ASSOCIATION) {
                     pickerField.addLookupAction();
                     if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
+                        // todo use injection instead
                         DynamicAttributesGuiTools dynamicAttributesGuiTools =
                                 AppBeans.get(DynamicAttributesGuiTools.class);
                         DynamicAttributesMetaProperty dynamicAttributesMetaProperty =
@@ -379,14 +380,14 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 linkField.setScreen(linkScreen);
             }
 
-            final String invokeMethodName = xmlDescriptor.attributeValue("linkInvoke");
+            String invokeMethodName = xmlDescriptor.attributeValue("linkInvoke");
             if (StringUtils.isNotEmpty(invokeMethodName)) {
                 linkField.setCustomClickHandler(new InvokeEntityLinkClickHandler(invokeMethodName));
             }
 
             String openTypeAttribute = xmlDescriptor.attributeValue("linkScreenOpenType");
             if (StringUtils.isNotEmpty(openTypeAttribute)) {
-                WindowManager.OpenType openType = WindowManager.OpenType.valueOf(openTypeAttribute);
+                OpenType openType = OpenType.valueOf(openTypeAttribute);
                 linkField.setScreenOpenType(openType);
             }
         }
