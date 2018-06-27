@@ -35,7 +35,7 @@
 
     <layout expand="mainTabSheet">
         <tabSheet id="mainTabSheet" width="100%" height="100%">
-            <tab id="buildInfoTab" caption="Information" margin="true" expand="buildInfoTable">
+            <tab id="buildInfoTab" caption="msg://info" margin="true" expand="buildInfoTable">
                 <table id="buildInfoTable" columnHeaderVisible="false" width="100%" textSelectionEnabled="true">
                     <columns>
                         <column id="name"/>
