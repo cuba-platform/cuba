@@ -35,7 +35,7 @@ import java.util.Set;
  * @see #optional(Entity)
  * @see #optional(Class, Object)
  */
-public class EntitySet extends ForwardingSet implements Serializable {
+public class EntitySet extends ForwardingSet<Entity> implements Serializable {
 
     private Set<? extends Entity> entities;
 
