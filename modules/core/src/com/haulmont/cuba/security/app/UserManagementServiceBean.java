@@ -331,7 +331,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
             tx.commit();
         } finally {
-          tx.end();
+            tx.end();
         }
 
         return token;
@@ -444,6 +444,19 @@ public class UserManagementServiceBean implements UserManagementService {
             tx.commit();
         } finally {
             tx.end();
+        }
+    }
+
+    @Override
+    public void changeGroupParent(UUID groupId, UUID newParentId) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            Group group = em.find(Group.class, groupId);
+            Group newParent = em.find(Group.class, newParentId);
+            if (group != null) {
+                group.setParent(newParent);
+            }
+            tx.commit();
         }
     }
 

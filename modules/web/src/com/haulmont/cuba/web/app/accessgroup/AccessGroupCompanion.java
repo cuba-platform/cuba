@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.app.accessgroup;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser;
+import com.haulmont.cuba.gui.app.security.group.browse.GroupChangeEvent;
 import com.haulmont.cuba.gui.app.security.group.browse.UserGroupChangedEvent;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.event.DataBoundTransferable;
+import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
@@ -36,13 +38,16 @@ import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class AccessGroupCompanion implements GroupBrowser.Companion {
 
     @Override
-    public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree, Consumer<UserGroupChangedEvent> userGroupChangedHandler) {
+    public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
+                                Consumer<UserGroupChangedEvent> userGroupChangedHandler,
+                                Consumer<GroupChangeEvent> groupChangeEventHandler) {
         com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
         vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
 
@@ -58,9 +63,20 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
 
                 Component sourceComponent = transferable.getSourceComponent();
 
+                Object dropOverId = dropData.getItemIdOver();
+                Object itemId = transferable.getItemId();
+
                 List<User> users = null;
                 if (sourceComponent instanceof com.vaadin.v7.ui.Table) {
                     users = new ArrayList<>(usersTable.getSelected());
+                } else if (sourceComponent instanceof com.vaadin.v7.ui.Tree) {
+                    if (!itemId.equals(dropOverId) && isNotContainDropOver(itemId, dropOverId, vTree)) {
+
+                        Group itemGroup = convertToEntity(vTree.getItem(transferable.getItemId()), Group.class);
+                        Group dropOverGroup = convertToEntity(vTree.getItem(dropOverId), Group.class);
+
+                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, itemGroup.getId(), dropOverGroup.getId()));
+                    }
                 }
 
                 if (users == null) {
@@ -86,9 +102,33 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
 
             @Override
             public AcceptCriterion getAcceptCriterion() {
-                return new And(AbstractSelect.AcceptItem.ALL);
+                return new And(
+                        new Not(AbstractSelect.VerticalLocationIs.BOTTOM),
+                        new Not(AbstractSelect.VerticalLocationIs.TOP));
             }
         });
+    }
+
+    protected boolean isNotContainDropOver(Object groupId, Object dropOverId, CubaTree vTree) {
+        if (!vTree.hasChildren(groupId)) {
+            return true;
+        }
+
+        return checkAllChildrenRecursively(vTree.getChildren(groupId), dropOverId, vTree);
+    }
+
+    protected boolean checkAllChildrenRecursively(Collection children, Object dropOverId, CubaTree vTree) {
+        for (Object id : children) {
+            if (id.equals(dropOverId)) {
+                return false;
+            } else if (vTree.hasChildren(id)) {
+                if (!checkAllChildrenRecursively(vTree.getChildren(id), dropOverId, vTree)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Nullable
