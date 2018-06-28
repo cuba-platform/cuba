@@ -124,7 +124,10 @@ public class GroupBrowser extends AbstractWindow {
     protected GroupPropertyCreateAction userCreateAction;
 
     public interface Companion {
-        void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree, Consumer<UserGroupChangedEvent> userGroupChangedHandler);
+        void initDragAndDrop(Table<User> usersTable,
+                             Tree<Group> groupsTree,
+                             Consumer<UserGroupChangedEvent> userGroupChangedHandler,
+                             Consumer<GroupChangeEvent> groupChangeEventHandler);
     }
 
     @Override
@@ -309,6 +312,9 @@ public class GroupBrowser extends AbstractWindow {
                             }
                     );
                 }
+            }, (groupEvent) -> {
+                userManagementService.changeGroupParent(groupEvent.getGroupId(), groupEvent.getNewParentId());
+                groupsDs.refresh();
             });
         }
     }

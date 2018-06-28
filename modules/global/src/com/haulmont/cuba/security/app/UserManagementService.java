@@ -147,4 +147,12 @@ public interface UserManagementService {
      * @return true if removing is allowed or false otherwise
      */
     boolean isUsersRemovingAllowed(Collection<String> userLogins);
+
+    /**
+     * Sets new parent group in separate transaction.
+     *
+     * @param groupId     id of group
+     * @param newParentId id of new parent group
+     */
+    void changeGroupParent(UUID groupId, UUID newParentId);
 }
