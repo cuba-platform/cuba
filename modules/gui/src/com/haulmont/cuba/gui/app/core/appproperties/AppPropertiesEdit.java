@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.app.core.appproperties;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
 import com.haulmont.cuba.core.app.ConfigStorageService;
@@ -69,6 +69,9 @@ public class AppPropertiesEdit extends AbstractWindow {
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    protected DatatypeRegistry datatypeRegistry;
+
     @Named("fieldGroup.displayedDefaultValue")
     protected TextField displayedDefaultValueField;
 
@@ -76,7 +79,8 @@ public class AppPropertiesEdit extends AbstractWindow {
     public void init(Map<String, Object> params) {
         cannotEditValueLabel.setVisible(item.getOverridden());
 
-        Datatype datatype = Datatypes.get(item.getDataTypeName());
+        Datatype datatype = item.getEnumValues() != null ?
+                datatypeRegistry.getNN(String.class) : datatypeRegistry.get(item.getDataTypeName());
 
         fieldGroup.addCustomField("currentValue", (datasource, propertyId) -> {
             if (item.getOverridden()) {
