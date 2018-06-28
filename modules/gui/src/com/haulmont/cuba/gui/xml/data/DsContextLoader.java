@@ -36,6 +36,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class DsContextLoader {
@@ -53,11 +54,14 @@ public class DsContextLoader {
         this.metadata = AppBeans.get(Metadata.NAME);
     }
 
-    public DsContext loadDatasources(@Nullable Element element,@Nullable DsContext parent) {
+    public DsContext loadDatasources(@Nullable Element element, @Nullable DsContext parent, Map<String, String> aliasesMap) {
         if (element == null) {
             context = new DsContextImpl(dataservice);
             if (parent != null)
                 context.setParent(parent);
+            if (aliasesMap != null) {
+                aliasesMap.forEach(context::addAlias);
+            }
             return context;
         }
 
@@ -78,6 +82,9 @@ public class DsContextLoader {
         }
         if (parent != null) {
             context.setParent(parent);
+        }
+        if (aliasesMap != null) {
+            aliasesMap.forEach(context::addAlias);
         }
 
         builder = DsBuilder.create(context);

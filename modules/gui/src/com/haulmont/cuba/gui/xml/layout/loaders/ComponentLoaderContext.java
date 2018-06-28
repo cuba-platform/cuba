@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import groovy.lang.Binding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     protected List<ComponentLoader.InitTask> initTasks = new ArrayList<>();
 
     protected Map<String, Object> parameters;
+    protected Map<String, String> aliasesMap = new HashMap<>();
 
     protected ComponentLoader.Context parent;
 
@@ -199,6 +201,11 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         if (context.getInitTasks().remove(task) && context.getParent() != null) {
             removeTask(task, (ComponentLoaderContext) context.getParent());
         }
+    }
+
+    @Override
+    public Map<String, String> getAliasesMap() {
+        return aliasesMap;
     }
 
     protected class TaskExecutor implements Runnable {

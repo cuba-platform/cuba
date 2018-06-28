@@ -80,7 +80,7 @@
             </xs:simpleType>
         </xs:union>
     </xs:simpleType>
-    
+
     <xs:simpleType name="numericDatatypeEnum">
         <xs:union>
             <xs:simpleType>
@@ -2562,6 +2562,20 @@
     <xs:complexType name="frameContainer">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="dsContext" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="alias" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attributeGroup ref="hasDatasourceProp"/>
+                                        <xs:attribute name="name" type="xs:string" use="required"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
                 <xs:attribute name="src" type="xs:string"/>
                 <xs:attribute name="screen" type="xs:string"/>
             </xs:extension>

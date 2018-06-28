@@ -94,6 +94,8 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadAliases();
+
         if (context.getFrame() != null) {
             resultComponent.setFrame(context.getFrame());
         }
@@ -123,6 +125,22 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         } finally {
             context.setCurrentFrameId(currentFrameId);
             loadDescriptorWatch.stop();
+        }
+    }
+
+    protected void loadAliases() {
+        Element dsAliases = element.element("dsContext");
+        if (dsAliases != null && frameLoader instanceof FrameLoader) {
+            ComponentLoaderContext frameLoaderInnerContext = ((FrameLoader) frameLoader).getInnerContext();
+            for (Object o : dsAliases.elements("alias")) {
+                if (o instanceof Element) {
+                    String aliasDatasourceId = ((Element) o).attributeValue("name");
+                    String originalDatasourceId = ((Element) o).attributeValue("datasource");
+                    if (StringUtils.isNotBlank(aliasDatasourceId) && StringUtils.isNotBlank(originalDatasourceId)) {
+                        frameLoaderInnerContext.getAliasesMap().put(aliasDatasourceId, originalDatasourceId);
+                    }
+                }
+            }
         }
     }
 }
