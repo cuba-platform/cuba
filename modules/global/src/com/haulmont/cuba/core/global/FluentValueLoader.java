@@ -113,49 +113,49 @@ public class FluentValueLoader<T> extends AbstractFluentValueLoader {
     }
 
     @Override
-    public FluentValueLoader store(String store) {
+    public FluentValueLoader<T> store(String store) {
         super.store(store);
         return this;
     }
 
     @Override
-    public FluentValueLoader softDeletion(boolean softDeletion) {
+    public FluentValueLoader<T> softDeletion(boolean softDeletion) {
         super.softDeletion(softDeletion);
         return this;
     }
 
     @Override
-    public FluentValueLoader parameter(String name, Object value) {
+    public FluentValueLoader<T> parameter(String name, Object value) {
         super.parameter(name, value);
         return this;
     }
 
     @Override
-    public FluentValueLoader parameter(String name, Date value, TemporalType temporalType) {
+    public FluentValueLoader<T> parameter(String name, Date value, TemporalType temporalType) {
         super.parameter(name, value, temporalType);
         return this;
     }
 
     @Override
-    public FluentValueLoader parameter(String name, Object value, boolean implicitConversion) {
+    public FluentValueLoader<T> parameter(String name, Object value, boolean implicitConversion) {
         super.parameter(name, value, implicitConversion);
         return this;
     }
 
     @Override
-    public FluentValueLoader setParameters(Map<String, Object> parameters) {
+    public FluentValueLoader<T> setParameters(Map<String, Object> parameters) {
         super.setParameters(parameters);
         return this;
     }
 
     @Override
-    public FluentValueLoader firstResult(int firstResult) {
+    public FluentValueLoader<T> firstResult(int firstResult) {
         super.firstResult(firstResult);
         return this;
     }
 
     @Override
-    public FluentValueLoader maxResults(int maxResults) {
+    public FluentValueLoader<T> maxResults(int maxResults) {
         super.maxResults(maxResults);
         return this;
     }
