@@ -130,11 +130,10 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
     }
 
     protected void loadAliases() {
-        Element dsAliases = element.element("dsContext");
-        if (dsAliases != null && frameLoader instanceof FrameLoader) {
+        if (frameLoader instanceof FrameLoader) {
             ComponentLoaderContext frameLoaderInnerContext = ((FrameLoader) frameLoader).getInnerContext();
-            for (Element aliasElement : Dom4j.elements(dsAliases, "alias")) {
-                    String aliasDatasourceId = aliasElement.attributeValue("name");
+            for (Element aliasElement : Dom4j.elements(element, "dsAlias")) {
+                    String aliasDatasourceId = aliasElement.attributeValue("alias");
                     String originalDatasourceId = aliasElement.attributeValue("datasource");
                     if (StringUtils.isNotBlank(aliasDatasourceId) && StringUtils.isNotBlank(originalDatasourceId)) {
                         frameLoaderInnerContext.getAliasesMap().put(aliasDatasourceId, originalDatasourceId);
