@@ -21,105 +21,123 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LayoutLoaderConfig {
 
-    private static Map<String, Class<? extends ComponentLoader>> loaders = new ConcurrentHashMap<>();
+    private static final String WINDOW_TOP_LEVEL_TAG = "window";
 
-    private static Class<? extends WindowLoader> windowLoader = WindowLoader.class;
-    private static Class<? extends FrameLoader> frameLoader = FrameLoader.class;
-    private static Class<? extends WindowLoader.Editor> editorLoader = WindowLoader.Editor.class;
-    private static Class<? extends WindowLoader.Lookup> lookupLoader = WindowLoader.Lookup.class;
+    private static LayoutLoaderConfig sharedLoaders = new LayoutLoaderConfig();
 
-    private static LayoutLoaderConfig llc = new LayoutLoaderConfig();
+    private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig(sharedLoaders);
+    private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig(sharedLoaders);
+    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig(sharedLoaders);
+    private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig(sharedLoaders);
+
+    private LayoutLoaderConfig parent;
+    private Map<String, Class<? extends ComponentLoader>> loaders = new ConcurrentHashMap<>();
+
+    public LayoutLoaderConfig() {
+    }
+
+    public LayoutLoaderConfig(LayoutLoaderConfig parent) {
+        this.parent = parent;
+    }
 
     static {
-        loaders.put(HBoxLayout.NAME, HBoxLayoutLoader.class);
-        loaders.put(VBoxLayout.NAME, VBoxLayoutLoader.class);
-        loaders.put(GridLayout.NAME, GridLayoutLoader.class);
-        loaders.put(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
-        loaders.put(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
-        loaders.put(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
-        loaders.put(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
-        loaders.put(CssLayout.NAME, CssLayoutLoader.class);
+        sharedLoaders.register(HBoxLayout.NAME, HBoxLayoutLoader.class);
+        sharedLoaders.register(VBoxLayout.NAME, VBoxLayoutLoader.class);
+        sharedLoaders.register(GridLayout.NAME, GridLayoutLoader.class);
+        sharedLoaders.register(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
+        sharedLoaders.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
+        sharedLoaders.register(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
+        sharedLoaders.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
+        sharedLoaders.register(CssLayout.NAME, CssLayoutLoader.class);
 
-        loaders.put(Button.NAME, ButtonLoader.class);
-        loaders.put(LinkButton.NAME, LinkButtonLoader.class);
-        loaders.put(CheckBox.NAME, CheckBoxLoader.class);
-        loaders.put(Label.NAME, LabelLoader.class);
-        loaders.put(Link.NAME, LinkLoader.class);
+        sharedLoaders.register(Button.NAME, ButtonLoader.class);
+        sharedLoaders.register(LinkButton.NAME, LinkButtonLoader.class);
+        sharedLoaders.register(CheckBox.NAME, CheckBoxLoader.class);
+        sharedLoaders.register(Label.NAME, LabelLoader.class);
+        sharedLoaders.register(Link.NAME, LinkLoader.class);
 
-        loaders.put(TextField.NAME, TextFieldLoader.class);
-        loaders.put(MaskedField.NAME, MaskedFieldLoader.class);
-        loaders.put(TextArea.NAME, ResizableTextAreaLoader.class);
-        loaders.put(SourceCodeEditor.NAME, SourceCodeEditorLoader.class);
-        loaders.put(PasswordField.NAME, PasswordFieldLoader.class);
-        loaders.put(RichTextArea.NAME, RichTextAreaLoader.class);
+        sharedLoaders.register(TextField.NAME, TextFieldLoader.class);
+        sharedLoaders.register(MaskedField.NAME, MaskedFieldLoader.class);
+        sharedLoaders.register(TextArea.NAME, ResizableTextAreaLoader.class);
+        sharedLoaders.register(SourceCodeEditor.NAME, SourceCodeEditorLoader.class);
+        sharedLoaders.register(PasswordField.NAME, PasswordFieldLoader.class);
+        sharedLoaders.register(RichTextArea.NAME, RichTextAreaLoader.class);
 
-        loaders.put(DateField.NAME, DateFieldLoader.class);
-        loaders.put(TimeField.NAME, TimeFieldLoader.class);
-        loaders.put(DatePicker.NAME, DatePickerLoader.class);
-        loaders.put(LookupField.NAME, LookupFieldLoader.class);
-        loaders.put(SuggestionField.NAME, SuggestionFieldLoader.class);
-        loaders.put(SuggestionPickerField.NAME, SuggestionPickerFieldLoader.class);
-        loaders.put(PickerField.NAME, PickerFieldLoader.class);
-        loaders.put(ColorPicker.NAME, ColorPickerLoader.class);
-        loaders.put(LookupPickerField.NAME, LookupPickerFieldLoader.class);
-        loaders.put(SearchPickerField.NAME, SearchPickerFieldLoader.class);
-        loaders.put(OptionsGroup.NAME, OptionsGroupLoader.class);
-        loaders.put(OptionsList.NAME, OptionsListLoader.class);
-        loaders.put(FileUploadField.NAME, FileUploadFieldLoader.class);
-        loaders.put(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
-        loaders.put(CurrencyField.NAME, CurrencyFieldLoader.class);
+        sharedLoaders.register(DateField.NAME, DateFieldLoader.class);
+        sharedLoaders.register(TimeField.NAME, TimeFieldLoader.class);
+        sharedLoaders.register(DatePicker.NAME, DatePickerLoader.class);
+        sharedLoaders.register(LookupField.NAME, LookupFieldLoader.class);
+        sharedLoaders.register(SuggestionField.NAME, SuggestionFieldLoader.class);
+        sharedLoaders.register(SuggestionPickerField.NAME, SuggestionPickerFieldLoader.class);
+        sharedLoaders.register(PickerField.NAME, PickerFieldLoader.class);
+        sharedLoaders.register(ColorPicker.NAME, ColorPickerLoader.class);
+        sharedLoaders.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);
+        sharedLoaders.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
+        sharedLoaders.register(OptionsGroup.NAME, OptionsGroupLoader.class);
+        sharedLoaders.register(OptionsList.NAME, OptionsListLoader.class);
+        sharedLoaders.register(FileUploadField.NAME, FileUploadFieldLoader.class);
+        sharedLoaders.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
+        sharedLoaders.register(CurrencyField.NAME, CurrencyFieldLoader.class);
 
-        loaders.put(Table.NAME, TableLoader.class);
-        loaders.put(TreeTable.NAME, TreeTableLoader.class);
-        loaders.put(GroupTable.NAME, GroupTableLoader.class);
-        loaders.put(DataGrid.NAME, DataGridLoader.class);
+        sharedLoaders.register(Table.NAME, TableLoader.class);
+        sharedLoaders.register(TreeTable.NAME, TreeTableLoader.class);
+        sharedLoaders.register(GroupTable.NAME, GroupTableLoader.class);
+        sharedLoaders.register(DataGrid.NAME, DataGridLoader.class);
 
-        loaders.put(Calendar.NAME, CalendarLoader.class);
+        sharedLoaders.register(Calendar.NAME, CalendarLoader.class);
 
-        loaders.put(Frame.NAME, FrameComponentLoader.class);
-        loaders.put("iframe", FrameComponentLoader.class); // for backward compatibility
-        loaders.put(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
-        loaders.put(SplitPanel.NAME, SplitPanelLoader.class);
-        loaders.put(Tree.NAME, TreeLoader.class);
-        loaders.put(TabSheet.NAME, TabSheetLoader.class);
-        loaders.put(Accordion.NAME, AccordionLoader.class);
-        loaders.put(Embedded.NAME, EmbeddedLoader.class);
-        loaders.put(Image.NAME, ImageLoader.class);
-        loaders.put(BrowserFrame.NAME, BrowserFrameLoader.class);
-        loaders.put(Filter.NAME, FilterLoader.class);
-        loaders.put(ButtonsPanel.NAME, ButtonsPanelLoader.class);
-        loaders.put(PopupButton.NAME, PopupButtonLoader.class);
-        loaders.put(PopupView.NAME, PopupViewLoader.class);
-        loaders.put(FieldGroup.NAME, FieldGroupLoader.class);
-        loaders.put(TokenList.NAME, TokenListLoader.class);
-        loaders.put(WidgetsTree.NAME, WidgetsTreeLoader.class);
-        loaders.put(TwinColumn.NAME, TwinColumnLoader.class);
-        loaders.put(ProgressBar.NAME, ProgressBarLoader.class);
-        loaders.put(SearchField.NAME, SearchFieldLoader.class);
-        loaders.put(RelatedEntities.NAME, RelatedEntitiesLoader.class);
-        loaders.put(BulkEditor.NAME, BulkEditorLoader.class);
-        loaders.put(CapsLockIndicator.NAME, CapsLockIndicatorLoader.class);
+        sharedLoaders.register(Frame.NAME, FrameComponentLoader.class);
+        sharedLoaders.register("iframe", FrameComponentLoader.class); // for backward compatibility
+        sharedLoaders.register(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
+        sharedLoaders.register(SplitPanel.NAME, SplitPanelLoader.class);
+        sharedLoaders.register(Tree.NAME, TreeLoader.class);
+        sharedLoaders.register(TabSheet.NAME, TabSheetLoader.class);
+        sharedLoaders.register(Accordion.NAME, AccordionLoader.class);
+        sharedLoaders.register(Embedded.NAME, EmbeddedLoader.class);
+        sharedLoaders.register(Image.NAME, ImageLoader.class);
+        sharedLoaders.register(BrowserFrame.NAME, BrowserFrameLoader.class);
+        sharedLoaders.register(Filter.NAME, FilterLoader.class);
+        sharedLoaders.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
+        sharedLoaders.register(PopupButton.NAME, PopupButtonLoader.class);
+        sharedLoaders.register(PopupView.NAME, PopupViewLoader.class);
+        sharedLoaders.register(FieldGroup.NAME, FieldGroupLoader.class);
+        sharedLoaders.register(TokenList.NAME, TokenListLoader.class);
+        sharedLoaders.register(WidgetsTree.NAME, WidgetsTreeLoader.class);
+        sharedLoaders.register(TwinColumn.NAME, TwinColumnLoader.class);
+        sharedLoaders.register(ProgressBar.NAME, ProgressBarLoader.class);
+        sharedLoaders.register(SearchField.NAME, SearchFieldLoader.class);
+        sharedLoaders.register(RelatedEntities.NAME, RelatedEntitiesLoader.class);
+        sharedLoaders.register(BulkEditor.NAME, BulkEditorLoader.class);
+        sharedLoaders.register(CapsLockIndicator.NAME, CapsLockIndicatorLoader.class);
 
         /* Main window components */
 
-        loaders.put(AppMenu.NAME, AppMenuLoader.class);
-        loaders.put(AppWorkArea.NAME, AppWorkAreaLoader.class);
-        loaders.put(LogoutButton.NAME, LogoutButtonLoader.class);
-        loaders.put(NewWindowButton.NAME, NewWindowButtonLoader.class);
-        loaders.put(UserIndicator.NAME, UserIndicatorLoader.class);
-        loaders.put(FoldersPane.NAME, FoldersPaneLoader.class);
-        loaders.put(FtsField.NAME, FtsFieldLoader.class);
-        loaders.put(TimeZoneIndicator.NAME, TimeZoneIndicatorLoader.class);
-        loaders.put(SideMenu.NAME, SideMenuLoader.class);
+        sharedLoaders.register(AppMenu.NAME, AppMenuLoader.class);
+        sharedLoaders.register(AppWorkArea.NAME, AppWorkAreaLoader.class);
+        sharedLoaders.register(LogoutButton.NAME, LogoutButtonLoader.class);
+        sharedLoaders.register(NewWindowButton.NAME, NewWindowButtonLoader.class);
+        sharedLoaders.register(UserIndicator.NAME, UserIndicatorLoader.class);
+        sharedLoaders.register(FoldersPane.NAME, FoldersPaneLoader.class);
+        sharedLoaders.register(FtsField.NAME, FtsFieldLoader.class);
+        sharedLoaders.register(TimeZoneIndicator.NAME, TimeZoneIndicatorLoader.class);
+        sharedLoaders.register(SideMenu.NAME, SideMenuLoader.class);
+
+        // windows
+
+        frameLoaders.register(WINDOW_TOP_LEVEL_TAG, FrameLoader.class);
+        windowLoaders.register(WINDOW_TOP_LEVEL_TAG, WindowLoader.class);
+        lookupLoaders.register(WINDOW_TOP_LEVEL_TAG, WindowLoader.Lookup.class);
+        editorLoaders.register(WINDOW_TOP_LEVEL_TAG, WindowLoader.Editor.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends ComponentLoader> aClass) {
-        loaders.put(tagName, aClass);
+        sharedLoaders.register(tagName, aClass);
     }
 
     /**
@@ -130,49 +148,55 @@ public class LayoutLoaderConfig {
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends ComponentLoader>> paletteLoaders = palette.getLoaders();
             for (Map.Entry<String, Class<? extends ComponentLoader>> loaderEntry : paletteLoaders.entrySet()) {
-                loaders.put(loaderEntry.getKey(), loaderEntry.getValue());
+                sharedLoaders.register(loaderEntry.getKey(), loaderEntry.getValue());
             }
         }
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {
-        llc.register("window", windowLoader);
-        return llc;
+        return windowLoaders;
     }
 
     public static LayoutLoaderConfig getEditorLoaders() {
-        llc.register("window", editorLoader);
-        return llc;
+        return editorLoaders;
     }
 
     public static LayoutLoaderConfig getFrameLoaders() {
-        llc.register("window", frameLoader);
-        return llc;
+        return frameLoaders;
     }
 
     public static LayoutLoaderConfig getLookupLoaders() {
-        llc.register("window", lookupLoader);
-        return llc;
+        return lookupLoaders;
     }
 
+    @Nullable
     public Class<? extends ComponentLoader> getLoader(String name) {
-        return loaders.get(name);
+        Class<? extends ComponentLoader> loader = loaders.get(name);
+        if (loader != null) {
+            return loader;
+        }
+
+        if (parent != null) {
+            return parent.getLoader(name);
+        }
+
+        return null;
     }
 
     public static void registerWindowLoader(Class<? extends WindowLoader> loader) {
-        windowLoader = loader;
+        windowLoaders.register(WINDOW_TOP_LEVEL_TAG, loader);
     }
 
     public static void registerFrameLoader(Class<? extends FrameLoader> loader) {
-        frameLoader = loader;
+        frameLoaders.register(WINDOW_TOP_LEVEL_TAG, loader);
     }
 
     public static void registerEditorLoader(Class<? extends WindowLoader.Editor> loader) {
-        editorLoader = loader;
+        editorLoaders.register(WINDOW_TOP_LEVEL_TAG, loader);
     }
 
     public static void registerLookupLoader(Class<? extends WindowLoader.Lookup> loader) {
-        lookupLoader = loader;
+        lookupLoaders.register(WINDOW_TOP_LEVEL_TAG, loader);
     }
 
     protected void register(String tagName, Class<? extends ComponentLoader> loaderClass) {
