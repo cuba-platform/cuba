@@ -70,12 +70,19 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                 if (sourceComponent instanceof com.vaadin.v7.ui.Table) {
                     users = new ArrayList<>(usersTable.getSelected());
                 } else if (sourceComponent instanceof com.vaadin.v7.ui.Tree) {
+                    if (itemId == null) {
+                        return;
+                    }
+
                     if (!itemId.equals(dropOverId) && isNotContainDropOver(itemId, dropOverId, vTree)) {
 
-                        Group itemGroup = convertToEntity(vTree.getItem(transferable.getItemId()), Group.class);
+                        Group itemGroup = convertToEntity(vTree.getItem(itemId), Group.class);
                         Group dropOverGroup = convertToEntity(vTree.getItem(dropOverId), Group.class);
 
-                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, itemGroup.getId(), dropOverGroup.getId()));
+                        if (itemGroup != null) {
+                            groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, itemGroup.getId(),
+                                    dropOverGroup == null ? null : dropOverGroup.getId()));
+                        }
                     }
                 }
 
