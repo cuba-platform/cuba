@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
@@ -34,6 +35,7 @@ public abstract class AbstractSearchFolder extends Folder {
     @Column(name = "FILTER_COMPONENT")
     protected String filterComponentId;
 
+    @Lob
     @Column(name = "FILTER_XML")
     protected String filterXml;
 
