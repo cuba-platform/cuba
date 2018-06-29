@@ -449,10 +449,12 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public void changeGroupParent(UUID groupId, UUID newParentId) {
+        checkUpdatePermission(Group.class);
+
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             Group group = em.find(Group.class, groupId);
-            Group newParent = em.find(Group.class, newParentId);
+            Group newParent = newParentId != null ? em.find(Group.class, newParentId) : null;
             if (group != null) {
                 group.setParent(newParent);
             }
