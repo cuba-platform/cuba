@@ -18,36 +18,21 @@ package com.haulmont.cuba.testmodel.many2many_fetchsameentity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail;
 
 import javax.persistence.*;
 import java.util.List;
 
 @NamePattern("%s|name")
-@Table(name = "TEST_MANY2_MANY_FETCH_SAME1")
-@Entity(name = "test$Many2Many_FetchSame1")
-public class Many2Many_FetchSame1 extends StandardEntity {
+@Table(name = "TEST_MANY2_MANY_FETCH_SAME3")
+@Entity(name = "test$Many2Many_FetchSame3")
+public class Many2Many_FetchSame3 extends StandardEntity {
     private static final long serialVersionUID = 9128262506497031204L;
 
     @Column(name = "NAME")
     protected String name;
 
-    @JoinTable(name = "TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK",
-        joinColumns = @JoinColumn(name = "MANY2_MANY__FETCH_SAME1_ID"),
-        inverseJoinColumns = @JoinColumn(name = "MANY2_MANY__FETCH_SAME2_ID"))
-    @ManyToMany
-    protected List<Many2Many_FetchSame2> many2;
-
-    @OneToMany(mappedBy = "manyToOne1")
+    @OneToMany(mappedBy = "many3")
     protected List<Many2Many_FetchSame2> oneToMany2;
-
-    public void setMany2(List<Many2Many_FetchSame2> many2) {
-        this.many2 = many2;
-    }
-
-    public List<Many2Many_FetchSame2> getMany2() {
-        return many2;
-    }
 
     public void setName(String name) {
         this.name = name;

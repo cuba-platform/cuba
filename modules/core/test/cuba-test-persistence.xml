@@ -71,6 +71,7 @@
 
         <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame1</class>
         <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame2</class>
+        <class>com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame3</class>
 
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToOne_First</class>
         <class>com.haulmont.cuba.testmodel.deletepolicy.DeletePolicy_OneToOne_Second</class>
