@@ -664,7 +664,7 @@ public abstract class WindowManager {
         }
 
         //noinspection UnnecessaryLocalVariable
-        DsContext dsContext = new DsContextLoader(dataSupplier).loadDatasources(element.element("dsContext"), null);
+        DsContext dsContext = new DsContextLoader(dataSupplier).loadDatasources(element.element("dsContext"), null, null);
         return dsContext;
     }
 

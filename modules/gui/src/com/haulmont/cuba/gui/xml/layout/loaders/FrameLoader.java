@@ -152,7 +152,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         Element dsContextElement = element.element("dsContext");
         DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
 
-        DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext());
+        DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext(), innerContext.getAliasesMap());
 
         assignXmlDescriptor(resultComponent, element);
 
@@ -304,5 +304,9 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
                 FrameLoader.this.context.executePostInitTasks();
             }
         }
+    }
+
+    public ComponentLoaderContext getInnerContext() {
+        return innerContext;
     }
 }

@@ -47,6 +47,8 @@ public interface ComponentLoader<T extends Component> {
         void addInitTask(InitTask task);
         void executeInitTasks();
 
+        Map<String, String> getAliasesMap();
+
         Frame getFrame();
         void setFrame(Frame frame);
 
