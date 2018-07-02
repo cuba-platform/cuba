@@ -74,12 +74,20 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                         return;
                     }
 
+                    // if we don't drop to itself and don't drop parent to child
                     if (!itemId.equals(dropOverId) && isNotContainDropOver(itemId, dropOverId, vTree)) {
 
                         Group itemGroup = convertToEntity(vTree.getItem(itemId), Group.class);
                         Group dropOverGroup = convertToEntity(vTree.getItem(dropOverId), Group.class);
 
                         if (itemGroup != null) {
+
+                            // if we drop to the same parent
+                            if ((itemGroup.getParent() != null && dropOverGroup != null)
+                                    && (itemGroup.getParent().getId().equals(dropOverGroup.getId()))) {
+                                return;
+                            }
+
                             groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, itemGroup.getId(),
                                     dropOverGroup == null ? null : dropOverGroup.getId()));
                         }
