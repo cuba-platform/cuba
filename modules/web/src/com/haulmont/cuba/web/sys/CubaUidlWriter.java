@@ -43,6 +43,8 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern OLD_WEBJAR_IDENTIFIER = Pattern.compile("([^:]+)/.+/(.+)");
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
+    protected static final Pattern WEB_JAR_PROPERTY_DEFAULT_VALUE_PATTERN = Pattern.compile("\\?:");
+
     protected final ServletContext servletContext;
 
     public CubaUidlWriter(ServletContext servletContext) {
@@ -140,7 +142,7 @@ public class CubaUidlWriter extends UidlWriter {
         }
 
         String propertyName = uri.substring(propertyFirstIndex + 2, propertyLastIndex);
-        String[] splittedProperty = propertyName.split("\\?:");
+        String[] splittedProperty = WEB_JAR_PROPERTY_DEFAULT_VALUE_PATTERN.split(propertyName);
 
         String webJarVersion = AppContext.getProperty(splittedProperty[0]);
 
