@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.gui.components.HighlightMode;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
@@ -36,7 +37,7 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     protected JComponent composition;
 
     protected Suggester suggester;
-    protected Mode mode;
+    protected HighlightMode mode;
 
     protected boolean showGutter = true;
     protected boolean showPrintMargin = true;
@@ -84,55 +85,36 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     }
 
     @Override
-    public Mode getMode() {
+    public HighlightMode getMode() {
         return mode;
     }
 
     @Override
-    public void setMode(Mode mode) {
-        Preconditions.checkNotNullArgument(mode, "Mode of SourceCodeEditor cannot be null");
+    public void setMode(HighlightMode mode) {
+        Preconditions.checkNotNullArgument(mode, "HighlightMode of SourceCodeEditor cannot be null");
 
         this.mode = mode;
 
-        switch (mode) {
-            case Groovy:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
+        String modeId = "text/" + mode.getId();
+
+        switch (modeId) {
+            case SyntaxConstants.SYNTAX_STYLE_GROOVY:
+            case SyntaxConstants.SYNTAX_STYLE_HTML:
+            case SyntaxConstants.SYNTAX_STYLE_JAVA:
+            case SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT:
+            case SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE:
+            case SyntaxConstants.SYNTAX_STYLE_SQL:
+            case SyntaxConstants.SYNTAX_STYLE_XML:
+            case SyntaxConstants.SYNTAX_STYLE_CSS:
+                impl.setSyntaxEditingStyle(modeId);
                 break;
 
-            case HTML:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
-                break;
-
-            case Java:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-                break;
-
-            case JavaScript:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-                break;
-
-            case Properties:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
-                break;
-
-            case SQL:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
-                break;
-
-            case XML:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
-                break;
-
-            case CSS:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
-                break;
-
-            case SCSS:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
-                break;
-
-            case Text:
-                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+            default:
+                if (mode.getId().equals(HighlightMode.SCSS.getId())) {
+                    impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+                } else {
+                    impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+                }
                 break;
         }
     }

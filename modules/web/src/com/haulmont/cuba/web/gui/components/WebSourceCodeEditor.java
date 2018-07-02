@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.gui.components.HighlightMode;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
@@ -35,7 +36,7 @@ import java.util.List;
 public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor, String, String>
         implements SourceCodeEditor {
 
-    protected Mode mode = Mode.Text;
+    protected HighlightMode mode = HighlightMode.TEXT;
     protected Suggester suggester;
     protected SuggestionExtension suggestionExtension;
 
@@ -70,57 +71,23 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
     }
 
     @Override
-    public Mode getMode() {
+    public HighlightMode getMode() {
         return mode;
     }
 
     @Override
-    public void setMode(Mode mode) {
-        Preconditions.checkNotNullArgument(mode, "Mode of SourceCodeEditor cannot be null");
+    public void setMode(HighlightMode mode) {
+        Preconditions.checkNotNullArgument(mode, "HighlightMode of SourceCodeEditor cannot be null");
 
         this.mode = mode;
 
-        AceMode editorMode;
-        switch (mode) {
-            case Groovy:
-                editorMode = AceMode.groovy;
-                break;
+        AceMode editorMode = AceMode.text;
 
-            case HTML:
-                editorMode = AceMode.html;
+        for (AceMode aceMode : AceMode.values()) {
+            if (aceMode.name().equals(mode.getId())) {
+                editorMode = aceMode;
                 break;
-
-            case Java:
-                editorMode = AceMode.java;
-                break;
-
-            case SQL:
-                editorMode = AceMode.sql;
-                break;
-
-            case JavaScript:
-                editorMode = AceMode.javascript;
-                break;
-
-            case XML:
-                editorMode = AceMode.xml;
-                break;
-
-            case Properties:
-                editorMode = AceMode.properties;
-                break;
-
-            case CSS:
-                editorMode = AceMode.css;
-                break;
-
-            case SCSS:
-                editorMode = AceMode.scss;
-                break;
-
-            default:
-                editorMode = AceMode.text;
-                break;
+            }
         }
 
         component.setMode(editorMode);

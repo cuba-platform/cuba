@@ -24,17 +24,28 @@ import org.apache.commons.lang3.StringUtils;
 public interface SourceCodeEditor extends Field<String>, Component.Focusable {
     String NAME = "sourceCodeEditor";
 
-    enum Mode {
-        Java,
-        HTML,
-        XML,
-        Groovy,
-        SQL,
-        JavaScript,
-        Properties,
-        CSS,
-        SCSS,
-        Text;
+    @Deprecated
+    enum Mode implements HighlightMode {
+        Java("java"),
+        HTML("html"),
+        XML("xml"),
+        Groovy("groovy"),
+        SQL("sql"),
+        JavaScript("javascript"),
+        Properties("properties"),
+        CSS("css"),
+        SCSS("scss"),
+        Text("text");
+
+        protected String id;
+
+        Mode(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
 
         public static Mode parse(String name) {
             if (StringUtils.isEmpty(name)) {
@@ -51,8 +62,8 @@ public interface SourceCodeEditor extends Field<String>, Component.Focusable {
         }
     }
 
-    Mode getMode();
-    void setMode(Mode mode);
+    HighlightMode getMode();
+    void setMode(HighlightMode mode);
 
     Suggester getSuggester();
     void setSuggester(Suggester suggester);
