@@ -37,6 +37,15 @@ public class Many2Many_FetchSame2 extends StandardEntity {
     @ManyToMany
     protected List<Many2Many_FetchSame1> many1;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MANY3_ID")
+    protected Many2Many_FetchSame3 many3;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MANY_TO_ONE1_ID")
+    protected Many2Many_FetchSame1 manyToOne1;
+
     public void setMany1(List<Many2Many_FetchSame1> many1) {
         this.many1 = many1;
     }
@@ -44,7 +53,6 @@ public class Many2Many_FetchSame2 extends StandardEntity {
     public List<Many2Many_FetchSame1> getMany1() {
         return many1;
     }
-
 
     public void setName(String name) {
         this.name = name;
@@ -54,5 +62,19 @@ public class Many2Many_FetchSame2 extends StandardEntity {
         return name;
     }
 
+    public Many2Many_FetchSame3 getMany3() {
+        return many3;
+    }
 
+    public void setMany3(Many2Many_FetchSame3 many3) {
+        this.many3 = many3;
+    }
+
+    public Many2Many_FetchSame1 getManyToOne1() {
+        return manyToOne1;
+    }
+
+    public void setManyToOne1(Many2Many_FetchSame1 manyToOne1) {
+        this.manyToOne1 = manyToOne1;
+    }
 }

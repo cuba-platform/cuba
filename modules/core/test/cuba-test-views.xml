@@ -16,7 +16,7 @@
 
     <view entity="test$Many2Many_FetchSame1"
           extends="_local"
-          name="Many2Many_FetchSame1-view">
+          name="Many2Many_FetchSame1-emptyCollection">
         <property name="many2"
                   view="_minimal">
             <property name="many1"
@@ -26,4 +26,18 @@
             </property>
         </property>
     </view>
+
+    <view entity="test$Many2Many_FetchSame1"
+          extends="_local"
+          name="Many2Many_FetchSame1-sameEntityTwice">
+        <property name="oneToMany2"
+                  view="_minimal">
+            <property name="many3"
+                      view="_minimal">
+                <property name="oneToMany2"
+                          view="_minimal"/>
+            </property>
+        </property>
+    </view>
+
 </views>

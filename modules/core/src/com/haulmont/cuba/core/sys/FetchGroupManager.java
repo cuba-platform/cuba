@@ -129,9 +129,9 @@ public class FetchGroupManager {
     }
 
     public FetchGroupDescription calculateFetchGroup(String queryString,
-                                                      View view,
-                                                      boolean singleResultExpected,
-                                                      boolean useFetchGroup) {
+                                                     View view,
+                                                     boolean singleResultExpected,
+                                                     boolean useFetchGroup) {
         Set<FetchGroupField> fetchGroupFields = new LinkedHashSet<>();
         processView(view, null, fetchGroupFields, useFetchGroup);
 
@@ -251,26 +251,38 @@ public class FetchGroupManager {
                 }
             }
 
-            //Find many-to-many fields with cycle loading same: {E}.b.a.b, where b of type {E}.
-            //If {E}.b BATCH, {E}.b.a BATCH and {E}.b.a.b BATCH then same query used simultaneously
-            //while loading {E}.b and {E}.b.a.b, so result of batch query is incorrect.
             //Remove this fields from BATCH processing
             for (FetchGroupField refField : refFields) {
+                //Find many-to-many fields with cycle loading same: {E}.b.a.b, where a of type {E}.
+                //If {E}.b BATCH, {E}.b.a BATCH and {E}.b.a.b BATCH then same query used simultaneously
+                //while loading {E}.b and {E}.b.a.b, so result of batch query is incorrect.
                 if (refField.fetchMode == FetchMode.AUTO &&
                         refField.metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY) {
                     //find property {E}.a.b for {E}.a where b of type {E}
                     List<FetchGroupField> selfRefs = refFields.stream()
-                            .filter(f -> isTransitiveSelfReference(refField, f))
+                            .filter(f -> isTransitiveSelfReference(refField, f, Range.Cardinality.MANY_TO_MANY, refField.metaClass))
                             .collect(Collectors.toList());
                     for (FetchGroupField selfRef : selfRefs) {
                         List<FetchGroupField> secondLevelSelfRefs = refFields.stream()
-                                .filter(f -> isTransitiveSelfReference(selfRef, f))
+                                .filter(f -> isTransitiveSelfReference(selfRef, f, Range.Cardinality.MANY_TO_MANY, selfRef.metaClass))
                                 .collect(Collectors.toList());
                         for (FetchGroupField f : secondLevelSelfRefs) {
                             batchFields.remove(f);
                             batchFields.remove(selfRef);
                             batchFields.remove(refField);
                         }
+                    }
+                }
+
+                if (refField.fetchMode == FetchMode.AUTO &&
+                        refField.metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY) {
+                    //find properties {E}.a.b.a for {E}.a
+                    List<FetchGroupField> selfRefs = refFields.stream()
+                            .filter(f -> isTransitiveSelfReference(refField, f, Range.Cardinality.ONE_TO_MANY, refField.metaProperty.getRange().asClass()))
+                            .collect(Collectors.toList());
+                    for (FetchGroupField selfRef : selfRefs) {
+                        batchFields.remove(selfRef);
+                        batchFields.remove(refField);
                     }
                 }
             }
@@ -291,13 +303,14 @@ public class FetchGroupManager {
         return description;
     }
 
-    private boolean isTransitiveSelfReference(FetchGroupField root, FetchGroupField current) {
+    private boolean isTransitiveSelfReference(FetchGroupField root, FetchGroupField current,
+                                              Range.Cardinality cardinality, MetaClass metaClass) {
         return root != current
                 && current.fetchMode == FetchMode.AUTO
                 && current.metaPropertyPath.startsWith(root.metaPropertyPath)
                 && current.metaProperty.getRange().isClass()
-                && current.metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY
-                && Objects.equals(current.metaProperty.getRange().asClass(), root.metaClass);
+                && current.metaProperty.getRange().getCardinality() == cardinality
+                && Objects.equals(current.metaProperty.getRange().asClass(), metaClass);
     }
 
     private List<String> getMasterEntityAttributes(Set<FetchGroupField> fetchGroupFields,
