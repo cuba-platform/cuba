@@ -71,6 +71,13 @@ public interface DsContext {
     Collection<Datasource> getAll();
 
     /**
+     * Add alias for datasource.
+     * @param aliasDatasourceId     additional datasource id
+     * @param originalDatasourceId  original datasource id
+     */
+    void addAlias(String aliasDatasourceId, String originalDatasourceId);
+
+    /**
      * @return true if any contained datasource is modified
      */
     boolean isModified();

@@ -41,6 +41,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected Map<String, Datasource> datasourceMap = new HashMap<>();
     protected Map<Datasource, Datasource> dependencies = new HashMap<>();
+    protected Map<String, String> aliasesMap = new HashMap<>();
 
     protected Metadata metadata;
 
@@ -507,6 +508,9 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public Datasource get(String id) {
+        if (aliasesMap.containsKey(id)) {
+            id = aliasesMap.get(id);
+        }
         Preconditions.checkNotNullArgument(id, "Null datasource ID");
         Datasource ds = null;
         if (!id.contains(".")) {
@@ -539,6 +543,10 @@ public class DsContextImpl implements DsContextImplementation {
     @Override
     public Collection<Datasource> getAll() {
         return datasourceMap.values();
+    }
+
+    public void addAlias(String aliasDatasourceId, String originalDatasourceId) {
+        aliasesMap.put(aliasDatasourceId, originalDatasourceId);
     }
 
     @Override

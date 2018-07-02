@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -94,6 +95,8 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadAliases();
+
         if (context.getFrame() != null) {
             resultComponent.setFrame(context.getFrame());
         }
@@ -123,6 +126,19 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         } finally {
             context.setCurrentFrameId(currentFrameId);
             loadDescriptorWatch.stop();
+        }
+    }
+
+    protected void loadAliases() {
+        if (frameLoader instanceof FrameLoader) {
+            ComponentLoaderContext frameLoaderInnerContext = ((FrameLoader) frameLoader).getInnerContext();
+            for (Element aliasElement : Dom4j.elements(element, "dsAlias")) {
+                    String aliasDatasourceId = aliasElement.attributeValue("alias");
+                    String originalDatasourceId = aliasElement.attributeValue("datasource");
+                    if (StringUtils.isNotBlank(aliasDatasourceId) && StringUtils.isNotBlank(originalDatasourceId)) {
+                        frameLoaderInnerContext.getAliasesMap().put(aliasDatasourceId, originalDatasourceId);
+                    }
+            }
         }
     }
 }
