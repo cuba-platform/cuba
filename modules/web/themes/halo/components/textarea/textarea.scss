@@ -18,6 +18,10 @@
 @mixin halo-textarea($primary-stylename: v-textarea) {
   .#{$primary-stylename} {
     -ms-overflow-y: auto;
+
+    .v-ff & {
+      overflow-x:hidden;
+    }
   }
 
   .c-resizabletextarea-wrapper-error {

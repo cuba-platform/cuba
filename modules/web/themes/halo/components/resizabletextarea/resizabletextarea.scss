@@ -71,6 +71,10 @@
         font-size: $v-font-size--huge;
       }
     }
+
+    .v-ff & {
+      overflow-x:hidden;
+    }
   }
 
   .#{$primary-stylename}-resize-corner {
