@@ -136,7 +136,8 @@ public class QueryCacheManager {
     /**
      * Put query results into query cache for specified query {@code queryKey}.
      * Results are extracted as identifiers from {@code resultList}
-     * @param type - result entity type (metaClass name)
+     *
+     * @param type         - result entity type (metaClass name)
      * @param relatedTypes - query dependent types (metaClass names). It's a list of entity types used in query
      */
     @SuppressWarnings("unchecked")
@@ -179,8 +180,10 @@ public class QueryCacheManager {
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidate(Class typeClass, boolean sendInCluster) {
-        MetaClass metaClass = metadata.getClassNN(typeClass);
-        invalidate(metaClass.getName(), sendInCluster);
+        if (isEnabled()) {
+            MetaClass metaClass = metadata.getClassNN(typeClass);
+            invalidate(metaClass.getName(), sendInCluster);
+        }
     }
 
     /**
@@ -188,9 +191,14 @@ public class QueryCacheManager {
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidate(String typeName, boolean sendInCluster) {
-        queryCache.invalidate(typeName);
-        if (sendInCluster) {
-            clusterManager.send(new InvalidateQueryCacheMsg(Sets.newHashSet(typeName)));
+        if (isEnabled()) {
+            queryCache.invalidate(typeName);
+            if (sendInCluster) {
+                MetaClass metaClass = metadata.getClass(typeName);
+                if (metaClass != null && metadata.getTools().isCacheable(metaClass)) {
+                    clusterManager.send(new InvalidateQueryCacheMsg(Sets.newHashSet(typeName)));
+                }
+            }
         }
     }
 
@@ -199,10 +207,18 @@ public class QueryCacheManager {
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidate(Set<String> typeNames, boolean sendInCluster) {
-        if (typeNames != null && typeNames.size() > 0) {
-            queryCache.invalidate(typeNames);
-            if (sendInCluster) {
-                clusterManager.send(new InvalidateQueryCacheMsg(typeNames));
+        if (isEnabled()) {
+            if (typeNames != null && typeNames.size() > 0) {
+                queryCache.invalidate(typeNames);
+                if (sendInCluster) {
+                    boolean hasCacheable = typeNames.stream().anyMatch(typeName -> {
+                        MetaClass metaClass = metadata.getClass(typeName);
+                        return metaClass != null && metadata.getTools().isCacheable(metaClass);
+                    });
+                    if (hasCacheable) {
+                        clusterManager.send(new InvalidateQueryCacheMsg(typeNames));
+                    }
+                }
             }
         }
     }
@@ -213,9 +229,11 @@ public class QueryCacheManager {
      */
     public void invalidate(UUID queryId, boolean sendInCluster) {
         Preconditions.checkNotNull(queryId, "Query identifier is null");
-        QueryKey queryKey = queryCache.invalidate(queryId);
-        if (queryKey != null && sendInCluster) {
-            clusterManager.send(new InvalidateQueryCacheMsg(queryKey));
+        if (isEnabled()) {
+            QueryKey queryKey = queryCache.invalidate(queryId);
+            if (queryKey != null && sendInCluster) {
+                clusterManager.send(new InvalidateQueryCacheMsg(queryKey));
+            }
         }
     }
 
@@ -224,9 +242,11 @@ public class QueryCacheManager {
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidateAll(boolean sendInCluster) {
-        queryCache.invalidateAll();
-        if (sendInCluster) {
-            clusterManager.send(new InvalidateQueryCacheMsg(true));
+        if (isEnabled()) {
+            queryCache.invalidateAll();
+            if (sendInCluster) {
+                clusterManager.send(new InvalidateQueryCacheMsg(true));
+            }
         }
     }
 
