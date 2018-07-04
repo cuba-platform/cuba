@@ -50,10 +50,10 @@ public class Config extends BaseUuidEntity implements Versioned, Creatable, Upda
     @Column(name = "UPDATED_BY", length = 50)
     private String updatedBy;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     private String name;
 
-    @Column(name = "VALUE_")
+    @Column(name = "VALUE_", nullable = false)
     private String value;
 
     @Override

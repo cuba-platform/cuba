@@ -24,8 +24,8 @@ create table SYS_CONFIG (
     UPDATE_TS timestamp,
     UPDATED_BY varchar(50),
     --
-    NAME varchar(255),
-    VALUE_ text,
+    NAME varchar(255) not null,
+    VALUE_ text not null,
     --
     primary key (ID)
 )^
