@@ -30,8 +30,8 @@ create table SYS_CONFIG (
     UPDATE_TS timestamp,
     UPDATED_BY varchar(50),
     --
-    NAME varchar(255),
-    VALUE_ longvarchar,
+    NAME varchar(255) not null,
+    VALUE_ longvarchar not null,
     --
     primary key (ID),
     constraint IDX_SYS_CONFIG_UNIQ_NAME unique (NAME)

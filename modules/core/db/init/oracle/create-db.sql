@@ -112,8 +112,8 @@ create table SYS_CONFIG (
     VERSION integer,
     UPDATE_TS timestamp,
     UPDATED_BY varchar2(50),
-    NAME varchar2(255),
-    VALUE_ clob,
+    NAME varchar2(255) not null,
+    VALUE_ clob not null,
     primary key(ID)
 )^
 create unique index IDX_SYS_CONFIG_UNIQ_NAME on SYS_CONFIG(NAME)^

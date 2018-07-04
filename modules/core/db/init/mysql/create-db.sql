@@ -22,8 +22,8 @@ create table SYS_CONFIG (
     UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
     --
-    NAME varchar(190),
-    VALUE_ text,
+    NAME varchar(190) not null, -- See PL-8935, 190 length is set due to MySQL problem with encoding
+    VALUE_ text not null,
     --
     primary key (ID)
 )^

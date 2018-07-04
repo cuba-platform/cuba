@@ -23,8 +23,8 @@ create table SYS_CONFIG (
     UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     --
-    NAME varchar(255),
-    VALUE_ varchar(max),
+    NAME varchar(255) not null,
+    VALUE_ varchar(max) not null,
     --
     primary key nonclustered (ID)
 )^
