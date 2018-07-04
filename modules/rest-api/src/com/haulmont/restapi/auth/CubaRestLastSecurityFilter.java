@@ -74,9 +74,8 @@ public class CubaRestLastSecurityFilter implements Filter {
         parseRequestLocale(request);
 
         try {
-            if (events != null) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (events != null && authentication != null) {
                 BeforeRestInvocationEvent beforeInvocationEvent = new BeforeRestInvocationEvent(authentication, request, response);
                 events.publish(beforeInvocationEvent);
 
