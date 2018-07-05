@@ -157,8 +157,8 @@ public class ServicesControllerManager {
                     modelVersion, JsonTransformationDirection.TO_VERSION, entityJson);
             return new ServiceCallResult(entityJson, true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            Class returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
-            if ((returnTypeArgument != null && Entity.class.isAssignableFrom(returnTypeArgument))
+            Type returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
+            if ((returnTypeArgument instanceof Class && Entity.class.isAssignableFrom((Class) returnTypeArgument))
                     || isEntitiesCollection((Collection) methodResult)) {
                 Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
                 entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
@@ -166,7 +166,7 @@ public class ServicesControllerManager {
                         null,
                         EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
                 if (returnTypeArgument != null) {
-                    MetaClass metaClass = metadata.getClass(returnTypeArgument);
+                    MetaClass metaClass = metadata.getClass((Class) returnTypeArgument);
                     if (metaClass != null) {
                         entitiesJson = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion,
                                 JsonTransformationDirection.TO_VERSION, entitiesJson);
@@ -189,13 +189,13 @@ public class ServicesControllerManager {
     }
 
     @Nullable
-    protected Class getMethodReturnTypeArgument(Method serviceMethod) {
-        Class returnTypeArgument = null;
+    protected Type getMethodReturnTypeArgument(Method serviceMethod) {
+        Type returnTypeArgument = null;
         Type genericReturnType = serviceMethod.getGenericReturnType();
         if (genericReturnType instanceof ParameterizedType) {
             Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
             if (actualTypeArguments.length > 0) {
-                returnTypeArgument = (Class) actualTypeArguments[0];
+                returnTypeArgument = actualTypeArguments[0];
             }
         }
         return returnTypeArgument;
