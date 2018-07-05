@@ -9,7 +9,6 @@ exception
     when others then
         null;
 end;
-/
 ^
 
 create index IDX_SYS_CONFIG_UNIQ_NAME on SYS_CONFIG (NAME)^
