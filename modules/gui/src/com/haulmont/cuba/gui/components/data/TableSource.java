@@ -105,10 +105,10 @@ public interface TableSource<I> {
 
     // todo
     class ValueChangeEvent<T> extends EventObject {
-        private final T prevValue;
-        private final T value;
+        private final Object prevValue;
+        private final Object value;
 
-        public ValueChangeEvent(TableSource<T> source, T prevValue, T value) {
+        public ValueChangeEvent(TableSource<T> source, Object prevValue, Object value) {
             super(source);
             this.prevValue = prevValue;
             this.value = value;
@@ -120,11 +120,11 @@ public interface TableSource<I> {
             return (TableSource<T>) super.getSource();
         }
 
-        public T getPrevValue() {
+        public Object getPrevValue() {
             return prevValue;
         }
 
-        public T getValue() {
+        public Object getValue() {
             return value;
         }
     }
