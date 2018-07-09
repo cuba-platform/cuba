@@ -16,6 +16,10 @@
 
 package com.haulmont.cuba.gui.config;
 
+/**
+ * @deprecated Will be removed in 7.0
+ */
+@Deprecated
 public interface ScreenAgent {
     /**
      * Defines the highest precedence for {@link org.springframework.core.Ordered} platform agents.
