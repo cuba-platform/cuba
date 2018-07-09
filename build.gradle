@@ -338,7 +338,11 @@ configure(globalModule) {
         from new File(project.buildDir, 'release-number')
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     task filterDummyEntities {
         ext.srcFile1 = file('src/base-persistence.xml')
@@ -423,7 +427,11 @@ configure(coreModule) {
     	testRuntime(bom['org.postgresql:postgresql'])
     }
 
-    task enhanceTestModel(type: CubaTestEnhancing)
+    entitiesEnhancing {
+        test {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -584,7 +592,11 @@ configure(guiModule) {
         testCompile(clientModule.sourceSets.test.output)
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -656,7 +668,11 @@ configure(webModule) {
         testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     jar {
         with copySpec {
