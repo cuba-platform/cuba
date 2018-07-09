@@ -327,7 +327,7 @@ configure(globalModule) {
         compile(bom['org.hibernate:hibernate-validator'])
         compile(bom['org.glassfish.web:javax.el'])
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
@@ -417,7 +417,7 @@ configure(coreModule) {
 
         compile(bom['org.jsoup:jsoup']) // simplify version management for fts
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         jdbc(bom['org.postgresql:postgresql'])
         jdbc(bom['org.hsqldb:hsqldb'])
@@ -578,7 +578,7 @@ configure(guiModule) {
 
 configure(webWidgetsModule) {
     dependencies {
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        compileOnly(bom['org.apache.tomcat:tomcat-servlet-api'])
 
         compile(bom['org.apache.commons:commons-lang3'])
         compile(bom['com.google.guava:guava'])
@@ -646,7 +646,7 @@ configure(webModule) {
 
         compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         themes(bom['com.vaadin:vaadin-themes'])
 
@@ -887,7 +887,7 @@ configure(restApiModule) {
 
         compile(bom['io.swagger:swagger-models'])
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         testCompile(clientTestsModule)
     }
@@ -915,7 +915,7 @@ configure(portalModule) {
         compile(bom['org.thymeleaf:thymeleaf-spring4'])
         compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity4'])
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         testCompile(clientTestsModule)
     }
@@ -950,7 +950,7 @@ configure(idpModule) {
 
         testCompile(clientTestsModule)
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
     }
 
     task webArchive(type: Zip) {
@@ -1006,7 +1006,7 @@ configure(frontModule) {
     dependencies {
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
     }
 }
 
