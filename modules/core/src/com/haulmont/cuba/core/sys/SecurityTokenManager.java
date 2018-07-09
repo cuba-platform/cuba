@@ -57,8 +57,12 @@ public class SecurityTokenManager {
     protected static final String READ_ONLY_ATTRIBUTES_KEY = "__readonlyAttributes";
     protected static final String REQUIRED_ATTRIBUTES_KEY = "__requiredAttributes";
     protected static final String HIDDEN_ATTRIBUTES_KEY = "__hiddenAttributes";
+    protected static final String ENTITY_NAME_KEY = "__entityName";
+    protected static final String ENTITY_ID_KEY = "__entityId";
+
     protected static final Set SYSTEM_ATTRIBUTE_KEYS = Sets.newHashSet(READ_ONLY_ATTRIBUTES_KEY,
-            REQUIRED_ATTRIBUTES_KEY, HIDDEN_ATTRIBUTES_KEY);
+            REQUIRED_ATTRIBUTES_KEY, HIDDEN_ATTRIBUTES_KEY, ENTITY_NAME_KEY, ENTITY_ID_KEY);
+
     /**
      * Encrypt filtered data and write the result to the security token
      */
@@ -85,6 +89,11 @@ public class SecurityTokenManager {
             }
             if (!securityState.getRequiredAttributes().isEmpty()) {
                 jsonObject.put(REQUIRED_ATTRIBUTES_KEY, securityState.getRequiredAttributes());
+            }
+            MetaClass metaClass = entity.getMetaClass();
+            jsonObject.put(ENTITY_NAME_KEY, metaClass.getName());
+            if (!metadata.getTools().hasCompositePrimaryKey(metaClass)) {
+                jsonObject.put(ENTITY_ID_KEY, getEntityId(entity));
             }
 
             String json = jsonObject.toString();
@@ -121,7 +130,7 @@ public class SecurityTokenManager {
                     MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(elementName);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Object id = jsonArray.get(i);
-                        filteredData.put(elementName, convertId(id, metaProperty));
+                        filteredData.put(elementName, convertId(id, metaProperty.getRange().asClass(), true));
                     }
                 }
             }
@@ -137,6 +146,27 @@ public class SecurityTokenManager {
                 BaseEntityInternalAccess.setRequiredAttributes(securityState, parseJsonArrayAsStrings(
                         jsonObject.getJSONArray(REQUIRED_ATTRIBUTES_KEY)));
             }
+            MetaClass metaClass = entity.getMetaClass();
+            if (!metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass())
+                    && !(entity instanceof EmbeddableEntity)) {
+                if (!jsonObject.has(ENTITY_ID_KEY) || !jsonObject.has(ENTITY_NAME_KEY)) {
+                    throw new SecurityTokenException("Invalid format for security token");
+                }
+                String entityName = jsonObject.getString(ENTITY_NAME_KEY);
+                if (!Objects.equals(entityName, metaClass.getName())) {
+                    throw new SecurityTokenException("Invalid format for security token: incorrect entity type");
+                }
+                Object jsonEntityId = jsonObject.get(ENTITY_ID_KEY);
+                if (jsonEntityId == null) {
+                    throw new SecurityTokenException("Invalid format for security token: incorrect entity id");
+                }
+                Object entityId = getEntityId(entity);
+                if (entityId != null && !Objects.equals(entityId, convertId(jsonEntityId, metaClass, false))) {
+                    throw new SecurityTokenException("Invalid format for security token: incorrect entity id");
+                }
+            }
+        } catch (SecurityTokenException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while reading security token", e);
         }
@@ -164,9 +194,17 @@ public class SecurityTokenManager {
         return result.toArray(new String[result.size()]);
     }
 
-    protected Object convertId(Object value, MetaProperty metaProperty) {
-        MetaClass metaClass = metaProperty.getRange().asClass();
-        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+    protected Object getEntityId(Entity entity) {
+        Object entityId = entity.getId();
+        if (entityId instanceof IdProxy) {
+            return ((IdProxy) entityId).get();
+        } else {
+            return entityId;
+        }
+    }
+
+    protected Object convertId(Object value, MetaClass metaClass, boolean handleHasUuid) {
+        if (handleHasUuid && HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
             return UuidProvider.fromString((String) value);
         }
         MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);
