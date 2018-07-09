@@ -111,6 +111,11 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
+    public EntitySet commit(Entity... entities) {
+        return commit(new CommitContext(entities));
+    }
+
+    @Override
     public void remove(Entity entity) {
     }
 

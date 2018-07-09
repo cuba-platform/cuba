@@ -97,4 +97,9 @@ public final class Id<T extends Entity<K>, K> implements Serializable {
         result = 31 * result + (entityClass != null ? entityClass.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Id{" + entityClass.getName() + ", " + id + '}';
+    }
 }

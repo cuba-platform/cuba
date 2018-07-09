@@ -104,26 +104,17 @@ public class SecurityContext {
     }
 
     /**
-     * @return Whether the security check is required for standard mechanisms ({@code DataManager} in particular) on
-     * the middleware
+     * @deprecated Use isAuthorizationRequired() method of Load/CommitContext
      */
+    @Deprecated
     public boolean isAuthorizationRequired() {
         return authorizationRequired;
     }
 
     /**
-     * Whether the security check is required for standard mechanisms ({@code DataManager} in particular) on
-     * the middleware. Example usage:
-     * <pre>{@code
-     * boolean saved = AppContext.getSecurityContext().isAuthorizationRequired();
-     * AppContext.getSecurityContext().setAuthorizationRequired(true);
-     * try {
-     *     // all calls to DataManager will apply security restrictions
-     * } finally {
-     *     AppContext.getSecurityContext().setAuthorizationRequired(saved);
-     * }
-     * }</pre>
+     * @deprecated Use setAuthorizationRequired() method of Load/CommitContext
      */
+    @Deprecated
     public void setAuthorizationRequired(boolean authorizationRequired) {
         this.authorizationRequired = authorizationRequired;
     }

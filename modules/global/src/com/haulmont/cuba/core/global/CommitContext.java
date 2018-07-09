@@ -38,6 +38,8 @@ public class CommitContext implements Serializable {
 
     protected boolean softDeletion = true;
     protected boolean discardCommitted;
+    protected boolean authorizationRequired;
+    protected boolean joinTransaction;
     protected Map<String, Object> dbHints = new HashMap<>();
 
     /**
@@ -187,6 +189,24 @@ public class CommitContext implements Serializable {
      */
     public void setDiscardCommitted(boolean discardCommitted) {
         this.discardCommitted = discardCommitted;
+    }
+
+    public boolean isAuthorizationRequired() {
+        return authorizationRequired;
+    }
+
+    public CommitContext setAuthorizationRequired(boolean authorizationRequired) {
+        this.authorizationRequired = authorizationRequired;
+        return this;
+    }
+
+    public boolean isJoinTransaction() {
+        return joinTransaction;
+    }
+
+    public CommitContext setJoinTransaction(boolean joinTransaction) {
+        this.joinTransaction = joinTransaction;
+        return this;
     }
 
     private View getViewFromRepository(Entity entity, String viewName) {

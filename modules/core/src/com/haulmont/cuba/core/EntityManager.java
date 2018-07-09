@@ -220,6 +220,8 @@ public interface EntityManager {
      */
     void flush();
 
+    void detach(Entity entity);
+
     /**
      * @return true if the EntityManager is in SoftDeletion mode
      */

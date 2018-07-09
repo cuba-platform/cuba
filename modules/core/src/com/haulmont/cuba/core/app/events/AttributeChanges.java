@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,25 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.persistence;
+package com.haulmont.cuba.core.app.events;
 
-import org.eclipse.persistence.sessions.changesets.AggregateChangeRecord;
-import org.eclipse.persistence.sessions.changesets.ChangeRecord;
-import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.contracts.Id;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-/**
- * INTERNAL. Accumulates changes in entity attributes.
- */
-public class EntityAttributeChanges {
+public class AttributeChanges {
 
-    private Set<Change> changes = new HashSet<>();
-    private Map<String, EntityAttributeChanges> embeddedChanges = new HashMap<>();
+    private Set<Change> changes;
+    private Map<String, AttributeChanges> embeddedChanges;
 
-    public void addChanges(ObjectChangeSet changeSet) {
-        if (changeSet == null)
-            return;
-        for (ChangeRecord changeRecord : changeSet.getChanges()) {
-            changes.add(new Change(changeRecord.getAttribute(), changeRecord.getOldValue()));
-            if (changeRecord instanceof AggregateChangeRecord) {
-                embeddedChanges.computeIfAbsent(changeRecord.getAttribute(), s -> {
-                    EntityAttributeChanges embeddedChanges = new EntityAttributeChanges();
-                    embeddedChanges.addChanges(((AggregateChangeRecord) changeRecord).getChangedObject());
-                    return embeddedChanges;
-                });
-            }
-        }
+    public AttributeChanges(Set<Change> changes, Map<String, AttributeChanges> embeddedChanges) {
+        this.changes = changes;
+        this.embeddedChanges = embeddedChanges;
     }
 
     /**
@@ -61,7 +48,7 @@ public class EntityAttributeChanges {
     public Set<String> getAttributes() {
         Set<String> attributes = new HashSet<>();
         for (Change change : changes) {
-            EntityAttributeChanges nestedChanges = embeddedChanges.get(change.name);
+            AttributeChanges nestedChanges = embeddedChanges.get(change.name);
             if (nestedChanges == null) {
                 attributes.add(change.name);
             } else {
@@ -81,33 +68,39 @@ public class EntityAttributeChanges {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public <T> T getOldValue(String attributeName) {
-        for (Change change : changes) {
-            if (change.name.equals(attributeName))
-                return (T) change.oldValue;
-        }
-        return null;
-    }
-
-    @Nullable
-    public <T> T getOldValueEx(String attributePath) {
-        String[] properties = attributePath.split("[.]");
+        String[] properties = attributeName.split("\\.");
         if (properties.length == 1) {
             for (Change change : changes) {
-                if (change.name.equals(attributePath))
+                if (change.name.equals(attributeName))
                     return (T) change.oldValue;
             }
         } else {
-            EntityAttributeChanges nestedChanges = embeddedChanges.get(properties[0]);
+            AttributeChanges nestedChanges = embeddedChanges.get(properties[0]);
             if (nestedChanges != null) {
-               return nestedChanges.getOldValueEx(attributePath.substring(attributePath.indexOf(".") + 1));
+                return nestedChanges.getOldValue(attributeName.substring(attributeName.indexOf(".") + 1));
             }
         }
         return null;
     }
 
-    private static class Change {
+    @Nullable
+    public <E extends Entity<K>, K> Id<E, K> getOldReferenceId(String attributeName) {
+        return getOldValue(attributeName);
+    }
+
+    @Override
+    public String toString() {
+        return "AttributeChanges{"
+                + getAttributes().stream()
+                        .map(name -> name + ": " + getOldValue(name))
+                        .collect(Collectors.joining(","))
+                + '}';
+    }
+
+    public static class Change {
 
         public final String name;
         public final Object oldValue;

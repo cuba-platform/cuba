@@ -59,12 +59,14 @@ public class CrossDataStoreReferenceLoader {
     private MetaClass metaClass;
 
     private View view;
+    private boolean joinTransaction;
 
-    public CrossDataStoreReferenceLoader(MetaClass metaClass, View view) {
+    public CrossDataStoreReferenceLoader(MetaClass metaClass, View view, boolean joinTransaction) {
         Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
         Preconditions.checkNotNullArgument(view, "view is null");
         this.metaClass = metaClass;
         this.view = view;
+        this.joinTransaction = joinTransaction;
     }
 
     public Map<Class<? extends Entity>, List<CrossDataStoreProperty>> getCrossPropertiesMap() {
@@ -169,6 +171,7 @@ public class CrossDataStoreReferenceLoader {
         loadContext.setId(id);
         if (aProp.viewProperty.getView() != null)
             loadContext.setView(aProp.viewProperty.getView());
+        loadContext.setJoinTransaction(joinTransaction);
         Entity relatedEntity = dataManager.load(loadContext);
         entity.setValue(aProp.property.getName(), relatedEntity);
     }
@@ -228,6 +231,7 @@ public class CrossDataStoreReferenceLoader {
         }
 
         loadContext.setView(crossDataStoreProperty.viewProperty.getView());
+        loadContext.setJoinTransaction(joinTransaction);
 
         List<Entity> loadedEntities = dataManager.loadList(loadContext);
 

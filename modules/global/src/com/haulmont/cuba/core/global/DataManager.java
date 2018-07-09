@@ -20,10 +20,10 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.entity.contracts.Id;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Central interface to provide CRUD functionality. Can be used on both middle and client tiers.
@@ -115,6 +115,13 @@ public interface DataManager {
     EntitySet commit(CommitContext context);
 
     /**
+     * Commits new or detached entity instances to the data store.
+     * @param entities  entities to commit
+     * @return          set of committed instances
+     */
+    EntitySet commit(Entity... entities);
+
+    /**
      * Commits the entity to the data store.
      * @param entity    entity instance
      * @param view      view object, affects the returned committed instance
@@ -177,6 +184,10 @@ public interface DataManager {
      */
     default <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
         return new FluentLoader<>(entityClass, this);
+    }
+
+    default <E extends Entity<K>, K> FluentLoader.ById<E, K> load(Id<E, K> entityId) {
+        return new FluentLoader<>(entityId.getEntityClass(), this).id(entityId.getValue());
     }
 
     /**

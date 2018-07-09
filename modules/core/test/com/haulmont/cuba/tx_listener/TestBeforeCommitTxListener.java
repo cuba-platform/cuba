@@ -17,6 +17,8 @@
 package com.haulmont.cuba.tx_listener;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
 import com.haulmont.cuba.core.TypedQuery;
@@ -44,16 +46,61 @@ public class TestBeforeCommitTxListener implements BeforeCommitTransactionListen
     @Inject
     private Metadata metadata;
 
+    @Inject
+    private Persistence persistence;
+
     @Override
     public void beforeCommit(EntityManager entityManager, Collection<Entity> managedEntities) {
         if (test != null) {
             System.out.println("beforeCommit: managedEntities=" + managedEntities);
             switch (test) {
                 case "testChangeEntity": changeEntity(managedEntities); break;
-                case "testCreateEntity": createEntity(managedEntities, entityManager); break;
+                case "testCreateEntity": createEntity(entityManager); break;
                 case "testQueryWithFlush": queryWithFlush(managedEntities, entityManager); break;
+                case "testCreateEntityInNewTransaction": createEntityInNewTransaction(); break;
+                case "testCreateEntityInNewTransactionAndRollback": createEntityInNewTransactionAndRollback(); break;
+                case "testCreateEntityInSameTransaction": createEntityInSameTransaction(); break;
+                case "testCreateEntityInSameTransactionAndRollback": createEntityInSameTransactionAndRollback(); break;
             }
         }
+    }
+
+    private void createEntityInNewTransaction() {
+        test = null;
+        try (Transaction tx = persistence.createTransaction()) {
+            createEntity(persistence.getEntityManager());
+            System.out.println("Created in new transaction: " + createdEntityId);
+            tx.commit();
+        }
+    }
+
+    private void createEntityInSameTransaction() {
+        test = null;
+        try (Transaction tx = persistence.getTransaction()) {
+            createEntity(persistence.getEntityManager());
+            System.out.println("Created in same transaction: " + createdEntityId);
+            tx.commit();
+        }
+    }
+
+    private void createEntityInNewTransactionAndRollback() {
+        test = null;
+        try (Transaction tx = persistence.createTransaction()) {
+            createEntity(persistence.getEntityManager());
+            System.out.println("Created in new transaction: " + createdEntityId);
+            tx.commit();
+        }
+        throw new RuntimeException("some error");
+    }
+
+    private void createEntityInSameTransactionAndRollback() {
+        test = null;
+        try (Transaction tx = persistence.getTransaction()) {
+            createEntity(persistence.getEntityManager());
+            System.out.println("Created in same transaction: " + createdEntityId);
+            tx.commit();
+        }
+        throw new RuntimeException("some error");
     }
 
     private void changeEntity(Collection<Entity> managedEntities) {
@@ -68,7 +115,7 @@ public class TestBeforeCommitTxListener implements BeforeCommitTransactionListen
         }
     }
 
-    private void createEntity(Collection<Entity> managedEntities, EntityManager entityManager) {
+    private void createEntity(EntityManager entityManager) {
         Group companyGroup = entityManager.find(Group.class, TestSupport.COMPANY_GROUP_ID);
         User u = metadata.create(User.class);
         createdEntityId = u.getId();
