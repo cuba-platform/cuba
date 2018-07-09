@@ -171,7 +171,13 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public void restoreSecurityState(Entity entity) {
-        securityTokenManager.readSecurityToken(entity);
+        try {
+            securityTokenManager.readSecurityToken(entity);
+        } catch (SecurityTokenException e) {
+            throw new RowLevelSecurityException(
+                    format("Could not restore security state for entity [%s] because security token isn't valid.",
+                            entity), entity.getMetaClass().getName());
+        }
     }
 
     @Override
