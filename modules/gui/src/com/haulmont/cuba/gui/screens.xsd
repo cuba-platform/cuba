@@ -19,8 +19,7 @@
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/screens.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/screens.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+        elementFormDefault="qualified">
 
     <xs:element name="screen-config" type="screenConfigType"/>
 
@@ -31,21 +30,6 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:simpleType name="screenAgent">
-        <xs:union>
-            <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-            </xs:simpleType>
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="DESKTOP"/>
-                    <xs:enumeration value="PHONE"/>
-                    <xs:enumeration value="TABLET"/>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:union>
-    </xs:simpleType>
-
     <xs:complexType name="screenType">
         <xs:sequence>
             <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
@@ -54,7 +38,9 @@
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="template" type="xs:string"/>
         <xs:attribute name="multipleOpen" type="xs:boolean"/>
-        <xs:attribute name="agent" type="screenAgent"/>
+
+        <!-- screen agent deprecated and will be removed in 7.0 -->
+        <!--<xs:attribute name="agent" type="screenAgent"/>-->
     </xs:complexType>
 
     <xs:complexType name="includeType">

@@ -21,6 +21,10 @@ import com.haulmont.cuba.gui.config.ScreenAgent;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated ScreenAgent feature will be removed in 7.0
+ */
+@Deprecated
 @Component(DesktopScreenAgent.NAME)
 public class DesktopScreenAgent implements ScreenAgent, Ordered {
 
