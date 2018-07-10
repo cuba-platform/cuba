@@ -156,10 +156,10 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<Layou
     }
 
     protected void setResolutionInternal(Resolution resolution) {
-        dateField.setResolution(WebComponentsHelper.convertDateTimeResolution(resolution));
+        dateField.setResolution(WebWrapperUtils.convertDateTimeResolution(resolution));
 
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            timeField.setResolution(WebComponentsHelper.convertTimeResolution(resolution));
+            timeField.setResolution(WebWrapperUtils.convertTimeResolution(resolution));
         } else {
             // Set time field value to zero in case of resolution without time.
             // If we don't set value to zero then after changing resolution back to

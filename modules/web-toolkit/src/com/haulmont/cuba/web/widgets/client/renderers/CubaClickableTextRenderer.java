@@ -18,8 +18,8 @@ package com.haulmont.cuba.web.widgets.client.renderers;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.InlineHTML;
-import com.vaadin.v7.client.renderers.ClickableRenderer;
-import com.vaadin.v7.client.widget.grid.RendererCellReference;
+import com.vaadin.client.renderers.ClickableRenderer;
+import com.vaadin.client.widget.grid.RendererCellReference;
 
 public class CubaClickableTextRenderer extends ClickableRenderer<String, InlineHTML> {
     @Override

@@ -32,6 +32,7 @@ import com.vaadin.ui.UI;
 
 import java.util.*;
 
+@Deprecated
 public class DataGridIndexedCollectionDsWrapper
         extends
             AbstractContainer

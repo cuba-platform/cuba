@@ -16,36 +16,38 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
+import com.haulmont.cuba.gui.components.DataGrid.RendererClickListener;
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
-import com.vaadin.v7.ui.renderers.ClickableRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 
-public abstract class WebAbstractClickableRenderer<T> extends WebDataGrid.AbstractRenderer<T>
-        implements DataGrid.HasRendererClickListener {
+public abstract class WebAbstractClickableRenderer<T extends Entity, V> extends WebDataGrid.AbstractRenderer<T, V>
+        implements DataGrid.HasRendererClickListener<T> {
 
-    protected DataGrid.RendererClickListener listener;
+    protected RendererClickListener<T> listener;
 
     public WebAbstractClickableRenderer() {
         this(null);
     }
 
-    public WebAbstractClickableRenderer(DataGrid.RendererClickListener listener) {
+    public WebAbstractClickableRenderer(RendererClickListener<T> listener) {
         super(null);
         this.listener = listener;
     }
 
-    protected ClickableRenderer.RendererClickListener createClickListenerWrapper(DataGrid.RendererClickListener listener) {
-        return (ClickableRenderer.RendererClickListener) e -> {
+    protected ClickableRenderer.RendererClickListener<T> createClickListenerWrapper(RendererClickListener<T> listener) {
+        return (ClickableRenderer.RendererClickListener<T>) e -> {
             DataGrid.Column column = getColumnByGridColumn(e.getColumn());
-            DataGrid.RendererClickEvent event = new DataGrid.RendererClickEvent(
-                    getDataGrid(), WebWrapperUtils.toMouseEventDetails(e), e.getItemId(), column.getId());
+            DataGrid.RendererClickEvent<T> event = new DataGrid.RendererClickEvent<>(getDataGrid(),
+                    WebWrapperUtils.toMouseEventDetails(e), e.getItem(), column.getId());
             listener.onClick(event);
         };
     }
 
     @Override
-    public void setRendererClickListener(DataGrid.RendererClickListener listener) {
+    public void setRendererClickListener(RendererClickListener<T> listener) {
         checkRendererNotSet();
         this.listener = listener;
     }

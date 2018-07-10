@@ -16,11 +16,10 @@
 
 package com.haulmont.cuba.web.widgets.renderers;
 
-import com.vaadin.v7.ui.Grid;
+import com.vaadin.ui.renderers.AbstractRenderer;
 import elemental.json.JsonValue;
-import org.apache.commons.lang3.BooleanUtils;
 
-public class CubaCheckBoxRenderer extends Grid.AbstractRenderer<Boolean> {
+public class CubaCheckBoxRenderer extends AbstractRenderer<Object, Boolean> {
 
     public CubaCheckBoxRenderer() {
         super(Boolean.class, null);
@@ -28,6 +27,6 @@ public class CubaCheckBoxRenderer extends Grid.AbstractRenderer<Boolean> {
 
     @Override
     public JsonValue encode(Boolean value) {
-        return super.encode(BooleanUtils.isTrue(value));
+        return super.encode(Boolean.TRUE.equals(value));
     }
 }

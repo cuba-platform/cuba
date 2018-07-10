@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.grid;
 
-import com.vaadin.v7.shared.ui.grid.GridState;
+import com.vaadin.shared.ui.grid.GridState;
 
 import java.util.Map;
 

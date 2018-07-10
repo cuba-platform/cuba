@@ -16,11 +16,12 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.v7.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.DateRenderer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  * A renderer for presenting date values.
  */
-public class WebDateRenderer extends AbstractRenderer<Date> implements DataGrid.DateRenderer {
+public class WebDateRenderer extends AbstractRenderer<Entity, Date> implements DataGrid.DateRenderer {
 
     private Locale locale;
     private String formatString;

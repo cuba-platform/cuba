@@ -16,15 +16,17 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.widgets.renderers.CubaClickableTextRenderer;
-import com.vaadin.v7.ui.renderers.Renderer;
+import com.vaadin.ui.renderers.Renderer;
 
 /**
  * A renderer for presenting simple plain-text string values as a link with call back handler.
  */
-public class WebClickableTextRenderer extends WebAbstractClickableRenderer<String>
-        implements DataGrid.ClickableTextRenderer {
+public class WebClickableTextRenderer<T extends Entity>
+        extends WebAbstractClickableRenderer<T, String>
+        implements DataGrid.ClickableTextRenderer<T> {
 
     public WebClickableTextRenderer() {
         this("");
@@ -34,11 +36,11 @@ public class WebClickableTextRenderer extends WebAbstractClickableRenderer<Strin
         this(null, nullRepresentation);
     }
 
-    public WebClickableTextRenderer(DataGrid.RendererClickListener listener) {
+    public WebClickableTextRenderer(DataGrid.RendererClickListener<T> listener) {
         this(listener, "");
     }
 
-    public WebClickableTextRenderer(DataGrid.RendererClickListener listener, String nullRepresentation) {
+    public WebClickableTextRenderer(DataGrid.RendererClickListener<T> listener, String nullRepresentation) {
         super(listener);
         this.nullRepresentation = nullRepresentation;
     }
@@ -46,9 +48,9 @@ public class WebClickableTextRenderer extends WebAbstractClickableRenderer<Strin
     @Override
     protected Renderer<String> createImplementation() {
         if (listener != null) {
-            return new CubaClickableTextRenderer(createClickListenerWrapper(listener), getNullRepresentation());
+            return new CubaClickableTextRenderer<>(createClickListenerWrapper(listener), getNullRepresentation());
         } else {
-            return new CubaClickableTextRenderer(getNullRepresentation());
+            return new CubaClickableTextRenderer<>(getNullRepresentation());
         }
     }
 

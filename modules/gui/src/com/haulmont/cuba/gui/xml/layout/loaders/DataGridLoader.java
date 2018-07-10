@@ -104,7 +104,11 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadResponsive(resultComponent, element);
         loadReorderingAllowed(resultComponent, element);
         loadHeaderVisible(resultComponent, element);
+        loadFooterVisible(resultComponent, element);
         loadTextSelectionEnabled(resultComponent, element);
+        loadBodyRowHeight(resultComponent, element);
+        loadHeaderRowHeight(resultComponent, element);
+        loadFooterRowHeight(resultComponent, element);
 
         Element columnsElement = element.element("columns");
 
@@ -210,10 +214,38 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         }
     }
 
+    protected void loadBodyRowHeight(DataGrid dataGrid, Element element) {
+        String bodyRowHeight = element.attributeValue("bodyRowHeight");
+        if (StringUtils.isNotEmpty(bodyRowHeight)) {
+            dataGrid.setBodyRowHeight(Integer.parseInt(bodyRowHeight));
+        }
+    }
+
+    protected void loadHeaderRowHeight(DataGrid dataGrid, Element element) {
+        String headerRowHeight = element.attributeValue("headerRowHeight");
+        if (StringUtils.isNotEmpty(headerRowHeight)) {
+            dataGrid.setHeaderRowHeight(Integer.parseInt(headerRowHeight));
+        }
+    }
+
+    protected void loadFooterRowHeight(DataGrid dataGrid, Element element) {
+        String footerRowHeight = element.attributeValue("footerRowHeight");
+        if (StringUtils.isNotEmpty(footerRowHeight)) {
+            dataGrid.setFooterRowHeight(Integer.parseInt(footerRowHeight));
+        }
+    }
+
     protected void loadHeaderVisible(DataGrid component, Element element) {
         String columnHeaderVisible = element.attributeValue("headerVisible");
         if (StringUtils.isNotEmpty(columnHeaderVisible)) {
             component.setHeaderVisible(Boolean.parseBoolean(columnHeaderVisible));
+        }
+    }
+
+    protected void loadFooterVisible(DataGrid component, Element element) {
+        String columnFooterVisible = element.attributeValue("footerVisible");
+        if (StringUtils.isNotEmpty(columnFooterVisible)) {
+            component.setFooterVisible(Boolean.parseBoolean(columnFooterVisible));
         }
     }
 
@@ -315,7 +347,8 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         // Default caption set to columns when it is added to a DataGrid,
         // so we need to set caption as null to get caption from
         // metaProperty if 'caption' attribute is empty
-        column.setCaption(null);
+        // TODO: gg, do we need this?
+//        column.setCaption(null);
         String caption = loadCaption(element);
 
         if (caption == null) {

@@ -28,6 +28,7 @@ import java.util.List;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.Order;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
+@Deprecated
 public class SortableDataGridIndexedCollectionDsWrapper
         extends
             DataGridIndexedCollectionDsWrapper

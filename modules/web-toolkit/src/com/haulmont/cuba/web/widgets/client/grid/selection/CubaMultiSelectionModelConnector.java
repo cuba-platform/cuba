@@ -16,15 +16,21 @@
 
 package com.haulmont.cuba.web.widgets.client.grid.selection;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.haulmont.cuba.web.widgets.CubaMultiSelectionModel;
+import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.vaadin.client.ServerConnector;
-import com.vaadin.v7.client.connectors.MultiSelectionModelConnector;
-import com.vaadin.v7.client.renderers.ComplexRenderer;
-import com.vaadin.v7.client.widget.grid.events.BodyClickHandler;
-import com.vaadin.v7.client.widget.grid.selection.SelectionModel;
-import com.vaadin.v7.client.widgets.Grid;
+import com.vaadin.client.connectors.grid.MultiSelectionModelConnector;
+import com.vaadin.client.renderers.Renderer;
+import com.vaadin.client.widget.grid.CellReference;
+import com.vaadin.client.widget.grid.DataAvailableEvent;
+import com.vaadin.client.widget.grid.DataAvailableHandler;
+import com.vaadin.client.widget.grid.events.BodyClickHandler;
+import com.vaadin.client.widget.grid.events.GridClickEvent;
+import com.vaadin.client.widget.grid.selection.SelectionModel;
+import com.vaadin.client.widgets.Grid;
+import com.vaadin.shared.Range;
 import com.vaadin.shared.ui.Connect;
 import elemental.json.JsonObject;
 
@@ -34,12 +40,12 @@ public class CubaMultiSelectionModelConnector extends MultiSelectionModelConnect
     protected HandlerRegistration clickHandler;
 
     @Override
-    protected SelectionModel.Multi<JsonObject> createSelectionModel() {
+    protected MultiSelectionModel createSelectionModel() {
         return Tools.isUseSimpleMultiselectForTouchDevice()
                 ? super.createSelectionModel()
                 : new MultiSelectionModel() {
             @Override
-            protected ComplexRenderer<Boolean> createSelectionColumnRenderer(Grid<JsonObject> grid) {
+            public Renderer<Boolean> getRenderer() {
                 return null;
             }
         };
@@ -62,7 +68,7 @@ public class CubaMultiSelectionModelConnector extends MultiSelectionModelConnect
     }
 
     protected MultiSelectionBodyClickHandler createBodyClickHandler(Grid<JsonObject> grid) {
-        return new MultiSelectionBodyClickHandler(grid, getRpcProxy(CubaMultiSelectionModelServerRpc.class));
+        return new MultiSelectionBodyClickHandler(grid);
     }
 
     @Override
@@ -73,5 +79,91 @@ public class CubaMultiSelectionModelConnector extends MultiSelectionModelConnect
         }
 
         super.onUnregister();
+    }
+
+    public class MultiSelectionBodyClickHandler implements BodyClickHandler {
+
+        protected Grid<JsonObject> grid;
+        protected HandlerRegistration handler;
+        protected int previous = -1;
+
+        public MultiSelectionBodyClickHandler(Grid<JsonObject> grid) {
+            this.grid = grid;
+        }
+
+        @Override
+        public void onClick(GridClickEvent event) {
+            SelectionModel<JsonObject> selectionModel = grid.getSelectionModel();
+            if (!(selectionModel instanceof MultiSelectionModel)) {
+                return;
+            }
+
+            //noinspection unchecked
+            MultiSelectionModel model = (MultiSelectionModel) selectionModel;
+            CellReference<JsonObject> cell = grid.getEventCell();
+
+            if (!event.isShiftKeyDown() || previous < 0) {
+                handleCtrlClick(model, cell, event);
+                previous = cell.getRowIndex();
+                return;
+            }
+
+            // This works on the premise that grid fires the data available event to
+            // any newly added handlers.
+            boolean ctrlOrMeta = event.isControlKeyDown() || event.isMetaKeyDown();
+            handler = grid.addDataAvailableHandler(new ShiftSelector(cell, model, ctrlOrMeta));
+        }
+
+        protected void handleCtrlClick(MultiSelectionModel model,
+                                       CellReference<JsonObject> cell, GridClickEvent event) {
+            NativeEvent e = event.getNativeEvent();
+            JsonObject row = cell.getRow();
+            if (!e.getCtrlKey() && !e.getMetaKey()) {
+                model.deselectAll();
+            }
+
+            if (model.isSelected(row)) {
+                model.deselect(row);
+            } else {
+                model.select(row);
+            }
+        }
+
+        protected final class ShiftSelector implements DataAvailableHandler {
+            protected final CellReference<JsonObject> cell;
+            protected final MultiSelectionModel model;
+            protected boolean ctrlOrMeta;
+
+            private ShiftSelector(CellReference<JsonObject> cell,
+                                  MultiSelectionModel model, boolean ctrlOrMeta) {
+                this.cell = cell;
+                this.model = model;
+                this.ctrlOrMeta = ctrlOrMeta;
+            }
+
+            @Override
+            public void onDataAvailable(DataAvailableEvent event) {
+                int current = cell.getRowIndex();
+                int min = Math.min(current, previous);
+                int max = Math.max(current, previous);
+
+                if (!ctrlOrMeta) {
+                    model.deselectAll();
+                }
+
+                Range dataAvailable = event.getAvailableRows();
+
+                Range selected = Range.between(min, max + 1);
+                Range[] partition = selected.partitionWith(dataAvailable);
+
+                for (int i = partition[1].getStart(); i < partition[1].getEnd(); ++i) {
+                    model.select(grid.getDataSource().getRow(i));
+                }
+
+                if (handler != null) {
+                    handler.removeHandler();
+                }
+            }
+        }
     }
 }

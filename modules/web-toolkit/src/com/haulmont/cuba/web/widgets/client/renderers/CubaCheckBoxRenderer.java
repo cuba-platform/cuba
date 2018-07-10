@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.web.widgets.client.renderers;
 
-import com.vaadin.v7.client.renderers.Renderer;
-import com.vaadin.v7.client.widget.grid.RendererCellReference;
+import com.vaadin.client.renderers.Renderer;
+import com.vaadin.client.widget.grid.RendererCellReference;
 
 public class CubaCheckBoxRenderer implements Renderer<Boolean> {
 

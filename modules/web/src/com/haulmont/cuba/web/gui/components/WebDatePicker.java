@@ -62,7 +62,7 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
         Preconditions.checkNotNullArgument(resolution);
 
         this.resolution = resolution;
-        DateResolution vResolution = WebComponentsHelper.convertDateResolution(resolution);
+        DateResolution vResolution = WebWrapperUtils.convertDateResolution(resolution);
         component.setResolution(vResolution);
     }
 

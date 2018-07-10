@@ -16,12 +16,13 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.v7.ui.renderers.NumberRenderer;
-import com.vaadin.v7.ui.renderers.Renderer;
+import com.vaadin.ui.renderers.NumberRenderer;
+import com.vaadin.ui.renderers.Renderer;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -31,7 +32,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  * A renderer for presenting number values.
  */
-public class WebNumberRenderer extends AbstractRenderer<Number> implements DataGrid.NumberRenderer {
+public class WebNumberRenderer extends AbstractRenderer<Entity, Number> implements DataGrid.NumberRenderer {
 
     private Locale locale;
     private NumberFormat numberFormat;

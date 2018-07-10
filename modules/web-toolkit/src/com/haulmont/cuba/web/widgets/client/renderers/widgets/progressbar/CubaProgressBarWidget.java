@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.renderers.widgets.progressbar;
 
 import com.haulmont.cuba.web.widgets.client.grid.HasClickSettings;
-import com.vaadin.v7.client.ui.VProgressBar;
+import com.vaadin.client.ui.VProgressBar;
 
 public class CubaProgressBarWidget extends VProgressBar implements HasClickSettings {
     protected boolean clickThroughEnabled = false;

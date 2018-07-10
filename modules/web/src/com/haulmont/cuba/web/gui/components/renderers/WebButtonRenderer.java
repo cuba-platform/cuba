@@ -16,15 +16,18 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.vaadin.v7.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.ButtonRenderer;
 
 /**
  * A Renderer that displays a button with a textual caption. The value of the
  * corresponding property is used as the caption. Click listeners can be added
  * to the renderer, invoked when any of the rendered buttons is clicked.
  */
-public class WebButtonRenderer extends WebAbstractClickableRenderer<String> implements DataGrid.ButtonRenderer {
+public class WebButtonRenderer<T extends Entity>
+        extends WebAbstractClickableRenderer<T, String>
+        implements DataGrid.ButtonRenderer<T> {
 
     public WebButtonRenderer() {
         this("");
@@ -34,26 +37,26 @@ public class WebButtonRenderer extends WebAbstractClickableRenderer<String> impl
         this(null, nullRepresentation);
     }
 
-    public WebButtonRenderer(DataGrid.RendererClickListener listener) {
+    public WebButtonRenderer(DataGrid.RendererClickListener<T> listener) {
         this(listener, "");
     }
 
-    public WebButtonRenderer(DataGrid.RendererClickListener listener, String nullRepresentation) {
+    public WebButtonRenderer(DataGrid.RendererClickListener<T> listener, String nullRepresentation) {
         super(listener);
         this.nullRepresentation = nullRepresentation;
     }
 
     @Override
-    public ButtonRenderer getImplementation() {
-        return (ButtonRenderer) super.getImplementation();
+    public ButtonRenderer<T> getImplementation() {
+        return (ButtonRenderer<T>) super.getImplementation();
     }
 
     @Override
-    protected ButtonRenderer createImplementation() {
+    protected ButtonRenderer<T> createImplementation() {
         if (listener != null) {
-            return new ButtonRenderer(createClickListenerWrapper(listener), getNullRepresentation());
+            return new ButtonRenderer<>(createClickListenerWrapper(listener), getNullRepresentation());
         } else {
-            return new ButtonRenderer(getNullRepresentation());
+            return new ButtonRenderer<>(getNullRepresentation());
         }
     }
 

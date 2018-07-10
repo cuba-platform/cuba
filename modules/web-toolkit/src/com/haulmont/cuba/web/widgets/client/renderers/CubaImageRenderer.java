@@ -20,8 +20,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Image;
 import com.haulmont.cuba.web.widgets.client.renderers.widgets.image.CubaImageWidget;
-import com.vaadin.v7.client.renderers.ImageRenderer;
-import com.vaadin.v7.client.widget.grid.RendererCellReference;
+import com.vaadin.client.renderers.ImageRenderer;
+import com.vaadin.client.widget.grid.RendererCellReference;
 
 public class CubaImageRenderer extends ImageRenderer {
     @Override

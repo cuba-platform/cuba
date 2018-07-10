@@ -21,9 +21,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridWidget;
 import com.vaadin.client.WidgetUtil;
-import com.vaadin.v7.client.widget.grid.events.AbstractGridMouseEventHandler;
-import com.vaadin.v7.client.widget.grid.events.GridDoubleClickEvent;
-import com.vaadin.v7.client.widgets.Grid;
+import com.vaadin.client.widget.grid.events.AbstractGridMouseEventHandler;
+import com.vaadin.client.widget.grid.events.GridDoubleClickEvent;
+import com.vaadin.client.widgets.Grid;
 
 public class CubaGridDoubleClickEvent extends GridDoubleClickEvent {
     public static final Type<AbstractGridMouseEventHandler.GridDoubleClickHandler> EVENT_TYPE =

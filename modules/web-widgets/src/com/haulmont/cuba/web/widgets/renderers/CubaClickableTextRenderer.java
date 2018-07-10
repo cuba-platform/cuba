@@ -16,9 +16,16 @@
 
 package com.haulmont.cuba.web.widgets.renderers;
 
-import com.vaadin.v7.ui.renderers.ClickableRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 
-public class CubaClickableTextRenderer extends ClickableRenderer<String> {
+public class CubaClickableTextRenderer<T> extends ClickableRenderer<T, String> {
+
+    /**
+     * Creates a new clickable text renderer.
+     */
+    public CubaClickableTextRenderer() {
+        this("");
+    }
 
     /**
      * Creates a new clickable text renderer.
@@ -32,27 +39,20 @@ public class CubaClickableTextRenderer extends ClickableRenderer<String> {
     /**
      * Creates a new clickable text renderer and adds the given click listener to it.
      *
-     * @param listener           the click listener to register
-     * @param nullRepresentation the textual representation of {@code null} value
+     * @param listener the click listener to register
      */
-    public CubaClickableTextRenderer(RendererClickListener listener, String nullRepresentation) {
-        this(nullRepresentation);
-        addClickListener(listener);
-    }
-
-    /**
-     * Creates a new clickable text renderer.
-     */
-    public CubaClickableTextRenderer() {
-        this("");
+    public CubaClickableTextRenderer(RendererClickListener<T> listener) {
+        this(listener, "");
     }
 
     /**
      * Creates a new clickable text renderer and adds the given click listener to it.
      *
-     * @param listener the click listener to register
+     * @param listener           the click listener to register
+     * @param nullRepresentation the textual representation of {@code null} value
      */
-    public CubaClickableTextRenderer(RendererClickListener listener) {
-        this(listener, "");
+    public CubaClickableTextRenderer(RendererClickListener<T> listener, String nullRepresentation) {
+        this(nullRepresentation);
+        addClickListener(listener);
     }
 }

@@ -25,26 +25,27 @@ import com.haulmont.cuba.web.widgets.client.grid.events.CubaGridKeyDownEvent;
 import com.haulmont.cuba.web.widgets.client.grid.events.CubaGridKeyPressEvent;
 import com.haulmont.cuba.web.widgets.client.grid.events.CubaGridKeyUpEvent;
 import com.vaadin.client.WidgetUtil;
-import com.vaadin.v7.client.renderers.Renderer;
-import com.vaadin.v7.client.widget.escalator.EscalatorUpdater;
-import com.vaadin.v7.client.widget.escalator.FlyweightCell;
-import com.vaadin.v7.client.widget.escalator.RowContainer;
-import com.vaadin.v7.client.widget.grid.events.BodyClickHandler;
-import com.vaadin.v7.client.widget.grid.events.BodyDoubleClickHandler;
-import com.vaadin.v7.client.widget.grid.events.BodyKeyDownHandler;
-import com.vaadin.v7.client.widget.grid.events.BodyKeyPressHandler;
-import com.vaadin.v7.client.widget.grid.events.BodyKeyUpHandler;
-import com.vaadin.v7.client.widget.grid.events.FooterClickHandler;
-import com.vaadin.v7.client.widget.grid.events.FooterDoubleClickHandler;
-import com.vaadin.v7.client.widget.grid.events.FooterKeyDownHandler;
-import com.vaadin.v7.client.widget.grid.events.FooterKeyPressHandler;
-import com.vaadin.v7.client.widget.grid.events.FooterKeyUpHandler;
-import com.vaadin.v7.client.widget.grid.events.HeaderClickHandler;
-import com.vaadin.v7.client.widget.grid.events.HeaderDoubleClickHandler;
-import com.vaadin.v7.client.widget.grid.events.HeaderKeyDownHandler;
-import com.vaadin.v7.client.widget.grid.events.HeaderKeyPressHandler;
-import com.vaadin.v7.client.widget.grid.events.HeaderKeyUpHandler;
-import com.vaadin.v7.client.widgets.Grid;
+import com.vaadin.client.renderers.Renderer;
+import com.vaadin.client.widget.escalator.EscalatorUpdater;
+import com.vaadin.client.widget.escalator.FlyweightCell;
+import com.vaadin.client.widget.escalator.RowContainer;
+import com.vaadin.client.widget.grid.events.BodyClickHandler;
+import com.vaadin.client.widget.grid.events.BodyDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyDownHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyPressHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyUpHandler;
+import com.vaadin.client.widget.grid.events.FooterClickHandler;
+import com.vaadin.client.widget.grid.events.FooterDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyDownHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyPressHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyUpHandler;
+import com.vaadin.client.widget.grid.events.GridClickEvent;
+import com.vaadin.client.widget.grid.events.HeaderClickHandler;
+import com.vaadin.client.widget.grid.events.HeaderDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyDownHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyPressHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyUpHandler;
+import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
 import java.util.HashMap;
@@ -79,24 +80,13 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
     }
 
-    @Override
-    protected Editor<JsonObject> createEditor() {
-        Editor<JsonObject> editor = super.createEditor();
-        editor.setEventHandler(new CubaEditorEventHandler<>());
-        return editor;
-    }
-
-    @Override
-    protected void sortWithSorter(Column<?, ?> column, boolean shiftKeyDown) {
-        // ignore shiftKeyDown until datasources don't support multi-sorting
-        super.sortWithSorter(column, false);
-    }
-
-    @Override
-    protected void sortAfterDelayWithSorter(int delay, boolean multisort) {
-        // ignore shiftKeyDown until datasources don't support multi-sorting
-        super.sortAfterDelayWithSorter(delay, false);
-    }
+//    @Override
+//    protected Editor<JsonObject> createEditor() {
+//        Editor<JsonObject> editor = super.createEditor();
+//        editor.setEventHandler(new CubaEditorEventHandler<>());
+//        return editor;
+//    }
+//
 
     @Override
     protected boolean isWidgetAllowsClickHandling(Element targetElement) {
@@ -107,6 +97,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     @Override
     protected boolean isEventHandlerShouldHandleEvent(Element targetElement) {
+        // TEST: gg, instanceof is used for the ComponentRenderer. Check if we need some changes in the renderer
         // by default, clicking on widget renderer prevents cell focus changing
         // for some widget renderers we want to allow focus changing
         Widget widget = WidgetUtil.findWidget(targetElement, null);
@@ -206,6 +197,23 @@ public class CubaGridWidget extends Grid<JsonObject> {
         return new CubaStaticSectionUpdater(getFooter(), getEscalator().getFooter());
     }
 
+    @Override
+    protected UserSorter createUserSorter() {
+        return new CubaUserSorter();
+    }
+
+    protected class CubaUserSorter extends UserSorter {
+
+        protected CubaUserSorter() {
+        }
+
+        @Override
+        public void sort(Column<?, ?> column, boolean multisort) {
+            // ignore 'multisort' until datasources don't support multi-sorting
+            super.sort(column, false);
+        }
+    }
+
     protected class CubaStaticSectionUpdater extends StaticSectionUpdater {
 
         public CubaStaticSectionUpdater(StaticSection<?> section, RowContainer container) {
@@ -248,7 +256,6 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
     }
 
-    /* todo vaadin8
     @Override
     protected SelectionColumn createSelectionColumn(Renderer<Boolean> selectColumnRenderer) {
         return new CubaSelectionColumn(selectColumnRenderer);
@@ -261,10 +268,8 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
 
         @Override
-        protected HeaderClickHandler createHeaderClickHandler() {
-            return event -> {
-                // do nothing, as we want trigger select/deselect all only by clicking on the checkbox
-            };
+        protected void onHeaderClickEvent(GridClickEvent event) {
+            // do nothing, as we want to trigger select/deselect all only by clicking on the checkbox
         }
-    }*/
+    }
 }

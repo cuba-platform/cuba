@@ -16,14 +16,15 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.vaadin.v7.ui.renderers.TextRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 /**
  * A renderer for presenting simple plain-text string values.
  */
-public class WebTextRenderer extends AbstractRenderer<String> implements DataGrid.TextRenderer {
+public class WebTextRenderer extends AbstractRenderer<Entity, Object> implements DataGrid.TextRenderer {
 
     public WebTextRenderer() {
         this("");

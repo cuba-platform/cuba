@@ -31,7 +31,6 @@ public class StringToObjectConverter implements Converter<String, Object> {
         this.metaProperty = metaProperty;
     }
 
-
     @Override
     public Object convertToModel(String value, Class<?> targetType, Locale locale)
             throws ConversionException {

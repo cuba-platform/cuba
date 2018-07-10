@@ -17,8 +17,8 @@
 package com.haulmont.cuba.web.widgets.client.grid;
 
 public interface HasClickSettings {
+
     boolean isClickThroughEnabled();
+
     void setClickThroughEnabled(boolean enabled);
-
-
 }

@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.web.widgets.client.grid.selection;
 
-import com.haulmont.cuba.web.widgets.CubaMultiCheckSelectionModel;
-import com.vaadin.v7.client.connectors.MultiSelectionModelConnector;
+import com.haulmont.cuba.web.widgets.grid.CubaMultiCheckSelectionModel;
+import com.vaadin.client.connectors.grid.MultiSelectionModelConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaMultiCheckSelectionModel.class)

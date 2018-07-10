@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.widgets.client.renderers;
 
 import com.google.gwt.core.shared.GWT;
 import com.haulmont.cuba.web.widgets.client.renderers.widgets.progressbar.CubaProgressBarWidget;
-import com.vaadin.v7.client.renderers.ProgressBarRenderer;
+import com.vaadin.client.renderers.ProgressBarRenderer;
 
 public class CubaProgressBarRenderer extends ProgressBarRenderer {
 

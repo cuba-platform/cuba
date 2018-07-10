@@ -16,29 +16,32 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.widgets.renderers.CubaImageRenderer;
-import com.vaadin.v7.ui.renderers.Renderer;
+import com.vaadin.ui.renderers.Renderer;
 
 /**
  * A renderer for presenting images. The value of the corresponding property
  * is used as the image location. Location can be a theme resource or URL.
  */
-public class WebImageRenderer extends WebAbstractClickableRenderer implements DataGrid.ImageRenderer {
+public class WebImageRenderer<T extends Entity>
+        extends WebAbstractClickableRenderer<T, String>
+        implements DataGrid.ImageRenderer<T> {
 
     public WebImageRenderer() {
     }
 
-    public WebImageRenderer(DataGrid.RendererClickListener listener) {
+    public WebImageRenderer(DataGrid.RendererClickListener<T> listener) {
         super(listener);
     }
 
     @Override
-    protected Renderer createImplementation() {
+    protected Renderer<String> createImplementation() {
         if (listener != null) {
-            return new CubaImageRenderer(createClickListenerWrapper(listener));
+            return new CubaImageRenderer<>(createClickListenerWrapper(listener));
         } else {
-            return new CubaImageRenderer();
+            return new CubaImageRenderer<>();
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets.client.grid.selection;
+package com.haulmont.cuba.web.widgets.grid;
 
-import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 
-public interface CubaMultiSelectionModelServerRpc extends ServerRpc {
-
-    void selectRange(int start, int length);
+public class CubaMultiSelectionModel<T> extends MultiSelectionModelImpl<T> {
 }

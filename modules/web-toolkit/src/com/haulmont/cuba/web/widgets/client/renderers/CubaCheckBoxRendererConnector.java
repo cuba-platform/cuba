@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.renderers;
 
-import com.vaadin.v7.client.connectors.AbstractRendererConnector;
+import com.vaadin.client.connectors.AbstractRendererConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(com.haulmont.cuba.web.widgets.renderers.CubaCheckBoxRenderer.class)

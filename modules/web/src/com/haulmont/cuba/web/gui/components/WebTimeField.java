@@ -116,7 +116,7 @@ public class WebTimeField extends WebV8AbstractField<CubaTimeField, LocalTime, D
         Preconditions.checkNotNullArgument(resolution);
 
         this.resolution = resolution;
-        TimeResolution vResolution = WebComponentsHelper.convertTimeResolution(resolution);
+        TimeResolution vResolution = WebWrapperUtils.convertTimeResolution(resolution);
         component.setResolution(vResolution);
     }
 

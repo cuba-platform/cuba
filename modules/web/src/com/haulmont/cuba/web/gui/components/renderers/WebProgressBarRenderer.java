@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
 import com.haulmont.cuba.web.widgets.renderers.CubaProgressBarRenderer;
@@ -23,7 +24,9 @@ import com.haulmont.cuba.web.widgets.renderers.CubaProgressBarRenderer;
 /**
  * A renderer that represents a double values as a graphical progress bar.
  */
-public class WebProgressBarRenderer extends AbstractRenderer<Double> implements DataGrid.ProgressBarRenderer {
+public class WebProgressBarRenderer
+        extends AbstractRenderer<Entity, Double>
+        implements DataGrid.ProgressBarRenderer {
 
     @Override
     protected CubaProgressBarRenderer createImplementation() {

@@ -18,20 +18,30 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
+import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
 
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
-                                                    Component.HasIcon, HasRowsCount, HasSettings,
-                                                    LookupComponent, Component.Focusable {
+        Component.HasIcon, HasRowsCount, HasSettings,
+        LookupComponent, Component.Focusable {
 
     String NAME = "dataGrid";
 
@@ -42,7 +52,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @return unmodifiable copy of current columns
      * @see #getVisibleColumns()
      */
-    List<Column> getColumns();
+    List<Column<E>> getColumns();
 
     /**
      * Returns a copy of columns not hidden by security permissions.
@@ -50,7 +60,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @return copy of columns not hidden by security permissions
      * @see #getColumns()
      */
-    List<Column> getVisibleColumns();
+    List<Column<E>> getVisibleColumns();
 
     /**
      * Returns a column based on the Id.
@@ -60,7 +70,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #getColumnNN(String)
      */
     @Nullable
-    Column getColumn(String id);
+    Column<E> getColumn(String id);
 
     /**
      * Returns a column by its Id.
@@ -70,7 +80,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @throws java.lang.IllegalStateException if not found
      * @see #getColumn(String)
      */
-    Column getColumnNN(String id);
+    Column<E> getColumnNN(String id);
 
     /**
      * Adds the given column to DataGrid.
@@ -80,7 +90,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #addColumn(String, MetaPropertyPath)
      * @see #addColumn(String, MetaPropertyPath, int)
      */
-    void addColumn(Column column);
+    void addColumn(Column<E> column);
 
     /**
      * Adds the given column at the specified index to DataGrid.
@@ -91,7 +101,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #addColumn(String, MetaPropertyPath)
      * @see #addColumn(String, MetaPropertyPath, int)
      */
-    void addColumn(Column column, int index);
+    void addColumn(Column<E> column, int index);
 
     /**
      * Creates new column with given Id and property, then adds this column to DataGrid.
@@ -104,7 +114,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #addColumn(Column, int)
      * @see #addColumn(String, MetaPropertyPath, int)
      */
-    Column addColumn(String id, MetaPropertyPath propertyPath);
+    Column<E> addColumn(String id, MetaPropertyPath propertyPath);
 
     /**
      * Creates new column with given Id and property at the specified index,
@@ -119,7 +129,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #addColumn(Column, int)
      * @see #addColumn(String, MetaPropertyPath)
      */
-    Column addColumn(String id, MetaPropertyPath propertyPath, int index);
+    Column<E> addColumn(String id, MetaPropertyPath propertyPath, int index);
 
     /**
      * Removes the given column from DataGrid or do nothing if column is {@code null}.
@@ -127,7 +137,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param column the column to add
      * @see #removeColumn(String)
      */
-    void removeColumn(Column column);
+    void removeColumn(Column<E> column);
 
     /**
      * Removes a column from DataGrid by its Id or do nothing if column is not found.
@@ -138,21 +148,66 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     void removeColumn(String id);
 
     /**
-     * @return the DataGrid data source
+     * @return The DataGrid source
      */
-    CollectionDatasource getDatasource();
+    @Nullable
+    DataGridSource<E> getDataGridSource();
+
+    /**
+     * Sets an instance of {@link DataGridSource} as the DataGrid data source.
+     *
+     * @param dataGridSource the DataGrid data source
+     */
+    void setDataGridSource(@Nullable DataGridSource<E> dataGridSource);
+
+    /**
+     * @return the DataGrid data source
+     * @deprecated use {@link #getDataGridSource()} instead
+     */
+    @Deprecated
+    default CollectionDatasource getDatasource() {
+        DataGridSource<E> dataGridSource = getDataGridSource();
+        return dataGridSource != null ? ((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource() : null;
+    }
 
     /**
      * Sets an instance of {@link CollectionDatasource} as the DataGrid data source.
      *
      * @param datasource the DataGrid data source, not null
+     * @deprecated use {@link #setDataGridSource(DataGridSource)} instead
      */
-    void setDatasource(CollectionDatasource datasource);
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void setDatasource(CollectionDatasource datasource) {
+        if (datasource == null) {
+            setDataGridSource(null);
+        } else {
+            DataGridSource<E> dataGridSource;
+            if (datasource instanceof Sortable) {
+                dataGridSource = new SortableCollectionDatasourceDataGridAdapter<>((Sortable) datasource);
+            } else {
+                dataGridSource = new CollectionDatasourceDataGridAdapter<>(datasource);
+            }
+            setDataGridSource(dataGridSource);
+        }
+    }
 
     /**
-     * Marks all the items in the current data provider as selected
+     * Marks all the items in the current data source as selected
      */
     void selectAll();
+
+    /**
+     * Deselects the given item. If the item is not currently selected, does nothing.
+     *
+     * @param item the item to deselect, not null
+     */
+    void deselect(E item);
+
+    /**
+     * Deselects all the items in the current data source
+     */
+    void deselectAll();
 
     /**
      * Sorts the DataGrid data for passed column id in the chosen sort direction.
@@ -203,9 +258,71 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * Sets the visibility of the header section.
      *
-     * @param headerVisible {@code true} to show header section, {@code false} to hide
+     * @param headerVisible {@code true} to show the header section, {@code false} to hide
      */
     void setHeaderVisible(boolean headerVisible);
+
+    /**
+     * Returns the visibility of the footer section.
+     *
+     * @return {@code true} if visible, {@code false} otherwise
+     */
+    boolean isFooterVisible();
+
+    /**
+     * Sets the visibility of the footer section.
+     *
+     * @param footerVisible {@code true} to show the footer section, {@code false} to hide
+     */
+    void setFooterVisible(boolean footerVisible);
+
+    /**
+     * Returns the current body row height.
+     *
+     * @return body row height, -1 if height is AUTO
+     */
+    double getBodyRowHeight();
+
+    /**
+     * Sets the height of a body row. If -1 (default), the row height is
+     * calculated based on the theme for an empty row before the DataGrid is
+     * displayed.
+     *
+     * @param rowHeight the height of a row in pixels or -1 for AUTO
+     */
+    void setBodyRowHeight(double rowHeight);
+
+    /**
+     * Returns the current header row height.
+     *
+     * @return header row height, -1 if height is AUTO
+     */
+    double getHeaderRowHeight();
+
+    /**
+     * Sets the body of a body row. If -1 (default), the row height is
+     * calculated based on the theme for an empty row before the DataGrid is
+     * displayed.
+     *
+     * @param rowHeight the height of a row in pixels or -1 for AUTO
+     */
+    void setHeaderRowHeight(double rowHeight);
+
+    /**
+     * Returns the current footer row height.
+     *
+     * @return footer row height, -1 if height is AUTO
+     */
+    double getFooterRowHeight();
+
+    /**
+     * Sets the body of a footer row. If -1 (default), the row height is
+     * calculated based on the theme for an empty row before the DataGrid is
+     * displayed.
+     *
+     * @param rowHeight the height of a row in pixels or -1 for AUTO
+     */
+    void setFooterRowHeight(double rowHeight);
 
     /**
      * @return {@code true} if context menu is enabled, {@code false} otherwise
@@ -273,7 +390,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * columns will be frozen, but the built-in selection checkbox column will
      * still be frozen if it's in use. -1 means that not even the selection
      * column is frozen.
-     * <p>
+     *
      * <em>NOTE:</em> this count includes {@link Column#isCollapsed() hidden
      * columns} in the count.
      *
@@ -329,7 +446,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @return {@code true} if the editor is enabled for this grid
      * @see #setEditorEnabled(boolean)
-     * @see #getEditedItemId()
+     * @see #getEditedItem()
      */
     boolean isEditorEnabled();
 
@@ -340,7 +457,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * programmatically using the {@link #edit(Entity)} method.
      *
      * @param isEnabled {@code true} to enable the feature, {@code false} otherwise
-     * @see #getEditedItemId()
+     * @see #getEditedItem()
      */
     void setEditorEnabled(boolean isEnabled);
 
@@ -391,9 +508,20 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @return the id of the item that is currently being edited, or
      * {@code null} if no item is being edited at the moment
+     * @deprecated use {@link #getEditedItem()} instead
      */
+    @Deprecated
     @Nullable
     Object getEditedItemId();
+
+    /**
+     * Returns the item that is currently being edited.
+     *
+     * @return the item that is currently being edited, or
+     * {@code null} if no item is being edited at the moment
+     */
+    @Nullable
+    E getEditedItem();
 
     /**
      * Returns whether an item is currently being edited in the editor.
@@ -419,12 +547,12 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * Opens the editor interface for the provided entity. Scrolls the Grid to
      * bring the entity to view if it is not already visible.
      *
-     * @param entity the entity to edit
+     * @param item the item to edit
      * @throws IllegalStateException    if the editor is not enabled or already editing an entity in buffered mode
      * @throws IllegalArgumentException if datasource doesn't contain the entity
      * @see #setEditorEnabled(boolean)
      */
-    void edit(E entity);
+    void edit(E item);
 
     /**
      * Field generator that generates component for column in {@link DataGrid} editor.
@@ -794,32 +922,35 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
     /**
      * Allows to define different styles for DataGrid rows.
+     *
+     * @deprecated use {@link StyleProvider} instead
      */
-    interface RowStyleProvider<E extends Entity> {
-        /**
-         * Called by {@link DataGrid} to get a style for row.
-         *
-         * @param entity an entity instance represented by the current row
-         * @return style name or null to apply the default
-         */
-        String getStyleName(E entity);
+    @Deprecated
+    interface RowStyleProvider<E extends Entity> extends StyleProvider<E> {
     }
 
     /**
      * Adds style provider for the DataGrid rows.
      * <p>
      * DataGrid can use several providers to obtain many style names for rows.
+     *
+     * @param styleProvider a style provider to add, not null
      */
-    void addRowStyleProvider(RowStyleProvider<? super E> styleProvider);
+    void addRowStyleProvider(StyleProvider<? super E> styleProvider);
 
     /**
      * Removes style provider for the DataGrid rows.
+     *
+     * @param styleProvider a style provider to remove, not null
      */
-    void removeRowStyleProvider(RowStyleProvider<? super E> styleProvider);
+    void removeRowStyleProvider(StyleProvider<? super E> styleProvider);
 
     /**
      * Allows to define different styles for DataGrid cells.
+     *
+     * @deprecated use {@link StyleProvider} instead
      */
+    @Deprecated
     interface CellStyleProvider<E extends Entity> {
         /**
          * Called by {@link DataGrid} to get a style for cell.
@@ -835,19 +966,28 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * Adds style provider for the DataGrid cells.
      * <p>
      * DataGrid can use several providers to obtain many style names for cells.
+     *
+     * @deprecated use {@link Column#setStyleProvider(StyleProvider)} instead
      */
+    @Deprecated
     void addCellStyleProvider(CellStyleProvider<? super E> styleProvider);
 
     /**
      * Removes style provider for the DataGrid cells.
+     *
+     * @deprecated use {@link Column#setStyleProvider(StyleProvider)} instead
      */
+    @Deprecated
     void removeCellStyleProvider(CellStyleProvider<? super E> styleProvider);
 
     /**
      * A callback interface for generating optional descriptions (tooltips) for
      * DataGrid cells. If a cell has both a {@link RowDescriptionProvider row
      * description} and a cell description, the latter has precedence.
+     *
+     * @deprecated use {@link DescriptionProvider} instead
      */
+    @Deprecated
     interface CellDescriptionProvider<E extends Entity> {
 
         /**
@@ -866,8 +1006,10 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * descriptions (tooltips) for DataGrid cells.
      *
      * @return the description provider or {@code null} if no provider is set
+     * @deprecated use {@link Column#getDescriptionProvider()} instead
      */
-    CellDescriptionProvider getCellDescriptionProvider();
+    @Deprecated
+    CellDescriptionProvider<E> getCellDescriptionProvider();
 
     /**
      * Sets the {@code CellDescriptionProvider} instance for generating
@@ -877,25 +1019,21 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param provider the description provider to use or {@code null} to remove a
      *                 previously set provider if any
+     * @deprecated use {@link Column#setDescriptionProvider(DescriptionProvider)} instead
      */
-    void setCellDescriptionProvider(CellDescriptionProvider<E> provider);
+    @Deprecated
+    void setCellDescriptionProvider(CellDescriptionProvider<? super E> provider);
 
     /**
      * A callback interface for generating optional descriptions (tooltips) for
      * DataGrid rows. If a description is generated for a row, it is used for
      * all the cells in the row for which a {@link CellDescriptionProvider cell
      * description} is not generated.
+     *
+     * @deprecated use {@link DescriptionProvider} instead
      */
-    interface RowDescriptionProvider<E extends Entity> {
-
-        /**
-         * Called by DataGrid to generate a description (tooltip) for a row. The
-         * description may contain HTML markup.
-         *
-         * @param entity an entity instance represented by the current row
-         * @return the row description or {@code null} for no description
-         */
-        String getDescription(E entity);
+    @Deprecated
+    interface RowDescriptionProvider<E extends Entity> extends DescriptionProvider<E> {
     }
 
     /**
@@ -904,19 +1042,34 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @return the description provider or {@code} null if no provider is set
      */
-    RowDescriptionProvider getRowDescriptionProvider();
+    DescriptionProvider<E> getRowDescriptionProvider();
 
     /**
      * Sets the {@code RowDescriptionProvider} instance for generating
      * optional descriptions (tooltips) for DataGrid rows. If a
-     * {@link CellDescriptionProvider} is also set, the row description
-     * generated by {@code provider} is used for cells for which the cell
-     * description provider returns null.
+     * {@link Column#setDescriptionProvider(DescriptionProvider)} is also set,
+     * the row description generated by {@code provider} is used for cells
+     * for which the cell description provider returns null.
+     * <p>
+     * This method uses the {@link ContentMode#PREFORMATTED} content mode.
      *
      * @param provider the description provider to use or {@code null} to remove a
      *                 previously set provider if any
      */
-    void setRowDescriptionProvider(RowDescriptionProvider<E> provider);
+    void setRowDescriptionProvider(DescriptionProvider<? super E> provider);
+
+    /**
+     * Sets the {@code RowDescriptionProvider} instance for generating
+     * optional descriptions (tooltips) for DataGrid rows. If a
+     * {@link Column#setDescriptionProvider(DescriptionProvider)} is also set,
+     * the row description generated by {@code provider} is used for cells
+     * for which the cell description provider returns null.
+     *
+     * @param provider    the description provider to use or {@code null} to remove a
+     *                    previously set provider if any
+     * @param contentMode the content mode for row tooltips
+     */
+    void setRowDescriptionProvider(DescriptionProvider<? super E> provider, ContentMode contentMode);
 
     /**
      * The root class from which all DataGrid event state objects shall be derived.
@@ -997,7 +1150,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param generator column generator instance
      * @see #addGeneratedColumn(String, ColumnGenerator, int)
      */
-    Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator);
+    Column<E> addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator);
 
     /**
      * Add a generated column to the DataGrid.
@@ -1007,7 +1160,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param index     index of a new generated column
      * @see #addGeneratedColumn(String, ColumnGenerator)
      */
-    Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
+    Column<E> addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
 
     /**
      * Gets the columns generator for the given column id.
@@ -1057,7 +1210,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param entity the item for which to check details visibility
      * @return {@code true} if the details are visible
      */
-    boolean isDetailsVisible(Entity entity);
+    boolean isDetailsVisible(E entity);
 
     /**
      * Shows or hides the details for a specific item.
@@ -1065,7 +1218,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param entity  the item for which to set details visibility
      * @param visible {@code true} to show the details, or {@code false} to hide them
      */
-    void setDetailsVisible(Entity entity, boolean visible);
+    void setDetailsVisible(E entity, boolean visible);
 
     /**
      * Marker interface to indicate that the implementing class can be used as a renderer.
@@ -1074,7 +1227,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * Renderer has null representation.
+     * A renderer has a null representation.
      * String value which will be used for rendering if the original value is null.
      */
     interface HasNullRepresentation {
@@ -1094,24 +1247,69 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
+     * A renderer has a locale.
+     */
+    interface HasLocale {
+        /**
+         * @return the locale which is used to present values
+         */
+        Locale getLocale();
+
+        /**
+         * Sets the locale in which to present values.
+         *
+         * @param locale the locale in which to present values
+         */
+        void setLocale(Locale locale);
+    }
+
+    /**
+     * A renderer has a DateTimeFormatter.
+     */
+    interface HasDateTimeFormatter {
+        /**
+         * @return the pattern describing the date format
+         */
+        String getFormatPattern();
+
+        /**
+         * @param formatPattern the pattern describing the date and time format
+         *                      which will be used to create {@link DateTimeFormatter} instance.
+         * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns">
+         * Format Pattern Syntax</a>
+         */
+        void setFormatPattern(String formatPattern);
+
+        /**
+         * @return the instance of {@link DateTimeFormatter} which is used to present dates
+         */
+        DateTimeFormatter getFormatter();
+
+        /**
+         * @param formatter the instance of {@link DateTimeFormatter} with which to present dates
+         */
+        void setFormatter(DateTimeFormatter formatter);
+    }
+
+    /**
      * Renderer listens to clicks.
      */
     @FunctionalInterface
-    interface RendererClickListener {
+    interface RendererClickListener<T extends Entity> {
 
         /**
          * Called when a renderer is clicked.
          *
          * @param event the event representing the click
          */
-        void onClick(RendererClickEvent event);
+        void onClick(RendererClickEvent<T> event);
     }
 
     /**
      * Click event fired by a {@link HasRendererClickListener}
      */
-    class RendererClickEvent extends DataGridClickEvent {
-        protected Object itemId;
+    class RendererClickEvent<T extends Entity> extends DataGridClickEvent {
+        protected T item;
         protected String columnId;
 
         /**
@@ -1119,22 +1317,31 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          *
          * @param component the DataGrid from which this event originates
          * @param details   an instance of {@link MouseEventDetails} with information about mouse event details
-         * @param itemId    an item Id
+         * @param item      an item
          * @param columnId  id of the DataGrid column
          */
-        public RendererClickEvent(DataGrid component,
-                                  MouseEventDetails details, Object itemId, String columnId) {
+        public RendererClickEvent(DataGrid<T> component,
+                                  MouseEventDetails details, T item, String columnId) {
             super(component, details);
 
-            this.itemId = itemId;
+            this.item = item;
             this.columnId = columnId;
         }
 
         /**
-         * @return an item Id
+         * @return an item
          */
+        public T getItem() {
+            return item;
+        }
+
+        /**
+         * @return an item Id
+         * @deprecated use {@link #getItem()} instead
+         */
+        @Deprecated
         public Object getItemId() {
-            return itemId;
+            return item.getId();
         }
 
         /**
@@ -1149,13 +1356,13 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * Renderer has click listener.
      */
     @FunctionalInterface
-    interface HasRendererClickListener {
+    interface HasRendererClickListener<T extends Entity> {
         /**
          * Sets new renderer click listener.
          *
          * @param listener the listener to set
          */
-        void setRendererClickListener(RendererClickListener listener);
+        void setRendererClickListener(RendererClickListener<T> listener);
     }
 
     /**
@@ -1167,7 +1374,8 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * A renderer for presenting simple plain-text string values as a link with call back handler.
      */
-    interface ClickableTextRenderer extends Renderer, HasNullRepresentation, HasRendererClickListener {
+    interface ClickableTextRenderer<T extends Entity>
+            extends Renderer, HasNullRepresentation, HasRendererClickListener<T> {
     }
 
     /**
@@ -1185,19 +1393,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * A renderer for presenting date values.
      */
-    interface DateRenderer extends Renderer, HasNullRepresentation {
-        /**
-         * @return the locale which is used to present dates
-         */
-        Locale getLocale();
-
-        /**
-         * Sets the locale in which to present dates.
-         *
-         * @param locale the locale in which to present dates
-         */
-        void setLocale(Locale locale);
-
+    interface DateRenderer extends Renderer, HasNullRepresentation, HasLocale {
         /**
          * @return the pattern describing the date and time format
          */
@@ -1207,7 +1403,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param formatString the pattern describing the date and time format
          *                     which will be used to create {@link DateFormat} instance.
          * @see <a href="https://docs.oracle.com/javase/tutorial/i18n/format/simpleDateFormat.html">Format
-         *      String Syntax</a>
+         * String Syntax</a>
          */
         void setFormatString(String formatString);
 
@@ -1220,6 +1416,18 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param dateFormat the instance of {@link DateFormat} with which to present dates
          */
         void setDateFormat(DateFormat dateFormat);
+    }
+
+    /**
+     * A renderer for presenting LocalDate values.
+     */
+    interface LocalDateRenderer extends Renderer, HasNullRepresentation, HasLocale, HasDateTimeFormatter {
+    }
+
+    /**
+     * A renderer for presenting LocalDateTime values.
+     */
+    interface LocalDateTimeRenderer extends Renderer, HasNullRepresentation, HasLocale, HasDateTimeFormatter {
     }
 
     /**
@@ -1246,7 +1454,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         /**
          * @param formatString the format string with which to format the number
          * @see <a href=
-         *      "http://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#dnum">Format String Syntax</a>
+         * "http://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#dnum">Format String Syntax</a>
          */
         void setFormatString(String formatString);
 
@@ -1266,14 +1474,15 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * corresponding property is used as the caption. Click listeners can be added
      * to the renderer, invoked when any of the rendered buttons is clicked.
      */
-    interface ButtonRenderer extends Renderer, HasNullRepresentation, HasRendererClickListener {
+    interface ButtonRenderer<T extends Entity>
+            extends Renderer, HasNullRepresentation, HasRendererClickListener<T> {
     }
 
     /**
      * A renderer for presenting images. The value of the corresponding property
      * is used as the image location. Location can be a theme resource or URL.
      */
-    interface ImageRenderer extends Renderer, HasRendererClickListener {
+    interface ImageRenderer<T extends Entity> extends Renderer, HasRendererClickListener<T> {
     }
 
     /**
@@ -1303,7 +1512,10 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *            {@link #getPresentationType()} returns.
      * @param <M> the model type. Must be compatible with what
      *            {@link #getModelType()} returns.
+     * @deprecated Use {@link Column#setRenderer(Renderer, Function)}
+     * and presentation provider represented by a {@link Function} instead
      */
+    @Deprecated
     interface Converter<P, M> {
 
         /**
@@ -1330,7 +1542,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * The source type of the converter.
-         *
+         * <p>
          * Values of this type can be passed to
          * {@link #convertToPresentation(Object, Class, Locale)}.
          *
@@ -1340,7 +1552,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * The target type of the converter.
-         *
+         * <p>
          * Values of this type can be passed to
          * {@link #convertToModel(Object, Class, Locale)}.
          *
@@ -1551,7 +1763,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * A {@link List} of all the items that became selected.
-         * <p>
+         *
          * <em>Note:</em> this excludes all items that might have been previously
          * selected.
          *
@@ -1563,7 +1775,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * A {@link List} of all the items that became deselected.
-         * <p>
+         *
          * <em>Note:</em> this excludes all items that might have been previously
          * deselected.
          *
@@ -1867,7 +2079,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * took place. The position is relative to the clicked component.
          *
          * @return The mouse cursor x position relative to the clicked layout
-         *         component or -1 if no x coordinate available
+         * component or -1 if no x coordinate available
          */
         public int getRelativeX() {
             return details.getRelativeX();
@@ -1878,7 +2090,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * took place. The position is relative to the clicked component.
          *
          * @return The mouse cursor y position relative to the clicked layout
-         *         component or -1 if no y coordinate available
+         * component or -1 if no y coordinate available
          */
         public int getRelativeY() {
             return details.getRelativeY();
@@ -1965,8 +2177,8 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          *
          * @param columnId column id
          * @return the cell for the given column id,
-         *         merged cell for merged properties,
-         *         null if not found
+         * merged cell for merged properties,
+         * null if not found
          */
         T getCell(String columnId);
     }
@@ -2015,7 +2227,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * Returns the HTML content displayed in this cell.
          *
          * @return the html
-         *
          */
         String getHtml();
 
@@ -2260,7 +2471,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * A column in the DataGrid.
      */
-    interface Column extends HasXmlDescriptor, HasFormatter, Serializable {
+    interface Column<E extends Entity> extends HasXmlDescriptor, HasFormatter, Serializable {
 
         /**
          * @return id of a column
@@ -2269,7 +2480,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * @return the instance of {@link MetaPropertyPath} representing a relative path
-         *         to a property from certain MetaClass
+         * to a property from certain MetaClass
          */
         @Nullable
         MetaPropertyPath getPropertyPath();
@@ -2300,7 +2511,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * <p>
          * The default value is <code>null</code>, and in that case the column's
          * {@link #getCaption() header caption} is used.
-         * <p>
+         *
          * <em>NOTE:</em> setting this to empty string might cause the hiding
          * toggle to not render correctly.
          *
@@ -2352,7 +2563,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * <p>
          * If a column has a defined width ({@link #setWidth(double)}), it
          * overrides this method's effects.
-         * <p>
+         *
          * <em>Example:</em> A DataGrid with three columns, with expand ratios 0, 1
          * and 2, respectively. The column with a <strong>ratio of 0 is exactly
          * as wide as its contents requires</strong>. The column with a ratio of
@@ -2414,7 +2625,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * @return {@code false} if the column is currently hidden by security permissions,
-         *         {@code true} otherwise
+         * {@code true} otherwise
          */
         boolean isVisible();
 
@@ -2441,7 +2652,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
 
         /**
          * Returns whether this column can be hidden by the user. Default is {@code true}.
-         * <p>
+         *
          * <em>Note:</em> the column can be programmatically hidden using
          * {@link #setCollapsed(boolean)} regardless of the returned value.
          *
@@ -2482,7 +2693,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         /**
          * Returns whether this column can be resized by the user. Default is
          * {@code true}.
-         * <p>
+         *
          * <em>Note:</em> the column can be programmatically resized using
          * {@link #setWidth(double)} and {@link #setWidthAuto()} regardless
          * of the returned value.
@@ -2499,13 +2710,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         void setResizable(boolean resizable);
 
         /**
-         * Sets this column as the last frozen column in its grid.
-         *
-         * @see DataGrid#setFrozenColumnCount(int)
-         */
-        void setLastFrozenColumn();
-
-        /**
          * Returns the renderer instance used by this column.
          *
          * @return the renderer
@@ -2517,32 +2721,72 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * If given renderer is null, then the default renderer will be used.
          *
          * @param renderer the renderer to use
-         * @see #setConverter(Converter)
+         * @see #setRenderer(Renderer, Function)
          */
         void setRenderer(Renderer renderer);
+
+        /**
+         * Sets the renderer for this column. If given renderer is null, then
+         * the default renderer will be used.
+         * <p>
+         * The presentation provider is a {@link Function} that takes the value of this
+         * column on a single row, and converts that to a value that the renderer accepts.
+         * <p>
+         * The presentation provider takes precedence over {@link Converter} and {@link Formatter}.
+         *
+         * @param renderer             the renderer to use
+         * @param presentationProvider the presentation provider to use
+         * @see #setRenderer(Renderer)
+         */
+        void setRenderer(Renderer renderer, Function presentationProvider);
+
+        /**
+         * @return a function to get presentations from the value of this column
+         */
+        Function getPresentationProvider();
+
+        /**
+         * @deprecated use {@link #getPresentationProvider()} instead
+         */
+        @Deprecated
+        @Override
+        Formatter getFormatter();
+
+        /**
+         * If either {@link Function presentation provider} or {@link Converter} are set they take precedence over {@link Formatter}.
+         *
+         * @deprecated use {@link #getPresentationProvider()} instead
+         */
+        @Deprecated
+        @Override
+        void setFormatter(Formatter formatter);
 
         /**
          * Returns the converter instance used by this column.
          *
          * @return the converter
+         * @deprecated use {@link #getPresentationProvider()} instead
          */
+        @Deprecated
         Converter<?, ?> getConverter();
 
         /**
          * Sets the converter used to convert from the property value type to
          * the renderer presentation type. If given converter is null, then the
          * default converter will be used.
+         * <p>
+         * Takes precedence over {@link Formatter}, but is inferior to the {@link Function presentation provider}.
          *
          * @param converter the converter to use, or {@code null} to not use any
          *                  converters
-         * @see #setRenderer(Renderer)
+         * @deprecated use {@link #setRenderer(Renderer, Function)} instead
          */
+        @Deprecated
         void setConverter(Converter<?, ?> converter);
 
         /**
          * @return the type of value represented by this column
          */
-        @Nullable
         Class getType();
 
         /**
@@ -2585,14 +2829,57 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         void setEditorFieldGenerator(ColumnEditorFieldGenerator fieldFactory);
 
         /**
+         * @return the style provider that is used for generating styles for cells
+         */
+        StyleProvider<E> getStyleProvider();
+
+        /**
+         * Sets the style provider for the DataGrid column.
+         *
+         * @param styleProvider a style provider to set
+         */
+        void setStyleProvider(StyleProvider<? super E> styleProvider);
+
+        /**
+         * @return the description provider that is used for generating
+         * descriptions for cells in this column
+         */
+        DescriptionProvider<E> getDescriptionProvider();
+
+        /**
+         * Sets the description provider that is used for generating
+         * descriptions for cells in this column.
+         * <p>
+         * This method uses the {@link ContentMode#PREFORMATTED} content mode.
+         * <p>
+         * It has priority over {@link DataGrid#setCellDescriptionProvider(CellDescriptionProvider)}.
+         *
+         * @param descriptionProvider a description provider to set,
+         *                            or {@code null} to remove a previously set generator
+         */
+        void setDescriptionProvider(DescriptionProvider<? super E> descriptionProvider);
+
+        /**
+         * Sets the description provider that is used for generating
+         * descriptions for cells in this column.
+         * <p>
+         * It has priority over {@link DataGrid#setCellDescriptionProvider(CellDescriptionProvider)}.
+         *
+         * @param descriptionProvider a description provider to set,
+         *                            or {@code null} to remove a previously set generator
+         * @param contentMode         a content mode for row tooltips
+         */
+        void setDescriptionProvider(DescriptionProvider<? super E> descriptionProvider, ContentMode contentMode);
+
+        /**
          * @return The DataGrid this column belongs to
          */
-        DataGrid getOwner();
+        DataGrid<E> getOwner();
 
         /**
          * @param owner The DataGrid this column belongs to
          */
-        void setOwner(DataGrid owner);
+        void setOwner(DataGrid<E> owner);
     }
 
 }

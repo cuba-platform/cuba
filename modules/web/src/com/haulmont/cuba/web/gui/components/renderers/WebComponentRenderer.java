@@ -16,19 +16,19 @@
 
 package com.haulmont.cuba.web.gui.components.renderers;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
-import com.haulmont.cuba.web.widgets.renderers.componentrenderer.ComponentRenderer;
-import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.renderers.Renderer;
-
-import java.util.Locale;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.ui.renderers.ComponentRenderer;
+import com.vaadin.ui.renderers.Renderer;
 
 /**
  * A renderer for UI components.
  */
-public class WebComponentRenderer extends WebDataGrid.AbstractRenderer<com.vaadin.ui.Component>
+public class WebComponentRenderer<T extends Entity>
+        extends WebDataGrid.AbstractRenderer<T, com.vaadin.ui.Component>
         implements DataGrid.ComponentRenderer {
 
     @Override
@@ -37,31 +37,8 @@ public class WebComponentRenderer extends WebDataGrid.AbstractRenderer<com.vaadi
     }
 
     @Override
-    public Converter getConverter() {
-        return new Converter<com.vaadin.ui.Component, Component>() {
-            @Override
-            public Component convertToModel(com.vaadin.ui.Component value,
-                                            Class<? extends Component> targetType, Locale locale) {
-                // do nothing
-                return null;
-            }
-
-            @Override
-            public com.vaadin.ui.Component convertToPresentation(Component value,
-                                                                 Class<? extends com.vaadin.ui.Component> targetType,
-                                                                 Locale locale) {
-                return value.unwrap(com.vaadin.ui.Component.class);
-            }
-
-            @Override
-            public Class<Component> getModelType() {
-                return Component.class;
-            }
-
-            @Override
-            public Class<com.vaadin.ui.Component> getPresentationType() {
-                return com.vaadin.ui.Component.class;
-            }
-        };
+    public ValueProvider<Component, com.vaadin.ui.Component> getPresentationValueProvider() {
+        return (ValueProvider<Component, com.vaadin.ui.Component>) value ->
+                value.unwrap(com.vaadin.ui.Component.class);
     }
 }

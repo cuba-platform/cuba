@@ -21,9 +21,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridWidget;
 import com.vaadin.client.WidgetUtil;
-import com.vaadin.v7.client.widget.grid.events.AbstractGridKeyEventHandler;
-import com.vaadin.v7.client.widget.grid.events.GridKeyDownEvent;
-import com.vaadin.v7.client.widgets.Grid;
+import com.vaadin.client.widget.grid.events.AbstractGridKeyEventHandler;
+import com.vaadin.client.widget.grid.events.GridKeyDownEvent;
+import com.vaadin.client.widgets.Grid;
 
 public class CubaGridKeyDownEvent extends GridKeyDownEvent {
 

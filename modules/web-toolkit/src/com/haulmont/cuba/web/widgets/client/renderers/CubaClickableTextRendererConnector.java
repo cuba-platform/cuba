@@ -16,9 +16,9 @@
 
 package com.haulmont.cuba.web.widgets.client.renderers;
 
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.vaadin.v7.client.connectors.ClickableRendererConnector;
-import com.vaadin.v7.client.renderers.ClickableRenderer;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.vaadin.client.connectors.ClickableRendererConnector;
+import com.vaadin.client.renderers.ClickableRenderer;
 import com.vaadin.shared.ui.Connect;
 import elemental.json.JsonObject;
 

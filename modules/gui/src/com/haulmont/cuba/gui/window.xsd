@@ -2092,6 +2092,10 @@
                 <xs:attribute name="datasource" type="xs:string"/>
                 <xs:attribute name="frozenColumnCount" type="xs:integer"/>
                 <xs:attribute name="headerVisible" type="xs:boolean"/>
+                <xs:attribute name="footerVisible" type="xs:boolean"/>
+                <xs:attribute name="bodyRowHeight" type="xs:integer"/>
+                <xs:attribute name="headerRowHeight" type="xs:integer"/>
+                <xs:attribute name="footerRowHeight" type="xs:integer"/>
                 <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
                 <xs:attribute name="sortable" type="xs:boolean"/>

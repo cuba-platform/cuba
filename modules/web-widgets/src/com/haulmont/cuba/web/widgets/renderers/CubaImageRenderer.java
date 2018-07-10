@@ -21,13 +21,13 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ResourceReference;
 import com.vaadin.shared.communication.URLReference;
-import com.vaadin.v7.ui.renderers.ClickableRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import elemental.json.JsonValue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class CubaImageRenderer extends ClickableRenderer<String> {
+public class CubaImageRenderer<T> extends ClickableRenderer<T, String> {
 
     public CubaImageRenderer() {
         super(String.class, null);
@@ -38,7 +38,7 @@ public class CubaImageRenderer extends ClickableRenderer<String> {
      *
      * @param listener the click listener to register
      */
-    public CubaImageRenderer(RendererClickListener listener) {
+    public CubaImageRenderer(RendererClickListener<T> listener) {
         this();
         addClickListener(listener);
     }
