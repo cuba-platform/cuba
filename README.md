@@ -38,7 +38,7 @@
 <a href="https://twitter.com/CubaPlatform" target="_blank"><img src="https://github.com/cuba-platform/cuba/blob/master/img/twitter.png" height="36px" alt="" title=""></a>
 <a href="https://www.facebook.com/CUBAplatform/" target="_blank"><img src="https://github.com/cuba-platform/cuba/blob/master/img/facebook.png" height="36px" margin-left="20px" alt="" title=""></a>
 <a href="https://www.linkedin.com/company/cuba-platform/" target="_blank"><img src="https://github.com/cuba-platform/cuba/blob/master/img/linkedin.png" height="36px" margin-left="20px" alt="" title=""></a>
-<a href="https://www.youtube.com/channel/UCEmWc8OwhgHnAV7vVVxtglQ" target="_blank"><img src="https://github.com/cuba-platform/cuba/blob/master/img/youtube.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://www.youtube.com/c/CubaPlatform" target="_blank"><img src="https://github.com/cuba-platform/cuba/blob/master/img/youtube.png" height="36px" margin-left="20px" alt="" title=""></a>
 </p>
   
 [CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
