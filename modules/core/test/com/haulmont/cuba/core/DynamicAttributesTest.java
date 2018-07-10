@@ -27,6 +27,8 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity;
+import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.*;
 
@@ -51,12 +53,16 @@ public class DynamicAttributesTest {
     protected User user, user2;
     protected UserRole userRole;
     protected Role role;
+    protected CompositeKeyEntity compositeKeyEntity;
 
     @Before
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
         metadata = AppBeans.get(Metadata.class);
         dynamicAttributesManagerAPI = AppBeans.get(DynamicAttributesManagerAPI.class);
+
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
+        runner.update("delete from TEST_COMPOSITE_KEY");
 
         try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.entityManager();
@@ -143,6 +149,15 @@ public class DynamicAttributesTest {
             userRole.setRole(role);
             em.persist(userRole);
 
+            compositeKeyEntity = metadata.create(CompositeKeyEntity.class);
+            EntityKey entityKey = metadata.create(EntityKey.class);
+            entityKey.setTenant(1);
+            entityKey.setEntityId(10L);
+            compositeKeyEntity.setId(entityKey);
+            compositeKeyEntity.setName("foo");
+            compositeKeyEntity.setEmail("foo@mail.com");
+            em.persist(compositeKeyEntity);
+
             tx.commit();
         }
 
@@ -169,6 +184,7 @@ public class DynamicAttributesTest {
     public void tearDown() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_ATTR_VALUE");
+        runner.update("delete from TEST_COMPOSITE_KEY");
         cont.deleteRecord(userRole, role, user, user2, group, group2);
         cont.deleteRecord(userAttribute, userRoleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute);
         cont.deleteRecord(userCategory, userRoleCategory);
@@ -251,6 +267,14 @@ public class DynamicAttributesTest {
         assertEquals(2, intCollection.size());
         assertTrue(intCollection.contains(1));
         assertTrue(intCollection.contains(3));
+    }
+
+    @Test
+    public void testLoadDynamicAttributesForCompositeKeyEntity() {
+        LoadContext<CompositeKeyEntity> loadContext = LoadContext.create(CompositeKeyEntity.class).setLoadDynamicAttributes(true);
+        loadContext.setQueryString("select e from test$CompositeKeyEntity e");
+        List<CompositeKeyEntity> result = dataManager.loadList(loadContext);
+        assertEquals(1, result.size());
     }
 
     @Test
