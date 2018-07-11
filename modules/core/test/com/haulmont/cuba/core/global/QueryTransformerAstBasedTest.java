@@ -562,15 +562,19 @@ public class QueryTransformerAstBasedTest {
         assertTransformsToSame(model, "select p.name as name from Player p");
     }
 
-//    @Test
-//    public void getResult_noChangesMade_Extract() throws RecognitionException {
-//        EntityBuilder builder = new EntityBuilder();
-//        builder.startNewEntity("Player");
-//        builder.addSingleValueAttribute(Date.class, "createTs");
-//        builder.addStringAttribute("createTs");
-//        DomainModel model = new DomainModel(builder.produce());
-//        assertTransformsToSame(model, "select extract(HOUR from p.createTs) as hours, p.name as name from Player p");
-//    }
+    @Test
+    public void getResult_noChangesMade_Extract() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        builder.startNewEntity("Player");
+        builder.addSingleValueAttribute(Date.class, "createTs");
+        builder.addStringAttribute("createTs");
+        DomainModel model = new DomainModel(builder.produce());
+        assertTransformsToSame(model, "select extract(HOUR from p.createTs) as hours, p.name as name from Player p");
+        assertTransformsToSame(model, "select extract(HOUR from p.createTs) as hours, sum(p.name) as name from Player p " +
+                "group by extract(HOUR from p.createTs)");
+        assertTransformsToSame(model, "select extract(HOUR from p.createTs) as hours, sum(p.name) as name from Player p " +
+                "group by extract(HOUR from p.createTs) order by extract(HOUR from p.createTs)");
+    }
 
     @Test
     public void getResult_noChangesMade_Decimal() throws RecognitionException {
