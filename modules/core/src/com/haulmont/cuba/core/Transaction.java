@@ -17,25 +17,18 @@
 package com.haulmont.cuba.core;
 
 /**
- * Programmatic transaction control interface. Supports the following usage scenarios.
+ * Programmatic transaction control interface.
  *
- * <p> Try-with-resources scenario:
- * <pre>{@code
- *     try (Transaction tx = persistence.createTransaction()) {
+ * <p> Use it in a try-with-resources block:
+ * <pre>
+ *     try (Transaction tx = transactions.create()) {
  *         // transactional code here
  *         tx.commit();
  *     }
- * }</pre>
+ * </pre>
  *
- * <p> Lambda scenario:
- * <pre>{@code
- *     persistence.createTransaction().execute((EntityManager em) -> {
- *         // transactional code here
- *     });
- * }</pre>
- *
- * @see Persistence#runInTransaction(Runnable)
- * @see Persistence#callInTransaction(Callable)
+ * @see Transactions
+ * @see Persistence
  */
 public interface Transaction extends AutoCloseable {
 

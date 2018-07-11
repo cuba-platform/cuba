@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.TransactionalDataManager;
+import com.haulmont.cuba.core.Transactions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
@@ -24,15 +25,15 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 @Component(TransactionalDataManager.NAME)
 public class TransactionalDataManagerBean implements TransactionalDataManager {
 
     @Inject
-    private DataManager dataManager;
+    protected DataManager dataManager;
+
+    @Inject
+    protected Transactions transactions;
 
     @Override
     public <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
@@ -90,5 +91,10 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
         cc.addInstanceToRemove(entity);
         cc.setJoinTransaction(true);
         dataManager.commit(cc);
+    }
+
+    @Override
+    public Transactions transactions() {
+        return transactions;
     }
 }

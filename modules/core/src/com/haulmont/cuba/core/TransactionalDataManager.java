@@ -62,4 +62,9 @@ public interface TransactionalDataManager {
     <E extends Entity> E save(E entity, @Nullable String viewName);
 
     void remove(Entity entity);
+
+    /**
+     * Returns an entry point to programmatic transaction control.
+     */
+    Transactions transactions();
 }

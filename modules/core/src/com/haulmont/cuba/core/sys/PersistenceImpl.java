@@ -31,7 +31,6 @@ import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -70,8 +69,8 @@ public class PersistenceImpl implements Persistence {
 
     protected EntityManagerFactory jpaEmf;
 
-    @Inject @Named("transactionManager")
-    protected PlatformTransactionManager transactionManager;
+    @Inject
+    protected Transactions transactions;
 
     @Inject
     protected MiddlewareStatisticsAccumulator statisticsAccumulator;
@@ -118,32 +117,32 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public Transaction createTransaction(TransactionParams params) {
-        return new TransactionImpl(transactionManager, this, false, params, Stores.MAIN);
+        return transactions.create(params);
     }
 
     @Override
     public Transaction createTransaction(String store, TransactionParams params) {
-        return new TransactionImpl(getTransactionManager(store), this, false, params, store);
+        return transactions.create(store, params);
     }
 
     @Override
     public Transaction createTransaction() {
-        return new TransactionImpl(transactionManager, this, false, null, Stores.MAIN);
+        return transactions.create();
     }
 
     @Override
     public Transaction createTransaction(String store) {
-        return new TransactionImpl(getTransactionManager(store), this, false, null, store);
+        return transactions.create(store);
     }
 
     @Override
     public Transaction getTransaction() {
-        return new TransactionImpl(transactionManager, this, true, null, Stores.MAIN);
+        return transactions.get();
     }
 
     @Override
     public Transaction getTransaction(String store) {
-        return new TransactionImpl(getTransactionManager(store), this, true, null, store);
+        return transactions.get(store);
     }
 
     @Override
@@ -346,15 +345,6 @@ public class PersistenceImpl implements Persistence {
             return jpaEmf;
         else
             return beanLocator.get("entityManagerFactory_" + store);
-    }
-
-    protected PlatformTransactionManager getTransactionManager(String store) {
-        PlatformTransactionManager tm;
-        if (Stores.isMain(store))
-            tm = this.transactionManager;
-        else
-            tm = beanLocator.get("transactionManager_" + store, PlatformTransactionManager.class);
-        return tm;
     }
 
     protected class EntityManagerInvocationHandler implements InvocationHandler {
