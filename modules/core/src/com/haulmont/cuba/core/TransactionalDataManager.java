@@ -17,10 +17,12 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Similar to {@link DataManager} but joins an existing transaction.
@@ -52,6 +54,28 @@ public interface TransactionalDataManager {
     FluentValuesLoader loadValues(String queryString);
 
     <T> FluentValueLoader<T> loadValue(String queryString, Class<T> valueClass);
+
+    /**
+     * Loads a single entity instance.
+     * @param context   {@link com.haulmont.cuba.core.global.LoadContext} object, defining what and how to load
+     * @return          the loaded detached object, or null if not found
+     */
+    @Nullable
+    <E extends Entity> E load(LoadContext<E> context);
+
+    /**
+     * Loads collection of entity instances.
+     * @param context   {@link LoadContext} object, defining what and how to load
+     * @return          a list of detached instances, or empty list if nothing found
+     */
+    <E extends Entity> List<E> loadList(LoadContext<E> context);
+
+    /**
+     * Loads list of key-value pairs.
+     * @param context   defines a query for scalar values and a list of keys for returned KeyValueEntity
+     * @return list of KeyValueEntity instances
+     */
+    List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     EntitySet save(Entity... entities);
 

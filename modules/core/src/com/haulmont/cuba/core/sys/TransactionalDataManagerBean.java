@@ -19,12 +19,14 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.Transactions;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.List;
 
 @Component(TransactionalDataManager.NAME)
 public class TransactionalDataManagerBean implements TransactionalDataManager {
@@ -53,6 +55,25 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
     @Override
     public <T> FluentValueLoader<T> loadValue(String queryString, Class<T> valueClass) {
         return new FluentValueLoader<>(queryString, valueClass, dataManager, true);
+    }
+
+    @Nullable
+    @Override
+    public <E extends Entity> E load(LoadContext<E> context) {
+        context.setJoinTransaction(true);
+        return dataManager.load(context);
+    }
+
+    @Override
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
+        context.setJoinTransaction(true);
+        return dataManager.loadList(context);
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        context.setJoinTransaction(true);
+        return dataManager.loadValues(context);
     }
 
     @Override
