@@ -105,8 +105,8 @@ public class AttributeChanges {
      * <p>
      * Usage example:
      * <pre>
-     * Collection<Id<OrderLine, UUID>> orderLines = event.getChanges().getOldCollection("orderLines", OrderLine.class);
-     * for (Id<OrderLine, UUID> orderLineId : orderLines) {
+     * Collection&lt;Id&lt;OrderLine, UUID&gt;&gt; orderLines = event.getChanges().getOldCollection("orderLines", OrderLine.class);
+     * for (Id&lt;OrderLine, UUID&gt; orderLineId : orderLines) {
      *     OrderLine orderLine = dataManager.load(orderLineId).one();
      *     // ...
      * }
