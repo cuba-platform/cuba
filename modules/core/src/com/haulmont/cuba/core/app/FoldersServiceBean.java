@@ -264,7 +264,7 @@ public class FoldersServiceBean implements FoldersService {
     @Override
     public Folder importFolder(Folder parentFolder, byte[] bytes) throws IOException {
         if (!security.isEntityOpPermitted(Folder.class, EntityOp.CREATE)) {
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.CREATE, Folder.class.getSimpleName());
         }
 
         Folder folder = null;

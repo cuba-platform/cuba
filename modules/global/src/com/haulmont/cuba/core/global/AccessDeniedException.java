@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 
 /**
@@ -32,6 +33,8 @@ public class AccessDeniedException extends RuntimeException
 
     private PermissionType type;
 
+    private EntityOp entityOp;
+
     private String target;
 
     /**
@@ -47,11 +50,30 @@ public class AccessDeniedException extends RuntimeException
         this.target = target;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param type      permission type
+     * @param entityOp  type of operation on entity
+     * @param target    permission target object, e.g. a screen id or entity operation name. When throwing the exception
+     *                  in application code, can be any string suitable to describe the situation in the log.
+     */
+    public AccessDeniedException(PermissionType type, EntityOp entityOp, String target) {
+        super(type.toString() + ":" + entityOp.toString() + " " + target);
+        this.type = type;
+        this.target = target;
+        this.entityOp = entityOp;
+    }
+
     public PermissionType getType() {
         return type;
     }
 
     public String getTarget() {
         return target;
+    }
+
+    public EntityOp getEntityOp() {
+        return entityOp;
     }
 }
