@@ -743,7 +743,7 @@ public class RdbmsStore implements DataStore {
 
     protected void checkPermission(MetaClass metaClass, EntityOp operation) {
         if (!isEntityOpPermitted(metaClass, operation))
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, operation, metaClass.getName());
     }
 
     protected boolean checkValueQueryPermissions(QueryParser queryParser) {
