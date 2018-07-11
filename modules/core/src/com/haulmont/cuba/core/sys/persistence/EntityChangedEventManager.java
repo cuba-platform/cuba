@@ -17,10 +17,12 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.events.AttributeChanges;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.PublishEntityChangedEvents;
 import com.haulmont.cuba.core.entity.contracts.Id;
@@ -100,6 +102,7 @@ public class EntityChangedEventManager {
                 AttributeChanges attributeChanges = null;
                 if (info.onCreated && BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
                     type = EntityChangedEvent.Type.CREATED;
+                    attributeChanges = new AttributeChanges();
                 } else {
                     if (info.onUpdated || info.onDeleted) {
                         AttributeChangeListener changeListener =
@@ -110,6 +113,7 @@ public class EntityChangedEventManager {
                         }
                         if (info.onDeleted && PersistenceImplSupport.isDeleted((BaseGenericIdEntity) entity, changeListener)) {
                             type = EntityChangedEvent.Type.DELETED;
+                            attributeChanges = getEntityAttributeChanges(entity);
                         } else if (info.onUpdated && changeListener.hasChanges()) {
                             type = EntityChangedEvent.Type.UPDATED;
                             attributeChanges = getEntityAttributeChanges(changeListener.getObjectChangeSet());
@@ -140,16 +144,52 @@ public class EntityChangedEventManager {
         Map<String, AttributeChanges> embeddedChanges = new HashMap<>();
 
         for (ChangeRecord changeRecord : changeSet.getChanges()) {
-            Object oldValue = changeRecord.getOldValue();
-            if (oldValue instanceof Entity) {
-                oldValue = Id.of((Entity) oldValue);
-            }
-            changes.add(new AttributeChanges.Change(changeRecord.getAttribute(), oldValue));
             if (changeRecord instanceof AggregateChangeRecord) {
                 embeddedChanges.computeIfAbsent(changeRecord.getAttribute(), s ->
                         getEntityAttributeChanges(((AggregateChangeRecord) changeRecord).getChangedObject()));
+            } else {
+                Object oldValue = changeRecord.getOldValue();
+                if (oldValue instanceof Entity) {
+                    changes.add(new AttributeChanges.Change(changeRecord.getAttribute(), Id.of((Entity) oldValue)));
+                } else if (oldValue instanceof Collection) {
+                    Collection<Entity> coll = (Collection<Entity>) oldValue;
+                    Collection<Id> idColl = oldValue instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
+                    for (Entity item : coll) {
+                        idColl.add(Id.of(item));
+                    }
+                    changes.add(new AttributeChanges.Change(changeRecord.getAttribute(), idColl));
+                } else {
+                    changes.add(new AttributeChanges.Change(changeRecord.getAttribute(), oldValue));
+                }
             }
         }
+        return new AttributeChanges(changes, embeddedChanges);
+    }
+
+    @SuppressWarnings("unchecked")
+    private AttributeChanges getEntityAttributeChanges(Entity entity) {
+        Set<AttributeChanges.Change> changes = new HashSet<>();
+        Map<String, AttributeChanges> embeddedChanges = new HashMap<>();
+
+        for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
+            Object oldValue = entity.getValue(property.getName());
+            if (oldValue instanceof EmbeddableEntity) {
+                EmbeddableEntity embedded = (EmbeddableEntity) oldValue;
+                embeddedChanges.computeIfAbsent(property.getName(), s -> getEntityAttributeChanges(embedded));
+            } else if (oldValue instanceof Entity) {
+                changes.add(new AttributeChanges.Change(property.getName(), Id.of((Entity) oldValue)));
+            } else if (oldValue instanceof Collection) {
+                Collection<Entity> coll = (Collection<Entity>) oldValue;
+                Collection<Id> idColl = oldValue instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
+                for (Entity item : coll) {
+                    idColl.add(Id.of(item));
+                }
+                changes.add(new AttributeChanges.Change(property.getName(), idColl));
+            } else {
+                changes.add(new AttributeChanges.Change(property.getName(), oldValue));
+            }
+        }
+
         return new AttributeChanges(changes, embeddedChanges);
     }
 }

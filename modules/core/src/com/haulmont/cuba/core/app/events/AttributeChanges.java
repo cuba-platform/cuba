@@ -20,15 +20,18 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AttributeChanges {
 
     private Set<Change> changes;
     private Map<String, AttributeChanges> embeddedChanges;
+
+    public AttributeChanges() {
+        changes = new HashSet<>();
+        embeddedChanges = new HashMap<>();
+    }
 
     public AttributeChanges(Set<Change> changes, Map<String, AttributeChanges> embeddedChanges) {
         this.changes = changes;
@@ -86,8 +89,34 @@ public class AttributeChanges {
         return null;
     }
 
+    /**
+     * Type-safe method of getting the old value of a reference attribute.
+     *
+     * @param attributeName reference attribute name
+     * @return Id of the referenced object
+     */
     @Nullable
     public <E extends Entity<K>, K> Id<E, K> getOldReferenceId(String attributeName) {
+        return getOldValue(attributeName);
+    }
+
+    /**
+     * Type-safe method of getting the old value of a collection attribute.
+     * <p>
+     * Usage example:
+     * <pre>
+     * Collection<Id<OrderLine, UUID>> orderLines = event.getChanges().getOldCollection("orderLines", OrderLine.class);
+     * for (Id<OrderLine, UUID> orderLineId : orderLines) {
+     *     OrderLine orderLine = dataManager.load(orderLineId).one();
+     *     // ...
+     * }
+     * </pre>
+     *
+     * @param attributeName collection attribute name
+     * @param entityClass   class of the attribute
+     * @return collection of Ids
+     */
+    public <E extends Entity<K>, K> Collection<Id<E, K>> getOldCollection(String attributeName, Class<E> entityClass) {
         return getOldValue(attributeName);
     }
 

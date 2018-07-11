@@ -35,6 +35,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -105,36 +106,43 @@ public class DataManagerTransactionalUsageTest {
 
         @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) // same as simple @EventListener
         protected void orderLineChanged(EntityChangedEvent<OrderLine, UUID> event) {
+            AttributeChanges changes = event.getChanges();
 
-            OrderLine orderLine = txDataManager.load(event.getEntityId()).view("with-product").one();
-            Product product = orderLine.getProduct();
+            Collection<Product> products = changes.getOldValue("aaa");
 
-            if (event.getType() == EntityChangedEvent.Type.UPDATED) {
-                AttributeChanges changes = event.getChanges();
+            if (event.getType() == EntityChangedEvent.Type.DELETED) {
+                Id<Product, UUID> productId = changes.getOldReferenceId("product");
+                Integer oldQuantity = changes.getOldValue("quantity");
 
-                if (changes.isChanged("product")) {
-                    Id<Product, UUID> oldProductId = changes.getOldReferenceId("product");
-                    if (oldProductId != null) {
-                        Product oldProduct = txDataManager.load(oldProductId).one();
-                        oldProduct.setQuantity(oldProduct.getQuantity() + orderLine.getQuantity());
-                        txDataManager.save(oldProduct);
+                Product product = txDataManager.load(productId).one();
+                product.setQuantity(product.getQuantity() + oldQuantity);
+                txDataManager.save(product);
+
+            } else {
+                OrderLine orderLine = txDataManager.load(event.getEntityId()).view("with-product").one();
+                Product product = orderLine.getProduct();
+
+                if (event.getType() == EntityChangedEvent.Type.UPDATED) {
+                    if (changes.isChanged("product")) {
+                        Id<Product, UUID> oldProductId = changes.getOldReferenceId("product");
+                        if (oldProductId != null) {
+                            Product oldProduct = txDataManager.load(oldProductId).one();
+                            oldProduct.setQuantity(oldProduct.getQuantity() + orderLine.getQuantity());
+                            txDataManager.save(oldProduct);
+                        }
+
+                        product.setQuantity(product.getQuantity() - orderLine.getQuantity());
+                        txDataManager.save(product);
+
+                    } else if (changes.isChanged("quantity")) {
+                        product.setQuantity(product.getQuantity() - orderLine.getQuantity());
+                        txDataManager.save(product);
                     }
 
-                    product.setQuantity(product.getQuantity() - orderLine.getQuantity());
-                    txDataManager.save(product);
-
-                } else if (changes.isChanged("quantity")) {
+                } else if (event.getType() == EntityChangedEvent.Type.CREATED) {
                     product.setQuantity(product.getQuantity() - orderLine.getQuantity());
                     txDataManager.save(product);
                 }
-
-            } else if (event.getType() == EntityChangedEvent.Type.CREATED) {
-                product.setQuantity(product.getQuantity() - orderLine.getQuantity());
-                txDataManager.save(product);
-
-            } else if (event.getType() == EntityChangedEvent.Type.DELETED) {
-                product.setQuantity(product.getQuantity() + orderLine.getQuantity());
-                txDataManager.save(product);
             }
         }
 
