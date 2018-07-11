@@ -94,7 +94,21 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
     }
 
     @Override
+    public TransactionalDataManager secure() {
+        return new Secure(dataManager, transactions);
+    }
+
+    @Override
     public Transactions transactions() {
         return transactions;
+    }
+
+    private static class Secure extends TransactionalDataManagerBean {
+
+        @SuppressWarnings("ReassignmentInjectVariable")
+        public Secure(DataManager dataManager, Transactions transactions) {
+            this.dataManager = dataManager.secure();
+            this.transactions = transactions;
+        }
     }
 }

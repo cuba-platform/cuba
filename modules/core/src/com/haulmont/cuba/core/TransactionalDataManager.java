@@ -64,6 +64,21 @@ public interface TransactionalDataManager {
     void remove(Entity entity);
 
     /**
+     * By default, DataManager does not apply security restrictions on entity operations and attributes, only row-level
+     * constraints take effect.
+     * <p>
+     * This method returns the {@code TransactionalDataManager} implementation that applies security restrictions on entity operations.
+     * Attribute permissions will be enforced only if you additionally set the {@code cuba.entityAttributePermissionChecking}
+     * application property to true.
+     * <p>
+     * Usage example:
+     * <pre>
+     *     txDataManager.secure().load(Customer.class).list();
+     * </pre>
+     */
+    TransactionalDataManager secure();
+
+    /**
      * Returns an entry point to programmatic transaction control.
      */
     Transactions transactions();

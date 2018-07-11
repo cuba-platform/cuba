@@ -71,6 +71,30 @@ public class DataManagerTransactionalUsageTest {
             return Id.of(orderLine);
         }
 
+        public Id<OrderLine, UUID> sellSecureWithProgrammaticTx(String productName, Integer quantity) {
+            TransactionalDataManager secureDm = txDataManager.secure();
+            try (Transaction tx = secureDm.transactions().create()) {
+                Product product = secureDm.load(Product.class)
+                        .query("select p from sales1$Product p where p.name = :name")
+                        .parameter("name", productName)
+                        .optional()
+                        .orElseGet(() -> {
+                            Product p = metadata.create(Product.class);
+                            p.setName(productName);
+                            p.setQuantity(100); // initial quantity of a new product
+                            return secureDm.save(p);
+                        });
+
+                OrderLine orderLine = metadata.create(OrderLine.class);
+                orderLine.setProduct(product);
+                orderLine.setQuantity(quantity);
+                secureDm.save(orderLine);
+
+                tx.commit();
+
+                return Id.of(orderLine);
+            }
+        }
     }
 
     @Component("test_OrderLineChangedListener")
@@ -163,6 +187,32 @@ public class DataManagerTransactionalUsageTest {
 
         Product changedProduct2 = dataManager.load(Id.of(product2)).one();
         assertEquals(90, (int) changedProduct2.getQuantity());
+    }
 
+    @Test
+    public void testSecureWithProgrammaticTx() {
+        SaleProcessor processor = AppBeans.get("test_SaleProcessor");
+        Id<OrderLine, UUID> orderLineId = processor.sellSecureWithProgrammaticTx("abc", 10);
+
+        Product product1 = dataManager.load(Product.class)
+                .query("select p from sales1$Product p where p.name = :name")
+                .parameter("name", "abc")
+                .one();
+        assertEquals(90, (int) product1.getQuantity());
+
+        Product product2 = metadata.create(Product.class);
+        product2.setName("def");
+        product2.setQuantity(100);
+        dataManager.commit(product2);
+
+        OrderLine orderLine = dataManager.load(orderLineId).view("with-product").one();
+        orderLine.setProduct(product2);
+        dataManager.commit(orderLine);
+
+        Product changedProduct1 = dataManager.load(Id.of(product1)).one();
+        assertEquals(100, (int) changedProduct1.getQuantity());
+
+        Product changedProduct2 = dataManager.load(Id.of(product2)).one();
+        assertEquals(90, (int) changedProduct2.getQuantity());
     }
 }
