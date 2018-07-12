@@ -159,7 +159,7 @@ public class PersistenceTools {
     public Object getOldValue(Entity entity, String attribute) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
-        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+        if (!(entity instanceof ChangeTracker))
             throw new IllegalArgumentException("The entity " + entity + " is not a ChangeTracker");
 
         if (!PersistenceHelper.isManaged(entity))
