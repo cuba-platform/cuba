@@ -24,8 +24,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -70,6 +70,9 @@ public class PersistenceTools {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected EntityStates entityStates;
+
     /**
      * Returns the set of dirty attributes (changed since the last load from the database).
      * <p> If the entity is new, returns all its attributes.
@@ -82,11 +85,11 @@ public class PersistenceTools {
     public Set<String> getDirtyFields(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
-        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+        if (!(entity instanceof ChangeTracker) || !entityStates.isManaged(entity))
             return Collections.emptySet();
 
         HashSet<String> result = new HashSet<>();
-        if (PersistenceHelper.isNew(entity)) {
+        if (entityStates.isNew(entity)) {
             for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
                 if (metadata.getTools().isPersistent(property))
                     result.add(property.getName());
@@ -115,10 +118,10 @@ public class PersistenceTools {
     public boolean isDirty(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
-        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+        if (!(entity instanceof ChangeTracker) || !entityStates.isManaged(entity))
             return false;
 
-        if (PersistenceHelper.isNew(entity))
+        if (entityStates.isNew(entity))
             return true;
 
         AttributeChangeListener attributeChangeListener = (AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
@@ -159,13 +162,13 @@ public class PersistenceTools {
     public Object getOldValue(Entity entity, String attribute) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
-        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+        if (!(entity instanceof ChangeTracker))
             throw new IllegalArgumentException("The entity " + entity + " is not a ChangeTracker");
 
-        if (!PersistenceHelper.isManaged(entity))
+        if (!entityStates.isManaged(entity))
             throw new IllegalArgumentException("The entity " + entity + " is not in the Managed state");
 
-        if (PersistenceHelper.isNew(entity)) {
+        if (entityStates.isNew(entity)) {
             return null;
 
         } else if (!isDirty(entity, attribute)) {
@@ -220,7 +223,7 @@ public class PersistenceTools {
      * @return true if loaded
      */
     public boolean isLoaded(Object entity, String property) {
-        return PersistenceHelper.isLoaded(entity, property);
+        return entityStates.isLoaded(entity, property);
     }
 
     /**
@@ -251,7 +254,7 @@ public class PersistenceTools {
         if (!metaProperty.getRange().isClass() || metaProperty.getRange().getCardinality().isMany())
             throw new IllegalArgumentException("Property is not a reference");
 
-        if (!PersistenceHelper.isManaged(entity))
+        if (!entityStates.isManaged(entity))
             throw new IllegalStateException("Entity must be in managed state");
 
         String[] inaccessibleAttributes = BaseEntityInternalAccess.getInaccessibleAttributes(entity);
