@@ -19,7 +19,10 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.EntityAccessException;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.View;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -29,6 +32,8 @@ import java.io.InputStream;
 public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
     @Inject
     protected FileStorageAPI fileStorage;
+    @Inject
+    protected DataManager dataManager;
 
     @Override
     public void uploadFile(InputStream inputStream, FileDescriptor fileDescriptor) throws FileStorageException {
@@ -37,6 +42,14 @@ public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
 
     @Override
     public InputStream downloadFile(FileDescriptor fileDescriptor) throws FileStorageException {
-        return fileStorage.openStream(fileDescriptor);
+        FileDescriptor descriptor;
+        try {
+            // FileDescriptor must be available for the current user and be non deleted
+            descriptor = dataManager.secure().reload(fileDescriptor, View.LOCAL);
+        } catch (EntityAccessException e) {
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescriptor.getName(), e);
+        }
+
+        return fileStorage.openStream(descriptor);
     }
 }
