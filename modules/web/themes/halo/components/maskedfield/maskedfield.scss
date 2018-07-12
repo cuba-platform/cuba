@@ -20,6 +20,7 @@
     @include box-defaults;
     @include valo-textfield-style;
     height: $v-unit-size;
+    width: $v-default-field-width;
   }
 
   .#{$primary-stylename}.v-readonly {
