@@ -813,12 +813,12 @@
 
     <xs:attributeGroup name="hasId">
         <xs:attribute name="id" type="xs:string"/>
-        <xs:anyAttribute namespace="##other" processContents="lax"/>
+        <xs:anyAttribute processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresId">
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:anyAttribute namespace="##other" processContents="lax"/>
+        <xs:anyAttribute processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSize">
@@ -3114,4 +3114,6 @@
             <xs:enumeration value="CENTER"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:attribute name="box.expandRatio" type="xs:float"/>
 </xs:schema>

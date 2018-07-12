@@ -456,4 +456,14 @@ public abstract class DesktopAbstractBox
     public void removeShortcutAction(ShortcutAction action) {
         // do nothing
     }
+
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        // do nothing
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        return 0;
+    }
 }

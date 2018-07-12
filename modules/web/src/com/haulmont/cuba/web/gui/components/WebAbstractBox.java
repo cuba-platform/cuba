@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutListener;
@@ -254,5 +255,25 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
                 shortcuts = null;
             }
         }
+    }
+
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        if (ratio < 0) {
+            throw new GuiDevelopmentException(
+                    String.format("Expand ratio must be greater than or equal to 0 in component: %s.",
+                            component.getId()), getFrame().getId());
+        }
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(component);
+
+        this.component.setExpandRatio(vComponent, ratio);
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        com.vaadin.ui.Component vComponent = component.unwrap(com.vaadin.ui.Component.class);
+
+        return this.component.getExpandRatio(vComponent);
     }
 }
