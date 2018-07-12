@@ -53,15 +53,6 @@ public class CubaMenuBarConnector extends MenuBarConnector {
     }
 
     @Override
-    protected String getItemId(UIDL uidl) {
-        if (uidl.hasAttribute("tid")) {
-            return uidl.getStringAttribute("tid");
-        }
-
-        return null;
-    }
-
-    @Override
     protected void assignAdditionalAttributes(VMenuBar.CustomMenuItem currentItem, UIDL item) {
         if (item.hasAttribute("cid")) {
             currentItem.getElement().setAttribute("cuba-id", item.getStringAttribute("cid"));

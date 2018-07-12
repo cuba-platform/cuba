@@ -30,7 +30,6 @@ import java.util.Map;
 public class CubaMenuBar extends com.vaadin.ui.MenuBar {
 
     protected Map<MenuItem, String> shortcuts = null;
-    protected Map<MenuItem, String> testIds = null;
     protected Map<MenuItem, String> cubaIds = null;
 
     @Override
@@ -64,20 +63,6 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
         shortcuts.put(item, str);
     }
 
-    public void setTestId(MenuItem item, String id) {
-        if (testIds == null) {
-            testIds = new HashMap<>();
-        }
-        testIds.put(item, id);
-    }
-
-    public String getTestId(MenuItem item) {
-        if (testIds != null) {
-            return testIds.get(item);
-        }
-        return null;
-    }
-
     public void setCubaId(MenuItem item, String id) {
         if (cubaIds == null) {
             cubaIds = new HashMap<>();
@@ -91,12 +76,6 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
             String shortcut = shortcuts.get(item);
             if (shortcut != null) {
                 target.addAttribute("shortcut", shortcut);
-            }
-        }
-        if (testIds != null && testIds.containsKey(item)) {
-            String testIdValue = testIds.get(item);
-            if (testIdValue != null) {
-                target.addAttribute("tid", testIdValue);
             }
         }
         if (cubaIds != null && cubaIds.containsKey(item)) {
