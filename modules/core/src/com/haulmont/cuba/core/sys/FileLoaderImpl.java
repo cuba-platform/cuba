@@ -16,8 +16,11 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.springframework.stereotype.Component;
@@ -27,10 +30,16 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 @Component(FileLoader.NAME)
 public class FileLoaderImpl implements FileLoader {
     @Inject
     protected FileStorageAPI fileStorageAPI;
+    @Inject
+    protected Persistence persistence;
+    @Inject
+    protected EntityStates entityStates;
 
     @Override
     public void saveStream(FileDescriptor fd, Supplier<InputStream> inputStreamSupplier) throws FileStorageException {
@@ -46,6 +55,8 @@ public class FileLoaderImpl implements FileLoader {
 
     @Override
     public InputStream openStream(FileDescriptor fd) throws FileStorageException {
+        checkNotNullArgument(fd);
+        checkIfFileDescriptorExists(fd);
         return fileStorageAPI.openStream(fd);
     }
 
@@ -57,5 +68,14 @@ public class FileLoaderImpl implements FileLoader {
     @Override
     public boolean fileExists(FileDescriptor fd) throws FileStorageException {
         return fileStorageAPI.fileExists(fd);
+    }
+
+    protected void checkIfFileDescriptorExists(FileDescriptor fd) throws FileStorageException {
+        try (Transaction tx = persistence.getTransaction()) {
+            FileDescriptor existingFile = persistence.getEntityManager().find(FileDescriptor.class, fd.getId());
+            if (existingFile == null || entityStates.isDeleted(existingFile)) {
+                throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fd.getName());
+            }
+        }
     }
 }
