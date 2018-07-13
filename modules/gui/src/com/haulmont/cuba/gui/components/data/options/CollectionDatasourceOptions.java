@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.options;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class CollectionDatasourceOptions<E extends Entity<K>, K> implements OptionsSource<E>, EntityOptionsSource<E> {
 
     protected CollectionDatasource<E, K> datasource;
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     protected BindingState state = BindingState.INACTIVE;
 

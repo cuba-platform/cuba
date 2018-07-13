@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.value;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -38,7 +38,7 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
 
     protected BindingState state = BindingState.ACTIVE;
 
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     public CollectionContainerTableSource(CollectionContainer<E> container) {
         this.container = container;

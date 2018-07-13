@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.value;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -38,7 +38,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
     protected BindingState state = BindingState.INACTIVE;
 
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     @SuppressWarnings("unchecked")
     public DatasourceValueSource(Datasource<E> datasource, String property) {

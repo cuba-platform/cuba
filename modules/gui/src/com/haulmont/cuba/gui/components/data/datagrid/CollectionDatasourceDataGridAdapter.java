@@ -1,6 +1,6 @@
 package com.haulmont.cuba.gui.components.data.datagrid;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public class CollectionDatasourceDataGridAdapter<E extends Entity<K>, K> implements EntityDataGridSource<E> {
 
     protected CollectionDatasource.Indexed<E, K> datasource;
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     protected BindingState state = BindingState.INACTIVE;
 

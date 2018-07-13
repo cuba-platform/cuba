@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.table;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements EntityTableSource<E> {
 
     protected CollectionDatasource datasource;
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     protected BindingState state = BindingState.INACTIVE;
 

@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
-        extends EventPublisher
+        extends EventHub
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption, HasDebugId {
 

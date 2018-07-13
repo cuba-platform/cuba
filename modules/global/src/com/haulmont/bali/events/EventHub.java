@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * EventPublisher class implementing the event listening model with concrete event classes.
+ * EventHub class implementing the event listening model with concrete event classes.
  */
 @NotThreadSafe
-public class EventPublisher {
+public class EventHub {
     protected static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
     protected static final int EVENTS_LIST_INITIAL_CAPACITY = 2;
 
@@ -139,11 +139,11 @@ public class EventPublisher {
     }
 
     protected static class SubscriptionImpl<T> implements Subscription {
-        private final EventPublisher publisher;
+        private final EventHub publisher;
         private final Class<T> eventClass;
         private final Consumer<T> listener;
 
-        public SubscriptionImpl(EventPublisher publisher, Class<T> eventClass, Consumer<T> listener) {
+        public SubscriptionImpl(EventHub publisher, Class<T> eventClass, Consumer<T> listener) {
             this.publisher = publisher;
             this.eventClass = eventClass;
             this.listener = listener;

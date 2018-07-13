@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components.data.value;
 
 import com.google.common.base.Joiner;
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -42,7 +42,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     protected BindingState state = BindingState.INACTIVE;
 
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
 
     @SuppressWarnings("unchecked")
     public ContainerValueSource(InstanceContainer<E> container, String property) {

@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.bali.events.EventPublisher;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.Instance;
@@ -42,7 +42,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
     protected MetaClass entityMetaClass;
     protected View view;
 
-    protected EventPublisher events = new EventPublisher();
+    protected EventHub events = new EventHub();
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
 
