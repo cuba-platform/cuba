@@ -95,13 +95,19 @@ public class WindowBreadCrumbs extends CssLayout {
 
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
-            TestIdManager testIdManager = ui.getTestIdManager();
-            linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
             linksLayout.setCubaId("breadCrumbs");
 
             if (closeBtn != null) {
-                closeBtn.setId(testIdManager.getTestId("closeBtn"));
                 closeBtn.setCubaId("closeBtn");
+            }
+        }
+
+        if (ui.isPerformanceTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
+            linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
+
+            if (closeBtn != null) {
+                closeBtn.setId(testIdManager.getTestId("closeBtn"));
             }
         }
 
@@ -237,6 +243,9 @@ public class WindowBreadCrumbs extends CssLayout {
 
             if (isTestMode) {
                 button.setCubaId("breadCrubms_Button_" + window.getId());
+            }
+
+            if (ui.isPerformanceTestMode()) {
                 button.setId(ui.getTestIdManager().getTestId("breadCrubms_Button_" + window.getId()));
             }
 

@@ -618,7 +618,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
                     // init debug ids after all
                     AppUI appUI = AppUI.getCurrent();
-                    if (appUI.isTestMode()) {
+                    // use testMode or performanceTestMode cause initDebugIds method works for both
+                    if (appUI.isTestMode() || appUI.isPerformanceTestMode()) {
                         context.addPostInitTask((localContext, localWindow) -> {
                             Window.TopLevelWindow appWindow = appUI.getTopLevelWindow();
                             ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(localWindow);

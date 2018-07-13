@@ -105,6 +105,9 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             userComboBox.setNullSelectionAllowed(false);
             if (ui.isTestMode()) {
                 userComboBox.setCubaId("substitutedUserSelect");
+            }
+
+            if (ui.isPerformanceTestMode()) {
                 userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));
             }
 

@@ -513,11 +513,13 @@ public class WebWindowManager extends WindowManager {
 
                 tabSheet.addTab(layout, tabId);
 
-                if (ui.isTestMode()) {
-                    String id = "tab_" + window.getId();
+                String id = "tab_" + window.getId();
 
-                    tabSheet.setTabTestId(tabId, ui.getTestIdManager().getTestId(id));
+                if (ui.isTestMode()) {
                     tabSheet.setTabCubaId(tabId, id);
+                }
+                if (ui.isPerformanceTestMode()) {
+                    tabSheet.setTabTestId(tabId, ui.getTestIdManager().getTestId(id));
                 }
             }
             String windowContentSwitchMode = window.getContentSwitchMode().name();
@@ -681,6 +683,9 @@ public class WebWindowManager extends WindowManager {
         vWindow.setStyleName("c-app-dialog-window");
         if (ui.isTestMode()) {
             vWindow.setCubaId("dialog_" + window.getId());
+        }
+
+        if (ui.isPerformanceTestMode()) {
             vWindow.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
         }
 
@@ -1165,6 +1170,9 @@ public class WebWindowManager extends WindowManager {
 
         if (ui.isTestMode()) {
             vWindow.setCubaId("messageDialog");
+        }
+
+        if (ui.isPerformanceTestMode()) {
             vWindow.setId(ui.getTestIdManager().getTestId("messageDialog"));
         }
 
@@ -1281,8 +1289,12 @@ public class WebWindowManager extends WindowManager {
 
         if (ui.isTestMode()) {
             window.setCubaId("optionDialog");
+        }
+
+        if (ui.isPerformanceTestMode()) {
             window.setId(ui.getTestIdManager().getTestId("optionDialog"));
         }
+
         window.setClosable(false);
 
         CubaLabel messageLab = new CubaLabel();
@@ -1375,7 +1387,9 @@ public class WebWindowManager extends WindowManager {
 
             if (ui.isTestMode()) {
                 button.setCubaId("optionDialog_" + action.getId());
+            }
 
+            if (ui.isPerformanceTestMode()) {
                 button.setId(ui.getTestIdManager().getTestId("optionDialog_" + action.getId()));
             }
 
@@ -1503,7 +1517,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void initDebugIds(final Frame frame) {
-        if (ui.isTestMode()) {
+        // use testMode or performanceTestMode cause assignAutoDebugId method works for both
+        if (ui.isTestMode() || ui.isPerformanceTestMode()) {
             ComponentsHelper.walkComponents(frame, (component, name) -> {
                 if (component instanceof HasDebugId
                         && ((HasDebugId) component).getDebugId() == null) {

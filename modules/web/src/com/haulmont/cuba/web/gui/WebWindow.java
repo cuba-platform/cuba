@@ -918,7 +918,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         AppUI ui = AppUI.getCurrent();
         if (ui != null
-                && ui.isTestMode()
+                && ui.isPerformanceTestMode()
                 && StringUtils.isEmpty(debugId)) {
             getComponent().setId(ui.getTestIdManager().getTestId("window_" + id));
         }
@@ -1916,7 +1916,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
             if (debugId != null) {
                 AppUI ui = AppUI.getCurrent();
-                if (ui.isTestMode()) {
+                if (ui.isPerformanceTestMode()) {
                     TestIdManager testIdManager = ui.getTestIdManager();
                     Action selectAction = getSelectAction();
                     if (selectAction != null) {

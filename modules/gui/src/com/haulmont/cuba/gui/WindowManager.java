@@ -580,7 +580,9 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
-        if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
+        // use testMode or performanceTestMode cause initDebugIds method works for both
+        if (configuration.getConfig(GlobalConfig.class).getTestMode()
+                || configuration.getConfig(GlobalConfig.class).getPerformanceTestMode()) {
             initDebugIds(clientSpecificWindow);
         }
 

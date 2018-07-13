@@ -97,6 +97,9 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
         if (ui.isTestMode()) {
             dialog.setCubaId("optionDialog");
+        }
+
+        if (ui.isPerformanceTestMode()) {
             dialog.setId(ui.getTestIdManager().getTestId("optionDialog"));
         }
 
@@ -115,8 +118,12 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         Button reloginBtn = new Button();
         if (ui.isTestMode()) {
             reloginBtn.setCubaId("reloginBtn");
+        }
+
+        if (ui.isPerformanceTestMode()) {
             reloginBtn.setId(ui.getTestIdManager().getTestId("reloginBtn"));
         }
+
         reloginBtn.addStyleName(WebButton.ICON_STYLE);
         reloginBtn.addStyleName("c-primary-action");
         reloginBtn.addClickListener(event -> relogin());

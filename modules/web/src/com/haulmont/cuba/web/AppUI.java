@@ -105,6 +105,7 @@ public class AppUI extends CubaUI
     protected TestIdManager testIdManager = new TestIdManager();
 
     protected boolean testMode = false;
+    protected boolean performanceTestMode = false;
 
     protected CubaClientManager clientManager;
 
@@ -173,7 +174,7 @@ public class AppUI extends CubaUI
 
         try {
             this.testMode = globalConfig.getTestMode();
-
+            this.performanceTestMode = globalConfig.getPerformanceTestMode();
             // init error handlers
             setErrorHandler(this);
 
@@ -373,6 +374,10 @@ public class AppUI extends CubaUI
 
     public boolean isTestMode() {
         return testMode;
+    }
+
+    public boolean isPerformanceTestMode() {
+        return performanceTestMode;
     }
 
     @Override

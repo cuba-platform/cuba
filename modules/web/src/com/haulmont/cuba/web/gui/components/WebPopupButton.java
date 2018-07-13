@@ -285,14 +285,15 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         vButton.setSizeFull();
         vButton.setStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
 
-        AppUI ui = AppUI.getCurrent();
+        if (AppUI.getCurrent().isTestMode()) {
+            button.setId(action.getId());
+        }
 
-        if (ui.isTestMode()) {
+        if (AppUI.getCurrent().isPerformanceTestMode()) {
             String debugId = getDebugId();
             if (debugId != null) {
-                button.setDebugId(ui.getTestIdManager().getTestId(debugId + "_" + action.getId()));
+                button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
             }
-            button.setId(action.getId());
         }
         return vButton;
     }
