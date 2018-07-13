@@ -548,16 +548,22 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     protected void assignDebugId(FieldConfig fc, com.vaadin.ui.Field composition) {
         AppUI ui = AppUI.getCurrent();
-        if (ui != null) {
-            if (ui.isTestMode()) {
-                String debugId = getDebugId();
-                if (composition != null) {
-                    if (debugId != null) {
-                        TestIdManager testIdManager = ui.getTestIdManager();
-                        composition.setId(testIdManager.getTestId(debugId + "_" + fc.getId()));
-                    }
-                    composition.setCubaId(fc.getId());
-                }
+        if (ui == null) {
+            return;
+        }
+
+        String debugId = getDebugId();
+
+        if (ui.isTestMode()) {
+            if (composition != null) {
+                composition.setCubaId(fc.getId());
+            }
+        }
+
+        if (ui.isPerformanceTestMode()) {
+            if (composition != null && debugId != null) {
+                TestIdManager testIdManager = ui.getTestIdManager();
+                composition.setId(testIdManager.getTestId(debugId + "_" + fc.getId()));
             }
         }
     }

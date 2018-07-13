@@ -211,7 +211,6 @@ public class ExceptionDialog extends CubaWindow {
         setResizable(false);
 
         if (ui.isTestMode()) {
-            setId(ui.getTestIdManager().getTestId("exceptionDialog"));
             setCubaId("exceptionDialog");
 
             closeButton.setCubaId("closeButton");
@@ -221,6 +220,10 @@ public class ExceptionDialog extends CubaWindow {
             showStackTraceButton.setCubaId("showStackTraceButton");
             stackTraceTextArea.setCubaId("stackTraceTextArea");
             logoutButton.setCubaId("logoutButton");
+        }
+
+        if (ui.isPerformanceTestMode()) {
+            setId(ui.getTestIdManager().getTestId("exceptionDialog"));
         }
     }
 

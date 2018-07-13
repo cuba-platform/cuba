@@ -105,14 +105,21 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     public void assignAutoDebugId() {
         AppUI ui = AppUI.getCurrent();
-        if (ui != null && ui.isTestMode()) {
-            String alternativeDebugId = getAlternativeDebugId();
+        if (ui == null) {
+            return;
+        }
+
+        String alternativeDebugId = getAlternativeDebugId();
+
+        if (ui.isTestMode()) {
 
             // always change cuba id, do not assign auto id for components
             if (getId() == null && component != null) {
                 component.setCubaId(alternativeDebugId);
             }
+        }
 
+        if (ui.isPerformanceTestMode()) {
             if (frame == null || StringUtils.isEmpty(frame.getId()))
                 return;
 
