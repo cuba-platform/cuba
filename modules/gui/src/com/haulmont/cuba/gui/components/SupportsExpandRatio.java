@@ -3,7 +3,7 @@ package com.haulmont.cuba.gui.components;
 /**
  * Component container which supports expand ratio of components
  */
-public interface RatioLayout {
+public interface SupportsExpandRatio {
 
     /**
      * Sets expand ratio for the component. The ratio must be greater than or equal to 0.
