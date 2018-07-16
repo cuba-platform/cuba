@@ -34,9 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 
 public class WindowDelegate {
+
+    private static final Logger log = LoggerFactory.getLogger(WindowDelegate.class);
 
     public static final String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
     public static final String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
@@ -48,8 +52,6 @@ public class WindowDelegate {
     protected Settings settings;
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-
-    private final Logger log = LoggerFactory.getLogger(WindowDelegate.class);
 
     public WindowDelegate(Window window) {
         this.window = window;
