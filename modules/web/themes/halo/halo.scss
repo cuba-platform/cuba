@@ -101,6 +101,7 @@
 @import "app/report-parameters";
 @import "app/report-templates";
 @import "app/localized-frame";
+@import "app/entity-inspector-browse";
 
 @mixin halo {
   @include valo;
@@ -189,4 +190,5 @@
   @include cuba-report-parameters;
   @include cuba-report-templates;
   @include cuba-localized-frame;
+  @include cuba-entity-inspector-browse;
 }
