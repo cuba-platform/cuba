@@ -104,6 +104,7 @@
 @import "app/report-templates";
 @import "app/diff-viewer";
 @import "app/localized-frame";
+@import "app/entity-inspector-browse";
 
 @mixin havana {
   @include base;
@@ -190,4 +191,5 @@
   @include cuba-report-templates;
   @include cuba-diff-viewer;
   @include cuba-localized-frame;
+  @include cuba-entity-inspector-browse;
 }
