@@ -30,11 +30,15 @@ import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.UUID;
 
 public class SystemInfoWindow extends AbstractWindow {
 
     public interface Companion {
         void initInfoTable(Table infoTable);
+
+        void addCopyAction(Button copyButton, String successfulMessage, String failedMessage,
+                           String cubaCopyLogContentClass);
     }
 
     @Inject
@@ -70,6 +74,9 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    private Button copy;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -77,15 +84,20 @@ public class SystemInfoWindow extends AbstractWindow {
         paramsDs.setInstance(item);
         paramsDs.setInstanceMetaClass((MetaClass) params.get("metaClass"));
 
+        String cubaLogContentClass = "c-system-info-log-content";
+        String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
+        scriptArea.setStyleName(cubaLogContentClass);
+        scriptArea.addStyleName(cubaCopyLogContentClass);
         paramsDs.refresh();
-
+        copy.setVisible(false);
         Companion companion = getCompanion();
         if (companion != null) {
             companion.initInfoTable(infoTable);
+            companion.addCopyAction(copy, messages.getMainMessage("exceptionDialog.copingSuccessful"),
+                    messages.getMainMessage("exceptionDialog.copingFailed"), cubaCopyLogContentClass);
         }
 
         infoTable.removeAllActions();
-
         if (!clientConfig.getSystemInfoScriptsEnabled()
                 || item == null
                 || !metadata.getTools().isPersistent(item.getMetaClass())) {
@@ -94,6 +106,7 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateInsert() {
+        copy.setVisible(true);
         scriptArea.setEditable(true);
         if (item instanceof Role) {
             View localView = metadata.getViewRepository().getView(Role.class, View.LOCAL);
@@ -115,12 +128,14 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateUpdate() {
+        copy.setVisible(true);
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateUpdateScript(item));
         showScriptArea();
     }
 
     public void generateSelect() {
+        copy.setVisible(true);
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateSelectScript(item));
         showScriptArea();

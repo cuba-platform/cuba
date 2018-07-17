@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.widgets;
 import com.haulmont.cuba.web.widgets.client.button.CubaCopyButtonExtensionServerRpc;
 import com.haulmont.cuba.web.widgets.client.button.CubaCopyButtonExtensionState;
 import com.vaadin.server.AbstractExtension;
+import com.vaadin.server.Page;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Button;
 import com.vaadin.util.ReflectTools;
 
@@ -101,5 +103,10 @@ public class CubaCopyButtonExtension extends AbstractExtension {
 
     public void removeCopyListener(CopyListener listener) {
         removeListener(CopyEvent.class, listener, COPY_METHOD);
+    }
+
+    public static boolean browserSupportCopy() {
+        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
+        return !webBrowser.isSafari() && !webBrowser.isIOS() && !webBrowser.isWindowsPhone();
     }
 }

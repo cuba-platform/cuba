@@ -35,7 +35,6 @@ import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.server.Page;
-import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.*;
@@ -169,7 +168,7 @@ public class ExceptionDialog extends CubaWindow {
         String cubaLogContentClass = "c-exception-dialog-log-content";
         String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
 
-        if (browserSupportCopy()) {
+        if (CubaCopyButtonExtension.browserSupportCopy()) {
             copyButton = new CubaButton(messages.getMainMessage("exceptionDialog.copyStackTrace"));
             copyButton.setVisible(false);
             CubaCopyButtonExtension copyExtension = CubaCopyButtonExtension.copyWith(copyButton, cubaCopyLogContentClass);
@@ -228,11 +227,6 @@ public class ExceptionDialog extends CubaWindow {
         if (ui.isPerformanceTestMode()) {
             setId(ui.getTestIdManager().getTestId("exceptionDialog"));
         }
-    }
-
-    protected boolean browserSupportCopy() {
-        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
-        return !webBrowser.isSafari() && !webBrowser.isIOS() && !webBrowser.isWindowsPhone();
     }
 
     protected String getStackTrace(Throwable throwable) {
