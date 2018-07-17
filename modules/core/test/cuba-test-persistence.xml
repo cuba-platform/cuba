@@ -91,5 +91,9 @@
         <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
 
         <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
+
+        <class>com.haulmont.cuba.testmodel.namepattern.MethodNamePatternEntity</class>
+        <class>com.haulmont.cuba.testmodel.namepattern.SimpleNamePatternEntity</class>
+        <class>com.haulmont.cuba.testmodel.namepattern.SpelNamePatternEntity</class>
     </persistence-unit>
 </persistence>
