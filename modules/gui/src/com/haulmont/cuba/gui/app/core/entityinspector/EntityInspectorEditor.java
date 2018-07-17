@@ -160,8 +160,13 @@ public class EntityInspectorEditor extends AbstractWindow {
             setParentField(item, parentProperty, parent);
         } else {
             //edit request
-            if (!isNew)
-                item = loadSingleItem(meta, item.getId(), view);
+            Object itemId = item.getId();
+            if (!isNew) {
+                item = loadSingleItem(meta, itemId, view);
+            }
+            if (item == null) {
+                throw new EntityAccessException(meta, itemId);
+            }
         }
         createEmbeddedFields(meta, item);
 
