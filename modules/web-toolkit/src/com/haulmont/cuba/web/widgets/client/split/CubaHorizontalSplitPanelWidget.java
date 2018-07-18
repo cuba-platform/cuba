@@ -24,6 +24,8 @@ import com.haulmont.cuba.web.widgets.client.placeholder.CubaPlaceHolderWidget;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
 
+import java.util.function.Consumer;
+
 public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     /**
      * Styles for widget
@@ -52,7 +54,10 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     protected SplitPanelDockMode dockMode = SplitPanelDockMode.LEFT;
 
+    protected Consumer<String> beforeDockPositionHandler = null;
+
     protected String defaultPosition = null;
+    protected String beforeDockPosition = null;
 
     private VOverlay dockButtonContainer;
     private CubaPlaceHolderWidget dockButton;
@@ -109,6 +114,9 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 newPosition = "0px";
             } else if (defaultPosition != null) {
                 newPosition = defaultPosition;
+            } else if (beforeDockPosition != null) {
+                // apply last saved position if defaultPosition is null
+                newPosition = beforeDockPosition;
             }
         } else if (dockMode == SplitPanelDockMode.RIGHT) {
             if (dockButtonState == DockButtonState.RIGHT) {
@@ -116,9 +124,14 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 newPosition = reversed ? "0px" : getAbsoluteRight() + "px";
             } else if (defaultPosition != null) {
                 newPosition = defaultPosition;
+            } else if (beforeDockPosition != null) {
+                // apply last saved position if defaultPosition is null
+                newPosition = beforeDockPosition;
             }
         }
 
+        // save last position before dock changes position
+        beforeDockPositionHandler.accept(defaultPosition);
         setSplitPosition(newPosition);
         fireEvent(new SplitterMoveHandler.SplitterMoveEvent(this));
     }
