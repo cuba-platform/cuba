@@ -39,6 +39,10 @@ public class UserSessionSubstitutedEvent extends ApplicationEvent {
         return (Connection) super.getSource();
     }
 
+    public Connection getConnection() {
+        return (Connection) super.getSource();
+    }
+
     public UserSession getSourceSession() {
         return sourceSession;
     }

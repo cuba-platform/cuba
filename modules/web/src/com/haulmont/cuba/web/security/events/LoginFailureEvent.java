@@ -43,4 +43,12 @@ public class LoginFailureEvent extends ApplicationEvent {
     public Credentials getCredentials() {
         return (Credentials) super.getSource();
     }
+
+    public LoginProvider getProvider() {
+        return provider;
+    }
+
+    public LoginException getException() {
+        return exception;
+    }
 }
