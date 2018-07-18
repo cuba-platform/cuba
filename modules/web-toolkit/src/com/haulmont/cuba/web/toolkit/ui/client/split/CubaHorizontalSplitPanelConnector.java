@@ -26,6 +26,14 @@ import com.vaadin.shared.ui.Connect;
 public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector {
 
     @Override
+    protected void init() {
+        super.init();
+
+        getWidget().beforeDockPositionHandler =
+                position -> getRpcProxy(CubaHorizontalSplitPanelServerRpc.class).setBeforeDockPosition(position);
+    }
+
+    @Override
     public CubaHorizontalSplitPanelState getState() {
         return (CubaHorizontalSplitPanelState) super.getState();
     }
@@ -47,6 +55,9 @@ public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConne
         }
         if (stateChangeEvent.hasPropertyChanged("defaultPosition")) {
             getWidget().defaultPosition = getState().defaultPosition;
+        }
+        if (stateChangeEvent.hasPropertyChanged("beforeDockPosition")) {
+            getWidget().beforeDockPosition = getState().beforeDockPosition;
         }
     }
 }

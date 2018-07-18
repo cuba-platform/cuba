@@ -17,11 +17,21 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.split.CubaHorizontalSplitPanelServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.split.CubaHorizontalSplitPanelState;
 import com.haulmont.cuba.web.toolkit.ui.client.split.SplitPanelDockMode;
 import com.vaadin.ui.HorizontalSplitPanel;
 
 public class CubaHorizontalSplitPanel extends HorizontalSplitPanel {
+
+    public CubaHorizontalSplitPanel() {
+        super();
+
+        CubaHorizontalSplitPanelServerRpc serverRpc =
+                (CubaHorizontalSplitPanelServerRpc) position -> getState().beforeDockPosition = position;
+
+        registerRpc(serverRpc);
+    }
 
     @Override
     protected CubaHorizontalSplitPanelState getState() {
