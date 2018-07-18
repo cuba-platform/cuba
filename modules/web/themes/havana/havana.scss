@@ -106,10 +106,16 @@
 @import "app/localized-frame";
 @import "app/entity-inspector-browse";
 
+// Add-ons
+@import "addons/googlemap/googlemap";
+
 @mixin havana {
   @include base;
 
   @include havana-common;
+
+  // Add-ons
+  @include addon-googlemap;
 
   @include havana-tree;
   @include havana-label;

@@ -109,6 +109,7 @@
 @import "addons/aceeditor/suggestionpopup";
 @import "addons/popupbutton/popupbutton";
 @import "addons/dragdroplayouts/dragdroplayouts";
+@import "addons/googlemap/googlemap";
 
 @mixin halo {
   @include valo;
@@ -118,6 +119,7 @@
   @include addon-aceeditor-suggestpopup;
   @include addon-popupbutton;
   @include addon-dragdroplayouts;
+  @include addon-googlemap;
 
   @include halo-common;
 
