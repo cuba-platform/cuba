@@ -42,6 +42,6 @@ public class UserSessionFinishedEvent extends ApplicationEvent {
     }
 
     public UserSession getUserSession() {
-        return (UserSession) super.getSource();
+        return session;
     }
 }
