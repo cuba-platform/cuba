@@ -96,6 +96,7 @@ public class LogArchiver {
             long lengthFile = randomAccessFile.length();
             if (lengthFile >= LOG_TAIL_FOR_PACKING_SIZE) {
                 randomAccessFile.seek(lengthFile - LOG_TAIL_FOR_PACKING_SIZE);
+                skipFirstLine(randomAccessFile);
             }
             buf = new byte[size];
             while ((len = randomAccessFile.read(buf, 0, size)) != -1) {
@@ -126,5 +127,26 @@ public class LogArchiver {
         zipEntry.setCompressedSize(zipEntry.getSize());
         zipEntry.setCrc(FileUtils.checksumCRC32(file));
         return zipEntry;
+    }
+
+    protected static void skipFirstLine(RandomAccessFile logFile) throws IOException {
+        boolean eol = false;
+        while (!eol) {
+            switch (logFile.read()) {
+                case -1:
+                case '\n':
+                    eol = true;
+                    break;
+                case '\r':
+                    eol = true;
+                    long cur = logFile.getFilePointer();
+                    if ((logFile.read()) != '\n') {
+                        logFile.seek(cur);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
