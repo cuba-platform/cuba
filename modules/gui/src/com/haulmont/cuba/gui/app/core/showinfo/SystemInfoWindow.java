@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.Role;
 
@@ -37,8 +38,8 @@ public class SystemInfoWindow extends AbstractWindow {
     public interface Companion {
         void initInfoTable(Table infoTable);
 
-        void addCopyAction(Button copyButton, String successfulMessage, String failedMessage,
-                           String cubaCopyLogContentClass);
+        void addCopyButton(BoxLayout boxLayout, String description, String successfulMessage, String failedMessage,
+                           String cubaCopyLogContentClass, ComponentsFactory componentsFactory);
     }
 
     @Inject
@@ -75,7 +76,7 @@ public class SystemInfoWindow extends AbstractWindow {
     protected Metadata metadata;
 
     @Inject
-    private Button copy;
+    private ComponentsFactory componentsFactory;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -89,12 +90,11 @@ public class SystemInfoWindow extends AbstractWindow {
         scriptArea.setStyleName(cubaLogContentClass);
         scriptArea.addStyleName(cubaCopyLogContentClass);
         paramsDs.refresh();
-        copy.setVisible(false);
         Companion companion = getCompanion();
         if (companion != null) {
             companion.initInfoTable(infoTable);
-            companion.addCopyAction(copy, messages.getMainMessage("exceptionDialog.copingSuccessful"),
-                    messages.getMainMessage("exceptionDialog.copingFailed"), cubaCopyLogContentClass);
+            companion.addCopyButton(buttonsHbox, messages.getMainMessage("caption.copy"), messages.getMainMessage("exceptionDialog.copingSuccessful"),
+                    messages.getMainMessage("exceptionDialog.copingFailed"), cubaCopyLogContentClass, componentsFactory);
         }
 
         infoTable.removeAllActions();
@@ -106,7 +106,7 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateInsert() {
-        copy.setVisible(true);
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         if (item instanceof Role) {
             View localView = metadata.getViewRepository().getView(Role.class, View.LOCAL);
@@ -128,17 +128,24 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateUpdate() {
-        copy.setVisible(true);
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateUpdateScript(item));
         showScriptArea();
     }
 
     public void generateSelect() {
-        copy.setVisible(true);
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateSelectScript(item));
         showScriptArea();
+    }
+
+    private void setCopyButtonVisible() {
+        Component copyBtn = buttonsHbox.getComponent("copy");
+        if (copyBtn != null) {
+            copyBtn.setVisible(true);
+        }
     }
 
     protected void showScriptArea() {
