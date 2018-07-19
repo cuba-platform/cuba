@@ -76,7 +76,7 @@ public class SystemInfoWindow extends AbstractWindow {
     protected Metadata metadata;
 
     @Inject
-    private ComponentsFactory componentsFactory;
+    protected ComponentsFactory componentsFactory;
 
     @Override
     public void init(Map<String, Object> params) {
