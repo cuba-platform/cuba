@@ -903,6 +903,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                             }
                         }));
 
+        component.addShortcutListener(
+                new ShortcutListenerDelegate("tableSelectAll", KeyCode.A,
+                        new int[] { com.vaadin.event.ShortcutAction.ModifierKey.CTRL })
+                        .withHandler((sender, target) -> {
+                            if (target == this.component) {
+                                selectAll();
+                            }
+                        }));
+
         component.addItemClickListener(event -> {
             if (event.isDoubleClick() && event.getItem() != null) {
                 handleClickAction();
