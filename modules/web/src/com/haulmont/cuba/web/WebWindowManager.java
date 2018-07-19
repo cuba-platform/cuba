@@ -1569,8 +1569,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void initDebugIds(final Frame frame) {
-        // use testMode or performanceTestMode cause assignAutoDebugId method works for both
-        if (ui.isTestMode() || ui.isPerformanceTestMode()) {
+        if (ui.isPerformanceTestMode()) {
             ComponentsHelper.walkComponents(frame, (component, name) -> {
                 if (component.getDebugId() == null) {
                     Frame componentFrame = null;
