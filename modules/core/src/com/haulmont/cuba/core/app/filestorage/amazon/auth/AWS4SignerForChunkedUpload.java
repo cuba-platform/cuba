@@ -214,7 +214,7 @@ public class AWS4SignerForChunkedUpload extends AWS4SignerBase {
             dataToChunk = FINAL_CHUNK;
         } else {
             if (userDataLen < userData.length) {
-                // shrink the chunkdata to fit
+                // shrink the chunk data to fit
                 dataToChunk = new byte[userDataLen];
                 System.arraycopy(userData, 0, dataToChunk, 0, userDataLen);
             } else {

@@ -85,7 +85,7 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
      *
      * @param className actual exception class name
      * @param message   exception message
-     * @param throwable exception instance. Can be null if the exception occured on the server side and this
+     * @param throwable exception instance. Can be null if the exception occurred on the server side and this
      *                  exception class isn't accessible by the client.
      * @param windowManager WindowManager instance
      */

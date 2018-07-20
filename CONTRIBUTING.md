@@ -117,9 +117,9 @@ Start the following command to run static code analysis:
 1. Use default IntelliJ Idea code formatting options. You can reformat your code (reformat changed code only!) using Ctrl+Alt+L shortcut.
 1. Maximum line length - 120 symbols.
 1. Recommended method length - up to 50 lines.
-1. All public interfaces, classes and their public methods must have JavaDoc statement (excluding entities and simple gettters/settters).
+1. All public interfaces, classes and their public methods must have JavaDoc statement (excluding entities and simple getters/setters).
 1. All overridden methods should have @Override annotation.
-1. SQL reseved words - lowercase.
+1. SQL reserved words - lowercase.
 1. SQL identifiers (table names, column names, etc) - UPPERCASE_WITH_UNDERSCORES.
 1. If you change data model - you have to provide SQL create / update scripts for all supported databases: HSQL, PostgreSQL, MySQL, MS SQL, Oracle.
 1. SQL Update scripts must be named as <yymmdd>-yourScriptName.sql: 170719-addedAuditTable.sql

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * Component having a buttons pancel.
+ * Component having a buttons panel.
  */
 public interface HasButtonsPanel {
     ButtonsPanel getButtonsPanel();

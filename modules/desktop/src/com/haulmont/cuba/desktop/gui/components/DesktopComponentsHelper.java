@@ -422,7 +422,7 @@ public class DesktopComponentsHelper {
                     if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
                         final JTabbedPane tabbedPane = (JTabbedPane) c;
 
-                        // do not focus tabbed pane on programmaticaly selection change
+                        // do not focus tabbed pane on programmatically selection change
                         JTabbedPaneExt.setFocusOnSelectionChange(false);
                         tabbedPane.setSelectedComponent(prevC);
                         break;

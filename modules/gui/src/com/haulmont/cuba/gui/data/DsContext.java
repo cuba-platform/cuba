@@ -169,9 +169,10 @@ public interface DsContext {
         void beforeCommit(CommitContext context);
 
         /**
-         * Called after a succesfull commit to the middleware.
-         * @param context   commit context
-         * @param result    set of committed entities returning from the middleware service
+         * Called after a successful commit to the middleware.
+         *
+         * @param context commit context
+         * @param result  set of committed entities returning from the middleware service
          */
         void afterCommit(CommitContext context, Set<Entity> result);
     }
@@ -210,9 +211,10 @@ public interface DsContext {
     interface AfterCommitListener {
 
         /**
-         * Called after a succesfull commit to the middleware.
-         * @param context   commit context
-         * @param result    set of committed entities returning from the middleware service
+         * Called after a successful commit to the middleware.
+         *
+         * @param context commit context
+         * @param result  set of committed entities returning from the middleware service
          */
         void afterCommit(CommitContext context, Set<Entity> result);
     }

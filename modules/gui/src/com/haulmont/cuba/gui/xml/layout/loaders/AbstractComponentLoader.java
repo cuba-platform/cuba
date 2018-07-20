@@ -785,7 +785,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             loader.setFactory(factory);
             loader.setElement(element);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instantiate error: " + e, context.getFullFrameId());
+            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
         }
 
         return loader;

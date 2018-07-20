@@ -224,7 +224,7 @@ public abstract class Properties extends JavaScriptObject {
    * null is "object".
    *
    * @param key The name of the property to type check.
-   * @return The JavaScript type of the property, as defined by the JavaScipt
+   * @return The JavaScript type of the property, as defined by the JavaScript
    * typeof operator.
    */
   public final native String typeofValue(String key) /*-{

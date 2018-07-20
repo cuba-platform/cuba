@@ -613,7 +613,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 final TableCellElement td = tdElement.cast();
                 initCellWithText(text, ALIGN_LEFT, "", false, true, null, td);
 
-                // Enchance DOM for table cell
+                // Enhance DOM for table cell
                 Element container = (Element) td.getChild(0);
                 String containerInnerHTML = container.getInnerHTML();
 

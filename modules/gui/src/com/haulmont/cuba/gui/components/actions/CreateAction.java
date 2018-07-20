@@ -204,9 +204,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         }
 
         final CollectionDatasource datasource = target.getDatasource();
-        final DataSupplier dataservice = datasource.getDataSupplier();
+        final DataSupplier dataService = datasource.getDataSupplier();
 
-        final Entity item = dataservice.newInstance(datasource.getMetaClass());
+        final Entity item = dataService.newInstance(datasource.getMetaClass());
 
         if (target instanceof Tree) {
             String hierarchyProperty = ((Tree) target).getHierarchyProperty();
@@ -452,7 +452,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     }
 
     /**
-     * @param afterCommitHandler handler that is invoked after the editor was commited and closed
+     * @param afterCommitHandler handler that is invoked after the editor was committed and closed
      */
     public void setAfterCommitHandler(AfterCommitHandler afterCommitHandler) {
         this.afterCommitHandler = afterCommitHandler;

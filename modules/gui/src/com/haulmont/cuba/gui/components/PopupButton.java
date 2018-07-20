@@ -64,13 +64,13 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
     SizeUnit getMenuWidthSizeUnit();
 
     /**
-     * @return whether to close menu automatically after action triggerring or not
+     * @return whether to close menu automatically after action triggering or not
      */
     boolean isAutoClose();
     /**
      * Set menu automatic close after option click.
      *
-     * @param autoClose whether to close menu automatically after action triggerring or not
+     * @param autoClose whether to close menu automatically after action triggering or not
      */
     void setAutoClose(boolean autoClose);
 
@@ -112,7 +112,7 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
     /**
      * If set to true, clicking on outside the popup closes it. Note that this doesn't affect clicking on the button itself.
      *
-     * @param closePopupOnOutsideClick whether to close popup on ouside click
+     * @param closePopupOnOutsideClick whether to close popup on outside click
      */
     void setClosePopupOnOutsideClick(boolean closePopupOnOutsideClick);
 

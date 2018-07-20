@@ -96,7 +96,7 @@
 
     <!-- Begin Perf4J  -->
 
-    <!-- To enable performace statistics uncomment the appenders below,
+    <!-- To enable performance statistics uncomment the appenders below,
         set loggers level to INFO and uncomment their appender-ref elements -->
 
     <!--

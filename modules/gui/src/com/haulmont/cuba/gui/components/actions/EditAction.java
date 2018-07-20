@@ -385,7 +385,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     }
 
     /**
-     * @param afterCommitHandler handler that is invoked after the editor was commited and closed
+     * @param afterCommitHandler handler that is invoked after the editor was committed and closed
      */
     public void setAfterCommitHandler(AfterCommitHandler afterCommitHandler) {
         this.afterCommitHandler = afterCommitHandler;

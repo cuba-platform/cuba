@@ -59,13 +59,13 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
         assertNull(component.getValue());
 
-        boolean throwed = false;
+        boolean thrown = false;
         try {
             component.setValue("One");
         } catch (IllegalStateException e) {
-            throwed = true;
+            thrown = true;
         }
-        assertTrue(throwed);
+        assertTrue(thrown);
 
         assertNull(component.getValue());
 

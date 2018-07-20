@@ -120,15 +120,15 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot
 
         boolean clearCaptionRight = false;
 
-        boolean captionAboveCompnent;
+        boolean captionAboveComponent;
         if (caption == null) {
-            captionAboveCompnent = false;
+            captionAboveComponent = false;
             style.clearPaddingLeft();
 
             clearCaptionRight = true;
         } else {
-            captionAboveCompnent = !caption.shouldBePlacedAfterComponent();
-            if (!captionAboveCompnent) {
+            captionAboveComponent = !caption.shouldBePlacedAfterComponent();
+            if (!captionAboveComponent) {
                 availableWidth -= captionWidth;
                 if (availableWidth < 0) {
                     availableWidth = 0;
@@ -197,19 +197,19 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot
             }
             if (alignment.isHorizontalCenter()) {
                 currentLocation += (allocatedSpace - usedWidth) / 2d;
-                if (captionAboveCompnent) {
+                if (captionAboveComponent) {
                     captionStyle.setLeft(
                             Math.round(usedWidth - captionWidth) / 2, Style.Unit.PX);
                 }
             } else {
                 currentLocation += (allocatedSpace - usedWidth);
-                if (captionAboveCompnent) {
+                if (captionAboveComponent) {
                     captionStyle.setLeft(Math.round(usedWidth - captionWidth),
                             Style.Unit.PX);
                 }
             }
         } else {
-            if (captionAboveCompnent) {
+            if (captionAboveComponent) {
                 captionStyle.setLeft(0, Style.Unit.PX);
             }
         }

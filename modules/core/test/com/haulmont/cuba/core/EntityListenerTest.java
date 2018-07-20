@@ -153,7 +153,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void testDetachAttch() throws Exception {
+    public void testDetachAttach() throws Exception {
         UUID id;
         Transaction tx = cont.persistence().createTransaction();
         try {

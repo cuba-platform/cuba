@@ -29,6 +29,6 @@ public class IllegalComponentStateExceptionHandler extends AbstractExceptionHand
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         // Just swallow this exception because it usually occurs when user clicks on Language drop-down list
-        // while the app is logging in and UI is freezed for some time.
+        // while the app is logging in and UI is frozen for some time.
     }
 }

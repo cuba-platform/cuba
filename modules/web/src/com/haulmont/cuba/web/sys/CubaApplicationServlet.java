@@ -176,7 +176,7 @@ public class CubaApplicationServlet extends VaadinServlet {
                 try {
                     request.getSession().invalidate();
                 } catch (Exception e) {
-                    // Vaadin listens to invalidate of web session and can throw exceptions during invalildate() call
+                    // Vaadin listens to invalidate of web session and can throw exceptions during invalidate() call
                     log.debug("Exception during session invalidation", e);
                 } finally {
                     // always send redirect to client

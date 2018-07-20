@@ -30,7 +30,7 @@ public interface DetailsOpenCloseServerRpc extends ServerRpc {
      *
      * @param rowIndex the rowIndex of the row, this is the rowIndex of an IndexedContainer,
      *                 this is NOT the rowId (= id in the container) or the
-     *                 rowKey (= internal key in clienside grid implementation)
+     *                 rowKey (= internal key in client side grid implementation)
      * @param visible set the details to visible (= true) or hidden (= false)
      */
     void setDetailsVisible(int rowIndex, boolean visible);

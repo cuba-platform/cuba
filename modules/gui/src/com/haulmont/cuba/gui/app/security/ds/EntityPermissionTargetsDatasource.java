@@ -104,10 +104,10 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
         for (Permission p : permissionDs.getItems()) {
             String permissionTargetString = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTargetString)) {
-                int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimeterIndex >= 0) {
-                    String variant = permissionTargetString.substring(delimeterIndex + 1);
-                    String permissionTarget = permissionTargetString.substring(0, delimeterIndex);
+                int delimiterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
+                if (delimiterIndex >= 0) {
+                    String variant = permissionTargetString.substring(delimiterIndex + 1);
+                    String permissionTarget = permissionTargetString.substring(0, delimiterIndex);
 
                     if (Objects.equals(permissionTarget, target.getPermissionValue())) {
                         PermissionVariant permissionVariant = getPermissionVariant(p);

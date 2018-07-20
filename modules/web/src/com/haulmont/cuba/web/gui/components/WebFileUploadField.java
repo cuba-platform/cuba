@@ -143,9 +143,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                 try {
                     fileUploading.putFileIntoStorage(fileId, fileDescriptor);
 
-                    FileDescriptor commitedDescriptor = commitFileDescriptor(fileDescriptor);
+                    FileDescriptor committedDescriptor = commitFileDescriptor(fileDescriptor);
 
-                    setValue(commitedDescriptor);
+                    setValue(committedDescriptor);
                 } catch (FileStorageException e) {
                     log.error("Error has occurred during file saving", e);
                 }

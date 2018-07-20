@@ -402,7 +402,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
                 return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
             } catch (Exception e) {
-                LoggerFactory.getLogger(WebAbstractTree.class).error("Uncautch exception in Tree StyleProvider", e);
+                LoggerFactory.getLogger(WebAbstractTree.class).error("Uncaught exception in Tree StyleProvider", e);
                 this.exceptionHandled = true;
                 return null;
             }

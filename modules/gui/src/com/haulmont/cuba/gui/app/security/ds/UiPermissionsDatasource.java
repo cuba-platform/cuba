@@ -50,10 +50,10 @@ public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTar
         for (Permission p : permissionDs.getItems()) {
             String permissionTarget = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTarget)) {
-                int delimeterIndex = permissionTarget.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimeterIndex >= 0) {
-                    String component = permissionTarget.substring(delimeterIndex + 1);
-                    String screen = permissionTarget.substring(0, delimeterIndex);
+                int delimiterIndex = permissionTarget.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
+                if (delimiterIndex >= 0) {
+                    String component = permissionTarget.substring(delimiterIndex + 1);
+                    String screen = permissionTarget.substring(0, delimiterIndex);
                     UiPermissionVariant permissionVariant = getPermissionVariant(p);
                     String permissionValue = screen + Permission.TARGET_PATH_DELIMETER + component;
                     UiPermissionTarget target = new UiPermissionTarget("ui:" + permissionValue,

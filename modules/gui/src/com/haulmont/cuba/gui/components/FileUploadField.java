@@ -34,7 +34,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
          */
         MANUAL,
         /**
-         * FileDescriptor will be placed into FileStorage and commited to database right after upload.
+         * FileDescriptor will be placed into FileStorage and committed to database right after upload.
          */
         IMMEDIATE
     }
@@ -282,7 +282,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     void setMode(FileStoragePutMode mode);
     /**
-     * @return mode which determines when {@link FileDescriptor} will be commited.
+     * @return mode which determines when {@link FileDescriptor} will be committed.
      */
     FileStoragePutMode getMode();
 
