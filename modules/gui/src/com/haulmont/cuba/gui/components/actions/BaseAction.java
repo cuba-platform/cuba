@@ -230,7 +230,7 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     }
 
     /**
-     * Set caption usin fluent API method.
+     * Set caption using fluent API method.
      *
      * @param caption caption
      * @return current instance of action

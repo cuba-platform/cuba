@@ -33,7 +33,6 @@ import java.util.List;
  * {@link #doHandle(Thread, String, String, Throwable)} method
  * and register the new handler in the definition of {@link ExceptionHandlersConfiguration} bean in the client's
  * spring.xml.
- *
  */
 public abstract class AbstractExceptionHandler implements ExceptionHandler {
 
@@ -73,7 +72,7 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
      *
      * @param className exception class name
      * @param message   exception message
-     * @param throwable exception instance. Can be null if the exception occured on the server side and this
+     * @param throwable exception instance. Can be null if the exception occurred on the server side and this
      *                  exception class isn't accessible by the client.
      * @return true if the exception can be handled by this handler
      */
@@ -87,7 +86,7 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
      * @param thread    current thread
      * @param className actual exception class name
      * @param message   exception message
-     * @param throwable exception instance. Can be null if the exception occured on the server side and this
+     * @param throwable exception instance. Can be null if the exception occurred on the server side and this
      * exception class isn't accessible by the client.
      */
     protected abstract void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable);

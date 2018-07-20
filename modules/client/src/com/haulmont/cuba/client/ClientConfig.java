@@ -122,7 +122,7 @@ public interface ClientConfig extends Config {
     /**
      * @return If true, then check filter conditions (empty or not) before applying filter. If all conditions are empty
      * (no parameters entered), the filter doesn't apply and special message to user is shown.<br>
-     * If false, no checks are performed and the filter applyes, refreshing connected table.
+     * If false, no checks are performed and the filter applies, refreshing connected table.
      */
     @Property("cuba.gui.genericFilterChecking")
     @Source(type = SourceType.DATABASE)

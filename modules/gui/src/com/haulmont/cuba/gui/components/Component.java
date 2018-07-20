@@ -889,7 +889,7 @@ public interface Component {
     }
 
     /**
-     * Component having a buttons pancel.
+     * Component having a buttons panel.
      */
     interface HasButtonsPanel {
         ButtonsPanel getButtonsPanel();

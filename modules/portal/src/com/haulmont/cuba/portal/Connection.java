@@ -40,7 +40,7 @@ public interface Connection extends Serializable {
      * @param ipAddress  IP address
      * @param clientInfo Client info
      * @throws com.haulmont.cuba.security.global.LoginException
-     *          in case of unsuccesful login due to wrong credentials or other issues
+     *          in case of unsuccessful login due to wrong credentials or other issues
      */
     void login(String login, String password, Locale locale,
                @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException;
@@ -52,7 +52,7 @@ public interface Connection extends Serializable {
      * @param ipAddress  IP address
      * @param clientInfo Client info
      * @throws com.haulmont.cuba.security.global.LoginException
-     *          in case of unsuccesful login due to wrong credentials or other issues
+     *          in case of unsuccessful login due to wrong credentials or other issues
      */
     void login(Locale locale, @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException;
 
@@ -82,7 +82,7 @@ public interface Connection extends Serializable {
      *
      * @param session new UserSession object
      * @throws com.haulmont.cuba.security.global.LoginException
-     *          in case of unsuccesful update
+     *          in case of unsuccessful update
      */
     void update(PortalSession session) throws LoginException;
 

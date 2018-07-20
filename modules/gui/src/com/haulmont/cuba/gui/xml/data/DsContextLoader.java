@@ -309,7 +309,7 @@ public class DsContextLoader {
     private void initPropertyDatasourceAttributes(Element element, Datasource ds, String property) {
         String id = getDatasourceId(element);
         MetaClass metaClass = ds.getMetaClass();
-        metaClass.getPropertyNN(property); // check property existense
+        metaClass.getPropertyNN(property); // check property existence
 
         builder.reset()
                 .setMetaClass(metaClass)

@@ -241,8 +241,8 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         }
 
         @Override
-        public String applySuggestion(Suggestion sugg, String text, int cursor) {
-            String suggestionText = sugg.getSuggestionText();
+        public String applySuggestion(Suggestion suggestion, String text, int cursor) {
+            String suggestionText = suggestion.getSuggestionText();
             return StringUtils.substring(text, 0, cursor) + suggestionText + StringUtils.substring(text, cursor);
         }
     }

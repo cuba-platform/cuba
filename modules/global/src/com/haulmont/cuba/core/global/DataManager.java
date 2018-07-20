@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.entity.KeyValueEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Central interface to provide CRUD functionality. Can be used on both middle and client tiers.

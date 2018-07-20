@@ -28,7 +28,7 @@ import com.vaadin.shared.ui.Connect;
 @Connect(CubaTimer.class)
 public class CubaTimerConnector extends AbstractExtensionConnector {
 
-    protected static int DEFFERED_DELAY_MS = 1000;
+    protected static int DEFERRED_DELAY_MS = 1000;
 
     protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
 
@@ -75,7 +75,7 @@ public class CubaTimerConnector extends AbstractExtensionConnector {
                         rpc.onTimer();
                     }
                 } else {
-                    jsTimer.schedule(DEFFERED_DELAY_MS);
+                    jsTimer.schedule(DEFERRED_DELAY_MS);
                 }
             } else {
                 requestCompleted();

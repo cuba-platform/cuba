@@ -47,7 +47,7 @@ public interface SchedulingMBean {
     @ManagedOperation(description = "Starts the processing once, regardless of 'active' attribute")
     String processScheduledTasks();
 
-    @ManagedOperation(description = "Removes executions occured earlier than 'age' for tasks with period lesser than 'maxPeriod'")
+    @ManagedOperation(description = "Removes executions occurred earlier than 'age' for tasks with period lesser than 'maxPeriod'")
     @ManagedOperationParameters({
             @ManagedOperationParameter(name = "age", description = "Execution age in hours"),
             @ManagedOperationParameter(name = "maxPeriod", description = "Max task period in hours")})

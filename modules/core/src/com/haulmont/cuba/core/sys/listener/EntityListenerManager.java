@@ -121,7 +121,7 @@ public class EntityListenerManager {
     protected ThreadLocal<List<ListenerExecution>> threadLocalExecutions = new ThreadLocal<>();
 
     /**
-     * Register an entity listener by its class. The listener instance will be instatiated as a plain object.
+     * Register an entity listener by its class. The listener instance will be instantiated as a plain object.
      *
      * @param entityClass   entity
      * @param listenerClass listener class

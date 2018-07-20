@@ -341,7 +341,7 @@ public class Param {
             case DATATYPE:
             case UNARY:
                 Datatype datatype = Datatypes.getNN(javaClass);
-                //hardcode for compatibility with old datatypes
+                // hard code for compatibility with old datatypes
                 if (datatype.getJavaClass().equals(Date.class)) {
                     try {
                         value = datatype.parse(text);

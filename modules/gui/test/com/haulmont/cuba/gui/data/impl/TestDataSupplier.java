@@ -91,7 +91,7 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
-    public <E extends Entity> E reload(E entity, View view, MetaClass metaClass, boolean loadDynamicEttributes) {
+    public <E extends Entity> E reload(E entity, View view, MetaClass metaClass, boolean loadDynamicAttributes) {
         return null;
     }
 
