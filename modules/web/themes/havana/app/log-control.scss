@@ -23,6 +23,10 @@
   }
 
   .v-label {
+    span.c-log-lowered-attention {
+      opacity: .3;
+    }
+
     span.c-log-level {
       font-weight: bold;
     }
