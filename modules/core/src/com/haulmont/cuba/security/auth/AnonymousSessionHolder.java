@@ -56,6 +56,12 @@ public class AnonymousSessionHolder implements AppContext.Listener, Ordered {
     }
 
     public UserSession getAnonymousSession() {
+        if (session == null) {
+            throw new IllegalStateException(
+                    "Anonymous session is not initialized. Check the application log for the original cause."
+            );
+        }
+
         return session;
     }
 
@@ -67,7 +73,8 @@ public class AnonymousSessionHolder implements AppContext.Listener, Ordered {
 
             log.debug("Anonymous session initialized with id {}", session.getId());
         } catch (LoginException e) {
-            log.error("Unable to login anonymous session", e);
+            // Server should not start in this case
+            throw new RuntimeException("Unable to create anonymous session. It is required for system to start", e);
         }
     }
 
