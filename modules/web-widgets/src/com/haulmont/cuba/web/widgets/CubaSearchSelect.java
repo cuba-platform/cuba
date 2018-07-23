@@ -17,18 +17,16 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.searchselect.CubaSearchSelectState;
-import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 
-import java.util.List;
 import java.util.Map;
 
-public class CubaSearchSelect extends CubaComboBox {
+public class CubaSearchSelect<V> extends CComboBox<V> {
 
     protected FilterHandler filterHandler = null;
     protected boolean repaintOptions = false;
 
     public CubaSearchSelect() {
-        super.setFilteringMode(FilteringMode.OFF);
+//        super.setFilteringMode(FilteringMode.OFF);
 
         setStyleName("c-searchselect");
     }
@@ -49,7 +47,8 @@ public class CubaSearchSelect extends CubaComboBox {
         super.changeVariables(source, variables);
     }
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     protected void requestRepaintOptions(String caseSensitiveFilter) {
         if (!repaintOptions && currentPage < 0) {
             String aPrevFilter = this.prevfilterstring;
@@ -64,25 +63,20 @@ public class CubaSearchSelect extends CubaComboBox {
             this.prevfilterstring = aPrevFilter;
             this.filterstring = aFilter;
         }
-    }
+    }*/
+
+    /*@Override
+    public void setFilteringMode(FilteringMode filteringMode) {
+        // ignore filter mode change
+    }*/
 
     @Override
-    protected List<?> sanitizeList(List<?> options, boolean needNullSelectOption) {
-        // not needed to show null value in list
-        return super.sanitizeList(options, false);
-    }
-
-    @Override
-    protected boolean isNullOptionVisible(boolean needNullSelectOption, boolean nullFilteredOut) {
+    public boolean isTextInputAllowed() {
         return false;
     }
 
-    @Override
-    public void setFilteringMode(FilteringMode filteringMode) {
-        // ignore filter mode change
-    }
-
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     public boolean isNewItemsAllowed() {
         return false;
     }
@@ -92,7 +86,7 @@ public class CubaSearchSelect extends CubaComboBox {
         if (allowNewOptions) {
             throw new UnsupportedOperationException();
         }
-    }
+    }*/
 
     public FilterHandler getFilterHandler() {
         return filterHandler;

@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -134,6 +135,14 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         }
 
         return BindingState.INACTIVE;
+    }
+
+    public boolean isModified() {
+        return datasource.isModified();
+    }
+
+    public void setModified(boolean modified) {
+        ((DatasourceImplementation) datasource).setModified(modified);
     }
 
     @SuppressWarnings("unchecked")

@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.widgets.client.suggestionfield;
 import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.v7.client.ui.AbstractFieldConnector;
+import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.shared.ui.Connect;
 import elemental.json.JsonArray;
 

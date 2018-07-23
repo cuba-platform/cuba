@@ -160,7 +160,7 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
      *
      * @param suggestions suggestions to show
      */
-    void showSuggestions(List<?> suggestions);
+    void showSuggestions(List<V> suggestions);
 
     /**
      * Sets the given {@code width} to the component popup.
@@ -186,11 +186,11 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
     /**
      * Represent value and its string representation.
      */
-    class OptionWrapper {
+    class OptionWrapper<V> {
         protected String caption;
-        protected Object value;
+        protected V value;
 
-        public OptionWrapper(String caption, Object value) {
+        public OptionWrapper(String caption, V value) {
             Preconditions.checkNotNullArgument(caption);
             Preconditions.checkNotNullArgument(value);
 
@@ -208,7 +208,7 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
         /**
          * @return value
          */
-        public Object getValue() {
+        public V getValue() {
             return value;
         }
 
@@ -224,7 +224,8 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
 
             OptionWrapper that = (OptionWrapper) o;
 
-            return caption.equals(that.caption) && value.equals(that.value);
+            return caption.equals(that.caption)
+                    && value.equals(that.value);
         }
 
         @Override

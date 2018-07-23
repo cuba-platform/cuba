@@ -33,12 +33,14 @@ import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField, V> implements SuggestionField<V> {
+public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionField<V>, V, V>
+        implements SuggestionField<V>, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(WebSuggestionField.class);
 
@@ -46,6 +48,7 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
     protected UserSession userSession = AppBeans.get(UserSession.class);
     protected BackgroundTaskHandler<List<?>> handler;
 
+    // TODO: gg, generic?
     protected SearchExecutor<?> searchExecutor;
 
     protected EnterActionHandler enterActionHandler;
@@ -60,8 +63,21 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
     protected OptionsStyleProvider optionsStyleProvider;
 
     public WebSuggestionField() {
-        component = new CubaSuggestionField();
+        component = createComponent();
 
+        attachValueChangeListener(component);
+    }
+
+    protected CubaSuggestionField<V> createComponent() {
+        return new CubaSuggestionField<>();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaSuggestionField<V> component) {
         component.setTextViewConverter(this::convertToTextView);
 
         component.setSearchExecutor(query -> {
@@ -70,11 +86,9 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
         });
 
         component.setCancelSearchHandler(this::cancelSearch);
-
-        attachListener(component);
     }
 
-    protected String convertToTextView(Object value) {
+    protected String convertToTextView(V value) {
         if (value == null) {
             return StringUtils.EMPTY;
         }
@@ -186,8 +200,8 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
             @Override
             public void done(List<?> result) {
                 log.debug("Search results for '{}'", query);
-
-                handleSearchResult(result);
+                // TODO: gg, to do to do do do
+                handleSearchResult((List<V>) result);
             }
 
             @Override
@@ -222,7 +236,7 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
         return searchResultItems;
     }
 
-    protected void handleSearchResult(List<?> results) {
+    protected void handleSearchResult(List<V> results) {
         showSuggestions(results);
     }
 
@@ -291,7 +305,7 @@ public class WebSuggestionField<V> extends WebAbstractField<CubaSuggestionField,
     }
 
     @Override
-    public void showSuggestions(List<?> suggestions) {
+    public void showSuggestions(List<V> suggestions) {
         component.showSuggestions(suggestions);
     }
 

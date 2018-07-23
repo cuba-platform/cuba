@@ -23,10 +23,10 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
-import com.vaadin.v7.client.ui.VFilterSelect;
+import com.vaadin.client.ui.VComboBox;
 import com.vaadin.client.ui.menubar.MenuItem;
 
-public class CubaSearchSelectWidget extends VFilterSelect {
+public class CubaSearchSelectWidget extends VComboBox {
 
     protected static final String CLASSNAME = "c-searchselect";
 
@@ -39,7 +39,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
     protected int tabIndex = 0;
 
     public CubaSearchSelectWidget() {
-        this.filterOptionsOnPaste = false;
+//        this.filterOptionsOnPaste = false;
     }
 
     @Override
@@ -52,21 +52,24 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             page = -1;
         }
 
-        waitingForFilteringResponse = true;
+        // VAADIN8: gg, implement
+        /*waitingForFilteringResponse = true;
         client.updateVariable(paintableId, "filter", filter, false);
         client.updateVariable(paintableId, "page", page, immediate);
-        afterUpdateClientVariables();
+        afterUpdateClientVariables();*/
 
         lastFilter = filter;
         currentPage = page;
     }
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     protected boolean isShowNullItem() {
         return false;
-    }
+    }*/
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     public void applyNewSuggestions() {
         if (totalMatches == 1 || currentSuggestions.size() == 1) {
             onSuggestionSelected(currentSuggestions.get(0));
@@ -101,7 +104,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
         keyboardNavigation = false;
 
         updateEditState();
-    }
+    }*/
 
     @Override
     public void updateReadOnly() {
@@ -114,19 +117,21 @@ public class CubaSearchSelectWidget extends VFilterSelect {
         this.tabIndex = tabIndex;
     }
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     public void onSuggestionSelected(FilterSelectSuggestion suggestion) {
         super.onSuggestionSelected(suggestion);
 
         lastFilter = tb.getText();
-    }
+    }*/
 
     @Override
     public void onClick(ClickEvent event) {
         // do nothing
     }
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     protected void inputFieldKeyDown(KeyDownEvent event) {
         switch (event.getNativeKeyCode()) {
             case KeyCodes.KEY_ENTER:
@@ -138,7 +143,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 }
                 break;
         }
-    }
+    }*/
 
     protected void updateEditState() {
         if (enabled && !readonly) {
@@ -160,7 +165,8 @@ public class CubaSearchSelectWidget extends VFilterSelect {
         }
     }
 
-    @Override
+    // VAADIN8: gg, implement
+    /*@Override
     protected void popupKeyDown(KeyDownEvent event) {
         // Propagation of handled events is stopped so other handlers such as
         // shortcut key handlers do not also handle the same events.
@@ -215,7 +221,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 event.stopPropagation();
                 break;
         }
-    }
+    }*/
 
     @Override
     public void onKeyUp(KeyUpEvent event) {
@@ -243,7 +249,8 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                     // NOP
                     break;
                 case KeyCodes.KEY_ESCAPE:
-                    reset();
+                    // VAADIN8: gg, implement
+//                    reset();
                     break;
             }
 

@@ -18,9 +18,35 @@ package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.Datasource;
+
+import java.util.Map;
 
 public interface EntityOptionsSource<E extends Entity> extends OptionsSource<E> {
     MetaClass getEntityMetaClass();
 
     void setSelectedItem(E item);
+
+    /**
+     * @return true if the underlying collection contains an item with the specified ID
+     */
+    boolean containsItem(E item);
+
+    /**
+     * Update an item in the collection if it is already there.
+     */
+    void updateItem(E item);
+
+    /**
+     * Refreshes the source moving it to the {@link BindingState#ACTIVE} state
+     */
+    void refresh();
+
+    /**
+     * Refreshes the source passing specified parameters to the query.
+     * <p>These parameters may be referenced in the query text by "custom$" prefix.</p>
+     *
+     * @param parameters parameters map
+     */
+    void refresh(Map<String, Object> parameters);
 }

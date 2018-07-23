@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.searchselect;
 
-import com.vaadin.v7.shared.ui.combobox.ComboBoxState;
+import com.vaadin.shared.ui.combobox.ComboBoxState;
 
 public class CubaSearchSelectState extends ComboBoxState {
 }

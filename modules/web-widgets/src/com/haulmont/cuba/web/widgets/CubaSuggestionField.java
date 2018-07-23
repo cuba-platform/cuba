@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldC
 import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldServerRpc;
 import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldState;
 import com.vaadin.server.*;
-import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CubaSuggestionField extends AbstractField<Object> {
+public class CubaSuggestionField<T> extends AbstractField<T> {
     protected static final String SUGGESTION_ID = "id";
     protected static final String SUGGESTION_CAPTION = "caption";
     protected static final String SUGGESTION_STYLE_NAME = "styleName";
@@ -44,17 +44,18 @@ public class CubaSuggestionField extends AbstractField<Object> {
     protected Consumer<String> arrowDownActionHandler;
     protected Runnable cancelSearchHandler;
 
-    protected KeyMapper keyMapper = new KeyMapper<>();
+    protected KeyMapper<T> keyMapper = new KeyMapper<>();
 
     protected com.vaadin.event.FieldEvents.FocusAndBlurServerRpcImpl focusBlurRpc;
     protected CubaSuggestionFieldServerRpc serverRpc;
 
-    protected Function<Object, String> textViewConverter;
+    protected Function<T, String> textViewConverter;
     protected int suggestionsLimit = 10;
     protected Function<Object, String> optionsStyleProvider;
 
+    protected T internalValue;
+
     public CubaSuggestionField() {
-        setValidationVisible(false);
         serverRpc = new CubaSuggestionFieldServerRpc() {
             @Override
             public void searchSuggestions(String query) {
@@ -65,7 +66,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
             @Override
             public void selectSuggestion(String suggestionId) {
-                Object suggestion = keyMapper.get(suggestionId);
+                T suggestion = keyMapper.get(suggestionId);
                 setValue(suggestion);
 
                 updateTextPresentation(getValue());
@@ -104,13 +105,17 @@ public class CubaSuggestionField extends AbstractField<Object> {
     }
 
     @Override
-    protected void setInternalValue(Object newValue) {
-        super.setInternalValue(newValue);
-
-        updateTextPresentation(newValue);
+    protected void doSetValue(T value) {
+        this.internalValue = value;
+        updateTextPresentation(value);
     }
 
-    public void updateTextPresentation(Object value) {
+    @Override
+    public T getValue() {
+        return internalValue;
+    }
+
+    public void updateTextPresentation(T value) {
         String stringValue = textViewConverter.apply(value);
 
         if (!Objects.equals(getState(false).text, stringValue)) {
@@ -120,7 +125,8 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
     @Override
     public ErrorMessage getErrorMessage() {
-        ErrorMessage superError = super.getErrorMessage();
+        // VAADIN8: gg, implement
+        /*ErrorMessage superError = super.getErrorMessage();
         if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
@@ -128,16 +134,12 @@ public class CubaSuggestionField extends AbstractField<Object> {
                 return new CompositeErrorMessage(superError, error);
             }
         }
-        return superError;
+        return superError;*/
+        return super.getErrorMessage();
     }
 
-    public void setTextViewConverter(Function<?, String> converter) {
-        this.textViewConverter = (Function<Object, String>) converter;
-    }
-
-    @Override
-    public Class<Object> getType() {
-        return Object.class;
+    public void setTextViewConverter(Function<T, String> converter) {
+        this.textViewConverter = converter;
     }
 
     public int getAsyncSearchDelayMs() {
@@ -172,7 +174,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
         this.searchExecutor = searchExecutor;
     }
 
-    public void showSuggestions(List<?> suggestions) {
+    public void showSuggestions(List<T> suggestions) {
         final JsonArray jsonArray = Json.createArray();
         for (int i = 0; i < suggestions.size() && i < suggestionsLimit; i++) {
             jsonArray.set(i, getJsonObject(suggestions.get(i)));
@@ -194,7 +196,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
         return (CubaSuggestionFieldState) super.getState(markAsDirty);
     }
 
-    private JsonObject getJsonObject(Object suggestion) {
+    private JsonObject getJsonObject(T suggestion) {
         final JsonObject object = Json.createObject();
 
         //noinspection unchecked

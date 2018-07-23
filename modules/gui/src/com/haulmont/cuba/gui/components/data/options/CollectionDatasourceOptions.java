@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -91,6 +92,26 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
 
             events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
         }
+    }
+
+    @Override
+    public boolean containsItem(E item) {
+        return datasource.containsItem(item.getId());
+    }
+
+    @Override
+    public void updateItem(E item) {
+        datasource.updateItem(item);
+    }
+
+    @Override
+    public void refresh() {
+        datasource.refresh();
+    }
+
+    @Override
+    public void refresh(Map<String, Object> parameters) {
+        datasource.refresh(parameters);
     }
 
     @SuppressWarnings("unchecked")

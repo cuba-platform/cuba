@@ -20,12 +20,14 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CComboBox;
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class WebSearchField<V> extends WebLookupField<V> implements SearchField<V> {
 
@@ -37,26 +39,12 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
 
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
-    protected SearchNotifications searchNotifications = new SearchNotifications() {
-        protected Messages messages = AppBeans.get(Messages.NAME);
+    protected SearchNotifications searchNotifications = createSearchNotifications();
 
-        @Override
-        public void notFoundSuggestions(String filterString) {
-            String message = messages.formatMessage("com.haulmont.cuba.gui", "searchSelect.notFound", filterString);
-            App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
-        }
+    @Override
+    protected CComboBox<V> createComponent() {
+        return new CubaSearchSelect<>();
 
-        @Override
-        public void needMinSearchStringLength(String filterString, int minSearchStringLength) {
-            String message = messages.formatMessage(
-                    "com.haulmont.cuba.gui", "searchSelect.minimumLengthOfFilter", minSearchStringLength);
-            App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
-        }
-    };
-
-//    vaadin8
-//    @Override
-    protected CComboBox createComponent() {
         /* vaadin8
         this.component = new CubaSearchSelect() {
             @Override
@@ -80,10 +68,36 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
                 }
             }
         };*/
+    }
 
-        getSearchComponent().setFilterHandler(this::executeSearch);
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
 
-        return null;
+        initComponent(getSearchComponent());
+    }
+
+    protected void initComponent(CubaSearchSelect<V> component) {
+        component.setFilterHandler(this::executeSearch);
+    }
+
+    protected SearchNotifications createSearchNotifications() {
+        return new SearchNotifications() {
+            protected Messages messages = AppBeans.get(Messages.NAME);
+
+            @Override
+            public void notFoundSuggestions(String filterString) {
+                String message = messages.formatMessage("com.haulmont.cuba.gui", "searchSelect.notFound", filterString);
+                App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
+            }
+
+            @Override
+            public void needMinSearchStringLength(String filterString, int minSearchStringLength) {
+                String message = messages.formatMessage(
+                        "com.haulmont.cuba.gui", "searchSelect.minimumLengthOfFilter", minSearchStringLength);
+                App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
+            }
+        };
     }
 
     protected void executeSearch(final String newFilter) {
@@ -133,10 +147,8 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
         }*/
     }
 
-    protected CubaSearchSelect getSearchComponent() {
-//        vaadin8
-        return null;
-//        return (CubaSearchSelect) component;
+    protected CubaSearchSelect<V> getSearchComponent() {
+        return (CubaSearchSelect<V>) component;
     }
 
     @Override
@@ -211,8 +223,23 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
         throw new UnsupportedOperationException();
     }
 
-    /* vaadin8
     @Override
+    public void setOptionsMap(Map<String, V> map) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOptionsEnum(Class<V> optionsEnum) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOptionsSource(OptionsSource<V> optionsSource) {
+        super.setOptionsSource(optionsSource);
+    }
+
+    // VAADIN8: gg, implement
+    /*@Override
     protected void setupDsAutoRefresh(OptionsDsWrapper ds) {
         ds.setAutoRefresh(false);
         ds.setExecuteAutoRefreshInvalid(false);

@@ -16,154 +16,94 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.security.ActionsPermissions;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.vaadin.ui.Component;
+import com.haulmont.cuba.gui.components.OptionsStyleProvider;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
+import com.haulmont.cuba.gui.components.SuggestionPickerField;
+import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.web.widgets.CubaPickerField;
+import com.haulmont.cuba.web.widgets.CubaSuggestionPickerField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.function.Consumer;
+import javax.inject.Inject;
+import java.util.List;
 
-public class WebSuggestionPickerField<V extends Entity> extends WebSuggestionField<V> implements
-        SuggestionPickerField<V>, SecuredActionsHolder {
+public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V>
+        implements SuggestionPickerField<V>, SecuredActionsHolder {
 
-    protected WebPickerField pickerField;
+    private static final Logger log = LoggerFactory.getLogger(WebSuggestionPickerField.class);
 
-    protected boolean updateComponentValue = false;
+    /* Beans */
+    protected BackgroundWorker backgroundWorker;
 
-    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+    protected BackgroundTaskHandler<List<?>> handler;
+
+    protected SearchExecutor<?> searchExecutor;
+
+    protected EnterActionHandler enterActionHandler;
+    protected ArrowDownActionHandler arrowDownActionHandler;
+
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public WebSuggestionPickerField() {
-        component.setInvalidAllowed(false);
-        component.setInvalidCommitted(true);
-
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component);
-
-        //noinspection IncorrectCreateGuiComponent
-        pickerField = new WebPickerField(picker);
-
-        initValueSync(picker);
     }
 
     @Override
-    public void setCaption(String caption) {
-        pickerField.setCaption(caption);
+    protected CubaPickerField<V> createComponent() {
+        return new CubaSuggestionPickerField<>();
     }
 
     @Override
-    public String getCaption() {
-        return pickerField.getCaption();
+    public CubaSuggestionPickerField<V> getComponent() {
+        //noinspection unchecked
+        return (CubaSuggestionPickerField<V>) super.getComponent();
+    }
+
+    @Inject
+    public void setBackgroundWorker(BackgroundWorker backgroundWorker) {
+        this.backgroundWorker = backgroundWorker;
     }
 
     @Override
-    public void setDescription(String description) {
-        pickerField.setDescription(description);
-    }
+    protected void initComponent(CubaPickerField<V> component) {
+        getComponent().setTextViewConverter(this::convertToTextView);
 
-    @Override
-    public String getDescription() {
-        return pickerField.getDescription();
-    }
-
-    @Override
-    public String getContextHelpText() {
-        return pickerField.getContextHelpText();
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        pickerField.setContextHelpText(contextHelpText);
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        return pickerField.isContextHelpTextHtmlEnabled();
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        pickerField.setContextHelpTextHtmlEnabled(enabled);
-    }
-
-    @Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        return pickerField.getContextHelpIconClickHandler();
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        pickerField.setContextHelpIconClickHandler(handler);
-    }
-
-    protected void initValueSync(WebPickerField.Picker picker) {
-        component.addValueChangeListener(e -> {
-            if (updateComponentValue)
-                return;
-
-            updateComponentValue = true;
-            if (!Objects.equals(component.getValue(), picker.getValue())) {
-                //noinspection unchecked
-                picker.setValueIgnoreReadOnly(component.getValue());
-            }
-            updateComponentValue = false;
+        getComponent().setSearchExecutor(query -> {
+            cancelSearch();
+            searchSuggestions(query);
         });
 
-        picker.addValueChangeListener(event -> {
-            if (updateComponentValue)
-                return;
-
-            updateComponentValue = true;
-            if (!Objects.equals(component.getValue(), picker.getValue())) {
-                component.setValueIgnoreReadOnly(picker.getValue());
-            }
-            updateComponentValue = false;
-        });
+        getComponent().setCancelSearchHandler(this::cancelSearch);
     }
 
-    @Override
-    public Component getComposition() {
-        return pickerField.getComposition();
+    protected String convertToTextView(V value) {
+        // TODO: gg, wait for WebSuggestionField implementation
+        return metadataTools.format(value);
     }
 
-    @Override
-    public Component getComponent() {
-        return pickerField.getComponent();
+    protected void cancelSearch() {
+        if (handler != null) {
+            log.debug("Cancel previous search");
+
+            handler.cancel();
+            handler = null;
+        }
     }
 
-    @Override
-    public MetaClass getMetaClass() {
-        return pickerField.getMetaClass();
+    protected void searchSuggestions(final String query) {
+        BackgroundTask<Long, List<?>> task = getSearchSuggestionsTask(query);
+        if (task != null) {
+            handler = backgroundWorker.handle(task);
+            handler.execute();
+        }
     }
 
-    @Override
-    public void setMetaClass(MetaClass metaClass) {
-        pickerField.setMetaClass(metaClass);
-    }
-
-    @Override
-    public LookupAction addLookupAction() {
-        LookupAction action = LookupAction.create(this);
-        addAction(action);
-        return action;
-    }
-
-    @Override
-    public ClearAction addClearAction() {
-        ClearAction action = ClearAction.create(this);
-        addAction(action);
-        return action;
-    }
-
-    @Override
-    public OpenAction addOpenAction() {
-        OpenAction action = OpenAction.create(this);
-        addAction(action);
-        return action;
+    protected BackgroundTask<Long, List<?>> getSearchSuggestionsTask(final String query) {
+        // TODO: gg, wait for WebSuggestionField implementation
+        return null;
     }
 
     @Override
@@ -177,89 +117,140 @@ public class WebSuggestionPickerField<V extends Entity> extends WebSuggestionFie
     }
 
     @Override
-    public void addAction(Action action) {
-        pickerField.addAction(action);
+    @Deprecated
+    public int getAsyncSearchTimeoutMs() {
+        return getComponent().getAsyncSearchDelayMs();
     }
 
     @Override
-    public void addAction(Action action, int index) {
-        pickerField.addAction(action, index);
+    @Deprecated
+    public void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs) {
+        getComponent().setAsyncSearchDelayMs(asyncSearchTimeoutMs);
     }
 
     @Override
-    public void removeAction(@Nullable Action action) {
-        pickerField.removeAction(action);
+    public int getAsyncSearchDelayMs() {
+        return getComponent().getAsyncSearchDelayMs();
     }
 
     @Override
-    public void removeAction(@Nullable String id) {
-        pickerField.removeAction(id);
+    public void setAsyncSearchDelayMs(int asyncSearchDelayMs) {
+        getComponent().setAsyncSearchDelayMs(asyncSearchDelayMs);
     }
 
     @Override
-    public void removeAllActions() {
-        pickerField.removeAllActions();
+    public SearchExecutor getSearchExecutor() {
+        return searchExecutor;
     }
 
     @Override
-    public Collection<Action> getActions() {
-        return pickerField.getActions();
-    }
-
-    @Nullable
-    @Override
-    public Action getAction(String id) {
-        return pickerField.getAction(id);
+    public void setSearchExecutor(SearchExecutor searchExecutor) {
+        this.searchExecutor = searchExecutor;
     }
 
     @Override
-    public void setFrame(Frame frame) {
-        super.setFrame(frame);
-        pickerField.setFrame(frame);
+    public EnterActionHandler getEnterActionHandler() {
+        return enterActionHandler;
     }
 
     @Override
-    public void setDatasource(Datasource datasource, String property) {
-        pickerField.checkDatasourceProperty(datasource, property);
-        super.setDatasource(datasource, property);
-        pickerField.setDatasource(datasource, property);
+    public void setEnterActionHandler(EnterActionHandler enterActionHandler) {
+        this.enterActionHandler = enterActionHandler;
+        getComponent().setEnterActionHandler(enterActionHandler::onEnterKeyPressed);
     }
 
     @Override
-    protected void setEditableToComponent(boolean editable) {
-        super.setEditableToComponent(editable);
-
-        pickerField.setEditable(editable);
+    public ArrowDownActionHandler getArrowDownActionHandler() {
+        return arrowDownActionHandler;
     }
 
     @Override
-    public void setRequired(boolean required) {
-        pickerField.setRequired(required);
+    public void setArrowDownActionHandler(ArrowDownActionHandler arrowDownActionHandler) {
+        this.arrowDownActionHandler = arrowDownActionHandler;
+        getComponent().setArrowDownActionHandler(arrowDownActionHandler::onArrowDownKeyPressed);
     }
 
     @Override
-    public void setRequiredMessage(String msg) {
-        pickerField.setRequiredMessage(msg);
+    public int getMinSearchStringLength() {
+        return getComponent().getMinSearchStringLength();
     }
 
     @Override
-    public String getRequiredMessage() {
-        return pickerField.getRequiredMessage();
+    public void setMinSearchStringLength(int minSearchStringLength) {
+        getComponent().setMinSearchStringLength(minSearchStringLength);
     }
 
     @Override
-    public boolean isRequired() {
-        return pickerField.isRequired();
+    public int getSuggestionsLimit() {
+        return getComponent().getSuggestionsLimit();
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
-        // do nothing
+    public void setSuggestionsLimit(int suggestionsLimit) {
+        getComponent().setSuggestionsLimit(suggestionsLimit);
     }
 
     @Override
-    public Collection getLookupSelectedItems() {
-        return Collections.singleton(getValue());
+    public void showSuggestions(List<V> suggestions) {
+        getComponent().showSuggestions(suggestions);
+    }
+
+    @Override
+    public void setPopupWidth(String popupWidth) {
+        getComponent().setPopupWidth(popupWidth);
+    }
+
+    @Override
+    public String getPopupWidth() {
+        return getComponent().getPopupWidth();
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return getComponent().getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        getComponent().setInputPrompt(inputPrompt);
+    }
+
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+
+        if (optionsStyleProvider != null) {
+            getComponent().setOptionsStyleProvider(item ->
+                    optionsStyleProvider.getItemStyleName(this, item));
+        } else {
+            getComponent().setOptionsStyleProvider(null);
+        }
+    }
+
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        getComponent().setPopupStyleName(name);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        super.addStyleName(styleName);
+
+        getComponent().addPopupStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        super.removeStyleName(styleName);
+
+        getComponent().removePopupStyleName(styleName);
     }
 
     @Override
@@ -285,31 +276,5 @@ public class WebSuggestionPickerField<V extends Entity> extends WebSuggestionFie
     @Override
     public boolean isModified() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setStyleName(String name) {
-        super.setStyleName(name);
-
-        component.setPopupStyleName(name);
-    }
-
-    @Override
-    public void addStyleName(String styleName) {
-        super.addStyleName(styleName);
-
-        component.addPopupStyleName(styleName);
-    }
-
-    @Override
-    public void removeStyleName(String styleName) {
-        super.removeStyleName(styleName);
-
-        component.removePopupStyleName(styleName);
-    }
-
-    @Override
-    public ActionsPermissions getActionsPermissions() {
-        return actionsPermissions;
     }
 }

@@ -17,140 +17,163 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
-import com.haulmont.cuba.gui.components.security.ActionsPermissions;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.widgets.CComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.ComboBox;
+import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.OptionsBinding;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
+import com.haulmont.cuba.web.widgets.CubaComboBoxPickerField;
+import com.haulmont.cuba.web.widgets.CubaPickerField;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.ItemCaptionGenerator;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Locale;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> implements LookupPickerField<V>, SecuredActionsHolder {
+public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
+        implements LookupPickerField<V>, SecuredActionsHolder {
 
-    protected WebPickerField pickerField;
-    protected boolean updateComponentValue = false;
+    protected V nullOption;
+    protected boolean nullOptionVisible = true;
+
+    protected FilterMode filterMode = FilterMode.CONTAINS;
+    protected FilterPredicate filterPredicate;
+
+    protected NewOptionHandler newOptionHandler;
+
+    protected OptionsStyleProvider optionsStyleProvider;
+    protected OptionIconProvider<? super V> optionIconProvider;
+    protected Function<? super V, String> optionCaptionProvider;
+
+    protected OptionsBinding<V> optionsBinding;
+
     protected boolean refreshOptionsOnLookupClose = false;
 
-    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+    protected Locale locale;
 
     public WebLookupPickerField() {
+        super();
 
-        CComboBox selectComponent = component;
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
-            @Override
+        setNewOptionAllowed(false);
+    }
+
+    @Override
+    protected CubaPickerField<V> createComponent() {
+        return new CubaComboBoxPickerField<V>() {
+            // VAADIN8: gg, implement and move to the component
+            /*@Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
-                selectComponent.setEmptySelectionAllowed(!required);
-            }
+                this.setEmptySelectionAllowed(!required);
+            }*/
         };
-        pickerField = new WebPickerField(picker); // vaadin8 fix this
-    }
-
-/* vaadin8
-    @Override
-    protected void createComponent() {
-        super.createComponent();
-
-        // delegate error indication
-        this.componentErrorHandler = message -> {
-            if (message instanceof UserError) {
-                return false;
-            }
-
-            // vaadin8
-//            pickerField.component.setComponentError(message);
-            return true;
-        };
-
-        component.setCustomValueEquals(InstanceUtils::propertyValueEquals);
-
-        ComboBox selectComponent = component;
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
-            @Override
-            public void setRequired(boolean required) {
-                super.setRequired(required);
-                selectComponent.setNullSelectionAllowed(!required);
-            }
-        };
-        pickerField = new WebPickerField(picker);
-
-        // Required for custom components in fieldgroup
-        initValueSync(selectComponent, picker);
-    }*/
-
-    protected void initValueSync(ComboBox selectComponent, WebPickerField.Picker picker) {
-        selectComponent.addValueChangeListener(event -> {
-            if (updateComponentValue)
-                return;
-
-            updateComponentValue = true;
-            if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
-                picker.setValueIgnoreReadOnly(selectComponent.getValue());
-            }
-            updateComponentValue = false;
-        });
-
-        picker.addValueChangeListener(event -> {
-            if (updateComponentValue)
-                return;
-
-            updateComponentValue = true;
-            if (!Objects.equals(selectComponent.getValue(), picker.getValue())) {
-                selectComponent.setValueIgnoreReadOnly(picker.getValue());
-            }
-            updateComponentValue = false;
-        });
     }
 
     @Override
-    public Component getComposition() {
-        return pickerField.getComposition();
+    public CubaComboBoxPickerField<V> getComponent() {
+        //noinspection unchecked
+        return (CubaComboBoxPickerField<V>) super.getComponent();
     }
 
     @Override
-    public Component getComponent() {
-        return pickerField.getComponent();
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
+        Configuration configuration = applicationContext.getBean(Configuration.NAME, Configuration.class);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        setPageLength(clientConfig.getLookupFieldPageLength());
+
+        UserSessionSource userSessionSource =
+                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+
+        this.locale = userSessionSource.getLocale();
     }
 
     @Override
-    public MetaClass getMetaClass() {
-        return pickerField.getMetaClass();
+    protected void initComponent(CubaPickerField<V> component) {
+        ((CubaComboBoxPickerField<V>) component)
+                .setItemCaptionGenerator(this::generateDefaultItemCaption);
+
+        component.addShortcutListener(new ShortcutListenerDelegate("clearShortcut",
+                ShortcutAction.KeyCode.DELETE, new int[]{ShortcutAction.ModifierKey.SHIFT})
+                .withHandler((sender, target) -> {
+                    if (!isRequired()
+                            && isEnabledRecursive()
+                            && isEditableWithParent()) {
+                        setValue(null);
+                    }
+                }));
+    }
+
+    protected String generateDefaultItemCaption(V item) {
+        if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            return metadataTools.format(item, entityValueSource.getMetaPropertyPath().getMetaProperty());
+        }
+
+        return metadataTools.format(item);
+    }
+
+    protected String generateItemCaption(V item) {
+        if (item == null) {
+            return "";
+        }
+
+        if (optionCaptionProvider != null) {
+            return optionCaptionProvider.apply(item);
+        }
+
+        return generateDefaultItemCaption(item);
     }
 
     @Override
-    public void setMetaClass(MetaClass metaClass) {
-        pickerField.setMetaClass(metaClass);
+    public V getNullOption() {
+        return nullOption;
     }
 
     @Override
-    public LookupAction addLookupAction() {
-        LookupAction action = LookupAction.create(this);
-        addAction(action);
-        return action;
+    public void setNullOption(V nullOption) {
+        this.nullOption = nullOption;
+
+        getComponent().setEmptySelectionCaption(generateItemCaption(nullOption));
+
+        setInputPrompt(null);
     }
 
     @Override
-    public ClearAction addClearAction() {
-        ClearAction action = ClearAction.create(this);
-        addAction(action);
-        return action;
+    public FilterMode getFilterMode() {
+        return filterMode;
     }
 
     @Override
-    public OpenAction addOpenAction() {
-        OpenAction action = OpenAction.create(this);
-        addAction(action);
-        return action;
+    public void setFilterMode(FilterMode filterMode) {
+        this.filterMode = filterMode;
+    }
+
+    @Override
+    public boolean isNewOptionAllowed() {
+        return false;
+        // VAADIN8: gg, implement
+//        return component.isNewItemsAllowed();
+    }
+
+    @Override
+    public void setNewOptionAllowed(boolean newOptionAllowed) {
+        // VAADIN8: gg, implement
+//        component.setNewItemsAllowed(newItemAllowed);
     }
 
     @Override
@@ -164,169 +187,187 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
     }
 
     @Override
-    public void addAction(Action action) {
-        pickerField.addAction(action);
+    public boolean isTextInputAllowed() {
+        return getComponent().isTextInputAllowed();
     }
 
     @Override
-    public void addAction(Action action, int index) {
-        pickerField.addAction(action, index);
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        getComponent().setTextInputAllowed(textInputAllowed);
     }
 
     @Override
-    public void removeAction(@Nullable Action action) {
-        pickerField.removeAction(action);
+    public NewOptionHandler getNewOptionHandler() {
+        return newOptionHandler;
     }
 
     @Override
-    public void removeAction(@Nullable String id) {
-        pickerField.removeAction(id);
+    public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
+        this.newOptionHandler = newOptionHandler;
     }
 
     @Override
-    public void removeAllActions() {
-        pickerField.removeAllActions();
+    public int getPageLength() {
+        return getComponent().getPageLength();
     }
 
     @Override
-    public Collection<Action> getActions() {
-        return pickerField.getActions();
+    public void setPageLength(int pageLength) {
+        getComponent().setPageLength(pageLength);
     }
 
     @Override
-    public void setCaption(String caption) {
-        pickerField.setCaption(caption);
+    public boolean isNullOptionVisible() {
+        return nullOptionVisible;
     }
 
     @Override
-    public String getCaption() {
-        return pickerField.getCaption();
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        this.nullOptionVisible = nullOptionVisible;
+
+        getComponent().setEmptySelectionAllowed(!isRequired() && nullOptionVisible);
     }
 
     @Override
-    public void setDescription(String description) {
-        pickerField.setDescription(description);
-    }
+    public void setOptionIconProvider(OptionIconProvider<? super V> optionIconProvider) {
+        if (this.optionIconProvider != optionIconProvider) {
+            // noinspection unchecked
+            this.optionIconProvider = optionIconProvider;
 
-    @Override
-    public String getDescription() {
-        return pickerField.getDescription();
-    }
-
-    @Override
-    public String getContextHelpText() {
-        return pickerField.getContextHelpText();
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        pickerField.setContextHelpText(contextHelpText);
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        return pickerField.isContextHelpTextHtmlEnabled();
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        pickerField.setContextHelpTextHtmlEnabled(enabled);
-    }
-
-    @Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        return pickerField.getContextHelpIconClickHandler();
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        pickerField.setContextHelpIconClickHandler(handler);
-    }
-
-    @Override
-    @Nullable
-    public Action getAction(String id) {
-        return pickerField.getAction(id);
-    }
-
-    @Override
-    public void setFrame(Frame frame) {
-        super.setFrame(frame);
-        pickerField.setFrame(frame);
-        pickerField.getComposition().setCubaId(component.getCubaId());
-    }
-
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if (datasource != null) {
-            pickerField.checkDatasourceProperty(datasource, property);
-        }
-        super.setDatasource(datasource, property);
-        pickerField.setDatasource(datasource, property);
-    }
-
-    @Override
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        super.setOptionsDatasource(datasource);
-        if (pickerField.getMetaClass() == null && datasource != null) {
-            pickerField.setMetaClass(datasource.getMetaClass());
+            if (optionIconProvider == null) {
+                getComponent().setItemIconGenerator(null);
+            } else {
+                getComponent().setItemIconGenerator(this::generateOptionIcon);
+            }
         }
     }
 
     @Override
-    public void commit() {
-        super.commit();
-        pickerField.commit();
+    public void setOptionIconProvider(Class<V> optionClass, OptionIconProvider<V> optionIconProvider) {
+        setOptionIconProvider(optionIconProvider);
     }
 
     @Override
-    public void discard() {
-        super.discard();
-        pickerField.discard();
+    public OptionIconProvider<? super V> getOptionIconProvider() {
+        return optionIconProvider;
+    }
+
+    protected Resource generateOptionIcon(V item) {
+        String resourceId;
+        try {
+            // noinspection unchecked
+            resourceId = optionIconProvider.getItemIcon(item);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(WebLookupField.class)
+                    .warn("Error invoking OptionIconProvider getItemIcon method", e);
+            return null;
+        }
+
+        return iconResolver.getIconResource(resourceId);
     }
 
     @Override
-    public boolean isBuffered() {
-        return pickerField.isBuffered();
+    public void setFilterPredicate(FilterPredicate filterPredicate) {
+        this.filterPredicate = filterPredicate;
+
+        if (filterPredicate != null) {
+            // VAADIN8: gg, implement
+//            component.setFilterPredicate(filterPredicate::test);
+        } else {
+//            component.setFilterPredicate(null);
+        }
     }
 
     @Override
-    public void setBuffered(boolean buffered) {
-        super.setBuffered(buffered);
-        pickerField.setBuffered(buffered);
+    public FilterPredicate getFilterPredicate() {
+        return filterPredicate;
     }
 
     @Override
-    public boolean isModified() {
-        return pickerField.isModified();
+    public String getInputPrompt() {
+        return getComponent().getPlaceholder();
     }
 
     @Override
-    protected void setEditableToComponent(boolean editable) {
-        super.setEditableToComponent(editable);
-
-        pickerField.setEditable(editable);
+    public void setInputPrompt(String inputPrompt) {
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            setNullOption(null);
+        }
+        getComponent().setPlaceholder(inputPrompt);
     }
 
     @Override
-    public void setRequired(boolean required) {
-        component.setEmptySelectionAllowed(!required);
-        pickerField.setRequired(required);
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 
     @Override
-    public void setRequiredMessage(String msg) {
-        pickerField.setRequiredMessage(msg);
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+
+//        vaadin8
+        /*if (optionsStyleProvider != null) {
+            component.setItemStyleGenerator((comboBox, item) ->
+                    optionsStyleProvider.getItemStyleName(this, item));
+        } else {
+            component.setItemStyleGenerator(null);
+        }*/
     }
 
     @Override
-    public String getRequiredMessage() {
-        return pickerField.getRequiredMessage();
+    public OptionsSource<V> getOptionsSource() {
+        return optionsBinding != null ? optionsBinding.getSource() : null;
     }
 
     @Override
-    public boolean isRequired() {
-        return pickerField.isRequired();
+    public void setOptionsSource(OptionsSource<V> optionsSource) {
+        if (this.optionsBinding != null) {
+            this.optionsBinding.unbind();
+            this.optionsBinding = null;
+        }
+
+        if (optionsSource != null) {
+            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
+            this.optionsBinding.activate();
+
+            if (getMetaClass() == null
+                    && optionsSource instanceof EntityOptionsSource) {
+                setMetaClass(((EntityOptionsSource<V>) optionsSource).getEntityMetaClass());
+            }
+        }
+    }
+
+    protected void setItemsToPresentation(Stream<V> options) {
+        getComponent().setItems(this::filterItemTest, options.collect(Collectors.toList()));
+    }
+
+    protected boolean filterItemTest(String itemCaption, String filterText) {
+        if (filterMode == FilterMode.NO) {
+            return true;
+        }
+
+        if (filterMode == FilterMode.STARTS_WITH) {
+            return itemCaption
+                    .toLowerCase(locale)
+                    .startsWith(filterText.toLowerCase(locale));
+        }
+
+        return itemCaption
+                .toLowerCase(locale)
+                .contains(filterText.toLowerCase(locale));
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        this.optionCaptionProvider = captionProvider;
+
+        getComponent().setItemCaptionGenerator((ItemCaptionGenerator<V>) captionProvider::apply);
     }
 
     @Override
@@ -337,10 +378,5 @@ public class WebLookupPickerField<V extends Entity> extends WebLookupField<V> im
     @Override
     public boolean isRefreshOptionsOnLookupClose() {
         return refreshOptionsOnLookupClose;
-    }
-
-    @Override
-    public ActionsPermissions getActionsPermissions() {
-        return actionsPermissions;
     }
 }

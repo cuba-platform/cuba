@@ -18,15 +18,24 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -161,7 +170,11 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
     abstract class StandardAction extends BaseAction {
 
+        public static final String PROP_EDITABLE = "editable";
+
         protected PickerField pickerField;
+
+        protected boolean editable = true;
 
         protected ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
@@ -170,14 +183,20 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             this.pickerField = pickerField;
         }
 
+        public boolean isEditable() {
+            return editable;
+        }
+
         public void setEditable(boolean editable) {
-            ActionOwner owner = getOwner();
-            if (owner != null && owner instanceof Component) {
-                ((Component) owner).setVisible(editable);
+            boolean oldValue = this.editable;
+            if (oldValue != editable) {
+                this.editable = editable;
+                firePropertyChange(PROP_EDITABLE, oldValue, editable);
             }
         }
 
         protected Datasource getPropertyDatasource() {
+            // TODO: gg, use value source
             if (pickerField.getDatasource() == null
                     || pickerField.getMetaPropertyPath() == null
                     || pickerField.getMetaPropertyPath().getMetaProperty().getType() != MetaProperty.Type.COMPOSITION
@@ -289,8 +308,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
                     if (metaClass == null) {
-                        throw new DevelopmentException("Neither metaClass nor datasource/property is specified for the PickerField",
-                                "action ID", getId());
+                        throw new DevelopmentException("Neither metaClass nor datasource/property is specified " +
+                                "for the PickerField", "action ID", getId());
                     }
                     windowAlias = windowConfig.getAvailableLookupScreenId(metaClass);
                 }
@@ -321,9 +340,10 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                             && pickerField instanceof LookupPickerField) {
                         LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
-                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-                        if (optionsDatasource != null && lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                            optionsDatasource.refresh();
+                        OptionsSource optionsSource = lookupPickerField.getOptionsSource();
+                        if (optionsSource instanceof EntityOptionsSource
+                                && lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                            ((EntityOptionsSource) optionsSource).refresh();
                         }
                     }
 
@@ -361,6 +381,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             return resultParams;
         }
 
+        @SuppressWarnings("unchecked")
         protected void handleLookupWindowSelection(Collection items) {
             if (items.isEmpty()) {
                 return;
@@ -372,16 +393,15 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             if (pickerField instanceof LookupPickerField) {
                 LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
-                CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-                if (optionsDatasource != null) {
-                    //noinspection unchecked
-                    if (optionsDatasource.containsItem(newValue.getId())) {
-                        //noinspection unchecked
-                        optionsDatasource.updateItem(newValue);
+                OptionsSource optionsSource = lookupPickerField.getOptionsSource();
+                if (optionsSource instanceof EntityOptionsSource) {
+                    EntityOptionsSource entityOptionsSource = (EntityOptionsSource) optionsSource;
+                    if (entityOptionsSource.containsItem(newValue)) {
+                        entityOptionsSource.updateItem(newValue);
                     }
 
                     if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                        optionsDatasource.refresh();
+                        entityOptionsSource.refresh();
                     }
                 }
             }
@@ -467,14 +487,17 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             setShortcut(clientConfig.getPickerClearShortcut());
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
                 Object value = pickerField.getValue();
 
+                EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
                 if (value instanceof Entity
-                        && pickerField.getMetaPropertyPath() != null
-                        && pickerField.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                        && entityValueSource.getMetaPropertyPath() != null
+                        && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                    // TODO: gg, use value source
                     Datasource propertyDatasource = getPropertyDatasource();
                     if (propertyDatasource != null) {
                         for (Datasource datasource : propertyDatasource.getDsContext().getAll()) {
@@ -484,13 +507,11 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                                 if (datasource instanceof CollectionDatasource) {
                                     CollectionDatasource collectionDatasource = (CollectionDatasource) datasource;
                                     for (Object id : collectionDatasource.getItemIds()) {
-                                        //noinspection unchecked
                                         collectionDatasource.removeItem(collectionDatasource.getItem(id));
                                     }
                                 }
                             }
                         }
-                        //noinspection unchecked
                         ((DatasourceImplementation) propertyDatasource).deleted((Entity) value);
                     }
                 }
@@ -595,8 +616,10 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
         @Override
         public void actionPerform(Component component) {
-            boolean composition = pickerField.getMetaPropertyPath() != null
-                    && pickerField.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
+            EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
+            MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
+            boolean composition = metaPropertyPath != null
+                    && metaPropertyPath.getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
 
             Entity entity = getEntity();
             if (entity == null && composition) {
@@ -682,10 +705,11 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 return (Entity) value;
             }
 
-            if (pickerField.getDatasource() != null && !pickerField.isBuffered()) {
-                Entity item = pickerField.getDatasource().getItem();
+            if (pickerField.getValueSource() != null && !pickerField.isBuffered()) {
+                EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
+                Entity item = entityValueSource.getItem();
                 if (item != null) {
-                    Object dsValue = item.getValue(pickerField.getMetaPropertyPath().getMetaProperty().getName());
+                    Object dsValue = item.getValue(entityValueSource.getMetaPropertyPath().getMetaProperty().getName());
                     if (dsValue instanceof Entity)
                         return (Entity) dsValue;
                 }
@@ -695,11 +719,12 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         }
 
         protected Entity initEntity() {
+            EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
             Entity entity = AppBeans.get(Metadata.class).create(
-                    pickerField.getMetaPropertyPath().getMetaProperty().getRange().asClass());
+                    entityValueSource.getMetaPropertyPath().getMetaProperty().getRange().asClass());
 
-            Entity ownerEntity = pickerField.getDatasource().getItem();
-            MetaProperty inverseProp = pickerField.getMetaPropertyPath().getMetaProperty().getInverse();
+            Entity ownerEntity = entityValueSource.getItem();
+            MetaProperty inverseProp = entityValueSource.getMetaPropertyPath().getMetaProperty().getInverse();
             if (inverseProp != null) {
                 entity.setValue(inverseProp.getName(), ownerEntity);
             }
@@ -707,24 +732,26 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             return entity;
         }
 
+        @SuppressWarnings("unchecked")
         protected void afterCommitOpenedEntity(Entity item) {
             if (pickerField instanceof LookupField) {
                 LookupField lookupPickerField = ((LookupField) pickerField);
 
-                CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-                //noinspection unchecked
-                if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
-                    //noinspection unchecked
-                    optionsDatasource.updateItem(item);
+                EntityOptionsSource entityOptionsSource = (EntityOptionsSource) lookupPickerField.getOptionsSource();
+                if (entityOptionsSource != null
+                        && entityOptionsSource.containsItem(item)) {
+                    entityOptionsSource.updateItem(item);
                 }
             }
 
-            if (pickerField.getDatasource() != null) {
-                boolean modified = pickerField.getDatasource().isModified();
+            if (pickerField.getValueSource() instanceof DatasourceValueSource) {
+                DatasourceValueSource datasourceValueSource = (DatasourceValueSource) pickerField.getValueSource();
+
+                boolean modified = datasourceValueSource.isModified();
 
                 pickerField.setValue(item);
 
-                ((DatasourceImplementation) pickerField.getDatasource()).setModified(modified);
+                datasourceValueSource.setModified(modified);
             } else {
                 pickerField.setValue(item);
             }
@@ -739,6 +766,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
         @Override
         public void setEditable(boolean editable) {
+            super.setEditable(editable);
             setIcon(getEditableIcon(icon, editable));
         }
 
