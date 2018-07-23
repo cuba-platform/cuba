@@ -47,7 +47,6 @@
             <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
             <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
             <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>
-            <button id="copy" description="msg://caption.copy" icon="CLIPBOARD"/>
         </buttonsPanel>
         <textArea id="scriptArea" visible="false" width="100%"/>
     </layout>
