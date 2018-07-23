@@ -93,8 +93,10 @@ public class SystemInfoWindow extends AbstractWindow {
         Companion companion = getCompanion();
         if (companion != null) {
             companion.initInfoTable(infoTable);
-            companion.addCopyButton(buttonsHbox, messages.getMainMessage("caption.copy"), messages.getMainMessage("exceptionDialog.copingSuccessful"),
-                    messages.getMainMessage("exceptionDialog.copingFailed"), cubaCopyLogContentClass, componentsFactory);
+            companion.addCopyButton(buttonsHbox, messages.getMainMessage("systemInfoWindow.copy"),
+                    messages.getMainMessage("systemInfoWindow.copingSuccessful"),
+                    messages.getMainMessage("systemInfoWindow.copingFailed"),
+                    cubaCopyLogContentClass, componentsFactory);
         }
 
         infoTable.removeAllActions();
