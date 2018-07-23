@@ -25,8 +25,16 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.expression.BeanResolver;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.common.TemplateParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -226,6 +234,9 @@ public final class InstanceUtils {
                     throw new RuntimeException("Error getting instance name", e);
                 }
             }
+            if (rec.isSpEL) {
+                return evaluateSpEL(instance, rec.format);
+            }
 
             // lazy initialized messages, used only for enum values
             Messages messages = null;
@@ -252,6 +263,15 @@ public final class InstanceUtils {
         }
     }
 
+    public static String evaluateSpEL(Instance instance, String format) {
+        ExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext evaluationContext = new StandardEvaluationContext(instance);
+        BeanResolver beanResolver = new BeanFactoryResolver(AppContext.getApplicationContext());
+        evaluationContext.setBeanResolver(beanResolver);
+        Expression expression = parser.parseExpression(format, new TemplateParserContext());
+        return expression.getValue(evaluationContext, String.class);
+    }
+
     /**
      * Parse a name pattern defined by {@link NamePattern} annotation.
      * @param metaClass entity meta-class
@@ -272,10 +292,13 @@ public final class InstanceUtils {
 
         String format = StringUtils.substring(pattern, 0, pos);
         String trimmedFormat = format.trim();
-        String methodName = trimmedFormat.startsWith("#") ? trimmedFormat.substring(1) : null;
+        boolean isSpEL = trimmedFormat.startsWith("#{");
+        String methodName = trimmedFormat.startsWith("#") && !isSpEL ?
+                trimmedFormat.substring(1) :
+                null;
         String fieldsStr = StringUtils.substring(pattern, pos + 1);
         String[] fields = INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr);
-        return new NamePatternRec(format, methodName, fields);
+        return new NamePatternRec(format, methodName, fields, isSpEL);
     }
 
     public static class NamePatternRec {
@@ -291,11 +314,16 @@ public final class InstanceUtils {
          * Array of property names
          */
         public final String[] fields;
+        /**
+         * Is name pattern described as SpEL
+         */
+        public final boolean isSpEL;
 
-        public NamePatternRec(String format, String methodName, String[] fields) {
+        public NamePatternRec(String format, String methodName, String[] fields, boolean isSpEL) {
             this.fields = fields;
             this.format = format;
             this.methodName = methodName;
+            this.isSpEL = isSpEL;
         }
     }
 
