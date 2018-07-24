@@ -265,10 +265,8 @@ public class ServerLogWindow extends AbstractWindow {
 
             // transform to XHTML
             value = StringEscapeUtils.escapeHtml4(value);
-            String space = "&nbsp;";
-            value = StringUtils.replace(value, " ", space);
-            String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            value = StringUtils.replace(value, "\t", tab);
+            value = replaceSpaces(value);
+
 
             // highlight log
             StringBuilder coloredLog = new StringBuilder();
@@ -294,10 +292,10 @@ public class ServerLogWindow extends AbstractWindow {
                         }
                     }
                     for (String pattern : webConfig.getLoweredAttentionPatterns()) {
-                        pattern = pattern.replace(" ", space);
-                        String coloredLine = highlightLoweredAttention(line, pattern);
-                        if (!Objects.equals(coloredLine, line)) {
-                            line = coloredLine;
+                        pattern = replaceSpaces(pattern);
+                        String changedLine = highlightLoweredAttention(line, pattern);
+                        if (!Objects.equals(changedLine, line)) {
+                            line = changedLine;
                             break;
                         }
                     }
@@ -315,13 +313,25 @@ public class ServerLogWindow extends AbstractWindow {
         logContainer.unwrap(CubaScrollBoxLayout.class).setScrollTop(30000);
     }
 
+    protected String replaceSpaces(String value) {
+        String space = "&nbsp;";
+        value = StringUtils.replace(value, " ", space);
+        String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
+        value = StringUtils.replace(value, "\t", tab);
+        return value;
+    }
+
     protected String highlightLoweredAttention(String line, String pattern) {
         Pattern patternObject = Pattern.compile(pattern);
         Matcher matcher = patternObject.matcher(line);
         if (matcher.find()) {
-            return "<span class='c-log-lowered-attention'>" + line + "</span>";
+            return getLoweredAttentionLine(line);
         }
         return line;
+    }
+
+    protected String getLoweredAttentionLine(String line) {
+        return "<span class='c-log-lowered-attention'>" + line + "</span>";
     }
 
     public void getLoggerLevel() {
@@ -434,11 +444,11 @@ public class ServerLogWindow extends AbstractWindow {
                     exportDisplay.show(dataProvider, fileName + ".zip");
                 } else {
                     openWindow("serverLogDownloadOptionsDialog",
-                               OpenType.DIALOG,
-                               ParamsMap.of("logFileName", fileName,
-                                            "connection", selectedConnection,
-                                            "logFileSize", size,
-                                            "remoteContextList", availableContexts));
+                            OpenType.DIALOG,
+                            ParamsMap.of("logFileName", fileName,
+                                    "connection", selectedConnection,
+                                    "logFileSize", size,
+                                    "remoteContextList", availableContexts));
                 }
             } catch (RuntimeException | LogControlException e) {
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);

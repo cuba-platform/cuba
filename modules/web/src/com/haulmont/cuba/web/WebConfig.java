@@ -407,31 +407,32 @@ public interface WebConfig extends Config {
     void setDefaultScreenCanBeClosed(boolean b);
 
     /**
-     * Defines enabled expressions to color in server log.
+     * Defines the list of regular expression patterns that are applied to each row of the log in the Server Log window.
+     * If at least one pattern is matched, then this row will be marked as lowered attention row.
      */
     @Property("cuba.web.serverLog.loweredAttentionPatterns")
     @Source(type = SourceType.DATABASE)
-    @Default("at com.sun.proxy.$Proxy|" +
-            "at groovy.|" +
-            "at java.lang.reflect.Constructor.newInstance|" +
-            "at java.lang.reflect.Method.invoke|" +
-            "at java.rmi.|" +
-            "at java.security.AccessControlContext$1.doIntersectionPrivilege|" +
-            "at java.security.AccessController.doPrivileged(Native Method)" +
-            "at java.security.ProtectionDomain$1.doIntersectionPrivilege|" +
-            "at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege|" +
-            "at java.util.Spliterators$|" +
-            "at java.util.stream.AbstractPipeline.copyInto|" +
-            "at java.util.stream.AbstractPipeline.evaluate|" +
-            "at java.util.stream.AbstractPipeline.wrapAndCopyInto|" +
-            "at java.util.stream.ReduceOps$|" +
-            "at java.util.stream.ReferencePipeline$|" +
-            "at org.codehaus.groovy.|" +
-            "at org.gradle.|" +
-            "at sun.reflect.|" +
-            "at sun.rmi.|" +
-            "at com.vaadin.event.EventRouter.fireEvent|" +
-            "at com.vaadin.server.ServerRpcManager|")
+    @Default("at com.sun[\\.]proxy[\\.][\\$]Proxy|" +
+            "at groovy[\\.]|" +
+            "at java[\\.]lang[\\.]reflect[\\.]Constructor[\\.]newInstance|" +
+            "at java[\\.]lang[\\.]reflect[\\.]Method[\\.]invoke|" +
+            "at java[\\.]rmi[\\.]|" +
+            "at java[\\.]security[\\.]AccessControlContext[\\$]1[\\.]doIntersectionPrivilege|" +
+            "at java[\\.]security[\\.]AccessController[\\.]doPrivileged|" +
+            "at java[\\.]security[\\.]ProtectionDomain[\\$]1[\\.]doIntersectionPrivilege|" +
+            "at java[\\.]security[\\.]ProtectionDomain[\\$]JavaSecurityAccessImpl[\\.]doIntersectionPrivilege|" +
+            "at java[\\.]util[\\.]Spliterators[\\$]|" +
+            "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]copyInto|" +
+            "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]evaluate|" +
+            "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]wrapAndCopyInto|" +
+            "at java[\\.]util[\\.]stream[\\.]ReduceOps[\\$]|" +
+            "at java[\\.]util[\\.]stream[\\.]ReferencePipeline[\\$]|" +
+            "at org[\\.]codehaus[\\.]groovy[\\.]|" +
+            "at org[\\.]gradle[\\.]|" +
+            "at sun[\\.]reflect[\\.]|" +
+            "at sun[\\.]rmi[\\.]|" +
+            "at com[\\.]vaadin[\\.]event[\\.]EventRouter[\\.]fireEvent|" +
+            "at com[\\.]vaadin[\\.]server[\\.]ServerRpcManager")
     @Factory(factory = StringListTypeFactory.class)
     List<String> getLoweredAttentionPatterns();
 }
