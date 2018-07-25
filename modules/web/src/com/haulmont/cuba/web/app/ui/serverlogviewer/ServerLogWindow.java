@@ -121,12 +121,15 @@ public class ServerLogWindow extends AbstractWindow {
     protected Security security;
 
     protected JmxInstance localJmxInstance;
+    protected List<Pattern> loweredAttentionPatterns = new ArrayList<>();
 
     protected static final String LAST_SELECTED_LOG_FILE_NAME = "lastSelectedLogFileName";
     protected static final String LAST_SELECTED_JMX_CONNECTION_ID = "lastSelectedJmxConnectionId";
 
     @Override
     public void init(Map<String, Object> params) {
+        initLoweredAttentionPatterns();
+
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
 
         localJmxInstance = jmxControlAPI.getLocalInstance();
@@ -215,6 +218,15 @@ public class ServerLogWindow extends AbstractWindow {
         logContainer.unwrapComposition(CubaScrollBoxLayout.class).setDelayed(true);
     }
 
+    protected void initLoweredAttentionPatterns() {
+        List<String> loweredAttentionPatterns = webConfig.getLoweredAttentionPatterns();
+        for (String loweredAttentionPattern: loweredAttentionPatterns) {
+            String replacedPattern = replaceSpaces(loweredAttentionPattern);
+            Pattern pattern = Pattern.compile(replacedPattern);
+            this.loweredAttentionPatterns.add(pattern);
+        }
+    }
+
     private void refreshHostInfo() {
         JmxRemoteLoggingAPI.LoggingHostInfo hostInfo = jmxRemoteLoggingAPI.getHostInfo(getSelectedConnection());
         refreshLoggers(hostInfo);
@@ -291,8 +303,7 @@ public class ServerLogWindow extends AbstractWindow {
                             break;
                         }
                     }
-                    for (String pattern : webConfig.getLoweredAttentionPatterns()) {
-                        pattern = replaceSpaces(pattern);
+                    for (Pattern pattern : loweredAttentionPatterns) {
                         String changedLine = highlightLoweredAttention(line, pattern);
                         if (!Objects.equals(changedLine, line)) {
                             line = changedLine;
@@ -321,9 +332,8 @@ public class ServerLogWindow extends AbstractWindow {
         return value;
     }
 
-    protected String highlightLoweredAttention(String line, String pattern) {
-        Pattern patternObject = Pattern.compile(pattern);
-        Matcher matcher = patternObject.matcher(line);
+    protected String highlightLoweredAttention(String line, Pattern pattern) {
+        Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
             return getLoweredAttentionLine(line);
         }
