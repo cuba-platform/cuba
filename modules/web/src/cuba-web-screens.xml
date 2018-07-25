@@ -83,6 +83,8 @@
             template="/com/haulmont/cuba/web/tmp/dc-screen-2.xml"/>
     <screen id="dcScreen3"
             template="/com/haulmont/cuba/web/tmp/dc-screen-3.xml"/>
+    <screen id="dcScreen4"
+            template="/com/haulmont/cuba/web/tmp/dc-screen-4.xml"/>
 
     <screen id="tableApiScreen1"
             template="/com/haulmont/cuba/web/tmp/table-api-screen-1.xml"/>

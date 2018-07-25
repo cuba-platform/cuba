@@ -109,7 +109,10 @@ public final class ParametersHelper {
     }
 
     private static ParameterInfo parse(String param, boolean caseInsensitive) {
-        final String[] strings = param.split("\\$");
+        String[] strings = param.split("\\$");
+        if (strings.length == 1) {
+            return new ParameterInfo(param, ParameterInfo.Type.NONE, caseInsensitive);
+        }
         if (strings.length != 2) {
             throw new IllegalStateException(String.format("Illegal parameter info '%s'", param));
         }

@@ -395,7 +395,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 .setJavaClass(javaClass)
                 .setEntityWhere(entityParamWhere)
                 .setEntityView(entityParamView)
-                .setDataSource(condition.getDatasource())
+                .setMetaClass(condition.getEntityMetaClass())
                 .setInExpr(condition.getInExpr())
                 .setRequired(condition.getRequired())
                 .setUseUserTimeZone(condition.getUseUserTimeZone())
@@ -448,13 +448,12 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int senderCursorPosition) {
         String joinStr = joinField.getValue();
         String whereStr = whereField.getValue();
-        CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
 
         // CAUTION: the magic entity name!  The length is three character to match "{E}" length in query
         String entityAlias = "a39";
 
         int queryPosition = -1;
-        String queryStart = "select " + entityAlias + " from " + ds.getMetaClass().getName() + " " + entityAlias + " ";
+        String queryStart = "select " + entityAlias + " from " + condition.getEntityMetaClass().getName() + " " + entityAlias + " ";
 
         StringBuilder queryBuilder = new StringBuilder(queryStart);
         if (StringUtils.isNotEmpty(joinStr)) {

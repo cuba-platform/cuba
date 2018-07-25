@@ -49,7 +49,7 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         componentsFactory = AppBeans.get(ComponentsFactory.class);
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
-        MetaClass metaClass = condition.getDatasource().getMetaClass();
+        MetaClass metaClass = condition.getEntityMetaClass();
         MetaPropertyPath propertyPath = metaClass.getPropertyPath(condition.getName());
         if (propertyPath == null) {
             throw new IllegalStateException(String.format("Unable to find property '%s' in entity %s",

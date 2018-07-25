@@ -34,8 +34,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 @SystemLevel
 public class CustomConditionCreator extends AbstractConditionDescriptor {
 
-    public CustomConditionCreator(String filterComponentName, CollectionDatasource datasource) {
-        super(RandomStringUtils.randomAlphabetic(10), filterComponentName, datasource);
+    public CustomConditionCreator(String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass,
+                                  String entityAlias) {
+        super(RandomStringUtils.randomAlphabetic(10), filterComponentName, metaClass, entityAlias);
 
         Messages messages = AppBeans.get(Messages.NAME);
         this.locCaption = messages.getMainMessage("filter.customCondition.new");

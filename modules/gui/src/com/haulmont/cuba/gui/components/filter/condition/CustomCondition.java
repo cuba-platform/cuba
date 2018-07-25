@@ -48,8 +48,8 @@ public class CustomCondition extends AbstractCondition {
         this.operator = ((CustomCondition) other).operator;
     }
 
-    public CustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
-        super(element, messagesPack, filterComponentName, datasource);
+    public CustomCondition(Element element, String messagesPack, String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass) {
+        super(element, messagesPack, filterComponentName, metaClass);
 
         if (isBlank(caption)) {
             locCaption = element.attributeValue("locCaption");

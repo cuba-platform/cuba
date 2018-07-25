@@ -32,8 +32,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 public class HeaderConditionDescriptor extends AbstractConditionDescriptor {
 
 
-    public HeaderConditionDescriptor(String name, String locCaption, String filterComponentName, CollectionDatasource datasource) {
-        super(name, filterComponentName, datasource);
+    public HeaderConditionDescriptor(String name, String locCaption, String filterComponentName,
+                                     com.haulmont.chile.core.model.MetaClass metaClass, String entityAlias) {
+        super(name, filterComponentName, metaClass, entityAlias);
         this.locCaption = locCaption;
     }
 

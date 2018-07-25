@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter.descriptor;
 
-import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -30,14 +30,15 @@ import org.dom4j.Element;
 /**
  * Class for existing (described in filter component xml) custom condition descriptor
  */
-@MetaClass(name = "sec$CustomConditionDescriptor")
+@com.haulmont.chile.core.annotations.MetaClass(name = "sec$CustomConditionDescriptor")
 @SystemLevel
 public class CustomConditionDescriptor extends AbstractConditionDescriptor {
     public CustomConditionDescriptor(Element element,
                                      String messagesPack,
                                      String filterComponentName,
-                                     CollectionDatasource datasource) {
-        super(element.attributeValue("name"), filterComponentName, datasource);
+                                     MetaClass metaClass,
+                                     String entityAlias) {
+        super(element.attributeValue("name"), filterComponentName, metaClass, entityAlias);
         this.element = element;
         this.messagesPack = messagesPack;
         this.caption = element.attributeValue("caption");

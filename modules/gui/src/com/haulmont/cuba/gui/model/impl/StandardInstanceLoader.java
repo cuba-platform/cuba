@@ -21,12 +21,16 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -38,6 +42,8 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     private DataContext dataContext;
     private InstanceContainer<E> container;
     private String query;
+    private Condition condition;
+    private Map<String, Object> parameters = new HashMap<>();
     private Object entityId;
     private boolean softDeletion = true;
     private View view;
@@ -70,13 +76,17 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     public void load() {
         if (container == null)
             throw new IllegalStateException("container is null");
-        if (entityId == null)
-            throw new IllegalStateException("entityId is null");
 
         @SuppressWarnings("unchecked")
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
-        loadContext.setId(entityId);
+        if (entityId != null) {
+            loadContext.setId(entityId);
+        } else {
+            LoadContext.Query query = loadContext.setQueryString(this.query);
+            query.setCondition(condition);
+            query.setParameters(parameters);
+        }
 
         if (view == null && viewName != null) {
             this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
@@ -111,6 +121,43 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     @Override
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    @Override
+    public Condition getCondition() {
+        return condition;
+    }
+
+    @Override
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    @Override
+    public Map<String, Object> getParameters() {
+        return Collections.unmodifiableMap(parameters);
+    }
+
+    @Override
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters.clear();
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            setParameter(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public Object getParameter(String name) {
+        return parameters.get(name);
+    }
+
+    @Override
+    public void setParameter(String name, Object value) {
+        if (value == null || (value instanceof String && value.equals(""))) {
+            parameters.remove(name);
+        } else {
+            parameters.put(name, value);
+        }
     }
 
     @Override

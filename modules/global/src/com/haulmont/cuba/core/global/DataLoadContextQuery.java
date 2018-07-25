@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.global.queryconditions.Condition;
+
 import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.Map;
@@ -34,4 +36,7 @@ public interface DataLoadContextQuery {
 
     int getMaxResults();
     DataLoadContextQuery setMaxResults(int maxResults);
+
+    Condition getCondition();
+    DataLoadContextQuery setCondition(Condition condition);
 }

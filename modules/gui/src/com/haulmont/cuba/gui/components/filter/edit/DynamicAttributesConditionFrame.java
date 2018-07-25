@@ -133,7 +133,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
         paramName = paramBuilder.createParamName(condition);
 
-        String cavEntityId = referenceToEntitySupport.getReferenceIdPropertyName(condition.getDatasource().getMetaClass());
+        String cavEntityId = referenceToEntitySupport.getReferenceIdPropertyName(condition.getEntityMetaClass());
 
         String where;
         if (op == Op.NOT_EMPTY) {
@@ -192,7 +192,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         Param param = Param.Builder.getInstance()
                 .setName(paramName)
                 .setJavaClass(paramJavaClass)
-                .setDataSource(condition.getDatasource())
+                .setMetaClass(condition.getEntityMetaClass())
                 .setProperty(DynamicAttributesUtils.getMetaPropertyPath(null, attribute).getMetaProperty())
                 .setInExpr(condition.getInExpr())
                 .setRequired(condition.getRequired())
@@ -214,7 +214,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     protected void fillCategorySelect() {
         DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
-        MetaClass metaClass = condition.getDatasource().getMetaClass();
+        MetaClass metaClass = condition.getEntityMetaClass();
         if (!Strings.isNullOrEmpty(condition.getPropertyPath())) {
             MetaPropertyPath propertyPath = metaClass.getPropertyPath(condition.getPropertyPath());
             if (propertyPath == null) {

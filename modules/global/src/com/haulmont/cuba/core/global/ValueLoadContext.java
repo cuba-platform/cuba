@@ -16,6 +16,9 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.global.filter.QueryFilter;
+import com.haulmont.cuba.core.global.queryconditions.Condition;
+
 import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
@@ -170,6 +173,7 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
         private int maxResults;
         private Map<String, Object> parameters = new HashMap<>();
         private String[] noConversionParams;
+        private Condition condition;
 
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
@@ -264,6 +268,22 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
          */
         public Query setMaxResults(int maxResults) {
             this.maxResults = maxResults;
+            return this;
+        }
+
+        /**
+         * @return root query condition
+         */
+        public Condition getCondition() {
+            return condition;
+        }
+
+        /**
+         * @param condition root query condition
+         * @return this query instance for chaining
+         */
+        public Query setCondition(Condition condition) {
+            this.condition = condition;
             return this;
         }
 

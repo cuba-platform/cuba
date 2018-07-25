@@ -44,6 +44,14 @@ public class Clause extends Condition {
         this.type = type;
     }
 
+    public Clause(String fieldName, Op operator, String param) {
+        super(fieldName);
+
+        this.content = fieldName + operator.forJpql() + param;
+        this.parameters = ParametersHelper.parseQuery(content);
+        this.operator = operator;
+    }
+
     @Override
     public List<Condition> getConditions() {
         return Collections.emptyList();
@@ -55,6 +63,10 @@ public class Clause extends Condition {
 
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override

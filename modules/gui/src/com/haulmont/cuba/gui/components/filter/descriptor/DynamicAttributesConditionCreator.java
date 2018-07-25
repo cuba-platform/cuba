@@ -32,8 +32,9 @@ public class DynamicAttributesConditionCreator extends AbstractConditionDescript
 
     protected String propertyPath;
 
-    public DynamicAttributesConditionCreator(String filterComponentName, CollectionDatasource datasource, String propertyPath) {
-        super(RandomStringUtils.randomAlphabetic(10), filterComponentName, datasource);
+    public DynamicAttributesConditionCreator(String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass,
+                                             String propertyPath, String entityAlias) {
+        super(RandomStringUtils.randomAlphabetic(10), filterComponentName, metaClass, entityAlias);
         this.propertyPath = propertyPath;
         Messages messages = AppBeans.get(Messages.NAME);
         locCaption = messages.getMainMessage("filter.dynamicAttributeConditionCreator");

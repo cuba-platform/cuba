@@ -17,10 +17,17 @@
 package com.haulmont.cuba.core.global.filter;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 
-public class ParameterInfo {
+public class ParameterInfo implements Serializable {
 
     public enum Type {
+        NONE("") {
+            @Override
+            public String prepend(String value, Character separator) {
+                return value;
+            }
+        },
         DATASOURCE("ds"),
         COMPONENT("component"),
         PARAM("param"),
@@ -35,6 +42,10 @@ public class ParameterInfo {
 
         public String getPrefix() {
             return prefix;
+        }
+
+        public String prepend(String value, Character separator) {
+            return prefix + separator + value;
         }
     }
 
@@ -55,16 +66,24 @@ public class ParameterInfo {
         return type;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public String getPath() {
         return path;
     }
 
     public String getName() {
-        return (type.getPrefix() + "$" + path);
+        return type.prepend(path, '$');
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getFlatName() {
-        return (type.getPrefix() + "." + path).replaceAll("\\.", "_");
+        return type.prepend(path, '.').replace(".", "_");
     }
 
     public boolean isCaseInsensitive() {

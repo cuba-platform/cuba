@@ -28,8 +28,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 @SystemLevel
 public class FtsConditionDescriptor extends AbstractConditionDescriptor {
 
-    public FtsConditionDescriptor(String filterComponentName, CollectionDatasource datasource) {
-        super("fts", filterComponentName, datasource);
+    public FtsConditionDescriptor(String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass,
+                                  String entityAlias) {
+        super("fts", filterComponentName, metaClass, entityAlias);
     }
 
     @Override

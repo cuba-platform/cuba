@@ -16,10 +16,11 @@
  */
 package com.haulmont.cuba.core.global.filter;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public abstract class Condition implements Cloneable {
+public abstract class Condition implements Cloneable, Serializable {
     protected String name;
 
     public Condition(String name) {

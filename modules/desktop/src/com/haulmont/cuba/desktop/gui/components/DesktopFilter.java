@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -28,6 +29,8 @@ import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -382,6 +385,26 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
         delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
+    }
+
+    @Override
+    public MetaClass getEntityMetaClass() {
+        return delegate.getEntityMetaClass();
+    }
+
+    @Override
+    public String getEntityAlias() {
+        return delegate.getEntityAlias();
+    }
+
+    @Override
+    public CollectionLoader getDataLoader() {
+        return delegate.getDataLoader();
+    }
+
+    @Override
+    public void setDataLoader(CollectionLoader loader) {
+        delegate.setDataLoader(loader);
     }
 
     // just stub

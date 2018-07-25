@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter.descriptor;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
@@ -31,8 +32,8 @@ public class GroupConditionDescriptor extends AbstractConditionDescriptor {
     protected GroupType groupType;
 
     public GroupConditionDescriptor(GroupType groupType,
-                                    String filterComponentName, CollectionDatasource datasource) {
-        super("group", filterComponentName, datasource);
+                                    String filterComponentName, MetaClass metaClass, String entityAlias) {
+        super("group", filterComponentName, metaClass, entityAlias);
         this.groupType = groupType;
     }
 

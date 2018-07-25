@@ -88,7 +88,6 @@ public class Param {
     protected boolean useUserTimeZone;
     protected String entityWhere;
     protected String entityView;
-    protected Datasource datasource;
     protected MetaProperty property;
     protected boolean inExpr;
     protected boolean required;
@@ -110,7 +109,7 @@ public class Param {
         private Class javaClass;
         private String entityWhere;
         private String entityView;
-        private Datasource dataSource;
+        private MetaClass metaClass;
         private MetaProperty property;
         private boolean inExpr;
         private boolean required;
@@ -145,8 +144,8 @@ public class Param {
             return this;
         }
 
-        public Builder setDataSource(Datasource dataSource) {
-            this.dataSource = dataSource;
+        public Builder setMetaClass(MetaClass metaClass) {
+            this.metaClass = metaClass;
             return this;
         }
 
@@ -189,7 +188,6 @@ public class Param {
         setJavaClass(builder.javaClass);
         entityWhere = builder.entityWhere;
         entityView = (builder.entityView != null) ? builder.entityView : View.MINIMAL;
-        datasource = builder.dataSource;
         property = builder.property;
         inExpr = builder.inExpr;
         required = builder.required;
@@ -775,7 +773,8 @@ public class Param {
                 picker.setMetaClass(metaClass);
 
                 picker.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
-                picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
+                // TODO filter ds
+//                picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
                 picker.addLookupAction();
                 picker.addClearAction();
 
@@ -813,7 +812,7 @@ public class Param {
     }
 
     protected CollectionDatasource<Entity<Object>, Object> createOptionsDataSource(MetaClass metaClass) {
-        CollectionDatasource ds = DsBuilder.create(datasource.getDsContext())
+        CollectionDatasource ds = DsBuilder.create()
                 .setMetaClass(metaClass)
                 .setViewName(entityView)
                 .buildCollectionDatasource();
@@ -829,12 +828,13 @@ public class Param {
             ds.setQuery(q);
         }
 
-        if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getFrameContext())) {
-            if (ds instanceof CollectionDatasource.Suspendable)
-                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
-            else
+        // TODO filter ds
+//        if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getFrameContext())) {
+//            if (ds instanceof CollectionDatasource.Suspendable)
+//                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
+//            else
                 ds.refresh();
-        }
+//        }
 
         return ds;
     }

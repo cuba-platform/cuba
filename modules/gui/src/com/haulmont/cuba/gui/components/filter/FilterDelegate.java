@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.dom4j.Element;
 
@@ -57,7 +59,15 @@ public interface FilterDelegate {
 
     ComponentContainer getLayout();
 
+    MetaClass getEntityMetaClass();
+
+    String getEntityAlias();
+
     void setDatasource(CollectionDatasource datasource);
+
+    CollectionLoader getDataLoader();
+
+    void setDataLoader(CollectionLoader loader);
 
     CollectionDatasource getDatasource();
 

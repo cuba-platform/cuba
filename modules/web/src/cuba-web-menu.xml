@@ -22,6 +22,7 @@
         <item id="dcScreen1"/>
         <item id="dcScreen2"/>
         <item id="dcScreen3"/>
+        <item id="dcScreen4"/>
         <separator/>
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>

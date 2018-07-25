@@ -16,11 +16,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.vaadin.shared.ui.MarginInfo;
@@ -380,6 +382,26 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     @Override
     public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
         delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
+    }
+
+    @Override
+    public MetaClass getEntityMetaClass() {
+        return delegate.getEntityMetaClass();
+    }
+
+    @Override
+    public String getEntityAlias() {
+        return delegate.getEntityAlias();
+    }
+
+    @Override
+    public CollectionLoader getDataLoader() {
+        return delegate.getDataLoader();
+    }
+
+    @Override
+    public void setDataLoader(CollectionLoader loader) {
+        delegate.setDataLoader(loader);
     }
 
     @Override

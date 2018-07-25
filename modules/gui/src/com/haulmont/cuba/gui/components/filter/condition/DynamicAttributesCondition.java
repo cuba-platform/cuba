@@ -77,8 +77,8 @@ public class DynamicAttributesCondition extends AbstractCondition {
         this.propertyPath = propertyPath;
     }
 
-    public DynamicAttributesCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
-        super(element, messagesPack, filterComponentName, datasource);
+    public DynamicAttributesCondition(Element element, String messagesPack, String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass) {
+        super(element, messagesPack, filterComponentName, metaClass);
 
         propertyPath = element.attributeValue("propertyPath");
 
@@ -249,7 +249,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
     public String getLocCaption() {
         if (isBlank(caption) && !isBlank(propertyPath)) {
             MessageTools messageTools = AppBeans.get(MessageTools.class);
-            String propertyCaption = messageTools.getPropertyCaption(datasource.getMetaClass(), propertyPath);
+            String propertyCaption = messageTools.getPropertyCaption(metaClass, propertyPath);
             if (!isBlank(propertyCaption)) {
                 return propertyCaption + "." + locCaption;
             }
@@ -258,7 +258,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
             return messageTools.loadString(messagesPack, caption);
         }
 
-        MetaPropertyPath mpp = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), getCategoryAttributeId());
+        MetaPropertyPath mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, getCategoryAttributeId());
         if (mpp != null) {
             return DynamicAttributesUtils.getCategoryAttribute(mpp.getMetaProperty()).getLocaleName();
         }

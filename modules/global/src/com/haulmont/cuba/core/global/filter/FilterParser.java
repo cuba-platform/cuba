@@ -21,10 +21,12 @@ import com.haulmont.bali.util.Dom4j;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public class FilterParser {
+public class FilterParser implements Serializable {
+
     protected final Condition root;
 
     public FilterParser(Element element) {

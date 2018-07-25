@@ -21,10 +21,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.QueryParser;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
 /**
@@ -43,21 +40,17 @@ public abstract class AbstractConditionDescriptor extends BaseUuidEntity {
     protected String locCaption;
     protected String filterComponentName;
     protected MetaClass datasourceMetaClass;
-    protected CollectionDatasource datasource;
     protected String entityAlias;
     protected Boolean inExpr = false;
     protected Boolean showImmediately = false;
     protected String messagesPack;
 
-    public AbstractConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
+    public AbstractConditionDescriptor(String name, String filterComponentName, MetaClass metaClass, String entityAlias) {
         this.name = name;
         this.filterComponentName = filterComponentName;
-        this.datasource = datasource;
-        this.datasourceMetaClass = datasource.getMetaClass();
+        this.datasourceMetaClass = metaClass;
 
-        String query = datasource.getQuery();
-        QueryParser parser = QueryTransformerFactory.createParser(query);
-        entityAlias = parser.getEntityAlias(datasourceMetaClass.getName());
+        this.entityAlias = entityAlias;
     }
 
     public String getName() {
@@ -95,10 +88,6 @@ public abstract class AbstractConditionDescriptor extends BaseUuidEntity {
 
     public Boolean isShowImmediately() {
         return showImmediately;
-    }
-
-    public CollectionDatasource getDatasource() {
-        return datasource;
     }
 
     public String getOperatorType() {

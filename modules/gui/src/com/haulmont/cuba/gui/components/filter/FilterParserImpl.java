@@ -21,6 +21,7 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.filter.ConditionType;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang3.StringUtils;
@@ -86,18 +87,17 @@ public class FilterParserImpl implements FilterParser {
     protected AbstractCondition createCondition(ConditionType type, Element element, Filter filter, String xml) {
         String filterComponentName = filter.getId();
         String messagesPack = filter.getFrame().getMessagesPack();
-        CollectionDatasource datasource = filter.getDatasource();
         switch (type) {
             case GROUP:
                 return new GroupCondition(element, filterComponentName);
             case PROPERTY:
-                return new PropertyCondition(element, messagesPack, filterComponentName, datasource);
+                return new PropertyCondition(element, messagesPack, filterComponentName, ((FilterImplementation) filter).getEntityMetaClass());
             case CUSTOM:
-                return new CustomCondition(element, messagesPack, filterComponentName, datasource);
+                return new CustomCondition(element, messagesPack, filterComponentName, ((FilterImplementation) filter).getEntityMetaClass());
             case RUNTIME_PROPERTY:
-                return new DynamicAttributesCondition(element, messagesPack, filterComponentName, datasource);
+                return new DynamicAttributesCondition(element, messagesPack, filterComponentName, ((FilterImplementation) filter).getEntityMetaClass());
             case FTS:
-                return new FtsCondition(element, messagesPack, filterComponentName, datasource);
+                return new FtsCondition(element, messagesPack, filterComponentName, ((FilterImplementation) filter).getEntityMetaClass());
             default:
                 throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
         }

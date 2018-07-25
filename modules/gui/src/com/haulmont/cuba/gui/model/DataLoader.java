@@ -16,9 +16,10 @@
 
 package com.haulmont.cuba.gui.model;
 
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.queryconditions.Condition;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  *
@@ -35,6 +36,18 @@ public interface DataLoader {
     String getQuery();
 
     void setQuery(String query);
+
+    Condition getCondition();
+
+    void setCondition(Condition condition);
+
+    Map<String, Object> getParameters();
+
+    void setParameters(Map<String, Object> parameters);
+
+    Object getParameter(String name);
+
+    void setParameter(String name, Object value);
 
     boolean isSoftDeletion();
 

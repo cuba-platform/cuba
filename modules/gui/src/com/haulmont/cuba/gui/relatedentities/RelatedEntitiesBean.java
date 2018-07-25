@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.components.Window;
@@ -136,7 +137,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 if (!(screenComponent instanceof Filter)) {
                     return false;
                 } else {
-                    MetaClass actualMetaClass = ((Filter) screenComponent).getDatasource().getMetaClass();
+                    MetaClass actualMetaClass = ((FilterImplementation) screenComponent).getEntityMetaClass();
                     MetaClass relatedMetaClass = metaProperty.getRange().asClass();
                     MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(relatedMetaClass);
                     if (Objects.equals(actualMetaClass, effectiveMetaClass)) {
@@ -299,7 +300,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 .setJavaClass(parentPrimaryKeyClass)
                 .setEntityWhere(StringUtils.EMPTY)
                 .setEntityView(StringUtils.EMPTY)
-                .setDataSource(datasource)
+                .setMetaClass(datasource.getMetaClass())
                 .setProperty(parentMetaClass.getPropertyNN(parentPrimaryKey))
                 .setInExpr(true)
                 .setRequired(true)
@@ -312,7 +313,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                                                          String filterComponentName, MetaClass parentMetaClass) {
         String conditionName = String.format("related_%s", RandomStringUtils.randomAlphabetic(6));
         CustomCondition condition = new CustomCondition(getConditionXmlElement(conditionName, parentMetaClass), AppConfig.getMessagesPack(),
-                filterComponentName, datasource);
+                filterComponentName, datasource.getMetaClass());
 
 
         Class<?> parentPrimaryKeyClass = parentMetaClass.getPropertyNN(parentPrimaryKey).getJavaType();
@@ -341,8 +342,10 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
 
     protected PropertyCondition getNonOptimizedCondition(MetaClass metaClass, List<Object> ids, Filter component,
                                                          String filterComponentName, String primaryKey) {
+
         PropertyConditionDescriptor conditionDescriptor = new PropertyConditionDescriptor(primaryKey, primaryKey,
-                AppConfig.getMessagesPack(), filterComponentName, component.getDatasource());
+                AppConfig.getMessagesPack(), filterComponentName, ((FilterImplementation) component).getEntityMetaClass(),
+                ((FilterImplementation) component).getEntityAlias());
 
         PropertyCondition condition = (PropertyCondition) conditionDescriptor.createCondition();
         condition.setInExpr(true);
@@ -356,7 +359,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 .setJavaClass(idType)
                 .setEntityWhere("")
                 .setEntityView("")
-                .setDataSource(component.getDatasource())
+                .setMetaClass(((FilterImplementation) component).getEntityMetaClass())
                 .setProperty(metaClass.getProperty(primaryKey))
                 .setInExpr(true)
                 .setRequired(true)

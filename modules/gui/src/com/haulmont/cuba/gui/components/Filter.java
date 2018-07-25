@@ -16,9 +16,13 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.List;
 
@@ -63,6 +67,16 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
     AfterFilterAppliedHandler getAfterFilterAppliedHandler();
 
     void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler);
+
+    /**
+     * Returns {@link DataLoader} which the filter is applied to.
+     */
+    CollectionLoader getDataLoader();
+
+    /**
+     * Sets {@link DataLoader} which the filter is applied to.
+     */
+    void setDataLoader(CollectionLoader loader);
 
     CollectionDatasource getDatasource();
 

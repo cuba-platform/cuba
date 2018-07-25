@@ -15,8 +15,8 @@
   -->
 
 <window
-        class="com.haulmont.cuba.web.tmp.DcScreen3"
-        caption="Screen 3"
+        class="com.haulmont.cuba.web.tmp.DcScreen4"
+        caption="Screen 4"
         messagesPack="com.haulmont.cuba.web.tmp">
 
     <data>
@@ -28,44 +28,28 @@
                     cacheable="false" softDeletion="true">
                 <query>
                     select u from sec$User u
-                    where u.group = :{params.group}
+                    where u.group.id = :groupId
                     order by u.name
+                    <condition>
+                        <and>
+                            <jpql>
+                                <where>u.login like :login</where>
+                            </jpql>
+                            <jpql>
+                                <where>u.active = :active</where>
+                            </jpql>
+                        </and>
+                    </condition>
                 </query>
             </loader>
         </collection>
-
-        <collection id="rolesCont"
-                    class="com.haulmont.cuba.security.entity.Role" view="_base">
-
-            <loader id="rolesLoader">
-                <query>
-                    select r from sec$Role r, sec$UserRole ur
-                    where ur.role = r and ur.user = :{containers.usersCont}
-                </query>
-            </loader>
-        </collection>
-
-        <instance id="userCont"
-                  class="com.haulmont.cuba.security.entity.User" view="user.edit">
-
-            <loader>
-                <query>
-                    select u from sec$User u
-                    where u.id = :{containers.usersCont}
-                </query>
-            </loader>
-
-            <collection id="substCont" property="substitutions"/>
-        </instance>
     </data>
 
-    <layout spacing="true" expand="split">
-        <textField id="textField1"/>
-        <split id="split" orientation="horizontal" width="100%">
-
-        </split>
-        <!--<button caption="Change" invoke="changeName"/>-->
-        <!--<button caption="Next User" invoke="nextUser"/>-->
-        <!--<label id="spacer"/>-->
+    <layout spacing="true">
+        <filter id="usersFilter"/>
+        <hbox spacing="true">
+            <textField id="loginField" caption="Login" align="MIDDLE_LEFT"/>
+            <checkBox id="activeField" caption="Only Active" align="MIDDLE_LEFT"/>
+        </hbox>
     </layout>
 </window>

@@ -66,7 +66,7 @@ public class FilteringLookupAction extends PickerField.LookupAction {
             if (!(screenComponent instanceof Filter)) {
                 return false;
             } else {
-                MetaClass actualMetaClass = ((Filter) screenComponent).getDatasource().getMetaClass();
+                MetaClass actualMetaClass = ((FilterImplementation) screenComponent).getEntityMetaClass();
                 MetaClass propertyMetaClass = extendedEntities.getEffectiveMetaClass(pickerField.getMetaClass());
                 if (Objects.equals(actualMetaClass, propertyMetaClass)) {
                     applyFilter(((Filter) screenComponent));
@@ -104,7 +104,7 @@ public class FilteringLookupAction extends PickerField.LookupAction {
         CustomCondition condition = new CustomCondition(createConditionXmlElement(),
                 AppConfig.getMessagesPack(),
                 getFilterComponentName(filterComponent),
-                filterComponent.getDatasource());
+                ((FilterImplementation) filterComponent).getEntityMetaClass());
 
         condition.setUnary(true);
         condition.setHidden(true);
@@ -117,7 +117,7 @@ public class FilteringLookupAction extends PickerField.LookupAction {
                 .setJavaClass(Boolean.class)
                 .setEntityWhere("")
                 .setEntityView("")
-                .setDataSource(filterComponent.getDatasource())
+                .setMetaClass(((FilterImplementation) filterComponent).getEntityMetaClass())
                 .setInExpr(true)
                 .setRequired(true)
                 .build();

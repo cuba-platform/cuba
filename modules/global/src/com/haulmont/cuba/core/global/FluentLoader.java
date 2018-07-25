@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.queryconditions.Condition;
 
 import javax.persistence.TemporalType;
 import java.util.*;
@@ -197,6 +198,7 @@ public class FluentLoader<E extends Entity<K>, K> {
         private int firstResult;
         private int maxResults;
         private boolean cacheable;
+        private Condition condition;
 
         ByQuery(String queryString) {
             Preconditions.checkNotEmptyString(queryString, "queryString is empty");
@@ -216,6 +218,7 @@ public class FluentLoader<E extends Entity<K>, K> {
             }
             loadContext.setQuery(query);
 
+            loadContext.getQuery().setCondition(condition);
             loadContext.getQuery().setFirstResult(firstResult);
             loadContext.getQuery().setMaxResults(maxResults);
             loadContext.getQuery().setCacheable(cacheable);
@@ -274,6 +277,14 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public ByQuery softDeletion(boolean softDeletion) {
             FluentLoader.this.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets additional query condition.
+         */
+        public ByQuery condition(Condition condition) {
+            this.condition = condition;
             return this;
         }
 

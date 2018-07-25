@@ -49,8 +49,9 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
                                        @Nullable String caption,
                                        String messagesPack,
                                        String filterComponentName,
-                                       CollectionDatasource datasource) {
-        super(name, filterComponentName, datasource);
+                                       MetaClass metaClass,
+                                       String entityAlias) {
+        super(name, filterComponentName, metaClass, entityAlias);
         this.caption = caption;
         this.messagesPack = messagesPack;
         Messages messages = AppBeans.get(Messages.NAME);
@@ -63,12 +64,13 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
     }
 
     public PropertyConditionDescriptor(Element element, String messagesPack, String filterComponentName,
-                                       CollectionDatasource datasource) {
+                                       MetaClass metaClass, String entityAlias) {
         this(element.attributeValue("name"),
                 element.attributeValue("caption"),
                 messagesPack,
                 filterComponentName,
-                datasource);
+                metaClass,
+                entityAlias);
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");

@@ -17,10 +17,17 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+
 /**
  * The interface is implemented by generic filter components. It contains low-level methods
  * that generally should not be used in client code
  */
 public interface FilterImplementation {
+
+    MetaClass getEntityMetaClass();
+
+    String getEntityAlias();
+
     void loadFiltersAndApplyDefault();
 }

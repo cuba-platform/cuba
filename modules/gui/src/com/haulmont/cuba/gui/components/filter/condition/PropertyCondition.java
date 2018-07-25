@@ -51,8 +51,8 @@ public class PropertyCondition extends AbstractCondition {
         this.operator = condition.operator;
     }
 
-    public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
-        super(element, messagesPack, filterComponentName, datasource);
+    public PropertyCondition(Element element, String messagesPack, String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass) {
+        super(element, messagesPack, filterComponentName, metaClass);
 
         String text = element.getText();
         if (operator != Op.DATE_INTERVAL) {
@@ -93,8 +93,8 @@ public class PropertyCondition extends AbstractCondition {
 
         String nameToUse = name;
         boolean useCrossDataStoreRefId = false;
-        String thisStore = metadataTools.getStoreName(datasource.getMetaClass());
-        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(name);
+        String thisStore = metadataTools.getStoreName(metaClass);
+        MetaPropertyPath propertyPath = metaClass.getPropertyPath(name);
         if (propertyPath != null) {
             String refIdProperty = metadataTools.getCrossDataStoreReferenceIdProperty(thisStore, propertyPath.getMetaProperty());
             if (refIdProperty != null) {
@@ -208,7 +208,7 @@ public class PropertyCondition extends AbstractCondition {
     }
 
     public String getPropertyLocCaption() {
-        return FilterConditionUtils.getPropertyLocCaption(datasource.getMetaClass(), name);
+        return FilterConditionUtils.getPropertyLocCaption(metaClass, name);
     }
 
     @Override

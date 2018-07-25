@@ -24,6 +24,7 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
@@ -33,8 +34,8 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.filter.DenyingClause;
-import com.haulmont.cuba.core.global.filter.QueryFilter;
+import com.haulmont.cuba.core.global.filter.*;
+import com.haulmont.cuba.core.global.queryconditions.JpqlCondition;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
@@ -55,6 +56,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -136,6 +138,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterEntity filterEntity;
     protected FilterEntity initialFilterEntity;
     protected CollectionDatasource datasource;
+    protected CollectionLoader dataLoader;
+    protected Adapter adapter;
     protected QueryFilter dsQueryFilter;
     protected List<FilterEntity> filterEntities = new ArrayList<>();
     protected AppliedFilter lastAppliedFilter;
@@ -408,13 +412,13 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void switchFilterMode(FilterMode filterMode) {
         if (filterMode == FilterMode.FTS_MODE && !isFtsModeEnabled() && !isEntityAvailableForFts()) {
             log.warn("Unable to switch to the FTS filter mode. FTS mode is not supported for the {} entity",
-                    datasource.getMetaClass().getName());
+                    adapter.getMetaClass().getName());
             return;
         }
         this.filterMode = filterMode;
         if (filterMode == FilterMode.FTS_MODE) {
             prevConditions = conditions;
-            ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+            adapter.unpinAllQuery();
             appliedFilters.clear();
             lastAppliedFilter = null;
         }
@@ -522,13 +526,13 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected boolean suitableCondition(AbstractCondition condition) {
         if (condition instanceof PropertyCondition) {
-            return datasource.getMetaClass()
+            return adapter.getMetaClass()
                     .getPropertyPath(condition.getName()) != null;
         }
 
         if (condition instanceof DynamicAttributesCondition) {
             return DynamicAttributesUtils.getMetaPropertyPath(
-                    datasource.getMetaClass(),
+                    adapter.getMetaClass(),
                     ((DynamicAttributesCondition) condition).getCategoryAttributeId()
             ) != null;
         }
@@ -549,7 +553,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (AbstractCondition condition : initialConditions) {
             if (!suitableCondition(condition)) {
                 String message = String.format(getMainMessage("filter.inappropriate.filter"),
-                        filterEntity.getName(), datasource.getMetaClass().getName());
+                        filterEntity.getName(), adapter.getMetaClass().getName());
 
                 windowManager.showNotification(message, Frame.NotificationType.HUMANIZED);
                 setFilterEntity(adHocFilter);
@@ -661,7 +665,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter && (!isGlobal || userCanEditGlobalFilter);
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0)
-                && (datasource == null || Stores.isMain(metadata.getTools().getStoreName(datasource.getMetaClass())));
+                && (adapter == null || Stores.isMain(metadata.getTools().getStoreName(adapter.getMetaClass())));
         boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode;
         boolean saveAsAppFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
@@ -1258,7 +1262,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (appliedFilters.size() == 1) {
                 AppliedFilterHolder holder = appliedFilters.removeLast();
                 appliedFiltersLayout.remove(holder.layout);
-                ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                adapter.unpinAllQuery();
                 this.layout.remove(appliedFiltersLayout);
             } else {
                 windowManager.showOptionDialog(
@@ -1272,7 +1276,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                                         FilterDelegateImpl.this.layout.remove(appliedFiltersLayout);
                                     }
                                     appliedFilters.clear();
-                                    ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                                    adapter.unpinAllQuery();
                                 }),
                                 new DialogAction(Type.NO, Status.PRIMARY)
                         });
@@ -1319,9 +1323,24 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public MetaClass getEntityMetaClass() {
+        checkState();
+        return adapter.getMetaClass();
+    }
+
+    @Override
+    public String getEntityAlias() {
+        checkState();
+        String query = adapter.getQuery();
+        QueryParser parser = QueryTransformerFactory.createParser(query);
+        return parser.getEntityAlias(adapter.getMetaClass().getName());
+    }
+
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
+        this.adapter = new DatasourceAdapter(datasource);
 
         if (getResultingManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
@@ -1344,20 +1363,44 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public CollectionLoader getDataLoader() {
+        return dataLoader;
+    }
+
+    @Override
+    public void setDataLoader(CollectionLoader dataLoader) {
+        this.dataLoader = dataLoader;
+        this.adapter = new LoaderAdapter(dataLoader, filter);
+        this.adapter.setDataLoaderCondition(dataLoader.getCondition());
+
+        if (getResultingManualApplyRequired()) {
+            // set initial denying condition to get empty datasource before explicit filter applying
+            JpqlCondition denyingCondition = new JpqlCondition("0<>0");
+            this.dataLoader.setCondition(denyingCondition);
+        }
+
+        if (useMaxResults) {
+            initMaxResults();
+        }
+    }
+
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
     protected void initMaxResults() {
+        checkState();
+
         int maxResults;
         if (this.maxResults != -1) {
             maxResults = this.maxResults;
         } else {
-            maxResults = datasource.getMaxResults();
+            maxResults = adapter.getMaxResults();
         }
 
-        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName())) {
-            maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(adapter.getMetaClass().getName())) {
+            maxResults = persistenceManager.getFetchUI(adapter.getMetaClass().getName());
         }
 
         if (maxResultsAddedToLayout) {
@@ -1373,7 +1416,13 @@ public class FilterDelegateImpl implements FilterDelegate {
             maxResultsField.setValue(maxResults);
         }
 
-        datasource.setMaxResults(maxResults);
+        adapter.setMaxResults(maxResults);
+    }
+
+    protected void checkState() {
+        if (dataLoader == null && datasource == null) {
+            throw new IllegalStateException("Set DataLoader or Datasource first");
+        }
     }
 
     protected int findClosestValue(int maxResults, List<Integer> optionsList) {
@@ -1396,10 +1445,10 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected boolean isEntityAvailableForFts() {
-        return datasource != null
+        return adapter != null
                 && ftsFilterHelper != null
-                && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName())
-                && Stores.isMain(metadata.getTools().getStoreName(datasource.getMetaClass()));
+                && ftsFilterHelper.isEntityIndexed(adapter.getMetaClass().getName())
+                && Stores.isMain(metadata.getTools().getStoreName(adapter.getMetaClass()));
     }
 
     @Override
@@ -1498,7 +1547,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected Map<String, Object> prepareDatasourceCustomParams() {
-        Map<String, Object> lastRefreshParameters = new HashMap<>(datasource.getLastRefreshParameters());
+        Map<String, Object> lastRefreshParameters = new HashMap<>(adapter.getLastRefreshParameters());
         for (String paramName : ftsLastDatasourceRefreshParamsNames) {
             lastRefreshParameters.remove(paramName);
         }
@@ -1510,7 +1559,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (FtsCondition ftsCondition : ftsConditions) {
             String searchTerm = (String) ftsCondition.getParam().getValue();
             if (!Strings.isNullOrEmpty(searchTerm)) {
-                FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+                FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, adapter.getMetaClass().getName());
                 int queryKey = ftsSearchResult.getQueryKey();
 
                 lastRefreshParameters.put(ftsCondition.getSessionIdParamName(), userSessionSource.getUserSession().getId());
@@ -1540,12 +1589,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         Map<String, Object> params = new HashMap<>();
 
         if (!Strings.isNullOrEmpty(searchTerm)) {
-            FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+            FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, adapter.getMetaClass().getName());
             int queryKey = ftsSearchResult.getQueryKey();
             params.put(FtsFilterHelper.SESSION_ID_PARAM_NAME, userSessionSource.getUserSession().getId());
             params.put(FtsFilterHelper.QUERY_KEY_PARAM_NAME, queryKey);
 
-            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(datasource.getMetaClass().getName());
+            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(adapter.getMetaClass().getName());
             conditions = new ConditionsTree();
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
@@ -1558,7 +1607,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         applyDatasourceFilter();
         initDatasourceMaxResults();
-        datasource.refresh(params);
+        adapter.refresh(params);
 
         if (afterFilterAppliedHandler != null) {
             afterFilterAppliedHandler.afterFilterApplied();
@@ -1571,43 +1620,37 @@ public class FilterDelegateImpl implements FilterDelegate {
      * Method also resets the datasource {@code firstResult} value
      */
     protected void initDatasourceMaxResults() {
-        if (datasource == null) {
-            throw new DevelopmentException("Filter datasource is not set");
-        }
+        checkState();
+
         if (this.maxResults != -1) {
-            datasource.setMaxResults(maxResults);
+            adapter.setMaxResults(maxResults);
         } else if (maxResultsAddedToLayout && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
             if (maxResults != null && maxResults > 0) {
-                datasource.setMaxResults(maxResults);
+                adapter.setMaxResults(maxResults);
             } else {
-                datasource.setMaxResults(persistenceManager.getFetchUI(datasource.getMetaClass().getName()));
+                adapter.setMaxResults(persistenceManager.getFetchUI(adapter.getMetaClass().getName()));
             }
         }
-        if (datasource instanceof CollectionDatasource.SupportsPaging) {
-            ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
-        }
+        adapter.setFirstResult(0);
     }
 
     protected void applyDatasourceFilter() {
-        if (datasource != null) {
+        checkState();
 
-            String currentFilterXml = filterParser.getXml(conditions, Param.ValueProperty.VALUE);
+        String currentFilterXml = filterParser.getXml(conditions, Param.ValueProperty.VALUE);
 
-            if (!Strings.isNullOrEmpty(currentFilterXml)) {
-                Element element = Dom4j.readDocument(currentFilterXml).getRootElement();
-                QueryFilter queryFilter = new QueryFilter(element);
+        if (!Strings.isNullOrEmpty(currentFilterXml)) {
+            Element element = Dom4j.readDocument(currentFilterXml).getRootElement();
+            QueryFilter queryFilter = new QueryFilter(element);
 
-                if (dsQueryFilter != null) {
-                    queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);
-                }
-
-                datasource.setQueryFilter(queryFilter);
-            } else {
-                datasource.setQueryFilter(dsQueryFilter);
+            if (dsQueryFilter != null) {
+                queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);
             }
+
+            adapter.setQueryFilter(queryFilter);
         } else {
-            log.warn("Unable to apply datasource filter with null datasource");
+            adapter.setQueryFilter(dsQueryFilter);
         }
     }
 
@@ -1640,10 +1683,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      * before it will be refreshed
      */
     protected void refreshDatasource(Map<String, Object> parameters) {
-        if (datasource instanceof CollectionDatasource.Suspendable)
-            ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended(parameters);
-        else
-            datasource.refresh(parameters);
+        adapter.refreshIfNotSuspended(parameters);
     }
 
     @Override
@@ -1716,10 +1756,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         Element maxResultsEl = element.element("maxResults");
-        if (maxResultsEl != null && isMaxResultsLayoutVisible()) {
+        if (maxResultsEl != null && !maxResultsEl.getText().equals("") && isMaxResultsLayoutVisible()) {
             try {
                 Integer maxResultsFromSettings = Integer.valueOf(maxResultsEl.getText());
-                datasource.setMaxResults(maxResultsFromSettings);
+                adapter.setMaxResults(maxResultsFromSettings);
                 initMaxResults();
             } catch (NumberFormatException ex) {
                 log.error("Error on parsing maxResults setting value", ex);
@@ -2080,7 +2120,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             filter.getFrame().addAction(new AbstractAction(Filter.APPLY_ACTION_ID, clientConfig.getFilterApplyShortcut()) {
                 @Override
                 public void actionPerform(Component component) {
-                    if (isVisible() && datasource != null) {
+                    if (isVisible() && adapter != null) {
                         if (filterMode == FilterMode.GENERIC_MODE) {
                             apply(false);
                         } else {
@@ -2095,7 +2135,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             filter.getFrame().addAction(new AbstractAction(Filter.SELECT_ACTION_ID, clientConfig.getFilterSelectShortcut()) {
                 @Override
                 public void actionPerform(Component component) {
-                    if (isVisible() && datasource != null && filtersPopupButton.isEnabled()) {
+                    if (isVisible() && adapter != null && filtersPopupButton.isEnabled()) {
                         filtersPopupButton.setPopupVisible(true);
                     }
                 }
@@ -2448,8 +2488,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void actionPerform(Component component) {
-            if (datasource instanceof CollectionDatasource.SupportsApplyToSelected) {
-                ((CollectionDatasource.SupportsApplyToSelected) datasource).pinQuery();
+            if (adapter.supportsApplyToSelected()) {
+                adapter.pinQuery();
                 addAppliedFilter();
 
             }
@@ -2513,8 +2553,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
                 params.put("componentId", componentId);
                 params.put("foldersPane", filterHelper.getFoldersPane());
-                params.put("entityClass", datasource.getMetaClass().getJavaClass().getName());
-                params.put("query", datasource.getQuery());
+                params.put("entityClass", adapter.getMetaClass().getJavaClass().getName());
+                params.put("query", adapter.getQuery());
                 filter.getFrame().openWindow("saveSetInFolder",
                         WindowManager.OpenType.DIALOG,
                         params);
@@ -2752,6 +2792,261 @@ public class FilterDelegateImpl implements FilterDelegate {
                 default:
                     return true;
             }
+        }
+    }
+
+    protected interface Adapter {
+
+        MetaClass getMetaClass();
+        int getMaxResults();
+        void setMaxResults(int maxResults);
+        int getFirstResult();
+        void setFirstResult(int firstResult);
+        void setQueryFilter(QueryFilter filter);
+        void setDataLoaderCondition(com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition);
+        Map<String, Object> getLastRefreshParameters();
+        void refresh(Map<String, Object> parameters);
+        void refreshIfNotSuspended(Map<String, Object> parameters);
+        boolean supportsApplyToSelected();
+        void pinQuery();
+        void unpinAllQuery();
+        String getQuery();
+    }
+
+    protected static class LoaderAdapter implements Adapter {
+
+        protected CollectionLoader loader;
+        protected Filter filter;
+        protected QueryFilter queryFilter;
+
+        /**
+         * Condition which was set on DataLoader before applying the filter
+         */
+        protected com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition;
+
+        protected static final Pattern PARAM_PATTERN = Pattern.compile("(:)component\\$([\\w.]+)");
+
+        public LoaderAdapter(CollectionLoader loader, Filter filter) {
+            this.filter = filter;
+            if (loader.getContainer() == null) {
+                throw new IllegalStateException("DataLoader must be connected to a Container");
+            }
+            this.loader = loader;
+        }
+
+        @Override
+        public MetaClass getMetaClass() {
+            return loader.getContainer().getEntityMetaClass();
+        }
+
+        @Override
+        public int getMaxResults() {
+            return loader.getMaxResults();
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            loader.setMaxResults(maxResults);
+        }
+
+        @Override
+        public int getFirstResult() {
+            return loader.getFirstResult();
+        }
+
+        @Override
+        public void setFirstResult(int firstResult) {
+            loader.setFirstResult(firstResult);
+        }
+
+        @Override
+        public void setQueryFilter(QueryFilter filter) {
+            queryFilter = filter;
+        }
+
+        @Override
+        public void setDataLoaderCondition(com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition) {
+            this.dataLoaderCondition = dataLoaderCondition;
+        }
+
+        @Override
+        public Map<String, Object> getLastRefreshParameters() {
+            return loader.getParameters();
+        }
+
+        @Override
+        public void refresh(Map<String, Object> parameters) {
+            loader.setParameters(parameters);
+            loader.load();
+        }
+
+        @Override
+        public void refreshIfNotSuspended(Map<String, Object> parameters) {
+            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                loader.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            if (queryFilter != null) {
+                replaceParamNames(queryFilter.getRoot());
+
+                for (ParameterInfo parameterInfo : queryFilter.getParameters()) {
+                    if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
+                        String fullName = parameterInfo.getPath();
+                        int i = fullName.lastIndexOf('.');
+                        String name = i == -1 ? fullName : fullName.substring(i + 1);
+
+                        parameterInfo.setType(ParameterInfo.Type.NONE);
+                        parameterInfo.setPath(parameterInfo.getPath().replace(".", "_"));
+
+                        loader.setParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
+                    }
+                }
+
+                com.haulmont.cuba.core.global.queryconditions.Condition condition = queryFilter.toQueryCondition();
+
+                if (dataLoaderCondition != null) {
+                    com.haulmont.cuba.core.global.queryconditions.LogicalCondition combined = new com.haulmont.cuba.core.global.queryconditions.LogicalCondition(com.haulmont.cuba.core.global.queryconditions.LogicalCondition.Type.AND);
+                    combined.add(dataLoaderCondition);
+                    combined.add(condition);
+                    condition = combined;
+                }
+
+                loader.setCondition(condition);
+            } else {
+                loader.setCondition(dataLoaderCondition);
+            }
+
+            loader.load();
+        }
+
+        /**
+         * Recursively replaces parameter names in condition's text, e.g.
+         * "u.name like :component$usersFilter.name26607" -> "u.name like :usersFilter_name26607"
+         */
+        protected void replaceParamNames(Condition condition) {
+            if (condition instanceof Clause) {
+                for (ParameterInfo parameterInfo : condition.getParameters()) {
+                    if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
+                        Matcher m = PARAM_PATTERN.matcher(((Clause) condition).getContent());
+                        StringBuffer sb = new StringBuffer();
+                        while (m.find()) {
+                            m.appendReplacement(sb, m.group(1) + m.group(2).replace('.', '_'));
+                        }
+                        m.appendTail(sb);
+                        ((Clause) condition).setContent(sb.toString());
+                    }
+                }
+            } else if (condition instanceof LogicalCondition) {
+                for (Condition nestedCond : condition.getConditions()) {
+                    replaceParamNames(nestedCond);
+                }
+            }
+        }
+
+        @Override
+        public boolean supportsApplyToSelected() {
+            return false; // TODO filter supportsApplyToSelected
+        }
+
+        @Override
+        public void pinQuery() {
+            // TODO filter supportsApplyToSelected
+        }
+
+        @Override
+        public void unpinAllQuery() {
+            // TODO filter supportsApplyToSelected
+        }
+
+        @Override
+        public String getQuery() {
+            return loader.getQuery();
+        }
+    }
+
+    protected static class DatasourceAdapter implements Adapter {
+
+        protected CollectionDatasource datasource;
+
+        public DatasourceAdapter(CollectionDatasource datasource) {
+            this.datasource = datasource;
+        }
+
+        @Override
+        public MetaClass getMetaClass() {
+            return datasource.getMetaClass();
+        }
+
+        @Override
+        public int getMaxResults() {
+            return datasource.getMaxResults();
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            datasource.setMaxResults(maxResults);
+        }
+
+        @Override
+        public int getFirstResult() {
+            if (datasource instanceof CollectionDatasource.SupportsPaging) {
+                return ((CollectionDatasource.SupportsPaging) datasource).getFirstResult();
+            }
+            return 0;
+        }
+
+        @Override
+        public void setFirstResult(int firstResult) {
+            if (datasource instanceof CollectionDatasource.SupportsPaging) {
+                ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(firstResult);
+            }
+        }
+
+        @Override
+        public void setQueryFilter(QueryFilter filter) {
+            datasource.setQueryFilter(filter);
+        }
+
+        @Override
+        public void setDataLoaderCondition(com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition) {
+        }
+
+        @Override
+        public Map<String, Object> getLastRefreshParameters() {
+            return datasource.getLastRefreshParameters();
+        }
+
+        @Override
+        public void refresh(Map<String, Object> parameters) {
+            datasource.refresh(parameters);
+        }
+
+        @Override
+        public void refreshIfNotSuspended(Map<String, Object> parameters) {
+            if (datasource instanceof CollectionDatasource.Suspendable)
+                ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended(parameters);
+            else
+                datasource.refresh(parameters);
+        }
+
+        @Override
+        public boolean supportsApplyToSelected() {
+            return true;
+        }
+
+        @Override
+        public void pinQuery() {
+            ((CollectionDatasource.SupportsApplyToSelected) datasource).pinQuery();
+        }
+
+        @Override
+        public void unpinAllQuery() {
+            ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+        }
+
+        @Override
+        public String getQuery() {
+            return datasource.getQuery();
         }
     }
 }

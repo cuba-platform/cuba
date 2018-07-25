@@ -59,13 +59,13 @@ public class FtsCondition extends AbstractCondition {
             FtsFilterHelper ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
             this.queryKeyParamName = generateQueryKeyParamName();
             this.sessionIdParamName = generateSessionIdParamName();
-            this.text = ftsFilterHelper.createFtsWhereClause(datasource.getMetaClass().getName(),
+            this.text = ftsFilterHelper.createFtsWhereClause(metaClass.getName(),
                     queryKeyParamName, sessionIdParamName);
         }
     }
 
-    public FtsCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
-        super(element, messagesPack, filterComponentName, datasource);
+    public FtsCondition(Element element, String messagesPack, String filterComponentName, com.haulmont.chile.core.model.MetaClass metaClass) {
+        super(element, messagesPack, filterComponentName, metaClass);
         queryKeyParamName = element.attributeValue("queryKeyParamName");
         sessionIdParamName = element.attributeValue("sessionIdParamName");
     }

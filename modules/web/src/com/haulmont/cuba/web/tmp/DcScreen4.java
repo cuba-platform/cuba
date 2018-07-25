@@ -16,78 +16,78 @@
 
 package com.haulmont.cuba.web.tmp;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.SplitPanel;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContextFactory;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
  */
-public class DcScreen3 extends AbstractWindow {
+public class DcScreen4 extends AbstractWindow {
 
     @Inject
-    private TextField<String> textField1;
-    @Inject
-    private SplitPanel split;
-    @Inject
     private Metadata metadata;
-    @Inject
-    private DataContextFactory dataContextFactory;
+
     @Inject
     private ComponentsFactory componentsFactory;
 
+    @Inject
+    private ScreenData screenData;
+
     private CollectionContainer<User> usersContainer;
-    private CollectionContainer<UserRole> userRolesContainer;
+
+    @Inject
+    private Filter usersFilter;
+
+    @Inject
+    private TextField<String> loginField;
+
+    @Inject
+    private CheckBox activeField;
 
     @Override
     public void init(Map<String, Object> params) {
+        screenData.load(getXmlDescriptor().element("data"));
+
         Table<User> usersTable = componentsFactory.createComponent(Table.class);
         usersTable.setSizeFull();
-        split.add(usersTable);
-
-        Table<UserRole> userRolesTable = componentsFactory.createComponent(Table.class);
-        userRolesTable.setSizeFull();
-        split.add(userRolesTable);
+        add(usersTable);
+        expand(usersTable);
 
         MetaClass userMetaClass = metadata.getClassNN(User.class);
         usersTable.addColumn(new Table.Column<>(userMetaClass.getPropertyPath("login")));
         usersTable.addColumn(new Table.Column<>(userMetaClass.getPropertyPath("name")));
 
-        MetaClass userRoleMetaClass = metadata.getClassNN(UserRole.class);
-        userRolesTable.addColumn(new Table.Column<>(userRoleMetaClass.getPropertyPath("role.name")));
+        CollectionLoader<User> usersLoader = screenData.getLoader("usersLoader");
+        usersLoader.setParameter("groupId", UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
-        usersContainer = dataContextFactory.createCollectionContainer(User.class);
-        userRolesContainer = dataContextFactory.createCollectionContainer(UserRole.class);
+        usersContainer = screenData.getContainer("usersCont");
+        usersTable.setTableSource(new CollectionContainerTableSource<>(usersContainer));
 
-        CollectionLoader<User> loader = dataContextFactory.createCollectionLoader();
-        loader.setContainer(usersContainer);
-        loader.setQuery("select u from sec$User u order by u.name");
-        loader.setView("user.edit");
-
-        loader.load();
-
-        usersContainer.addItemChangeListener(e -> {
-            User user = e.getItem();
-            userRolesContainer.setItems(user != null ? user.getUserRoles() : null);
+        loginField.addValueChangeListener(e -> {
+            usersLoader.setParameter("login", Strings.isNullOrEmpty((String) e.getValue()) ? null : "(?i)%" + e.getValue() + "%");
+            usersLoader.load();
         });
 
-        usersTable.setTableSource(new CollectionContainerTableSource<>(usersContainer));
-        userRolesTable.setTableSource(new CollectionContainerTableSource<>(userRolesContainer));
-        
-        textField1.setValueSource(new ContainerValueSource<>(usersContainer, "name"));
+        activeField.addValueChangeListener(e -> {
+            usersLoader.setParameter("active", Boolean.TRUE.equals(e.getValue()) ? true : null);
+            usersLoader.load();
+        });
+
+        usersFilter.setDataLoader(usersLoader);
     }
 }

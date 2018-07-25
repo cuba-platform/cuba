@@ -82,7 +82,7 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
                         condition.getJavaClass() : condition.getParamClass());
                 builder.setEntityWhere(condition.getEntityParamWhere());
                 builder.setEntityView(condition.getEntityParamView());
-                builder.setDataSource(condition.getDatasource());
+                builder.setMetaClass(condition.getEntityMetaClass());
                 builder.setInExpr(condition.getInExpr());
                 builder.setUseUserTimeZone(Boolean.TRUE.equals(condition.getUseUserTimeZone()));
             }
@@ -95,7 +95,7 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
         @Override
         public Param.Builder getParamBuilder(AbstractCondition condition) {
             Param.Builder builder = super.getParamBuilder(condition);
-            MetaPropertyPath propertyPath = condition.getDatasource().getMetaClass().getPropertyPath(condition.getName());
+            MetaPropertyPath propertyPath = condition.getEntityMetaClass().getPropertyPath(condition.getName());
             MetaProperty metaProperty = propertyPath != null ? propertyPath.getMetaProperty() : null;
             if (!condition.getUnary())
                 builder.setJavaClass(condition.getJavaClass())
@@ -119,14 +119,13 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
                 Class paramJavaClass = _condition.getUnary() ? Boolean.class : _condition.getJavaClass();
 
                 MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(
-                        _condition.getDatasource().getMetaClass(), _condition.getCategoryAttributeId());
+                        _condition.getEntityMetaClass(), _condition.getCategoryAttributeId());
 
                 builder = Param.Builder.getInstance()
                         .setJavaClass(paramJavaClass)
                         .setName(condition.getParamName())
                         .setEntityWhere(null)
                         .setEntityView(null)
-                        .setDataSource(_condition.getDatasource())
                         .setProperty(metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null)
                         .setInExpr(_condition.getInExpr())
                         .setCategoryAttrId(_condition.getCategoryAttributeId())
