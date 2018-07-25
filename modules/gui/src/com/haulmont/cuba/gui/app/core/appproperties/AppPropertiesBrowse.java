@@ -51,7 +51,7 @@ public class AppPropertiesBrowse extends AbstractWindow {
     private TreeTable<AppPropertyEntity> paramsTable;
 
     @Inject
-    private TextField searchField;
+    private TextField<String> searchField;
 
     @Inject
     private Button exportBtn;
