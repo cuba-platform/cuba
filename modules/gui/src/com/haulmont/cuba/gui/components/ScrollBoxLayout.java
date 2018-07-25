@@ -17,15 +17,10 @@
 package com.haulmont.cuba.gui.components;
 
 public interface ScrollBoxLayout
-        extends OrderedContainer, Component.BelongToFrame, HasMargin, HasSpacing,
+        extends OrderedContainer, Component.BelongToFrame, HasMargin, HasSpacing, HasOrientation,
                 Component.HasIcon, Component.HasCaption, ShortcutNotifier {
 
     String NAME = "scrollBox";
-
-    enum Orientation {
-        VERTICAL,
-        HORIZONTAL
-    }
 
     enum ScrollBarPolicy {
         VERTICAL,
@@ -33,9 +28,6 @@ public interface ScrollBoxLayout
         BOTH,
         NONE
     }
-
-    Orientation getOrientation();
-    void setOrientation(Orientation orientation);
 
     ScrollBarPolicy getScrollBarPolicy();
     void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);

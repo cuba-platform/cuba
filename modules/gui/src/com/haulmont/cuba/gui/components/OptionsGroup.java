@@ -22,17 +22,10 @@ package com.haulmont.cuba.gui.components;
  * @param <V>
  * @param <I>
  */
-public interface OptionsGroup<V, I> extends OptionsField<V, I>, LookupComponent, Component.Focusable {
+@Deprecated
+public interface OptionsGroup<V, I> extends OptionsField<V, I>, LookupComponent, Component.Focusable, HasOrientation {
     String NAME = "optionsGroup";
 
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
-
-    Orientation getOrientation();
-    void setOrientation(Orientation orientation);
-
-    enum Orientation {
-        VERTICAL,
-        HORIZONTAL
-    }
 }

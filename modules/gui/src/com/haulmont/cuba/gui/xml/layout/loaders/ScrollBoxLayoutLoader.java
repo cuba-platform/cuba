@@ -28,20 +28,6 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
 
     private final Logger log = LoggerFactory.getLogger(ScrollBoxLayoutLoader.class);
 
-    protected void loadOrientation(ScrollBoxLayout component, Element element) {
-        String orientation = element.attributeValue("orientation");
-        if (orientation == null)
-            return;
-
-        if ("horizontal".equalsIgnoreCase(orientation)) {
-            component.setOrientation(ScrollBoxLayout.Orientation.HORIZONTAL);
-        } else if ("vertical".equalsIgnoreCase(orientation)) {
-            component.setOrientation(ScrollBoxLayout.Orientation.VERTICAL);
-        } else {
-            throw new GuiDevelopmentException("Invalid scrollbox orientation value: " + orientation, context.getFullFrameId());
-        }
-    }
-
     protected void loadScrollBars(ScrollBoxLayout component, Element element) {
         String scrollBars = element.attributeValue("scrollBars");
         if (scrollBars == null)

@@ -16,22 +16,35 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component.Alignment;
+import com.haulmont.cuba.gui.components.ContentMode;
+import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.DatePicker;
+import com.haulmont.cuba.gui.components.HasOrientation;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
+import com.haulmont.cuba.gui.components.MouseEventDetails;
+import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
+import com.haulmont.cuba.gui.components.SizeUnit;
+import com.haulmont.cuba.gui.components.TextInputField;
+import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.Orientation;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
+import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.shared.ui.grid.ScrollDestination;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.v7.ui.AbstractSelect;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -559,6 +572,32 @@ public final class WebWrapperUtils {
                 return ScrollDestination.END;
             default:
                 throw new IllegalArgumentException("Can't be converted to ScrollDestination: " + destination);
+        }
+    }
+
+    public static HasOrientation.Orientation convertToOrientation(Orientation orientation) {
+        checkNotNullArgument(orientation);
+
+        switch (orientation) {
+            case VERTICAL:
+                return HasOrientation.Orientation.VERTICAL;
+            case HORIZONTAL:
+                return HasOrientation.Orientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Can't be converted to HasOrientation.Orientation: " + orientation);
+        }
+    }
+
+    public static Orientation convertToVaadinOrientation(HasOrientation.Orientation orientation) {
+        checkNotNullArgument(orientation);
+
+        switch (orientation) {
+            case VERTICAL:
+                return Orientation.VERTICAL;
+            case HORIZONTAL:
+                return Orientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Can't be converted to Orientation: " + orientation);
         }
     }
 }

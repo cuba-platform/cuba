@@ -19,18 +19,10 @@ package com.haulmont.cuba.gui.components;
 public interface GroupBoxLayout
         extends ExpandingLayout,
                 OrderedContainer,
-                Component.HasIcon, Component.HasCaption, HasBorder, HasSpacing, HasOuterMargin,
+                Component.HasIcon, Component.HasCaption, HasBorder, HasSpacing, HasOuterMargin, HasOrientation,
                 Collapsable, Component.BelongToFrame, HasSettings, ShortcutNotifier {
 
     String NAME = "groupBox";
-
-    enum Orientation {
-        VERTICAL,
-        HORIZONTAL
-    }
-
-    Orientation getOrientation();
-    void setOrientation(Orientation orientation);
 
     /**
      * Set layout style as Vaadin Panel

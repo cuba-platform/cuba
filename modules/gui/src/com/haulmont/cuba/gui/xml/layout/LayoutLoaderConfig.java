@@ -80,6 +80,8 @@ public class LayoutLoaderConfig {
         sharedLoaders.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);
         sharedLoaders.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
         sharedLoaders.register(OptionsGroup.NAME, OptionsGroupLoader.class);
+        sharedLoaders.register(CheckBoxGroup.NAME, CheckBoxGroupLoader.class);
+        sharedLoaders.register(RadioButtonGroup.NAME, RadioButtonGroupLoader.class);
         sharedLoaders.register(OptionsList.NAME, OptionsListLoader.class);
         sharedLoaders.register(FileUploadField.NAME, FileUploadFieldLoader.class);
         sharedLoaders.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);

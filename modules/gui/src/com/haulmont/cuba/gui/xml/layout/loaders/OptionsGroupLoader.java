@@ -16,10 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Element;
 
 public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> {
     @Override
@@ -36,23 +34,6 @@ public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> 
 
         loadOptionsEnum(resultComponent, element);
         loadTabIndex(resultComponent, element);
-    }
-
-    protected void loadOrientation(OptionsGroup component, Element element) {
-        String orientation = element.attributeValue("orientation");
-
-        if (orientation == null) {
-            return;
-        }
-
-        if ("horizontal".equalsIgnoreCase(orientation)) {
-            component.setOrientation(OptionsGroup.Orientation.HORIZONTAL);
-        } else if ("vertical".equalsIgnoreCase(orientation)) {
-            component.setOrientation(OptionsGroup.Orientation.VERTICAL);
-        } else {
-            throw new GuiDevelopmentException("Invalid orientation value for option group: " +
-                    orientation, context.getFullFrameId(), "OptionsGroup ID", component.getId());
-        }
     }
 
     @Override

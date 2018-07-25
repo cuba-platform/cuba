@@ -763,6 +763,22 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
+    protected void loadOrientation(HasOrientation component, Element element) {
+        String orientation = element.attributeValue("orientation");
+        if (orientation == null) {
+            return;
+        }
+
+        if ("horizontal".equalsIgnoreCase(orientation)) {
+            component.setOrientation(HasOrientation.Orientation.HORIZONTAL);
+        } else if ("vertical".equalsIgnoreCase(orientation)) {
+            component.setOrientation(HasOrientation.Orientation.VERTICAL);
+        } else {
+            throw new GuiDevelopmentException("Invalid orientation value: " + orientation,
+                    context.getFullFrameId(), "Component ID", ((Component) component).getId());
+        }
+    }
+
     protected ComponentLoader getLoader(Element element, String name) {
         Class<? extends ComponentLoader> loaderClass = layoutLoaderConfig.getLoader(name);
         if (loaderClass == null) {

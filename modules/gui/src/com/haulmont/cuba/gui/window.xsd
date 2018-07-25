@@ -1693,8 +1693,6 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
 
-                <xs:attribute name="multiselect" type="xs:boolean"/>
-
                 <xs:attribute name="optionsEnum" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
@@ -1705,6 +1703,7 @@
         <xs:complexContent>
             <xs:extension base="optionsBaseFieldComponent">
                 <xs:attribute name="orientation" type="orientation"/>
+                <xs:attribute name="multiselect" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1714,6 +1713,25 @@
         <xs:complexContent>
             <xs:extension base="optionsBaseFieldComponent">
                 <xs:attribute name="nullOptionVisible" type="xs:boolean"/>
+                <xs:attribute name="multiselect" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- RadioButtonGroup -->
+    <xs:complexType name="radioButtonGroupComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
+                <xs:attribute name="orientation" type="orientation"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- CheckBoxGroup -->
+    <xs:complexType name="checkBoxGroupComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
+                <xs:attribute name="orientation" type="orientation"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2925,6 +2943,8 @@
 
                 <xs:element name="colorPicker" type="colorPickerComponent"/>
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
+                <xs:element name="radioButtonGroup" type="radioButtonGroupComponent"/>
+                <xs:element name="checkBoxGroup" type="checkBoxGroupComponent"/>
                 <xs:element name="optionsList" type="optionsListComponent"/>
                 <xs:element name="progressBar" type="progressBarComponent"/>
 
