@@ -427,6 +427,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
                 selectable = false;
+                addStyleName("c-group-row");
             }
 
             @Override
