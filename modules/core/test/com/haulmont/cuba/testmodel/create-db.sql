@@ -923,3 +923,24 @@ create table TEST_CUSTOMER_W_NPERS_REF (
     --
     primary key (ID)
 )^
+
+-- begin TEST_ADDRESS_EMBEDDED_CONTAINER
+create table TEST_ADDRESS_EMBEDDED_CONTAINER (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    ADDRESS_STREET varchar(255),
+    ADDRESS_COUNTRY varchar(255),
+    ADDRESS_INDEX_ integer,
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TEST_ADDRESS_EMBEDDED_CONTAINER
