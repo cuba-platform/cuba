@@ -25,9 +25,11 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.gui.icons.IconResolver;
+import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import com.haulmont.cuba.desktop.sys.FontDialog;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
@@ -60,6 +62,7 @@ import org.jdesktop.swingx.table.TableColumnExt;
 import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -1002,7 +1005,18 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         @Override
         public Object getCellEditorValue() {
             flush(DesktopComponentsHelper.getComposition(cellComponent));
-            impl.requestFocus();
+
+            boolean canRequestFocus = true;
+            Component root = SwingUtilities.getRoot(impl);
+            if (root instanceof TopLevelFrame) {
+                TopLevelFrame topLevelFrame = (TopLevelFrame) root;
+                canRequestFocus = !topLevelFrame.getGlassPane().isVisible();
+            }
+            // Do not try to focus field if there is modality curtain after value change
+            if (canRequestFocus) {
+                impl.requestFocus();
+            }
+
             if (cellComponent instanceof HasValue) {
                 return ((Field) cellComponent).getValue();
             }
