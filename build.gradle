@@ -664,7 +664,7 @@ configure(webModule) {
     }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['halo', 'havana']
+        themes = ['halo', 'hover', 'havana']
 //        compress = true
 //        sprites = true
 //        cleanup = true
@@ -673,6 +673,19 @@ configure(webModule) {
     assemble.dependsOn buildScssThemes
 
     task deployThemes(type: CubaDeployThemeTask, dependsOn: buildScssThemes) {
+    }
+
+    task buildHover(type: CubaWebScssThemeCreation) {
+        themes = ['hover']
+//        compress = true
+//        sprites = true
+//        cleanup = true
+    }
+
+    task deployHover(type: Copy, dependsOn: buildHover) {
+        from file("$webModule.buildDir/web/VAADIN/themes/hover")
+        into "${cuba.tomcat.dir}/webapps/cuba/VAADIN/themes/hover"
+        exclude '**/web.xml'
     }
 
     task buildHalo(type: CubaWebScssThemeCreation) {

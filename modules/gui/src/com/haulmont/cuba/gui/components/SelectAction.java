@@ -36,6 +36,7 @@ public class SelectAction extends AbstractAction {
     public SelectAction(Window.Lookup window) {
         super(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
         this.window = window;
+        this.primary = true;
         setShortcut(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCommitShortcut());
     }
 

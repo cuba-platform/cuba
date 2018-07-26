@@ -543,8 +543,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
         shortcut = loadShortcut(shortcut);
 
+        DeclarativeAction action;
+
         if (Boolean.parseBoolean(trackSelection)) {
-            DeclarativeTrackingAction action = new DeclarativeTrackingAction(
+            action = new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
@@ -560,7 +562,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
             return action;
         } else {
-            return new DeclarativeAction(
+            action = new DeclarativeAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
@@ -572,6 +574,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     actionsHolder
             );
         }
+
+        action.setPrimary(Boolean.parseBoolean(element.attributeValue("primary")));
+
+        return action;
     }
 
     protected void loadActionConstraint(Action action, Element element) {

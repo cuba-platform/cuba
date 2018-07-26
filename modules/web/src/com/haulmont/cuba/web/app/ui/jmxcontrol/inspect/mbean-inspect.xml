@@ -80,6 +80,6 @@
             <vbox id="operations" spacing="true">
             </vbox>
         </scrollBox>
-        <button id="close" caption="msg://close" icon="icons/close.png" invoke="close"/>
+        <button id="close" caption="msg://close" icon="icons/close.png" invoke="close" primary="true"/>
     </layout>
 </window>

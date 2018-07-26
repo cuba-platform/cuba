@@ -25,7 +25,7 @@
                 datasourceClass="com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsDs"/>
     </dsContext>
     <actions>
-        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="mainMsg://actions.Select"/>
+        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="mainMsg://actions.Select" primary="true"/>
         <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="mainMsg://actions.Cancel"/>
     </actions>
     <layout spacing="true" expand="tree">

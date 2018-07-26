@@ -45,7 +45,7 @@
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
-                <button id="enableBtn" invoke="enableLogging"/>
+                <button id="enableBtn" invoke="enableLogging" primary="true"/>
                 <button id="excelBtn" action="sessionsTable.excel"/>
             </buttonsPanel>
             <rowsCount/>

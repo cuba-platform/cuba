@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.User;
@@ -49,27 +50,25 @@ public class CopySettings extends AbstractWindow {
 
         getDialogOptions().setWidthAuto();
 
-        copyBtn.setAction(new AbstractAction("deployBtn") {
-            @Override
-            public void actionPerform(Component component) {
-                if (usersDs.getItem() == null) {
-                    showNotification(
-                            getMessage("selectUser"), NotificationType.HUMANIZED);
-                } else {
-                    showOptionDialog(
-                            getMessage("confirmCopy.title"),
-                            getMessage("confirmCopy.msg"),
-                            MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new DialogAction(Type.YES).withHandler(event -> {
-                                        copySettings();
-                                    }),
-                                    new DialogAction(Type.NO, Status.PRIMARY)
-                            }
-                    );
-                }
-            }
-        });
+        copyBtn.setAction(new BaseAction("deployBtn")
+                .withPrimary(true)
+                .withHandler(e -> {
+                    if (usersDs.getItem() == null) {
+                        showNotification(
+                                getMessage("selectUser"), NotificationType.HUMANIZED);
+                    } else {
+                        showOptionDialog(
+                                getMessage("confirmCopy.title"),
+                                getMessage("confirmCopy.msg"),
+                                MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new DialogAction(Type.YES).withHandler(event ->
+                                                copySettings()),
+                                        new DialogAction(Type.NO, Action.Status.PRIMARY)
+                                }
+                        );
+                    }
+                }));
 
         cancelBtn.setAction(new AbstractAction("cancelBtn") {
             @Override

@@ -460,6 +460,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         public CreateAction() {
             super("create");
+            this.primary = true;
             setShortcut(configuration.getConfig(ClientConfig.class).getTableInsertShortcut());
         }
 

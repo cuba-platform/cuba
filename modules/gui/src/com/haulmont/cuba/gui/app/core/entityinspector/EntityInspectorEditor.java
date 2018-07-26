@@ -1028,7 +1028,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected class CommitAction extends AbstractAction {
 
         protected CommitAction() {
-            super("commit");
+            super("commit", Status.PRIMARY);
         }
 
         @Override

@@ -14,12 +14,27 @@
  * limitations under the License.
  */
 
+/**
+ * The font weight of datagrid header
+ * @group dataGrid
+ */
+$cuba-datagrid-header-font-weight: $v-font-weight !default;
+/**
+ * Defines whether datagrid row should be colored when it is hovered.
+ * @group dataGrid
+ */
+$cuba-datagrid-highlight-hover-row: false !default;
+
 @mixin halo-datagrid($primary-stylename: v-grid) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
 
   .#{$primary-stylename} {
     @include user-select(none);
+  }
+
+  .#{$primary-stylename}-header th {
+    font-weight: $cuba-datagrid-header-font-weight;
   }
 
   .text-selection-enabled .#{$primary-stylename}-body {
@@ -113,6 +128,19 @@
 
   .#{$primary-stylename}-body .#{$primary-stylename}-row {
     cursor: pointer;
+  }
+
+  @if $cuba-datagrid-highlight-hover-row {
+    .#{$primary-stylename}-body .#{$primary-stylename}-row:hover > td {
+      background-color: $cuba-hover-color;
+      color: valo-font-color($cuba-hover-color, 0.9);
+    }
+
+    .#{$primary-stylename}-body .#{$primary-stylename}-row-selected:hover > td {
+      @include valo-gradient($v-selection-color);
+      background-origin: border-box;
+      color: valo-font-color($v-selection-color, 0.9);
+    }
   }
 
   .#{$primary-stylename}-editor {

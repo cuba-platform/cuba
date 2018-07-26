@@ -208,6 +208,7 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setMultiSelect(true);
                 Action restoreAction = new ItemTrackingAction("restore")
                         .withCaption(getMessage("entityRestore.restore"))
+                        .withPrimary(true)
                         .withHandler(event ->
                                 showRestoreDialog()
                         );

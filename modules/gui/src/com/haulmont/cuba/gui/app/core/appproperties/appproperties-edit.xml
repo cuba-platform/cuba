@@ -31,7 +31,7 @@
     </dsContext>
 
     <actions>
-        <action id="okAction" shortcut="Ctrl-Enter" invoke="ok"/>
+        <action id="okAction" primary="true" shortcut="Ctrl-Enter" invoke="ok"/>
         <action id="cancelAction" invoke="cancel"/>
     </actions>
     <layout spacing="true">
@@ -43,7 +43,7 @@
             </column>
         </fieldGroup>
         <label id="cannotEditValueLabel" value="msg://cannotEditValue" visible="false" width="100%"/>
-        <hbox spacing="true" align="BOTTOM_LEFT">
+        <hbox align="BOTTOM_LEFT" spacing="true">
             <button caption="mainMsg://actions.Ok" action="okAction" icon="EDITOR_OK"/>
             <button caption="mainMsg://actions.Cancel" action="cancelAction" icon="EDITOR_CANCEL"/>
         </hbox>
