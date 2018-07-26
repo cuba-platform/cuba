@@ -136,6 +136,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     test {
         maxHeapSize = '256m'
+
+        systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
     }
 
     javadoc {
