@@ -138,7 +138,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     test {
         maxHeapSize = '256m'
         systemProperties = [
-                'jdk.attach.allowAttachSelf' : 'true'
+                'jdk.attach.allowAttachSelf' : 'true',
+                'logback.configurationFile': System.getProperty('logback.configurationFile')
         ]
     }
 
