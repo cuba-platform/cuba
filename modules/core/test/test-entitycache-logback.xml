@@ -43,6 +43,10 @@
 
     <logger name="org.springframework" level="WARN"/>
 
+    <logger name="eclipselink" level="WARN"/>
+
+    <logger name="eclipselink.sql" level="DEBUG"/>
+
     <logger name="org.apache" level="INFO"/>
 
     <logger name="org.perf4j.TimingLogger" level="OFF"/>
