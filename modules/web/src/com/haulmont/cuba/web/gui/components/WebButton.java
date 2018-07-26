@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
@@ -117,6 +118,13 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);
+            }
+
+            boolean primaryAction = action instanceof AbstractAction && ((AbstractAction) action).isPrimary();
+            if (primaryAction) {
+                addStyleName("c-primary-action");
+            } else {
+                removeStyleName("c-primary-action");
             }
         }
     }

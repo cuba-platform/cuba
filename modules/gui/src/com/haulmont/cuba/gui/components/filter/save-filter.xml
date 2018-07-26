@@ -19,7 +19,7 @@
         class="com.haulmont.cuba.gui.components.filter.SaveFilterWindow"
         caption="mainMsg://filter.saveFilter.caption">
     <actions>
-        <action id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+        <action id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png" primary="true" shortcut="CTRL-ENTER"/>
     </actions>
     <layout spacing="true">
         <hbox spacing="true" width="100%" expand="filterName">

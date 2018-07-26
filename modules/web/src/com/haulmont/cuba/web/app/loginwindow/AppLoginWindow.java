@@ -103,13 +103,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected CheckBox rememberMeCheckBox;
 
     @Inject
-    protected Label rememberMeSpacer;
-
-    @Inject
     protected PasswordField passwordField;
-
-    @Inject
-    protected Label localesSelectLabel;
 
     @Inject
     protected LookupField<Locale> localesSelect;
@@ -148,8 +142,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         boolean localeSelectVisible = globalConfig.getLocaleSelectVisible();
         localesSelect.setVisible(localeSelectVisible);
-        localesSelectLabel.setVisible(localeSelectVisible);
-
         localesSelect.addValueChangeListener(e -> {
             Locale selectedLocale = (Locale) e.getValue();
 
@@ -179,8 +171,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         if (!webConfig.getRememberMeEnabled()) {
             rememberMeCheckBox.setValue(false);
-
-            rememberMeSpacer.setVisible(false);
             rememberMeCheckBox.setVisible(false);
             return;
         }

@@ -80,6 +80,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadFocusable(resultComponent, element);
         loadDisableOnClick(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadPrimary(resultComponent, element);
     }
 
     protected void loadCaptionAsHtml(Button resultComponent, Element element) {
@@ -93,6 +94,13 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         String disableOnClick = element.attributeValue("disableOnClick");
         if (StringUtils.isNotEmpty(disableOnClick)) {
             component.setDisableOnClick(Boolean.parseBoolean(disableOnClick));
+        }
+    }
+
+    private void loadPrimary(Button resultComponent, Element element) {
+        String primary = element.attributeValue("primary");
+        if (Boolean.parseBoolean(primary)) {
+            resultComponent.addStyleName("c-primary-action");
         }
     }
 }

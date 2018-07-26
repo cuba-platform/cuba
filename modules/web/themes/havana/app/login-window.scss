@@ -38,6 +38,46 @@
     color: #2B4666;
   }
 
+  .c-login-form {
+    width: 270px;
+
+    & .v-spacing {
+      height: 15px;
+    }
+  }
+
+  .c-login-credentials {
+    width: 100%;
+  }
+
+  .c-login-remember-locales {
+    width: 100%;
+
+    & > * {
+      width: 50%;
+    }
+  }
+
+  .c-login-username {
+    border-bottom-width: 0;
+    display: block;
+    width: 100%;
+  }
+
+  .c-login-username.v-textfield:focus + .c-login-password,
+  .c-login-username.v-textfield-focus + .c-login-password {
+    border-top-color: $cuba-field-focused-border-color;
+  }
+
+  .c-login-password {
+    display: block;
+    width: 100%;
+  }
+
+  .c-login-locale > input {
+    width: 80px;
+  }
+
   .c-powered-by {
     font-size: 12px;
     padding-bottom: 30px;

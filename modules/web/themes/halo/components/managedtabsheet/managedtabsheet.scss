@@ -1,4 +1,31 @@
-$c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*first-number($v-border);
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+/**
+ * INTERNAL.
+ * It is a copy of the "$cuba-maintabsheet-top-padding" variable.
+ * @group managedTabsheet
+ */
+$cuba-main-managed-tabsheet-top-padding: round($v-unit-size/6) !default;
+
+$c-managed-tabsheet-tabbar-height:
+        $v-unit-size +
+        $cuba-main-managed-tabsheet-top-padding +
+        first-number($v-border);
 
 @mixin managed-tabsheet($primary-stylename: c-managed-tabsheet) {
   // we rarely hide first tab but often hide other tabs
@@ -23,7 +50,7 @@ $c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*firs
 
   .#{$primary-stylename} {
     & > .c-managed-tab {
-      background-color: rgb(255, 255, 255);
+      background-color: $v-panel-background-color;
       height: auto !important;
     }
 
@@ -38,6 +65,10 @@ $c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*firs
 
   .#{$primary-stylename}.v-has-width.v-has-height {
     position: relative !important;
+
+    .c-sidemenu-layout & {
+      $c-managed-tabsheet-tabbar-height: $c-managed-tabsheet-tabbar-height - 1;
+    }
 
     .c-managed-tab {
       top: $c-managed-tabsheet-tabbar-height;

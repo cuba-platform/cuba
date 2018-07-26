@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -76,40 +77,27 @@ public class EditorWindowDelegate extends WindowDelegate {
             commitAndCloseButtonExists = true;
 
             this.window.addAction(
-                    new AbstractAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE, commitShortcut) {
-                        @Override
-                        public String getCaption() {
-                            return messages.getMainMessage("actions.OkClose");
-                        }
-
-                        @Override
-                        public void actionPerform(Component component) {
-                            editor.commitAndClose();
-                        }
-                    }
-            );
+                    new BaseAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE)
+                            .withCaption(messages.getMainMessage("actions.OkClose"))
+                            .withPrimary(true)
+                            .withShortcut(commitShortcut)
+                            .withHandler(e ->
+                                    editor.commitAndClose()));
         }
 
-        AbstractAction commitAction = new AbstractAction(Window.Editor.WINDOW_COMMIT) {
-            @Override
-            public String getCaption() {
-                return messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok");
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                if (!commitAndCloseButtonExists) {
-                    editor.commitAndClose();
-                } else {
-                    if (editor.commit()) {
-                        commitActionPerformed = true;
+        AbstractAction commitAction = new BaseAction(Window.Editor.WINDOW_COMMIT)
+                .withCaption(messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok"))
+                .withPrimary(!commitAndCloseButtonExists)
+                .withShortcut(commitAndCloseButtonExists ? null : commitShortcut)
+                .withHandler(e -> {
+                    if (!commitAndCloseButtonExists) {
+                        editor.commitAndClose();
+                    } else {
+                        if (editor.commit()) {
+                            commitActionPerformed = true;
+                        }
                     }
-                }
-            }
-        };
-        if (!commitAndCloseButtonExists) {
-            commitAction.setShortcut(commitShortcut);
-        }
+                });
         this.window.addAction(commitAction);
 
         this.window.addAction(

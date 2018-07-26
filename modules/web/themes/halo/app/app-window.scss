@@ -16,21 +16,95 @@
  */
 
 /**
+ * The bottom padding of main menu bar.
+ * @group menubar
+ */
+$cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
+/**
  * The top padding of main menu bar.
  * @group menubar
  */
 $cuba-app-menubar-padding-top: round($v-unit-size/8) !default;
 /**
- * The bottom padding of main menu bar.
+ * The font weight of main tabsheet selected tab.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-selected-tab-font-weight: $v-font-weight !default;
+/**
+ * The background color of the main tabsheet tab container.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tabcontainer-background-color: $v-background-color !default;
+/**
+ * The border radius of main tabsheet items.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tabs-border-radius: $v-border-radius !default;
+/**
+ * INTERNAL
+ * The left border width of main tabsheet tabs.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tab-border-left-width: 1px !default;
+/**
+ * INTERNAL
+ * The top border width of main tabsheet tabs.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tab-border-top-width: 1px !default;
+/**
+ * The margin (distance) between tabs.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tab-margin-left: ceil($v-unit-size/10) !default;
+/**
+ * INTERNAL
+ * The side padding of tabbar.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-tabbar-side-padding: 0 round($v-unit-size/4) !default;
+/**
+ * The top padding between tabcontainer and tabs.
+ * @group maintabsheet
+ */
+$cuba-maintabsheet-top-padding: round($v-unit-size/6) !default;
+/**
+ * The height of main menu bar.
  * @group menubar
  */
-$cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
+$cuba-menubar-height: $v-unit-size !default;
+/**
+ * The line height of main menu bar.
+ * @group menubar
+ */
+$cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
 
 // Application Window styles
 @mixin cuba-application-window {
   .v-tabsheet.c-main-tabsheet {
     & > .v-tabsheet-tabcontainer {
       padding-top: round($v-unit-size/6);
+    }
+  }
+
+  .v-tabsheet.c-main-tabsheet.framed.padded-tabbar > .v-tabsheet-tabcontainer {
+    background-color: $cuba-maintabsheet-tabcontainer-background-color;
+    padding-top: $cuba-maintabsheet-top-padding;
+
+    & > .v-tabsheet-tabs {
+      padding: $cuba-maintabsheet-tabbar-side-padding;
+    }
+
+    & .v-tabsheet-tabitem .v-caption {
+      $br: $cuba-maintabsheet-tabs-border-radius;
+      border-radius: $br $br 0 0;
+      border-left-width: $cuba-maintabsheet-tab-border-left-width;
+      border-top-width: $cuba-maintabsheet-tab-border-top-width;
+      margin-left: $cuba-maintabsheet-tab-margin-left;
+    }
+
+    & .v-tabsheet-tabitem-selected .v-caption {
+      font-weight: $cuba-maintabsheet-selected-tab-font-weight;
     }
   }
 
@@ -58,8 +132,14 @@ $cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
     @include valo-gradient();
     @include box-shadow(valo-bevel-and-shadow($bevel: $v-bevel, $shadow: $v-shadow, $background-color: $v-background-color, $gradient: $v-gradient));
 
+    border-top: 0;
     padding-top: $cuba-app-menubar-padding-top;
     padding-bottom: $cuba-app-menubar-padding-bottom;
+
+    .v-menubar {
+      height: $cuba-menubar-height;
+      line-height: $cuba-menubar-lineheight;
+    }
   }
 
   .v-button.c-ftsfield-button,
@@ -80,21 +160,13 @@ $cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
     }
   }
 
-  .c-app-menubar {
-    border-top: 0;
-  }
-
   .c-app-appname-label {
     font-size: round(2*$v-unit-size/3);
     font-weight: bold;
   }
 
   .v-horizontallayout.c-app-titlebar {
-    padding-top: round($v-unit-size/10);
-    padding-bottom: round($v-unit-size/10);
-
-    padding-left: 0;
-    padding-right: 0;
+    padding: round($v-unit-size/10) 0;
 
     & > .v-spacing {
       width: ceil($v-layout-spacing-horizontal/2);

@@ -27,16 +27,19 @@
     <layout stylename="c-login-main-layout" expand="loginWrapper">
         <vbox id="loginWrapper">
             <vbox id="loginMainBox"
-                  stylename="c-login-panel" width="AUTO"
-                  margin="true" align="MIDDLE_CENTER">
-                <hbox id="loginTitleBox" stylename="c-login-title"
-                      spacing="true" align="MIDDLE_CENTER">
+                  align="MIDDLE_CENTER"
+                  margin="true"
+                  stylename="c-login-panel"
+                  width="AUTO">
+                <hbox id="loginTitleBox"
+                      align="MIDDLE_CENTER"
+                      spacing="true"
+                      stylename="c-login-title">
                     <image id="logoImage"
-                           align="MIDDLE_LEFT"
-                           height="AUTO"
-                           width="AUTO"
-                           scaleMode="SCALE_DOWN"
-                           stylename="c-login-icon"/>
+                              align="MIDDLE_LEFT"
+                              height="AUTO"
+                              stylename="c-login-icon"
+                              width="AUTO"/>
 
                     <label id="welcomeLabel"
                            align="MIDDLE_LEFT"
@@ -48,57 +51,40 @@
                                    align="MIDDLE_CENTER"
                                    stylename="c-login-capslockindicator"/>
 
-                <grid id="loginFormLayout"
-                      stylename="c-login-form"
+                <vbox id="loginForm"
                       spacing="true"
-                      align="MIDDLE_CENTER">
-                    <columns>
-                        <column id="loginFormCaptionColumn"/>
-                        <column id="loginFormFieldColumn"/>
-                    </columns>
-                    <rows>
-                        <row id="loginFieldRow">
-                            <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_RIGHT"
-                                   stylename="login-form-label"/>
-
-                            <textField id="loginField" stylename="c-login-username"
-                                       width="theme://cuba.web.LoginWindow.field.width"/>
-                        </row>
-                        <row id="passwordFieldRow">
-                            <label id="passwordFieldLabel" value="mainMsg://loginWindow.passwordField"
-                                   align="MIDDLE_RIGHT" stylename="login-form-label"/>
-
-                            <passwordField id="passwordField" stylename="c-login-password" autocomplete="true"
-                                           width="theme://cuba.web.LoginWindow.field.width"
-                                           capsLockIndicator="capsLockIndicator"/>
-                        </row>
-                        <row id="localesRow">
-                            <label id="localesSelectLabel" value="mainMsg://loginWindow.localesSelect"
-                                   align="MIDDLE_RIGHT"
-                                   stylename="login-form-label"/>
-
-                            <lookupField id="localesSelect" width="theme://cuba.web.LoginWindow.field.width"
-                                         nullOptionVisible="false" textInputAllowed="false"/>
-                        </row>
-                        <row id="rememberMeRow">
-                            <label id="rememberMeSpacer"/>
-
-                            <checkBox id="rememberMeCheckBox" caption="mainMsg://loginWindow.rememberMe"/>
-                        </row>
-                        <row id="submitRow">
-                            <label id="submitSpacer"/>
-
-                            <button id="loginButton" action="submit" stylename="c-login-submit-button"/>
-                        </row>
-                    </rows>
-                </grid>
+                      stylename="c-login-form">
+                    <cssLayout id="loginCredentials"
+                               stylename="c-login-credentials">
+                        <textField id="loginField"
+                                   stylename="c-login-username"/>
+                        <passwordField id="passwordField"
+                                       capsLockIndicator="capsLockIndicator"
+                                       stylename="c-login-password"/>
+                    </cssLayout>
+                    <hbox id="rememberLocalesBox"
+                          stylename="c-login-remember-locales">
+                        <checkBox id="rememberMeCheckBox"
+                                  align="MIDDLE_LEFT"
+                                  caption="mainMsg://loginWindow.rememberMe"/>
+                        <lookupField id="localesSelect"
+                                     align="MIDDLE_RIGHT"
+                                     nullOptionVisible="false"
+                                     stylename="c-login-locale"
+                                     textInputAllowed="false"/>
+                    </hbox>
+                    <button id="loginButton"
+                            align="MIDDLE_CENTER"
+                            action="submit"
+                            stylename="c-login-submit-button"/>
+                </vbox>
             </vbox>
         </vbox>
 
         <label id="poweredByLink"
                align="MIDDLE_CENTER"
-               value="mainMsg://cuba.poweredBy"
                htmlEnabled="true"
-               stylename="c-powered-by"/>
+               stylename="c-powered-by"
+               value="mainMsg://cuba.poweredBy"/>
     </layout>
 </window>

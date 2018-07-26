@@ -15,20 +15,171 @@
  *
  */
 
+/**
+ * Login submit button background.
+ * @group loginWindow
+ */
+$cuba-login-btn-background: null !default;
+/**
+ * Login screen submit button font weight.
+ * @group loginWindow
+ */
+$cuba-login-btn-font-weight: $v-font-weight !default;
+/**
+ * Login screen submit button height.
+ * @group loginWindow
+ */
+$cuba-login-btn-height: $v-unit-size !default;
+/**
+ * Login screen submit button top margin.
+ * @group loginWindow
+ */
+$cuba-login-btn-margin-top: round($v-unit-size/3) !default;
+/**
+ * Login screen submit button width.
+ * @group loginWindow
+ */
+$cuba-login-btn-width: auto !default;
+/**
+ * Login screen caption font size.
+ * @group loginWindow
+ */
+$cuba-login-caption-font-size: $v-font-size !default;
+/**
+ * Login screen caption font weight.
+ * @group loginWindow
+ */
+$cuba-login-caption-font-weight: $v-font-weight !default;
+/**
+ * Login screen locale select border width.
+ * @group loginWindow.
+ */
+$cuba-login-locale-border-width: first-number($v-border) !default;
+/**
+ * Login screen locale select text align.
+ * @group loginWindow
+ */
+$cuba-login-locale-text-align: left !default;
+/**
+ * Login screen logo height.
+ * @group loginWindow
+ */
+$cuba-login-logo-height: 32px !default;
+/**
+ * Login screen panel padding.
+ * @group loginWindow
+ */
+$cuba-login-panel-padding: round($v-unit-size/2) $v-layout-margin-right*4 round($v-unit-size/2) $v-layout-margin-left*4 !default;
+/**
+ * Login screen username field border radius.
+ * @group loginWindow
+ */
+$cuba-login-username-border-radius: $v-border-radius !default;
+/**
+ * Login screen username field height.
+ * @group loginWindow
+ */
+$cuba-login-username-height: $v-unit-size !default;
+/**
+ * Login screen password field border radius.
+ * @group loginWindow
+ */
+$cuba-login-password-border-radius: $v-border-radius !default;
+/**
+ * Login screen password field height.
+ * @group loginWindow
+ */
+$cuba-login-password-height: $v-unit-size !default;
+
 @mixin cuba-login-window {
-  .c-login-panel {
-    background: $v-panel-background-color;
-    border: valo-border();
-    border-radius: $v-border-radius;
-    padding: round($v-unit-size/2) $v-layout-margin-right*4 round($v-unit-size/2) $v-layout-margin-left*4;
-  }
 
   .c-login-main-layout {
     background-color: $v-app-background-color;
   }
 
-  img.c-login-icon {
-    height: 32px;
+  .c-login-panel {
+    background: $v-panel-background-color;
+    border: valo-border();
+    border-radius: $v-border-radius;
+    padding: $cuba-login-panel-padding;
+  }
+
+  .c-login-icon > img {
+    height: $cuba-login-logo-height;
+  }
+
+  .c-login-caption.v-label {
+    font-size: $cuba-login-caption-font-size;
+    font-weight: $cuba-login-caption-font-weight;
+  }
+
+  .c-login-capslockindicator {
+    font-size: $v-font-size--small;
+    height: $v-unit-size;
+    line-height: $v-unit-size - round($v-unit-size / 6);
+
+    span {
+      vertical-align: unset;
+    }
+  }
+
+  .c-login-form {
+    width: 385px;
+  }
+
+  .c-login-credentials {
+    width: 100%;
+  }
+
+  .c-login-remember-locales {
+    width: 100%;
+
+    & > * {
+      width: 50%;
+    }
+  }
+
+  .c-login-username {
+    border-bottom-width: 0;
+    border-radius: $cuba-login-username-border-radius;
+    display: block;
+    height: $cuba-login-username-height;
+    width: 100%;
+  }
+
+  .c-login-username.v-textfield:focus + .c-login-password,
+  .c-login-username.v-textfield-focus + .c-login-password {
+    border-top-color: $v-focus-color;
+  }
+
+  .c-login-password {
+    border-radius: $cuba-login-password-border-radius;
+    display: block;
+    height: $cuba-login-password-height;
+    width: 100%;
+  }
+
+  .c-login-locale {
+    width: 150px;
+  }
+  .c-login-locale > input.v-filterselect-input,
+  .c-login-locale.v-filterselect-focus > input.v-filterselect-input {
+    background: none;
+    border-width: $cuba-login-locale-border-width;
+    box-shadow: none;
+    text-align: $cuba-login-locale-text-align;
+  }
+
+  .c-login-submit-button {
+    @if ($cuba-login-btn-background) {
+      background: $cuba-login-btn-background;
+      color: valo-font-color(first-color($cuba-login-btn-background), 0.9);
+      font-weight: $cuba-login-btn-font-weight;
+    }
+    box-shadow: none;
+    margin-top: $cuba-login-btn-margin-top;
+    height: $cuba-login-btn-height;
+    width: $cuba-login-btn-width;
   }
 
   .c-powered-by {
@@ -42,9 +193,7 @@
       font-weight: bold;
       color: #006BAC;
 
-      background: url(images/cuba-icon-login.png);
-      background-repeat: no-repeat;
-      background-position: left center;
+      background: url(images/cuba-icon-login.png) no-repeat left center;
       background-size: contain;
       background-clip: border-box;
       padding-left: 24px;
@@ -55,19 +204,5 @@
     .c-cuba-word {
       color: #5b5857;
     }
-  }
-
-  .c-login-capslockindicator {
-    font-size: $v-font-size--small;
-    height: $v-unit-size;
-    line-height: $v-unit-size - round($v-unit-size/6);
-
-    span{
-      vertical-align: unset;
-    }
-  }
-
-  .c-login-submit-button {
-    margin-top: round($v-unit-size/3);
   }
 }
