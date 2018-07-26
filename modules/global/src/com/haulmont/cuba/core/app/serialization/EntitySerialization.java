@@ -346,7 +346,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             value.stream()
                     .filter(e -> e instanceof Entity)
                     .forEach(e -> {
-                        JsonObject jsonObject = serializeEntity((Entity) e, view, cyclicReferences);
+                        JsonObject jsonObject = serializeEntity((Entity) e, view, new HashSet<>(cyclicReferences));
                         jsonArray.add(jsonObject);
                     });
             return jsonArray;
