@@ -91,5 +91,8 @@
         <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
 
         <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
+
+        <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_Order</class>
+        <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_OrderItem</class>
     </persistence-unit>
 </persistence>
