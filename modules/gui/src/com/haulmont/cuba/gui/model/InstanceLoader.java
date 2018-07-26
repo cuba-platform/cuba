@@ -19,9 +19,6 @@ package com.haulmont.cuba.gui.model;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
-/**
- *
- */
 public interface InstanceLoader<E extends Entity> extends DataLoader {
 
     InstanceContainer<E> getContainer();

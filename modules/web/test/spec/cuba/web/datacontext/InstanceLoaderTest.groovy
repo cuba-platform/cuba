@@ -51,8 +51,7 @@ class InstanceLoaderTest extends Specification {
     }
 
     def "successful load"() {
-
-        InstanceLoader<Foo, UUID> loader = factory.createInstanceLoader()
+        InstanceLoader<Foo> loader = factory.createInstanceLoader()
         InstanceContainer<Foo> container = factory.createInstanceContainer(Foo)
 
         Foo foo = new Foo()
