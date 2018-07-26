@@ -37,7 +37,7 @@
 
     <layout spacing="true" expand="mainLayout">
         <hbox id="mainLayout" spacing="true" expand="splitPanel" width="100%">
-            <split id="splitPanel" height="100%" settingsEnabled="true" orientation="horizontal">
+            <split id="splitPanel" height="100%" settingsEnabled="true" orientation="horizontal" pos="53%">
                 <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree"
                       margin="false, true, false, false">
                     <grid id="filterPropertiesGrid" spacing="true" width="100%">
