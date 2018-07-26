@@ -17,10 +17,9 @@
 package com.haulmont.bali.events;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -29,11 +28,8 @@ import java.util.function.Consumer;
 @NotThreadSafe
 public class EventHub {
     protected static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
-    protected static final int EVENTS_LIST_INITIAL_CAPACITY = 2;
 
-    // Map with listener classes and listener lists
-    // Lists are created on demand
-    protected Map<Class, List<Consumer>> events = null;
+    protected LinkedHashSet<Tag<?>> events = null;
 
     /**
      * Add an event listener for events with type T.
@@ -52,14 +48,11 @@ public class EventHub {
         }
 
         if (events == null) {
-            events = new IdentityHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
+            events = new LinkedHashSet<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }
 
-        List<Consumer> listeners = events.computeIfAbsent(eventType,
-                eventClass -> new ArrayList<>(EVENTS_LIST_INITIAL_CAPACITY));
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        Tag<T> tag = new Tag<>(eventType, listener);
+        events.add(tag);
 
         return new SubscriptionImpl<>(this, eventType, listener);
     }
@@ -81,15 +74,14 @@ public class EventHub {
         }
 
         if (events != null) {
-            List<Consumer> listenersList = events.get(eventType);
-            if (listenersList != null) {
-                boolean wasRemoved = listenersList.remove(listener);
-                if (listenersList.isEmpty()) {
-                    events.remove(eventType);
+            Iterator<Tag<?>> i = events.iterator();
+            while (i.hasNext()) {
+                Tag t = i.next();
+                if (t.matches(eventType, listener)) {
+                    i.remove();
+                    return true;
                 }
-                return wasRemoved;
             }
-            return false;
         }
         return false;
     }
@@ -106,8 +98,16 @@ public class EventHub {
             throw new IllegalArgumentException("eventType cannot be null");
         }
 
-        return events != null
-                && events.get(eventType) != null;
+        if (events == null) {
+            return false;
+        }
+
+        for (Tag<?> event : events) {
+            if (event.isType(eventType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -126,12 +126,12 @@ public class EventHub {
         }
 
         if (events != null) {
-            @SuppressWarnings("unchecked")
-            List<Consumer> listeners = events.get(eventType);
-            if (listeners != null) {
-                for (Object listenerEntry : listeners.toArray()) {
+            Tag<?>[] tags = events.toArray(new Tag[0]);
+
+            for (Tag<?> tag : tags) {
+                if (tag.isType(eventType)) {
                     @SuppressWarnings("unchecked")
-                    Consumer<T> listener = (Consumer<T>) listenerEntry;
+                    Consumer<T> listener = (Consumer<T>) tag.getListener();
                     listener.accept(event);
                 }
             }
@@ -152,6 +152,55 @@ public class EventHub {
         @Override
         public void remove() {
             publisher.unsubscribe(eventClass, listener);
+        }
+    }
+
+    protected static class Tag<T> {
+        protected final Class<T> eventClass;
+        protected final Consumer<T> listener;
+
+        public Tag(Class<T> eventClass, Consumer<T> listener) {
+            this.eventClass = eventClass;
+            this.listener = listener;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Tag<?> tag = (Tag<?>) o;
+            return Objects.equals(eventClass, tag.eventClass) &&
+                    Objects.equals(listener, tag.listener);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(eventClass, listener);
+        }
+
+        @Override
+        public String toString() {
+            return "Tag{" +
+                    "eventClass=" + eventClass +
+                    ", listener=" + listener +
+                    '}';
+        }
+
+        public boolean matches(Class eventClass, Consumer listener) {
+            return Objects.equals(eventClass, this.eventClass) &&
+                    Objects.equals(listener, this.listener);
+        }
+
+        public Consumer<T> getListener() {
+            return listener;
+        }
+
+        public boolean isType(Class<?> eventClass) {
+            return this.eventClass == eventClass;
         }
     }
 }
