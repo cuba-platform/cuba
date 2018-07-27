@@ -48,8 +48,8 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public void setItem(@Nullable E item) {
         if (item != null) {
-            Integer idx = idMap.get(item.getId());
-            if (idx == -1) {
+            Integer idx = getItemIndex(item.getId());
+            if (idx < -1) {
                 throw new IllegalArgumentException("CollectionContainer does not contain " + item);
             }
             E existingItem = collection.get(idx);
@@ -89,8 +89,8 @@ public class CollectionContainerImpl<E extends Entity>
     @Nullable
     @Override
     public E getItemOrNull(Object entityId) {
-        Integer idx = idMap.get(entityId);
-        return idx != null ? collection.get(idx) : null;
+        Integer idx = getItemIndex(entityId);
+        return idx != -1 ? collection.get(idx) : null;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class CollectionContainerImpl<E extends Entity>
     }
 
     protected void clearItemIfNotExists() {
-        if (item != null && idMap.get(item.getId()) == -1) {
+        if (item != null && getItemIndex(item.getId()) == -1) {
             setItem(null);
         }
     }
