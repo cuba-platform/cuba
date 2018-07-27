@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 //import sun.awt.CausedFocusEvent;
 
 import javax.swing.*;
@@ -91,7 +92,7 @@ public class TableFocusManager {
             nextFocusElement();
             return true;
         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && pressed) {
-            impl.requestFocus();
+            requestFocusIfWindowActive(impl);
             impl.editingCanceled(new ChangeEvent(this));
             // allow handle ESCAPE in window
             return false;
@@ -275,7 +276,7 @@ public class TableFocusManager {
         impl.scrollRectToVisible(impl.getCellRect(row, col, true));
 
         if (row >= 0 && col >= 0)
-            impl.requestFocus();
+            requestFocusIfWindowActive(impl);
 
         impl.getSelectionModel().setSelectionInterval(row, row);
         impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
@@ -287,7 +288,7 @@ public class TableFocusManager {
 
     protected void focusTo(int row, int col) {
         if (row >= 0) {
-            impl.requestFocus();
+            requestFocusIfWindowActive(impl);
 
             impl.getSelectionModel().setSelectionInterval(row, row);
             impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
@@ -308,13 +309,16 @@ public class TableFocusManager {
         JComponent newEditorComp = (JComponent) impl.getEditorComponent();
 
         if (newEditorComp != null) {
-            newEditorComp.requestFocusInWindow();
+            if (DesktopComponentsHelper.canRequestFocus(newEditorComp)) {
+                newEditorComp.requestFocusInWindow();
+            }
             KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
             FocusTraversalPolicy defaultFocusTraversalPolicy = focusManager.getDefaultFocusTraversalPolicy();
             Component component = defaultFocusTraversalPolicy.getFirstComponent(newEditorComp);
 
-            if (component != null)
-                component.requestFocus();
+            if (component != null) {
+                requestFocusIfWindowActive(component);
+            }
         }
     }
 
@@ -328,8 +332,9 @@ public class TableFocusManager {
             FocusTraversalPolicy defaultFocusTraversalPolicy = focusManager.getDefaultFocusTraversalPolicy();
             Component component = defaultFocusTraversalPolicy.getLastComponent(newEditorComp);
 
-            if (component != null)
-                component.requestFocus();
+            if (component != null) {
+                requestFocusIfWindowActive(component);
+            }
         }
     }
 
@@ -366,7 +371,7 @@ public class TableFocusManager {
             if (focusOwner == impl) {
                 Component component = defaultFocusTraversalPolicy.getFirstComponent(activeComponent);
                 if (component != null)
-                    component.requestFocus();
+                    requestFocusIfWindowActive(component);
                 else
                     moveFocusToNextControl();
             } else {
@@ -408,5 +413,11 @@ public class TableFocusManager {
 
     protected void moveFocusToPrevControl() {
         FocusHelper.moveFocusToPrevControl();
+    }
+
+    protected void requestFocusIfWindowActive(Component impl) {
+        if (DesktopComponentsHelper.canRequestFocus(impl)) {
+            impl.requestFocus();
+        }
     }
 }

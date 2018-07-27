@@ -20,6 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
@@ -468,5 +469,18 @@ public class DesktopComponentsHelper {
             return contextHelpTextHtmlEnabled ? contextHelpText : StringEscapeUtils.escapeHtml(contextHelpText);
         }
         return null;
+    }
+
+    public static boolean canRequestFocus(java.awt.Component impl) {
+        boolean canRequestFocus = true;
+        java.awt.Component root = SwingUtilities.getRoot(impl);
+        if (root instanceof TopLevelFrame) {
+            TopLevelFrame topLevelFrame = (TopLevelFrame) root;
+            canRequestFocus = !topLevelFrame.getGlassPane().isVisible();
+        } else if (root instanceof DialogWindow) {
+            DialogWindow dialogWindow = (DialogWindow) root;
+            canRequestFocus = !dialogWindow.getGlassPane().isVisible();
+        }
+        return canRequestFocus;
     }
 }
