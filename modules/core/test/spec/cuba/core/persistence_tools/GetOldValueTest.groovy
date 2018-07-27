@@ -180,6 +180,64 @@ class GetOldValueTest extends Specification {
         oldValue == [orderLine1]
     }
 
+    def "test collection attribute after repeated deletion"() {
+        Order order
+        List<OrderLine> oldValue
+        OrderLine orderLine11, orderLine12
+
+        def view = new View(Order).addProperty('orderLines', new View(OrderLine).addProperty('product'))
+
+        persistence.runInTransaction { em ->
+            orderLine11 = metadata.create(OrderLine)
+            orderLine11.product = "prod11"
+            orderLine11.order = persistence.getEntityManager().getReference(Order, order1.id)
+            em.persist(orderLine11)
+
+            orderLine12 = metadata.create(OrderLine)
+            orderLine12.product = "prod12"
+            orderLine12.order = persistence.getEntityManager().getReference(Order, order1.id)
+            em.persist(orderLine12)
+        }
+
+        when:
+
+        persistence.runInTransaction { em ->
+            order = persistence.getEntityManager().find(Order, order1.id, view)
+
+            def orderLine = order.orderLines.find { it.product == 'prod11' }
+            em.remove(orderLine)
+
+            oldValue = persistenceTools.getOldValue(order, 'orderLines')
+        }
+
+        then:
+
+        oldValue.sort { it.product } == [orderLine1, orderLine11, orderLine12]
+
+        when: "item is deleted and composition saved"
+
+        def orderLine = order.orderLines.find { it.product == 'prod12' }
+        order.orderLines.remove(orderLine)
+
+        persistence.runInTransaction { em ->
+            def mergedOrder = em.merge(order)
+            em.remove(orderLine)
+
+            oldValue = persistenceTools.getOldValue(mergedOrder, 'orderLines')
+            oldValue.each {
+                println it
+            }
+        }
+
+        then: "old value does not include previously deleted item"
+
+        oldValue.sort { it.product } == [orderLine1, orderLine12]
+
+        cleanup:
+
+        cont.deleteRecord(orderLine11, orderLine12)
+    }
+
     def "test enum attribute"() {
         def customer
         def oldValue

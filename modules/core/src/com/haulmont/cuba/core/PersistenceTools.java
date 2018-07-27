@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
@@ -42,16 +43,14 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
+import org.eclipse.persistence.sessions.changesets.CollectionChangeRecord;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Utility class to provide common functionality related to persistence.
@@ -78,8 +77,8 @@ public class PersistenceTools {
      * <p> If the entity is new, returns all its attributes.
      * <p> If the entity is not persistent or not in the Managed state, returns empty set.
      *
-     * @param entity    entity instance
-     * @return          dirty attribute names
+     * @param entity entity instance
+     * @return dirty attribute names
      * @see #isDirty(Entity, String...)
      */
     public Set<String> getDirtyFields(Entity entity) {
@@ -110,8 +109,7 @@ public class PersistenceTools {
      * <br> If the entity is new, returns true.
      * <br> If the entity is not persistent or not in the Managed state, returns false.
      *
-     * @param entity    entity instance
-     *
+     * @param entity entity instance
      * @see #getDirtyFields(Entity)
      * @see #isDirty(Entity, String...)
      */
@@ -132,8 +130,9 @@ public class PersistenceTools {
      * Returns true if at least one of the given attributes is dirty (i.e. changed since the last load from the database).
      * <p> If the entity is new, always returns true.
      * <p> If the entity is not persistent or not in the Managed state, always returns false.
-     * @param entity        entity instance
-     * @param attributes    attributes to check
+     *
+     * @param entity     entity instance
+     * @param attributes attributes to check
      * @see #getDirtyFields(Entity)
      */
     public boolean isDirty(Entity entity, String... attributes) {
@@ -176,11 +175,36 @@ public class PersistenceTools {
 
         } else {
             ObjectChangeSet objectChanges =
-                    ((AttributeChangeListener)((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+                    ((AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
             if (objectChanges != null) { // can be null for example in AFTER_DELETE entity listener
                 ChangeRecord changeRecord = objectChanges.getChangesForAttributeNamed(attribute);
-                if (changeRecord != null)
+                if (changeRecord instanceof CollectionChangeRecord) {
+                    if (persistence.getEntityManager().isSoftDeletion() && changeRecord.getOldValue() != null) {
+                        MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(attribute);
+                        if (SoftDelete.class.isAssignableFrom(metaProperty.getRange().asClass().getJavaClass())) {
+                            Collection oldValue = (Collection) changeRecord.getOldValue();
+                            Collection<SoftDelete> filteredValue;
+                            Class<?> propertyType = metaProperty.getJavaType();
+                            if (List.class.isAssignableFrom(propertyType)) {
+                                filteredValue = new ArrayList<>();
+                            } else if (Set.class.isAssignableFrom(propertyType)) {
+                                filteredValue = new LinkedHashSet<>();
+                            } else {
+                                throw new RuntimeException(String.format("Could not instantiate collection with class [%s].", propertyType));
+                            }
+                            for (Object item : oldValue) {
+                                SoftDelete softDelete = (SoftDelete) item;
+                                if (!softDelete.isDeleted() || softDelete.isDeleted() && isDirty((Entity) softDelete, "deleteTs")) {
+                                    filteredValue.add(softDelete);
+                                }
+                            }
+                            return filteredValue;
+                        }
+                    }
                     return changeRecord.getOldValue();
+                } else if (changeRecord != null) {
+                    return changeRecord.getOldValue();
+                }
             }
         }
         return null;
@@ -193,7 +217,7 @@ public class PersistenceTools {
      *
      * @param entity    entity instance
      * @param attribute attribute name
-     * @return  an old value stored in the database. For a new entity returns null.
+     * @return an old value stored in the database. For a new entity returns null.
      * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
      */
     @Nullable
@@ -228,7 +252,7 @@ public class PersistenceTools {
 
     /**
      * Returns an ID of directly referenced entity without loading it from DB.
-     *
+     * <p>
      * If the view does not contain the reference and {@link View#loadPartialEntities()} is true,
      * the returned {@link RefId} will have {@link RefId#isLoaded()} = false.
      *
@@ -244,8 +268,8 @@ public class PersistenceTools {
      * @param property name of reference property
      * @return {@link RefId} instance which contains the referenced entity ID
      * @throws IllegalArgumentException if the specified property is not a reference
-     * @throws IllegalStateException if the entity is not in Managed state
-     * @throws RuntimeException if anything goes wrong when retrieving the ID
+     * @throws IllegalStateException    if the entity is not in Managed state
+     * @throws RuntimeException         if anything goes wrong when retrieving the ID
      */
     public RefId getReferenceId(BaseGenericIdEntity entity, String property) {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
@@ -323,6 +347,7 @@ public class PersistenceTools {
 
     /**
      * A wrapper for the reference ID value returned by {@link #getReferenceId(BaseGenericIdEntity, String)} method.
+     *
      * @see #isLoaded()
      * @see #getValue()
      */
@@ -355,6 +380,7 @@ public class PersistenceTools {
 
         /**
          * Returns the reference ID value (can be null) if {@link #isLoaded()} is true
+         *
          * @throws IllegalStateException if {@link #isLoaded()} is false
          */
         @Nullable
