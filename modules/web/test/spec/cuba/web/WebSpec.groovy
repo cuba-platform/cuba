@@ -17,6 +17,7 @@
 package spec.cuba.web
 
 import com.haulmont.cuba.core.app.ConfigStorageService
+import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.model.DataContextFactory
 import com.haulmont.cuba.gui.theme.ThemeConstants
@@ -56,6 +57,10 @@ class WebSpec extends Specification {
         componentsFactory = cont.getBean(ComponentsFactory)
 
         // all the rest is required for web components
+
+        TestServiceProxy.mock(PersistenceManagerService, Mock(PersistenceManagerService) {
+            isNullsLastSorting() >> false
+        })
 
         TestServiceProxy.mock(ConfigStorageService, Mock(ConfigStorageService) {
             getDbProperties() >> [:]

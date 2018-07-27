@@ -41,6 +41,8 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
     @Nullable
     E getItemOrNull(Object entityId);
 
+    int getItemIndex(Object entityId);
+
     /**
      *
      */
@@ -66,4 +68,7 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
 
     Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener);
 
+    Sorter getSorter();
+
+    void setSorter(Sorter sorter);
 }

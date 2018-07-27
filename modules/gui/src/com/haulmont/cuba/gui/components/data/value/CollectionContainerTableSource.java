@@ -23,16 +23,20 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class CollectionContainerTableSource<E extends Entity> implements EntityTableSource<E> {
+public class CollectionContainerTableSource<E extends Entity> implements EntityTableSource<E>, TableSource.Sortable<E> {
 
     protected CollectionContainer<E> container;
 
@@ -157,5 +161,63 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
                 metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass()) :
                 // otherwise use all properties from meta-class
                 metadataTools.getPropertyPaths(container.getEntityMetaClass());
+    }
+
+    @Override
+    public Object nextItemId(Object itemId) {
+        List<E> items = container.getItems();
+        int index = container.getItemIndex(itemId);
+        return index == items.size() - 1 ? null : items.get(index + 1).getId();
+    }
+
+    @Override
+    public Object prevItemId(Object itemId) {
+        int index = container.getItemIndex(itemId);
+        return index <= 0 ? null : container.getItems().get(index - 1).getId();
+    }
+
+    @Override
+    public Object firstItemId() {
+        List<E> items = container.getItems();
+        return items.isEmpty() ? null : items.get(0).getId();
+    }
+
+    @Override
+    public Object lastItemId() {
+        List<E> items = container.getItems();
+        return items.isEmpty() ? null : items.get(0).getId();
+    }
+
+    @Override
+    public boolean isFirstId(Object itemId) {
+        int index = container.getItemIndex(itemId);
+        return index == 0;
+    }
+
+    @Override
+    public boolean isLastId(Object itemId) {
+        int index = container.getItemIndex(itemId);
+        return index == container.getItems().size() - 1;
+    }
+
+    @Override
+    public void sort(Object[] propertyId, boolean[] ascending) {
+        List<Sort.Order> orders = new ArrayList<>();
+        for (int i = 0; i < propertyId.length; i++) {
+            String property;
+            if (propertyId[i] instanceof MetaPropertyPath) {
+                property = ((MetaPropertyPath) propertyId[i]).toPathString();
+            } else {
+                property = (String) propertyId[i];
+            }
+            Sort.Order order = ascending[i] ? Sort.Order.asc(property) : Sort.Order.desc(property);
+            orders.add(order);
+        }
+        container.getSorter().sort(Sort.by(orders));
+    }
+
+    @Override
+    public void resetSortOrder() {
+        container.getSorter().sort(Sort.UNSORTED);
     }
 }

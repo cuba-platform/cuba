@@ -76,4 +76,11 @@ public class KeyValueCollectionContainerImpl
         }
         super.setItems(entities);
     }
+
+    @Override
+    public String toString() {
+        return "KeyValueCollectionContainerImpl{" +
+                "size=" + collection.size() +
+                '}';
+    }
 }

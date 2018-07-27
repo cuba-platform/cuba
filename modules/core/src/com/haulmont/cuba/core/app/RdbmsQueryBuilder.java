@@ -17,19 +17,19 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Joiner;
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.ConditionJpqlGenerator;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +38,18 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Builds {@link Query} instance to use in DataService.
  */
-@Component(DataServiceQueryBuilder.NAME)
+@Component(RdbmsQueryBuilder.NAME)
 @Scope("prototype")
-public class DataServiceQueryBuilder {
+public class RdbmsQueryBuilder {
 
-    public static final String NAME = "cuba_DataServiceQueryBuilder";
+    public static final String NAME = "cuba_RdbmsQueryBuilder";
 
-    private static final Logger log = LoggerFactory.getLogger(DataServiceQueryBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(RdbmsQueryBuilder.class);
 
     protected String queryString;
     protected Map<String, Object> queryParams;
@@ -65,7 +66,8 @@ public class DataServiceQueryBuilder {
     @Inject
     private ConditionJpqlGenerator conditionJpqlGenerator;
 
-    public void init(String queryString, Condition condition, Map<String, Object> queryParams, String[] noConversionParams,
+    public void init(String queryString, Condition condition, Sort sort,
+                     Map<String, Object> queryParams, String[] noConversionParams,
                      Object id, String entityName)
     {
         this.entityName = entityName;
@@ -85,10 +87,12 @@ public class DataServiceQueryBuilder {
         }
         if (condition != null) {
             Condition actualized = condition.actualize(queryParams.keySet());
-            this.queryString = conditionJpqlGenerator.processQuery(queryString, actualized);
-        } else {
-            this.queryString = qs;
+            qs = conditionJpqlGenerator.processQuery(qs, actualized);
         }
+        if (sort != null) {
+            qs = processSort(qs, sort);
+        }
+        this.queryString = qs;
     }
 
     public void setSingleResult(boolean singleResult) {
@@ -122,6 +126,10 @@ public class DataServiceQueryBuilder {
         );
         queryString = transformer.getResult();
         this.queryParams.put("_qr_sessionId", sessionId);
+    }
+
+    public String getQueryString() {
+        return queryString;
     }
 
     public Query getQuery(EntityManager em) {
@@ -179,6 +187,96 @@ public class DataServiceQueryBuilder {
         }
 
         return query;
+    }
+
+    protected String processSort(String queryString, Sort sort) {
+        if (sort.getOrders().isEmpty()) {
+            return queryString;
+        }
+        Map<Sort.Direction, List<Sort.Order>> directions = sort.getOrders().stream()
+                .collect(Collectors.groupingBy(Sort.Order::getDirection));
+        if (directions.size() > 1) {
+            throw new UnsupportedOperationException("Sorting by multiple properties in different directions is not supported");
+        }
+        boolean asc = directions.keySet().iterator().next() == Sort.Direction.ASC;
+
+        List<String> allSortProperties = new ArrayList<>();
+
+        for (Sort.Order order : sort.getOrders()) {
+            MetaPropertyPath propertyPath = metadata.getClassNN(entityName).getPropertyPath(order.getProperty());
+            if (propertyPath == null) {
+                throw new IllegalArgumentException("Property " + order.getProperty() + " is invalid");
+            }
+
+            if (metadata.getTools().isPersistent(propertyPath)) {
+                allSortProperties.addAll(getSortPropertiesForPersistentAttribute(propertyPath));
+            } else {
+                // a non-persistent attribute
+                List<String> relProperties = metadata.getTools().getRelatedProperties(propertyPath.getMetaProperty());
+                if (!relProperties.isEmpty()) {
+                    List<String> sortPropertiesList = new ArrayList<>(relProperties.size());
+                    for (String relProp : relProperties) {
+                        String[] ppCopy = Arrays.copyOf(propertyPath.getPath(), propertyPath.getPath().length);
+                        ppCopy[ppCopy.length - 1] = relProp;
+
+                        MetaPropertyPath relPropertyPath = propertyPath.getMetaProperties()[0].getDomain().getPropertyPath(Joiner.on(".").join(ppCopy));
+                        List<String> sortPropertiesForRelProperty = getSortPropertiesForPersistentAttribute(relPropertyPath);
+                        if (sortPropertiesForRelProperty != null)
+                            sortPropertiesList.addAll(sortPropertiesForRelProperty);
+                    }
+                    if (!sortPropertiesList.isEmpty())
+                        allSortProperties.addAll(sortPropertiesList);
+                }
+            }
+        }
+
+        if (!allSortProperties.isEmpty()) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString);
+            transformer.replaceOrderBy(!asc, allSortProperties.toArray(new String[0]));
+            return transformer.getResult();
+        } else {
+            return queryString;
+        }
+    }
+
+    protected List<String> getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
+        List<String> sortProperties = new ArrayList<>(1);
+        MetaProperty metaProperty = propertyPath.getMetaProperty();
+        Range range = metaProperty.getRange();
+
+        if (!range.isClass()) {
+            // a scalar persistent attribute
+            MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(propertyPath);
+            String storeName = metadata.getTools().getStoreName(propertyMetaClass);
+            if (!metadata.getTools().isLob(metaProperty) || supportsLobSortingAndFiltering(storeName)) {
+                sortProperties.add(propertyPath.toString());
+            }
+        } else {
+            // a reference attribute
+            if (!range.getCardinality().isMany()) {
+                Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(range.asClass());
+                if (!properties.isEmpty()) {
+                    sortProperties.addAll(properties.stream()
+                            .filter(prop -> {
+                                if (metadata.getTools().isPersistent(prop)) {
+                                    String storeName = metadata.getTools().getStoreName(range.asClass());
+                                    return !metadata.getTools().isLob(prop) || supportsLobSortingAndFiltering(storeName);
+                                }
+                                return false;
+                            })
+                            .map(MetadataObject::getName)
+                            .map(propName -> propertyPath.toString().concat(".").concat(propName))
+                            .collect(Collectors.toList()));
+                } else {
+                    sortProperties.add(propertyPath.toString());
+                }
+            }
+        }
+        return sortProperties;
+    }
+
+    protected boolean supportsLobSortingAndFiltering(String storeName) {
+        return storeName == null || DbmsSpecificFactory.getDbmsFeatures(storeName).supportsLobSortingAndFiltering();
     }
 
     protected void replaceParamsInMacros(Query query) {

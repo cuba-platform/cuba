@@ -131,6 +131,7 @@ class SampleTest extends Specification {
 
         TestServiceProxy.mock(DataService, Mock(DataService) {
             load(_) >> user
+            loadList(_) >> [user]
         })
 
         when:
@@ -142,6 +143,15 @@ class SampleTest extends Specification {
 
         noExceptionThrown()
         user1 == user
+
+        when:
+
+        List<User> users = dataManager.loadList(loadContext)
+
+        then:
+
+        noExceptionThrown()
+        users[0] == user
 
         cleanup:
 

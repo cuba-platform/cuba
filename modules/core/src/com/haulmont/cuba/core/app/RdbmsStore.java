@@ -174,7 +174,7 @@ public class RdbmsStore implements DataStore {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
                     + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
-                    + ", query=" + (context.getQuery() == null ? null : DataServiceQueryBuilder.printQuery(context.getQuery().getQueryString()))
+                    + ", query=" + (context.getQuery() == null ? null : RdbmsQueryBuilder.printQuery(context.getQuery().getQueryString()))
                     + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
                     + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
@@ -238,7 +238,7 @@ public class RdbmsStore implements DataStore {
         if (log.isDebugEnabled())
             log.debug("getCount: metaClass=" + context.getMetaClass()
                     + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
-                    + ", query=" + (context.getQuery() == null ? null : DataServiceQueryBuilder.printQuery(context.getQuery().getQueryString())));
+                    + ", query=" + (context.getQuery() == null ? null : RdbmsQueryBuilder.printQuery(context.getQuery().getQueryString())));
 
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
@@ -466,7 +466,7 @@ public class RdbmsStore implements DataStore {
         ValueLoadContext.Query contextQuery = context.getQuery();
 
         if (log.isDebugEnabled())
-            log.debug("query: " + (DataServiceQueryBuilder.printQuery(contextQuery.getQueryString()))
+            log.debug("query: " + (RdbmsQueryBuilder.printQuery(contextQuery.getQueryString()))
                     + (contextQuery.getFirstResult() == 0 ? "" : ", first=" + contextQuery.getFirstResult())
                     + (contextQuery.getMaxResults() == 0 ? "" : ", max=" + contextQuery.getMaxResults()));
 
@@ -483,8 +483,9 @@ public class RdbmsStore implements DataStore {
 
             List<String> keys = context.getProperties();
 
-            DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
-            queryBuilder.init(contextQuery.getQueryString(), contextQuery.getCondition(), contextQuery.getParameters(), contextQuery.getNoConversionParams(),
+            RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
+            queryBuilder.init(contextQuery.getQueryString(), contextQuery.getCondition(), contextQuery.getSort(),
+                    contextQuery.getParameters(), contextQuery.getNoConversionParams(),
                     null, metadata.getClassNN(KeyValueEntity.class).getName());
             Query query = queryBuilder.getQuery(em);
 
@@ -565,10 +566,11 @@ public class RdbmsStore implements DataStore {
                 && context.getId() == null)
             throw new IllegalArgumentException("Query string or ID needed");
 
-        DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
+        RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
         queryBuilder.init(
                 contextQuery == null ? null : contextQuery.getQueryString(),
                 contextQuery == null ? null : contextQuery.getCondition(),
+                contextQuery == null ? null : contextQuery.getSort(),
                 contextQuery == null ? null : contextQuery.getParameters(),
                 contextQuery == null ? null : contextQuery.getNoConversionParams(),
                 context.getId(), context.getMetaClass()

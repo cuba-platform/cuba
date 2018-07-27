@@ -17,10 +17,7 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -51,6 +48,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     private boolean cacheable;
     private View view;
     private String viewName;
+    private Sort sort;
 
     public StandardCollectionLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -88,6 +86,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         LoadContext.Query query = loadContext.setQueryString(this.query);
 
         query.setCondition(condition);
+        query.setSort(sort);
         query.setParameters(parameters);
 
         query.setCacheable(cacheable);
@@ -124,6 +123,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     @Override
     public void setContainer(CollectionContainer<E> container) {
         this.container = container;
+        container.setSorter(new CollectionContainerSorter(this));
     }
 
     @Override
@@ -228,5 +228,19 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (this.view != null)
             throw new IllegalStateException("view is already set");
         this.viewName = viewName;
+    }
+
+    @Override
+    public Sort getSort() {
+        return sort;
+    }
+
+    @Override
+    public void setSort(Sort sort) {
+        if (sort == null || sort.getOrders().isEmpty()) {
+            this.sort = null;
+        } else {
+            this.sort = sort;
+        }
     }
 }

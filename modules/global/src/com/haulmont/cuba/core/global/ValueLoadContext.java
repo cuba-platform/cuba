@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 
 import javax.annotation.Nullable;
@@ -174,6 +173,7 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
         private Map<String, Object> parameters = new HashMap<>();
         private String[] noConversionParams;
         private Condition condition;
+        private Sort sort;
 
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
@@ -284,6 +284,22 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
          */
         public Query setCondition(Condition condition) {
             this.condition = condition;
+            return this;
+        }
+
+        /**
+         * @return query sort
+         */
+        public Sort getSort() {
+            return sort;
+        }
+
+        /**
+         * @param sort query sort
+         * @return this query instance for chaining
+         */
+        public Query setSort(Sort sort) {
+            this.sort = sort;
             return this;
         }
 

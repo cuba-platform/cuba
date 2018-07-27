@@ -20,14 +20,12 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.Sorter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -40,6 +38,9 @@ public class CollectionContainerImpl<E extends Entity>
 
     protected List<E> collection = new ArrayList<>();
 
+    protected Map<Object, Integer> idMap = new HashMap<>();
+    private Sorter sorter;
+
     public CollectionContainerImpl(MetaClass metaClass) {
         super(metaClass);
     }
@@ -47,10 +48,11 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public void setItem(@Nullable E item) {
         if (item != null) {
-            E existingItem = collection.stream()
-                    .filter(item::equals)
-                    .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("CollectionContainer does not contain " + item));
+            Integer idx = idMap.get(item.getId());
+            if (idx == -1) {
+                throw new IllegalArgumentException("CollectionContainer does not contain " + item);
+            }
+            E existingItem = collection.get(idx);
             super.setItem(existingItem);
         } else {
             super.setItem(null);
@@ -65,6 +67,7 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public List<E> getMutableItems() {
         return new ObservableList<>(collection, () -> {
+            buildIdMap();
             clearItemIfNotExists();
             fireCollectionChanged();
         });
@@ -78,6 +81,7 @@ public class CollectionContainerImpl<E extends Entity>
             collection.addAll(entities);
             attachListener(collection);
         }
+        buildIdMap();
         clearItemIfNotExists();
         fireCollectionChanged();
     }
@@ -85,10 +89,14 @@ public class CollectionContainerImpl<E extends Entity>
     @Nullable
     @Override
     public E getItemOrNull(Object entityId) {
-        return collection.stream()
-                .filter(entity -> entity.getId().equals(entityId))
-                .findAny()
-                .orElse(null);
+        Integer idx = idMap.get(entityId);
+        return idx != null ? collection.get(idx) : null;
+    }
+
+    @Override
+    public int getItemIndex(Object entityId) {
+        Integer idx = idMap.get(entityId);
+        return idx != null ? idx : -1;
     }
 
     @Override
@@ -103,6 +111,16 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener) {
         return events.subscribe(CollectionChangeEvent.class, (Consumer) listener);
+    }
+
+    @Override
+    public Sorter getSorter() {
+        return sorter;
+    }
+
+    @Override
+    public void setSorter(Sorter sorter) {
+        this.sorter = sorter;
     }
 
     protected void fireCollectionChanged() {
@@ -123,9 +141,25 @@ public class CollectionContainerImpl<E extends Entity>
         }
     }
 
+    protected void buildIdMap() {
+        idMap.clear();
+        for (int i = 0; i < collection.size(); i++) {
+            idMap.put(collection.get(i).getId(), i);
+        }
+    }
+
     protected void clearItemIfNotExists() {
-        if (item != null && !collection.contains(item)) {
+        if (item != null && idMap.get(item.getId()) == -1) {
             setItem(null);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CollectionContainerImpl{" +
+                "entity=" + entityMetaClass +
+                ", view=" + view +
+                ", size=" + collection.size() +
+                '}';
     }
 }

@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.app.queryresults;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.DataServiceQueryBuilder;
+import com.haulmont.cuba.core.app.RdbmsQueryBuilder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryHolder;
@@ -97,15 +97,16 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             transformer.removeOrderBy();
             String queryString = transformer.getResult();
 
-            DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
-            queryBuilder.init(queryString, contextQuery.getCondition(), contextQuery.getParameters(), contextQuery.getNoConversionParams(),
+            RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
+            queryBuilder.init(queryString, contextQuery.getCondition(), contextQuery.getSort(),
+                    contextQuery.getParameters(), contextQuery.getNoConversionParams(),
                     null, entityName);
             if (prevQueries.size() > 1) {
                 queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), loadContext.getQueryKey());
             }
             Query query = queryBuilder.getQuery(em);
 
-            String logMsg = "Load previous query results: " + DataServiceQueryBuilder.printQuery(query.getQueryString());
+            String logMsg = "Load previous query results: " + RdbmsQueryBuilder.printQuery(query.getQueryString());
             log.debug(logMsg);
             long start = System.currentTimeMillis();
 

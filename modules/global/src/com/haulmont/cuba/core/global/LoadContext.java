@@ -297,6 +297,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
         private int maxResults;
         private boolean cacheable;
         private Condition condition;
+        private Sort sort;
 
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
@@ -408,6 +409,22 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
          */
         public Query setCondition(Condition condition) {
             this.condition = condition;
+            return this;
+        }
+
+        /**
+         * @return query sort
+         */
+        public Sort getSort() {
+            return sort;
+        }
+
+        /**
+         * @param sort query sort
+         * @return this query instance for chaining
+         */
+        public Query setSort(Sort sort) {
+            this.sort = sort;
             return this;
         }
 

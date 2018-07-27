@@ -148,6 +148,9 @@ public class MetaPropertyPath implements Serializable {
         return Arrays.equals(subarray, other.metaProperties);
     }
 
+    /**
+     * Returns the path as dot-separated string.
+     */
     public String toPathString() {
         return pathString;
     }
