@@ -287,6 +287,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         searchBtn.setStyleName("filter-search-button");
         searchBtn.setCaption(getMainMessage("filter.search"));
         searchBtn.setIcon("icons/search.png");
+        searchBtn.setDescription(getMainMessage("filter.searchBtn.description"));
         searchBtn.setAction(new AbstractAction("search") {
             @Override
             public void actionPerform(Component component) {
