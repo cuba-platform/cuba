@@ -203,7 +203,7 @@ public class CubaScrollTableConnector extends TableConnector {
         // We may have actions attached to this table
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();
-            for (int i = 1; i < cnt; i++) {
+            for (int i = 0; i < cnt; i++) {
                 UIDL childUidl = uidl.getChildUIDL(i);
                 if (childUidl.getTag().equals("shortcuts")) {
                     if (getWidget().getShortcutActionHandler() == null) {

@@ -200,12 +200,21 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         if (cachedItemIds == null) {
             List<Object> result = new ArrayList<>();
             //noinspection unchecked
-            List<GroupInfo> roots = getGroupTableSource().rootGroups();
-            for (GroupInfo root : roots) {
-                result.add(root);
-                collectItemIds(root, result);
+
+            if (getGroupTableSource().hasGroups()) {
+                List<GroupInfo> roots = getGroupTableSource().rootGroups();
+                if (!roots.isEmpty()) {
+                    for (GroupInfo root : roots) {
+                        result.add(root);
+                        collectItemIds(root, result);
+                    }
+                }
+                cachedItemIds = result;
+            } else {
+                cachedItemIds = new ArrayList<>();
+                //noinspection unchecked
+                cachedItemIds.addAll(getGroupTableSource().getItemIds());
             }
-            cachedItemIds = result;
 
             if (!cachedItemIds.isEmpty()) {
                 first = cachedItemIds.get(0);
