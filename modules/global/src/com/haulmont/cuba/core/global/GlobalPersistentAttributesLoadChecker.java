@@ -21,10 +21,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.EmbeddableEntity;
+import com.haulmont.cuba.core.entity.*;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
@@ -57,6 +54,10 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
 
     @Override
     public boolean isLoaded(Object entity, String property) {
+        if (entity instanceof KeyValueEntity) {
+            KeyValueEntity keyValue = (KeyValueEntity) entity;
+            return keyValue.getMetaClass() != null && keyValue.getMetaClass().getProperty(property) != null;
+        }
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         if (isDynamicAttribute(property)) {
             @SuppressWarnings("unchecked")
