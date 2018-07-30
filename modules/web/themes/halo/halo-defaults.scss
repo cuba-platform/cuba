@@ -61,6 +61,10 @@ $v-support-inverse-menu: true !default;
  */
 $v-show-required-indicators: false !default;
 /**
+ * The background color of hovered item.
+ */
+$cuba-hover-color: #d3eaf8 !default;
+/**
  * Enables custom colored scrollbars for webkit/blink browsers.
  * @group scrollbar
  */

@@ -15,6 +15,17 @@
  *
  */
 
+/**
+ * The font weight of table header.
+ * @group table
+ */
+$cuba-table-header-font-weight: $v-font-weight !default;
+/**
+ * Defines whether table row should be colored when it is hovered.
+ * @group table
+ */
+$cuba-table-highlight-hover-row: false !default;
+
 @mixin halo-table($primary-stylename: v-table) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
@@ -123,6 +134,10 @@
   .v-scrollable > .#{$primary-stylename} .#{$primary-stylename}-column-selector {
     top: round($v-unit-size/2) - round($v-unit-size/4);
     right: round($v-unit-size/2) - round($v-unit-size/4);
+  }
+
+  .#{$primary-stylename} > .#{$primary-stylename}-header-wrap {
+    font-weight: $cuba-table-header-font-weight;
   }
 
   .#{$primary-stylename}.v-has-width {
@@ -343,5 +358,34 @@
   .#{$primary-stylename}-column-selector-popup .gwt-MenuBar {
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  @if $cuba-table-highlight-hover-row {
+    .#{$primary-stylename}-row:hover,
+    .#{$primary-stylename}-row-odd:hover {
+      background-color: $cuba-hover-color;
+      color: valo-font-color($cuba-hover-color, 0.9);
+
+      .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper,
+      .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
+        &:before {
+          color: valo-font-color($cuba-hover-color, 0.9);
+        }
+      }
+    }
+
+    .#{$primary-stylename}-row.v-selected:hover,
+    .#{$primary-stylename}-row-odd.v-selected:hover  {
+      @include valo-gradient($v-selection-color);
+      background-origin: border-box;
+      color: valo-font-color($v-selection-color, 0.9);
+
+      .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper,
+      .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
+        &:before {
+          color: valo-font-color($v-selection-color, 0.9);
+        }
+      }
+    }
   }
 }

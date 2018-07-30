@@ -31,7 +31,7 @@
     </dsContext>
 
     <actions>
-        <action id="okAction" shortcut="Ctrl-Enter" invoke="ok"/>
+        <action id="okAction" primary="true" shortcut="Ctrl-Enter" invoke="ok"/>
         <action id="cancelAction" invoke="cancel"/>
     </actions>
     <layout spacing="true">

@@ -143,6 +143,41 @@
 }
 
 /**
+ * The sidemenu background color.
+ * @group sidemenu
+ */
+$cuba-sidemenu-background-color: if(is-dark-color($v-app-background-color), darken($v-app-background-color, 4%), lighten($v-app-background-color, 8%)) !default;
+/**
+ * The sidemenu items font weight.
+ * @group sidemenu
+ */
+$cuba-sidemenu-item-font-weight: $v-font-weight + 100 !default;
+/**
+ * Defines whether sidemenu items should have delimiters.
+ * @group sidemenu
+ */
+$cuba-sidemenu-separate-items: true !default;
+/**
+ * The sidemenu timezone font weight.
+ * @group sidemenu
+ */
+$cuba-sidemenu-timezone-font-weight: $v-font-weight !default;
+/**
+ * The sidemenu title font size.
+ * @group sidemenu
+ */
+$cuba-sidemenu-title-font-size: $v-font-size--h2 !default;
+/**
+ * The sidemenu title font weight.
+ * @group sidemenu
+ */
+$cuba-sidemenu-title-font-weight: $v-font-weight !default;
+/**
+ * Defines whether sidemenu title should have gradient.
+ * @group sidemenu
+ */
+$cuba-sidemenu-title-gradient: true !default;
+/**
  * The top offset of mobile buttons and show/hide toggle button.
  * @group sidemenu
  */
@@ -152,9 +187,14 @@ $cuba-sidemenu-top-offset: floor(($v-unit-size - $v-unit-size * 0.8) / 2);
  * @group sidemenu
  */
 $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
+/**
+ * The sidemenu user indicator font weight.
+ * @group sidemenu
+ */
+$cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
 @mixin halo-cuba-sidemenu($primary-stylename: c-sidemenu) {
-  $bg: if(is-dark-color($v-app-background-color), darken($v-app-background-color, 4%), lighten($v-app-background-color, 8%)) !default;
+  $bg: $cuba-sidemenu-background-color;
 
   .#{$primary-stylename}-user {
     background: transparent;
@@ -180,21 +220,23 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
   }
 
   .#{$primary-stylename}-title {
-    @include valo-gradient($color: $v-selection-color);
-    $font-color: valo-font-color($v-selection-color, 1);
+    $font-color: valo-font-color($bg, 0.9);
+    @if $cuba-sidemenu-title-gradient {
+      @include valo-gradient($color: $v-selection-color);
+      border-bottom: valo-border($color: $v-selection-color);
+      $font-color: valo-font-color($v-selection-color, 0.9);
+    }
     color: $font-color;
+    font-size: $cuba-sidemenu-title-font-size;
+    font-weight: $cuba-sidemenu-title-font-weight;
+
     text-shadow: valo-text-shadow($font-color: $font-color, $background-color: $v-selection-color);
     padding: round($v-unit-size/3) round($v-unit-size/2);
 
-    border-bottom: valo-border($color: $v-selection-color);
     @include box-shadow(valo-bevel-and-shadow($shadow: $v-shadow));
 
     text-align: center;
     width: 100%;
-
-    .v-label {
-      font-size: $v-font-size--h2;
-    }
   }
 
   .#{$primary-stylename} {
@@ -213,7 +255,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
   }
 
   .#{$primary-stylename}.v-has-width {
-    .#{$primary-stylename}-item-caption{
+    .#{$primary-stylename}-item-caption {
       max-width: initial;
     }
   }
@@ -242,10 +284,16 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
   .#{$primary-stylename}-item-header {
     color: valo-font-color($bg, 0.7);
-    margin: round($v-unit-size/5) 0 round($v-unit-size/5) round($v-unit-size/2);
-    border-bottom: valo-border($color: $bg, $strength: 1, $border: first-number($v-border) solid v-tone);
+    margin: round($v-unit-size/5) 0;
 
-    margin-left: 0;
+    @if $cuba-sidemenu-separate-items {
+      border-bottom: valo-border(
+              $color: $valo-menu-background-color,
+              $strength: 0.5,
+              $border: first-number($v-border) solid v-tone);
+    } @else {
+      border-bottom: none;
+    }
 
     .#{$primary-stylename}-item-badge {
       background: transparent;
@@ -450,15 +498,16 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     @include valo-menu-style;
 
     .#{$primary-stylename} {
-      background: transparent;
-      background-image: none;
+      background: transparent none;
     }
 
-    .#{$primary-stylename}.v-has-width {
-      .#{$primary-stylename}-item-caption{
-        max-width: initial;
-        width: 100%;
-      }
+    .#{$primary-stylename}.v-has-width .#{$primary-stylename}-item-caption {
+      max-width: initial;
+      width: 100%;
+    }
+
+    .c-userindicator {
+      font-weight: $cuba-sidemenu-userindicator-font-weight;
     }
 
     .c-ftsfield-button,
@@ -473,6 +522,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
     .c-user-timezone-label {
       color: valo-font-color($valo-menu-background-color, 0.5);
+      font-weight: $cuba-sidemenu-timezone-font-weight;
     }
 
     .c-app-icon {
@@ -510,13 +560,14 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     .#{$primary-stylename}-item {
       @include valo-menu-item-style;
 
+      font-weight: $cuba-sidemenu-item-font-weight;
+
       :hover {
         color: valo-font-color($valo-menu-background-color, 1);
       }
     }
 
     .#{$primary-stylename}-item-header {
-      border-bottom: valo-border($color: $valo-menu-background-color, $strength: 0.5, $border: first-number($v-border) solid v-tone);
       color: valo-font-color($valo-menu-background-color, 0.5);
     }
 

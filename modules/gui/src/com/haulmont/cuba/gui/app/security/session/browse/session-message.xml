@@ -26,7 +26,7 @@
         <label id="sendToAllLabel" visible="false"/>
         <textArea id="messageField" caption="msg://messageWindow.textField" rows="5" width="100%"/>
         <hbox spacing="true">
-            <button id="sendBtn" caption="msg://messageWindow.send" invoke="send"/>
+            <button id="sendBtn" caption="msg://messageWindow.send" invoke="send" primary="true"/>
             <button id="cancelBtn" caption="msg://com.haulmont.cuba.gui/actions.Cancel" invoke="close"/>
         </hbox>
     </layout>

@@ -15,8 +15,29 @@
  *
  */
 
+/**
+ * The button caption font weight.
+ * @group button
+ */
+$cuba-button-font-weight: $v-font-weight !default;
+/**
+ * Defines whether button with primary action should be highlighted.
+ * @group button
+ */
+$cuba-highlight-primary-action: false !default;
+
 @mixin halo-button($primary-stylename: v-button) {
   $link-padding: 2px;
+
+  .#{$primary-stylename} {
+    .v-button-caption {
+      font-weight: $cuba-button-font-weight;
+    }
+
+    &.c-cm-button .v-button-caption {
+      font-weight: $v-font-weight;
+    }
+  }
 
   .#{$primary-stylename}-link {
     text-align: left;
@@ -68,6 +89,12 @@
       bottom: 0;
       left: 0;
       right: 0;
+    }
+  }
+
+  @if $cuba-highlight-primary-action {
+    .#{$primary-stylename}.c-primary-action {
+      @include valo-button-style($background-color: $v-focus-color, $unit-size: null);
     }
   }
 }

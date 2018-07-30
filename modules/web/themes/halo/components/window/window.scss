@@ -15,7 +15,36 @@
  *
  */
 
-$v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
+/**
+ * The modal window header background.
+ * @group window
+ */
+$cuba-window-modal-header-background: null !default;
+/**
+ * The modal window header font weight.
+ * @group window
+ */
+$cuba-window-modal-header-font-weight: $v-font-weight !default;
+/**
+ * The modal window header height.
+ * @group window
+ */
+$cuba-window-modal-header-height: $v-unit-size !default;
+/**
+ * The modal window header line height.
+ * @group window
+ */
+$cuba-window-modal-header-line-height: $cuba-window-modal-header-height - 1px !default;
+/**
+ * The modal window buttons line height.
+ * @group window
+ */
+$cuba-window-modal-header-buttons-line-height: $cuba-window-modal-header-line-height - 3px !default;
+/**
+ * The non modal window shadow.
+ * @group window
+ */
+$v-window-nonmodal-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !default;
 
 @mixin halo-window($primary-stylename: v-window) {
   .#{$primary-stylename}-contents {
@@ -39,12 +68,15 @@ $v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
     display: none;
   }
 
-  $background-color: $v-table-background-color or valo-table-background-color();
-
   .#{$primary-stylename}-outerheader {
     border-bottom: valo-border();
-    $bg-lightness: if(color-luminance($background-color) < 10, 4%, -4%);
-    background-color: scale-color($background-color, $lightness: $bg-lightness);
+
+    @if ($cuba-window-modal-header-background == null) {
+      $background-color: $v-table-background-color or valo-table-background-color();
+      $bg-lightness: if(color-luminance($background-color) < 10, 4%, -4%);
+      $cuba-window-modal-header-background: scale-color($background-color, $lightness: $bg-lightness);
+    }
+    background-color: $cuba-window-modal-header-background;
 
     .v-mac & {
         border-radius: $v-window-border-radius $v-window-border-radius 0 0;
@@ -62,6 +94,18 @@ $v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
     .#{$primary-stylename}-header {
       color: inherit;
       background-color: inherit;
+      height: $cuba-window-modal-header-height;
+    }
+
+    .#{$primary-stylename}-header {
+      font-weight: $cuba-window-modal-header-font-weight;
+      line-height: $cuba-window-modal-header-line-height;
+    }
+
+    .#{$primary-stylename}-closebox,
+    .#{$primary-stylename}-maximizebox,
+    .#{$primary-stylename}-restorebox {
+      line-height: $cuba-window-modal-header-buttons-line-height;
     }
 
     .v-mac & {

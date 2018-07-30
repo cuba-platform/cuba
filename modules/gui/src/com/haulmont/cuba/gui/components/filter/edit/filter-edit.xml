@@ -32,7 +32,7 @@
     </dsContext>
 
     <actions>
-        <action id="commit" invoke="commitAndClose" caption="mainMsg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+        <action id="commit" invoke="commitAndClose" caption="mainMsg://actions.Ok" icon="icons/ok.png" primary="true" shortcut="CTRL-ENTER"/>
     </actions>
 
     <layout spacing="true" expand="mainLayout">

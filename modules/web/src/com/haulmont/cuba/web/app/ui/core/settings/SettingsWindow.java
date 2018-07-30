@@ -164,6 +164,7 @@ public class SettingsWindow extends AbstractWindow {
         Action commitAction = new BaseAction("commit")
                 .withCaption(messages.getMainMessage("actions.Ok"))
                 .withShortcut(clientConfig.getCommitShortcut())
+                .withPrimary(true)
                 .withHandler(event ->
                         commit()
                 );
