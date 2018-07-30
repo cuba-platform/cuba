@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
+import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.AbstractRenderer;
 import com.haulmont.cuba.web.widgets.renderers.CubaProgressBarRenderer;
 
 /**

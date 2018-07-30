@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components.renderers;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid;
+import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.AbstractRenderer;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.renderers.ComponentRenderer;
 import com.vaadin.ui.renderers.Renderer;
@@ -27,8 +27,7 @@ import com.vaadin.ui.renderers.Renderer;
 /**
  * A renderer for UI components.
  */
-public class WebComponentRenderer<T extends Entity>
-        extends WebDataGrid.AbstractRenderer<T, com.vaadin.ui.Component>
+public class WebComponentRenderer<T extends Entity> extends AbstractRenderer<T, com.vaadin.ui.Component>
         implements DataGrid.ComponentRenderer {
 
     @Override

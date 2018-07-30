@@ -18,16 +18,14 @@ package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid;
+import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.AbstractRenderer;
 import com.haulmont.cuba.web.widgets.renderers.CubaCheckBoxRenderer;
 import com.vaadin.ui.renderers.Renderer;
 
 /**
  * A renderer that represents a boolean values as a graphical check box icons.
  */
-public class WebCheckBoxRenderer
-        extends WebDataGrid.AbstractRenderer<Entity, Boolean>
-        implements DataGrid.CheckBoxRenderer {
+public class WebCheckBoxRenderer extends AbstractRenderer<Entity, Boolean> implements DataGrid.CheckBoxRenderer {
 
     @Override
     protected Renderer<Boolean> createImplementation() {

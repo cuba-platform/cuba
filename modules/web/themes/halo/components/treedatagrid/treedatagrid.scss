@@ -1,0 +1,5 @@
+@import "../datagrid/datagrid";
+
+@mixin halo-treedatagrid($primary-stylename: v-treegrid) {
+  @include halo-datagrid($primary-stylename);
+}

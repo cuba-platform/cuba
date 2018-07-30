@@ -1,36 +1,20 @@
-/*
- * Copyright (c) 2008-2016 Haulmont.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.haulmont.cuba.web.widgets.client.grid;
+package com.haulmont.cuba.web.widgets.client.treegrid;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.widgets.client.grid.HasClickSettings;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
-import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
-import com.vaadin.client.widgets.Grid;
+import com.vaadin.client.widget.treegrid.TreeGrid;
 import elemental.json.JsonObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CubaGridWidget extends Grid<JsonObject> {
+public class CubaTreeGridWidget extends TreeGrid {
 
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
@@ -92,18 +76,8 @@ public class CubaGridWidget extends Grid<JsonObject> {
     }
 
     @Override
-    protected EscalatorUpdater createHeaderUpdater() {
-        return new CubaStaticSectionUpdater(getHeader(), getEscalator().getHeader());
-    }
-
-    @Override
-    protected EscalatorUpdater createFooterUpdater() {
-        return new CubaStaticSectionUpdater(getFooter(), getEscalator().getFooter());
-    }
-
-    @Override
     protected UserSorter createUserSorter() {
-        return new CubaUserSorter();
+        return new CubaTreeGridWidget.CubaUserSorter();
     }
 
     protected class CubaUserSorter extends UserSorter {
@@ -140,7 +114,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     @Override
     protected ColumnHider createColumnHider() {
-        return new CubaColumnHider();
+        return new CubaTreeGridWidget.CubaColumnHider();
     }
 
     protected class CubaColumnHider extends ColumnHider {
@@ -162,7 +136,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     @Override
     protected SelectionColumn createSelectionColumn(Renderer<Boolean> selectColumnRenderer) {
-        return new CubaSelectionColumn(selectColumnRenderer);
+        return new CubaTreeGridWidget.CubaSelectionColumn(selectColumnRenderer);
     }
 
     protected class CubaSelectionColumn extends SelectionColumn {

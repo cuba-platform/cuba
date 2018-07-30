@@ -91,6 +91,7 @@ public class LayoutLoaderConfig {
         sharedLoaders.register(TreeTable.NAME, TreeTableLoader.class);
         sharedLoaders.register(GroupTable.NAME, GroupTableLoader.class);
         sharedLoaders.register(DataGrid.NAME, DataGridLoader.class);
+        sharedLoaders.register(TreeDataGrid.NAME, TreeDataGridLoader.class);
 
         sharedLoaders.register(Calendar.NAME, CalendarLoader.class);
 

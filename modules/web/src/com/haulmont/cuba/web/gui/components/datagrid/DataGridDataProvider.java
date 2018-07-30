@@ -93,16 +93,6 @@ public class DataGridDataProvider<T> extends AbstractDataProvider<T, Serializabl
                 .limit(query.getLimit());
     }
 
-    @Override
-    public void refreshItem(T item) {
-        throw new UnsupportedOperationException("Use a datasource instead");
-    }
-
-    @Override
-    public void refreshAll() {
-        throw new UnsupportedOperationException("Use a datasource instead");
-    }
-
     protected void datasourceItemSetChanged(DataGridSource.ItemSetChangeEvent<T> event) {
         fireEvent(new DataChangeEvent<>(this));
 

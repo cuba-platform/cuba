@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridState;
-import com.vaadin.event.Action;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 
@@ -29,7 +28,7 @@ import java.util.Map;
 //import static com.haulmont.cuba.web.widgets.CubaGrid.EditorPostCommitListener.EDITOR_POST_COMMIT_METHOD;
 //import static com.haulmont.cuba.web.widgets.CubaGrid.EditorPreCommitListener.EDITOR_PRE_COMMIT_METHOD;
 
-public class CubaGrid<T> extends Grid<T> implements Action.ShortcutNotifier {
+public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
 
 //    protected CubaGridEditorFieldFactory editorFieldFactory;
 //
@@ -57,6 +56,7 @@ public class CubaGrid<T> extends Grid<T> implements Action.ShortcutNotifier {
 //        this.editorFieldFactory = editorFieldFactory;
 //    }
 
+    @Override
     public void setGridSelectionModel(GridSelectionModel<T> model) {
         setSelectionModel(model);
     }
@@ -71,14 +71,17 @@ public class CubaGrid<T> extends Grid<T> implements Action.ShortcutNotifier {
         return (CubaGridState) super.getState(markAsDirty);
     }
 
+    @Override
     public Map<String, String> getColumnIds() {
         return getState().columnIds;
     }
 
+    @Override
     public void setColumnIds(Map<String, String> ids) {
         getState().columnIds = ids;
     }
 
+    @Override
     public void addColumnId(String column, String value) {
         if (getState().columnIds == null) {
             getState().columnIds = new HashMap<>();
@@ -87,12 +90,14 @@ public class CubaGrid<T> extends Grid<T> implements Action.ShortcutNotifier {
         getState().columnIds.put(column, value);
     }
 
+    @Override
     public void removeColumnId(String column) {
         if (getState().columnIds != null) {
             getState().columnIds.remove(column);
         }
     }
 
+    @Override
     public void repaint() {
         markAsDirtyRecursive();
         getDataCommunicator().reset();

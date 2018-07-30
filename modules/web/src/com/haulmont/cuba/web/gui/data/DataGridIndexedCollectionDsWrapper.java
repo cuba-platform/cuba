@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.CollectionDsListenersWrapper;
+import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.CollectionDsListenersWrapper;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;

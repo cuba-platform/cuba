@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.CollectionDsListenersWrapper;
+import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.CollectionDsListenersWrapper;
 import com.vaadin.v7.data.Container;
 
 import java.util.Collection;
