@@ -50,21 +50,17 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     protected com.vaadin.event.ExpandEvent.ExpandListener<E> createExpandListener() {
         return e -> {
-            if (hasSubscriptions(ExpandEvent.class)) {
-                ExpandEvent<E> event = new ExpandEvent<>(WebTreeDataGrid.this,
-                        e.getExpandedItem(), e.isUserOriginated());
-                publish(ExpandEvent.class, event);
-            }
+            ExpandEvent<E> event = new ExpandEvent<>(WebTreeDataGrid.this,
+                    e.getExpandedItem(), e.isUserOriginated());
+            publish(ExpandEvent.class, event);
         };
     }
 
     protected com.vaadin.event.CollapseEvent.CollapseListener<E> createCollapseListener() {
         return e -> {
-            if (hasSubscriptions(CollapseEvent.class)) {
-                CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
-                        e.getCollapsedItem(), e.isUserOriginated());
-                publish(CollapseEvent.class, event);
-            }
+            CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
+                    e.getCollapsedItem(), e.isUserOriginated());
+            publish(CollapseEvent.class, event);
         };
     }
 

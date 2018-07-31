@@ -1,12 +1,10 @@
 package com.haulmont.cuba.gui.components;
 
-import java.io.Serializable;
-
-public interface HasUserOriginated extends Serializable {
+public interface HasUserOriginated {
     /**
      * Returns whether this event was triggered by user interaction or programmatically.
      *
      * @return {@code true} if this event originates by user interaction, {@code false} otherwise.
      */
-    public boolean isUserOriginated();
+    boolean isUserOriginated();
 }

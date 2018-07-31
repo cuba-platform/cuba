@@ -1614,14 +1614,14 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * Registers a new column collapsing change listener
+     * Registers a new column collapsing change listener.
      *
      * @param listener the listener to register
      */
     void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener);
 
     /**
-     * Removes a previously registered column collapsing change listener
+     * Removes a previously registered column collapsing change listener.
      *
      * @param listener the listener to remove
      */

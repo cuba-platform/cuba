@@ -2,7 +2,12 @@ package com.haulmont.cuba.web.gui.components.datagrid;
 
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 
-// TODO: gg, JavaDoc
+/**
+ *
+ * {@link DataGridDataProvider} delegates event handling to an implementation of this interface.
+ *
+ * @param <I> items type
+ */
 public interface DataGridSourceEventsDelegate<I> {
 
     void dataGridSourceItemSetChanged(DataGridSource.ItemSetChangeEvent<I> event);

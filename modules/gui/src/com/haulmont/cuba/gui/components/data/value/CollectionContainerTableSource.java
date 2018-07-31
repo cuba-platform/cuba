@@ -61,7 +61,8 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
 
     @SuppressWarnings("unchecked")
     protected void containerItemPropertyChanged(CollectionContainer.ItemPropertyChangeEvent<E> e) {
-        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, e.getPrevValue(), e.getValue()));
+        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this,
+                e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue()));
     }
 
     @Override

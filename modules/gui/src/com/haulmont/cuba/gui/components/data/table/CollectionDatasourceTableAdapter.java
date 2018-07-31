@@ -66,7 +66,8 @@ public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements
 
     @SuppressWarnings("unchecked")
     protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent<E> e) {
-        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, e.getPrevValue(), e.getValue()));
+        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this,
+                e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue()));
     }
 
     protected void datasourceStateChanged(Datasource.StateChangeEvent<E> e) {
