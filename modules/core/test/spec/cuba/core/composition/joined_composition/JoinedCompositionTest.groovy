@@ -24,6 +24,7 @@ import com.haulmont.cuba.testmodel.selfinherited.ChildEntity
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntityDetail
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
+import org.junit.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -49,6 +50,7 @@ class JoinedCompositionTest extends Specification {
         runner.update('delete from TEST_ROOT_ENTITY')
     }
 
+    @Ignore
     def "store master-detail"() {
         when:
         persistence.runInTransaction({ em ->
