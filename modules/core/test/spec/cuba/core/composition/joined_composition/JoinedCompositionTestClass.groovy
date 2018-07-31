@@ -27,11 +27,12 @@ import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class JoinedCompositionTest extends Specification {
+class JoinedCompositionTestClass extends Specification {
 
     @Shared
     @ClassRule
-    public TestContainer cont = Common.INSTANCE
+    public TestContainer cont = new TestContainer()
+            .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties", "/spec/cuba/core/composition/test-composition-app.properties"))
 
     private Persistence persistence = cont.persistence()
     private Metadata metadata = cont.metadata()
@@ -45,6 +46,7 @@ class JoinedCompositionTest extends Specification {
     void cleanup() {
         def runner = new QueryRunner(persistence.dataSource)
         runner.update('delete from TEST_CHILD_ENTITY_DETAIL')
+        runner.update('delete from TEST_ROOT_ENTITY_DETAIL')
         runner.update('delete from TEST_CHILD_ENTITY')
         runner.update('delete from TEST_ROOT_ENTITY')
     }
@@ -66,20 +68,4 @@ class JoinedCompositionTest extends Specification {
         then:
         noExceptionThrown()
     }
-
-
-    static class Common extends TestContainer {
-
-        public static final Common INSTANCE = new Common()
-
-        private Common() {
-        }
-
-        @Override
-        public void before() throws Throwable {
-            appProperties.put('cuba.hasMultipleTableConstraintDependency', 'true')
-            super.before();
-        }
-    }
-
 }

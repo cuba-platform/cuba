@@ -440,6 +440,11 @@ configure(coreModule) {
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
     }
 
+    task testJoinedComposition(type: Test) {
+        scanForTestClasses = false
+        includes = ['spec/cuba/core/composition/joined_composition/JoinedCompositionTestClass.class']
+    }
+
     assembleDbScripts {
         moduleAlias = '10-cuba'
     }
