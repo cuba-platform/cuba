@@ -24,15 +24,15 @@ import com.haulmont.cuba.testmodel.selfinherited.ChildEntity
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntityDetail
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
-import org.junit.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
-class JoinedCompositionTest extends Specification {
+class JoinedCompositionTestClass extends Specification {
 
     @Shared
     @ClassRule
-    public TestContainer cont = Common.INSTANCE
+    public TestContainer cont = new TestContainer()
+            .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties", "/spec/cuba/core/composition/test-composition-app.properties"))
 
     private Persistence persistence = cont.persistence()
     private Metadata metadata = cont.metadata()
@@ -46,42 +46,26 @@ class JoinedCompositionTest extends Specification {
     void cleanup() {
         def runner = new QueryRunner(persistence.dataSource)
         runner.update('delete from TEST_CHILD_ENTITY_DETAIL')
+        runner.update('delete from TEST_ROOT_ENTITY_DETAIL')
         runner.update('delete from TEST_CHILD_ENTITY')
         runner.update('delete from TEST_ROOT_ENTITY')
     }
 
+    def "store master-detail"() {
+        when:
+        persistence.runInTransaction({ em ->
+            ChildEntity childEntity = metadata.create(ChildEntity)
+            childEntity.name = 'name'
+            childEntity.description = 'description'
+            em.persist(childEntity)
 
-//    def "store master-detail"() {
-//        when:
-//        persistence.runInTransaction({ em ->
-//            ChildEntity childEntity = metadata.create(ChildEntity)
-//            childEntity.name = 'name'
-//            childEntity.description = 'description'
-//            em.persist(childEntity)
-//
-//            ChildEntityDetail childEntityDetail = metadata.create(ChildEntityDetail)
-//            childEntityDetail.childEntity = childEntity
-//            childEntityDetail.info = 'info'
-//            em.persist(childEntityDetail)
-//        })
-//
-//        then:
-//        noExceptionThrown()
-//    }
+            ChildEntityDetail childEntityDetail = metadata.create(ChildEntityDetail)
+            childEntityDetail.childEntity = childEntity
+            childEntityDetail.info = 'info'
+            em.persist(childEntityDetail)
+        })
 
-
-    static class Common extends TestContainer {
-
-        public static final Common INSTANCE = new Common()
-
-        private Common() {
-        }
-
-        @Override
-        public void before() throws Throwable {
-            appProperties.put('cuba.hasMultipleTableConstraintDependency', 'true')
-            super.before();
-        }
+        then:
+        noExceptionThrown()
     }
-
 }
