@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.restapi.common.RestAuthUtils;
+import com.haulmont.restapi.common.RestTokenMasker;
 import com.haulmont.restapi.events.AfterRestInvocationEvent;
 import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import org.slf4j.Logger;
@@ -61,6 +62,9 @@ public class CubaRestLastSecurityFilter implements Filter {
 
     @Inject
     protected RestAuthUtils restAuthUtils;
+
+    @Inject
+    protected RestTokenMasker restTokenMasker;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -114,7 +118,7 @@ public class CubaRestLastSecurityFilter implements Filter {
                     tokenValue = ((OAuth2AuthenticationDetails) authentication.getDetails()).getTokenValue();
                 }
                 log.debug("REST API request [{}] {} {} {}",
-                        tokenValue,
+                        restTokenMasker.maskToken(tokenValue),
                         ((HttpServletRequest) request).getMethod(),
                         getRequestURL((HttpServletRequest) request),
                         request.getRemoteAddr());

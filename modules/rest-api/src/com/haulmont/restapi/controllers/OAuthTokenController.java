@@ -19,6 +19,7 @@ package com.haulmont.restapi.controllers;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
+import com.haulmont.restapi.common.RestTokenMasker;
 import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,9 @@ public class OAuthTokenController {
     protected OAuthTokenRevoker oAuthTokenRevoker;
 
     @Inject
+    protected RestTokenMasker tokenMasker;
+
+    @Inject
     protected Events events;
 
     @PostMapping("/v2/oauth/revoke")
@@ -55,7 +59,7 @@ public class OAuthTokenController {
             throw new InsufficientAuthenticationException(
                     "There is no client authentication. Try adding an appropriate authentication filter.");
         }
-        log.info("POST /oauth/revoke; token = {}, token_type_hint = {}", token, tokenTypeHint);
+        log.info("POST /oauth/revoke; token = {}, token_type_hint = {}", tokenMasker.maskToken(token), tokenTypeHint);
 
         String revokedTokenValue = null;
         if ("refresh_token".equals(tokenTypeHint)) {
@@ -73,7 +77,7 @@ public class OAuthTokenController {
         }
 
         if (revokedTokenValue == null) {
-            log.debug("No token with value {} was revoked.", token);
+            log.debug("No token with value {} was revoked.", tokenMasker.maskToken(token));
         }
 
         if (events != null) {

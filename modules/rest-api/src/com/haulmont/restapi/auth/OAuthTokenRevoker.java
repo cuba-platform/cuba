@@ -17,6 +17,7 @@
 package com.haulmont.restapi.auth;
 
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.restapi.common.RestTokenMasker;
 import com.haulmont.restapi.events.OAuthTokenRevokedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,18 +41,22 @@ public class OAuthTokenRevoker {
 
     @Inject
     protected TokenStore tokenStore;
+
     @Inject
     protected Events events;
 
+    @Inject
+    protected RestTokenMasker tokenMasker;
+
     @Nullable
     public String revokeAccessToken(String token, Authentication clientAuth) {
-        log.debug("revokeAccessToken: token = {}, clientAuth = {}", token, clientAuth);
+        log.debug("revokeAccessToken: token = {}, clientAuth = {}", tokenMasker.maskToken(token), clientAuth);
         return revokeAccessToken(token, clientAuth, TokenRevocationInitiator.CLIENT);
     }
 
     @Nullable
     public String revokeAccessToken(String token) {
-        log.debug("revokeAccessToken: token = {} without clientAuth", token);
+        log.debug("revokeAccessToken: token = {} without clientAuth", tokenMasker.maskToken(token));
         return revokeAccessToken(token, null, TokenRevocationInitiator.SERVER);
     }
 
@@ -70,7 +75,7 @@ public class OAuthTokenRevoker {
                 tokenStore.removeRefreshToken(accessToken.getRefreshToken());
             }
             tokenStore.removeAccessToken(accessToken);
-            log.debug("Access token removed: {}", token);
+            log.debug("Access token removed: {}", tokenMasker.maskToken(token));
 
             if (events != null) {
                 events.publish(new OAuthTokenRevokedEvent(accessToken, revocationInitiator));
@@ -79,7 +84,7 @@ public class OAuthTokenRevoker {
             return accessToken.getValue();
         }
 
-        log.debug("No access token {} found in the token store", token);
+        log.debug("No access token {} found in the token store", tokenMasker.maskToken(token));
         return null;
     }
 
@@ -91,11 +96,11 @@ public class OAuthTokenRevoker {
             checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
             tokenStore.removeAccessTokenUsingRefreshToken(refreshToken);
             tokenStore.removeRefreshToken(refreshToken);
-            log.debug("Successfully removed refresh token {} (and any associated access token).", refreshToken);
+            log.debug("Successfully removed refresh token {} (and any associated access token).", tokenMasker.maskToken(refreshToken.getValue()));
             return refreshToken.getValue();
         }
 
-        log.debug("No refresh token {} found in the token store.", tokenValue);
+        log.debug("No refresh token {} found in the token store.", tokenMasker.maskToken(tokenValue));
         return null;
     }
 
