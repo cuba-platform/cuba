@@ -16,7 +16,10 @@
 
 package com.haulmont.cuba.testmodel.selfinherited;
 
+import com.haulmont.chile.core.annotations.Composition;
+
 import javax.persistence.*;
+import java.util.List;
 
 @DiscriminatorValue("C")
 @Entity(name = "test$ChildEntity")
@@ -27,6 +30,10 @@ public class ChildEntity extends RootEntity {
 
     @Column(name = "NAME")
     protected String name;
+
+    @OneToMany(mappedBy = "childEntity")
+    @Composition
+    protected List<ChildEntityDetail> childDetails;
 
     public String getName() {
         return name;

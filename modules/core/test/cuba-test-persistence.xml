@@ -34,6 +34,7 @@
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail</class>
+        <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntityDetail</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB</class>
         <class>com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity</class>
