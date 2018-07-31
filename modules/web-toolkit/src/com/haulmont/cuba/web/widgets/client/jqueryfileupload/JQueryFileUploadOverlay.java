@@ -69,14 +69,12 @@ public class JQueryFileUploadOverlay {
         //noinspection JSUnresolvedFunction
         var upload = $wnd.jQuery(fileInput);
 
-        var _forceIframeTransport = this.@com.haulmont.cuba.web.widgets.client.jqueryfileupload.JQueryFileUploadOverlay::isIframeTransportNecessary()();
-
         upload.fileupload({
             dropZone: upload,
             dataType: 'json',
             autoUpload: false,
             sequentialUploads: true,
-            forceIframeTransport: _forceIframeTransport
+            forceIframeTransport: false
         });
 
         var self = this;
@@ -210,10 +208,6 @@ public class JQueryFileUploadOverlay {
         }
     }
 
-    protected boolean isIframeTransportNecessary() {
-        return BrowserInfo.get().isIE10();
-    }
-
     protected void queueUploadStop() {
         // hide upload window
     }
@@ -255,45 +249,33 @@ public class JQueryFileUploadOverlay {
     }
 
     protected void subscribeGlobalDragDropHandlers() {
-        RootPanel.get().addBitlessDomHandler(new DragOverHandler() {
-            @Override
-            public void onDragOver(DragOverEvent event) {
-                globalDocumentDragOver(event);
+        RootPanel.get().addBitlessDomHandler(event -> {
+            globalDocumentDragOver(event);
 
-                if (dropZoneFileUploadMap.size() > 0) {
-                    event.preventDefault();
-                }
+            if (dropZoneFileUploadMap.size() > 0) {
+                event.preventDefault();
             }
         }, DragOverEvent.getType());
 
-        RootPanel.get().addBitlessDomHandler(new DragLeaveHandler() {
-            @Override
-            public void onDragLeave(DragLeaveEvent event) {
-                globalDocumentDragLeave(event);
-            }
-        }, DragLeaveEvent.getType());
+        RootPanel.get().addBitlessDomHandler(
+                JQueryFileUploadOverlay::globalDocumentDragLeave,
+                DragLeaveEvent.getType()
+        );
 
-        RootPanel.get().addBitlessDomHandler(new DragEndHandler() {
-            @Override
-            public void onDragEnd(DragEndEvent event) {
-                globalDocumentDragEnd(event);
-            }
-        }, DragEndEvent.getType());
+        RootPanel.get().addBitlessDomHandler(
+                JQueryFileUploadOverlay::globalDocumentDragEnd,
+                DragEndEvent.getType()
+        );
 
-        RootPanel.get().addBitlessDomHandler(new DropHandler() {
-            @Override
-            public void onDrop(DropEvent event) {
-                globalDocumentDrop(event);
-            }
-        }, DropEvent.getType());
+        RootPanel.get().addBitlessDomHandler(
+                JQueryFileUploadOverlay::globalDocumentDrop,
+                DropEvent.getType()
+        );
 
         // prevent misses leading to opening of file inside browser
-        RootPanel.get().addBitlessDomHandler(new DropHandler() {
-            @Override
-            public void onDrop(DropEvent event) {
-                if (dropZoneFileUploadMap.size() > 0) {
-                    event.preventDefault();
-                }
+        RootPanel.get().addBitlessDomHandler(event -> {
+            if (dropZoneFileUploadMap.size() > 0) {
+                event.preventDefault();
             }
         }, DropEvent.getType());
 

@@ -66,16 +66,4 @@ public class ToolsImpl {
 
         walkEach = null;
     }-*/;
-
-    public native void fixFlashTitleIEJS() /*-{
-        var originalTitle = $doc.title.split("#")[0];
-        var fixFlashTitleIEWorking = false;
-        $doc.attachEvent('onpropertychange', function (evt) {
-            if(evt.propertyName == 'title' && $doc.title != originalTitle && !fixFlashTitleIEWorking) {
-                fixFlashTitleIEWorking = true;
-                $doc.title = originalTitle;
-                fixFlashTitleIEWorking = false;
-            }
-        });
-    }-*/;
 }

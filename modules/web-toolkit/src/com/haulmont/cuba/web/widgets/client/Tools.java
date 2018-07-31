@@ -69,13 +69,6 @@ public class Tools {
         element.setClassName(newClassName.trim());
     }
 
-    public static void fixFlashTitleIE() {
-        // if url has '#' then title changed in ie8 after flash loaded. This fix changed set normal title
-        if (BrowserInfo.get().isIE()) {
-            impl.fixFlashTitleIEJS();
-        }
-    }
-
     public static VOverlay createCubaTablePopup(boolean autoClose) {
         final VOverlay tableCustomPopup = autoClose ? createContextMenu() : new VOverlay();
 
@@ -94,11 +87,6 @@ public class Tools {
 
     protected static VOverlay createContextMenu() {
         return new TableOverlay() {
-            @Override
-            protected void onDetach() {
-                super.onDetach();
-            }
-
             @Override
             protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
                 super.onPreviewNativeEvent(event);
@@ -314,17 +302,8 @@ public class Tools {
             Element target = Element.as(nativeEvent.getEventTarget());
 
             if (Event.ONCLICK == event.getTypeInt()) {
-                final Widget hoveredButton = WidgetUtil.findWidget(target, null);
                 if (getElement().isOrHasChild(target)) {
-                    Scheduler.get().scheduleDeferred(() -> {
-                        hide();
-
-                        if (BrowserInfo.get().isIE9()) {
-                            if (hoveredButton instanceof CubaButtonWidget) {
-                                hoveredButton.removeStyleName("ie9-hover");
-                            }
-                        }
-                    });
+                    Scheduler.get().scheduleDeferred(this::hide);
                 }
             }
         }
