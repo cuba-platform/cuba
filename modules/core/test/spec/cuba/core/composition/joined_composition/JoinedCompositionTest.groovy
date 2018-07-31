@@ -50,24 +50,24 @@ class JoinedCompositionTest extends Specification {
         runner.update('delete from TEST_ROOT_ENTITY')
     }
 
-    @Ignore
-    def "store master-detail"() {
-        when:
-        persistence.runInTransaction({ em ->
-            ChildEntity childEntity = metadata.create(ChildEntity)
-            childEntity.name = 'name'
-            childEntity.description = 'description'
-            em.persist(childEntity)
 
-            ChildEntityDetail childEntityDetail = metadata.create(ChildEntityDetail)
-            childEntityDetail.childEntity = childEntity
-            childEntityDetail.info = 'info'
-            em.persist(childEntityDetail)
-        })
-
-        then:
-        noExceptionThrown()
-    }
+//    def "store master-detail"() {
+//        when:
+//        persistence.runInTransaction({ em ->
+//            ChildEntity childEntity = metadata.create(ChildEntity)
+//            childEntity.name = 'name'
+//            childEntity.description = 'description'
+//            em.persist(childEntity)
+//
+//            ChildEntityDetail childEntityDetail = metadata.create(ChildEntityDetail)
+//            childEntityDetail.childEntity = childEntity
+//            childEntityDetail.info = 'info'
+//            em.persist(childEntityDetail)
+//        })
+//
+//        then:
+//        noExceptionThrown()
+//    }
 
 
     static class Common extends TestContainer {
