@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.common.RestAuthUtils;
+import com.haulmont.restapi.common.RestTokenMasker;
 import com.haulmont.restapi.config.RestApiConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -76,6 +77,9 @@ public class ClientProxyTokenStore implements TokenStore {
     @Inject
     protected RestAuthUtils restAuthUtils;
 
+    @Inject
+    protected RestTokenMasker tokenMasker;
+
     public void setAuthenticationKeyGenerator(AuthenticationKeyGenerator authenticationKeyGenerator) {
         this.authenticationKeyGenerator = authenticationKeyGenerator;
     }
@@ -113,7 +117,7 @@ public class ClientProxyTokenStore implements TokenStore {
                 locale,
                 refreshTokenValue);
         processSession(authentication, token.getValue());
-        log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
+        log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), tokenMasker.maskToken(token.getValue())) ;
     }
 
     @Override
@@ -200,7 +204,7 @@ public class ClientProxyTokenStore implements TokenStore {
                 throw new OAuth2Exception("Cannot login to the middleware", e);
             }
 
-            log.debug("New session created for token '{}' since the original session has been expired", tokenValue);
+            log.debug("New session created for token '{}' since the original session has been expired", tokenMasker.maskToken(tokenValue));
         }
 
         if (session != null) {

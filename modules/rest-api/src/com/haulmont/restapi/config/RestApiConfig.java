@@ -58,4 +58,12 @@ public interface RestApiConfig extends Config {
     @Property("cuba.rest.anonymousEnabled")
     @DefaultBoolean(false)
     boolean getRestAnonymousEnabled();
+
+    /**
+     * @return token masking in application logs is enabled
+     */
+    @Property("cuba.rest.tokenMaskingEnabled")
+    @DefaultBoolean(true)
+    boolean getTokenMaskingEnabled();
+
 }
