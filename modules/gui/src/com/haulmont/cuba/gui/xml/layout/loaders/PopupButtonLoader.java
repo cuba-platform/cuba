@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.gui.components.PopupButton.PopupOpenDirection;
@@ -76,6 +77,19 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         }
 
         loadFocusable(resultComponent, element);
+    }
+
+    @Override
+    protected void loadActions(ActionsHolder actionsHolder, Element element) {
+        Element actionsEl = element.element("actions");
+        if (actionsEl == null)
+            return;
+
+        for (Element actionEl : Dom4j.elements(actionsEl, "action")) {
+            actionsHolder.addAction(loadDeclarativeAction(actionsHolder, actionEl));
+            String actionId = actionEl.attributeValue("id");
+            context.addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder, actionId, context.getFrame()));
+        }
     }
 
     protected void loadAutoClose(PopupButton component, Element element) {

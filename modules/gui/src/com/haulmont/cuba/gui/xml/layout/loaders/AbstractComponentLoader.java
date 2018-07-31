@@ -412,9 +412,9 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadAction(ActionOwner component, Element element) {
-        final String actionName = element.attributeValue("action");
-        if (!StringUtils.isEmpty(actionName)) {
-            context.addPostInitTask(new AssignActionPostInitTask(component, actionName, context.getFrame()));
+        final String actionId = element.attributeValue("action");
+        if (!StringUtils.isEmpty(actionId)) {
+            context.addPostInitTask(new ActionOwnerAssignActionPostInitTask(component, actionId, context.getFrame()));
         }
     }
 

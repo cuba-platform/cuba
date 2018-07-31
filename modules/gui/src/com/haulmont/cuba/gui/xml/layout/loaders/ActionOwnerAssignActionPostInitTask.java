@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionOwner;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 
-@Deprecated
-public class AssignActionPostInitTask extends ActionOwnerAssignActionPostInitTask {
-    public AssignActionPostInitTask(ActionOwner component, String actionId, Frame frame) {
-        super(component, actionId, frame);
+public class ActionOwnerAssignActionPostInitTask extends AbstractAssignActionPostInitTask {
+    public ActionOwnerAssignActionPostInitTask(ActionOwner component, String actionId, Frame frame) {
+        super((Component) component, actionId, frame);
+    }
+
+    @Override
+    protected boolean hasOwnAction(String id) {
+        return false;
+    }
+
+    @Override
+    protected void addAction(Action action) {
+        ActionOwner actionOwner = (ActionOwner) component;
+        actionOwner.setAction(action);
     }
 }
