@@ -445,6 +445,8 @@ configure(coreModule) {
         includes = ['spec/cuba/core/composition/joined_composition/JoinedCompositionTestClass.class']
     }
 
+    test.finalizedBy testJoinedComposition
+
     assembleDbScripts {
         moduleAlias = '10-cuba'
     }
