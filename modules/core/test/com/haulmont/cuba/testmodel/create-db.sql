@@ -128,6 +128,21 @@ create table TEST_ROOT_ENTITY_DETAIL (
     primary key (ID)
 )^
 
+
+create table TEST_CHILD_ENTITY_DETAIL (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    INFO varchar(255),
+    CHILD_ENTITY_ID varchar(36) not null,
+    constraint TEST_CHILD_ENTITY_DETAIL_CHILD_ENTITY foreign key (CHILD_ENTITY_ID) references TEST_CHILD_ENTITY(ENTITY_ID),
+    primary key (ID)
+)^
 ------------------------------------------------------------------------------------------------------------
 
 create table TEST_SOFT_DELETE_OTO_B (
