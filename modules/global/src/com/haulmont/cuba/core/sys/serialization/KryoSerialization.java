@@ -33,6 +33,7 @@ import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -129,6 +130,8 @@ public class KryoSerialization implements Serialization {
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
         kryo.register(UnitOfWorkQueryValueHolder.class, new UnitOfWorkQueryValueHolderSerializer(kryo));
 
+        registerEntitySerializer(kryo);
+
         return kryo;
     }
 
@@ -172,6 +175,10 @@ public class KryoSerialization implements Serialization {
             return null;
         }
         return kryos.get().copy(object);
+    }
+
+    protected void registerEntitySerializer(Kryo kryo) {
+        kryo.addDefaultSerializer(Entity.class, EntitySerializer.class);
     }
 
     public static class IndirectContainerSerializer extends CollectionSerializer {
