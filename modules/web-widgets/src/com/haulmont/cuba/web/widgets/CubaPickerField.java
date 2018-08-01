@@ -19,10 +19,9 @@ package com.haulmont.cuba.web.widgets;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.event.Action;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.TextField;
+import com.vaadin.server.Page;
+import com.vaadin.server.WebBrowser;
+import com.vaadin.ui.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +43,10 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
 
     protected List<Button> buttons = new ArrayList<>(4);
     protected CubaCssActionsLayout container;
+
+    // CAUTION used only for Safari layout, is null for another browsers
+    // Fixes cuba-platform/cuba#1107
+    protected CssLayout inputWrapper;
 
     protected boolean fieldReadOnly = true;
 
@@ -77,7 +80,23 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         container.setWidth(100, Unit.PERCENTAGE);
         field.setWidth(100, Unit.PERCENTAGE);
 
-        container.addComponent(field);
+        Page current = Page.getCurrent();
+        if (current != null) {
+            WebBrowser browser = current.getWebBrowser();
+            if (browser != null
+                    && browser.isSafari()) {
+                inputWrapper = new CssLayout();
+                inputWrapper.setWidth(100, Unit.PERCENTAGE);
+                inputWrapper.setPrimaryStyleName("safari-input-wrap");
+                inputWrapper.addComponent(field);
+
+                container.addComponent(inputWrapper);
+            } else {
+                container.addComponent(field);
+            }
+        } else {
+            container.addComponent(field);
+        }
 
         setFocusDelegate((Focusable) field);
     }
@@ -184,9 +203,15 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
             if (width < 0) {
                 container.setWidthUndefined();
                 field.setWidthUndefined();
+                if (inputWrapper != null) {
+                    inputWrapper.setWidthUndefined();
+                }
             } else {
                 container.setWidth(100, Unit.PERCENTAGE);
                 field.setWidth(100, Unit.PERCENTAGE);
+                if (inputWrapper != null) {
+                    inputWrapper.setWidth(100, Unit.PERCENTAGE);
+                }
             }
         }
     }
@@ -199,9 +224,15 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
             if (height < 0) {
                 container.setHeightUndefined();
                 field.setHeightUndefined();
+                if (inputWrapper != null) {
+                    inputWrapper.setHeightUndefined();
+                }
             } else {
                 container.setHeight(100, Unit.PERCENTAGE);
                 field.setHeight(100, Unit.PERCENTAGE);
+                if (inputWrapper != null) {
+                    inputWrapper.setHeight(100, Unit.PERCENTAGE);
+                }
             }
         }
     }
