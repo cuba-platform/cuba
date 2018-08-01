@@ -19,6 +19,7 @@ package spec.cuba.core.serialization
 import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.core.sys.serialization.KryoSerialization
@@ -65,8 +66,8 @@ class KryoSerializationTest extends Specification {
                 .addProperty("lineSet",
                 new View(OrderLine).addProperty("product").addProperty("order",
                         new View(Order).addProperty("number")))
-        Order order = dataManager.load(Order).id(orderId).view(view).one()
-        KryoSerialization kryoSerialization = new KryoSerialization();
+        Order order = dataManager.load(new LoadContext<>(Order).setId(orderId).setView(view))
+        KryoSerialization kryoSerialization = new KryoSerialization()
         when:
         Set set = new LinkedHashSet()
         set.add(order.lineSet[0])

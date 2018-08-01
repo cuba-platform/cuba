@@ -303,6 +303,24 @@ create table TEST_ORDER (
     constraint TEST_ORDER_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
 
+create table TEST_ORDER_LINE (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    PRODUCT varchar(500),
+    QUANTITY integer,
+    ORDER_ID varchar(36),
+    --
+    primary key (ID),
+    constraint FK_TEST_ORDER_LINE_ORDER foreign key (ORDER_ID) references TEST_ORDER(ID)
+)^
+
 ----------------------------------------------------------------------------------------------------------------
 
 create table TEST_LINK_ENTITY (
