@@ -129,6 +129,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
         kryo.register(UnitOfWorkQueryValueHolder.class, new UnitOfWorkQueryValueHolderSerializer(kryo));
+
         registerEntitySerializer(kryo);
 
         return kryo;

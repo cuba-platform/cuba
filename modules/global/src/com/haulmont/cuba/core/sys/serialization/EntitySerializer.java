@@ -21,7 +21,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,19 +61,15 @@ public class EntitySerializer<T extends Entity> extends KryoSerialization.CubaFi
     }
 
     protected void extractPrimaryKeyName(Class type) {
-        if (AppContext.isReady()) {
-            Metadata metadata = AppBeans.get(Metadata.class);
-            MetaClass metaClass = metadata.getClass(type);
-            if (metaClass != null) {
-                primaryKey = metadata.getTools().getPrimaryKeyName(metaClass);
-                if (primaryKey == null) {
-                    log.debug("Unable to resolve primary key for type {}", type.getSimpleName());
-                }
-            } else {
-                log.debug("Unable to resolve metaClass for type {}", type.getSimpleName());
+        Metadata metadata = AppBeans.get(Metadata.class);
+        MetaClass metaClass = metadata.getClass(type);
+        if (metaClass != null) {
+            primaryKey = metadata.getTools().getPrimaryKeyName(metaClass);
+            if (primaryKey == null) {
+                log.debug("Unable to resolve primary key for type {}", type.getSimpleName());
             }
         } else {
-            log.debug("Unable to resolve primary key for type {}, because application context isn't started", type.getSimpleName());
+            log.debug("Unable to resolve metaClass for type {}", type.getSimpleName());
         }
     }
 }
