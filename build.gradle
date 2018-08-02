@@ -427,6 +427,8 @@ configure(coreModule) {
 
         testCompile(coreTestsModule)
         testCompile(bom['org.hsqldb:hsqldb'])
+
+        testCompile(bom['org.codehaus.groovy:groovy-json'])
     }
 
     entitiesEnhancing {
