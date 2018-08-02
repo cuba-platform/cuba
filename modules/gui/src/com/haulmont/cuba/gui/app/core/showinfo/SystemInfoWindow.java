@@ -25,16 +25,21 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.UUID;
 
 public class SystemInfoWindow extends AbstractWindow {
 
     public interface Companion {
         void initInfoTable(Table infoTable);
+
+        void addCopyButton(BoxLayout boxLayout, String description, String successfulMessage, String failedMessage,
+                           String cubaCopyLogContentClass, ComponentsFactory componentsFactory);
     }
 
     @Inject
@@ -70,6 +75,9 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -77,15 +85,21 @@ public class SystemInfoWindow extends AbstractWindow {
         paramsDs.setInstance(item);
         paramsDs.setInstanceMetaClass((MetaClass) params.get("metaClass"));
 
+        String cubaLogContentClass = "c-system-info-log-content";
+        String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
+        scriptArea.setStyleName(cubaLogContentClass);
+        scriptArea.addStyleName(cubaCopyLogContentClass);
         paramsDs.refresh();
-
         Companion companion = getCompanion();
         if (companion != null) {
             companion.initInfoTable(infoTable);
+            companion.addCopyButton(buttonsHbox, messages.getMainMessage("systemInfoWindow.copy"),
+                    messages.getMainMessage("systemInfoWindow.copingSuccessful"),
+                    messages.getMainMessage("systemInfoWindow.copingFailed"),
+                    cubaCopyLogContentClass, componentsFactory);
         }
 
         infoTable.removeAllActions();
-
         if (!clientConfig.getSystemInfoScriptsEnabled()
                 || item == null
                 || !metadata.getTools().isPersistent(item.getMetaClass())) {
@@ -94,6 +108,7 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateInsert() {
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         if (item instanceof Role) {
             View localView = metadata.getViewRepository().getView(Role.class, View.LOCAL);
@@ -115,15 +130,24 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     public void generateUpdate() {
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateUpdateScript(item));
         showScriptArea();
     }
 
     public void generateSelect() {
+        setCopyButtonVisible();
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateSelectScript(item));
         showScriptArea();
+    }
+
+    private void setCopyButtonVisible() {
+        Component copyBtn = buttonsHbox.getComponent("copy");
+        if (copyBtn != null) {
+            copyBtn.setVisible(true);
+        }
     }
 
     protected void showScriptArea() {

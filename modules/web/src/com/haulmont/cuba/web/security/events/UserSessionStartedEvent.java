@@ -52,4 +52,8 @@ public class UserSessionStartedEvent extends ApplicationEvent {
     public AuthenticationDetails getAuthenticationDetails() {
         return authenticationDetails;
     }
+
+    public Credentials getCredentials() {
+        return credentials;
+    }
 }

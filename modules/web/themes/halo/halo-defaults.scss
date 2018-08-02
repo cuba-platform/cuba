@@ -45,6 +45,23 @@ $v-error-focus-style: inset 0px 0px 3px 1px rgba($v-error-indicator-color, 0.5);
 $v-error-indicator-use-bg: false;
 $v-error-indicator-use-color: false;
 
+$cuba-login-btn-background: #1b6198 none;
+$cuba-login-btn-font-weight: 700;
+$cuba-login-btn-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-btn-margin-top: 0;
+$cuba-login-btn-width: 100%;
+
+$cuba-login-caption-font-size: round($v-font-size * 1.45);
+$cuba-login-caption-font-weight: 700;
+$cuba-login-locale-border-width: 0;
+$cuba-login-locale-text-align: right;
+$cuba-login-logo-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-panel-padding:$v-unit-size + $v-unit-size / 3;
+$cuba-login-password-border-radius: 0 0 $v-border-radius $v-border-radius;
+$cuba-login-password-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-username-border-radius: $v-border-radius $v-border-radius 0 0;
+$cuba-login-username-height: $v-unit-size + $v-unit-size / 3;
+
 /**
  * Whether to enable show/hide animations for dialog windows.
  * @group window
@@ -60,6 +77,10 @@ $v-support-inverse-menu: true !default;
  * @group field
  */
 $v-show-required-indicators: false !default;
+/**
+ * The background color of hovered item.
+ */
+$cuba-hover-color: #d3eaf8 !default;
 /**
  * Enables custom colored scrollbars for webkit/blink browsers.
  * @group scrollbar

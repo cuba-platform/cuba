@@ -25,7 +25,7 @@ import com.vaadin.shared.ui.Connect;
 @Connect(CubaOptionGroup.class)
 public class CubaOptionGroupConnector extends OptionGroupConnector {
 
-    public static final String HORIZONTAL_ORIENTAION_STYLE = "horizontal";
+    public static final String HORIZONTAL_ORIENTATION_STYLE = "horizontal";
 
     @Override
     public CubaOptionGroupState getState() {
@@ -40,7 +40,7 @@ public class CubaOptionGroupConnector extends OptionGroupConnector {
             if (getState().orientation == OptionGroupOrientation.VERTICAL)
                 getWidget().removeStyleDependentName("horizontal");
             else
-                getWidget().addStyleDependentName(HORIZONTAL_ORIENTAION_STYLE);
+                getWidget().addStyleDependentName(HORIZONTAL_ORIENTATION_STYLE);
         }
     }
 }

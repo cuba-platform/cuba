@@ -34,6 +34,7 @@
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail</class>
+        <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntityDetail</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB</class>
         <class>com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity</class>
@@ -95,5 +96,11 @@
         <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
 
         <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
+
+        <class>com.haulmont.cuba.testmodel.embedded.AddressEmbedded</class>
+        <class>com.haulmont.cuba.testmodel.embedded.AddressEmbeddedContainer</class>
+
+        <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_Order</class>
+        <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_OrderItem</class>
     </persistence-unit>
 </persistence>

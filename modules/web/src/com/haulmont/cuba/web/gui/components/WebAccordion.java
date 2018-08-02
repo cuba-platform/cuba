@@ -567,7 +567,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
                     // init debug ids after all
                     AppUI appUI = AppUI.getCurrent();
-                    if (appUI.isTestMode()) {
+                    if (appUI.isPerformanceTestMode()) {
                         context.addPostInitTask((context1, window1) -> {
                             Window.TopLevelWindow appWindow = appUI.getTopLevelWindow();
                             ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(window1);

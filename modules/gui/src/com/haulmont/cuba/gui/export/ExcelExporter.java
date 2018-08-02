@@ -445,10 +445,10 @@ public class ExcelExporter {
         for (Table.Column column : columns) {
             AggregationInfo agr = column.getAggregation();
             if (agr != null) {
-                Object agregationResult = results.get(agr.getPropertyPath());
-                if (agregationResult != null) {
+                Object aggregationResult = results.get(agr.getPropertyPath());
+                if (aggregationResult != null) {
                     HSSFCell cell = row.createCell(i);
-                    formatValueCell(cell, agregationResult, null, i, rowNumber, 0, null);
+                    formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
                 }
             }
             i++;

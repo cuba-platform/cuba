@@ -52,11 +52,11 @@ public class TreeToQuery implements TreeVisitorAction {
         if (node.getType() == JPA2Lexer.HAVING ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_SIMPLE_CONDITION
                         && !parentNodeHasPreviousLparen(node) && !isDecimal(node) ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY && !isExtractDatePartNode(node) ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY && node.getType() != JPA2Lexer.T_ORDER_BY_FIELD ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && (node.childIndex == 0 || node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN) ||
                 node.getType() == JPA2Lexer.AND ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD && !isExtractDatePartNode(node) ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS ||
                 node.getType() == JPA2Lexer.OR ||
                 node.getType() == JPA2Lexer.NOT ||
@@ -70,7 +70,8 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.WHEN ||
                 node.getType() == JPA2Lexer.THEN ||
                 node.getType() == JPA2Lexer.ELSE ||
-                node.getType() == JPA2Lexer.END
+                node.getType() == JPA2Lexer.END ||
+                isExtractFromNode(node)
                 ) {
             sb.appendSpace();
         }
@@ -81,7 +82,10 @@ public class TreeToQuery implements TreeVisitorAction {
 
         if (isGroupByItem(node)) {
             if (node.childIndex > 0 && isGroupByItem((CommonTree) node.parent.getChild(node.childIndex - 1))) {
-                sb.appendString(", ");
+                if (!isExtractFromNode(node) && !isExtractDatePartNode(node)
+                        && !isExtractArgNode(node) && !isExtractEnd(node)) {
+                    sb.appendString(", ");
+                }
             }
         }
 
@@ -128,6 +132,58 @@ public class TreeToQuery implements TreeVisitorAction {
         return false;
     }
 
+    private boolean isExtractFromNode(CommonTree node) {
+        if (node.parent != null && "from".equalsIgnoreCase(node.getText())) {
+            //third part of EXTRACT expression
+            if (node.childIndex >= 2) {
+                Tree extractNode = node.parent.getChild(node.childIndex - 2);
+                if ("extract(".equalsIgnoreCase(extractNode.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isExtractDatePartNode(CommonTree node) {
+        if (node.parent != null) {
+            //date part of EXTRACT expression
+            if (node.childIndex >= 1) {
+                Tree extractNode = node.parent.getChild(node.childIndex - 1);
+                if ("extract(".equalsIgnoreCase(extractNode.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isExtractArgNode(CommonTree node) {
+        if (node.parent != null) {
+            //argument of EXTRACT expression
+            if (node.childIndex >= 3) {
+                Tree extractNode = node.parent.getChild(node.childIndex - 3);
+                if ("extract(".equalsIgnoreCase(extractNode.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isExtractEnd(CommonTree node) {
+        if (node.parent != null && ")".equalsIgnoreCase(node.getText())) {
+            //third part of EXTRACT expression
+            if (node.childIndex >= 4) {
+                Tree extractNode = node.parent.getChild(node.childIndex - 4);
+                if ("extract(".equalsIgnoreCase(extractNode.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public Object post(Object t) {
         if (!(t instanceof CommonTree))
@@ -146,7 +202,8 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.FETCH ||
                 node.getType() == JPA2Lexer.THEN ||
                 node.getType() == JPA2Lexer.ELSE ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS) {
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS ||
+                isExtractFromNode(node)) {
             sb.appendSpace();
         }
 

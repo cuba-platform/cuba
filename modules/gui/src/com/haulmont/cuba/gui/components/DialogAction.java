@@ -36,7 +36,7 @@ import com.haulmont.cuba.gui.icons.Icons;
  *                     }),
  *                     new DialogAction(Type.NO)
  *                             .withCaption("Print selected")
- *                             .withIcon("icons/print-seletcted.png")
+ *                             .withIcon("icons/print-selected.png")
  *                             .withHandler(event -> {
  *                         // add action logic here
  *                     }),

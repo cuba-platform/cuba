@@ -30,4 +30,7 @@ public class CubaHorizontalSplitPanelState extends HorizontalSplitPanelState {
 
     @NoLayout
     public String defaultPosition = null;
+
+    @NoLayout
+    public String beforeDockPosition = null;
 }

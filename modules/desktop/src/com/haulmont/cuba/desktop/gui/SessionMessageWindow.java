@@ -49,9 +49,9 @@ public class SessionMessageWindow extends JDialog {
         int mainX = ownerLocation.x;
         int mainY = ownerLocation.y;
 
-        Dimension onwerSize = owner.getSize();
-        int mainWidth = onwerSize.width;
-        int mainHeight = onwerSize.height;
+        Dimension ownerSize = owner.getSize();
+        int mainWidth = ownerSize.width;
+        int mainHeight = ownerSize.height;
 
         Dimension size = getSize();
         int width = size.width;

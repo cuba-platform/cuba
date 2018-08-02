@@ -29,9 +29,8 @@
     <!-- Annotation-based beans -->
 
     <context:component-scan base-package="com.haulmont.cuba">
-        <!-- Rest API functionality should be initialized in dispatcher-spring.xml
-             and should be turned on only by demand of user -->
-        <!--<context:exclude-filter type="regex" expression="com.haulmont.cuba.restapi.*"/>-->
+        <!-- REST v1 disabled by default since 6.10 -->
+        <context:exclude-filter type="regex" expression="com.haulmont.cuba.restapi.*"/>
 
         <!-- Exclude default CUBA controllers -->
         <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.controllers.*"/>

@@ -396,7 +396,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
         } else if ("int".equals(elementName)) {
             return Integer.parseInt(element.attributeValue("value"));
         } else {
-            log.error("Uknown UI property value: " + elementName);
+            log.error("Unknown UI property value: " + elementName);
             return null;
         }
     }
@@ -464,7 +464,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
 
         String size = element.attributeValue("size");
         if (size == null) {
-            log.error("Font size required for ui-defauls");
+            log.error("Font size required for ui-defaults");
             return null;
         }
 

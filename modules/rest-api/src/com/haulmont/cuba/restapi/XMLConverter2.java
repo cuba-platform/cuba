@@ -195,7 +195,7 @@ public class XMLConverter2 implements Converter {
             //commit instances
             Element commitInstancesEl = rootElement.element("commitInstances");
             if (commitInstancesEl != null) {
-                //first find and register ids of all entities to be commited
+                //first find and register ids of all entities to be committed
                 Set<String> commitIds = new HashSet<>();
                 for (Object instance : commitInstancesEl.elements("instance")) {
                     Element instanceEl = (Element) instance;
@@ -534,8 +534,8 @@ public class XMLConverter2 implements Converter {
                                         + metaClass.getName() + "#" + property.getName() + " is not supported");
                             entity.setValue(propertyName, coll);
 
-                            for (Object childInstenceEl : propertyEl.elements("instance")) {
-                                Entity childEntity = parseEntity((Element) childInstenceEl, null, commitRequest);
+                            for (Object childInstanceEl : propertyEl.elements("instance")) {
+                                Entity childEntity = parseEntity((Element) childInstanceEl, null, commitRequest);
                                 coll.add(childEntity);
                             }
                         }

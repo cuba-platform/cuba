@@ -76,8 +76,8 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
         return dataSupplier;
     }
 
-    public void setDataSupplier(DataSupplier dataservice) {
-        this.dataSupplier = dataservice;
+    public void setDataSupplier(DataSupplier dataService) {
+        this.dataSupplier = dataService;
     }
 
     @SuppressWarnings("unchecked")

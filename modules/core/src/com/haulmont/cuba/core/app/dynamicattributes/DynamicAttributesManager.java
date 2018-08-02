@@ -320,6 +320,23 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     protected void doFetchDynamicAttributes(MetaClass metaClass, Collection<BaseGenericIdEntity> entities) {
+        Collection<CategoryAttribute> categoryAttributes = getAttributesForMetaClass(metaClass);
+        if (categoryAttributes == null || categoryAttributes.isEmpty()) {
+            for (BaseGenericIdEntity entity : entities) {
+                Map<String, CategoryAttributeValue> map = new HashMap<>();
+                entity.setDynamicAttributes(map);
+            }
+            return;
+        }
+        if (metadata.getTools().hasCompositePrimaryKey(metaClass)
+                && !HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+            for (BaseGenericIdEntity entity : entities) {
+                Map<String, CategoryAttributeValue> map = new HashMap<>();
+                entity.setDynamicAttributes(map);
+            }
+            return;
+        }
+
         List<Object> ids = entities.stream()
                 .map(e -> referenceToEntitySupport.getReferenceId(e))
                 .collect(Collectors.toList());

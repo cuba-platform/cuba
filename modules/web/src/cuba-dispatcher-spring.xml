@@ -33,7 +33,11 @@
     <context:annotation-config/>
 
     <context:component-scan base-package="com.haulmont.cuba.web.controllers"/>
+    <!--
+    REST v1 disabled by default since 6.10
+
     <context:component-scan base-package="com.haulmont.cuba.restapi"/>
+    -->
 
     <!-- Override web implementation bean in main context -->
     <bean id="cuba_Events" class="com.haulmont.cuba.core.sys.EventsImpl"/>

@@ -20,10 +20,7 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
@@ -280,6 +277,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setItemClickAction(entitiesTable.getAction("edit"));
         entitiesTable.setMultiSelect(true);
 
+        entitiesTable.addStyleName("table-boolean-text");
+
         createFilter();
     }
 
@@ -461,6 +460,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         public CreateAction() {
             super("create");
+            this.primary = true;
             setShortcut(configuration.getConfig(ClientConfig.class).getTableInsertShortcut());
         }
 

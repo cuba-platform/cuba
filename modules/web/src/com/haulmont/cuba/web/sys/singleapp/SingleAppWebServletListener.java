@@ -38,7 +38,7 @@ import java.util.Arrays;
  * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (web.dependencies).
  * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
  * <p>
- * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
+ * As a result, core classloader contains core classes, web classloader contains web classes and WebAppClassLoader contains "shared" classes.
  * <p>
  * To make sure the Spring context uses the specific classloader we load {@code AppWebContextLoader} reflectively, create new instance
  * and call its initialization methods reflectively as well.

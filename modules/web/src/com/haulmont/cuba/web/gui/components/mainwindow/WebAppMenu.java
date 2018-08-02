@@ -55,12 +55,15 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
     protected void handleAttach(ClientConnector.AttachEvent event) {
         AppUI appUi = (AppUI) component.getUI();
-        if (appUi == null || !appUi.isTestMode()) {
+        if (appUi == null) {
             return;
         }
 
-        for (Map.Entry<String, MenuItem> entry : allItemsIds.entrySet()) {
-            assignTestIds(entry.getValue(), entry.getKey());
+        // use testMode or performanceTestMode cause assignTestIds method works for both
+        if (appUi.isTestMode() || appUi.isPerformanceTestMode()) {
+            for (Map.Entry<String, MenuItem> entry : allItemsIds.entrySet()) {
+                assignTestIds(entry.getValue(), entry.getKey());
+            }
         }
     }
 
@@ -121,16 +124,22 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
     protected void assignTestIds(MenuItem menuItem, String id) {
         AppUI ui = (AppUI) component.getUI();
-        if (ui == null || !ui.isTestMode())
+        if (ui == null) {
             return;
+        }
 
         MenuBar.MenuItem delegateItem = ((MenuItemImpl) menuItem).getDelegateItem();
-        component.setCubaId(delegateItem, id);
 
-        TestIdManager testIdManager = ui.getTestIdManager();
-        String testId = component.getId() + "_" + id;
+        if (ui.isTestMode()) {
+            component.setCubaId(delegateItem, id);
+        }
 
-        component.setTestId(delegateItem, testIdManager.reserveId(testId));
+        if (ui.isPerformanceTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
+            String testId = component.getId() + "_" + id;
+
+            component.setTestId(delegateItem, testIdManager.reserveId(testId));
+        }
     }
 
     @Override

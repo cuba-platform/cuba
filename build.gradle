@@ -136,6 +136,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     test {
         maxHeapSize = '256m'
+
+        systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
     }
 
     javadoc {
@@ -336,7 +338,11 @@ configure(globalModule) {
         from new File(project.buildDir, 'release-number')
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     task filterDummyEntities {
         ext.srcFile1 = file('src/base-persistence.xml')
@@ -421,7 +427,11 @@ configure(coreModule) {
     	testRuntime(bom['org.postgresql:postgresql'])
     }
 
-    task enhanceTestModel(type: CubaTestEnhancing)
+    entitiesEnhancing {
+        test {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -437,6 +447,13 @@ configure(coreModule) {
         scanForTestClasses = false
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
     }
+
+    task testJoinedComposition(type: Test) {
+        scanForTestClasses = false
+        includes = ['spec/cuba/core/composition/joined_composition/JoinedCompositionTestClass.class']
+    }
+
+    test.finalizedBy testJoinedComposition
 
     assembleDbScripts {
         moduleAlias = '10-cuba'
@@ -582,7 +599,11 @@ configure(guiModule) {
         testCompile(clientModule.sourceSets.test.output)
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     test {
         scanForTestClasses = false
@@ -654,7 +675,11 @@ configure(webModule) {
         testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
 
     jar {
         with copySpec {
@@ -664,7 +689,7 @@ configure(webModule) {
     }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['halo', 'havana']
+        themes = ['halo', 'hover', 'havana']
 //        compress = true
 //        sprites = true
 //        cleanup = true
@@ -673,6 +698,19 @@ configure(webModule) {
     assemble.dependsOn buildScssThemes
 
     task deployThemes(type: CubaDeployThemeTask, dependsOn: buildScssThemes) {
+    }
+
+    task buildHover(type: CubaWebScssThemeCreation) {
+        themes = ['hover']
+//        compress = true
+//        sprites = true
+//        cleanup = true
+    }
+
+    task deployHover(type: Copy, dependsOn: buildHover) {
+        from file("$webModule.buildDir/web/VAADIN/themes/hover")
+        into "${cuba.tomcat.dir}/webapps/cuba/VAADIN/themes/hover"
+        exclude '**/web.xml'
     }
 
     task buildHalo(type: CubaWebScssThemeCreation) {

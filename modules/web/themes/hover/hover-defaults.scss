@@ -1,0 +1,189 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+$v-app-background-color: #f2f2f2;
+$v-background-color: lighten($v-app-background-color, 15%);
+$v-border: 1px solid (v-shade 1.2);
+$v-border-radius: 2px;
+
+$v-font-color: valo-font-color($v-background-color, 0.85);
+$v-font-size: 14px;
+$v-unit-size: 28px;
+
+$v-bevel: none;
+$v-button-font-color: $v-font-color;
+
+$v-caption-font-size: $v-font-size;
+
+$v-error-indicator-color: #d24f4f;
+$v-error-indicator-use-bg: false;
+$v-error-indicator-use-color: false;
+$v-error-focus-style: $v-error-indicator-color;
+
+$v-focus-color: #1b6198;
+$v-focus-style: $v-focus-color;
+
+$v-font-size--h1: 22px;
+$v-font-size--h2: 18px;
+$v-font-size--h3: 16px;
+$v-font-weight: 400;
+
+$v-friendly-color: #52aa4b;
+
+$v-gradient: none;
+
+$v-layout-spacing-vertical: $v-unit-size / 2;
+$v-layout-spacing-horizontal: $v-unit-size / 2;
+
+$v-layout-margin-top: $v-unit-size / 2;
+$v-layout-margin-left: $v-unit-size / 2;
+$v-layout-margin-right: $v-unit-size / 2;
+$v-layout-margin-bottom: $v-unit-size / 2;
+
+$v-link-text-decoration: none;
+
+$v-selection-color: #2b84ca;
+$v-selection-item-border-radius: 0;
+$v-selection-item-height: $v-unit-size;
+$v-selection-item-selection-color: $cuba-hover-color;
+$v-selection-overlay-padding-vertical: $v-unit-size / 8;
+$v-selection-overlay-padding-horizontal: 0;
+
+$v-shadow: none;
+
+$v-table-header-font-size: $v-font-size;
+$v-table-cell-padding-horizontal: $v-unit-size / 4;
+$v-tabsheet-caption-font-size: $v-font-size;
+
+$v-textfield-background-color: $v-background-color;
+$v-textfield-bevel: none;
+$v-textfield-shadow: none;
+
+$valo-menu-background-color: rgba(36, 36, 36, 1);
+
+$cuba-button-font-weight: 700;
+
+$cuba-checkbox-size: 18px;
+$cuba-checkbox-line-height: $cuba-checkbox-size;
+
+$cuba-datagrid-header-font-weight: 700;
+$cuba-datagrid-highlight-hover-row: true;
+
+$cuba-filter-friendly-search-button: true;
+
+$cuba-highlight-primary-action: true;
+
+$cuba-login-btn-background: $v-focus-color none;
+$cuba-login-btn-font-weight: 700;
+$cuba-login-btn-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-btn-margin-top: 0;
+$cuba-login-btn-width: 100%;
+
+$cuba-login-caption-font-size: round($v-font-size * 1.45);
+$cuba-login-caption-font-weight: 700;
+$cuba-login-locale-border-width: 0;
+$cuba-login-locale-text-align: right;
+$cuba-login-logo-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-panel-padding:$v-unit-size + $v-unit-size / 3;
+$cuba-login-password-border-radius: 0 0 $v-border-radius $v-border-radius;
+$cuba-login-password-height: $v-unit-size + $v-unit-size / 3;
+$cuba-login-username-border-radius: $v-border-radius $v-border-radius 0 0;
+$cuba-login-username-height: $v-unit-size + $v-unit-size / 3;
+
+$cuba-maintabsheet-selected-tab-font-weight: 700;
+$cuba-maintabsheet-tab-border-left-width: 0;
+$cuba-maintabsheet-tab-border-top-width: 0;
+$cuba-maintabsheet-tab-margin-left: 0;
+$cuba-maintabsheet-tabbar-side-padding: 0;
+$cuba-maintabsheet-tabcontainer-background-color: $v-app-background-color;
+$cuba-maintabsheet-tabs-border-radius: 0;
+$cuba-maintabsheet-top-padding: 0;
+
+$cuba-main-managed-tabsheet-top-padding: 0;
+
+$cuba-menubar-background-color: rgba(36, 36, 36, 1);
+$cuba-menubar-border-color: $cuba-menubar-background-color;
+$cuba-menubar-height: ceil($v-unit-size * 1.4);
+$cuba-menubar-menuitem-background-selected-color: lighten($cuba-menubar-background-color, 25%);
+$cuba-menubar-menuitem-border-radius: 0;
+$cuba-menubar-menuitem-font-weight: 700;
+$cuba-menubar-submenu-item-font-weight: 700;
+$cuba-menubar-menuitem-text-selected-color: valo-font-color($cuba-menubar-menuitem-background-selected-color, 0.95);
+$cuba-menubar-text-color: valo-font-color($cuba-menubar-background-color, 0.7);
+
+$cuba-optiongroup-size: 18px;
+
+$cuba-popupbutton-indicator-font-weight: 700;
+
+$cuba-sidemenu-background-color: rgba(36, 36, 36, 1);
+$cuba-sidemenu-item-font-weight: 700;
+$cuba-sidemenu-separate-items: false;
+$cuba-sidemenu-timezone-font-weight: 700;
+$cuba-sidemenu-title-font-size: round($v-font-size * 1.45);
+$cuba-sidemenu-title-font-weight: 700;
+$cuba-sidemenu-title-gradient: false;
+$cuba-sidemenu-userindicator-font-weight: 700;
+
+$cuba-splitpanel-splitter-width: 1px;
+
+$cuba-table-header-font-weight: 700;
+$cuba-table-highlight-hover-row: true;
+
+$cuba-tabsheet-tab-border-selected-color: $v-focus-color;
+$cuba-tabsheet-tab-caption-selected-color: $v-font-color;
+
+$cuba-window-modal-actions-align-right: true;
+$cuba-window-modal-header-background: $v-background-color;
+$cuba-window-modal-header-font-weight: 700;
+$cuba-window-modal-header-height: ceil($v-unit-size * 1.4);
+$cuba-window-modal-header-buttons-line-height: $cuba-window-modal-header-height;
+$cuba-window-modal-header-line-height: $cuba-window-modal-header-height;
+
+/**
+ * Whether to enable show/hide animations for dialog windows.
+ * @group window
+ */
+$v-window-animations-enabled: false !default;
+/**
+ * Whether to include styles for inverse colored main menu.
+ * @group menubar
+ */
+$v-support-inverse-menu: true !default;
+/**
+ * Whether to show or not separate * element for required fields.
+ * @group field
+ */
+$v-show-required-indicators: false !default;
+/**
+ * Enables custom colored scrollbars for webkit/blink browsers.
+ * @group scrollbar
+ */
+$cuba-scrollbars-style-enabled: false !default;
+/**
+ * The top padding of main menu bar.
+ * @group menubar
+ */
+$cuba-app-menubar-padding-top: 0 !default;
+/**
+ * The bottom padding of main menu bar.
+ * @group menubar
+ */
+$cuba-app-menubar-padding-bottom: 0 !default;
+/**
+ * The background color of hovered item.
+ */
+$cuba-hover-color: #d3eaf8 !default;

@@ -271,7 +271,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected class CategoryAttributeCreateAction extends AbstractAction {
 
         protected CategoryAttributeCreateAction() {
-            super("create");
+            super("create", Status.PRIMARY);
         }
 
         @Override

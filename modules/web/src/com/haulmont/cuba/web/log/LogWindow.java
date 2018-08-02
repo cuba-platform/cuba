@@ -43,8 +43,11 @@ public class LogWindow extends CubaWindow {
 
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
-            setId(ui.getTestIdManager().getTestId("logWindow"));
             setCubaId("logWindow");
+        }
+
+        if (ui.isPerformanceTestMode()) {
+            setId(ui.getTestIdManager().getTestId("logWindow"));
         }
 
         setHeight("80%");

@@ -56,6 +56,9 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
             searchField.setCubaId("ftsField");
+        }
+
+        if (ui.isPerformanceTestMode()) {
             searchField.setId(ui.getTestIdManager().reserveId("ftsField"));
         }
         searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {

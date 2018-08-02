@@ -217,7 +217,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                     @Override
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         if (!autoComplete.isEditableState()) {
-                            // Only if realy item changed
+                            // Only if really item changed
                             if (!enterHandling) {
                                 Object selectedItem = comboBox.getSelectedItem();
                                 if (selectedItem instanceof ValueWrapper) {

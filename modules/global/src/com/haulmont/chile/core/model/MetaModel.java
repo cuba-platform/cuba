@@ -38,7 +38,7 @@ public interface MetaModel extends MetadataObject {
     MetaClass getClass(Class<?> clazz);
 
     /**
-     * All metaclasses
+     * All meta classes
      */
     Collection<MetaClass> getClasses();
 }

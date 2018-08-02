@@ -375,7 +375,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      */
     interface SupportsPaging<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
-        /** Returns count of records in datatabase for the current query and filter */
+        /** Returns count of records in database for the current query and filter */
         int getCount();
 
         /**  */

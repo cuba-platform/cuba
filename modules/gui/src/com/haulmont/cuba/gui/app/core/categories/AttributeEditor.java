@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
@@ -50,6 +51,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -160,6 +163,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected GlobalConfig globalConfig;
 
+    @Inject
+    protected ClientConfig clientConfig;
+
+    @Inject
+    protected Icons icons;
+
     protected LocalizedNameFrame localizedFrame;
 
     private ListEditor enumerationListEditor;
@@ -175,13 +184,25 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         initLocalizedFrame();
         initFieldGroup();
 
-        targetScreensTable.addAction(new AbstractAction("create") {
+        Action createAction = initCreateScreenAndComponentAction();
+        targetScreensTable.addAction(createAction);
+        Action removeAction = new RemoveAction(targetScreensTable);
+        removeAction.setCaption(getMessage("targetScreensTable.remove"));
+        targetScreensTable.addAction(removeAction);
+    }
+
+    protected Action initCreateScreenAndComponentAction() {
+        Action createAction = new BaseAction("create") {
             @Override
             public void actionPerform(Component component) {
                 screensDs.addItem(new ScreenAndComponent());
             }
-        });
-        targetScreensTable.addAction(new RemoveAction(targetScreensTable));
+        };
+        createAction.setCaption(getMessage("targetScreensTable.create"));
+        String icon = icons.get(CubaIcon.CREATE_ACTION);
+        createAction.setIcon(icon);
+        createAction.setShortcut(clientConfig.getTableInsertShortcut());
+        return createAction;
     }
 
     protected void initLocalizedFrame() {

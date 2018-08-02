@@ -583,7 +583,7 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
-        if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
+        if (configuration.getConfig(GlobalConfig.class).getPerformanceTestMode()) {
             initDebugIds(clientSpecificWindow);
         }
 

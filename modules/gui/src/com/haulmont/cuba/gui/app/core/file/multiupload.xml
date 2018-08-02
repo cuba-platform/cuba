@@ -27,7 +27,7 @@
     </dsContext>
 
     <actions>
-        <action id="windowCommit" caption="msg://actions.Ok" invoke="commitAndClose"/>
+        <action id="windowCommit" caption="msg://actions.Ok" invoke="commitAndClose" primary="true"/>
         <action id="windowClose" caption="msg://actions.Cancel" invoke="close"/>
     </actions>
 

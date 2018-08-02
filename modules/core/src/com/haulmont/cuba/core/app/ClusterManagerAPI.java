@@ -71,7 +71,7 @@ public interface ClusterManagerAPI {
 
     /**
      * Inform whether the current node is currently the master node in the cluster. A middleware cluster always
-     * elects one of its members as master, ususally it is the oldest one.
+     * elects one of its members as master, usually it is the oldest one.
      *
      * @return true if the current node is the master
      */

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table.SortDirection;
@@ -83,6 +84,10 @@ public class AppPropertiesBrowse extends AbstractWindow {
                 lastSelected = paramsTable.getSingleSelected()
         );
         refreshAction.setAfterRefreshHandler(() -> {
+            if (StringUtils.isNotEmpty(searchField.getValue())) {
+                paramsTable.expandAll();
+            }
+
             if (lastSelected != null) {
                 for (AppPropertyEntity entity : paramsDs.getItems()) {
                     if (entity.getName().equals(lastSelected.getName())) {

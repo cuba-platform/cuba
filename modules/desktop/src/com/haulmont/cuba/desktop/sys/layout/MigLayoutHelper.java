@@ -135,7 +135,7 @@ public class MigLayoutHelper {
             if (expand) {
                 constraints.growY();
                 constraints.growPrioY(99); // lower grow priority
-                constraints.height("100%"); // preffered size to full container
+                constraints.height("100%"); // preferred size to full container
             } else {
                 constraints.growY(0.0f);
             }
@@ -154,7 +154,7 @@ public class MigLayoutHelper {
             if (expand) {
                 constraints.growX();
                 constraints.growPrioX(99); // lower grow priority
-                constraints.width("100%"); // preffered size to full container
+                constraints.width("100%"); // preferred size to full container
             } else {
                 constraints.growX(0);
             }

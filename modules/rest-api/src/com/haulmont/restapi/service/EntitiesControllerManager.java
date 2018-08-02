@@ -198,9 +198,15 @@ public class EntitiesControllerManager {
             throw new RestAPIException("Cannot parse entities filter", "Entities filter cannot be null", HttpStatus.BAD_REQUEST);
         }
 
+        //for backward compatibility we should support both 'view' and 'viewName' properties. In future the
+        //'viewName' parameter will be removed
+        String view = !Strings.isNullOrEmpty(searchEntitiesRequest.getView()) ?
+                searchEntitiesRequest.getView() :
+                searchEntitiesRequest.getViewName();
+
         return searchEntities(entityName,
                 searchEntitiesRequest.getFilter().toString(),
-                searchEntitiesRequest.getView(),
+                view,
                 searchEntitiesRequest.getLimit(),
                 searchEntitiesRequest.getOffset(),
                 searchEntitiesRequest.getSort(),
@@ -461,6 +467,8 @@ public class EntitiesControllerManager {
     protected class SearchEntitiesRequestDTO {
         protected JsonObject filter;
         protected String view;
+        @Deprecated //the viewName property has been left for a backward compatibility. It will removed in future releases
+        protected String viewName;
         protected Integer limit;
         protected Integer offset;
         protected String sort;
@@ -478,6 +486,11 @@ public class EntitiesControllerManager {
 
         public String getView() {
             return view;
+        }
+
+        @Deprecated
+        public String getViewName() {
+            return viewName;
         }
 
         public Integer getLimit() {
@@ -514,6 +527,11 @@ public class EntitiesControllerManager {
 
         public void setView(String view) {
             this.view = view;
+        }
+
+        @Deprecated
+        public void setViewName(String viewName) {
+            this.viewName = viewName;
         }
 
         public void setLimit(Integer limit) {

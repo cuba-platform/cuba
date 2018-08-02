@@ -18,14 +18,42 @@
 package com.haulmont.cuba.web.app.core.showinfo;
 
 import com.haulmont.cuba.gui.app.core.showinfo.SystemInfoWindow;
+import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
+import com.vaadin.ui.Notification;
+
+import static com.vaadin.server.FontAwesome.CLIPBOARD;
+
 
 public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
     @Override
     public void initInfoTable(Table infoTable) {
         CubaTable webTable = (CubaTable) WebComponentsHelper.unwrap(infoTable);
         webTable.setTextSelectionEnabled(true);
+    }
+
+    @Override
+    public void addCopyButton(BoxLayout boxLayout, String description, String success, String fail,
+                              String cubaCopyLogContentClass, ComponentsFactory componentsFactory) {
+        if (CubaCopyButtonExtension.browserSupportCopy()) {
+            Button copyButton = componentsFactory.createComponent(WebButton.class);
+            copyButton.setId("copy");
+            copyButton.setVisible(false);
+            com.vaadin.ui.Button button = copyButton.unwrap(com.vaadin.ui.Button.class);
+            button.setIcon(CLIPBOARD);
+            button.setDescription(description);
+            CubaCopyButtonExtension copyExtension = CubaCopyButtonExtension.copyWith(button,
+                    cubaCopyLogContentClass + " textarea");
+            copyExtension.addCopyListener(event ->
+                    Notification.show(event.isSuccess() ? success : fail,
+                            Notification.Type.TRAY_NOTIFICATION));
+            boxLayout.add(copyButton);
+        }
     }
 }

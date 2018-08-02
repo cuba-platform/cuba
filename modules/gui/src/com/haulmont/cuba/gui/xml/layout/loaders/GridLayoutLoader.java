@@ -181,35 +181,35 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
             if (StringUtils.isEmpty(colspan) && StringUtils.isEmpty(rowspan)) {
                 addSubComponent(gridLayout, subComponent, col, row, col, row);
             } else {
-                int cspan = 1;
-                int rspan = 1;
+                int cSpan = 1;
+                int rSpan = 1;
 
                 if (StringUtils.isNotEmpty(colspan)) {
-                    cspan = Integer.parseInt(colspan);
-                    if (cspan < 1) {
+                    cSpan = Integer.parseInt(colspan);
+                    if (cSpan < 1) {
                         throw new GuiDevelopmentException("GridLayout colspan can not be less than 1",
-                                context.getFullFrameId(), "colspan", cspan);
+                                context.getFullFrameId(), "colspan", cSpan);
                     }
-                    if (cspan == 1) {
+                    if (cSpan == 1) {
                         LoggerFactory.getLogger(GridLayoutLoader.class).warn("Do not use colspan=\"1\", it will have no effect");
                     }
                 }
 
                 if (StringUtils.isNotEmpty(rowspan)) {
-                    rspan = Integer.parseInt(rowspan);
-                    if (rspan < 1) {
+                    rSpan = Integer.parseInt(rowspan);
+                    if (rSpan < 1) {
                         throw new GuiDevelopmentException("GridLayout rowspan can not be less than 1",
-                                context.getFullFrameId(), "rowspan", rspan);
+                                context.getFullFrameId(), "rowspan", rSpan);
                     }
-                    if (rspan == 1) {
+                    if (rSpan == 1) {
                         LoggerFactory.getLogger(GridLayoutLoader.class).warn("Do not use rowspan=\"1\", it will have no effect");
                     }
                 }
 
-                fillSpanMatrix(col, row, cspan, rspan);
+                fillSpanMatrix(col, row, cSpan, rSpan);
 
-                int endColumn = col + cspan - 1;
-                int endRow = row + rspan - 1;
+                int endColumn = col + cSpan - 1;
+                int endRow = row + rSpan - 1;
 
                 addSubComponent(gridLayout, subComponent, col, row, endColumn, endRow);
             }
@@ -222,9 +222,9 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         grid.add(subComponent, c1, r1, c2, r2);
     }
 
-    protected void fillSpanMatrix(int col, int row, int cspan, int rspan) {
-        for (int i = col; i < (col + cspan); i++) {
-            for (int j = row; j < (row + rspan); j++) {
+    protected void fillSpanMatrix(int col, int row, int colspan, int rowspan) {
+        for (int i = col; i < (col + colspan); i++) {
+            for (int j = row; j < (row + rowspan); j++) {
                 if (spanMatrix[i][j]) {
                     throw new GuiDevelopmentException("Grid layout prohibits component overlapping",
                             context.getFullFrameId());

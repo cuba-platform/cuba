@@ -230,7 +230,7 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     }
 
     /**
-     * Set caption usin fluent API method.
+     * Set caption using fluent API method.
      *
      * @param caption caption
      * @return current instance of action
@@ -283,6 +283,17 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
      */
     public BaseAction withHandler(Consumer<ActionPerformedEvent> handler) {
         this.actionPerformHandler = handler;
+        return this;
+    }
+
+    /**
+     * Set whether this action is primary using fluent API method. Can be used instead of subclassing BaseAction class.
+     *
+     * @param primary primary
+     * @return current instance of action
+     */
+    public BaseAction withPrimary(boolean primary) {
+        this.primary = primary;
         return this;
     }
 }

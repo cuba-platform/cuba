@@ -104,7 +104,7 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
             try {
                 connection.login(new AnonymousUserCredentials(getLocale()));
             } catch (LoginException e) {
-                throw new RuntimeException("Unable to login as anonymous!");
+                throw new RuntimeException("Unable to login as anonymous!", e);
             }
 
             publishAppLoggedOutEvent(event.getPreviousSession());
@@ -215,7 +215,7 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
             try {
                 connection.login(new AnonymousUserCredentials(getLocale()));
             } catch (LoginException e) {
-                throw new RuntimeException("Unable to login as anonymous!");
+                throw new RuntimeException("Unable to login as anonymous!", e);
             }
         }
     }

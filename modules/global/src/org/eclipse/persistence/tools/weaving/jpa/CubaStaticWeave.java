@@ -29,10 +29,10 @@ public class CubaStaticWeave extends StaticWeave {
     public static void main(String[] argv) {
         EclipseLinkCustomizer.initTransientCompatibleAnnotations();
 
-        StaticWeave staticweaver = new StaticWeave(argv);
+        StaticWeave staticWeaver = new StaticWeave(argv);
         try {
-            staticweaver.processCommandLine();
-            staticweaver.start();
+            staticWeaver.processCommandLine();
+            staticWeaver.start();
         } catch (Exception e) {
             throw StaticWeaveException.exceptionPerformWeaving(e, argv);
         }

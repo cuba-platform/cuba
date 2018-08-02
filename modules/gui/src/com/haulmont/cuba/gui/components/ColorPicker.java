@@ -209,7 +209,7 @@ public interface ColorPicker extends Field, Component.Focusable {
      */
     void setHistoryVisible(boolean historyVisible);
     /**
-     * @return true if history pane is visibile.
+     * @return true if history pane is visible.
      */
     boolean isHistoryVisible();
 
@@ -220,7 +220,7 @@ public interface ColorPicker extends Field, Component.Focusable {
      */
     void setSwatchesVisible(boolean swatchesVisible);
     /**
-     * @return true if swatches tab is visibile.
+     * @return true if swatches tab is visible.
      */
     boolean isSwatchesVisible();
 

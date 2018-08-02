@@ -123,7 +123,7 @@ public class RdbmsStore implements DataStore {
         }
 
         E result = null;
-        boolean needToApplyConstraints = needToApplyByPredicate(context);
+        boolean needToApplyInMemoryReadConstraints = needToApplyInMemoryReadConstraints(context);
         try (Transaction tx = getLoadTransaction(context.isJoinTransaction())) {
             final EntityManager em = persistence.getEntityManager(storeName);
 
@@ -145,7 +145,7 @@ public class RdbmsStore implements DataStore {
                 result = resultList.get(0);
             }
 
-            if (result != null && needToApplyInMemoryReadConstraints(context) && security.filterByConstraints(result)) {
+            if (result != null && needToFilterByInMemoryReadConstraints(context) && security.filterByConstraints(result)) {
                 result = null;
             }
 
@@ -154,7 +154,7 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            if (result != null && needToApplyConstraints) {
+            if (result != null && needToApplyInMemoryReadConstraints) {
                 security.calculateFilteredData(result);
             }
 
@@ -171,7 +171,7 @@ public class RdbmsStore implements DataStore {
         }
 
         if (result != null) {
-            if (needToApplyConstraints) {
+            if (needToApplyInMemoryReadConstraints) {
                 security.applyConstraints(result);
             }
             if (isAuthorizationRequired(context)) {
@@ -202,7 +202,7 @@ public class RdbmsStore implements DataStore {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
-        boolean needToApplyConstraints = needToApplyByPredicate(context);
+        boolean needToApplyInMemoryReadConstraints = needToApplyInMemoryReadConstraints(context);
         try (Transaction tx = getLoadTransaction(context.isJoinTransaction())) {
             EntityManager em = persistence.getEntityManager(storeName);
             em.setSoftDeletion(context.isSoftDeletion());
@@ -229,8 +229,8 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            if (needToApplyConstraints) {
-                security.calculateFilteredData((Collection<Entity>)resultList);
+            if (needToApplyInMemoryReadConstraints) {
+                security.calculateFilteredData((Collection<Entity>) resultList);
             }
 
             attributeSecurity.onLoad(resultList, view);
@@ -245,7 +245,7 @@ public class RdbmsStore implements DataStore {
             tx.commit();
         }
 
-        if (needToApplyConstraints) {
+        if (needToApplyInMemoryReadConstraints) {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 
@@ -643,6 +643,7 @@ public class RdbmsStore implements DataStore {
         View copy = View.copy(isAuthorizationRequired(context) ? attributeSecurity.createRestrictedView(view) : view);
         if (context.isLoadPartialEntities()
                 && !needToApplyInMemoryReadConstraints(context)
+                && !needToFilterByInMemoryReadConstraints(context)
                 && !needToApplyAttributeAccess(context)) {
             copy.setLoadPartialEntities(true);
         }
@@ -656,9 +657,9 @@ public class RdbmsStore implements DataStore {
         if (initialSize == 0) {
             return list;
         }
-        boolean needApplyConstraints = needToApplyInMemoryReadConstraints(context);
+        boolean needToFilterByInMemoryReadConstraints = needToFilterByInMemoryReadConstraints(context);
         boolean filteredByConstraints = false;
-        if (needApplyConstraints) {
+        if (needToFilterByInMemoryReadConstraints) {
             filteredByConstraints = security.filterByConstraints((Collection<Entity>) list);
         }
         if (!ensureDistinct) {
@@ -673,13 +674,13 @@ public class RdbmsStore implements DataStore {
         }
         // In case of not first chunk, even if there where no duplicates, start filling the set from zero
         // to ensure correct paging
-        return getResultListIteratively(context, query, set, initialSize, needApplyConstraints);
+        return getResultListIteratively(context, query, set, initialSize, needToFilterByInMemoryReadConstraints);
     }
 
     @SuppressWarnings("unchecked")
     protected <E extends Entity> List<E> getResultListIteratively(LoadContext<E> context, Query query,
                                                                   Collection<E> filteredCollection,
-                                                                  int initialSize, boolean needApplyConstraints) {
+                                                                  int initialSize, boolean needToFilterByInMemoryReadConstraints) {
         int requestedFirst = context.getQuery().getFirstResult();
         int requestedMax = context.getQuery().getMaxResults();
 
@@ -708,7 +709,7 @@ public class RdbmsStore implements DataStore {
             if (list.size() == 0) {
                 break;
             }
-            if (needApplyConstraints) {
+            if (needToFilterByInMemoryReadConstraints) {
                 security.filterByConstraints((Collection<Entity>) list);
             }
             filteredCollection.addAll(list);
@@ -793,7 +794,7 @@ public class RdbmsStore implements DataStore {
 
     protected void checkPermission(MetaClass metaClass, EntityOp operation) {
         if (!isEntityOpPermitted(metaClass, operation))
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, operation, metaClass.getName());
     }
 
     protected boolean checkValueQueryPermissions(QueryParser queryParser) {
@@ -935,15 +936,17 @@ public class RdbmsStore implements DataStore {
         }
     }
 
+    protected boolean needToFilterByInMemoryReadConstraints(LoadContext context) {
+        return userSessionSource.getUserSession().hasConstraints()
+                && security.hasInMemoryConstraints(metadata.getClassNN(context.getMetaClass()),
+                ConstraintOperationType.READ, ConstraintOperationType.ALL);
+    }
+
     protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {
         return isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()
                 && needToApplyByPredicate(context,
-                metaClass -> security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
-    }
-
-    protected boolean needToApplyByPredicate(LoadContext context) {
-        return isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()
-                && needToApplyByPredicate(context, metaClass -> security.hasConstraints(metaClass));
+                metaClass -> security.hasInMemoryConstraints(metaClass,
+                        ConstraintOperationType.READ, ConstraintOperationType.ALL));
     }
 
     protected boolean needToApplyAttributeAccess(LoadContext context) {

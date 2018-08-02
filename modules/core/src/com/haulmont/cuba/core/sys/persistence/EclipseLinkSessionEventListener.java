@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
@@ -31,22 +32,17 @@ import com.haulmont.cuba.core.sys.UuidConverter;
 import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.descriptors.DescriptorEventListener;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 import javax.persistence.OneToOne;
-import java.lang.reflect.AnnotatedElement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
@@ -65,12 +61,16 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         setPrintInnerJoinOnClause(session);
 
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
-
+        boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
         for (Map.Entry<Class, ClassDescriptor> entry : descriptorMap.entrySet()) {
             MetaClass metaClass = metadata.getSession().getClassNN(entry.getKey());
             ClassDescriptor desc = entry.getValue();
 
             setCacheable(metaClass, desc, session);
+
+            if (hasMultipleTableConstraintDependency) {
+                setMultipleTableConstraintDependency(metaClass, desc);
+            }
 
             if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
                 // set DescriptorEventManager that doesn't invoke listeners for base classes
@@ -166,6 +166,24 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             metaClass.getAnnotations().put("cacheable", true);
             desc.getCachePolicy().setCacheCoordinationType(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS);
         }
+    }
+
+    private void setMultipleTableConstraintDependency(MetaClass metaClass, ClassDescriptor desc) {
+        InheritancePolicy policy = desc.getInheritancePolicyOrNull();
+        if (policy != null && policy.isJoinedStrategy() && policy.getParentClass() != null) {
+            boolean hasOneToMany = metaClass.getOwnProperties().stream().anyMatch(metaProperty ->
+                    metadata.getTools().isPersistent(metaProperty)
+                            && metaProperty.getRange().isClass()
+                            && metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY);
+            if (hasOneToMany) {
+                desc.setHasMultipleTableConstraintDependecy(true);
+            }
+        }
+    }
+
+    private boolean hasMultipleTableConstraintDependency() {
+        return BooleanUtils.toBoolean(
+                AppContext.getProperty("cuba.hasMultipleTableConstraintDependency"));
     }
 
     private void setDatabaseFieldParameters(Session session, DatabaseField field) {

@@ -52,7 +52,7 @@ public interface BruteForceProtectionAPI {
 
     /**
      * Returns an information about the locked users
-     * @return a set of strings. Each string consists of two parts (login and IP-adress) separated by the '|' symbol
+     * @return a set of strings. Each string consists of two parts (login and IP-address) separated by the '|' symbol
      */
     Set<String> getLockedUsersInfo();
 

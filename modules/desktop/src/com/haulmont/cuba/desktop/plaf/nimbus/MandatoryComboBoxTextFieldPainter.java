@@ -36,7 +36,7 @@ public class MandatoryComboBoxTextFieldPainter extends BaseMandatoryRegionPainte
     static final int BACKGROUND_ENABLED = 2;
     static final int BACKGROUND_SELECTED = 3;
 
-    private int state; //refers to one of the static final ints above
+    private int state; //refers to one of the static final integers above
     private PaintContext ctx;
 
     private boolean drawButtonBorder = true;

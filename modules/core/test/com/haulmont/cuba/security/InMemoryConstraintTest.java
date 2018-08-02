@@ -201,6 +201,30 @@ public class InMemoryConstraintTest {
         }
     }
 
+    @Test
+    public void testConstraintsOnFirstForNotSecureDataManager() throws LoginException {
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+
+        UserSession userSession = lw.login("constraintUser2", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            DataManager dataManager = AppBeans.get(DataManager.NAME);
+            LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login asc"));
+            loadContext.getQuery().setMaxResults(30);
+            loadContext.getQuery().setFirstResult(0);
+            List resultList = dataManager.loadList(loadContext);
+            assertEquals(9, resultList.size());
+            assertEquals(9, dataManager.getCount(loadContext));
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
+
 
     @Test
     public void testConstraintsOnEnd() throws LoginException {
@@ -300,6 +324,30 @@ public class InMemoryConstraintTest {
             assertEquals(1, resultList.size());
             assertEquals("constraintUser4",resultList.get(0).getLogin());
 
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
+
+    @Test
+    public void testConstraintByAttributeNotInViewForNotSecureDataManager() throws LoginException {
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+
+        UserSession userSession = lw.login("constraintUser4", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            DataManager dataManager = AppBeans.get(DataManager.NAME);
+            LoadContext loadContext = new LoadContext(User.class).setView(View.MINIMAL);
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where u.login = 'constraintUser4' order by u.login desc"));
+            loadContext.getQuery().setMaxResults(30);
+            loadContext.getQuery().setFirstResult(0);
+            List<User> resultList = dataManager.loadList(loadContext);
+            assertEquals(1, resultList.size());
+            assertEquals("constraintUser4",resultList.get(0).getLogin());
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }

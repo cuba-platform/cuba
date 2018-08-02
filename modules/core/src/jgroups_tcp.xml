@@ -52,7 +52,8 @@
              port_range="2"/>
     <MERGE3 min_interval="10000"
             max_interval="30000"/>
-    <FD_SOCK/>
+    <FD_SOCK client_bind_port="44329"
+             start_port="44328"/>
     <FD timeout="3000"
         max_tries="3"/>
     <VERIFY_SUSPECT timeout="1500"/>

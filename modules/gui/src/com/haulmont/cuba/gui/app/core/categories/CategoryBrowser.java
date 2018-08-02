@@ -91,7 +91,7 @@ public class CategoryBrowser extends AbstractLookup {
     protected class CreateAction extends AbstractAction {
 
         public CreateAction() {
-            super("create");
+            super("create", Status.PRIMARY);
         }
 
         @Override

@@ -128,6 +128,21 @@ create table TEST_ROOT_ENTITY_DETAIL (
     primary key (ID)
 )^
 
+
+create table TEST_CHILD_ENTITY_DETAIL (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    INFO varchar(255),
+    CHILD_ENTITY_ID varchar(36) not null,
+    constraint TEST_CHILD_ENTITY_DETAIL_CHILD_ENTITY foreign key (CHILD_ENTITY_ID) references TEST_CHILD_ENTITY(ENTITY_ID),
+    primary key (ID)
+)^
 ------------------------------------------------------------------------------------------------------------
 
 create table TEST_SOFT_DELETE_OTO_B (
@@ -991,3 +1006,24 @@ create table TEST_CUSTOMER_W_NPERS_REF (
     --
     primary key (ID)
 )^
+
+-- begin TEST_ADDRESS_EMBEDDED_CONTAINER
+create table TEST_ADDRESS_EMBEDDED_CONTAINER (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    ADDRESS_STREET varchar(255),
+    ADDRESS_COUNTRY varchar(255),
+    ADDRESS_INDEX_ integer,
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TEST_ADDRESS_EMBEDDED_CONTAINER

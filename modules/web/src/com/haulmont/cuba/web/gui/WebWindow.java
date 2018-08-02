@@ -922,7 +922,7 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setId(String id) {
         this.id = id;
 
-        if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(debugId)) {
+        if (AppUI.getCurrent().isPerformanceTestMode() && StringUtils.isEmpty(debugId)) {
             setDebugId(id);
         }
     }
@@ -1925,7 +1925,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
             if (debugId != null) {
                 AppUI ui = AppUI.getCurrent();
-                if (ui.isTestMode()) {
+                if (ui.isPerformanceTestMode()) {
                     TestIdManager testIdManager = ui.getTestIdManager();
                     Action selectAction = getSelectAction();
                     if (selectAction != null) {

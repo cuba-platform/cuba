@@ -107,6 +107,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     protected TestIdManager testIdManager = new TestIdManager();
 
     protected boolean testMode = false;
+    protected boolean performanceTestMode = false;
 
     protected String profilerMarker;
 
@@ -184,7 +185,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
         try {
             this.testMode = globalConfig.getTestMode();
-
+            this.performanceTestMode = globalConfig.getPerformanceTestMode();
             // init error handlers
             setErrorHandler(this);
 
@@ -383,6 +384,10 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     public boolean isTestMode() {
         return testMode;
+    }
+
+    public boolean isPerformanceTestMode() {
+        return performanceTestMode;
     }
 
     @Override
