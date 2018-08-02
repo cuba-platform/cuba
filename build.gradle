@@ -281,7 +281,9 @@ configure(sharedLibModule) {
 
 configure(globalModule) {
     dependencies {
-        compile(bom['org.codehaus.groovy:groovy-all'])
+        compile(bom['org.codehaus.groovy:groovy'])
+        compile(bom['org.codehaus.groovy:groovy-templates'])
+        compile(bom['org.codehaus.groovy:groovy-sql'])
 
         compile(bom['org.apache.commons:commons-lang3']) // simplify version management with reports and bpm
         compile(bom['org.apache.commons:commons-collections4'])
