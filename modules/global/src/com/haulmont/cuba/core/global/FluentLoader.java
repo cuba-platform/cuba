@@ -29,14 +29,22 @@ public class FluentLoader<E extends Entity<K>, K> {
     private Class<E> entityClass;
 
     private DataManager dataManager;
+    private boolean transactional;
 
     private View view;
     private String viewName;
     private boolean softDeletion = true;
+    private boolean dynamicAttributes;
 
-    FluentLoader(Class<E> entityClass, DataManager dataManager) {
+    public FluentLoader(Class<E> entityClass, DataManager dataManager) {
         this.entityClass = entityClass;
         this.dataManager = dataManager;
+    }
+
+    public FluentLoader(Class<E> entityClass, DataManager dataManager, boolean transactional) {
+        this.entityClass = entityClass;
+        this.dataManager = dataManager;
+        this.transactional = transactional;
     }
 
     LoadContext<E> createLoadContext() {
@@ -51,12 +59,15 @@ public class FluentLoader<E extends Entity<K>, K> {
     }
 
     private void initCommonLoadContextParameters(LoadContext<E> loadContext) {
+        loadContext.setJoinTransaction(transactional);
+
         if (view != null)
             loadContext.setView(view);
         else if (!Strings.isNullOrEmpty(viewName))
             loadContext.setView(viewName);
 
         loadContext.setSoftDeletion(softDeletion);
+        loadContext.setLoadDynamicAttributes(dynamicAttributes);
     }
 
     /**
@@ -116,30 +127,40 @@ public class FluentLoader<E extends Entity<K>, K> {
     }
 
     /**
+     * Sets loading of dynamic attributes. It is false by default.
+     */
+    public FluentLoader<E, K> dynamicAttributes(boolean dynamicAttributes) {
+        this.dynamicAttributes = dynamicAttributes;
+        return this;
+    }
+
+    /**
      * Sets the entity identifier.
      */
-    public ById id(K id) {
-        return new ById(id);
+    public ById<E, K> id(K id) {
+        return new ById<>(this, id);
     }
 
     /**
      * Sets the query text.
      */
-    public ByQuery query(String queryString) {
-        return new ByQuery(queryString);
+    public ByQuery<E, K> query(String queryString) {
+        return new ByQuery<>(this, queryString);
     }
 
-    public class ById {
+    public static class ById<E extends Entity<K>, K> {
 
-        private Object id;
+        private FluentLoader<E, K> loader;
+        private K id;
 
-        ById(Object id) {
+        ById(FluentLoader<E, K> loader, K id) {
+            this.loader = loader;
             this.id = id;
         }
 
         LoadContext<E> createLoadContext() {
-            LoadContext<E> loadContext = LoadContext.create(entityClass).setId(id);
-            initCommonLoadContextParameters(loadContext);
+            LoadContext<E> loadContext = LoadContext.create(loader.entityClass).setId(id);
+            loader.initCommonLoadContextParameters(loadContext);
             return loadContext;
         }
 
@@ -148,7 +169,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public Optional<E> optional() {
             LoadContext<E> loadContext = createLoadContext();
-            return Optional.ofNullable(dataManager.load(loadContext));
+            return Optional.ofNullable(loader.dataManager.load(loadContext));
         }
 
         /**
@@ -158,7 +179,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public E one() {
             LoadContext<E> loadContext = createLoadContext();
-            E entity = dataManager.load(loadContext);
+            E entity = loader.dataManager.load(loadContext);
             if (entity != null)
                 return entity;
             else
@@ -168,29 +189,39 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets a view.
          */
-        public ById view(View view) {
-            FluentLoader.this.view = view;
+        public ById<E, K> view(View view) {
+            loader.view = view;
             return this;
         }
 
         /**
          * Sets a view by name.
          */
-        public ById view(String viewName) {
-            FluentLoader.this.viewName = viewName;
+        public ById<E, K> view(String viewName) {
+            loader.viewName = viewName;
             return this;
         }
 
         /**
          * Sets soft deletion. The soft deletion is true by default.
          */
-        public ById softDeletion(boolean softDeletion) {
-            FluentLoader.this.softDeletion = softDeletion;
+        public ById<E, K> softDeletion(boolean softDeletion) {
+            loader.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets loading of dynamic attributes. It is false by default.
+         */
+        public ById<E, K> dynamicAttributes(boolean dynamicAttributes) {
+            loader.dynamicAttributes = dynamicAttributes;
             return this;
         }
     }
 
-    public class ByQuery {
+    public static class ByQuery<E extends Entity<K>, K> {
+
+        private FluentLoader<E, K> loader;
 
         private String queryString;
         private Map<String, Object> parameters = new HashMap<>();
@@ -200,14 +231,15 @@ public class FluentLoader<E extends Entity<K>, K> {
         private boolean cacheable;
         private Condition condition;
 
-        ByQuery(String queryString) {
+        ByQuery(FluentLoader<E, K> loader, String queryString) {
             Preconditions.checkNotEmptyString(queryString, "queryString is empty");
+            this.loader = loader;
             this.queryString = queryString;
         }
 
         LoadContext<E> createLoadContext() {
-            LoadContext<E> loadContext = LoadContext.create(entityClass);
-            initCommonLoadContextParameters(loadContext);
+            LoadContext<E> loadContext = LoadContext.create(loader.entityClass);
+            loader.initCommonLoadContextParameters(loadContext);
 
             LoadContext.Query query = LoadContext.createQuery(queryString);
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
@@ -231,7 +263,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public List<E> list() {
             LoadContext<E> loadContext = createLoadContext();
-            return dataManager.loadList(loadContext);
+            return loader.dataManager.loadList(loadContext);
         }
 
         /**
@@ -239,7 +271,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public Optional<E> optional() {
             LoadContext<E> loadContext = createLoadContext();
-            return Optional.ofNullable(dataManager.load(loadContext));
+            return Optional.ofNullable(loader.dataManager.load(loadContext));
         }
 
         /**
@@ -249,7 +281,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public E one() {
             LoadContext<E> loadContext = createLoadContext();
-            E entity = dataManager.load(loadContext);
+            E entity = loader.dataManager.load(loadContext);
             if (entity != null)
                 return entity;
             else
@@ -259,24 +291,32 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets a view.
          */
-        public ByQuery view(View view) {
-            FluentLoader.this.view = view;
+        public ByQuery<E, K> view(View view) {
+            loader.view = view;
             return this;
         }
 
         /**
          * Sets a view by name.
          */
-        public ByQuery view(String viewName) {
-            FluentLoader.this.viewName = viewName;
+        public ByQuery<E, K> view(String viewName) {
+            loader.viewName = viewName;
             return this;
         }
 
         /**
          * Sets soft deletion. The soft deletion is true by default.
          */
-        public ByQuery softDeletion(boolean softDeletion) {
-            FluentLoader.this.softDeletion = softDeletion;
+        public ByQuery<E, K> softDeletion(boolean softDeletion) {
+            loader.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets loading of dynamic attributes. It is false by default.
+         */
+        public ByQuery<E, K> dynamicAttributes(boolean dynamicAttributes) {
+            loader.dynamicAttributes = dynamicAttributes;
             return this;
         }
 
@@ -294,7 +334,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * @param name  parameter name
          * @param value parameter value
          */
-        public ByQuery parameter(String name, Object value) {
+        public ByQuery<E, K> parameter(String name, Object value) {
             parameters.put(name, value);
             return this;
         }
@@ -306,7 +346,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * @param value parameter value
          * @param temporalType  how to interpret the value
          */
-        public ByQuery parameter(String name, Date value, TemporalType temporalType) {
+        public ByQuery<E, K> parameter(String name, Date value, TemporalType temporalType) {
             parameters.put(name, new TemporalValue(value, temporalType));
             return this;
         }
@@ -318,7 +358,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * @param value parameter value
          * @param implicitConversion whether to do parameter value conversions, e.g. convert an entity to its ID
          */
-        public ByQuery parameter(String name, Object value, boolean implicitConversion) {
+        public ByQuery<E, K> parameter(String name, Object value, boolean implicitConversion) {
             parameters.put(name, value);
             if (!implicitConversion) {
                 noConversionParams.add(name);
@@ -329,7 +369,7 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets the map of query parameters.
          */
-        public ByQuery setParameters(Map<String, Object> parameters) {
+        public ByQuery<E, K> setParameters(Map<String, Object> parameters) {
             this.parameters.putAll(parameters);
             return this;
         }
@@ -337,7 +377,7 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets results offset.
          */
-        public ByQuery firstResult(int firstResult) {
+        public ByQuery<E, K> firstResult(int firstResult) {
             this.firstResult = firstResult;
             return this;
         }
@@ -345,7 +385,7 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets results limit.
          */
-        public ByQuery maxResults(int maxResults) {
+        public ByQuery<E, K> maxResults(int maxResults) {
             this.maxResults = maxResults;
             return this;
         }
@@ -354,7 +394,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * Indicates that the query results should be cached.
          * By default, queries are not cached.
          */
-        public ByQuery cacheable(boolean cacheable) {
+        public ByQuery<E, K> cacheable(boolean cacheable) {
             this.cacheable = cacheable;
             return this;
         }

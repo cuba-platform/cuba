@@ -70,6 +70,11 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
+    public EntitySet commit(Entity... entities) {
+        return getDataManager().commit(entities);
+    }
+
+    @Override
     public void remove(Entity entity) {
         getDataManager().remove(entity);
     }

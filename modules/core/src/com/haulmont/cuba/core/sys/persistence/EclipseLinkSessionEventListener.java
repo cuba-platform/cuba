@@ -35,6 +35,7 @@ import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.sessions.Session;
@@ -73,6 +74,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
                 // set DescriptorEventManager that doesn't invoke listeners for base classes
+                DescriptorEventManager oldEventManager = desc.getEventManager();
                 desc.setEventManager(new DescriptorEventManager() {
                     @Override
                     public void notifyListeners(DescriptorEvent event) {
@@ -84,7 +86,8 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                         }
                     }
                 });
-
+                desc.getEventManager().setEntityEventListener(oldEventManager.getEntityEventListener());
+                desc.getEventManager().getEntityListenerEventListeners().addAll(oldEventManager.getEntityListenerEventListeners());
                 desc.getEventManager().addListener(descriptorEventListener);
             }
 

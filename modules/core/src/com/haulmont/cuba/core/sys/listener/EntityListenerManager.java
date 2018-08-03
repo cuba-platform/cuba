@@ -227,55 +227,42 @@ public class EntityListenerManager {
         }
 
         try {
-            boolean saved = false;
-            SecurityContext securityContext = AppContext.getSecurityContext();
-            if (securityContext != null) { // can be null before login when detaching entities
-                saved = securityContext.isAuthorizationRequired();
-                securityContext.setAuthorizationRequired(false);
-            }
-            try {
-                for (Object listener : listeners) {
-                    switch (type) {
-                        case BEFORE_DETACH:
-                            logExecution(type, entity);
-                            ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager(storeName));
-                            break;
-                        case BEFORE_ATTACH:
-                            logExecution(type, entity);
-                            ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
-                            break;
-                        case BEFORE_INSERT:
-                            logExecution(type, entity);
-                            ((BeforeInsertEntityListener) listener).onBeforeInsert(entity, persistence.getEntityManager(storeName));
-                            break;
-                        case AFTER_INSERT:
-                            logExecution(type, entity);
-                            ((AfterInsertEntityListener) listener).onAfterInsert(entity, persistence.getEntityManager(storeName).getConnection());
-                            break;
-                        case BEFORE_UPDATE:
-                            logExecution(type, entity);
-                            ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity, persistence.getEntityManager(storeName));
-                            break;
-                        case AFTER_UPDATE:
-                            logExecution(type, entity);
-                            ((AfterUpdateEntityListener) listener).onAfterUpdate(entity, persistence.getEntityManager(storeName).getConnection());
-                            break;
-                        case BEFORE_DELETE:
-                            logExecution(type, entity);
-                            ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity, persistence.getEntityManager(storeName));
-                            break;
-                        case AFTER_DELETE:
-                            logExecution(type, entity);
-                            ((AfterDeleteEntityListener) listener).onAfterDelete(entity, persistence.getEntityManager(storeName).getConnection());
-                            break;
-                        default:
-                            throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
-                    }
-                }
-            } finally {
-                SecurityContext sc = AppContext.getSecurityContext();
-                if (sc != null) {
-                    sc.setAuthorizationRequired(saved);
+            for (Object listener : listeners) {
+                switch (type) {
+                    case BEFORE_DETACH:
+                        logExecution(type, entity);
+                        ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager(storeName));
+                        break;
+                    case BEFORE_ATTACH:
+                        logExecution(type, entity);
+                        ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
+                        break;
+                    case BEFORE_INSERT:
+                        logExecution(type, entity);
+                        ((BeforeInsertEntityListener) listener).onBeforeInsert(entity, persistence.getEntityManager(storeName));
+                        break;
+                    case AFTER_INSERT:
+                        logExecution(type, entity);
+                        ((AfterInsertEntityListener) listener).onAfterInsert(entity, persistence.getEntityManager(storeName).getConnection());
+                        break;
+                    case BEFORE_UPDATE:
+                        logExecution(type, entity);
+                        ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity, persistence.getEntityManager(storeName));
+                        break;
+                    case AFTER_UPDATE:
+                        logExecution(type, entity);
+                        ((AfterUpdateEntityListener) listener).onAfterUpdate(entity, persistence.getEntityManager(storeName).getConnection());
+                        break;
+                    case BEFORE_DELETE:
+                        logExecution(type, entity);
+                        ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity, persistence.getEntityManager(storeName));
+                        break;
+                    case AFTER_DELETE:
+                        logExecution(type, entity);
+                        ((AfterDeleteEntityListener) listener).onAfterDelete(entity, persistence.getEntityManager(storeName).getConnection());
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
                 }
             }
         } finally {

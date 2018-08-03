@@ -37,27 +37,32 @@ public class DataServiceBean implements DataService {
 
     @Override
     public Set<Entity> commit(CommitContext context) {
-        return dataManager.secure().commit(context);
+        context.setAuthorizationRequired(true);
+        return dataManager.commit(context);
     }
 
     @Override
     @Nullable
     public <E extends Entity> E load(LoadContext<E> context) {
-        return dataManager.secure().load(context);
+        context.setAuthorizationRequired(true);
+        return dataManager.load(context);
     }
 
     @Override
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
-        return dataManager.secure().loadList(context);
+        context.setAuthorizationRequired(true);
+        return dataManager.loadList(context);
     }
 
     @Override
     public long getCount(LoadContext<? extends Entity> context) {
-        return dataManager.secure().getCount(context);
+        context.setAuthorizationRequired(true);
+        return dataManager.getCount(context);
     }
 
     @Override
     public List<KeyValueEntity> loadValues(ValueLoadContext context) {
-        return dataManager.secure().loadValues(context);
+        context.setAuthorizationRequired(true);
+        return dataManager.loadValues(context);
     }
 }

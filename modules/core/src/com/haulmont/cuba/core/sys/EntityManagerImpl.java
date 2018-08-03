@@ -314,6 +314,12 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
+    public void detach(Entity entity) {
+        delegate.detach(entity);
+        support.detach(this, entity);
+    }
+
+    @Override
     public Connection getConnection() {
         return delegate.unwrap(Connection.class);
     }

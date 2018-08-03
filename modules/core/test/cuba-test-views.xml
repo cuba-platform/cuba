@@ -40,4 +40,11 @@
         </property>
     </view>
 
+    <view entity="sales1$Order" name="with-customer" extends="_local">
+        <property name="customer" view="_local"/>
+    </view>
+
+    <view entity="sales1$OrderLine" name="with-product" extends="_local">
+        <property name="product" view="_local"/>
+    </view>
 </views>

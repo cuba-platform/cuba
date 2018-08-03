@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.testmodel.sales;
+package com.haulmont.cuba.testmodel.sales_1;
 
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.PublishEntityChangedEvents;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.User;
 
@@ -28,11 +30,12 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-@Entity(name = "test$Order")
-@Table(name = "TEST_ORDER")
+@Entity(name = "sales1$Order")
+@Table(name = "SALES1_ORDER")
 @NamePattern("No %s for %s|number,customer")
+@PublishEntityChangedEvents
+@Listeners("test_EntityChangedEventListener")
 public class Order extends StandardEntity {
 
     @Column(name = "NUM")
@@ -57,10 +60,47 @@ public class Order extends StandardEntity {
     @OneToMany(mappedBy = "order")
     protected List<OrderLine> orderLines;
 
-    @Composition
-    @OnDelete(DeletePolicy.CASCADE)
-    @OneToMany(mappedBy = "order")
-    protected Set<OrderLine> lineSet;
+    @PrePersist
+    public void prePersist() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PrePersist", this));
+    }
+
+    @PostPersist
+    public void postPersist() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PostPersist", this));
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PreUpdate", this));
+    }
+
+    @PostUpdate
+    public void postUpdate() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PostUpdate", this));
+    }
+
+    @PreRemove
+    public void preRemove() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PreRemove", this));
+    }
+
+    @PostRemove
+    public void postRemove() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PostRemove", this));
+    }
+
+    @PostLoad
+    public void postLoad() {
+        TestEntityChangedEventListener listener = AppBeans.get(TestEntityChangedEventListener.class);
+        listener.allEvents.add(new TestEntityChangedEventListener.EventInfo("JPA PostLoad", this));
+    }
 
     public String getNumber() {
         return number;
@@ -108,13 +148,5 @@ public class Order extends StandardEntity {
 
     public void setOrderLines(List<OrderLine> orderLines) {
         this.orderLines = orderLines;
-    }
-
-    public Set<OrderLine> getLineSet() {
-        return lineSet;
-    }
-
-    public void setLineSet(Set<OrderLine> lineSet) {
-        this.lineSet = lineSet;
     }
 }

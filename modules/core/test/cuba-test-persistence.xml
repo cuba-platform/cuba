@@ -49,6 +49,10 @@
         <class>com.haulmont.cuba.testmodel.sales.Customer</class>
         <class>com.haulmont.cuba.testmodel.sales.Order</class>
         <class>com.haulmont.cuba.testmodel.sales.OrderLine</class>
+        <class>com.haulmont.cuba.testmodel.sales_1.Customer</class>
+        <class>com.haulmont.cuba.testmodel.sales_1.Order</class>
+        <class>com.haulmont.cuba.testmodel.sales_1.OrderLine</class>
+        <class>com.haulmont.cuba.testmodel.sales_1.Product</class>
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameMainEntity</class>
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkAEntity</class>
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkBEntity</class>

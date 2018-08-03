@@ -24,13 +24,12 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
+import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FtsConfigHelper;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
 import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
+import com.haulmont.cuba.core.sys.EntityFetcher;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -76,6 +75,18 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     protected EntityListenerManager entityListenerManager;
 
     @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
+    protected Events events;
+
+    @Inject
+    protected EntityFetcher entityFetcher;
+
+    @Inject
     protected QueryCacheManager queryCacheManager;
 
     @Inject
@@ -88,6 +99,9 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
     @Inject
     protected MiddlewareStatisticsAccumulator statisticsAccumulator;
+
+    @Inject
+    protected EntityChangedEventManager entityChangedEventManager;
 
     protected List<BeforeCommitTransactionListener> beforeCommitTxListeners;
 
@@ -180,7 +194,18 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName), warnAboutImplicitFlush);
     }
 
-    protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
+    protected void fireBeforeDetachEntityListener(BaseGenericIdEntity entity, String storeName) {
+        if (!BaseEntityInternalAccess.isDetached(entity)) {
+            CubaEntityFetchGroup.setAccessLocalUnfetched(false);
+            try {
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, storeName);
+            } finally {
+                CubaEntityFetchGroup.setAccessLocalUnfetched(true);
+            }
+        }
+    }
+
+    protected static boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
         if ((entity instanceof SoftDelete)) {
             ObjectChangeSet changeSet = changeListener.getObjectChangeSet();
             return changeSet != null
@@ -248,6 +273,37 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
     }
 
+    public void detach(EntityManager entityManager, Entity entity) {
+        UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
+        String storeName = getStorageName(unitOfWork);
+
+        if (entity instanceof BaseGenericIdEntity) {
+            fireBeforeDetachEntityListener((BaseGenericIdEntity) entity, storeName);
+
+            ContainerResourceHolder container = getInstanceContainerResourceHolder(storeName);
+            container.unregisterInstance(entity, unitOfWork);
+            if (BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
+                container.getNewDetachedInstances().add(entity);
+            }
+        }
+
+        makeDetached(entity);
+    }
+
+    protected void makeDetached(Object instance) {
+        if (instance instanceof BaseGenericIdEntity) {
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) instance, false);
+            BaseEntityInternalAccess.setManaged((BaseGenericIdEntity) instance, false);
+            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) instance, true);
+        }
+        if (instance instanceof FetchGroupTracker) {
+            ((FetchGroupTracker) instance)._persistence_setSession(null);
+        }
+        if (instance instanceof ChangeTracker) {
+            ((ChangeTracker) instance)._persistence_setPropertyChangeListener(null);
+        }
+    }
+
     public interface EntityVisitor {
         boolean visit(BaseGenericIdEntity entity);
     }
@@ -257,6 +313,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         protected Map<UnitOfWork, Set<Entity>> unitOfWorkMap = new HashMap<>();
 
         protected Set<Entity> savedInstances = createEntitySet();
+
+        protected Set<Entity> newDetachedInstances = createEntitySet();
 
         protected String storeName;
 
@@ -285,6 +343,13 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             instances.add(instance);
         }
 
+        protected void unregisterInstance(Entity instance, UnitOfWork unitOfWork) {
+            Set<Entity> instances = unitOfWorkMap.get(unitOfWork);
+            if (instances != null) {
+                instances.remove(instance);
+            }
+        }
+
         protected Collection<Entity> getInstances(UnitOfWork unitOfWork) {
             HashSet<Entity> set = new HashSet<>();
             Set<Entity> entities = unitOfWorkMap.get(unitOfWork);
@@ -303,6 +368,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
         protected Collection<Entity> getSavedInstances() {
             return savedInstances;
+        }
+
+        public Set<Entity> getNewDetachedInstances() {
+            return newDetachedInstances;
         }
 
         @Override
@@ -360,15 +429,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                             fetchGroupTracker._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
                     }
 
-                    if (PersistenceHelper.isNew(entity)) {
-                        typeNames.add(entity.getMetaClass().getName());
-                    }
-
-                    CubaEntityFetchGroup.setAccessLocalUnfetched(false);
-                    try {
-                        entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStoreName());
-                    } finally {
-                        CubaEntityFetchGroup.setAccessLocalUnfetched(true);
+                    if (entity instanceof BaseGenericIdEntity) {
+                        if (BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
+                            typeNames.add(entity.getMetaClass().getName());
+                        }
+                        fireBeforeDetachEntityListener((BaseGenericIdEntity) entity, container.getStoreName());
                     }
                 }
             }
@@ -378,8 +443,12 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 for (BeforeCommitTransactionListener transactionListener : beforeCommitTxListeners) {
                     transactionListener.beforeCommit(persistence.getEntityManager(container.getStoreName()), allInstances);
                 }
-
                 queryCacheManager.invalidate(typeNames, true);
+                List<EntityChangedEvent> collectedEvents = entityChangedEventManager.collect(container.getAllInstances());
+                detachAll();
+                publishEntityChangedEvents(collectedEvents);
+            } else {
+                detachAll();
             }
         }
 
@@ -391,32 +460,63 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
                 for (Object instance : instances) {
                     if (instance instanceof BaseGenericIdEntity) {
-                        BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
-                        BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
-
-                        if (BaseEntityInternalAccess.isNew(baseGenericIdEntity)) {
-                            // new instances become not new and detached only if the transaction was committed
-                            if (status == TransactionSynchronization.STATUS_COMMITTED) {
-                                BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
-                                BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                        if (status == TransactionSynchronization.STATUS_COMMITTED) {
+                            if (BaseEntityInternalAccess.isNew((BaseGenericIdEntity) instance)) {
+                                // new instances become not new and detached only if the transaction was committed
+                                BaseEntityInternalAccess.setNew((BaseGenericIdEntity) instance, false);
                             }
-                        } else {
-                            BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                        } else { // commit failed or the transaction was rolled back
+                            makeDetached(instance);
+                            for (Entity entity : container.getNewDetachedInstances()) {
+                                BaseEntityInternalAccess.setNew((BaseGenericIdEntity) entity, true);
+                                BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) entity, false);
+                            }
                         }
                     }
-                    if (instance instanceof FetchGroupTracker) {
-                        ((FetchGroupTracker) instance)._persistence_setSession(null);
-                    }
-                    if (instance instanceof ChangeTracker) {
-                        ((ChangeTracker) instance)._persistence_setPropertyChangeListener(null);
-                    }
                 }
-
                 for (AfterCompleteTransactionListener listener : afterCompleteTxListeners) {
                     listener.afterComplete(status == TransactionSynchronization.STATUS_COMMITTED, instances);
                 }
             } finally {
                 super.afterCompletion(status);
+            }
+        }
+
+        private void detachAll() {
+            Collection<Entity> instances = container.getAllInstances();
+            for (Object instance : instances) {
+                if (instance instanceof BaseGenericIdEntity &&
+                        BaseEntityInternalAccess.isNew((BaseGenericIdEntity) instance)) {
+                    container.getNewDetachedInstances().add((Entity) instance);
+                }
+            }
+
+            javax.persistence.EntityManager jpaEm = persistence.getEntityManager(container.getStoreName()).getDelegate();
+            jpaEm.flush();
+            jpaEm.clear();
+
+            for (Object instance : instances) {
+                makeDetached(instance);
+            }
+        }
+
+        private void publishEntityChangedEvents(List<EntityChangedEvent> collectedEvents) {
+            if (collectedEvents.isEmpty())
+                return;
+
+            List<TransactionSynchronization> synchronizationsBefore = new ArrayList<>(
+                    TransactionSynchronizationManager.getSynchronizations());
+
+            entityChangedEventManager.publish(collectedEvents);
+
+            List<TransactionSynchronization> synchronizations = new ArrayList<>(
+                    TransactionSynchronizationManager.getSynchronizations());
+
+            if (synchronizations.size() > synchronizationsBefore.size()) {
+                synchronizations.removeAll(synchronizationsBefore);
+                for (TransactionSynchronization synchronization : synchronizations) {
+                    synchronization.beforeCommit(false);
+                }
             }
         }
 
