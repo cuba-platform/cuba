@@ -48,6 +48,9 @@
             <property name="eclipselink.session-event-listener"
                       value="com.haulmont.cuba.core.sys.persistence.EclipseLinkSessionEventListener"/>
 
+            <property name="eclipselink.flush-clear.cache"
+                      value="Merge"/>
+
             <property name="javax.persistence.validation.mode"
                       value="NONE"/>
         </properties>
