@@ -70,7 +70,7 @@ public class CubaColorPickerSelect extends ColorPickerSelect {
 
     protected void updateSelectedItemCaption() {
         if (range != null && range.getSelectedItem().isPresent()) {
-            range.updateSelectedItemCaption();
+            range.updateSelectedItemCaption(range.getSelectedItem().get());
         }
     }
 }
