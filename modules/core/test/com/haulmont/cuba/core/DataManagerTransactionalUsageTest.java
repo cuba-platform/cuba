@@ -108,8 +108,6 @@ public class DataManagerTransactionalUsageTest {
         protected void orderLineChanged(EntityChangedEvent<OrderLine, UUID> event) {
             AttributeChanges changes = event.getChanges();
 
-            Collection<Product> products = changes.getOldValue("aaa");
-
             if (event.getType() == EntityChangedEvent.Type.DELETED) {
                 Id<Product, UUID> productId = changes.getOldReferenceId("product");
                 Integer oldQuantity = changes.getOldValue("quantity");
@@ -181,6 +179,8 @@ public class DataManagerTransactionalUsageTest {
                 .one();
         assertEquals(90, (int) product1.getQuantity());
 
+        // change Product in OrderLIne
+
         Product product2 = metadata.create(Product.class);
         product2.setName("def");
         product2.setQuantity(100);
@@ -195,6 +195,14 @@ public class DataManagerTransactionalUsageTest {
 
         Product changedProduct2 = dataManager.load(Id.of(product2)).one();
         assertEquals(90, (int) changedProduct2.getQuantity());
+
+        // remove OrderLine
+
+        OrderLine orderLineToRemove = dataManager.load(orderLineId).view("with-product").one();
+        dataManager.remove(orderLineToRemove);
+
+        Product product21 = dataManager.load(Id.of(product2)).one();
+        assertEquals(100, (int) product21.getQuantity());
     }
 
     @Test

@@ -23,30 +23,34 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * An object describing changes in entity attributes.
+ *
+ * @see EntityChangedEvent#getChanges()
+ */
 public class AttributeChanges {
 
     private Set<Change> changes;
     private Map<String, AttributeChanges> embeddedChanges;
 
-    public AttributeChanges() {
-        changes = new HashSet<>();
-        embeddedChanges = new HashMap<>();
-    }
-
+    /**
+     * INTERNAL.
+     */
     public AttributeChanges(Set<Change> changes, Map<String, AttributeChanges> embeddedChanges) {
         this.changes = changes;
         this.embeddedChanges = embeddedChanges;
     }
 
     /**
-     * @return changed attributes names for current entity
+     * Returns names of changed attributes for the root entity.
      */
     public Set<String> getOwnAttributes() {
         return changes.stream().map(change -> change.name).collect(Collectors.toSet());
     }
 
     /**
-     * @return changed attributes names for current entity and all embedded entities
+     * Returns names of changed attributes for the root entity and all its embedded entities (if any).
+     * Embedded attributes are represented by dot-separated paths.
      */
     public Set<String> getAttributes() {
         Set<String> attributes = new HashSet<>();
@@ -63,6 +67,10 @@ public class AttributeChanges {
         return attributes;
     }
 
+    /**
+     * Returns true if an attribute with the given name is changed.
+     * If the attribute is not changed or does not exist at all, returns false.
+     */
     public boolean isChanged(String attributeName) {
         for (Change change : changes) {
             if (change.name.equals(attributeName))
@@ -71,6 +79,13 @@ public class AttributeChanges {
         return false;
     }
 
+    /**
+     * Returns old value of a changed attribute with the given name. Old value can be null.
+     * If the attribute is not changed or does not exist at all, returns null.
+     * <p>
+     * If the attribute is a reference to an entity, its old value is of type {@link Id}. If the attribute is a
+     * collection of references, its old value is a collection of {@link Id}s.
+     */
     @SuppressWarnings("unchecked")
     @Nullable
     public <T> T getOldValue(String attributeName) {
@@ -129,6 +144,10 @@ public class AttributeChanges {
                 + '}';
     }
 
+    /**
+     * INTERNAL.
+     * Contains name and old value of a changed attribute.
+     */
     public static class Change {
 
         public final String name;

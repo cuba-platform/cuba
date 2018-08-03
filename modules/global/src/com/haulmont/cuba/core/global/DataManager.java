@@ -158,9 +158,14 @@ public interface DataManager {
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**
-     * Returns the DataManager implementation that is guaranteed to apply security restrictions.
-     * <p>By default, DataManager does not apply security when used on the middleware. Use this method if you want
-     * to run the same code both on the client and middle tier. For example:
+     * By default, DataManager does not apply security restrictions on entity operations and attributes, only row-level
+     * constraints take effect.
+     * <p>
+     * This method returns the {@code DataManager} implementation that applies security restrictions on entity operations.
+     * Attribute permissions will be enforced only if you additionally set the {@code cuba.entityAttributePermissionChecking}
+     * application property to true.
+     * <p>
+     * Usage example:
      * <pre>
      *     AppBeans.get(DataManager.class).secure().load(context);
      * </pre>
@@ -186,6 +191,15 @@ public interface DataManager {
         return new FluentLoader<>(entityClass, this);
     }
 
+    /**
+     * Entry point to the fluent API for loading entities.
+     * <p>
+     * Usage example:
+     * <pre>
+     * Customer customer = dataManager.load(customerId).view("with-grade").one();
+     * </pre>
+     * @param entityId   {@link Id} of entity that needs to be loaded
+     */
     default <E extends Entity<K>, K> FluentLoader.ById<E, K> load(Id<E, K> entityId) {
         return new FluentLoader<>(entityId.getEntityClass(), this).id(entityId.getValue());
     }

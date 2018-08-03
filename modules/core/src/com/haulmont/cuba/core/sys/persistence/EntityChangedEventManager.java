@@ -102,7 +102,7 @@ public class EntityChangedEventManager {
                 AttributeChanges attributeChanges = null;
                 if (info.onCreated && BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
                     type = EntityChangedEvent.Type.CREATED;
-                    attributeChanges = new AttributeChanges();
+                    attributeChanges = getEntityAttributeChanges(entity, false);
                 } else {
                     if (info.onUpdated || info.onDeleted) {
                         AttributeChangeListener changeListener =
@@ -113,7 +113,7 @@ public class EntityChangedEventManager {
                         }
                         if (info.onDeleted && PersistenceImplSupport.isDeleted((BaseGenericIdEntity) entity, changeListener)) {
                             type = EntityChangedEvent.Type.DELETED;
-                            attributeChanges = getEntityAttributeChanges(entity);
+                            attributeChanges = getEntityAttributeChanges(entity, true);
                         } else if (info.onUpdated && changeListener.hasChanges()) {
                             type = EntityChangedEvent.Type.UPDATED;
                             attributeChanges = getEntityAttributeChanges(changeListener.getObjectChangeSet());
@@ -167,26 +167,33 @@ public class EntityChangedEventManager {
     }
 
     @SuppressWarnings("unchecked")
-    private AttributeChanges getEntityAttributeChanges(Entity entity) {
+    private AttributeChanges getEntityAttributeChanges(Entity entity, boolean deleted) {
         Set<AttributeChanges.Change> changes = new HashSet<>();
         Map<String, AttributeChanges> embeddedChanges = new HashMap<>();
 
         for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
-            Object oldValue = entity.getValue(property.getName());
-            if (oldValue instanceof EmbeddableEntity) {
-                EmbeddableEntity embedded = (EmbeddableEntity) oldValue;
-                embeddedChanges.computeIfAbsent(property.getName(), s -> getEntityAttributeChanges(embedded));
-            } else if (oldValue instanceof Entity) {
-                changes.add(new AttributeChanges.Change(property.getName(), Id.of((Entity) oldValue)));
-            } else if (oldValue instanceof Collection) {
-                Collection<Entity> coll = (Collection<Entity>) oldValue;
-                Collection<Id> idColl = oldValue instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
-                for (Entity item : coll) {
-                    idColl.add(Id.of(item));
+            Object value = entity.getValue(property.getName());
+            if (deleted) {
+                if (value instanceof EmbeddableEntity) {
+                    EmbeddableEntity embedded = (EmbeddableEntity) value;
+                    embeddedChanges.computeIfAbsent(property.getName(), s -> getEntityAttributeChanges(embedded, true));
+                } else if (value instanceof Entity) {
+                    changes.add(new AttributeChanges.Change(property.getName(), Id.of((Entity) value)));
+                } else if (value instanceof Collection) {
+                    Collection<Entity> coll = (Collection<Entity>) value;
+                    Collection<Id> idColl = value instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
+                    for (Entity item : coll) {
+                        idColl.add(Id.of(item));
+                    }
+                    changes.add(new AttributeChanges.Change(property.getName(), idColl));
+                } else {
+                    changes.add(new AttributeChanges.Change(property.getName(), value));
                 }
-                changes.add(new AttributeChanges.Change(property.getName(), idColl));
+
             } else {
-                changes.add(new AttributeChanges.Change(property.getName(), oldValue));
+                if (value != null) {
+                    changes.add(new AttributeChanges.Change(property.getName(), null));
+                }
             }
         }
 

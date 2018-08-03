@@ -62,6 +62,14 @@ class EntityChangedEventTest extends Specification {
         listener.clear()
     }
 
+    private TestEntityChangedEventListener.Info beforeCommit() {
+        return listener.entityChangedEvents[0]
+    }
+
+    private TestEntityChangedEventListener.Info afterCommit() {
+        return listener.entityChangedEvents[1]
+    }
+
     def "create/update/delete entity"() {
 
         Order order = metadata.create(Order)
@@ -76,14 +84,21 @@ class EntityChangedEventTest extends Specification {
 
         listener.entityChangedEvents.size() == 2
 
-        !listener.entityChangedEvents[0].committedToDb
-        listener.entityChangedEvents[1].committedToDb
+        !beforeCommit().committedToDb
+        afterCommit().committedToDb
 
-        listener.entityChangedEvents[0].event.getEntityId().value == order.id
-        listener.entityChangedEvents[1].event.getEntityId().value == order.id
+        beforeCommit().event.getEntityId().value == order.id
+        afterCommit().event.getEntityId().value == order.id
 
-        listener.entityChangedEvents[0].event.getType() == EntityChangedEvent.Type.CREATED
-        listener.entityChangedEvents[1].event.getType() == EntityChangedEvent.Type.CREATED
+        beforeCommit().event.getType() == EntityChangedEvent.Type.CREATED
+        afterCommit().event.getType() == EntityChangedEvent.Type.CREATED
+
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('amount')
+        !beforeCommit().event.changes.isChanged('date')
+        !beforeCommit().event.changes.isChanged('customer')
+
+        beforeCommit().event.changes.getOldValue('amount') == null
 
         when:
 
@@ -96,16 +111,21 @@ class EntityChangedEventTest extends Specification {
 
         listener.entityChangedEvents.size() == 2
 
-        listener.entityChangedEvents[0].event.getEntityId().value == order.id
-        listener.entityChangedEvents[1].event.getEntityId().value == order.id
+        beforeCommit().event.getEntityId().value == order.id
+        afterCommit().event.getEntityId().value == order.id
 
-        listener.entityChangedEvents[0].event.getType() == EntityChangedEvent.Type.UPDATED
-        listener.entityChangedEvents[1].event.getType() == EntityChangedEvent.Type.UPDATED
+        beforeCommit().event.getType() == EntityChangedEvent.Type.UPDATED
+        afterCommit().event.getType() == EntityChangedEvent.Type.UPDATED
 
-        listener.entityChangedEvents[0].event.getChanges().attributes.contains('amount')
-        listener.entityChangedEvents[0].event.getChanges().getOldValue('amount') == 10
-        listener.entityChangedEvents[1].event.getChanges().attributes.contains('amount')
-        listener.entityChangedEvents[1].event.getChanges().getOldValue('amount') == 10
+        beforeCommit().event.getChanges().attributes.contains('amount')
+        beforeCommit().event.getChanges().getOldValue('amount') == 10
+        afterCommit().event.getChanges().attributes.contains('amount')
+        afterCommit().event.getChanges().getOldValue('amount') == 10
+
+        !beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('amount')
+
+        beforeCommit().event.changes.getOldValue('amount') == 10
 
         when:
 
@@ -117,11 +137,21 @@ class EntityChangedEventTest extends Specification {
 
         listener.entityChangedEvents.size() == 2
 
-        listener.entityChangedEvents[0].event.getEntityId().value == order.id
-        listener.entityChangedEvents[1].event.getEntityId().value == order.id
+        beforeCommit().event.getEntityId().value == order.id
+        afterCommit().event.getEntityId().value == order.id
 
-        listener.entityChangedEvents[0].event.getType() == EntityChangedEvent.Type.DELETED
-        listener.entityChangedEvents[1].event.getType() == EntityChangedEvent.Type.DELETED
+        beforeCommit().event.getType() == EntityChangedEvent.Type.DELETED
+        afterCommit().event.getType() == EntityChangedEvent.Type.DELETED
+
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('amount')
+        beforeCommit().event.changes.isChanged('date')
+        beforeCommit().event.changes.isChanged('customer')
+
+        beforeCommit().event.changes.getOldValue('number') == '111'
+        beforeCommit().event.changes.getOldValue('amount') == 20
+        beforeCommit().event.changes.getOldValue('date') == null
+        beforeCommit().event.changes.getOldValue('customer') == null
 
         cleanup:
 

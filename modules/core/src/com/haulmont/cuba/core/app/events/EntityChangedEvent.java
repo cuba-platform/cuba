@@ -27,8 +27,17 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
 
+/**
+ * A Spring application event of the middle tier that is sent right after an entity is changed in the data store.
+ *
+ * @param <E>   entity type
+ * @param <K>   entity identifier type
+ */
 public class EntityChangedEvent<E extends Entity<K>, K> extends ApplicationEvent implements ResolvableTypeProvider {
 
+    /**
+     * Type of the event: {@link #CREATED}, {@link #UPDATED} or {@link #DELETED}.
+     */
     public enum Type {
         CREATED,
         UPDATED,
@@ -39,6 +48,9 @@ public class EntityChangedEvent<E extends Entity<K>, K> extends ApplicationEvent
     private Type type;
     private AttributeChanges changes;
 
+    /**
+     * INTERNAL.
+     */
     public EntityChangedEvent(Object source, Id<E, K> entityId, Type type, AttributeChanges changes) {
         super(source);
         this.entityId = entityId;
@@ -46,18 +58,37 @@ public class EntityChangedEvent<E extends Entity<K>, K> extends ApplicationEvent
         this.changes = changes;
     }
 
+    /**
+     * Returns the entity id.
+     */
     public Id<E, K> getEntityId() {
         return entityId;
     }
 
+    /**
+     * Returns the event type.
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Returns an object describing changes in the entity attributes.
+     * <ul>
+     *   <li>For {@code CREATED} event, contains attributes stored with non-null values. Old values are null.
+     *   <li>For {@code UPDATED} event, contains changed attributes. Old values are the attribute values at the moment
+     *       of loading the entity from the database.
+     *   <li>For {@code DELETED} event, contains all entity attributes. Old values are the attribute values at the moment
+     *       of loading the entity from the database.
+     *  </ul>
+     */
     public AttributeChanges getChanges() {
         return changes;
     }
 
+    /**
+     * INTERNAL.
+     */
     @Override
     public ResolvableType getResolvableType() {
         Metadata metadata = AppBeans.get(Metadata.NAME);
