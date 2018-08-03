@@ -339,6 +339,74 @@ create table TEST_ORDER_LINE (
 
 ----------------------------------------------------------------------------------------------------------------
 
+create table SALES1_CUSTOMER (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    STATUS varchar(5),
+    primary key (ID)
+)^
+
+create table SALES1_ORDER (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NUM varchar(50),
+    DATE_ timestamp,
+    AMOUNT numeric(19,2),
+    CUSTOMER_ID varchar(36),
+    USER_ID varchar(36),
+    primary key (ID),
+    constraint SALES1_ORDER_CUSTOMER foreign key (CUSTOMER_ID) references SALES1_CUSTOMER(ID),
+    constraint SALES1_ORDER_USER foreign key (USER_ID) references SEC_USER(ID)
+)^
+
+create table SALES1_PRODUCT (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    QUANTITY integer,
+    primary key (ID)
+)^
+
+create table SALES1_ORDER_LINE (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    PRODUCT_ID varchar(36),
+    QUANTITY integer,
+    ORDER_ID varchar(36),
+    --
+    primary key (ID),
+    constraint FK_SALES1_ORDER_LINE_PRODUCT foreign key (PRODUCT_ID) references SALES1_PRODUCT(ID),
+    constraint FK_SALES1_ORDER_LINE_ORDER foreign key (ORDER_ID) references SALES1_ORDER(ID)
+)^
+
+----------------------------------------------------------------------------------------------------------------
+
 create table TEST_LINK_ENTITY (
     ID bigint,
     --

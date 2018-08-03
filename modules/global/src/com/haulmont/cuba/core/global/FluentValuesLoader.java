@@ -25,8 +25,12 @@ public class FluentValuesLoader extends AbstractFluentValueLoader {
 
     private List<String> properties = new ArrayList<>();
 
-    FluentValuesLoader(String queryString, DataManager dataManager) {
-        super(queryString, dataManager);
+    public FluentValuesLoader(String queryString, DataManager dataManager) {
+        super(queryString, dataManager, false);
+    }
+
+    public FluentValuesLoader(String queryString, DataManager dataManager, boolean transactional) {
+        super(queryString, dataManager, transactional);
     }
 
     protected ValueLoadContext createLoadContext() {

@@ -39,6 +39,8 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
     protected boolean softDeletion = true;
     protected String idName;
     protected List<String> properties = new ArrayList<>();
+    protected boolean authorizationRequired;
+    protected boolean joinTransaction;
 
     /**
      * Creates an instance of ValueLoadContext
@@ -153,6 +155,24 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
      */
     public List<String> getProperties() {
         return properties;
+    }
+
+    public boolean isAuthorizationRequired() {
+        return authorizationRequired;
+    }
+
+    public ValueLoadContext setAuthorizationRequired(boolean authorizationRequired) {
+        this.authorizationRequired = authorizationRequired;
+        return this;
+    }
+
+    public boolean isJoinTransaction() {
+        return joinTransaction;
+    }
+
+    public ValueLoadContext setJoinTransaction(boolean joinTransaction) {
+        this.joinTransaction = joinTransaction;
+        return this;
     }
 
     @Override

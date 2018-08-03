@@ -21,18 +21,15 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 
 @Component(DataManager.NAME)
@@ -67,7 +64,7 @@ public class DataManagerBean implements DataManager {
         DataStore storage = storeFactory.get(storeName);
         E entity = storage.load(context);
         if (entity != null)
-            readCrossDataStoreReferences(Collections.singletonList(entity), context.getView(), metaClass);
+            readCrossDataStoreReferences(Collections.singletonList(entity), context.getView(), metaClass, context.isJoinTransaction());
         return entity;
     }
 
@@ -82,7 +79,7 @@ public class DataManagerBean implements DataManager {
         }
         DataStore storage = storeFactory.get(storeName);
         List<E> entities = storage.loadList(context);
-        readCrossDataStoreReferences(entities, context.getView(), metaClass);
+        readCrossDataStoreReferences(entities, context.getView(), metaClass, context.isJoinTransaction());
         return entities;
     }
 
@@ -189,6 +186,7 @@ public class DataManagerBean implements DataManager {
             entityLog.processLoggingForCurrentThread(false);
             try {
                 CommitContext cc = new CommitContext();
+                cc.setJoinTransaction(context.isJoinTransaction());
                 for (Entity entity : result) {
                     if (toRepeat.contains(entity)) {
                         cc.addInstanceToCommit(entity, context.getViews().get(entity));
@@ -218,16 +216,13 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <E extends Entity> E commit(E entity, @Nullable View view) {
-        Set<Entity> res = commit(new CommitContext().addInstanceToCommit(entity, view));
+    public EntitySet commit(Entity... entities) {
+        return commit(new CommitContext(entities));
+    }
 
-        for (Entity e : res) {
-            if (e.equals(entity)) {
-                //noinspection unchecked
-                return (E) e;
-            }
-        }
-        return null;
+    @Override
+    public <E extends Entity> E commit(E entity, @Nullable View view) {
+        return commit(new CommitContext().addInstanceToCommit(entity, view)).get(entity);
     }
 
     @Override
@@ -268,20 +263,29 @@ public class DataManagerBean implements DataManager {
         CommitContext newCtx = new CommitContext();
         newCtx.setSoftDeletion(context.isSoftDeletion());
         newCtx.setDiscardCommitted(context.isDiscardCommitted());
+        newCtx.setAuthorizationRequired(context.isAuthorizationRequired());
+        newCtx.setJoinTransaction(context.isJoinTransaction());
         return newCtx;
     }
 
     @Override
     public DataManager secure() {
-        if (serverConfig.getDataManagerChecksSecurityOnMiddleware()) {
-            return this;
-        } else {
-            return (DataManager) Proxy.newProxyInstance(
-                    getClass().getClassLoader(),
-                    new Class[]{DataManager.class},
-                    new SecureDataManagerInvocationHandler(this)
-            );
-        }
+        return new Secure(this, metadata);
+    }
+
+    @Override
+    public <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
+        return new FluentLoader<>(entityClass, this);
+    }
+
+    @Override
+    public FluentValuesLoader loadValues(String queryString) {
+        return new FluentValuesLoader(queryString, this);
+    }
+
+    @Override
+    public <T> FluentValueLoader<T> loadValue(String queryString, Class<T> valueClass) {
+        return new FluentValueLoader<>(queryString, valueClass, this);
     }
 
     protected boolean writeCrossDataStoreReferences(Entity entity, Collection<Entity> allEntities) {
@@ -338,33 +342,55 @@ public class DataManagerBean implements DataManager {
         return repeatRequired;
     }
 
-    protected void readCrossDataStoreReferences(Collection<? extends Entity> entities, View view, MetaClass metaClass) {
+    protected void readCrossDataStoreReferences(Collection<? extends Entity> entities, View view, MetaClass metaClass,
+                                                boolean joinTransaction) {
         if (Stores.getAdditional().isEmpty() || entities.isEmpty() || view == null)
             return;
 
-        CrossDataStoreReferenceLoader crossDataStoreReferenceLoader = AppBeans.getPrototype(CrossDataStoreReferenceLoader.NAME, metaClass, view);
+        CrossDataStoreReferenceLoader crossDataStoreReferenceLoader = AppBeans.getPrototype(
+                CrossDataStoreReferenceLoader.NAME, metaClass, view, joinTransaction);
         crossDataStoreReferenceLoader.processEntities(entities);
     }
 
-    private class SecureDataManagerInvocationHandler implements InvocationHandler {
+    private static class Secure extends DataManagerBean {
 
-        private final DataManager impl;
+        private DataManager dataManager;
 
-        private SecureDataManagerInvocationHandler(DataManager impl) {
-            this.impl = impl;
+        public Secure(DataManager dataManager, Metadata metadata) {
+            this.dataManager = dataManager;
+            //noinspection ReassignmentInjectVariable
+            this.metadata = metadata;
+        }
+
+        @Nullable
+        @Override
+        public <E extends Entity> E load(LoadContext<E> context) {
+            context.setAuthorizationRequired(true);
+            return dataManager.load(context);
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            boolean authorizationRequired = AppContext.getSecurityContextNN().isAuthorizationRequired();
-            AppContext.getSecurityContextNN().setAuthorizationRequired(true);
-            try {
-                return method.invoke(impl, args);
-            } catch (InvocationTargetException e) {
-                throw e.getTargetException();
-            } finally {
-                AppContext.getSecurityContextNN().setAuthorizationRequired(authorizationRequired);
-            }
+        public <E extends Entity> List<E> loadList(LoadContext<E> context) {
+            context.setAuthorizationRequired(true);
+            return dataManager.loadList(context);
+        }
+
+        @Override
+        public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+            context.setAuthorizationRequired(true);
+            return dataManager.loadValues(context);
+        }
+
+        @Override
+        public long getCount(LoadContext<? extends Entity> context) {
+            context.setAuthorizationRequired(true);
+            return dataManager.getCount(context);
+        }
+
+        @Override
+        public EntitySet commit(CommitContext context) {
+            context.setAuthorizationRequired(true);
+            return dataManager.commit(context);
         }
     }
 }

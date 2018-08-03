@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.entity.contracts.Id;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -114,6 +115,13 @@ public interface DataManager {
     EntitySet commit(CommitContext context);
 
     /**
+     * Commits new or detached entity instances to the data store.
+     * @param entities  entities to commit
+     * @return          set of committed instances
+     */
+    EntitySet commit(Entity... entities);
+
+    /**
      * Commits the entity to the data store.
      * @param entity    entity instance
      * @param view      view object, affects the returned committed instance
@@ -150,9 +158,14 @@ public interface DataManager {
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**
-     * Returns the DataManager implementation that is guaranteed to apply security restrictions.
-     * <p>By default, DataManager does not apply security when used on the middleware. Use this method if you want
-     * to run the same code both on the client and middle tier. For example:
+     * By default, DataManager does not apply security restrictions on entity operations and attributes, only row-level
+     * constraints take effect.
+     * <p>
+     * This method returns the {@code DataManager} implementation that applies security restrictions on entity operations.
+     * Attribute permissions will be enforced only if you additionally set the {@code cuba.entityAttributePermissionChecking}
+     * application property to true.
+     * <p>
+     * Usage example:
      * <pre>
      *     AppBeans.get(DataManager.class).secure().load(context);
      * </pre>
@@ -176,6 +189,19 @@ public interface DataManager {
      */
     default <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
         return new FluentLoader<>(entityClass, this);
+    }
+
+    /**
+     * Entry point to the fluent API for loading entities.
+     * <p>
+     * Usage example:
+     * <pre>
+     * Customer customer = dataManager.load(customerId).view("with-grade").one();
+     * </pre>
+     * @param entityId   {@link Id} of entity that needs to be loaded
+     */
+    default <E extends Entity<K>, K> FluentLoader.ById<E, K> load(Id<E, K> entityId) {
+        return new FluentLoader<>(entityId.getEntityClass(), this).id(entityId.getValue());
     }
 
     /**

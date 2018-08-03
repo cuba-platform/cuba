@@ -125,6 +125,11 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
+    public EntitySet commit(Entity... entities) {
+        return commit(new CommitContext(entities));
+    }
+
+    @Override
     public void remove(Entity entity) {
         CommitContext context = new CommitContext(
                         Collections.<Entity>emptyList(),

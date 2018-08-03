@@ -217,8 +217,9 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .setSoftDeletion(false)
                     .setView(regularView)
                     .setLoadDynamicAttributes(true)
-                    .setId(srcEntity.getId());
-            Entity dstEntity = dataManager.secure().load(ctx);
+                    .setId(srcEntity.getId())
+                    .setAuthorizationRequired(true);
+            Entity dstEntity = dataManager.load(ctx);
 
             importEntity(srcEntity, dstEntity, importView, regularView, commitContext, referenceInfoList);
         }
@@ -258,7 +259,9 @@ public class EntityImportExport implements EntityImportExportAPI {
             commitContext.setSoftDeletion(true);
         }
 
-        return dataManager.secure().commit(commitContext);
+        commitContext.setAuthorizationRequired(true);
+
+        return dataManager.commit(commitContext);
     }
 
     /**

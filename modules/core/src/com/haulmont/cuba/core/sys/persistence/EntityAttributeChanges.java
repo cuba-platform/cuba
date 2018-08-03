@@ -73,22 +73,30 @@ public class EntityAttributeChanges {
         return attributes;
     }
 
-    @Nullable
-    public Object getOldValue(String attributeName) {
+    public boolean isChanged(String attributeName) {
         for (Change change : changes) {
             if (change.name.equals(attributeName))
-                return change.oldValue;
+                return true;
+        }
+        return false;
+    }
+
+    @Nullable
+    public <T> T getOldValue(String attributeName) {
+        for (Change change : changes) {
+            if (change.name.equals(attributeName))
+                return (T) change.oldValue;
         }
         return null;
     }
 
     @Nullable
-    public Object getOldValueEx(String attributePath) {
+    public <T> T getOldValueEx(String attributePath) {
         String[] properties = attributePath.split("[.]");
         if (properties.length == 1) {
             for (Change change : changes) {
                 if (change.name.equals(attributePath))
-                    return change.oldValue;
+                    return (T) change.oldValue;
             }
         } else {
             EntityAttributeChanges nestedChanges = embeddedChanges.get(properties[0]);
