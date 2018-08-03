@@ -34,6 +34,7 @@ public class FluentLoader<E extends Entity<K>, K> {
     private View view;
     private String viewName;
     private boolean softDeletion = true;
+    private boolean dynamicAttributes;
 
     public FluentLoader(Class<E> entityClass, DataManager dataManager) {
         this.entityClass = entityClass;
@@ -66,6 +67,7 @@ public class FluentLoader<E extends Entity<K>, K> {
             loadContext.setView(viewName);
 
         loadContext.setSoftDeletion(softDeletion);
+        loadContext.setLoadDynamicAttributes(dynamicAttributes);
     }
 
     /**
@@ -121,6 +123,14 @@ public class FluentLoader<E extends Entity<K>, K> {
      */
     public FluentLoader<E, K> softDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+        return this;
+    }
+
+    /**
+     * Sets loading of dynamic attributes. It is false by default.
+     */
+    public FluentLoader<E, K> dynamicAttributes(boolean dynamicAttributes) {
+        this.dynamicAttributes = dynamicAttributes;
         return this;
     }
 
@@ -197,6 +207,14 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public ById<E, K> softDeletion(boolean softDeletion) {
             loader.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets loading of dynamic attributes. It is false by default.
+         */
+        public ById<E, K> dynamicAttributes(boolean dynamicAttributes) {
+            loader.dynamicAttributes = dynamicAttributes;
             return this;
         }
     }
@@ -289,6 +307,14 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public ByQuery<E, K> softDeletion(boolean softDeletion) {
             loader.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets loading of dynamic attributes. It is false by default.
+         */
+        public ByQuery<E, K> dynamicAttributes(boolean dynamicAttributes) {
+            loader.dynamicAttributes = dynamicAttributes;
             return this;
         }
 

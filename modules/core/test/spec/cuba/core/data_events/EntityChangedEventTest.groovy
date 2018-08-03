@@ -16,20 +16,25 @@
 
 package spec.cuba.core.data_events
 
+import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.TransactionalDataManager
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType
 import com.haulmont.cuba.core.app.events.EntityChangedEvent
+import com.haulmont.cuba.core.entity.Category
+import com.haulmont.cuba.core.entity.CategoryAttribute
+import com.haulmont.cuba.core.entity.ReferenceToEntity
 import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.security.app.EntityLog
-import com.haulmont.cuba.testmodel.sales_1.Order
-import com.haulmont.cuba.testmodel.sales_1.OrderLine
-import com.haulmont.cuba.testmodel.sales_1.Product
-import com.haulmont.cuba.testmodel.sales_1.TestEntityChangedEventListener
+import com.haulmont.cuba.testmodel.sales_1.*
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
+
+import java.text.SimpleDateFormat
 
 class EntityChangedEventTest extends Specification {
 
@@ -194,5 +199,98 @@ class EntityChangedEventTest extends Specification {
         cleanup:
 
         cont.deleteRecord(orderLine11, orderLine12, product1, product2, order1)
+    }
+
+    def "dynamic attributes"() {
+
+        Category category = new Category(name: 'order', entityType: 'sales1$Order')
+        CategoryAttribute ca1 = new CategoryAttribute(name: 'dynAttr1', code: 'dynAttr1', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.STRING, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca2 = new CategoryAttribute(name: 'dynAttr2', code: 'dynAttr2', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.INTEGER, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca3 = new CategoryAttribute(name: 'dynAttr3', code: 'dynAttr3', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.DOUBLE, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca4 = new CategoryAttribute(name: 'dynAttr4', code: 'dynAttr4', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.BOOLEAN, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca5 = new CategoryAttribute(name: 'dynAttr5', code: 'dynAttr5', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.DATE, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca6 = new CategoryAttribute(name: 'dynAttr6', code: 'dynAttr6', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.ENUMERATION, defaultEntity: new ReferenceToEntity())
+        CategoryAttribute ca7 = new CategoryAttribute(name: 'dynAttr7', code: 'dynAttr7', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.ENTITY, entityClass: 'com.haulmont.cuba.testmodel.sales_1.Customer', defaultEntity: new ReferenceToEntity())
+        dataManager.commit(category, ca1, ca2, ca3, ca4, ca5, ca6, ca7)
+
+        AppBeans.get(DynamicAttributesManagerAPI).loadCache()
+
+        Order order = metadata.create(Order)
+        order.setNumber('111')
+        dataManager.commit(order)
+
+        Customer cust1 = new Customer(name: 'cust1')
+        Customer cust2 = new Customer(name: 'cust2')
+        dataManager.commit(cust1, cust2)
+
+        listener.clear()
+
+        when:
+
+        Order order1 = dataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+        order1.setNumber('222')
+        order1.setValue('+dynAttr1', 'val1')
+        order1.setValue('+dynAttr2', 10)
+        order1.setValue('+dynAttr3', (double) 123.456)
+        order1.setValue('+dynAttr4', true)
+        order1.setValue('+dynAttr5', new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-03'))
+        order1.setValue('+dynAttr6', 'enumVal1')
+        order1.setValue('+dynAttr7', cust1)
+        dataManager.commit(order1)
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('+dynAttr1')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == null
+        beforeCommit().event.changes.isChanged('+dynAttr2')
+        beforeCommit().event.changes.getOldValue('+dynAttr2') == null
+        beforeCommit().event.changes.isChanged('+dynAttr3')
+        beforeCommit().event.changes.getOldValue('+dynAttr3') == null
+        beforeCommit().event.changes.isChanged('+dynAttr4')
+        beforeCommit().event.changes.getOldValue('+dynAttr4') == null
+        beforeCommit().event.changes.isChanged('+dynAttr5')
+        beforeCommit().event.changes.getOldValue('+dynAttr5') == null
+        beforeCommit().event.changes.isChanged('+dynAttr6')
+        beforeCommit().event.changes.getOldValue('+dynAttr6') == null
+        beforeCommit().event.changes.isChanged('+dynAttr7')
+        beforeCommit().event.changes.getOldValue('+dynAttr7') == null
+
+        listener.clear()
+
+        when:
+
+        Order order2 = dataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+        order2.setNumber('333')
+        order2.setValue('+dynAttr1', 'val2')
+        order2.setValue('+dynAttr2', 20)
+        order2.setValue('+dynAttr3', (double) 7.89)
+        order2.setValue('+dynAttr4', false)
+        order2.setValue('+dynAttr5', new Date())
+        order2.setValue('+dynAttr6', 'enumVal2')
+        order2.setValue('+dynAttr7', cust2)
+        dataManager.commit(order2)
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == 'val1'
+        beforeCommit().event.changes.getOldValue('+dynAttr2') == 10
+        beforeCommit().event.changes.getOldValue('+dynAttr3') == 123.456
+        beforeCommit().event.changes.getOldValue('+dynAttr4') == true
+        beforeCommit().event.changes.getOldValue('+dynAttr5') == new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-03')
+        beforeCommit().event.changes.getOldValue('+dynAttr6') == 'enumVal1'
+        beforeCommit().event.changes.getOldValue('+dynAttr7') == Id.of(cust1)
+
+        cleanup:
+
+        new QueryRunner(cont.persistence().getDataSource()).update("delete from SYS_ATTR_VALUE")
+        cont.deleteRecord(ca1, ca2, ca3, ca4, ca5, ca6, ca7, category, cust1, cust2, order)
     }
 }

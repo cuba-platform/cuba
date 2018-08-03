@@ -18,12 +18,10 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.events.AttributeChanges;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.EmbeddableEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.PublishEntityChangedEvents;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.Events;
@@ -32,10 +30,12 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.sessions.changesets.AggregateChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,7 +116,7 @@ public class EntityChangedEventManager {
                             attributeChanges = getEntityAttributeChanges(entity, true);
                         } else if (info.onUpdated && changeListener.hasChanges()) {
                             type = EntityChangedEvent.Type.UPDATED;
-                            attributeChanges = getEntityAttributeChanges(changeListener.getObjectChangeSet());
+                            attributeChanges = getEntityAttributeChanges(entity, changeListener.getObjectChangeSet());
                         }
                     }
                 }
@@ -137,7 +137,7 @@ public class EntityChangedEventManager {
     }
 
     @SuppressWarnings("unchecked")
-    private AttributeChanges getEntityAttributeChanges(org.eclipse.persistence.sessions.changesets.ObjectChangeSet changeSet) {
+    private AttributeChanges getEntityAttributeChanges(@Nullable Entity entity, ObjectChangeSet changeSet) {
         if (changeSet == null)
             return null;
         Set<AttributeChanges.Change> changes = new HashSet<>();
@@ -146,7 +146,7 @@ public class EntityChangedEventManager {
         for (ChangeRecord changeRecord : changeSet.getChanges()) {
             if (changeRecord instanceof AggregateChangeRecord) {
                 embeddedChanges.computeIfAbsent(changeRecord.getAttribute(), s ->
-                        getEntityAttributeChanges(((AggregateChangeRecord) changeRecord).getChangedObject()));
+                        getEntityAttributeChanges(null, ((AggregateChangeRecord) changeRecord).getChangedObject()));
             } else {
                 Object oldValue = changeRecord.getOldValue();
                 if (oldValue instanceof Entity) {
@@ -163,6 +163,43 @@ public class EntityChangedEventManager {
                 }
             }
         }
+
+        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
+            Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
+            if (dynamicAttributes != null) {
+                for (CategoryAttributeValue cav : dynamicAttributes.values()  ) {
+                    if (BaseEntityInternalAccess.isNew(cav)) {
+                        changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), null));
+                    } else {
+                        AttributeChangeListener changeListener =
+                                (AttributeChangeListener) ((ChangeTracker) cav)._persistence_getPropertyChangeListener();
+                        if (changeListener != null && changeListener.getObjectChangeSet() != null) {
+                            for (ChangeRecord changeRecord : changeListener.getObjectChangeSet().getChanges()) {
+                                Object oldValue = null;
+                                switch (changeRecord.getAttribute()) {
+                                    case "stringValue":
+                                    case "intValue":
+                                    case "doubleValue":
+                                    case "booleanValue":
+                                    case "dateValue":
+                                        oldValue = changeRecord.getOldValue();
+                                        break;
+                                    case "entityValue":
+                                        Object entityId = ((ReferenceToEntity) changeRecord.getOldValue()).getObjectEntityId();
+                                        Class entityClass = cav.getCategoryAttribute().getJavaClassForEntity();
+                                        oldValue = Id.of(entityId, entityClass);
+                                        break;
+                                }
+                                if (oldValue != null) {
+                                    changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), oldValue));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return new AttributeChanges(changes, embeddedChanges);
     }
 
