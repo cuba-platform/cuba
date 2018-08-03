@@ -269,7 +269,7 @@ class EntityChangedEventTest extends Specification {
         order2.setValue('+dynAttr2', 20)
         order2.setValue('+dynAttr3', (double) 7.89)
         order2.setValue('+dynAttr4', false)
-        order2.setValue('+dynAttr5', new Date())
+        order2.setValue('+dynAttr5', new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-04'))
         order2.setValue('+dynAttr6', 'enumVal2')
         order2.setValue('+dynAttr7', cust2)
         dataManager.commit(order2)
@@ -288,9 +288,147 @@ class EntityChangedEventTest extends Specification {
         beforeCommit().event.changes.getOldValue('+dynAttr6') == 'enumVal1'
         beforeCommit().event.changes.getOldValue('+dynAttr7') == Id.of(cust1)
 
+        listener.clear()
+
+        when:
+
+        Order order3 = dataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+        dataManager.remove(order3)
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == 'val2'
+        beforeCommit().event.changes.getOldValue('+dynAttr2') == 20
+        beforeCommit().event.changes.getOldValue('+dynAttr3') == 7.89
+        beforeCommit().event.changes.getOldValue('+dynAttr4') == false
+        beforeCommit().event.changes.getOldValue('+dynAttr5') == new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-04')
+        beforeCommit().event.changes.getOldValue('+dynAttr6') == 'enumVal2'
+        beforeCommit().event.changes.getOldValue('+dynAttr7') == Id.of(cust2)
+
         cleanup:
 
         new QueryRunner(cont.persistence().getDataSource()).update("delete from SYS_ATTR_VALUE")
         cont.deleteRecord(ca1, ca2, ca3, ca4, ca5, ca6, ca7, category, cust1, cust2, order)
+    }
+
+    def "dynamic attributes in TransactionalDataManager"() {
+
+        Category category = new Category(name: 'order', entityType: 'sales1$Order')
+        CategoryAttribute ca1 = new CategoryAttribute(name: 'dynAttr1', code: 'dynAttr1', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.STRING, defaultEntity: new ReferenceToEntity())
+        dataManager.commit(category, ca1)
+
+        AppBeans.get(DynamicAttributesManagerAPI).loadCache()
+
+        Order order = metadata.create(Order)
+        order.setNumber('111')
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when: "set initial value to dynamic attributes"
+
+        def tx = txDataManager.transactions().create()
+        try {
+            Order order1 = txDataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+            order1.setNumber('222')
+            order1.setValue('+dynAttr1', 'val1')
+            txDataManager.save(order1)
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('+dynAttr1')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == null
+
+        listener.clear()
+
+        when: "update dynamic attributes"
+
+        def tx2 = txDataManager.transactions().create()
+        try {
+            Order order2 = txDataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+            order2.setNumber('333')
+            order2.setValue('+dynAttr1', 'val2')
+            txDataManager.save(order2)
+            tx2.commit()
+        } finally {
+            tx2.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == 'val1'
+
+        listener.clear()
+
+        when: "update dynamic attributes 2 times"
+
+        def tx3 = txDataManager.transactions().create()
+        try {
+            Order order3 = txDataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+            order3.setNumber('3331')
+            order3.setValue('+dynAttr1', 'val31')
+            order3 = txDataManager.save(order3)
+
+            order3.setNumber('3332')
+            order3.setValue('+dynAttr1', 'val32')
+            txDataManager.save(order3)
+
+            tx3.commit()
+        } finally {
+            tx3.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 4
+
+        // before commit
+        listener.entityChangedEvents[0].event.changes.getOldValue('+dynAttr1') == 'val2'
+        listener.entityChangedEvents[1].event.changes.getOldValue('+dynAttr1') == 'val31'
+
+        // after commit
+        listener.entityChangedEvents[2].event.changes.getOldValue('+dynAttr1') == 'val2'
+        listener.entityChangedEvents[3].event.changes.getOldValue('+dynAttr1') == 'val31'
+
+        listener.clear()
+
+        when: "remove entity"
+
+        def tx4 = txDataManager.transactions().create()
+        try {
+            Order order4 = dataManager.load(Order).id(order.id).dynamicAttributes(true).one()
+            txDataManager.remove(order4)
+            tx4.commit()
+        } finally {
+            tx4.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.getOldValue('+dynAttr1') == 'val32'
+
+        listener.clear()
+
+        cleanup:
+
+        new QueryRunner(cont.persistence().getDataSource()).update("delete from SYS_ATTR_VALUE")
+        cont.deleteRecord(ca1, category, order)
     }
 }

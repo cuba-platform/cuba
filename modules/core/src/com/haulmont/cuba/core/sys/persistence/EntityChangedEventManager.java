@@ -164,18 +164,55 @@ public class EntityChangedEventManager {
             }
         }
 
+        addDynamicAttributeChanges(entity, changes, false);
+
+        return new AttributeChanges(changes, embeddedChanges);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addDynamicAttributeChanges(@Nullable Entity entity, Set<AttributeChanges.Change> changes, boolean deleted) {
         if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
             Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
-            if (dynamicAttributes != null) {
-                for (CategoryAttributeValue cav : dynamicAttributes.values()  ) {
-                    if (BaseEntityInternalAccess.isNew(cav)) {
-                        changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), null));
+            for (CategoryAttributeValue cav : dynamicAttributes.values()) {
+                if (BaseEntityInternalAccess.isNew(cav)) {
+                    changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), null));
+                } else {
+                    if (deleted) {
+                        Object oldValue;
+                        switch (cav.getCategoryAttribute().getDataType()) {
+                            case STRING:
+                            case ENUMERATION:
+                                oldValue = cav.getStringValue();
+                                break;
+                            case INTEGER:
+                                oldValue = cav.getIntValue();
+                                break;
+                            case DOUBLE:
+                                oldValue = cav.getDoubleValue();
+                                break;
+                            case BOOLEAN:
+                                oldValue = cav.getBooleanValue();
+                                break;
+                            case DATE:
+                                oldValue = cav.getDateValue();
+                                break;
+                            case ENTITY:
+                                Object entityId = cav.getEntityValue().getObjectEntityId();
+                                Class entityClass = cav.getCategoryAttribute().getJavaClassForEntity();
+                                oldValue = entityId != null ? Id.of(entityId, entityClass) : null;
+                                break;
+                            default:
+                                log.warn("Unsupported dynamic attribute type: " + cav.getCategoryAttribute().getDataType());
+                                oldValue = null;
+                        }
+                        changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), oldValue));
                     } else {
                         AttributeChangeListener changeListener =
                                 (AttributeChangeListener) ((ChangeTracker) cav)._persistence_getPropertyChangeListener();
                         if (changeListener != null && changeListener.getObjectChangeSet() != null) {
+                            Object oldValue = null;
+                            boolean changed = false;
                             for (ChangeRecord changeRecord : changeListener.getObjectChangeSet().getChanges()) {
-                                Object oldValue = null;
                                 switch (changeRecord.getAttribute()) {
                                     case "stringValue":
                                     case "intValue":
@@ -183,15 +220,18 @@ public class EntityChangedEventManager {
                                     case "booleanValue":
                                     case "dateValue":
                                         oldValue = changeRecord.getOldValue();
+                                        changed = true;
                                         break;
                                     case "entityValue":
                                         Object entityId = ((ReferenceToEntity) changeRecord.getOldValue()).getObjectEntityId();
                                         Class entityClass = cav.getCategoryAttribute().getJavaClassForEntity();
-                                        oldValue = Id.of(entityId, entityClass);
+                                        oldValue = entityId != null ? Id.of(entityId, entityClass) : null;
+                                        changed = true;
                                         break;
                                 }
-                                if (oldValue != null) {
+                                if (changed) {
                                     changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), oldValue));
+                                    break;
                                 }
                             }
                         }
@@ -199,8 +239,6 @@ public class EntityChangedEventManager {
                 }
             }
         }
-
-        return new AttributeChanges(changes, embeddedChanges);
     }
 
     @SuppressWarnings("unchecked")
@@ -232,6 +270,10 @@ public class EntityChangedEventManager {
                     changes.add(new AttributeChanges.Change(property.getName(), null));
                 }
             }
+        }
+
+        if (deleted) {
+            addDynamicAttributeChanges(entity, changes, true);
         }
 
         return new AttributeChanges(changes, embeddedChanges);

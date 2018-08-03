@@ -433,6 +433,9 @@ public class RdbmsStore implements DataStore {
                 if (entityHasDynamicAttributes(entity)) {
                     Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
 
+                    // old values of dynamic attributes on deleted entity are used in EntityChangedEvent
+                    ((BaseGenericIdEntity) e).setDynamicAttributes(dynamicAttributes);
+
                     //dynamicAttributes checked for null in entityHasDynamicAttributes()
                     //noinspection ConstantConditions
                     for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
