@@ -1215,12 +1215,12 @@ public class WebWindowManager extends WindowManager {
         layout.addComponent(messageLab);
 
         DialogAction action = new DialogAction(Type.OK);
-        Button button = WebComponentsHelper.createButton();
+        CubaButton button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());
         button.setIcon(iconResolver.getIconResource(action.getIcon()));
         button.addStyleName(WebButton.ICON_STYLE);
-        button.addClickListener(event ->
+        button.setClickHandler(event ->
                 vWindow.close()
         );
 
@@ -1362,10 +1362,10 @@ public class WebWindowManager extends WindowManager {
         boolean hasPrimaryAction = false;
         Map<Action, Button> buttonMap = new HashMap<>();
         for (Action action : actions) {
-            Button button = WebComponentsHelper.createButton();
+            CubaButton button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
             button.setEnabled(action.isEnabled());
-            button.addClickListener(event -> {
+            button.setClickHandler(event -> {
                 try {
                     action.actionPerform(null);
                 } finally {

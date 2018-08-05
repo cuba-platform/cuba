@@ -207,16 +207,20 @@ public class WebComponentsHelper {
         }
     }
 
-    public static Button createButton() {
+    public static CubaButton createButton() {
         return createButton(null);
     }
 
-    public static Button createButton(String icon) {
+    /**
+     * todo rework, do not use WebButton here
+     */
+    @Deprecated
+    public static CubaButton createButton(String icon) {
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
         com.haulmont.cuba.gui.components.Button button =
                 cf.createComponent(com.haulmont.cuba.gui.components.Button.class);
         button.setIcon(icon);
-        return (Button) unwrap(button);
+        return (CubaButton) unwrap(button);
     }
 
     public static Frame getControllerFrame(Frame frame) {
