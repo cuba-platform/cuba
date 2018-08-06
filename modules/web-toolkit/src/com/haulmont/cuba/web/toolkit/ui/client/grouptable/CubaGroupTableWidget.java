@@ -264,7 +264,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             @Override
             protected boolean addSpecificCell(String columnId, int colIndex) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
-                    addCell("", aligns[colIndex], "", false);
+                    addCell("", aligns[colIndex], CLASSNAME + "-group-divider", false);
                     return true;
                 }
                 if (showRowHeaders && colIndex == 0) {

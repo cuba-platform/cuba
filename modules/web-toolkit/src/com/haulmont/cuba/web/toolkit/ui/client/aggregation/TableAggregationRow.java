@@ -206,4 +206,8 @@ public class TableAggregationRow extends Panel {
     public void setHorizontalScrollPosition(int scrollLeft) {
         getElement().setPropertyInt("scrollLeft", scrollLeft);
     }
+
+    public TableWidget getTableWidget() {
+        return tableWidget;
+    }
 }

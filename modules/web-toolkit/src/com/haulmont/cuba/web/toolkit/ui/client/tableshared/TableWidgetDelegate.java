@@ -137,11 +137,22 @@ public class TableWidgetDelegate {
                 if (realColWidth > 0) {
                     if (realColWidth > minWidth) {
                         Style hStyle = hcell.getElement().getStyle();
-
                         hStyle.setProperty("width", realColWidth + "px");
                     }
-
                     break;
+                }
+            }
+        }
+
+        if (aggregationRow != null && aggregationRow.isInitialized()) {
+            Widget twRow = aggregationRow.getTableWidget().getRenderedRows().get(0);
+            VScrollTable.VScrollTableBody.VScrollTableRow vRow = (VScrollTable.VScrollTableBody.VScrollTableRow) twRow;
+
+            double realColWidth = vRow.getRealCellWidth(colIndex);
+            if (realColWidth > 0) {
+                if (realColWidth > minWidth) {
+                    Style hStyle = hcell.getElement().getStyle();
+                    hStyle.setProperty("width", realColWidth + "px");
                 }
             }
         }
