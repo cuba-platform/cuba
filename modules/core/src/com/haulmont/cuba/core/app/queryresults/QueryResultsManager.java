@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryHolder;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -174,7 +174,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
                 String userSessionIdStr = converter.getSqlObject(userSessionId).toString(); // assuming that UUID can be passed to query as string in all databases
                 String sql = String.format("insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, %s) values ('%s', %s, ?)",
                         columnName, userSessionIdStr, queryKey);
-                int[] paramTypes = new int[] { converter.getSqlType(idFromList.getClass()) };
+                int[] paramTypes = new int[]{converter.getSqlType(idFromList.getClass())};
                 for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
                     List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
                     Object[][] params = new Object[sublist.size()][1];
@@ -262,7 +262,8 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             }
             i++;
             if (i % DELETE_BATCH_SIZE == 0) {
-                delete(ids);
+                if (!ids.isEmpty())
+                    delete(ids);
                 ids.clear();
             }
         }
