@@ -132,10 +132,31 @@ $cuba-login-password-height: $v-unit-size !default;
   }
 
   .c-login-remember-locales {
+    height: $v-unit-size;
     width: 100%;
+  }
+
+  .c-login-remember-locales > .v-slot {
+    width: 50%;
+
+    &:before {
+      content: "";
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      width: 0;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+
+    &:first-child {
+      text-align: left;
+    }
 
     & > * {
-      width: 50%;
+      vertical-align: middle;
     }
   }
 

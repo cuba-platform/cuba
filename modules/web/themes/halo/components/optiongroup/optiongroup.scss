@@ -35,6 +35,13 @@ $cuba-optiongroup-size: $v-unit-size/2 !default;
           width: round($cuba-optiongroup-size);
         }
 
+        & ~ label:after {
+          width: $cuba-optiongroup-size;
+          height: $cuba-optiongroup-size;
+          top: 0;
+          left: 0;
+        }
+
         &:checked ~ label:after {
           $factor: $cuba-optiongroup-size * 2 / $v-unit-size;
           $size: ceil(($cuba-optiongroup-size * $factor) / 3);

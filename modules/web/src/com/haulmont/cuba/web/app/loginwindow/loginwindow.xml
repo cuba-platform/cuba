@@ -65,10 +65,8 @@
                     <hbox id="rememberLocalesBox"
                           stylename="c-login-remember-locales">
                         <checkBox id="rememberMeCheckBox"
-                                  align="MIDDLE_LEFT"
                                   caption="mainMsg://loginWindow.rememberMe"/>
                         <lookupField id="localesSelect"
-                                     align="MIDDLE_RIGHT"
                                      nullOptionVisible="false"
                                      stylename="c-login-locale"
                                      textInputAllowed="false"/>
