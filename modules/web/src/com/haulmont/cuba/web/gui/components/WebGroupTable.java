@@ -437,7 +437,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         if (isMultiSelect()) {
             if (containerDatasource instanceof WebGroupTable.GroupTableDsWrapper) {
                 //noinspection unchecked
-                LinkedList<Object> itemIds = ((GroupTableDsWrapper) containerDatasource).getItemIds(false);
+                GroupTableDsWrapper containerDatasource = (GroupTableDsWrapper) this.containerDatasource;
+                Collection itemIds = containerDatasource.hasGroups()
+                        ? containerDatasource.getItemIds(false)
+                        : containerDatasource.getItemIds();
                 component.setValue(itemIds);
                 return;
             }
