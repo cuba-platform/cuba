@@ -34,7 +34,6 @@ buildscript {
     }
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaVersion
-        classpath group: 'gradle.plugin.org.jetbrains.gradle.plugin.idea-ext', name: 'gradle-idea-ext', version: 0.2
     }
 }
 
@@ -42,7 +41,6 @@ apply(plugin: 'base')
 apply(plugin: 'maven')
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
-apply(plugin: 'org.jetbrains.gradle.plugin.idea-ext')
 
 bom.load file('modules/global/src/com/haulmont/cuba/bom.properties')
 
