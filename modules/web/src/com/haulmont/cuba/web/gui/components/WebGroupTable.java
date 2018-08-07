@@ -406,8 +406,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     public void selectAll() {
         if (isMultiSelect()) {
             if (getTableSource() instanceof GroupTableSource) {
-                List<GroupInfo> roots = ((GroupTableSource<E>) getTableSource()).rootGroups();
-                LinkedList<Object> itemIds = getAllItemIds(roots);
+                GroupTableSource<E> tableSource = (GroupTableSource<E>) getTableSource();
+                Collection<?> itemIds = tableSource.hasGroups()
+                        ? getAllItemIds(tableSource)
+                        : tableSource.getItemIds();
                 component.setValue(itemIds);
                 return;
             }
@@ -415,7 +417,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         super.selectAll();
     }
 
-    protected LinkedList<Object> getAllItemIds(List<GroupInfo> roots) {
+    protected LinkedList<Object> getAllItemIds(GroupTableSource<E> tableSource) {
+        List<GroupInfo> roots = tableSource.rootGroups();
         final LinkedList<Object> result = new LinkedList<>();
         for (final GroupInfo root : roots) {
             result.add(root);
