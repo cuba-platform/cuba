@@ -432,6 +432,19 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         return component.aggregate(new CubaGroupTable.GroupAggregationContext(component, info));
     }
 
+    @Override
+    public void selectAll() {
+        if (isMultiSelect()) {
+            if (containerDatasource instanceof WebGroupTable.GroupTableDsWrapper) {
+                //noinspection unchecked
+                LinkedList<Object> itemIds = ((GroupTableDsWrapper) containerDatasource).getItemIds(false);
+                component.setValue(itemIds);
+                return;
+            }
+        }
+        super.selectAll();
+    }
+
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer, AggregationContainer {
 
@@ -791,6 +804,17 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             }
         }
 
+        public LinkedList<Object> getItemIds(boolean expandedOnly) {
+            final LinkedList<Object> result = new LinkedList<>();
+            //noinspection unchecked
+            final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
+            for (final GroupInfo root : roots) {
+                result.add(root);
+                collectItemIds(root, result, expandedOnly);
+            }
+            return result;
+        }
+
         @Override
         public void sort(Object[] propertyId, boolean[] ascending) {
             resetCachedItems();
@@ -799,14 +823,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         protected LinkedList getCachedItemIds() {
             if (cachedItemIds == null) {
-                final LinkedList<Object> result = new LinkedList<>();
-                //noinspection unchecked
-                final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
-                for (final GroupInfo root : roots) {
-                    result.add(root);
-                    collectItemIds(root, result);
-                }
-                cachedItemIds = result;
+                cachedItemIds = getItemIds(true);
 
                 if (!cachedItemIds.isEmpty()) {
                     first = cachedItemIds.peekFirst();
@@ -816,14 +833,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             return cachedItemIds;
         }
 
-        protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
-            if (expanded.contains(groupId)) {
+        protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds, boolean expandedOnly) {
+            if (!expandedOnly || expanded.contains(groupId)) {
                 if (((GroupDatasource) datasource).hasChildren(groupId)) {
                     @SuppressWarnings("unchecked")
                     final List<GroupInfo> children = ((GroupDatasource) datasource).getChildren(groupId);
                     for (final GroupInfo child : children) {
                         itemIds.add(child);
-                        collectItemIds(child, itemIds);
+                        collectItemIds(child, itemIds, expandedOnly);
                     }
                 } else {
                     itemIds.addAll(((GroupDatasource) datasource).getGroupItemIds(groupId));
