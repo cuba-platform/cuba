@@ -402,6 +402,41 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         return component.aggregate(new GroupAggregationContext(component, info));
     }
 
+    @Override
+    public void selectAll() {
+        if (isMultiSelect()) {
+            if (getTableSource() instanceof GroupTableSource) {
+                List<GroupInfo> roots = ((GroupTableSource<E>) getTableSource()).rootGroups();
+                LinkedList<Object> itemIds = getAllItemIds(roots);
+                component.setValue(itemIds);
+                return;
+            }
+        }
+        super.selectAll();
+    }
+
+    protected LinkedList<Object> getAllItemIds(List<GroupInfo> roots) {
+        final LinkedList<Object> result = new LinkedList<>();
+        for (final GroupInfo root : roots) {
+            result.add(root);
+            collectItemIds(root, result);
+        }
+        return result;
+    }
+
+    protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
+        GroupTableSource<E> groupTableSource = (GroupTableSource<E>) getTableSource();
+        if (groupTableSource.hasChildren(groupId)) {
+            final List<GroupInfo> children = groupTableSource.getChildren(groupId);
+            for (final GroupInfo child : children) {
+                itemIds.add(child);
+                collectItemIds(child, itemIds);
+            }
+        } else {
+            itemIds.addAll(groupTableSource.getGroupItemIds(groupId));
+        }
+    }
+
     protected String formatAggregatableGroupPropertyValue(GroupInfo<MetaPropertyPath> groupId, @Nullable Object value) {
         String formattedValue = formatGroupPropertyValue(groupId, value);
 
