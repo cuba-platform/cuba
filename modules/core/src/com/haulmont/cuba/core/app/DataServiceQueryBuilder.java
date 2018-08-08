@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -59,14 +60,19 @@ public class DataServiceQueryBuilder {
     @Inject
     private PersistenceSecurity security;
 
-    public void init(String queryString, Map<String, Object> queryParams, String[] noConversionParams,
-                     Object id, String entityName)
+    public void init(@Nullable String queryString, Map<String, Object> queryParams, String[] noConversionParams,
+                     @Nullable Object id, String entityName)
     {
         this.entityName = entityName;
-        if (!StringUtils.isBlank(queryString)) {
+        if (queryString == null && id == null) {
+            this.queryString = "select e from " + entityName + " e";
+            this.queryParams = Collections.emptyMap();
+
+        } else if (!StringUtils.isBlank(queryString)) {
             this.queryString = queryString;
             this.queryParams = queryParams;
             this.noConversionParams = noConversionParams;
+
         } else {
             MetaClass metaClass = metadata.getClassNN(entityName);
             String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
