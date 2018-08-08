@@ -46,6 +46,7 @@ public class AppPropertiesTest {
         reports.setProperty("prop3", "prop3_reports_val", false);
         reports.setProperty("prop4", "prop4_reports_val", true);
         reports.setProperty("prop5", "prop5_reports_val", false);
+        reports.setProperty("cronExpr", "*/10 * * * * *", false);
 
         AppComponents appComponents = new AppComponents("core");
         appComponents.add(cuba);
@@ -72,6 +73,8 @@ public class AppPropertiesTest {
         assertEquals("prop6_app_val", appProperties.getProperty("prop6"));
 
         assertNull(appProperties.getProperty("prop7"));
+
+        assertEquals("*/10 * * * * *", appProperties.getProperty("cronExpr"));
     }
 
     @Test
@@ -84,7 +87,7 @@ public class AppPropertiesTest {
     @Test
     public void testGetPropertyNames() {
         assertArrayEquals(
-                new String[] {"prop1", "prop2", "prop3", "prop4", "prop5", "prop6"},
+                new String[] {"cronExpr", "prop1", "prop2", "prop3", "prop4", "prop5", "prop6"},
                 appProperties.getPropertyNames());
     }
 

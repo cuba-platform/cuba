@@ -184,14 +184,16 @@ public class AppProperties {
 
             String compValue = component.getProperty(key);
             if (StringUtils.isNotEmpty(compValue)) {
-                index = 0;
-                for (String valuePart : split(compValue)) {
-                    if (!values.contains(valuePart)) {
-                        values.add(index, valuePart);
-                        index++;
+                if (component.isAdditiveProperty(key)) {
+                    index = 0;
+                    for (String valuePart : split(compValue)) {
+                        if (!values.contains(valuePart)) {
+                            values.add(index, valuePart);
+                            index++;
+                        }
                     }
-                }
-                if (!component.isAdditiveProperty(key)) {
+                } else {
+                    values.add(0, compValue);
                     // we found overwrite, stop iteration
                     break;
                 }
