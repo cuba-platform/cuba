@@ -34,6 +34,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -45,8 +46,6 @@ import javax.persistence.NoResultException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * INTERNAL.
@@ -132,8 +131,10 @@ public class RdbmsStore implements DataStore {
             persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
             // If maxResults=1 and the query is not by ID we should not use getSingleResult() for backward compatibility
-            boolean singleResult = !(context.getQuery() != null && context.getQuery().getMaxResults() == 1
-                    && context.getQuery().getQueryString() != null);
+            boolean singleResult = !(context.getQuery() != null
+                        && context.getQuery().getMaxResults() == 1
+                        && context.getQuery().getQueryString() != null)
+                    && context.getId() != null;
 
             View view = createRestrictedView(context);
             com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult);
@@ -272,8 +273,15 @@ public class RdbmsStore implements DataStore {
 
         queryResultsManager.savePreviousQueryResults(context);
 
+        context = context.copy();
+        if (context.getQuery() == null) {
+            context.setQuery(LoadContext.createQuery(null));
+        }
+        if (StringUtils.isBlank(context.getQuery().getQueryString())) {
+            context.getQuery().setQueryString("select e from " + metaClass.getName() + " e");
+        }
+
         if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
-            context = context.copy();
             List resultList;
             try (Transaction tx = getLoadTransaction(context.isJoinTransaction())) {
                 EntityManager em = persistence.getEntityManager(storeName);
@@ -303,7 +311,6 @@ public class RdbmsStore implements DataStore {
         } else {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
             transformer.replaceWithCount();
-            context = context.copy();
             context.getQuery().setQueryString(transformer.getResult());
 
             Number result;
@@ -608,10 +615,6 @@ public class RdbmsStore implements DataStore {
 
     protected Query createQuery(EntityManager em, LoadContext context, boolean singleResult) {
         LoadContext.Query contextQuery = context.getQuery();
-        if ((contextQuery == null || isBlank(contextQuery.getQueryString()))
-                && context.getId() == null)
-            throw new IllegalArgumentException("Query string or ID needed");
-
         RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
         queryBuilder.init(
                 contextQuery == null ? null : contextQuery.getQueryString(),

@@ -282,7 +282,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
             throw new RuntimeException("Error copying LoadContext", e);
         }
         ctx.metaClass = metaClass;
-        ctx.setQuery(query.copy());
+        ctx.setQuery(query != null ? query.copy() : null);
         ctx.view = view;
         ctx.id = id;
         ctx.softDeletion = softDeletion;
