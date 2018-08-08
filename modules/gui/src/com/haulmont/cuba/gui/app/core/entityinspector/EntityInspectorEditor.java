@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Categorized;
@@ -366,11 +367,13 @@ public class EntityInspectorEditor extends AbstractWindow {
                         isReadonly = true;
                     }
 
-                    if (metaProperty.getRange().asDatatype().getJavaClass().equals(Boolean.class)) {
+                    Range range = metaProperty.getRange();
+                    if (range.isDatatype() && range.asDatatype().getJavaClass().equals(Boolean.class)) {
                         addBooleanCustomField(metaClass, metaProperty, item, fieldGroup, isRequired, isReadonly);
-                    } else {
-                        addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
+                        break;
                     }
+
+                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
