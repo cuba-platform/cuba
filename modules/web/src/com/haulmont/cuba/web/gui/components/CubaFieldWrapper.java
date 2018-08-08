@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.Component;
 import com.vaadin.v7.ui.CustomField;
 
@@ -28,7 +29,16 @@ public class CubaFieldWrapper extends CustomField {
 
     public CubaFieldWrapper(Component component) {
         this.component = component;
+
         this.setCaption(" "); // use space in caption for proper layout
+
+        if (component instanceof Component.HasCaption) {
+            String caption = ((Component.HasCaption) component).getCaption();
+
+            if (!Strings.isNullOrEmpty(caption)) {
+                this.setCaption(caption);
+            }
+        }
     }
 
     @Override
