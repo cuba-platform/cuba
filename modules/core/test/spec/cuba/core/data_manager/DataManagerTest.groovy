@@ -122,4 +122,34 @@ class DataManagerTest extends Specification {
 
         list.size() > 0
     }
+
+    def "load without query and id"() {
+
+        when:
+
+        User user = dataManager.load(LoadContext.create(User))
+
+        then:
+
+        noExceptionThrown()
+        user != null
+
+        when:
+
+        List<User> users = dataManager.loadList(LoadContext.create(User))
+
+        then:
+
+        noExceptionThrown()
+        !users.isEmpty()
+
+        when:
+
+        long count = dataManager.getCount(LoadContext.create(User))
+
+        then:
+
+        noExceptionThrown()
+        count > 0
+    }
 }
