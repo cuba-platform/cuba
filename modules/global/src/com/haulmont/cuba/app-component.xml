@@ -45,7 +45,7 @@
         <artifact name="cuba-core-tests" configuration="testCompile"/>
         <artifact name="cuba-shared-lib" configuration="testCompile"/>
         <artifact name="cuba-core" classifier="db" ext="zip" configuration="dbscripts"/>
-        
+
         <property name="cuba.springContextConfig" value="cuba-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.remotingSpringContextConfig" value="cuba-remoting-spring.xml"/>
@@ -91,7 +91,7 @@
         <artifact name="cuba-web-themes" configuration="provided"/>
         <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
                   skipIfExists="web-toolkit"/>
-        
+
         <property name="cuba.metadataConfig" value="+cuba-web-metadata.xml"/>
         <property name="cuba.springContextConfig" value="+cuba-web-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.web"/>
@@ -106,7 +106,7 @@
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/dispatch"/>
         <property name="cuba.useLocalServiceInvocation" value="true"/>
         <property name="cuba.rest.client.id" value="client"/>
-        <property name="cuba.rest.client.secret" value="secret"/>
+        <property name="cuba.rest.client.secret" value="{noop}secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
         <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
         <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
@@ -127,7 +127,7 @@
 
     <module name="portal" dependsOn="rest-api" blocks="portal">
         <artifact name="cuba-portal" appJar="true"/>
-        
+
         <property name="cuba.springContextConfig" value="+cuba-portal-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.dispatcherSpringContextConfig" value="+cuba-portal-dispatcher-spring.xml"/>
@@ -135,7 +135,7 @@
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}"/>
         <property name="cuba.useLocalServiceInvocation" value="true"/>
         <property name="cuba.rest.client.id" value="client"/>
-        <property name="cuba.rest.client.secret" value="secret"/>
+        <property name="cuba.rest.client.secret" value="{noop}secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
         <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
         <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
@@ -145,10 +145,10 @@
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
         <property name="cuba.portal.templateLoaderPath" value="/WEB-INF/templates/"/>
     </module>
-    
+
     <module name="desktop" dependsOn="gui" blocks="desktop">
         <artifact name="cuba-desktop"/>
-        
+
         <property name="cuba.springContextConfig" value="+cuba-desktop-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.desktop"/>
         <property name="cuba.windowConfig" value="cuba-desktop-screens.xml"/>
