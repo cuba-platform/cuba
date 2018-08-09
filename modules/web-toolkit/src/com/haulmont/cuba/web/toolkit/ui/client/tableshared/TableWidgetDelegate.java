@@ -138,6 +138,8 @@ public class TableWidgetDelegate {
                     if (realColWidth > minWidth) {
                         Style hStyle = hcell.getElement().getStyle();
                         hStyle.setProperty("width", realColWidth + "px");
+                        hStyle.setProperty("minWidth", realColWidth + "px");
+                        hStyle.setProperty("maxWidth", realColWidth + "px");
                     }
                     break;
                 }
@@ -153,6 +155,8 @@ public class TableWidgetDelegate {
                 if (realColWidth > minWidth) {
                     Style hStyle = hcell.getElement().getStyle();
                     hStyle.setProperty("width", realColWidth + "px");
+                    hStyle.setProperty("minWidth", realColWidth + "px");
+                    hStyle.setProperty("maxWidth", realColWidth + "px");
                 }
             }
         }
