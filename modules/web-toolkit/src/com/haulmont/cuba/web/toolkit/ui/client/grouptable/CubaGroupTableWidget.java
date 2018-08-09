@@ -389,6 +389,15 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             HeaderCell lastCell = tHead.getHeaderCell(tHead.getVisibleCellCount() - 1);
             return this.equals(lastCell);
         }
+
+        @Override
+        public void setWidth(int w, boolean ensureDefinedWidth) {
+            super.setWidth(w, ensureDefinedWidth);
+
+            Style style = this.getElement().getStyle();
+            style.setProperty("minWidth", this.getWidth() + "px");
+            style.setProperty("maxWidth", this.getWidth() + "px");
+        }
     }
 
     protected class CubaGroupTableBody extends CubaScrollTableBody {
