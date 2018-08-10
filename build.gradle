@@ -207,9 +207,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
             'Generates a HTML report after executing PMD checks.') {
         doLast {
             ant.xslt(
-                    in: "${project.buildDir}/reports/pmd/main.xml",
-                    style: "${rootDir}/findbugs/pmd-nicerhtml.xsl",
-                    out: "${project.buildDir}/reports/pmd/main.html")
+                    'in': "${project.buildDir}/reports/pmd/main.xml",
+                    'style': "${rootDir}/findbugs/pmd-nicerhtml.xsl",
+                    'out': "${project.buildDir}/reports/pmd/main.html")
         }
     }
 
