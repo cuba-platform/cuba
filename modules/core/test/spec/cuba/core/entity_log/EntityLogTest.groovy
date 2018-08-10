@@ -29,6 +29,8 @@ import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.LoggedAttribute
 import com.haulmont.cuba.security.entity.LoggedEntity
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
+import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
 import org.junit.ClassRule
@@ -79,6 +81,26 @@ class EntityLogTest extends Specification {
             la.setEntity(le)
             la.setName('type')
             em.persist(la)
+
+            le = new LoggedEntity()
+            le.setName('test$IntIdentityEntity')
+            le.setAuto(true)
+            em.persist(le)
+
+            la = new LoggedAttribute()
+            la.setEntity(le)
+            la.setName('name')
+            em.persist(la)
+
+            le = new LoggedEntity()
+            le.setName('test$IdentityEntity')
+            le.setAuto(true)
+            em.persist(le)
+
+            la = new LoggedAttribute()
+            la.setEntity(le)
+            la.setName('name')
+            em.persist(la)
         }
         entityLog = AppBeans.get(EntityLogAPI.class)
         entityLog.invalidateCache()
@@ -102,16 +124,21 @@ class EntityLogTest extends Specification {
         runner.update("delete from SEC_LOGGED_ENTITY")
     }
 
-    private List<EntityLogItem> getEntityLogItems(def userId) {
+    private List<EntityLogItem> getEntityLogItems(String entityName, def entityId) {
         Transaction tx
         List<EntityLogItem> items
         tx = cont.persistence().createTransaction()
         try {
             EntityManager em = cont.persistence().getEntityManager()
+            String entityIdField
+            if (entityId instanceof Integer) entityIdField = 'intEntityId'
+            else if (entityId instanceof Long) entityIdField = 'longEntityId'
+            else entityIdField = 'entityId'
+
             TypedQuery<EntityLogItem> query = em.createQuery(
-                    'select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2 order by i.eventTs desc', EntityLogItem.class)
-            query.setParameter(1, 'sec$User')
-            query.setParameter(2, userId)
+                    "select i from sec\$EntityLog i where i.entity = ?1 and i.entityRef.$entityIdField = ?2 order by i.eventTs desc", EntityLogItem.class)
+            query.setParameter(1, entityName)
+            query.setParameter(2, entityId)
             items = query.getResultList()
 
             tx.commit()
@@ -147,8 +174,8 @@ class EntityLogTest extends Specification {
 
         then:
 
-        getEntityLogItems(user1Id).size() == 1
-        getEntityLogItems(user2Id).size() == 1
+        getEntityLogItems('sec$User', user1Id).size() == 1
+        getEntityLogItems('sec$User', user2Id).size() == 1
 
         when:
 
@@ -164,8 +191,8 @@ class EntityLogTest extends Specification {
 
         then:
 
-        getEntityLogItems(user1Id).size() == 2
-        getEntityLogItems(user2Id).size() == 2
+        getEntityLogItems('sec$User', user1Id).size() == 2
+        getEntityLogItems('sec$User', user2Id).size() == 2
     }
 
     def "correct old value in case of flush in the middle"() {
@@ -198,13 +225,89 @@ class EntityLogTest extends Specification {
 
         then:
 
-        getEntityLogItems(user1Id).size() == 2
-        def item = getEntityLogItems(user1Id)[0] // latest
+        getEntityLogItems('sec$User', user1Id).size() == 2
+        def item = getEntityLogItems('sec$User', user1Id)[0] // latest
 
         item.attributes.find({ it.name == 'email' }).value == 'email111'
         item.attributes.find({ it.name == 'email' }).oldValue == 'email1'
 
         item.attributes.find({ it.name == 'name' }).value == 'name11'
         item.attributes.find({ it.name == 'name' }).oldValue == 'name1'
+    }
+
+    def "works for BaseIdentityIdEntity"() {
+
+        when:
+
+        IdentityEntity entity = cont.persistence().callInTransaction { em ->
+            def e = new IdentityEntity(name: 'test1')
+            em.persist(e)
+            e
+        }
+
+        then:
+
+        noExceptionThrown()
+
+        def item1 = getEntityLogItems('test$IdentityEntity', entity.id.get())[0]
+        item1.attributes.find({ it.name == 'name' }).value == 'test1'
+        item1.attributes.find({ it.name == 'name' }).oldValue == null
+
+        when:
+
+        cont.persistence().runInTransaction { em ->
+            def e = em.find(IdentityEntity, entity.id)
+            e.name = 'test2'
+        }
+
+        then:
+
+        def item2 = getEntityLogItems('test$IdentityEntity', entity.id.get())[0]
+        item2.attributes.find({ it.name == 'name' }).value == 'test2'
+        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
+
+        cleanup:
+
+        if (entity != null && entity.getId().get() != null) {
+            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_IDENTITY where id = ${entity.getId().get()}")
+        }
+    }
+
+    def "works for BaseIntIdentityIdEntity"() {
+
+        when:
+
+        IntIdentityEntity entity = cont.persistence().callInTransaction { em ->
+            def e = new IntIdentityEntity(name: 'test1')
+            em.persist(e)
+            e
+        }
+
+        then:
+
+        noExceptionThrown()
+
+        def item1 = getEntityLogItems('test$IntIdentityEntity', entity.id.get())[0]
+        item1.attributes.find({ it.name == 'name' }).value == 'test1'
+        item1.attributes.find({ it.name == 'name' }).oldValue == null
+
+        when:
+
+        cont.persistence().runInTransaction { em ->
+            def e = em.find(IntIdentityEntity, entity.id)
+            e.name = 'test2'
+        }
+
+        then:
+
+        def item2 = getEntityLogItems('test$IntIdentityEntity', entity.id.get())[0]
+        item2.attributes.find({ it.name == 'name' }).value == 'test2'
+        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
+
+        cleanup:
+
+        if (entity != null && entity.getId().get() != null) {
+            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_INT_IDENTITY where id = ${entity.getId().get()}")
+        }
     }
 }

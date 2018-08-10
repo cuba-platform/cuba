@@ -37,6 +37,8 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -108,7 +110,9 @@ public class EntityLog implements EntityLogAPI {
 
         for (EntityLogItem item : items) {
             List<EntityLogItem> sameEntityList = items.stream()
-                    .filter(entityLogItem -> entityLogItem.getObjectEntityId().equals(item.getObjectEntityId()))
+                    .filter(entityLogItem -> entityLogItem.getDbGeneratedIdEntity() != null ?
+                            entityLogItem.getDbGeneratedIdEntity().equals(item.getDbGeneratedIdEntity()) :
+                            entityLogItem.getObjectEntityId().equals(item.getObjectEntityId()))
                     .collect(Collectors.toList());
             EntityLogItem itemToSave = sameEntityList.get(0);
             computeChanges(itemToSave, sameEntityList);
@@ -188,16 +192,31 @@ public class EntityLog implements EntityLogAPI {
 
     protected void saveItem(EntityLogItem item) {
         String storeName = metadataTools.getStoreName(metadata.getClassNN(item.getEntity()));
-        if (Stores.isMain(storeName)) {
-            EntityManager em = persistence.getEntityManager();
-            em.persist(item);
-        } else {
-            // Create a new transaction in main DB if we are saving an entity from additional data store
-            try (Transaction tx = persistence.createTransaction()) {
+        if (item.getDbGeneratedIdEntity() == null) {
+            if (Stores.isMain(storeName)) {
                 EntityManager em = persistence.getEntityManager();
                 em.persist(item);
-                tx.commit();
+            } else {
+                // Create a new transaction in main DB if we are saving an entity from additional data store
+                try (Transaction tx = persistence.createTransaction()) {
+                    EntityManager em = persistence.getEntityManager();
+                    em.persist(item);
+                    tx.commit();
+                }
             }
+        } else {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    Number id = item.getDbGeneratedIdEntity().getId().getNN();
+                    item.setObjectEntityId(id);
+                    try (Transaction tx = persistence.createTransaction()) {
+                        EntityManager em = persistence.getEntityManager();
+                        em.persist(item);
+                        tx.commit();
+                    }
+                }
+            });
         }
     }
 
@@ -383,7 +402,11 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
-        item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        if (entity instanceof BaseDbGeneratedIdEntity) {
+            item.setDbGeneratedIdEntity((BaseDbGeneratedIdEntity) entity);
+        } else {
+            item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        }
         item.setAttributes(createLogAttributes(entity, attributes, null));
 
         enqueueItem(item);
