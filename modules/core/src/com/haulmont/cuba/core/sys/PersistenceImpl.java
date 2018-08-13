@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -50,6 +51,11 @@ import java.util.function.Consumer;
 public class PersistenceImpl implements Persistence {
 
     public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
+
+    /**
+     * DEPRECATED. Use {@link TransactionSynchronizationManager#registerSynchronization}.
+     */
+    @Deprecated
     public static final String RUN_AFTER_COMPLETION_ATTR = "cuba.runAfterCompletion";
 
     private static final Logger log = LoggerFactory.getLogger(PersistenceImpl.class);
@@ -258,6 +264,20 @@ public class PersistenceImpl implements Persistence {
 
     protected TransactionSynchronization createSynchronization(String store) {
         return new EntityManagerContextSynchronization(store);
+    }
+
+    /**
+     * INTERNAL.
+     * Adds an action to be executed before commit of the current transaction.
+     * Can be invoked from {@link TransactionSynchronization#beforeCommit(boolean)} code.
+     */
+    public void addBeforeCommitAction(Runnable action) {
+        List<Runnable> list = getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
+        if (list == null) {
+            list = new ArrayList<>();
+            getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
+        }
+        list.add(action);
     }
 
     protected class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {

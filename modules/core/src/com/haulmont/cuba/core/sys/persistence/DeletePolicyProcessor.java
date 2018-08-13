@@ -198,12 +198,7 @@ public class DeletePolicyProcessor {
     }
 
     protected void hardDeleteNotLoadedReference(Entity entity, MetaProperty property, Entity reference) {
-        List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
-        if (list == null) {
-            list = new ArrayList<>();
-            persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
-        }
-        list.add(() -> {
+        ((PersistenceImpl) persistence).addBeforeCommitAction(() -> {
             MetadataTools metadataTools = metadata.getTools();
             QueryRunner queryRunner = new QueryRunner();
             try {
@@ -239,12 +234,7 @@ public class DeletePolicyProcessor {
     }
 
     protected void hardSetReferenceNull(Entity entity, MetaProperty property) {
-        List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
-        if (list == null) {
-            list = new ArrayList<>();
-            persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
-        }
-        list.add(() -> {
+        ((PersistenceImpl) persistence).addBeforeCommitAction(() -> {
             MetadataTools metadataTools = metadata.getTools();
             MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
             while (!entityMetaClass.equals(property.getDomain())) {
