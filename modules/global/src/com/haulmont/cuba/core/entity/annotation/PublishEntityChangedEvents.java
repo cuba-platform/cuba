@@ -21,12 +21,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that {@code EntityChangedEvent}s must be published on the middle tier when the annotated entity is changed
+ * in the data store.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @MetaAnnotation
 public @interface PublishEntityChangedEvents {
 
+    /**
+     * Publish event when the entity is created. True by default.
+     */
     boolean created() default true;
+
+    /**
+     * Publish event when the entity is updated. True by default.
+     */
     boolean updated() default true;
+
+    /**
+     * Publish event when the entity is deleted. True by default.
+     */
     boolean deleted() default true;
 }
