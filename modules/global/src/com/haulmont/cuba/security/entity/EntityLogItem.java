@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
@@ -31,7 +32,6 @@ import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Record containing information about entity lifecycle event.
@@ -98,6 +98,9 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
     @Embedded
     @EmbeddedParameters(nullAllowed = false)
     private ReferenceToEntity entityRef;
+
+    @Transient
+    private transient BaseDbGeneratedIdEntity dbGeneratedIdEntity;
 
     @Transient
     @MetaProperty
@@ -186,6 +189,14 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
 
     public void setEntityRef(ReferenceToEntity entityRef) {
         this.entityRef = entityRef;
+    }
+
+    public BaseDbGeneratedIdEntity getDbGeneratedIdEntity() {
+        return dbGeneratedIdEntity;
+    }
+
+    public void setDbGeneratedIdEntity(BaseDbGeneratedIdEntity dbGeneratedIdEntity) {
+        this.dbGeneratedIdEntity = dbGeneratedIdEntity;
     }
 
     public void setObjectEntityId(Object entity) {
