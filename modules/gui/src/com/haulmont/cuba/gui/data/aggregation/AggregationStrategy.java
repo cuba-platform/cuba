@@ -17,15 +17,32 @@
 
 package com.haulmont.cuba.gui.data.aggregation;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.components.Table;
+
 import java.util.Collection;
 
 /**
+ * Custom aggregation strategy for {@link Table} component.
  *
  * @param <T> type of aggregation result
  * @param <V> type of property values
+ *            or type of datasource items if {@link AggregationInfo.Type#CUSTOM} and
+ *            {@link MetaPropertyPath} of aggregation info is null
  */
 public interface AggregationStrategy<V, T> {
+    /**
+     * Performs aggregation of <code>propertyValues</code>.
+     *
+     * @param propertyValues values of the associated {@link MetaPropertyPath} or datasource items if
+     *                       {@link MetaPropertyPath} of aggregation info is null
+     * @return aggregation result
+     */
     T aggregate(Collection<V> propertyValues);
 
+    /**
+     * @return type of result value
+     */
     Class<T> getResultClass();
 }
