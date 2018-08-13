@@ -29,6 +29,24 @@ import org.springframework.core.ResolvableTypeProvider;
 
 /**
  * A Spring application event of the middle tier that is sent right after an entity is changed in the data store.
+ * <p>
+ * The event is sent by the framework if the entity has {@code @PublishEntityChangedEvents} annotation.
+ * <p>
+ * You can use {@code @EventListener} and {@code @TransactionalEventListener} annotations to handle this event. In the
+ * former case, the handler will work inside the transaction which changed the entity, in the latter - after commit.
+ * The {@code @TransactionalEventListener} annotation contains {@code phase} attribute which allows you to handle the event
+ * before or after transaction commit. Example of event handler:
+ * <pre>
+ * {@literal @}Component("test_OrderLineChangedListener")
+ * public class OrderLineChangedListener {
+ *
+ *     {@literal @}EventListener
+ *     protected void orderLineChanged(EntityChangedEvent&lt;OrderLine, UUID&gt; event) {
+ *         AttributeChanges changes = event.getChanges();
+ *         //...
+ *     }
+ * }
+ * </pre>
  *
  * @param <E>   entity type
  * @param <K>   entity identifier type

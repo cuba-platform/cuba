@@ -42,6 +42,8 @@ import java.util.List;
  *          txDataManager.save(acc2);
  *      }
  * </pre>
+ * Transactions can also be created/committed programmatically using the {@link Transactions} interface which is available
+ * via {@link #transactions()} method.
  */
 public interface TransactionalDataManager {
 
