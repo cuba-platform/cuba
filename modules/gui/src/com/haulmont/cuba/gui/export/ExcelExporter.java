@@ -416,6 +416,7 @@ public class ExcelExporter {
         doubleFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0.00"));
     }
 
+    @SuppressWarnings("unchecked")
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
                                        Boolean exportExpanded, int rowNumber, Object itemId) {
         HierarchicalDatasource hd = table.getDatasource();
@@ -423,7 +424,7 @@ public class ExcelExporter {
         if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(itemId) && !hd.getChildren(itemId).isEmpty()) {
             return rowNumber;
         } else {
-            final Collection children = hd.getChildren(itemId);
+            Collection children = hd.getChildren(itemId);
             if (children != null && !children.isEmpty()) {
                 for (Object id : children) {
                     if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(id) && !hd.getChildren(id).isEmpty()) {
@@ -437,7 +438,9 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    protected int createAggregatableRow(Table table, List<Table.Column> columns, int rowNumber, int aggregatableRow, CollectionDatasource datasource) {
+    @SuppressWarnings("unchecked")
+    protected int createAggregatableRow(Table table, List<Table.Column> columns, int rowNumber,
+                                        int aggregatableRow, CollectionDatasource datasource) {
         HSSFRow row = sheet.createRow(rowNumber);
         Map<Object, Object> results = table.getAggregationResults();
 
@@ -445,7 +448,8 @@ public class ExcelExporter {
         for (Table.Column column : columns) {
             AggregationInfo agr = column.getAggregation();
             if (agr != null) {
-                Object aggregationResult = results.get(agr.getPropertyPath());
+                Object key = agr.getPropertyPath() != null ? agr.getPropertyPath() : column.getId();
+                Object aggregationResult = results.get(key);
                 if (aggregationResult != null) {
                     HSSFCell cell = row.createCell(i);
                     formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
@@ -456,7 +460,9 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber, GroupInfo groupInfo, int groupNumber) {
+    @SuppressWarnings("unchecked")
+    protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber,
+                                 GroupInfo groupInfo, int groupNumber) {
         GroupDatasource ds = table.getDatasource();
 
         HSSFRow row = sheet.createRow(rowNumber);
@@ -492,7 +498,7 @@ public class ExcelExporter {
                     String captionProperty = xmlDescriptor.attributeValue("captionProperty");
 
                     Object itemId = children.iterator().next();
-                    Instance item = ds.getItem(itemId);
+                    Instance item = ds.getItemNN(itemId);
                     captionValue = item.getValueEx(captionProperty);
                 }
 
@@ -520,7 +526,8 @@ public class ExcelExporter {
             } else {
                 AggregationInfo agr = column.getAggregation();
                 if (agr != null) {
-                    Object aggregationResult = aggregations.get(agr.getPropertyPath());
+                    Object key = agr.getPropertyPath() != null ? agr.getPropertyPath() : column.getId();
+                    Object aggregationResult = aggregations.get(key);
                     if (aggregationResult != null) {
                         HSSFCell cell = row.createCell(i);
                         formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
@@ -553,6 +560,7 @@ public class ExcelExporter {
         return rowNumber;
     }
 
+    @SuppressWarnings("unchecked")
     protected void createRow(Table table, List<Table.Column> columns, int startColumn, int rowNumber, Object itemId) {
         if (startColumn >= columns.size()) {
             return;

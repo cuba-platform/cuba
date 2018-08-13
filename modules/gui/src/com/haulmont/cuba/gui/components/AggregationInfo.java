@@ -27,6 +27,10 @@ public class AggregationInfo {
         COUNT,
         MIN,
         MAX,
+
+        /**
+         * Enables us to use custom {@link AggregationStrategy} implementation.
+         */
         CUSTOM
     }
 

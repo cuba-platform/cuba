@@ -21,12 +21,13 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
-import com.haulmont.cuba.gui.components.AggregationInfo;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class AggregatableDelegate<K> {
     public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
@@ -38,7 +39,7 @@ public abstract class AggregatableDelegate<K> {
     }
 
     protected Map<AggregationInfo, String> doAggregation(Collection<K> itemIds, AggregationInfo[] aggregationInfos) {
-        final Map<AggregationInfo, String> aggregationResults = new HashMap<>();
+        Map<AggregationInfo, String> aggregationResults = new HashMap<>();
         for (AggregationInfo aggregationInfo : aggregationInfos) {
             final Object value = doPropertyAggregation(aggregationInfo, itemIds);
 
@@ -47,9 +48,11 @@ public abstract class AggregatableDelegate<K> {
                 //noinspection unchecked
                 formattedValue = aggregationInfo.getFormatter().format(value);
             } else {
+                // propertyPath could be null in case of custom aggregation
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
-                final Range range = propertyPath.getRange();
-                if (range.isDatatype()) {
+
+                Range range = propertyPath != null ? propertyPath.getRange() : null;
+                if (range != null && range.isDatatype()) {
                     if (aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
                         Class resultClass;
                         if (aggregationInfo.getStrategy() == null) {
@@ -86,7 +89,17 @@ public abstract class AggregatableDelegate<K> {
 
     @SuppressWarnings("unchecked")
     protected Object doPropertyAggregation(AggregationInfo aggregationInfo, Collection<K> itemIds) {
-        List items = valuesByProperty(aggregationInfo.getPropertyPath(), itemIds);
+        List items;
+
+        if (aggregationInfo.getType() == AggregationInfo.Type.CUSTOM
+                && aggregationInfo.getPropertyPath() == null) {
+            // use items in this case;
+            items = itemIds.stream()
+                    .map(this::getItem)
+                    .collect(Collectors.toList());
+        } else {
+            items = valuesByProperty(aggregationInfo.getPropertyPath(), itemIds);
+        }
 
         if (aggregationInfo.getStrategy() == null) {
             Class rangeJavaClass = aggregationInfo.getPropertyPath().getRangeJavaClass();

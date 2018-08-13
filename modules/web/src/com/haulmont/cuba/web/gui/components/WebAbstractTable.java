@@ -1901,19 +1901,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected void checkAggregation(AggregationInfo aggregationInfo) {
+        AggregationInfo.Type aggregationType = aggregationInfo.getType();
+
+        if (aggregationType == AggregationInfo.Type.CUSTOM) {
+            return;
+        }
+
         MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
         Class<?> javaType = propertyPath.getMetaProperty().getJavaType();
         Aggregation<?> aggregation = Aggregations.get(javaType);
-        AggregationInfo.Type aggregationType = aggregationInfo.getType();
 
-        if (aggregationType == AggregationInfo.Type.CUSTOM)
+        if (aggregation != null && aggregation.getSupportedAggregationTypes().contains(aggregationType)) {
             return;
-
-        if (aggregation != null && aggregation.getSupportedAggregationTypes().contains(aggregationType))
-            return;
+        }
 
         String msg = String.format("Unable to aggregate column \"%s\" with data type %s with default aggregation strategy: %s",
                 propertyPath, propertyPath.getRange(), aggregationInfo.getType());
+
         throw new IllegalArgumentException(msg);
     }
 
