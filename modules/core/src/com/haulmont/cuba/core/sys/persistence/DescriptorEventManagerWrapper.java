@@ -16,16 +16,18 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * INTERNAL.
+ * EclipseLink's DescriptorEventManager that doesn't invoke listeners for base classes.
+ */
 @SuppressWarnings("unused")
 public class DescriptorEventManagerWrapper extends DescriptorEventManager
         implements Cloneable, Serializable {
