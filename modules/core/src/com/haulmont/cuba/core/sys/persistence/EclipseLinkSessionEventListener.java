@@ -74,20 +74,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
                 // set DescriptorEventManager that doesn't invoke listeners for base classes
-                DescriptorEventManager oldEventManager = desc.getEventManager();
-                desc.setEventManager(new DescriptorEventManager() {
-                    @Override
-                    public void notifyListeners(DescriptorEvent event) {
-                        if (hasAnyListeners()) {
-                            for (int index = 0; index < getEventListeners().size(); index++) {
-                                DescriptorEventListener listener = getEventListeners().get(index);
-                                notifyListener(listener, event);
-                            }
-                        }
-                    }
-                });
-                desc.getEventManager().setEntityEventListener(oldEventManager.getEntityEventListener());
-                desc.getEventManager().getEntityListenerEventListeners().addAll(oldEventManager.getEntityListenerEventListeners());
+                desc.setEventManager(new DescriptorEventManagerWrapper(desc.getDescriptorEventManager()));
                 desc.getEventManager().addListener(descriptorEventListener);
             }
 
