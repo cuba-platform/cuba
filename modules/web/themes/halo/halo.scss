@@ -102,7 +102,7 @@
 @import "app/report-templates";
 @import "app/localized-frame";
 @import "app/entity-inspector-browse";
-@import "app/fts";
+@import "app/fts-search-window";
 
 @mixin halo {
   @include valo;
@@ -192,5 +192,5 @@
   @include cuba-report-templates;
   @include cuba-localized-frame;
   @include cuba-entity-inspector-browse;
-  @include fts;
+  @include fts-search-window;
 }
