@@ -42,7 +42,9 @@ public class NumberIdCache {
         public Generator(String entityName, NumberIdSequence sequence) {
             this.entityName = entityName;
             this.sequence = sequence;
-            createCounter();
+            if (config.getNumberIdCacheSize() != 0) {
+                createCounter();
+            }
         }
 
         protected void createCounter() {
@@ -51,12 +53,16 @@ public class NumberIdCache {
         }
 
         public synchronized long getNext() {
-            long next = ++counter;
-            if (next > sequenceValue + config.getNumberIdCacheSize()) {
-                createCounter();
-                next = ++counter;
+            if (config.getNumberIdCacheSize() == 0) {
+                return sequence.createLongId(entityName, 1);
+            } else {
+                long next = ++counter;
+                if (next > sequenceValue + config.getNumberIdCacheSize()) {
+                    createCounter();
+                    next = ++counter;
+                }
+                return next;
             }
-            return next;
         }
     }
 
