@@ -39,6 +39,10 @@ public class EntitySet extends ForwardingSet<Entity> implements Serializable {
 
     private Set<? extends Entity> entities;
 
+    public EntitySet() {
+        this.entities = new HashSet<>();
+    }
+
     public EntitySet(Set<? extends Entity> entities) {
         this.entities = entities;
     }
