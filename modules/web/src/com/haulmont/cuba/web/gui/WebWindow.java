@@ -125,6 +125,8 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
 
+    protected boolean defaultScreenWindow = false;
+
     public WebWindow() {
         component = createLayout();
         delegate = createDelegate();
@@ -1428,6 +1430,14 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         this.contentSwitchMode = mode;
+    }
+
+    public boolean isDefaultScreenWindow() {
+        return defaultScreenWindow;
+    }
+
+    public void setDefaultScreenWindow(boolean defaultScreenWindow) {
+        this.defaultScreenWindow = defaultScreenWindow;
     }
 
     protected class WebDialogOptions extends DialogOptions {

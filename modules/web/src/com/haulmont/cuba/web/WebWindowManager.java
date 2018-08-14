@@ -577,7 +577,7 @@ public class WebWindowManager extends WindowManager {
                 //noinspection SuspiciousMethodCalls
                 WindowBreadCrumbs breadCrumbs1 = tabs.get(tabContent);
 
-                if (!canWindowBeClosed(breadCrumbs1.getCurrentWindow())) {
+                if (isNotCloseable(breadCrumbs1.getCurrentWindow())) {
                     return;
                 }
 
@@ -961,7 +961,7 @@ public class WebWindowManager extends WindowManager {
         Frame keepOpenedFrame = keepOpenedCrumbs != null ? keepOpenedCrumbs.getCurrentWindow().getFrame() : null;
 
         for (Window window : getOpenWindows()) {
-            if (!canWindowBeClosed(window)) {
+            if (isNotCloseable(window)) {
                 continue;
             }
 
@@ -1739,7 +1739,7 @@ public class WebWindowManager extends WindowManager {
 
                             WindowBreadCrumbs breadCrumbs = tabs.get(layout);
 
-                            if (!canWindowBeClosed(breadCrumbs.getCurrentWindow())) {
+                            if (isNotCloseable(breadCrumbs.getCurrentWindow())) {
                                 return;
                             }
 
@@ -1775,19 +1775,19 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    protected boolean canWindowBeClosed(Window window) {
+    protected boolean isNotCloseable(Window window) {
         if (webConfig.getDefaultScreenCanBeClosed()) {
-            return true;
+            return false;
         }
 
-        String defaultScreenId = webConfig.getDefaultScreenId();
-
-        if (webConfig.getUserCanChooseDefaultScreen()) {
-            String userDefaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
-            defaultScreenId = StringUtils.isEmpty(userDefaultScreen) ? defaultScreenId : userDefaultScreen;
+        boolean windowIsDefault;
+        if (window instanceof Window.Wrapper) {
+            windowIsDefault = ((WebWindow) ((Window.Wrapper) window).getWrappedWindow()).isDefaultScreenWindow();
+        } else {
+            windowIsDefault = ((WebWindow) window).isDefaultScreenWindow();
         }
 
-        return !window.getId().equals(defaultScreenId);
+        return windowIsDefault;
     }
 
     @Override
@@ -1813,6 +1813,14 @@ public class WebWindowManager extends WindowManager {
         if (window == null) {
             return;
         }
+
+        WebWindow webWindow;
+        if (window instanceof Window.Wrapper) {
+            webWindow = (WebWindow) ((Window.Wrapper) window).getWrappedWindow();
+        } else {
+            webWindow = (WebWindow) window;
+        }
+        webWindow.setDefaultScreenWindow(true);
 
         if (!webConfig.getDefaultScreenCanBeClosed()) {
             WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
