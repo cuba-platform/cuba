@@ -63,67 +63,68 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
         Element xmlDescriptor = context.getXmlDescriptor();
 
-        if (mpp != null) {
-            Range mppRange = mpp.getRange();
-            if (mppRange.isDatatype()) {
-                Class type = mppRange.asDatatype().getJavaClass();
+        if (mpp == null) {
+            return null;
+        }
 
-                MetaProperty metaProperty = mpp.getMetaProperty();
-                if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                    CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
-                        return createEnumField(context);
-                    }
+        Range mppRange = mpp.getRange();
+        if (mppRange.isDatatype()) {
+            Class type = mppRange.asDatatype().getJavaClass();
+
+            MetaProperty metaProperty = mpp.getMetaProperty();
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+                    return createEnumField(context);
                 }
-
-                if (xmlDescriptor != null
-                        && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
-                    return createDatatypeLinkField(context);
-                } else {
-                    boolean hasMaskAttribute = xmlDescriptor != null
-                            && xmlDescriptor.attribute("mask") != null;
-
-                    if (type.equals(String.class)) {
-                        if (hasMaskAttribute) {
-                            return createMaskedField(context);
-                        } else {
-                            return createStringField(context, mpp);
-                        }
-                    } else if (type.equals(UUID.class)) {
-                        return createUuidField(context);
-                    } else if (type.equals(Boolean.class)) {
-                        return createBooleanField(context);
-                    } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
-                        return createDateField(context);
-                    } else if (type.equals(Time.class)) {
-                        return createTimeField(context);
-                    } else if (Number.class.isAssignableFrom(type)) {
-                        if (hasMaskAttribute) {
-                            return createMaskedField(context);
-                        } else {
-                            Field currencyField = createCurrencyField(context, mpp);
-                            if (currencyField != null) {
-                                return currencyField;
-                            }
-
-                            return createNumberField(context);
-                        }
-                    }
-                }
-            } else if (mppRange.isClass()) {
-                MetaProperty metaProperty = mpp.getMetaProperty();
-                Class<?> javaType = metaProperty.getJavaType();
-
-                if (FileDescriptor.class.isAssignableFrom(javaType)) {
-                    return createFileUploadField(context);
-                }
-
-                if (!Collection.class.isAssignableFrom(javaType)) {
-                    return createEntityField(context, mpp);
-                }
-            } else if (mppRange.isEnum()) {
-                return createEnumField(context);
             }
+
+            if (xmlDescriptor != null
+                    && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
+                return createDatatypeLinkField(context);
+            }
+
+            boolean hasMaskAttribute = xmlDescriptor != null
+                    && xmlDescriptor.attribute("mask") != null;
+
+            if (type.equals(String.class)) {
+                return hasMaskAttribute ? createMaskedField(context) : createStringField(context, mpp);
+            } else if (type.equals(UUID.class)) {
+                return createUuidField(context);
+            } else if (type.equals(Boolean.class)) {
+                return createBooleanField(context);
+            } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
+                return createDateField(context);
+            } else if (type.equals(Time.class)) {
+                return createTimeField(context);
+            } else if (Number.class.isAssignableFrom(type)) {
+                if (hasMaskAttribute) {
+                    return createMaskedField(context);
+                }
+
+                Field currencyField = createCurrencyField(context, mpp);
+                if (currencyField != null) {
+                    return currencyField;
+                }
+
+                return createNumberField(context);
+
+            }
+
+            return createCustomDatatypeField(context, type, mpp);
+        } else if (mppRange.isClass()) {
+            MetaProperty metaProperty = mpp.getMetaProperty();
+            Class<?> javaType = metaProperty.getJavaType();
+
+            if (FileDescriptor.class.isAssignableFrom(javaType)) {
+                return createFileUploadField(context);
+            }
+
+            if (!Collection.class.isAssignableFrom(javaType)) {
+                return createEntityField(context, mpp);
+            }
+        } else if (mppRange.isEnum()) {
+            return createEnumField(context);
         }
 
         return null;
@@ -374,6 +375,10 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
             return linkField;
         }
+    }
+
+    protected Component createCustomDatatypeField(ComponentGenerationContext context, Class dataType, MetaPropertyPath mpp) {
+        return createStringField(context, mpp);
     }
 
     protected void setLinkFieldAttributes(EntityLinkField linkField, ComponentGenerationContext context) {
