@@ -20,4 +20,6 @@ package com.haulmont.cuba.core.sys;
 public interface NumberIdSequence {
 
     Long createLongId(String entityName);
+
+    Long createLongId(String entityName, long startValue);
 }

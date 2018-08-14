@@ -71,8 +71,14 @@ public class NumberIdWorker implements NumberIdSequence {
 
     @Override
     public Long createLongId(String entityName) {
+       return createLongId(entityName, 0);
+    }
+
+    @Override
+    public Long createLongId(String entityName, long startValue) {
         String sqlScript = getSequenceSupport(entityName).getNextValueSql(getSequenceName(entityName));
-        return getResult(entityName, sqlScript, 0, globalConfig.getNumberIdCacheSize());
+        int cacheSize = globalConfig.getNumberIdCacheSize();
+        return getResult(entityName, sqlScript, startValue, cacheSize == 0 ? 1 : cacheSize);
     }
 
     /**

@@ -31,4 +31,9 @@ public class NumberIdServiceBean implements NumberIdService {
     public Long createLongId(String entityName) {
         return worker.createLongId(entityName);
     }
+
+    @Override
+    public Long createLongId(String entityName, long startValue) {
+        return worker.createLongId(entityName, startValue);
+    }
 }
