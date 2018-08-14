@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.EntitySet
+import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.testmodel.sales.Customer
 import com.haulmont.cuba.testmodel.sales.Order
 import com.haulmont.cuba.testsupport.TestContainer
@@ -33,12 +34,14 @@ class DataManagerCommitTest extends Specification {
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private DataManager dataManager
+    private EntityStates entityStates
 
     void setup() {
         dataManager = AppBeans.get(DataManager)
+        entityStates = AppBeans.get(EntityStates)
     }
 
-    def "usage"() {
+    def "usage of returned entities"() {
 
         Customer customer = new Customer(name: 'Smith')
         Order order = new Order(number: '111', customer: customer)
@@ -57,5 +60,53 @@ class DataManagerCommitTest extends Specification {
         cleanup:
 
         cont.deleteRecord(order, customer)
+    }
+
+    def "usage of patch object as reference"() {
+
+        Customer customer = new Customer(name: 'Smith')
+        Order order = new Order(number: '111')
+
+        Order order1 = dataManager.commit(customer, order).get(order)
+
+        when:
+
+        entityStates.makePatch(customer)
+        order1.customer = customer
+        Order order2 = dataManager.commit(order1)
+
+        then:
+
+        order2.customer == customer
+        order2.customer.version > 0
+        order2.customer.name == customer.name
+
+        cleanup:
+
+        cont.deleteRecord(order, customer)
+    }
+
+    def "usage of patch object to remove by id"() {
+
+        Customer customer = new Customer(name: 'Smith')
+        dataManager.commit(customer)
+
+        when:
+
+        Customer customer1 = new Customer(id: customer.id)
+        entityStates.makePatch(customer1)
+
+        dataManager.remove(customer1)
+
+        Customer customer2 = dataManager.load(Customer).id(customer.id).softDeletion(false).one()
+
+        then:
+
+        customer2.isDeleted()
+        customer2.name == customer.name
+
+        cleanup:
+
+        cont.deleteRecord(customer)
     }
 }
