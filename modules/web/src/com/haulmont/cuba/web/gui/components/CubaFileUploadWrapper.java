@@ -27,7 +27,8 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.vaadin.v7.ui.themes.BaseTheme.BUTTON_LINK;
@@ -61,7 +62,7 @@ public class CubaFileUploadWrapper extends CustomField {
         container.addStyleName("c-fileupload-container");
 
         fileNameButton = new Button();
-        fileNameButton.setWidth("100%");
+        fileNameButton.setWidth(100, Unit.PERCENTAGE);
         fileNameButton.addStyleName(BUTTON_LINK);
         fileNameButton.addStyleName("c-fileupload-filename");
         setFileNameButtonCaption(null);

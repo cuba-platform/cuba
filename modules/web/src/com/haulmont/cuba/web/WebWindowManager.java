@@ -754,7 +754,7 @@ public class WebWindowManager extends WindowManager {
                         openType.getHeightUnit() != null
                                 ? WebWrapperUtils.toVaadinUnit(openType.getHeightUnit())
                                 : Unit.PIXELS);
-                layout.setHeight("100%");
+                layout.setHeight(100, Unit.PERCENTAGE);
                 window.setHeightFull();
             } else {
                 window.setHeightAuto();

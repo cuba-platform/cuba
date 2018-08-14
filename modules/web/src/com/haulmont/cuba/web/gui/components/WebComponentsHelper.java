@@ -157,12 +157,12 @@ public class WebComponentsHelper {
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
         if (!isHorizontalLayout(layout)
                 && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
-            component.setHeight("100%");
+            component.setHeight(100, Sizeable.Unit.PERCENTAGE);
         }
 
         if (!isVerticalLayout(layout)
                 && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
-            component.setWidth("100%");
+            component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         }
 
         layout.setExpandRatio(component, 1);

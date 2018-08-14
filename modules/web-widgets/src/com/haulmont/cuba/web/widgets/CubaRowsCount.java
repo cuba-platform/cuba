@@ -37,15 +37,15 @@ public class CubaRowsCount extends CustomComponent { // vaadin8 inherit from Css
         setCompositionRoot(layout);
 
         CubaPlaceHolder expander = new CubaPlaceHolder();
-        expander.setWidth("100%");
+        expander.setWidth(100, Unit.PERCENTAGE);
         layout.addComponent(expander);
         layout.setExpandRatio(expander, 1);
 
         AbstractOrderedLayout contentLayout = createContentLayout();
         layout.addComponent(contentLayout);
 
-        layout.setWidth("100%");
-        setWidth("100%");
+        layout.setWidth(100, Unit.PERCENTAGE);
+        setWidth(100, Unit.PERCENTAGE);
     }
 
     protected AbstractOrderedLayout createContentLayout() {

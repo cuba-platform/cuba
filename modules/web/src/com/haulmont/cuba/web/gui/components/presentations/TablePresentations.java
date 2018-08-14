@@ -197,7 +197,7 @@ public class TablePresentations extends VerticalLayout {
 
         menuBar = new CubaMenuBar();
         menuBar.setStyleName("c-table-prefs-list");
-        menuBar.setWidth("100%");
+        menuBar.setWidth(100, Unit.PERCENTAGE);
         menuBar.setHeightUndefined();
         menuBar.setVertical(true);
         addComponent(menuBar);

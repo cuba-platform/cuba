@@ -161,7 +161,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     protected MessageTools messageTools;
 
     // Style names used by grid itself
-    protected final List<String> internalStyles = new ArrayList<>();
+    protected final List<String> internalStyles = new ArrayList<>(2);
 
     protected final Map<String, Column<E>> columns = new HashMap<>();
     protected List<Column<E>> columnsOrder = new ArrayList<>();

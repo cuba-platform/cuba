@@ -27,6 +27,7 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,7 +45,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
     private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
     // Style names used by tree itself
-    protected List<String> internalStyles = new ArrayList<>();
+    protected List<String> internalStyles = new ArrayList<>(2);
 
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
@@ -150,7 +151,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
             if (topPanel == null) {
                 topPanel = createTopPanel();
-                topPanel.setWidth("100%");
+                topPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(panel.unwrap(com.vaadin.ui.Component.class));

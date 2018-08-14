@@ -290,7 +290,14 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setHeight(String height) {
-        getComposition().setHeight(height);
+        // do not try to parse string if constant passed
+        if (Component.AUTO_SIZE.equals(height)) {
+            getComposition().setHeight(-1, Sizeable.Unit.PIXELS);
+        } else if (Component.FULL_SIZE.equals(height)) {
+            getComposition().setHeight(100, Sizeable.Unit.PERCENTAGE);
+        } else {
+            getComposition().setHeight(height);
+        }
     }
 
     @Override
@@ -310,7 +317,14 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setWidth(String width) {
-        getComposition().setWidth(width);
+        // do not try to parse string if constant passed
+        if (Component.AUTO_SIZE.equals(width)) {
+            getComposition().setWidth(-1, Sizeable.Unit.PIXELS);
+        } else if (Component.FULL_SIZE.equals(width)) {
+            getComposition().setWidth(100, Sizeable.Unit.PERCENTAGE);
+        } else {
+            getComposition().setWidth(width);
+        }
     }
 
     @Override

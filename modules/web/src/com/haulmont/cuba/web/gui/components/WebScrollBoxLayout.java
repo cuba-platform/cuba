@@ -45,11 +45,11 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxLayout();
-        component.setWidth("100%");
+        component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         component.setPrimaryStyleName(SCROLLBOX_STYLENAME);
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
-        content.setWidth("100%");
+        content.setWidth(100, Sizeable.Unit.PERCENTAGE);
         content.setStyleName(SCROLLBOX_CONTENT_STYLENAME);
         component.addComponent(content);
 
@@ -74,7 +74,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(getContent() instanceof CubaVerticalActionsLayout)) {
             newContent = new CubaVerticalActionsLayout();
-            newContent.setWidth("100%");
+            newContent.setWidth(100, Sizeable.Unit.PERCENTAGE);
         } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof CubaHorizontalActionsLayout)) {
             newContent = new CubaHorizontalActionsLayout();
         }
@@ -160,7 +160,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     public void removeAll() {
         getContent().removeAllComponents();
 
-        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
+        Component[] components = ownComponents.toArray(new Component[0]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -291,7 +291,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
         component.addShortcutListener(shortcut);
 
         if (shortcuts == null) {
-            shortcuts = new HashMap<>();
+            shortcuts = new HashMap<>(4);
         }
         shortcuts.put(action, shortcut);
     }

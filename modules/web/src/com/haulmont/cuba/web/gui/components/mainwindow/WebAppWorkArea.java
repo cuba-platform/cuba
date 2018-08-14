@@ -32,11 +32,15 @@ import com.haulmont.cuba.web.gui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.CubaManagedTabSheet;
+import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
+import com.haulmont.cuba.web.widgets.CubaTabSheet;
+import com.haulmont.cuba.web.widgets.HasTabSheetBehaviour;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -247,7 +251,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             });
         }
 
-        tabbedContainer.setHeight("100%");
+        tabbedContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
         tabbedContainer.setStyleName(TABBED_CONTAINER_STYLENAME);
         tabbedContainer.addStyleName(ValoTheme.TABSHEET_FRAMED);
         tabbedContainer.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);

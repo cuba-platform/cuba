@@ -65,6 +65,7 @@ import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -124,7 +125,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Locale locale;
 
     // Style names used by table itself
-    protected List<String> internalStyles = new ArrayList<>();
+    protected List<String> internalStyles = new ArrayList<>(2);
 
     protected Map<Object, Table.Column<E>> columns = new HashMap<>();
     protected List<Table.Column<E>> columnsOrder = new ArrayList<>();
@@ -1843,7 +1844,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             if (topPanel == null) {
                 topPanel = createTopPanel();
-                topPanel.setWidth("100%");
+                topPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(panel.unwrap(Component.class));

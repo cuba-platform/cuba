@@ -146,7 +146,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     public void removeAll() {
         getComponentContent().removeAllComponents();
 
-        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
+        Component[] components = ownComponents.toArray(new Component[0]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -385,7 +385,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         component.addShortcutListener(shortcut);
 
         if (shortcuts == null) {
-            shortcuts = new HashMap<>();
+            shortcuts = new HashMap<>(4);
         }
         shortcuts.put(action, shortcut);
     }

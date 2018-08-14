@@ -241,7 +241,7 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
         component.addShortcutListener(shortcut);
 
         if (shortcuts == null) {
-            shortcuts = new HashMap<>();
+            shortcuts = new HashMap<>(4);
         }
         shortcuts.put(action, shortcut);
     }

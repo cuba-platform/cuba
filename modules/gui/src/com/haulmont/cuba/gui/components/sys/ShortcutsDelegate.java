@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public abstract class ShortcutsDelegate<T> {
 
-    private Map<String, T> shortcuts = new HashMap<>();
+    private Map<String, T> shortcuts = new HashMap<>(4);
 
     private boolean allowEnterShortcut = true;
 

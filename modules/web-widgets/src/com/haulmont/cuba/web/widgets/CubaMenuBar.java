@@ -54,12 +54,10 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
 
     public void setShortcut(MenuItem item, String str) {
         if (shortcuts == null) {
-            shortcuts = new HashMap<>();
+            shortcuts = new HashMap<>(4);
         }
 
-        if (shortcuts.containsKey(item)) {
-            shortcuts.remove(item);
-        }
+        shortcuts.remove(item);
         shortcuts.put(item, str);
     }
 

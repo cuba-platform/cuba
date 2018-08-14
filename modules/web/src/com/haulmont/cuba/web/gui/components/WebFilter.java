@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
         ComponentContainer layout = delegate.getLayout();
         com.vaadin.ui.Component unwrap = layout.unwrapComposition(com.vaadin.ui.Component.class);
         component.addComponent(unwrap);
-        component.setWidth("100%");
+        component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         component.setPrimaryStyleName(FILTER_STYLENAME);
 
         delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));

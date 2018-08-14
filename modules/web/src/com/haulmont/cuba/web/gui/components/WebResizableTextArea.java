@@ -82,16 +82,6 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void setHeight(String height) {
-        wrapper.setHeight(height);
-    }
-
-    @Override
-    public void setWidth(String width) {
-        wrapper.setWidth(width);
-    }
-
-    @Override
     public String getCaption() {
         return wrapper.getCaption();
     }
