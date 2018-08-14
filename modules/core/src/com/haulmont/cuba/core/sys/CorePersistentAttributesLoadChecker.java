@@ -41,6 +41,9 @@ public class CorePersistentAttributesLoadChecker extends GlobalPersistentAttribu
             // throws exception if embedded entity refers to persistent entity
             return checkIsLoadedWithGetter(entity, property);
         }
+        if (!metadataTools.isPersistent(metaClass)) {
+            return checkIsLoadedWithGetter(entity, property);
+        }
         EntityManagerFactory jpaEmf = ((PersistenceImpl) persistence).getJpaEmf(metadataTools.getStoreName(metaClass));
         return jpaEmf.getPersistenceUnitUtil().isLoaded(entity, property);
     }
