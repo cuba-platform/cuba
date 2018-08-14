@@ -56,12 +56,7 @@ public class DataManagerBean implements DataManager {
     @Override
     public <E extends Entity> E load(LoadContext<E> context) {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
-        String storeName = metadata.getTools().getStoreName(metaClass);
-        if (storeName == null) {
-            log.debug("Data store for {} is not defined, returning null", metaClass);
-            return null;
-        }
-        DataStore storage = storeFactory.get(storeName);
+        DataStore storage = storeFactory.get(getStoreName(metaClass));
         E entity = storage.load(context);
         if (entity != null)
             readCrossDataStoreReferences(Collections.singletonList(entity), context.getView(), metaClass, context.isJoinTransaction());
@@ -72,12 +67,7 @@ public class DataManagerBean implements DataManager {
     @SuppressWarnings("unchecked")
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
-        String storeName = metadataTools.getStoreName(metaClass);
-        if (storeName == null) {
-            log.debug("Data store for {} is not defined, returning empty list", metaClass);
-            return Collections.emptyList();
-        }
-        DataStore storage = storeFactory.get(storeName);
+        DataStore storage = storeFactory.get(getStoreName(metaClass));
         List<E> entities = storage.loadList(context);
         readCrossDataStoreReferences(entities, context.getView(), metaClass, context.isJoinTransaction());
         return entities;
@@ -86,12 +76,7 @@ public class DataManagerBean implements DataManager {
     @Override
     public long getCount(LoadContext<? extends Entity> context) {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
-        String storeName = metadataTools.getStoreName(metaClass);
-        if (storeName == null) {
-            log.debug("Data store for {} is not defined, returning 0", metaClass);
-            return 0;
-        }
-        DataStore storage = storeFactory.get(storeName);
+        DataStore storage = storeFactory.get(getStoreName(metaClass));
         return storage.getCount(context);
     }
 
@@ -135,9 +120,7 @@ public class DataManagerBean implements DataManager {
         Set<Entity> toRepeat = new HashSet<>();
         for (Entity entity : context.getCommitInstances()) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            String storeName = metadataTools.getStoreName(metaClass);
-            if (storeName == null)
-                continue;
+            String storeName = getStoreName(metaClass);
 
             boolean repeatRequired = writeCrossDataStoreReferences(entity, context.getCommitInstances());
             if (repeatRequired) {
@@ -156,9 +139,8 @@ public class DataManagerBean implements DataManager {
         }
         for (Entity entity : context.getRemoveInstances()) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            String storeName = metadataTools.getStoreName(metaClass);
-            if (storeName == null)
-                continue;
+            String storeName = getStoreName(metaClass);
+
             CommitContext cc = storeToContextMap.get(storeName);
             if (cc == null) {
                 cc = createCommitContext(context);
@@ -250,7 +232,7 @@ public class DataManagerBean implements DataManager {
 
     @Override
     public List<KeyValueEntity> loadValues(ValueLoadContext context) {
-        DataStore store = storeFactory.get(context.getStoreName());
+        DataStore store = storeFactory.get(getStoreName(context.getStoreName()));
         return store.loadValues(context);
     }
 
@@ -350,6 +332,14 @@ public class DataManagerBean implements DataManager {
         CrossDataStoreReferenceLoader crossDataStoreReferenceLoader = AppBeans.getPrototype(
                 CrossDataStoreReferenceLoader.NAME, metaClass, view, joinTransaction);
         crossDataStoreReferenceLoader.processEntities(entities);
+    }
+
+    protected String getStoreName(MetaClass metaClass) {
+        return getStoreName(metadata.getTools().getStoreName(metaClass));
+    }
+
+    protected String getStoreName(@Nullable String storeName) {
+        return storeName == null ? StoreFactory.NULL_NAME : storeName;
     }
 
     private static class Secure extends DataManagerBean {
