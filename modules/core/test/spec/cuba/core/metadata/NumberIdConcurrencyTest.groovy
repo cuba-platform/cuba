@@ -106,6 +106,34 @@ class NumberIdConcurrencyTest extends Specification {
         AppContext.setProperty('cuba.numberIdCacheSize', null)
     }
 
+    def "generate with zero size cache"() {
+        AppContext.setProperty('cuba.numberIdCacheSize', '0')
+
+        when:
+
+        NumberIdSingleTableRoot foo = metadata.create(NumberIdSingleTableRoot)
+        foo.setName('item-1')
+        foo = dataManager.commit(foo)
+
+        then:
+
+        foo.id == getCurrentSequenceValue()
+
+        when:
+
+        foo = metadata.create(NumberIdSingleTableRoot)
+        foo.setName('item-2')
+        foo = dataManager.commit(foo)
+
+        then:
+
+        foo.id == getCurrentSequenceValue()
+
+        cleanup:
+
+        AppContext.setProperty('cuba.numberIdCacheSize', null)
+    }
+
     private void generateSomeEntities(int count) {
         long start = System.currentTimeMillis()
         ExecutorService executorService = Executors.newFixedThreadPool(10)
@@ -151,6 +179,13 @@ class NumberIdConcurrencyTest extends Specification {
         def runner = new QueryRunner(cont.persistence().getDataSource())
         List<Object[]> seqRows = runner.query(sql, new ListArrayHandler())
         return seqRows[0][0] as long
+    }
+
+    private long getCurrentSequenceValue() {
+        def sql = "select NEXT_VALUE from INFORMATION_SCHEMA.SYSTEM_SEQUENCES where SEQUENCE_NAME = '" + getSequenceName('test$NumberIdSingleTableRoot').toUpperCase() + "'"
+        def runner = new QueryRunner(cont.persistence().getDataSource())
+        List<Object[]> seqRows = runner.query(sql, new ListArrayHandler())
+        return (seqRows[0][0] as long) - 1
     }
 
     private long countEntities() {
