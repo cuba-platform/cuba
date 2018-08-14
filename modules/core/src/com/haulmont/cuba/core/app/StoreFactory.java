@@ -36,6 +36,8 @@ public class StoreFactory {
 
     public static final String NAME = "cuba_StoreFactory";
 
+    static final String NULL_NAME = "_NULL_";
+
     private Map<String, DataStore> stores = new HashMap<>();
 
     /**
@@ -49,10 +51,15 @@ public class StoreFactory {
             return store;
         }
 
-        String implName = AppContext.getProperty("cuba.storeImpl_" + name);
-        if (implName == null) {
-            log.debug("No implementation is specified for {} store, using RdbmsStore", name);
-            implName = RdbmsStore.NAME;
+        String implName;
+        if (NULL_NAME.equals(name)) {
+            implName = NullStore.NAME;
+        } else {
+            implName = AppContext.getProperty("cuba.storeImpl_" + name);
+            if (implName == null) {
+                log.debug("No implementation is specified for {} store, using RdbmsStore", name);
+                implName = RdbmsStore.NAME;
+            }
         }
         store = AppBeans.getPrototype(implName, name);
         stores.put(name, store);

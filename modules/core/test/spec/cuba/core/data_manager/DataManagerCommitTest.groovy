@@ -16,6 +16,7 @@
 
 package spec.cuba.core.data_manager
 
+import com.haulmont.cuba.core.entity.KeyValueEntity
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.DataManager
@@ -108,5 +109,22 @@ class DataManagerCommitTest extends Specification {
         cleanup:
 
         cont.deleteRecord(customer)
+    }
+
+    def "KeyValueEntity can be committed to NullStore"() {
+
+        KeyValueEntity entity = new KeyValueEntity()
+        entity.setValue('foo', 'val1')
+        entity.setValue('bar', 'val2')
+
+        when:
+
+        KeyValueEntity entity1 = dataManager.commit(entity)
+
+        then:
+
+        entity1 == entity
+        entity1.getValue('foo') == 'val1'
+        entity1.getValue('bar') == 'val2'
     }
 }
