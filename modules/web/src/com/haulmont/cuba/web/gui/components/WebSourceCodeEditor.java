@@ -23,10 +23,13 @@ import com.haulmont.cuba.gui.components.HighlightMode;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaSourceCodeEditor;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.AceEditor;
 import com.haulmont.cuba.web.widgets.addons.aceeditor.AceMode;
 import com.haulmont.cuba.web.widgets.addons.aceeditor.Suggestion;
 import com.haulmont.cuba.web.widgets.addons.aceeditor.SuggestionExtension;
+import com.vaadin.server.ClientConnector;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -44,12 +47,7 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
 
     public WebSourceCodeEditor() {
         component = createCubaSourceCodeEditor();
-
-        component.setMode(AceMode.text);
-//        vaadin8
-//        component.setInvalidCommitted(true);
-//        component.setInvalidAllowed(false);
-//        component.setBuffered(false);
+        initComponent(component);
 
         autoCompleteSupport = new AutoCompleteSupport() {
             @Override
@@ -68,6 +66,32 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
 
     protected CubaSourceCodeEditor createCubaSourceCodeEditor() {
         return new CubaSourceCodeEditor();
+    }
+
+    protected void initComponent(CubaSourceCodeEditor component) {
+        component.setMode(AceMode.text);
+        component.addAttachListener(this::handleAttach);
+
+//        vaadin8
+//        component.setInvalidCommitted(true);
+//        component.setInvalidAllowed(false);
+//        component.setBuffered(false);
+    }
+
+    protected void handleAttach(ClientConnector.AttachEvent attachEvent) {
+        AceEditor component = (AceEditor) attachEvent.getSource();
+        AppUI appUi = (AppUI) component.getUI();
+        if (appUi == null) {
+            return;
+        }
+
+        String acePath = appUi.getWebJarPath("ace-builds", "ace.js");
+        String path = appUi.translateToWebPath(acePath.substring(0, acePath.lastIndexOf("/"))) + "/";
+
+        component.setBasePath(path);
+        component.setThemePath(path);
+        component.setWorkerPath(path);
+        component.setModePath(path);
     }
 
     @Override

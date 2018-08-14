@@ -38,8 +38,6 @@ import com.haulmont.cuba.web.widgets.client.addons.aceeditor.TransportDiff;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.TransportDoc.TransportRange;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.Util;
 
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.FieldEvents.BlurNotifier;
@@ -56,8 +54,8 @@ import com.vaadin.util.ReflectTools;
  */
 @SuppressWarnings("serial")
 @WebJarResource(value = {
-		"ace-builds:src-min/ace.js",
-		"ace-builds:src-min/ext-searchbox.js",
+		"ace-builds:ace.js",
+		"ace-builds:ext-searchbox.js",
         "diff-match-patch:diff_match_patch.js"
 })
 public class AceEditor extends AbstractField<String> implements BlurNotifier,

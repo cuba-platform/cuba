@@ -624,7 +624,7 @@ configure(webWidgetsModule) {
         compile(bom['org.webjars:jquery-ui'])
         compile(bom['org.webjars.bower:jquery-file-upload'])
         compile(bom['org.webjars.npm:object-fit-images'])
-        compile(bom['org.webjars.bower:ace-builds'])
+        compile(bom['org.webjars:ace-builds'])
         compile(bom['org.webjars:diff-match-patch'])
     }
 
