@@ -108,6 +108,9 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     @Inject
     protected LookupField localesSelect;
 
+    @Inject
+    protected HBoxLayout rememberLocalesBox;
+
     protected boolean loginByRememberMe = false;
 
     protected ValueChangeListener loginChangeListener;
@@ -127,6 +130,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         initLocales();
 
         initRememberMe();
+
+        initRememberMeLocalesBox();
     }
 
     protected void initPoweredByLink() {
@@ -192,6 +197,10 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             loginField.addValueChangeListener(loginChangeListener);
             passwordField.addValueChangeListener(loginChangeListener);
         }
+    }
+
+    protected void initRememberMeLocalesBox() {
+        rememberLocalesBox.setVisible(rememberMeCheckBox.isVisible() || localesSelect.isVisible());
     }
 
     protected void initDefaultCredentials() {
