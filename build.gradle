@@ -137,7 +137,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     test {
         maxHeapSize = '256m'
 
-        systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     javadoc {
@@ -430,14 +432,18 @@ configure(coreModule) {
         includes = ['**/*Test.class']
         jvmArgs '-XX:-UseSplitVerifier'
 
-        systemProperties = [
-                'logback.configurationFile': System.getProperty('logback.configurationFile')
-        ]
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     task testEntityCache(type: Test) {
         scanForTestClasses = false
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
+
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     task testJoinedComposition(type: Test) {
