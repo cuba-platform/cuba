@@ -428,7 +428,7 @@ public class EntityManagerImpl implements EntityManager {
             for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
                 if (metadata.getTools().isNotPersistent(property) && !property.isReadOnly()) {
                     // copy using reflection to avoid executing getter/setter code
-                    Field field = FieldUtils.getDeclaredField(entity.getClass(), property.getName(), true);
+                    Field field = FieldUtils.getField(entity.getClass(), property.getName(), true);
                     if (field != null) {
                         try {
                             Object value = FieldUtils.readField(field, entity);
