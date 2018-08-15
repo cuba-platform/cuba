@@ -194,11 +194,11 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
-        super.setColWidth(colIndex, w, isDefinedWidth);
-
         if (_delegate.aggregationRow != null && _delegate.aggregationRow.isInitialized()) {
             _delegate.aggregationRow.setCellWidth(colIndex, w);
         }
+
+        super.setColWidth(colIndex, w, isDefinedWidth);
     }
 
     @Override

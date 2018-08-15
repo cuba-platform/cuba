@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.UIDL;
 import com.vaadin.v7.client.ui.VScrollTable;
 
@@ -209,5 +210,17 @@ public class TableAggregationRow extends Panel {
 
     public TableWidget getTableWidget() {
         return tableWidget;
+    }
+
+    // CAUTION copied from com.vaadin.client.ui.VScrollTable.VScrollTableBody.VScrollTableRow.getRealCellWidth
+    public double getRealCellWidth(int colIdx) {
+        if (colIdx >= tr.getChildCount()) {
+            return -1;
+        }
+
+        Element cell = DOM.getChild(tr, colIdx);
+        ComputedStyle cs = new ComputedStyle(cell);
+
+        return cs.getWidth() + cs.getPaddingWidth() + cs.getBorderWidth();
     }
 }
