@@ -95,6 +95,7 @@
         <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeBar</class>
         <class>com.haulmont.cuba.testmodel.jpa_cascade.JpaCascadeItem</class>
 
+        <class>com.haulmont.cuba.testmodel.not_persistent.BaseEntityWithNonPersistentProperty</class>
         <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
 
         <class>com.haulmont.cuba.testmodel.embedded.AddressEmbedded</class>
