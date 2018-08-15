@@ -419,7 +419,11 @@ public class FetchGroupManager {
                                                   String property,
                                                   FetchMode fetchMode) {
         MetaClass metaClass = metadata.getClassNN(entityClass);
-        return new FetchGroupField(metaClass, parentField, property, getFetchMode(metaClass, fetchMode));
+
+        MetaProperty metaProperty = metaClass.getPropertyNN(property);
+        MetaClass fetchMetaClass = metaProperty.getRange().isClass() ? metaProperty.getRange().asClass() : metaClass;
+
+        return new FetchGroupField(metaClass, parentField, property, getFetchMode(fetchMetaClass, fetchMode));
     }
 
     private FetchMode getFetchMode(MetaClass metaClass, FetchMode fetchMode) {

@@ -38,8 +38,8 @@ import org.junit.rules.TestRule;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
@@ -67,6 +67,8 @@ public class EntityCacheTestClass {
     private UserRole userRole;
     private User user1;
     private UserSetting userSetting;
+    private UserSubstitution userSubstitution;
+    private Predicate<String> selectsOnly = s -> s.contains("> SELECT");
 
     public EntityCacheTestClass() {
         appender = new TestAppender();
@@ -126,6 +128,11 @@ public class EntityCacheTestClass {
             userSetting.setUser(user);
             cont.entityManager().persist(userSetting);
 
+            userSubstitution = cont.metadata().create(UserSubstitution.class);
+            userSubstitution.setUser(user);
+            userSubstitution.setSubstitutedUser(user2);
+            cont.entityManager().persist(userSubstitution);
+
             tx.commit();
         }
         cache.clear();
@@ -133,7 +140,7 @@ public class EntityCacheTestClass {
 
     @After
     public void tearDown() throws Exception {
-        cont.deleteRecord(userSetting, userRole, role, user, user2);
+        cont.deleteRecord(userSetting, userRole, role, userSubstitution, user, user2);
         if (role1 != null)
             cont.deleteRecord(role1);
         if (user1 != null)
@@ -232,7 +239,7 @@ public class EntityCacheTestClass {
         }
         checkUser(u);
 
-        assertEquals(5, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role, UserSubstitution
+        assertEquals(6, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role, UserSubstitution, substituted User
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -261,7 +268,7 @@ public class EntityCacheTestClass {
         assertNotNull(r.getName());
         assertNotNull(r.getDescription());
 
-        assertEquals(0, u.getSubstitutions().size());
+        assertEquals(1, u.getSubstitutions().size());
     }
 
     @Test
@@ -836,6 +843,32 @@ public class EntityCacheTestClass {
             tx.commit();
         }
         assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
+    }
+
+    @Test
+    public void testLoadingRelatedEntityFromCache() {
+        appender.clearMessages();
+
+        ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+        View view = viewRepository.getView(cont.metadata().getClassNN(UserSubstitution.class), "usersubst.edit");
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.entityManager().find(UserSubstitution.class, this.userSubstitution.getId(), view);
+            tx.commit();
+        }
+
+        assertEquals(3, appender.filterMessages(selectsOnly).count()); // UserSubstitution, User, User
+        assertTrue(appender.filterMessages(selectsOnly).noneMatch(s -> s.contains("JOIN SEC_USER"))); // User must not be joined because it is cached
+
+        appender.clearMessages();
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.entityManager().find(UserSubstitution.class, this.userSubstitution.getId(), view);
+            tx.commit();
+        }
+
+        assertEquals(1, appender.filterMessages(selectsOnly).count()); // UserSubstitution only, User is cached
+        assertTrue(appender.filterMessages(selectsOnly).noneMatch(s -> s.contains("JOIN SEC_USER"))); // User must not be joined because it is cached
     }
 
     private void loadUserAlone() {
