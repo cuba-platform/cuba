@@ -30,7 +30,7 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
@@ -428,7 +428,7 @@ public class EntityManagerImpl implements EntityManager {
             for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
                 if (metadata.getTools().isNotPersistent(property) && !property.isReadOnly()) {
                     // copy using reflection to avoid executing getter/setter code
-                    Field field = FieldUtils.getDeclaredField(entity.getClass(), property.getName(), true);
+                    Field field = FieldUtils.getField(entity.getClass(), property.getName(), true);
                     if (field != null) {
                         try {
                             Object value = FieldUtils.readField(field, entity);

@@ -85,6 +85,7 @@
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot</class>
         <class>com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild</class>
 
+        <class>com.haulmont.cuba.testmodel.not_persistent.BaseEntityWithNonPersistentProperty</class>
         <class>com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef</class>
 
         <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_Order</class>
