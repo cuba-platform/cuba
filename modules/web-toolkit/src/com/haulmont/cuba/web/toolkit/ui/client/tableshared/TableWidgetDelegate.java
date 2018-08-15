@@ -124,41 +124,38 @@ public class TableWidgetDelegate {
         }
     }
 
-    public void reassignHeaderCellWidth(int colIndex, VScrollTable.HeaderCell hcell, int minWidth) {
+    public void reassignHeaderCellWidth(int colIndex, VScrollTable.HeaderCell hCell, int minWidth) {
         if (tableWidget.isCustomColumn(colIndex)) {
             return;
         }
 
-        for (Widget rowWidget : (tableWidget).getRenderedRows()) {
-            if (tableWidget.isGenericRow(rowWidget)) {
+        for (Widget rowWidget : tableWidget.getRenderedRows()) {
+            if (aggregationRow != null || tableWidget.isGenericRow(rowWidget)) {
                 VScrollTable.VScrollTableBody.VScrollTableRow row = (VScrollTable.VScrollTableBody.VScrollTableRow) rowWidget;
 
                 double realColWidth = row.getRealCellWidth(colIndex);
                 if (realColWidth > 0) {
-                    if (realColWidth > minWidth) {
-                        Style hStyle = hcell.getElement().getStyle();
-                        hStyle.setProperty("width", realColWidth + "px");
-                        hStyle.setProperty("minWidth", realColWidth + "px");
-                        hStyle.setProperty("maxWidth", realColWidth + "px");
-                    }
+                    updateHeaderCellWidth(hCell, minWidth, realColWidth);
                     break;
                 }
             }
         }
 
-        if (aggregationRow != null && aggregationRow.isInitialized()) {
-            Widget twRow = aggregationRow.getTableWidget().getRenderedRows().get(0);
-            VScrollTable.VScrollTableBody.VScrollTableRow vRow = (VScrollTable.VScrollTableBody.VScrollTableRow) twRow;
-
-            double realColWidth = vRow.getRealCellWidth(colIndex);
+        if (tableWidget.getRenderedRows().isEmpty() &&
+                aggregationRow != null && aggregationRow.isInitialized()) {
+            double realColWidth = aggregationRow.getRealCellWidth(colIndex);
             if (realColWidth > 0) {
-                if (realColWidth > minWidth) {
-                    Style hStyle = hcell.getElement().getStyle();
-                    hStyle.setProperty("width", realColWidth + "px");
-                    hStyle.setProperty("minWidth", realColWidth + "px");
-                    hStyle.setProperty("maxWidth", realColWidth + "px");
-                }
+                updateHeaderCellWidth(hCell, minWidth, realColWidth);
             }
+        }
+    }
+
+    public void updateHeaderCellWidth(VScrollTable.HeaderCell hCell, int minWidth, double realColWidth) {
+        if (realColWidth > minWidth) {
+            Style hStyle = hCell.getElement().getStyle();
+            hStyle.setProperty("width", realColWidth + "px");
+            hStyle.setProperty("minWidth", realColWidth + "px");
+            hStyle.setProperty("maxWidth", realColWidth + "px");
         }
     }
 
