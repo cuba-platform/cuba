@@ -243,10 +243,18 @@ public abstract class AbstractAction implements Action {
     public void refreshState() {
     }
 
+    /**
+     * @return true if action is primary or false otherwise
+     */
     public boolean isPrimary() {
         return primary;
     }
 
+    /**
+     * Sets whether action is primary or not.
+     *
+     * @param primary primary
+     */
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }
