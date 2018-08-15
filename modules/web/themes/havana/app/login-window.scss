@@ -66,16 +66,20 @@
       width: 0;
     }
 
-    &:last-child {
-      text-align: right;
-    }
-
-    &:first-child {
-      text-align: left;
-    }
-
     & > * {
       vertical-align: middle;
+    }
+  }
+
+  .c-login-remember-locales > .v-slot-c-login-remember-me {
+    text-align: left;
+  }
+
+  .c-login-remember-locales > .v-slot-c-login-locale {
+    text-align: right;
+
+    &:first-child:last-child {
+      float: right;
     }
   }
 
