@@ -18,17 +18,14 @@ package com.haulmont.cuba.testmodel.not_persistent;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.datatypes.impl.EnumUtils;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
-import com.haulmont.cuba.testmodel.sales.Status;
 
 import javax.persistence.*;
 
 @Entity(name = "test$CustomerWithNonPersistentRef")
 @Table(name = "TEST_CUSTOMER_W_NPERS_REF")
 @NamePattern("%s|name")
-public class CustomerWithNonPersistentRef extends StandardEntity {
+public class CustomerWithNonPersistentRef extends BaseEntityWithNonPersistentProperty {
 
     @Column(name = "NAME")
     private String name;
