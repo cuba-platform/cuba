@@ -143,6 +143,8 @@ public class ControlLoggerWindow extends AbstractWindow {
             }
         }
 
+        levels.put(loggerName, level);
+
         return new Pair<>(loggerNameField, buttonField);
     }
 
