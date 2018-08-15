@@ -595,7 +595,9 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
 
         @Override
         public void setTabDescription(String tabId, String description) {
-            getTabNN(tabId).setDescription(description);
+            Tab tab = getTabNN(tabId);
+            ((TabImpl) tab).getTabbarTab()
+                    .setDescription(description);
         }
 
         @Override
