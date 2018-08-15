@@ -138,9 +138,12 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     test {
         maxHeapSize = '256m'
         systemProperties = [
-                'jdk.attach.allowAttachSelf' : 'true',
-                'logback.configurationFile': System.getProperty('logback.configurationFile')
+                'jdk.attach.allowAttachSelf' : 'true'
         ]
+
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     javadoc {
@@ -442,18 +445,21 @@ configure(coreModule) {
         includes = ['**/*Test.class']
 
         systemProperties = [
-                'logback.configurationFile': System.getProperty('logback.configurationFile'),
                 'jdk.attach.allowAttachSelf' : 'true'
         ]
+
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     task testEntityCache(type: Test) {
         scanForTestClasses = false
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
 
-        systemProperties = [
-                'logback.configurationFile': System.getProperty('logback.configurationFile')
-        ]
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
     }
 
     task testJoinedComposition(type: Test) {
