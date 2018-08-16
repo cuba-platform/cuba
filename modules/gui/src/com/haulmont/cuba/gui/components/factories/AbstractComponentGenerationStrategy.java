@@ -88,12 +88,15 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                     && xmlDescriptor.attribute("mask") != null;
 
             if (type.equals(String.class)) {
-                return hasMaskAttribute ? createMaskedField(context) : createStringField(context, mpp);
+                return hasMaskAttribute
+                        ? createMaskedField(context)
+                        : createStringField(context, mpp);
             } else if (type.equals(UUID.class)) {
                 return createUuidField(context);
             } else if (type.equals(Boolean.class)) {
                 return createBooleanField(context);
-            } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
+            } else if (type.equals(java.sql.Date.class)
+                    || type.equals(Date.class)) {
                 return createDateField(context);
             } else if (type.equals(Time.class)) {
                 return createTimeField(context);
@@ -108,10 +111,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 }
 
                 return createNumberField(context);
-
             }
-
-            return createCustomDatatypeField(context, type, mpp);
         } else if (mppRange.isClass()) {
             MetaProperty metaProperty = mpp.getMetaProperty();
             Class<?> javaType = metaProperty.getJavaType();
@@ -375,10 +375,6 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
             return linkField;
         }
-    }
-
-    protected Component createCustomDatatypeField(ComponentGenerationContext context, Class dataType, MetaPropertyPath mpp) {
-        return createStringField(context, mpp);
     }
 
     protected void setLinkFieldAttributes(EntityLinkField linkField, ComponentGenerationContext context) {
