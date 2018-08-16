@@ -16,8 +16,6 @@
 
 package com.haulmont.cuba.gui.model;
 
-import org.dom4j.Element;
-
 public interface ScreenData {
 
     String NAME = "cuba_ScreenData";
@@ -28,5 +26,7 @@ public interface ScreenData {
 
     <T extends DataLoader> T getLoader(String id);
 
-    void load(Element element);
+    void registerContainer(String id, InstanceContainer container);
+
+    void registerLoader(String id, DataLoader loader);
 }

@@ -25,6 +25,7 @@ import javax.persistence.*;
 public class OrderLine extends StandardEntity {
     private static final long serialVersionUID = 5682981871475199801L;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRODUCT_ID")
     protected Product product;
 

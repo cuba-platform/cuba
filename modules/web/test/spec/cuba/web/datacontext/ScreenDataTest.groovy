@@ -18,6 +18,7 @@ package spec.cuba.web.datacontext
 
 import com.haulmont.bali.util.Dom4j
 import com.haulmont.cuba.gui.model.*
+import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader
 import com.haulmont.cuba.security.entity.Permission
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
@@ -47,10 +48,11 @@ class ScreenDataTest extends WebSpec {
             '''
         Document document = Dom4j.readDocument(xml)
         ScreenData screenData = cont.getBean(ScreenData)
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
 
-        screenData.load(document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement)
         DataContext dataContext = screenData.dataContext
         InstanceContainer<User> userCont = screenData.getContainer('userCont')
         CollectionContainer<User> usersCont = screenData.getContainer('usersCont')
@@ -90,10 +92,11 @@ class ScreenDataTest extends WebSpec {
             '''
         Document document = Dom4j.readDocument(xml)
         ScreenData screenData = cont.getBean(ScreenData)
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
 
-        screenData.load(document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement)
         DataContext dataContext = screenData.dataContext
         InstanceContainer<User> userCont = screenData.getContainer('userCont')
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
@@ -142,10 +145,11 @@ class ScreenDataTest extends WebSpec {
             '''
         Document document = Dom4j.readDocument(xml)
         ScreenData screenData = cont.getBean(ScreenData)
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
 
-        screenData.load(document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement)
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
 
@@ -160,7 +164,6 @@ class ScreenDataTest extends WebSpec {
         usersLoader.cacheable
     }
 
-    @Ignore
     def "nested containers"() {
 
         def order1 = new Order(number: '111')
@@ -188,10 +191,11 @@ class ScreenDataTest extends WebSpec {
             '''
         Document document = Dom4j.readDocument(xml)
         ScreenData screenData = cont.getBean(ScreenData)
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
 
-        screenData.load(document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement)
         InstanceContainer<Order> orderCont = screenData.getContainer('orderCont')
         CollectionContainer<OrderLine> linesCont = screenData.getContainer('linesCont')
         InstanceContainer<Product> productCont = screenData.getContainer('productCont')
@@ -203,5 +207,21 @@ class ScreenDataTest extends WebSpec {
         productCont != null
         tagsCont != null
 
+        when:
+
+        orderCont.item = order1
+
+        then:
+
+        linesCont.items == [line1, line2]
+
+        when:
+
+        linesCont.item = line1
+
+        then:
+
+        productCont.item == product1
+        tagsCont.items == [tag1, tag2]
     }
 }
