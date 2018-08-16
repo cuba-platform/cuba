@@ -17,7 +17,10 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.Component;
+import org.slf4j.LoggerFactory;
 
 public class MenuShortcutAction extends ShortcutListener {
 
@@ -36,6 +39,13 @@ public class MenuShortcutAction extends ShortcutListener {
 
     @Override
     public void handleAction(Object sender, Object target) {
-        menuItem.getCommand().accept(menuItem);
+        Component menuImpl = menuItem.getMenu().unwrap(Component.class);
+        CubaUI ui = (CubaUI) menuImpl.getUI();
+        if (ui.isAccessibleForUser(menuImpl)) {
+            menuItem.getCommand().accept(menuItem);
+        } else {
+            LoggerFactory.getLogger(MenuShortcutAction.class)
+                    .debug("Ignoring shortcut action because menu is inaccessible for user");
+        }
     }
 }

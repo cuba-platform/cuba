@@ -26,9 +26,11 @@ import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -226,9 +228,16 @@ public class SideMenuBuilder {
 
         @Override
         public void handleAction(Object sender, Object target) {
-            Consumer<SideMenu.MenuItem> command = menuItem.getCommand();
-            if (command != null) {
-                command.accept(menuItem);
+            com.vaadin.ui.Component menuImpl = menuItem.getMenu().unwrap(com.vaadin.ui.Component.class);
+            CubaUI ui = (CubaUI) menuImpl.getUI();
+            if (ui.isAccessibleForUser(menuImpl)) {
+                Consumer<SideMenu.MenuItem> command = menuItem.getCommand();
+                if (command != null) {
+                    command.accept(menuItem);
+                }
+            } else {
+                LoggerFactory.getLogger(SideMenuShortcutListener.class)
+                        .debug("Ignoring shortcut action because menu is inaccessible for user");
             }
         }
     }

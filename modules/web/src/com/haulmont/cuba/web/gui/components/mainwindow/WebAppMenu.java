@@ -24,10 +24,12 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.widgets.CubaMenuBar;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -425,7 +427,13 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         }
 
         protected void menuSelected(@SuppressWarnings("unused") MenuBar.MenuItem event) {
-            this.command.accept(this);
+            CubaUI ui = (CubaUI) menu.getComponent().getUI();
+            if (ui.isAccessibleForUser(menu.getComponent())) {
+                this.command.accept(this);
+            } else {
+                LoggerFactory.getLogger(WebAppMenu.class)
+                        .debug("Ignore click because menu is inaccessible for user");
+            }
         }
     }
 }

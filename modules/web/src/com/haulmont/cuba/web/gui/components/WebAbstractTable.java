@@ -62,6 +62,7 @@ import com.haulmont.cuba.web.gui.components.table.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
@@ -895,6 +896,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.addShortcutListener(
                 new ShortcutListenerDelegate("tableEnter", KeyCode.ENTER, null)
                         .withHandler((sender, target) -> {
+                            T tableImpl = WebAbstractTable.this.component;
+
+                            CubaUI ui = (CubaUI) tableImpl.getUI();
+                            if (!ui.isAccessibleForUser(tableImpl)) {
+                                LoggerFactory.getLogger(WebAbstractTable.class)
+                                        .debug("Ignore click attempt because Table is inaccessible for user");
+                                return;
+                            }
+
                             if (target == this.component) {
                                 if (enterPressAction != null) {
                                     enterPressAction.actionPerform(this);
@@ -915,6 +925,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         component.addItemClickListener(event -> {
             if (event.isDoubleClick() && event.getItem() != null) {
+                T tableImpl = WebAbstractTable.this.component;
+
+                CubaUI ui = (CubaUI) tableImpl.getUI();
+                if (!ui.isAccessibleForUser(tableImpl)) {
+                    LoggerFactory.getLogger(WebAbstractTable.class)
+                            .debug("Ignore click attempt because Table is inaccessible for user");
+                    return;
+                }
+
                 handleClickAction();
             }
         });

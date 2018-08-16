@@ -26,9 +26,13 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Dialog window container for OpenType.DIALOG windows.
@@ -185,6 +189,13 @@ public class CubaWindow extends Window {
 
     @Override
     public void close() {
+        CubaUI ui = (CubaUI) getUI();
+        if (!ui.isAccessibleForUser(this)) {
+            LoggerFactory.getLogger(CubaWindow.class)
+                    .debug("Ignore close window attempt because Window is inaccessible for user");
+            return;
+        }
+
         PreCloseEvent event = new PreCloseEvent(this);
         fireEvent(event);
 

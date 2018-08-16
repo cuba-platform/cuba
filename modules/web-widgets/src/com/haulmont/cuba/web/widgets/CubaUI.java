@@ -16,14 +16,78 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.widgets.client.appui.CubaUIClientRpc;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+
+import java.util.Collection;
 
 public class CubaUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
+    }
+
+    /**
+     * Check if users can interact with the component - there are no modal windows that prevent user action.
+     *
+     * @param component component
+     * @return whether it accessible or not
+     */
+    public boolean isAccessibleForUser(Component component) {
+        Collection<Window> windows = this.getWindows();
+        if (windows.isEmpty()) {
+            // there are no windows - all components are accessible
+            return true;
+        }
+
+        boolean hasModalWindows = windows.stream().anyMatch(Window::isModal);
+        if (!hasModalWindows) {
+            // there are no modal windows - all components are accessible
+            return true;
+        }
+
+        Component windowOrUI = CubaUIUtils.getWindowOrUI(component);
+        if (windowOrUI == null) {
+            // something went wrong
+            return false;
+        }
+
+        if (windowOrUI instanceof UI) {
+            // there are modal windows, component belongs to UI
+            return false;
+        }
+
+        if (windowOrUI instanceof Window) {
+            Window currentWindow = (Window) windowOrUI;
+
+            if (!currentWindow.isModal()) {
+                // there are modal windows, component belongs to non-modal window
+                return false;
+            }
+
+            int maxBringToFront = windows.stream()
+                    .mapToInt(w -> {
+                        if (w.isModal()
+                                && w.getBringToFront() != null) {
+                            return w.getBringToFront();
+                        }
+                        return -1;
+                    })
+                    .max()
+                    .orElse(-1);
+
+            if (maxBringToFront > 0) {
+                return currentWindow.getBringToFront() != null
+                        && currentWindow.getBringToFront() >= maxBringToFront;
+            }
+            return Iterables.getLast(windows) == currentWindow; // it is top most window
+        }
+
+        return true;
     }
 
     /**

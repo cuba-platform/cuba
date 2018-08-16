@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTree;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.AbstractComponent;
@@ -212,7 +213,16 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         component.addShortcutListener(
                 new ShortcutListenerDelegate("tableEnter", KeyCode.ENTER, null)
                         .withHandler((sender, target) -> {
-                            if (target == this.component) {
+                            T treeComponent = WebAbstractTree.this.component;
+
+                            if (target == treeComponent) {
+                                CubaUI ui = (CubaUI) treeComponent.getUI();
+                                if (!ui.isAccessibleForUser(treeComponent)) {
+                                    LoggerFactory.getLogger(WebAbstractTree.class)
+                                            .debug("Ignore click attempt because Tree is inaccessible for user");
+                                    return;
+                                }
+
                                 if (enterPressAction != null) {
                                     enterPressAction.actionPerform(this);
                                 } else {

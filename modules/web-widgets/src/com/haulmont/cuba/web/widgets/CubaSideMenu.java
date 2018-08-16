@@ -27,6 +27,7 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeEvent;
@@ -70,6 +71,13 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
         CubaSideMenuServerRpc menuRpc = new CubaSideMenuServerRpc() {
             @Override
             public void menuItemTriggered(String itemId) {
+                CubaUI ui = (CubaUI) CubaSideMenu.this.getUI();
+                if (!ui.isAccessibleForUser(CubaSideMenu.this)) {
+                    LoggerFactory.getLogger(CubaSideMenu.class)
+                            .debug("Ignore click because SideMenu is inaccessible for user");
+                    return;
+                }
+
                 MenuItem menuItem = menuItemIdMapper.get(itemId);
                 if (menuItem != null) {
                     if (isSelectOnClick()) {

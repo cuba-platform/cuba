@@ -49,6 +49,7 @@ import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
@@ -136,6 +137,14 @@ public class WebWindow implements Window, Component.Wrapper,
 
                 @Override
                 public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                    com.vaadin.ui.Component component = WebWindow.this.component;
+                    CubaUI ui = (CubaUI) component.getUI();
+                    if (!ui.isAccessibleForUser(component)) {
+                        LoggerFactory.getLogger(WebWindow.class)
+                                .debug("Ignore shortcut action because Window is inaccessible for user");
+                        return;
+                    }
+
                     Action action = actionsHolder.getAction(actionImpl);
                     if (action != null && action.isEnabled() && action.isVisible()) {
                         action.actionPerform(WebWindow.this);

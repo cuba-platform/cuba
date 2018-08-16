@@ -18,13 +18,14 @@ package com.haulmont.cuba.web.widgets;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.v7.event.FieldEvents;
-import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -93,8 +94,16 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         tabbedHeader.setVisible(false);
         tabbedHeader.addStyleName("framed padded-tabbar");
 
-        tabbedHeader.setCloseHandler((tabsheet, tabContent) ->
-                closeHandler.onTabClose(CubaManagedTabSheet.this, getContentTab(tabContent).getComponent()));
+        tabbedHeader.setCloseHandler((tabsheet, tabContent) -> {
+            CubaUI ui = (CubaUI) tabbedHeader.getUI();
+            if (!ui.isAccessibleForUser(tabbedHeader)) {
+                LoggerFactory.getLogger(CubaTabSheet.class)
+                        .debug("Ignore close tab attempt because TabSheet is inaccessible for user");
+                return;
+            }
+
+            closeHandler.onTabClose(CubaManagedTabSheet.this, getContentTab(tabContent).getComponent());
+        });
 
         tabbedHeader.addSelectedTabChangeListener(event -> {
             setSelected(tabToContentMap.get(tabbedHeader.getSelectedTab()));
@@ -632,16 +641,37 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
 
         @Override
         public void closeTab(Component target) {
+            CubaUI ui = (CubaUI) tabSheet.getUI();
+            if (!ui.isAccessibleForUser(tabSheet)) {
+                LoggerFactory.getLogger(CubaTabSheet.class)
+                        .debug("Ignore close tab attempt because TabSheet is inaccessible for user");
+                return;
+            }
+
             tabSheet.closeTab(target);
         }
 
         @Override
         public void closeOtherTabs(Component target) {
+            CubaUI ui = (CubaUI) tabSheet.getUI();
+            if (!ui.isAccessibleForUser(tabSheet)) {
+                LoggerFactory.getLogger(CubaTabSheet.class)
+                        .debug("Ignore close tab attempt because TabSheet is inaccessible for user");
+                return;
+            }
+
             tabSheet.closeOtherTabs(target);
         }
 
         @Override
         public void closeAllTabs() {
+            CubaUI ui = (CubaUI) tabSheet.getUI();
+            if (!ui.isAccessibleForUser(tabSheet)) {
+                LoggerFactory.getLogger(CubaTabSheet.class)
+                        .debug("Ignore close tab attempt because TabSheet is inaccessible for user");
+                return;
+            }
+
             tabSheet.closeAllTabs();
         }
 

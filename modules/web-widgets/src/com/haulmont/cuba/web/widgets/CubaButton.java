@@ -21,8 +21,7 @@ import com.haulmont.cuba.web.widgets.client.button.CubaButtonState;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
@@ -52,17 +51,35 @@ public class CubaButton extends com.vaadin.ui.Button {
     }
 
     @Override
-    protected void fireClick(MouseEventDetails details) {
-        try {
-            if (clickHandler != null) {
-                clickHandler.accept(details);
-            } else {
-                super.fireClick(details);
+    protected void fireClick() {
+        // check if it cannot be clicked at all due to modal dialogs
+        CubaUI ui = (CubaUI) getUI();
+        if (ui.isAccessibleForUser(this)) {
+            super.fireClick();
+        } else {
+            LoggerFactory.getLogger(CubaButton.class)
+                    .debug("Ignore click because button is inaccessible for user");
+        }
+    }
+
+    @Override
+    protected void fireClick(MouseEventDetails details) {// check if it cannot be clicked at all due to modal dialogs
+        CubaUI ui = (CubaUI) getUI();
+        if (ui.isAccessibleForUser(this)) {
+            try {
+                if (clickHandler != null) {
+                    clickHandler.accept(details);
+                } else {
+                    super.fireClick(details);
+                }
+            } finally {
+                if (getState(false).useResponsePending) {
+                    getRpcProxy(CubaButtonClientRpc.class).onClickHandled();
+                }
             }
-        } finally {
-            if (getState(false).useResponsePending) {
-                getRpcProxy(CubaButtonClientRpc.class).onClickHandled();
-            }
+        } else {
+            LoggerFactory.getLogger(CubaButton.class)
+                    .debug("Ignore click because button is inaccessible for user");
         }
     }
 
@@ -102,21 +119,13 @@ public class CubaButton extends com.vaadin.ui.Button {
         @Override
         public void handleAction(Object sender, Object target) {
             if (target instanceof Component) {
-                Component targetTopLevelComponent = getTopLevelComponent((Component) target);
-                Component buttonTopLevelComponent = getTopLevelComponent(button);
+                Component targetTopLevelComponent = CubaUIUtils.getWindowOrUI((Component) target);
+                Component buttonTopLevelComponent = CubaUIUtils.getWindowOrUI(button);
 
                 if (targetTopLevelComponent == buttonTopLevelComponent) {
                     super.handleAction(sender, target);
                 }
             }
-        }
-
-        protected Component getTopLevelComponent(Component component) {
-            Component parent = component;
-            while (parent != null && !(parent instanceof Window) && !(parent instanceof UI)) {
-                parent = parent.getParent();
-            }
-            return parent;
         }
     }
 }
