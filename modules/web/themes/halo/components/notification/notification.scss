@@ -30,6 +30,10 @@
 
     .#{$primary-stylename}-caption {
       font-size: $v-font-size--h1;
+
+      ~ .#{$primary-stylename}-description {
+        margin:0;
+      }
     }
 
     .#{$primary-stylename}-description {
