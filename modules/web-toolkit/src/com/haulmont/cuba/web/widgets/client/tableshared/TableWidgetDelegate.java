@@ -147,8 +147,18 @@ public class TableWidgetDelegate {
         if (tableWidget.getRenderedRows().isEmpty() &&
                 aggregationRow != null && aggregationRow.isInitialized()) {
             double realColWidth = aggregationRow.getRealCellWidth(colIndex);
-            if (realColWidth > 0) {
-                updateHeaderCellWidth(hCell, minWidth, realColWidth);
+            if (!Double.isNaN(realColWidth)) {
+                if (realColWidth > 0) {
+                    updateHeaderCellWidth(hCell, minWidth, realColWidth);
+                }
+            } else {
+                // schedule reassigning in case of empty table grouping due to aggregation row is not displayed yet
+                Scheduler.get().scheduleDeferred(() -> {
+                    double rcw = aggregationRow.getRealCellWidth(colIndex);
+                    if (rcw > 0) {
+                        updateHeaderCellWidth(hCell, minWidth, rcw);
+                    }
+                });
             }
         }
     }
