@@ -139,6 +139,14 @@ public class WebWindow implements Window, Component.Wrapper,
 
                 @Override
                 public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                    com.vaadin.ui.Component component = WebWindow.this.component;
+                    AppUI ui = (AppUI) component.getUI();
+                    if (!ui.isAccessibleForUser(component)) {
+                        LoggerFactory.getLogger(WebWindow.class)
+                                .debug("Ignore shortcut action because Window is inaccessible for user");
+                        return;
+                    }
+
                     Action action = actionsHolder.getAction(actionImpl);
                     if (action != null && action.isEnabled() && action.isVisible()) {
                         action.actionPerform(WebWindow.this);

@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ShortcutListener;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.vaadin.event.ShortcutAction.KeyCode;
 
 public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         extends WebAbstractList<T, E> implements Tree<E> {
@@ -205,10 +208,19 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
         component.setSizeFull();
 
-        component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
+        component.addShortcutListener(new ShortcutListener("tableEnter", KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                if (target == WebAbstractTree.this.component) {
+                T treeComponent = WebAbstractTree.this.component;
+
+                if (target == treeComponent) {
+                    AppUI ui = (AppUI) treeComponent.getUI();
+                    if (!ui.isAccessibleForUser(treeComponent)) {
+                        LoggerFactory.getLogger(WebAbstractTree.class)
+                                .debug("Ignore click attempt because Tree is inaccessible for user");
+                        return;
+                    }
+
                     if (enterPressAction != null) {
                         enterPressAction.actionPerform(WebAbstractTree.this);
                     } else {

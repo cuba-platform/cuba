@@ -68,7 +68,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
@@ -712,6 +711,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == WebAbstractTable.this.component) {
+                    AppUI ui = (AppUI) component.getUI();
+                    if (!ui.isAccessibleForUser(component)) {
+                        LoggerFactory.getLogger(WebAbstractTable.class)
+                                .debug("Ignore click attempt because Table is inaccessible for user");
+                        return;
+                    }
+
                     if (enterPressAction != null) {
                         enterPressAction.actionPerform(WebAbstractTable.this);
                     } else {
@@ -733,6 +739,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         component.addItemClickListener(event -> {
             if (event.isDoubleClick() && event.getItem() != null) {
+                AppUI ui = (AppUI) component.getUI();
+                if (!ui.isAccessibleForUser(component)) {
+                    LoggerFactory.getLogger(WebAbstractTable.class)
+                            .debug("Ignore click attempt because Table is inaccessible for user");
+                    return;
+                }
+
                 handleClickAction();
             }
         });

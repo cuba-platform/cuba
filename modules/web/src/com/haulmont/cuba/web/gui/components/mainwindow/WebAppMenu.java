@@ -29,6 +29,7 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         component.addAttachListener(this::handleAttach);
     }
 
-    protected void handleAttach(ClientConnector.AttachEvent event) {
+    protected void handleAttach(@SuppressWarnings("unused") ClientConnector.AttachEvent event) {
         AppUI appUi = (AppUI) component.getUI();
         if (appUi == null) {
             return;
@@ -357,7 +358,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
             this.command = command;
 
             if (command != null) {
-                delegateItem.setCommand(event -> this.command.accept(this));
+                delegateItem.setCommand(this::menuItemTriggered);
             } else {
                 delegateItem.setCommand(null);
             }
@@ -431,6 +432,16 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         protected void setSeparator(boolean separator) {
             this.separator = separator;
+        }
+
+        protected void menuItemTriggered(@SuppressWarnings("unused") MenuBar.MenuItem event) {
+            AppUI ui = (AppUI) menu.getComponent().getUI();
+            if (ui.isAccessibleForUser(menu.getComponent())) {
+                this.command.accept(this);
+            } else {
+                LoggerFactory.getLogger(WebAppMenu.class)
+                        .debug("Ignore click because menu is inaccessible for user");
+            }
         }
     }
 }

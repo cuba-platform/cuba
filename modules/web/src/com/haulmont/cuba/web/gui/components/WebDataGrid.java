@@ -67,6 +67,7 @@ import com.vaadin.ui.CssLayout;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
@@ -270,10 +271,18 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         component.addShortcutListener(new ShortcutListener("dataGridEnter", KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                if (target == WebDataGrid.this.component) {
+                CubaGrid dataGridComponent = WebDataGrid.this.component;
+                if (target == dataGridComponent) {
                     if (WebDataGrid.this.isEditorEnabled()) {
                         // Prevent custom actions on Enter if DataGrid editor is enabled
                         // since it's the default shortcut to open editor
+                        return;
+                    }
+
+                    AppUI ui = (AppUI) dataGridComponent.getUI();
+                    if (!ui.isAccessibleForUser(dataGridComponent)) {
+                        LoggerFactory.getLogger(WebDataGrid.class)
+                                .debug("Ignore click attempt because DataGrid is inaccessible for user");
                         return;
                     }
 
@@ -287,6 +296,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         });
 
         component.addItemClickListener(e -> {
+            CubaGrid dataGridComponent = this.component;
+            AppUI ui = (AppUI) dataGridComponent.getUI();
+            if (!ui.isAccessibleForUser(dataGridComponent)) {
+                LoggerFactory.getLogger(WebDataGrid.class)
+                        .debug("Ignore click attempt because DataGrid is inaccessible for user");
+                return;
+            }
+
             if (e.isDoubleClick() && e.getItem() != null && !WebDataGrid.this.isEditorEnabled()) {
                 // note: for now Grid doesn't send double click if editor is enabled,
                 // but it's better to handle it manually

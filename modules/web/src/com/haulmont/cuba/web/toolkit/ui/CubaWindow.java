@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.haulmont.cuba.web.toolkit.ui.client.window.CubaWindowClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.window.CubaWindowServerRpc;
@@ -27,17 +28,17 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * Dialog window container for OpenType.DIALOG windows.
- *
  */
 public class CubaWindow extends Window {
 
-    protected HashSet<Action.Handler> contextActionHandlers = new HashSet<>();
+    protected HashSet<Action.Handler> contextActionHandlers = new HashSet<>(4);
 
     protected KeyMapper<Action> contextActionMapper = null;
 
@@ -187,6 +188,13 @@ public class CubaWindow extends Window {
 
     @Override
     public void close() {
+        AppUI ui = (AppUI) getUI();
+        if (!ui.isAccessibleForUser(this)) {
+            LoggerFactory.getLogger(CubaWindow.class)
+                    .debug("Ignore close window attempt because Window is inaccessible for user");
+            return;
+        }
+
         PreCloseEvent event = new PreCloseEvent(this);
         fireEvent(event);
 

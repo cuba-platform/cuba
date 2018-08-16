@@ -29,12 +29,14 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Tree;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -244,6 +246,13 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
                     component.setDoubleClickMode(true);
                     itemClickListener = event -> {
                         if (event.isDoubleClick() && !component.isReadOnly()) {
+                            AppUI ui = (AppUI) component.getUI();
+                            if (!ui.isAccessibleForUser(component)) {
+                                LoggerFactory.getLogger(WebTree.class)
+                                        .debug("Ignore click attempt because Tree is inaccessible for user");
+                                return;
+                            }
+
                             if (!component.isMultiSelect()) {
                                 component.setValue(event.getItemId());
                             } else {

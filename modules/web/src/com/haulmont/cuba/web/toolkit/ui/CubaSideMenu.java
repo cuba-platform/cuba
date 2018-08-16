@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.theme.HaloTheme;
 import com.haulmont.cuba.web.toolkit.ui.client.verticalmenu.CubaSideMenuClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.verticalmenu.CubaSideMenuServerRpc;
@@ -28,6 +29,7 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeEvent;
@@ -71,6 +73,13 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
         CubaSideMenuServerRpc menuRpc = new CubaSideMenuServerRpc() {
             @Override
             public void menuItemTriggered(String itemId) {
+                AppUI ui = (AppUI) CubaSideMenu.this.getUI();
+                if (!ui.isAccessibleForUser(CubaSideMenu.this)) {
+                    LoggerFactory.getLogger(CubaSideMenu.class)
+                            .debug("Ignore click because SideMenu is inaccessible for user");
+                    return;
+                }
+
                 MenuItem menuItem = menuItemIdMapper.get(itemId);
                 if (menuItem != null) {
                     if (isSelectOnClick()) {

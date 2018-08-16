@@ -1745,6 +1745,13 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
+                AppUI ui = (AppUI) workArea.getComponent().getUI();
+                if (!ui.isAccessibleForUser(workArea.getComponent())) {
+                    LoggerFactory.getLogger(CubaTabSheet.class)
+                            .debug("Ignore close shortcut attempt because workArea is inaccessible for user");
+                    return;
+                }
+
                 if (workArea.getMode() == Mode.TABBED) {
                     TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                     if (tabSheet != null) {
