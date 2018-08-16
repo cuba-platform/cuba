@@ -387,7 +387,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         @Override
         protected boolean leaveRoomForSortIndicator() {
             HeaderCell lastCell = tHead.getHeaderCell(tHead.getVisibleCellCount() - 1);
-            return this.equals(lastCell);
+            return this.equals(lastCell) || super.leaveRoomForSortIndicator();
         }
 
         @Override
