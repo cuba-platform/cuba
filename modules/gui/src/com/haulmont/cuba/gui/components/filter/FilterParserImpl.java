@@ -24,12 +24,13 @@ import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -86,7 +87,10 @@ public class FilterParserImpl implements FilterParser {
 
     protected AbstractCondition createCondition(ConditionType type, Element element, Filter filter, String xml) {
         String filterComponentName = filter.getId();
-        String messagesPack = filter.getFrame().getMessagesPack();
+
+        Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
+        String messagesPack = controllerClass.getPackage().getName(); // todo rework
+        CollectionDatasource datasource = filter.getDatasource();
         switch (type) {
             case GROUP:
                 return new GroupCondition(element, filterComponentName);

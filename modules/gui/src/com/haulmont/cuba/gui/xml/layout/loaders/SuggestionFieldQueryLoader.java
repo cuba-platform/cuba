@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import groovy.text.GStringTemplateEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -55,7 +56,8 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
             String entityClassName = queryElement.attributeValue("entityClass");
             if (StringUtils.isNotEmpty(entityClassName)) {
                 suggestionField.setSearchExecutor((searchString, searchParams) -> {
-                    DataSupplier supplier = suggestionField.getFrame().getDsContext().getDataSupplier();
+                    LegacyFrame frame = (LegacyFrame) suggestionField.getFrame().getFrameOwner();
+                    DataSupplier supplier = frame.getDsContext().getDataSupplier();
                     Class<Entity> entityClass = ReflectionHelper.getClass(entityClassName);
                     if (escapeValue) {
                         searchString = QueryUtils.escapeForLike(searchString);

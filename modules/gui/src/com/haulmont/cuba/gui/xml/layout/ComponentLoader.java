@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -134,6 +135,8 @@ public interface ComponentLoader<T extends Component> {
     Element getElement(Element element);
     void setElement(Element element);
 
+    void setBeanLocator(BeanLocator beanLocator);
+
     /**
      * Creates result component by XML-element and loads its Id. Also creates all nested components.
      *
@@ -153,5 +156,5 @@ public interface ComponentLoader<T extends Component> {
      *
      * @see #createComponent()
      */
-    Component getResultComponent();
+    T getResultComponent();
 }

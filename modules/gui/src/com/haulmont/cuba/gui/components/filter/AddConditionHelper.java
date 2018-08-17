@@ -38,6 +38,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
+
 /**
  * Helper class that does a sequence of steps for adding new condition:
  * <p>
@@ -90,7 +92,7 @@ public class AddConditionHelper {
         Tree<AbstractConditionDescriptor> descriptorsTree = descriptorsTreeBuilder.build();
         params.put("descriptorsTree", descriptorsTree);
         WindowInfo windowInfo = windowConfig.getWindowInfo("addCondition");
-        AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+        AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
         window.addCloseListener(actionId -> {
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 Collection<AbstractConditionDescriptor> descriptors = window.getDescriptors();
@@ -111,7 +113,7 @@ public class AddConditionHelper {
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
             params.put("conditionsTree", conditionsTree);
-            final CustomConditionEditor window = (CustomConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final CustomConditionEditor window = (CustomConditionEditor) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     handler.handle(condition);
@@ -121,7 +123,7 @@ public class AddConditionHelper {
             WindowInfo windowInfo = windowConfig.getWindowInfo("dynamicAttributesConditionEditor");
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
-            final DynamicAttributesConditionEditor window = (DynamicAttributesConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            DynamicAttributesConditionEditor window = (DynamicAttributesConditionEditor) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     handler.handle(condition);

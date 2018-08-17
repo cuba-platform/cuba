@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Component;
@@ -31,7 +30,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
 
     @Override
     public void createComponent() {
-        resultComponent = (RelatedEntities) factory.createComponent(RelatedEntities.NAME);
+        resultComponent = factory.createComponent(RelatedEntities.NAME);
         loadId(resultComponent, element);
     }
 
@@ -72,8 +71,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
             String screen = routeElement.attributeValue("screen");
 
             if (StringUtils.isNotEmpty(screen)) {
-                WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-                if (windowConfig.findWindowInfo(screen) == null) {
+                if (getWindowConfig().findWindowInfo(screen) == null) {
                     throw new GuiDevelopmentException("Screen for custom route in related entities not found",
                             context.getFullFrameId(), "componentId", resultComponent.getId());
                 }
@@ -102,5 +100,9 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
 
         loadFocusable(resultComponent, element);
         loadTabIndex(resultComponent, element);
+    }
+
+    protected WindowConfig getWindowConfig() {
+        return beanLocator.get(WindowConfig.NAME);
     }
 }

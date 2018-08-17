@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.config.Config;
 
 /**
  * Central interface of the configuration parameters framework.
- *
- *
  */
 public interface Configuration {
 

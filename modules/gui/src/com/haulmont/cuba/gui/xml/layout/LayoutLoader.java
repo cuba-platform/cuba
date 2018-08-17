@@ -18,17 +18,27 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.Map;
 
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+@Component(LayoutLoader.NAME)
 public class LayoutLoader {
+
+    public static final String NAME = "cuba_LayoutLoader";
 
     protected ComponentLoader.Context context;
     protected ComponentsFactory factory;
@@ -37,9 +47,24 @@ public class LayoutLoader {
     protected Locale locale;
     protected String messagesPack;
 
-    public LayoutLoader(ComponentLoader.Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
+    protected BeanLocator beanLocator;
+
+    public LayoutLoader(ComponentLoader.Context context) {
         this.context = context;
+    }
+
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
+
+    @Inject
+    public void setFactory(ComponentsFactory factory) {
         this.factory = factory;
+    }
+
+    @Inject
+    public void setConfig(LayoutLoaderConfig config) {
         this.config = config;
     }
 
@@ -57,26 +82,46 @@ public class LayoutLoader {
             throw new GuiDevelopmentException("Unknown component: " + element.getName(), context.getFullFrameId());
         }
 
-        ComponentLoader loader;
-        try {
-            Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor();
-            loader = constructor.newInstance();
+        return initLoader(element, loaderClass);
+    }
 
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-            loader.setContext(context);
-            loader.setLayoutLoaderConfig(config);
-            loader.setFactory(factory);
-            loader.setElement(element);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+    protected WindowLoader getWindowLoader(Element element) {
+        Class<? extends ComponentLoader> loaderClass = config.getWindowLoader();
+
+        return (WindowLoader) initLoader(element, loaderClass);
+    }
+
+    protected ComponentLoader initLoader(Element element, Class<? extends ComponentLoader> loaderClass) {
+        ComponentLoader loader;
+
+        Constructor<? extends ComponentLoader> constructor;
+        try {
+            constructor = loaderClass.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new GuiDevelopmentException("Unable to get constructor for loader: " + e, context.getFullFrameId());
+        }
+
+        try {
+            loader = constructor.newInstance();
+        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
             throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
         }
+
+        loader.setBeanLocator(beanLocator);
+
+        loader.setLocale(locale);
+        loader.setMessagesPack(messagesPack);
+        loader.setContext(context);
+        loader.setLayoutLoaderConfig(config);
+        loader.setFactory(factory);
+        loader.setElement(element);
 
         return loader;
     }
 
-    public Pair<ComponentLoader, Element> createFrameComponent(String resourcePath, String id, Map<String, Object> params) {
-        ScreenXmlLoader screenXmlLoader = AppBeans.get(ScreenXmlLoader.class);
+    public Pair<ComponentLoader, Element> createFrameComponent(String resourcePath, String id,
+                                                               Map<String, Object> params) {
+        ScreenXmlLoader screenXmlLoader = AppBeans.get(ScreenXmlLoader.class); // todo use injection
         Element element = screenXmlLoader.load(resourcePath, id, params);
 
         ComponentLoader loader = getLoader(element);
@@ -101,6 +146,19 @@ public class LayoutLoader {
 
         loader.createComponent();
         return loader;
+    }
+
+    public ComponentLoader createWindowContent(Window window, Element element, String windowId) {
+        WindowLoader windowLoader = getWindowLoader(element);
+
+        windowLoader.setWindowId(windowId);
+        windowLoader.setResultComponent(window);
+
+        Element layout = element.element("layout");
+        if (layout != null) {
+            windowLoader.createContent(layout);
+        }
+        return windowLoader;
     }
 
     public Locale getLocale() {

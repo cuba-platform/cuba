@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
@@ -112,7 +113,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
                     && ((BelongToFrame) childComponent).getFrame() == null) {
                 ((BelongToFrame) childComponent).setFrame(frame);
             } else {
-                frame.registerComponent(childComponent);
+                ((FrameImplementation) frame).registerComponent(childComponent);
             }
         }
 

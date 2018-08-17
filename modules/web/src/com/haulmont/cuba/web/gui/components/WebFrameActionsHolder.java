@@ -20,18 +20,24 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
 
 import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
- * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
- * windows.
+ * Encapsulates {@link com.haulmont.cuba.gui.components.ActionsHolder} functionality for web frames and windows.
  */
-public class WebFrameActionsHolder {
+public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
     protected List<Action> actionList = new ArrayList<>(4);
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
+
+    protected Component actionSource;
+
+    public WebFrameActionsHolder(Component actionSource) {
+        this.actionSource = actionSource;
+    }
 
     public void addAction(Action action) {
         int index = findActionById(actionList, action.getId());
@@ -90,17 +96,30 @@ public class WebFrameActionsHolder {
     }
 
     public com.vaadin.event.Action[] getActionImplementations() {
-        List<com.vaadin.event.Action> orderedActions = new LinkedList<>();
+        List<com.vaadin.event.Action> orderedActions = new ArrayList<>(actionList.size());
         for (Action action : actionList) {
             com.vaadin.event.Action e = actions.inverse().get(action);
             if (e != null) {
                 orderedActions.add(e);
             }
         }
-        return orderedActions.toArray(new com.vaadin.event.Action[orderedActions.size()]);
+        return orderedActions.toArray(new com.vaadin.event.Action[0]);
     }
 
     public Action getAction(com.vaadin.event.Action actionImpl) {
         return actions.get(actionImpl);
+    }
+
+    @Override
+    public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+        return getActionImplementations();
+    }
+
+    @Override
+    public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+        Action cubaAction = getAction(actionImpl);
+        if (cubaAction != null && cubaAction.isEnabled() && cubaAction.isVisible()) {
+            cubaAction.actionPerform(actionSource);
+        }
     }
 }

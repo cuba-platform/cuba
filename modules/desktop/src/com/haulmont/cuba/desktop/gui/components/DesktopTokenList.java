@@ -31,7 +31,7 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.ExtFlowLayout;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerImpl;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
@@ -878,7 +878,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 params.putAll(lookupScreenParams);
             }
 
-            WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(DesktopTokenList.this).getWindowManager();
+            WindowManagerImpl wm = DesktopComponentsHelper.getTopLevelFrame(DesktopTokenList.this).getWindowManager();
 
             Window.Lookup lookupWindow = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                 @Override

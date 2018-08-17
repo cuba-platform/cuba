@@ -147,7 +147,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
     }
 
     protected void createSubComponents(GridLayout gridLayout, Element element, int row) {
-        LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
+        LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 

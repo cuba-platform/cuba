@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
@@ -26,6 +25,7 @@ import com.haulmont.cuba.gui.components.UploadField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -50,6 +50,9 @@ public class MultiUploader extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    protected FileUploadingAPI fileUploading;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -68,7 +71,6 @@ public class MultiUploader extends AbstractWindow {
         multiUpload.addQueueUploadCompleteListener(() -> {
             okBtn.setEnabled(true);
 
-            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             Map<UUID, String> uploads = multiUpload.getUploadsMap();
             for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
                 FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
@@ -89,22 +91,22 @@ public class MultiUploader extends AbstractWindow {
     }
 
     @Override
-    public boolean close(String actionId) {
+    protected boolean preClose(String actionId) {
+        // todo do this on RemoveEvent of window
         if (!COMMIT_ACTION_ID.equals(actionId)) {
-            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : tmpFileDescriptors.entrySet()) {
                 try {
                     fileUploading.deleteFile(upload.getValue());
                 } catch (FileStorageException e) {
-                    throw new RuntimeException("Unable to delete file from temp storage", e);
+                    LoggerFactory.getLogger(MultiUploader.class)
+                            .error("Unable to delete file from temp storage", e);
                 }
             }
         }
-        return super.close(actionId);
+        return super.preClose(actionId);
     }
 
     protected void saveFiles() {
-        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             for (FileDescriptor fDesc : filesDs.getItems()) {

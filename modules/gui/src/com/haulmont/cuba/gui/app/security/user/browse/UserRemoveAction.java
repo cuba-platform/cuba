@@ -18,17 +18,21 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserRemoveAction extends RemoveAction {
+
+    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
     public UserRemoveAction(ListComponent target,
                             UserManagementService userManagementService) {

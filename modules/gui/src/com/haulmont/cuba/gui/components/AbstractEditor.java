@@ -75,6 +75,11 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     @Override
+    public boolean hasUnsavedChanges() {
+        return isModified();
+    }
+
+    @Override
     public boolean isModified() {
         return getDsContext() != null && getDsContext().isModified();
     }
@@ -110,7 +115,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      */
     @Override
     public void commitAndClose() {
-        ((Editor) frame).commitAndClose();
+        closeWithCommit();
     }
 
     @Override
@@ -177,10 +182,10 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {
             if (showSaveNotification) {
-                Entity entity = ((Editor) frame).getItem();
+                Entity entity = getItem();
                 MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
-                frame.showNotification(
+                showNotification(
                         messages.formatMainMessage("info.EntitySave",
                                 messages.getTools().getEntityCaption(entity.getMetaClass()),
                                 metadataTools.getInstanceName(entity)),

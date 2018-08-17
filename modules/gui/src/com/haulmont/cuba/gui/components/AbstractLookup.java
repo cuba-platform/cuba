@@ -16,11 +16,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.Window.Lookup;
+
 /**
  * Base class for lookup screen controllers.
- *
  */
-public class AbstractLookup extends AbstractWindow implements Window.Lookup {
+public class AbstractLookup extends AbstractWindow implements Lookup {
 
     public AbstractLookup() {
     }
@@ -52,7 +53,7 @@ public class AbstractLookup extends AbstractWindow implements Window.Lookup {
 
     @Override
     public void setLookupValidator(Validator validator) {
-        if (frame instanceof Window.Lookup) {
+        if (frame instanceof Lookup) {
             ((Lookup) frame).setLookupValidator(validator);
         }
     }

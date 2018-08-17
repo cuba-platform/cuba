@@ -27,10 +27,12 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.descriptor.*;
-import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -98,7 +100,11 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     @Override
     public Tree<AbstractConditionDescriptor> build() {
         Messages messages = AppBeans.get(Messages.class);
-        String messagesPack = filter.getFrame().getMessagesPack();
+
+        Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
+        String messagesPack = controllerClass.getPackage().getName(); // todo rework
+
+        CollectionDatasource datasource = filter.getDatasource();
 
         Tree<AbstractConditionDescriptor> tree = new Tree<>();
         List<AbstractConditionDescriptor> propertyDescriptors = new ArrayList<>();
@@ -220,8 +226,11 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                         continue;
                     }
 
+                    Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
+                    String messagesPack = controllerClass.getPackage().getName(); // todo rework
+
                     PropertyConditionDescriptor childPropertyConditionDescriptor =
-                            new PropertyConditionDescriptor(propertyPath, null, filter.getFrame().getMessagesPack(),
+                            new PropertyConditionDescriptor(propertyPath, null, messagesPack,
                                     filterComponentName, entityMetaClass, entityAlias);
                     descriptors.add(childPropertyConditionDescriptor);
                 }
@@ -288,8 +297,11 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
         for (String prop : includedProps) {
             if (exclPattern == null || !exclPattern.matcher(prop).matches()) {
+                Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
+                String messagesPack = controllerClass.getPackage().getName(); // todo rework
+
                 AbstractConditionDescriptor conditionDescriptor =
-                        new PropertyConditionDescriptor(prop, null, filter.getFrame().getMessagesPack(),
+                        new PropertyConditionDescriptor(prop, null, messagesPack,
                                 filterComponentName, entityMetaClass, entityAlias);
                 descriptors.add(conditionDescriptor);
             }

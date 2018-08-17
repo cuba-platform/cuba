@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
+import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
@@ -65,11 +66,11 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     }
 
     protected void attachToFrame(Component childComponent) {
-        frame.registerComponent(childComponent);
+        ((FrameImplementation) frame).registerComponent(childComponent);
     }
 
     protected void detachFromFrame(Component childComponent) {
-        frame.unregisterComponent(childComponent);
+        ((FrameImplementation) frame).unregisterComponent(childComponent);
     }
 
     @Override

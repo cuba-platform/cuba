@@ -486,7 +486,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            Lookup roleLookupWindow = openLookup(Role.class, items -> {
+            AbstractLookup roleLookupWindow = openLookup(Role.class, items -> {
                 Collection<String> existingRoleNames = getExistingRoleNames();
                 rolesDs.suspendListeners();
                 try {

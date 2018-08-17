@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
@@ -87,7 +88,7 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
             return;
         }
 
-        getFrame().openWindow("ftsSearch", OpenType.NEW_TAB,
+        LegacyFrame.of(this).openWindow("ftsSearch", OpenType.NEW_TAB,
                 ParamsMap.of("searchTerm", searchTerm)
         );
     }
@@ -108,7 +109,7 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
 
     protected void adjustWidth() {
         if (getWidth() < 0) {
-            // todo rework - use CSS class
+            // vaadin8 rework - use CSS class
             ThemeConstants theme = App.getInstance().getThemeConstants();
             searchField.setWidth(theme.get("cuba.web.AppWindow.searchField.width"));
         } else {

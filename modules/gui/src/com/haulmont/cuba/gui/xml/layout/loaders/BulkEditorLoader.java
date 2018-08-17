@@ -18,22 +18,26 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Splitter;
-import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.BulkEditor;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
     protected void loadValidators(BulkEditor component, Element element) {
-        List<Element> validatorElements = Dom4j.elements(element, "validator");
+        List<Element> validatorElements = element.elements("validator");
         if (!validatorElements.isEmpty()) {
             List<Field.Validator> modelValidators = new ArrayList<>();
             Map<String, Field.Validator> fieldValidators = new LinkedHashMap<>();
@@ -61,7 +65,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
     @Override
     public void createComponent() {
-        resultComponent = (BulkEditor) factory.createComponent(BulkEditor.NAME);
+        resultComponent = factory.createComponent(BulkEditor.NAME);
         loadId(resultComponent, element);
     }
 
@@ -85,7 +89,8 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
         loadTabIndex(resultComponent, element);
 
-        if (!userSessionSource.getUserSession().isSpecificPermitted(BulkEditor.PERMISSION)) {
+        UserSession userSession = getUserSessionSource().getUserSession();
+        if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
             resultComponent.setVisible(false);
         }
 
@@ -144,5 +149,9 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadValidators(resultComponent, element);
 
         loadFocusable(resultComponent, element);
+    }
+
+    protected UserSessionSource getUserSessionSource() {
+        return beanLocator.get(UserSessionSource.NAME);
     }
 }

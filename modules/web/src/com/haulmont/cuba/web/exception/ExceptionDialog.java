@@ -20,6 +20,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
@@ -29,7 +30,6 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
@@ -87,7 +87,7 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        final AppUI ui = AppUI.getCurrent();
+        AppUI ui = AppUI.getCurrent();
 
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination closeCombination = KeyCombination.create(closeShortcut);
@@ -202,8 +202,7 @@ public class ExceptionDialog extends CubaWindow {
 
         stackTraceTextArea = new TextArea();
         stackTraceTextArea.setSizeFull();
-//        vaadin8 implement
-//        stackTraceTextArea.setWordwrap(false);
+        stackTraceTextArea.setWordWrap(false);
         stackTraceTextArea.setValue(stackTrace);
         stackTraceTextArea.setStyleName(cubaLogContentClass);
         stackTraceTextArea.addStyleName(cubaCopyLogContentClass);
@@ -368,7 +367,8 @@ public class ExceptionDialog extends CubaWindow {
 
     protected void logoutPrompt() {
         App app = AppUI.getCurrent().getApp();
-        final WebWindowManager wm = app.getWindowManager();
+
+        WindowManager wm = app.getWindowManager();
         wm.showOptionDialog(
                 messages.getMainMessage("exceptionDialog.logoutCaption"),
                 messages.getMainMessage("exceptionDialog.logoutMessage"),
@@ -392,9 +392,8 @@ public class ExceptionDialog extends CubaWindow {
 
     protected void forceLogout() {
         App app = ((AppUI) getUI()).getApp();
-        WebWindowManager wm = app.getWindowManager();
         try {
-            Connection connection = wm.getApp().getConnection();
+            Connection connection = app.getConnection();
             if (connection.isConnected()) {
                 connection.logout();
             }

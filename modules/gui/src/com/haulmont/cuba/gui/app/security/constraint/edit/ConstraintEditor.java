@@ -20,7 +20,7 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
@@ -57,6 +57,7 @@ import org.dom4j.Element;
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import static java.util.Arrays.asList;
 
 public class ConstraintEditor extends AbstractEditor<Constraint> {
@@ -310,7 +311,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         params.put("hideDynamicAttributes", constraint.getCheckType() != ConstraintCheckType.DATABASE);
         params.put("hideCustomConditions", constraint.getCheckType() != ConstraintCheckType.DATABASE);
 
-        FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+        FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {
             if (!COMMIT_ACTION_ID.equals(actionId)) return;
             FilterParser filterParser1 = AppBeans.get(FilterParser.class);

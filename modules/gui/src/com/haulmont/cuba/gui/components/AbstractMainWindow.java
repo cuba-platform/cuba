@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
@@ -27,20 +27,25 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
+import com.haulmont.cuba.gui.screen.MainScreen;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 /**
  * Base class for controller of application Main window.
  */
-public class AbstractMainWindow extends AbstractTopLevelWindow implements Window.MainWindow {
+public class AbstractMainWindow extends AbstractTopLevelWindow implements MainScreen {
 
     private AppWorkArea workArea;
     private UserIndicator userIndicator;
     private FoldersPane foldersPane;
+
+    @Inject
+    private BeanLocator beanLocator;
 
     @Override
     @Nullable
@@ -48,6 +53,7 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
         return workArea;
     }
 
+    @Override
     public void setWorkArea(AppWorkArea workArea) {
         this.workArea = workArea;
     }
@@ -58,6 +64,7 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
         return userIndicator;
     }
 
+    @Override
     public void setUserIndicator(UserIndicator userIndicator) {
         this.userIndicator = userIndicator;
     }
@@ -68,6 +75,7 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
         return foldersPane;
     }
 
+    @Override
     public void setFoldersPane(FoldersPane foldersPane) {
         this.foldersPane = foldersPane;
     }
@@ -86,7 +94,8 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
     }
 
     protected void initLayoutAnalyzerContextMenu(Component contextMenuTarget) {
-        LayoutAnalyzerContextMenuProvider laContextMenuProvider = AppBeans.get(LayoutAnalyzerContextMenuProvider.NAME);
+        LayoutAnalyzerContextMenuProvider laContextMenuProvider =
+                beanLocator.get(LayoutAnalyzerContextMenuProvider.NAME);
         laContextMenuProvider.initContextMenu(this, contextMenuTarget);
     }
 

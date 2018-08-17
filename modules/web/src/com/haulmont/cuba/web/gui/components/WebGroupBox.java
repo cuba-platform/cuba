@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.web.widgets.CubaGroupBox;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaOrderedActionsLayout;
@@ -101,7 +102,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
                     && ((BelongToFrame) childComponent).getFrame() == null) {
                 ((BelongToFrame) childComponent).setFrame(frame);
             } else {
-                frame.registerComponent(childComponent);
+                ((FrameImplementation) frame).registerComponent(childComponent);
             }
         }
 

@@ -38,6 +38,7 @@ import com.haulmont.cuba.core.global.filter.*;
 import com.haulmont.cuba.core.global.queryconditions.JpqlCondition;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -58,6 +59,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -502,7 +504,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         try {
             setFilterEntity(defaultFilter);
         } catch (Exception e) {
-            log.error("Exception on loading default filter '" + defaultFilter.getName() + "'", e);
+            log.error("Exception on loading default filter '{}'", defaultFilter.getName(), e);
             windowManager.showNotification(messages.formatMainMessage("filter.errorLoadingDefaultFilter", defaultFilter.getName()), Frame.NotificationType.ERROR);
             defaultFilter = adHocFilter;
             setFilterEntity(adHocFilter);
@@ -1049,15 +1051,19 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected FilterEntity getDefaultFilter(List<FilterEntity> filters) {
-        Window window = ComponentsHelper.getWindow(filter);
+        Window window = ComponentsHelper.getWindowImplementation(filter);
+        if (window == null) {
+            throw new IllegalStateException("There is no window set for filter");
+        }
 
         // First check if there is parameter with name equal to this filter component id, containing a filter code to apply
         Map<String, Object> params = filter.getFrame().getContext().getParams();
         String code = (String) params.get(filter.getId());
         if (!StringUtils.isBlank(code)) {
             for (FilterEntity filter : filters) {
-                if (code.equals(filter.getCode()))
+                if (code.equals(filter.getCode())) {
                     return filter;
+                }
             }
         }
 
@@ -1143,7 +1149,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             public void actionPerform(Component component) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
                 FilterSelectWindow window = (FilterSelectWindow) windowManager.openWindow(windowInfo,
-                        WindowManager.OpenType.DIALOG,
+                        OpenType.DIALOG,
                         ParamsMap.of("filterEntities", filterEntities));
 
                 window.addCloseListener(actionId -> {
@@ -2237,7 +2243,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (!getMainMessage("filter.adHocFilter").equals(filterEntity.getName())) {
                     params.put("filterName", filterEntity.getName());
                 }
-                final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+                final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
                 window.addCloseListener(actionId -> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String filterName = window.getFilterName();
@@ -2297,7 +2303,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                             .collect(Collectors.toList())
             );
 
-            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     String filterName = window.getFilterName();
@@ -2348,7 +2354,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("filter", filter);
             params.put("conditions", conditions);
 
-            FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     conditions = window.getConditions();
@@ -2556,8 +2562,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                 params.put("foldersPane", filterHelper.getFoldersPane());
                 params.put("entityClass", adapter.getMetaClass().getJavaClass().getName());
                 params.put("query", adapter.getQuery());
-                filter.getFrame().openWindow("saveSetInFolder",
-                        WindowManager.OpenType.DIALOG,
+
+                LegacyFrame.of(filter).openWindow("saveSetInFolder",
+                        OpenType.DIALOG,
                         params);
             }
         }
@@ -2627,7 +2634,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 lookupAlias.delete(index, lookupAlias.length());
                 lookupAlias.append(Window.LOOKUP_WINDOW_SUFFIX);
             }
-            frame.openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
+            LegacyFrame.of(frame).openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
 
                 @Override
                 public void handleLookup(Collection items) {
@@ -2637,7 +2644,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
                     setFilterEntity(filterEntity);
                 }
-            }, WindowManager.OpenType.THIS_TAB);
+            }, OpenType.THIS_TAB);
         }
     }
 

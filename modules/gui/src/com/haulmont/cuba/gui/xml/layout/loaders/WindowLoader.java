@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -30,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class WindowLoader extends FrameLoader<Window> {
+public class WindowLoader extends FrameLoader<Window> implements ComponentRootLoader<Window> {
 
     protected String windowId;
 
@@ -43,9 +44,18 @@ public class WindowLoader extends FrameLoader<Window> {
         resultComponent = createComponent(factory);
         resultComponent.setId(windowId);
 
-        Element layoutElement = element.element("layout");
-        if (layoutElement == null)
+        createContent(element.element("layout"));
+    }
+
+    public void setResultComponent(Window window) {
+        this.resultComponent = window;
+    }
+
+    @Override
+    public void createContent(Element layoutElement) {
+        if (layoutElement == null) {
             throw new DevelopmentException("Missing required 'layout' element");
+        }
         createSubComponents(resultComponent, layoutElement);
     }
 

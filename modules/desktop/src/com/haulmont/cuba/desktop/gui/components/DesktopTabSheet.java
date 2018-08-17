@@ -383,17 +383,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
         this.tabsVisible = tabsVisible;
     }
 
-    @Override
-    public void addListener(TabChangeListener listener) {
-        initComponentTabChangeListener();
-
-        CompatibleTabSheetSelectedTabChangeListener adapter = new CompatibleTabSheetSelectedTabChangeListener(listener);
-
-        if (!listeners.contains(adapter)) {
-            listeners.add(adapter);
-        }
-    }
-
     protected void initComponentTabChangeListener() {
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
@@ -507,11 +496,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
             lti.getTab().setLazyInitialized(true);
         }
-    }
-
-    @Override
-    public void removeListener(TabChangeListener listener) {
-        listeners.remove(new CompatibleTabSheetSelectedTabChangeListener(listener));
     }
 
     protected void fireTabChanged() {

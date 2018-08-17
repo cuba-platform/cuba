@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 /**
  * Handles a JPA optimistic lock exception.
- *
  */
 @Component("cuba_OptimisticExceptionHandler")
 public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler implements Ordered {

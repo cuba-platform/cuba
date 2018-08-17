@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -77,26 +78,27 @@ public class DeclarativeAction extends BaseAction {
             return;
         }
 
-        Object controller = ComponentsHelper.getFrameController(frame);
+        // todo support for legacy Frame
+        Screen controller = ComponentsHelper.getUIController(frame);
         Method method;
         try {
             method = controller.getClass().getMethod(methodName, Component.class);
-            try {
-                method.invoke(controller, component);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         } catch (NoSuchMethodException e) {
             try {
                 method = controller.getClass().getMethod(methodName);
-                try {
-                    method.invoke(controller);
-                } catch (Exception e1) {
-                    throw new RuntimeException(e1);
-                }
             } catch (NoSuchMethodException e1) {
                 throw new IllegalStateException(String.format("No suitable methods named %s for action %s", methodName, id));
             }
+        }
+
+        try {
+            if (method.getParameterCount() == 1) {
+                method.invoke(controller, component);
+            } else {
+                method.invoke(controller);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Exception on action handling", e);
         }
     }
 

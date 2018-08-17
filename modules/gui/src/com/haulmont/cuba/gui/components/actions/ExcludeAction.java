@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -111,6 +112,8 @@ public class ExcludeAction extends RemoveAction {
         super(target, autocommit, id);
 
         this.confirm = confirm;
+
+        Messages messages = AppBeans.get(Messages.NAME);
         this.caption = messages.getMainMessage("actions.Exclude");
         this.metadata = AppBeans.get(Metadata.NAME);
 

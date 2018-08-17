@@ -21,7 +21,8 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.FrameContextImpl;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -53,8 +54,8 @@ public class FakeFilterSupport {
         final Filter fakeFilter = AppBeans.get(ComponentsFactory.NAME, ComponentsFactory.class).createComponent(Filter.class);
         fakeFilter.setXmlDescriptor(Dom4j.readDocument("<filter/>").getRootElement());
         CollectionDatasourceImpl fakeDatasource = new CollectionDatasourceImpl();
-        DsContextImpl fakeDsContext = new DsContextImpl(frame.getDsContext().getDataSupplier());
-        FrameContextImpl fakeFrameContext = new FrameContextImpl(frame, Collections.<String, Object>emptyMap());
+        DsContextImpl fakeDsContext = new DsContextImpl(LegacyFrame.of(frame).getDsContext().getDataSupplier());
+        FrameContextImpl fakeFrameContext = new FrameContextImpl(frame, Collections.emptyMap());
         fakeDsContext.setFrameContext(fakeFrameContext);
         fakeDatasource.setDsContext(fakeDsContext);
         //Attention: this query should match the logic in com.haulmont.reports.wizard.ReportingWizardBean.createJpqlDataSet()

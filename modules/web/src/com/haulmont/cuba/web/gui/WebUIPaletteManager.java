@@ -18,16 +18,13 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.ComponentPalette;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 
 /**
  * Helper class to register component palettes on the web client.
- *
  */
 public class WebUIPaletteManager {
 
     public static void registerPalettes(ComponentPalette ... palettes) {
-        LayoutLoaderConfig.registerLoaders(palettes);
-        WebComponentsFactory.registerComponents(palettes);
+        // todo remove later
     }
 }

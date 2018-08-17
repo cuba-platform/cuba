@@ -89,8 +89,6 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
                 linkHandler = null;
             }
 
-            afterLoggedIn();
-
             publishAppLoggedInEvent();
         } else {
             initExceptionHandlers(false);
@@ -191,20 +189,12 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
 
     @Override
     protected String routeTopLevelWindowId() {
+        // todo demo only
         if (connection.isAuthenticated()) {
             return "mainWindow";
         } else {
             return "loginWindow";
         }
-    }
-
-    /**
-     * Perform actions after successful login. Will be removed in 7.0.
-     *
-     * @deprecated Use {@link AppLoggedInEvent} instead.
-     */
-    @Deprecated
-    protected void afterLoggedIn() {
     }
 
     @Override

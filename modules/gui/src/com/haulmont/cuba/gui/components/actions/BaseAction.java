@@ -73,7 +73,13 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     }
 
     protected BaseAction(String id, @Nullable String shortcut) {
-        super(id, shortcut);
+        // do not init messages in parent class
+        super();
+
+        this.id = id;
+        if (shortcut != null) {
+            this.shortcut = KeyCombination.create(shortcut);
+        }
     }
 
     /**

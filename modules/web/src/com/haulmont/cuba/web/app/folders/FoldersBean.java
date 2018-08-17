@@ -20,20 +20,21 @@ package com.haulmont.cuba.web.app.folders;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.HasPresentations;
-import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebWindowManager;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class FoldersBean implements Folders {
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
 
-        WebWindowManager wm = App.getInstance().getWindowManager();
+        WindowManager wm = App.getInstance().getWindowManager();
         Window window = wm.openWindow(windowInfo, OpenType.NEW_TAB, params);
 
         Filter filterComponent = null;
@@ -114,6 +115,6 @@ public class FoldersBean implements Folders {
             }
         }
 
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        ((DsContextImplementation) LegacyFrame.of(window).getDsContext()).resumeSuspended();
     }
 }

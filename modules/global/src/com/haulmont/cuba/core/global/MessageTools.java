@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -458,6 +459,8 @@ public class MessageTools {
      * @return language code if {@code cuba.useLocaleLanguageOnly=true}, or full locale representation otherwise
      */
     public String localeToString(Locale locale) {
+        Preconditions.checkNotNullArgument(locale);
+
         return useLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
     }
 
@@ -467,6 +470,8 @@ public class MessageTools {
      * @return          the locale with the same language and empty country and variant
      */
     public Locale trimLocale(Locale locale) {
+        Preconditions.checkNotNullArgument(locale);
+
         return useLocaleLanguageOnly() ? Locale.forLanguageTag(locale.getLanguage()) : locale;
     }
 

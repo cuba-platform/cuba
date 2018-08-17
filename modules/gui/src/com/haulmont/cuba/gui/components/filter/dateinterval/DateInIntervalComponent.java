@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
+
 /**
  * Class generates the UI component for "In interval" date condition of the generic filter component
  */
@@ -76,7 +78,7 @@ public class DateInIntervalComponent {
                 WindowManager windowManager = windowManagerProvider.get();
                 WindowInfo windowInfo = windowConfig.getWindowInfo("date-interval-editor");
                 DateIntervalEditor editor = (DateIntervalEditor) windowManager.openWindow(windowInfo,
-                        WindowManager.OpenType.DIALOG,
+                        OpenType.DIALOG,
                         Collections.singletonMap("dateIntervalDescription", value.getDescription()));
                 editor.addListener(actionId -> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {

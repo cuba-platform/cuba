@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -87,6 +88,8 @@ public class RefreshAction extends BaseAction {
     public RefreshAction(ListComponent target, String id) {
         super(id);
         this.owner = target;
+
+        Messages messages = AppBeans.get(Messages.NAME);
         this.caption = messages.getMainMessage("actions.Refresh");
 
         this.icon = AppBeans.get(Icons.class).get(CubaIcon.REFRESH_ACTION);

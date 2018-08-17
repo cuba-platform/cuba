@@ -1038,12 +1038,6 @@ public interface Table<E extends Entity>
             return -1;
         }
 
-        @Deprecated
-        @Override
-        public int getHeightUnits() {
-            return ComponentsHelper.convertFromSizeUnit(getHeightSizeUnit());
-        }
-
         @Override
         public SizeUnit getHeightSizeUnit() {
             return SizeUnit.PIXELS;
@@ -1057,12 +1051,6 @@ public interface Table<E extends Entity>
         @Override
         public float getWidth() {
             return -1;
-        }
-
-        @Deprecated
-        @Override
-        public int getWidthUnits() {
-            return ComponentsHelper.convertFromSizeUnit(getWidthSizeUnit());
         }
 
         @Override

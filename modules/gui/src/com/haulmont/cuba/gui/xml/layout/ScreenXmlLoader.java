@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
@@ -47,9 +48,10 @@ public class ScreenXmlLoader {
 
     @Inject
     protected ScreenXmlDocumentCache screenXmlCache;
-
     @Inject
     protected ScreenXmlParser screenXmlParser;
+    @Inject
+    protected BeanLocator beanLocator;
 
     /**
      * Loads a descriptor.
@@ -97,7 +99,8 @@ public class ScreenXmlLoader {
     protected Document createDocument(String template, Map<String, Object> params) {
         Document originalDocument = screenXmlParser.parseDescriptor(template);
 
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(originalDocument, params);
+        XmlInheritanceProcessor processor = beanLocator.getPrototype(XmlInheritanceProcessor.NAME,
+                originalDocument, params);
         Element resultRoot = processor.getResultRoot();
 
         return resultRoot.getDocument();

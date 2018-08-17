@@ -18,20 +18,21 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.sys.WebScreens;
 import com.haulmont.cuba.web.widgets.CubaManagedTabSheet;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaTabSheet;
@@ -47,6 +48,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +77,8 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     protected CubaSingleModeContainer singleContainer;
 
+    protected BeanLocator beanLocator;
+
     // lazy initialized listeners list
     protected List<StateChangeListener> stateChangeListeners = null;
 
@@ -83,13 +87,18 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         component.setPrimaryStyleName(WORKAREA_STYLENAME);
         component.addStyleName(MODE_TABBED_STYLENAME);
         component.addStyleName(STATE_INITIAL_STYLENAME);
+    }
 
-        ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
-        setInitialLayout(cf.createComponent(VBoxLayout.class));
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
 
-        tabbedContainer = createTabbedModeContainer();
+        ComponentsFactory cf = beanLocator.get(ComponentsFactory.NAME);
+        setInitialLayout(cf.createComponent(VBoxLayout.NAME));
 
-        UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
+        this.tabbedContainer = createTabbedModeContainer();
+
+        UserSettingsTools userSettingsTools = beanLocator.get(UserSettingsTools.NAME);
         setMode(userSettingsTools.loadAppWindowMode());
     }
 
@@ -205,7 +214,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     }
 
     protected HasTabSheetBehaviour createTabbedModeContainer() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
+        Configuration configuration = beanLocator.get(Configuration.NAME);
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         if (webConfig.getMainTabSheetMode() == MainTabSheetMode.DEFAULT) {
@@ -219,17 +228,17 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             cubaTabSheet.addActionHandler(actionHandler);
 
             cubaTabSheet.setCloseOthersHandler(container -> {
-                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                WebScreens windowManager = App.getInstance().getWindowManager();
                 windowManager.closeAllTabbedWindowsExcept(container);
             });
             cubaTabSheet.setCloseAllTabsHandler(container -> {
-                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                WebScreens windowManager = App.getInstance().getWindowManager();
                 windowManager.closeAllTabbedWindows();
             });
         } else {
             CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
 
-            ManagedMainTabSheetMode tabSheetMode = AppBeans.get(Configuration.class)
+            ManagedMainTabSheetMode tabSheetMode = configuration
                     .getConfig(WebConfig.class)
                     .getManagedMainTabSheetMode();
             cubaManagedTabSheet.setMode(CubaManagedTabSheet.Mode.valueOf(tabSheetMode.name()));
@@ -242,11 +251,11 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             cubaManagedTabSheet.addActionHandler(actionHandler);
 
             cubaManagedTabSheet.setCloseOthersHandler(container -> {
-                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                WebScreens windowManager = App.getInstance().getWindowManager();
                 windowManager.closeAllTabbedWindowsExcept(container);
             });
             cubaManagedTabSheet.setCloseAllTabsHandler(container -> {
-                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                WebScreens windowManager = App.getInstance().getWindowManager();
                 windowManager.closeAllTabbedWindows();
             });
         }
@@ -279,10 +288,11 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     }
 
     /**
-     * Used only by {@link com.haulmont.cuba.web.WebWindowManager}
+     * Used by {@link WindowManager}
      *
      * @param state new state
      */
+    @Override
     public void switchTo(State state) {
         if (this.state != state) {
             component.getUI().focus();

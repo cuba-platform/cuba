@@ -31,9 +31,9 @@ import java.util.Collection;
  */
 public class SelectAction extends AbstractAction {
 
-    protected Window.Lookup window;
+    protected AbstractLookup window;
 
-    public SelectAction(Window.Lookup window) {
+    public SelectAction(AbstractLookup window) {
         super(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
         this.window = window;
         this.primary = true;

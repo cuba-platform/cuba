@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.DsContextCommitListenerWrapper;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 
 import java.util.*;
 
@@ -524,7 +525,7 @@ public class DsContextImpl implements DsContextImplementation {
                 Component nestedFrame = getFrameContext().getFrame().getComponent(nestedFramePath);
                 if ((nestedFrame) != null && (nestedFrame instanceof Frame)) {
                     String nestedDsId = id.substring(id.indexOf(".") + 1);
-                    ds = ((Frame) nestedFrame).getDsContext().get(nestedDsId);
+                    ds = ((LegacyFrame) nestedFrame).getDsContext().get(nestedDsId);
                 }
             }
         }

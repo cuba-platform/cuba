@@ -32,13 +32,13 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Accordion) factory.createComponent(Accordion.NAME);
+        resultComponent = factory.createComponent(Accordion.NAME);
         loadId(resultComponent, element);
 
         //noinspection unchecked
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
-            final String name = tabElement.attributeValue("id");
+            String name = tabElement.attributeValue("id");
 
             boolean lazy = Boolean.parseBoolean(tabElement.attributeValue("lazy"));
             ComponentLoader tabComponentLoader = getLoader(tabElement, TabComponentLoader.class);

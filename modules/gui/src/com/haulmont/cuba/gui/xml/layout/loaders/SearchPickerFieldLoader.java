@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsHolder;
@@ -40,8 +39,7 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
 
         String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            searchPickerField.setMetaClass(metadata.getSession().getClass(metaClass));
+            searchPickerField.setMetaClass(getMetadata().getClass(metaClass));
         }
 
         loadActions(searchPickerField, element);
@@ -59,5 +57,9 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
     @Override
     protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         return loadPickerDeclarativeAction(actionsHolder, element);
+    }
+
+    protected Metadata getMetadata() {
+        return beanLocator.get(Metadata.NAME);
     }
 }

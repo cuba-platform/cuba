@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
@@ -40,10 +39,9 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
 
         LookupPickerField lookupPickerField = (LookupPickerField) resultComponent;
 
-        final String metaClass = element.attributeValue("metaClass");
+        String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            lookupPickerField.setMetaClass(metadata.getSession().getClass(metaClass));
+            lookupPickerField.setMetaClass(getMetadata().getClass(metaClass));
         }
 
         loadActions(lookupPickerField, element);
@@ -60,6 +58,10 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
         if (refreshOptionsOnLookupClose != null) {
             lookupPickerField.setRefreshOptionsOnLookupClose(Boolean.valueOf(refreshOptionsOnLookupClose));
         }
+    }
+
+    protected Metadata getMetadata() {
+        return beanLocator.get(Metadata.NAME);
     }
 
     @Override

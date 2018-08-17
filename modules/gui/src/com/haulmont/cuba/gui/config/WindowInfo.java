@@ -16,11 +16,13 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.gui.screen.Screen;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Screen's registration information.
@@ -29,15 +31,32 @@ import javax.annotation.Nullable;
  */
 public class WindowInfo {
 
-    private String id;
-    private Element descriptor;
-    private Class screenClass;
-    private ScreenAgent screenAgent;
+    private final String id;
 
-    public WindowInfo(String id, Element descriptor, @Nullable ScreenAgent screenAgent) {
+    private final WindowAttributesProvider windowAttributesProvider;
+
+    private final Element descriptor;
+    private final String screenClassName;
+
+    public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider, Element descriptor) {
+        checkNotNullArgument(id);
+        checkNotNullArgument(descriptor);
+
         this.id = id;
+        this.windowAttributesProvider = windowAttributesProvider;
         this.descriptor = descriptor;
-        this.screenAgent = screenAgent;
+        this.screenClassName = null;
+    }
+
+    public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider,
+                      String screenClassName) {
+        checkNotNullArgument(id);
+        checkNotNullArgument(screenClassName);
+
+        this.id = id;
+        this.windowAttributesProvider = windowAttributesProvider;
+        this.screenClassName = screenClassName;
+        this.descriptor = null;
     }
 
     /**
@@ -48,45 +67,50 @@ public class WindowInfo {
     }
 
     /**
-     * Screen template path as set in <code>screens.xml</code>
+     * JavaDoc
      */
-    public String getTemplate() {
-        return descriptor.attributeValue("template");
+    public Type getType() {
+        return windowAttributesProvider.getType(this);
     }
 
-    /**
-     * Screen class as set in <code>screens.xml</code>
-     */
-    @Nullable
-    public Class getScreenClass() {
-        if (screenClass == null) {
-            String className = descriptor.attributeValue("class");
-            if (className != null) {
-                Scripting scripting = AppBeans.get(Scripting.NAME);
-                screenClass = scripting.loadClass(className);
-            }
-        }
-
-        return screenClass;
-    }
-
-    public boolean getMultipleOpen() {
-        return Boolean.parseBoolean(descriptor.attributeValue("multipleOpen"));
+    @Nonnull
+    public Class<? extends Screen> getScreenClass() {
+        return windowAttributesProvider.getScreenClass(this);
     }
 
     /**
      * The whole XML element of the screen as set in <code>screens.xml</code>
      */
+    @Nullable
     public Element getDescriptor() {
         return descriptor;
     }
 
-    public void setDescriptor(Element descriptor) {
-        this.descriptor = descriptor;
+    /**
+     * Screen class as set in <code>screens.xml</code>
+     *
+     * JavaDoc
+     */
+    @Nullable
+    public String getScreenClassName() {
+        return screenClassName;
     }
 
-    public ScreenAgent getScreenAgent() {
-        return screenAgent;
+    /**
+     * Screen template path as set in <code>screens.xml</code>
+     *
+     * JavaDoc
+     */
+    @Nullable
+    public String getTemplate() {
+        return windowAttributesProvider.getTemplate(this);
+    }
+
+    /**
+     * JavaDoc
+     */
+    public boolean getMultipleOpen() {
+        return windowAttributesProvider.isMultiOpen(this);
     }
 
     @Override
@@ -94,6 +118,14 @@ public class WindowInfo {
         String template = getTemplate();
         return "id='" + id + '\'' +
                 (template != null ? ", template=" + template : "") +
-                (screenClass != null ? ", screenClass=" + screenClass : "");
+                (screenClassName != null ? ", screenClass=" + screenClassName : "");
+    }
+
+    /**
+     * Type of registered window.
+     */
+    public enum Type {
+        SCREEN,
+        FRAGMENT
     }
 }

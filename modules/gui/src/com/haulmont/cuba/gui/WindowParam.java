@@ -25,11 +25,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Identifies injectable fields in screen controllers, value for field comes from screen parameters
- *
  */
 @Target(value = ElementType.FIELD)
 @Retention(RUNTIME)
 public @interface WindowParam {
     String name() default "";
+
     boolean required() default false;
 }

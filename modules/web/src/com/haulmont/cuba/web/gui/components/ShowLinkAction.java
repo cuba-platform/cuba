@@ -18,6 +18,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -39,6 +42,7 @@ public class ShowLinkAction extends BaseAction {
         this.ds = ds;
         this.handler = handler;
 
+        Messages messages = AppBeans.get(Messages.NAME);
         setCaption(messages.getMainMessage("table.showLinkAction"));
     }
 
@@ -48,7 +52,9 @@ public class ShowLinkAction extends BaseAction {
             return;
         }
 
-        App.getInstance().getWindowManager().showMessageDialog(
+        Messages messages = AppBeans.get(Messages.NAME);
+        WindowManager wm = App.getInstance().getWindowManager();
+        wm.showMessageDialog(
                 messages.getMainMessage("table.showLinkAction"),
                 compileLink(ds),
                 Frame.MessageType.CONFIRMATION_HTML
@@ -58,6 +64,7 @@ public class ShowLinkAction extends BaseAction {
     protected String compileLink(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
+        Messages messages = AppBeans.get(Messages.NAME);
         sb.append(messages.getMainMessage("table.showLinkAction.link")).append("<br/>");
         sb.append("<textarea class=\"c-table-showlink-textarea\" autofocus=\"true\" readonly=\"true\">").
                 append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append("</textarea>");

@@ -23,11 +23,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
@@ -46,6 +42,7 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -377,7 +374,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
                 Map<String, Object> screenParams = prepareScreenParams();
 
-                Window lookupWindow = wm.openLookup(
+                AbstractLookup lookupWindow = (AbstractLookup) wm.openLookup(
                         windowConfig.getWindowInfo(windowAlias),
                         this::handleLookupWindowSelection,
                         openType,
@@ -385,7 +382,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 );
                 lookupWindow.addCloseListener(actionId -> {
                     // if value is selected then options datasource is refreshed in select handler
-                    if (!Window.Lookup.SELECT_ACTION_ID.equals(actionId)
+                    if (!Window.SELECT_ACTION_ID.equals(actionId)
                             && pickerField instanceof LookupPickerField) {
                         LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
@@ -690,6 +687,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             Map<String, Object> screenParams = prepareScreenParams();
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
+                Messages messages = AppBeans.get(Messages.NAME);
                 wm.showNotification(
                         messages.getMainMessage("OpenAction.objectIsDeleted"),
                         Frame.NotificationType.HUMANIZED);
@@ -697,7 +695,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
 
             if (!composition) {
-                entity = window.getDsContext().getDataSupplier().reload(entity, View.MINIMAL);
+                entity = LegacyFrame.of(window).getDsContext().getDataSupplier().reload(entity, View.MINIMAL);
             }
 
             String windowAlias = getEditScreen();
@@ -705,7 +703,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
             }
 
-            Window.Editor editor = wm.openEditor(
+            AbstractEditor editor = (AbstractEditor) wm.openEditor(
                     windowConfig.getWindowInfo(windowAlias),
                     entity,
                     openType,

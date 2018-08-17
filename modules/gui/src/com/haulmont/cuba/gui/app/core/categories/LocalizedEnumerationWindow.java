@@ -194,10 +194,10 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
         }
         enumValuesDs.commit();
 
-        close(COMMIT_ACTION_ID);
+        close(Window.COMMIT_ACTION_ID);
     }
 
     public void cancel() {
-        close(CLOSE_ACTION_ID);
+        close(Window.CLOSE_ACTION_ID);
     }
 }

@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 public class AppMenuLoader extends AbstractComponentLoader<AppMenu> {
     @Override
     public void createComponent() {
-        resultComponent = (AppMenu) factory.createComponent(AppMenu.NAME);
+        resultComponent = factory.createComponent(AppMenu.NAME);
         loadId(resultComponent, element);
     }
 

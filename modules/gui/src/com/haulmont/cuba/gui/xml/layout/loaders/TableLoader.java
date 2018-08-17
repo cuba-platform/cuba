@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Table;
 public class TableLoader extends AbstractTableLoader<Table> {
     @Override
     public void createComponent() {
-        resultComponent = (Table) factory.createComponent(Table.NAME);
+        resultComponent = factory.createComponent(Table.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }

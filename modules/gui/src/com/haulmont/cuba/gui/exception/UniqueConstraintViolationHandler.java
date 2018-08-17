@@ -23,8 +23,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -16,17 +16,19 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsHolder;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.PickerField;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
     @Override
     public void createComponent() {
-        resultComponent = (PickerField) factory.createComponent(PickerField.NAME);
+        resultComponent = factory.createComponent(PickerField.NAME);
         loadId(resultComponent, element);
     }
 
@@ -44,8 +46,7 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
 
         final String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            resultComponent.setMetaClass(metadata.getClassNN(metaClass));
+            resultComponent.setMetaClass(getMetadata().getClassNN(metaClass));
         }
 
         loadActions(resultComponent, element);
@@ -58,6 +59,10 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
         }
 
         loadBuffered(resultComponent, element);
+    }
+
+    protected Metadata getMetadata() {
+        return beanLocator.get(Metadata.NAME);
     }
 
     @Override

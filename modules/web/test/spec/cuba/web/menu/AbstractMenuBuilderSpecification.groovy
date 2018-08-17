@@ -28,7 +28,7 @@ abstract class AbstractMenuBuilderSpecification extends Specification {
 
     def configuration = new Configuration() {
         @Override
-        <T extends Config> T getConfig(Class<T> configInterface) {
+        Config getConfig(Class configInterface) {
             return null
         }
     }

@@ -18,9 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
@@ -48,18 +46,20 @@ public abstract class AbstractAction implements Action {
 
     protected PropertyChangeSupport changeSupport;
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
-
-    protected UserSession userSession;
-
     protected KeyCombination shortcut;
 
     protected boolean primary = false;
 
+    // legacy field
+    private Messages messages;
+
+    protected AbstractAction() {
+        // do not init messages here
+    }
+
     protected AbstractAction(String id) {
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        userSession = sessionSource.getUserSession();
         this.id = id;
+        this.messages = AppBeans.get(Messages.NAME); // legacy behaviour
     }
 
     protected AbstractAction(String id, @Nullable String shortcut) {
@@ -86,7 +86,12 @@ public abstract class AbstractAction implements Action {
     }
 
     protected String getDefaultCaption() {
-        return messages.getMessage(getClass(), id);
+        if (messages != null) {
+            // legacy behaviour
+            return messages.getMessage(getClass(), id);
+        } else {
+            return null;
+        }
     }
 
     @Override

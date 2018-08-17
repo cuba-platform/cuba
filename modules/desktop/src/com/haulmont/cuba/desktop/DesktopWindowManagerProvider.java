@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerImpl;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 
 import org.springframework.stereotype.Component;
@@ -25,17 +26,23 @@ import javax.swing.*;
 
 /**
  * Naive implementation of WindowManagerProvider. <br>
- * Always returns WindowManager of main application frame.
+ * Always returns WindowManagerImpl of main application frame.
  */
 @Component(WindowManagerProvider.NAME)
 public class DesktopWindowManagerProvider implements WindowManagerProvider {
     @Override
-    public WindowManager get() {
+    public WindowManagerImpl get() {
         if (!SwingUtilities.isEventDispatchThread())
-            throw new IllegalStateException("Could not access to WindowManager outside Event Dispatch Thread");
+            throw new IllegalStateException("Could not access to WindowManagerImpl outside Event Dispatch Thread");
 
         TopLevelFrame topFrame = App.getInstance().getMainFrame();
 
         return topFrame.getWindowManager();
+    }
+
+    @Override
+    public WindowManager getWm() {
+        // todo
+        return null;
     }
 }

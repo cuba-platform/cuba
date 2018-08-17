@@ -43,14 +43,14 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
     }
 
     protected void loadMaxLength(TextInputField.MaxLengthLimited component, Element element) {
-        final String maxLength = element.attributeValue("maxLength");
+        String maxLength = element.attributeValue("maxLength");
         if (StringUtils.isNotEmpty(maxLength)) {
             component.setMaxLength(Integer.parseInt(maxLength));
         }
     }
 
     protected void loadCaseConversion(TextInputField.CaseConversionSupported component, Element element) {
-        final String caseConversion = element.attributeValue("caseConversion");
+        String caseConversion = element.attributeValue("caseConversion");
         if (StringUtils.isNotEmpty(caseConversion)) {
             component.setCaseConversion(TextInputField.CaseConversion.valueOf(caseConversion));
             return;
@@ -70,12 +70,12 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
     }
 
     protected void loadTextChangeEventProperties(TextInputField.TextChangeNotifier component, Element element) {
-        final String textChangeEventMode = element.attributeValue("textChangeEventMode");
+        String textChangeEventMode = element.attributeValue("textChangeEventMode");
         if (StringUtils.isNotEmpty(textChangeEventMode)) {
             component.setTextChangeEventMode(TextInputField.TextChangeEventMode.valueOf(textChangeEventMode));
         }
 
-        final String textChangeTimeout = element.attributeValue("textChangeTimeout");
+        String textChangeTimeout = element.attributeValue("textChangeTimeout");
         if (StringUtils.isNotEmpty(textChangeTimeout)) {
             component.setTextChangeTimeout(Integer.parseInt(textChangeTimeout));
         }

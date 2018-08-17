@@ -19,9 +19,7 @@ package com.haulmont.cuba.gui.dynamicattributes;
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -32,7 +30,9 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -51,6 +51,8 @@ public class FilteringLookupAction extends PickerField.LookupAction {
     private ExtendedEntities extendedEntities;
     private String joinClause;
     private String whereClause;
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public FilteringLookupAction(PickerField pickerField, String joinClause, String whereClause) {
         super(pickerField);
@@ -76,9 +78,10 @@ public class FilteringLookupAction extends PickerField.LookupAction {
             }
         });
         if (!found) {
-            target.getFrame().showNotification(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"), Frame.NotificationType.WARNING);
+            LegacyFrame.of(target.getFrame()).showNotification(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"), Frame.NotificationType.WARNING);
         }
-        ((DsContextImplementation) lookupWindow.getDsContext()).resumeSuspended();
+        AbstractWindow controller = (AbstractWindow) (lookupWindow).getFrameOwner();
+        ((DsContextImplementation) controller.getDsContext()).resumeSuspended();
     }
 
     protected void applyFilter(Filter filterComponent) {
@@ -87,6 +90,8 @@ public class FilteringLookupAction extends PickerField.LookupAction {
         filterEntity.setComponentId(ComponentsHelper.getFilterComponentPath(filterComponent));
         filterEntity.setName(messages.getMainMessage("dynamicAttributes.entity.filter"));
         filterEntity.setXml(createFilterXml(filterComponent));
+
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         filterEntity.setUser(userSession.getCurrentOrSubstitutedUser());
 
         filterComponent.setFilterEntity(filterEntity);

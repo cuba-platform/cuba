@@ -107,6 +107,10 @@ public interface OptionsField<V, I> extends Field<V> {
         }
         return null;
     }
+
+    /**
+     * JavaDoc
+     */
     @Deprecated
     default void setOptionsMap(Map<String, I> map) {
         Preconditions.checkNotNullArgument(map);
@@ -117,6 +121,7 @@ public interface OptionsField<V, I> extends Field<V> {
         setOptionCaptionProvider(v -> biMap.inverse().get(v));
     }
 
+    @SuppressWarnings("unchecked")
     @Deprecated
     default Class<? extends EnumClass> getOptionsEnum() {
         OptionsSource optionsSource = getOptionsSource();
@@ -125,6 +130,10 @@ public interface OptionsField<V, I> extends Field<V> {
         }
         return null;
     }
+
+    /**
+     * JavaDoc
+     */
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setOptionsEnum(Class<V> optionsEnum) {

@@ -18,8 +18,11 @@ package spec.cuba.global.events
 
 import com.haulmont.bali.events.EventHub
 import spec.cuba.global.events.eventtypes.ButtonClickEvent
+import spec.cuba.global.events.eventtypes.InitEvent
 import spec.cuba.global.events.eventtypes.TextChangeEvent
 import spock.lang.Specification
+
+import java.util.function.Consumer
 
 @SuppressWarnings("GroovyPointlessBoolean")
 class EventHubTest extends Specification {
@@ -28,97 +31,122 @@ class EventHubTest extends Specification {
         def eventHub = new EventHub()
 
         when:
+
         def subscription = eventHub.subscribe(TextChangeEvent.class, { TextChangeEvent event ->
             // do nothing
         })
 
         then:
+
         eventHub.hasSubscriptions(TextChangeEvent.class) == true
 
         when:
+
         subscription.remove()
 
         then:
+
         eventHub.hasSubscriptions(TextChangeEvent.class) == false
     }
 
     def "add and publish listener"() {
         def eventHub = new EventHub()
+        def tListener = Mock(Consumer)
+        def bListener = Mock(Consumer)
 
         when:
-        def tCount = 0
-        def bCount = 0
 
-        eventHub.subscribe(TextChangeEvent.class, { TextChangeEvent event ->
-            tCount++
-        })
-        eventHub.subscribe(ButtonClickEvent.class, { ButtonClickEvent event ->
-            bCount++
-        })
+        eventHub.subscribe(TextChangeEvent.class, tListener)
+        eventHub.subscribe(ButtonClickEvent.class, bListener)
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
 
         then:
-        tCount == 1
-        bCount == 0
+
+        1 * tListener.accept(_)
+        0 * bListener.accept(_)
     }
 
     def "unsubscribe"() {
         def eventHub = new EventHub()
+        def listener = Mock(Consumer)
 
         when:
-        def count = 0
-        def subscription = eventHub.subscribe(TextChangeEvent.class, { TextChangeEvent event ->
-            count++
-        })
+
+        def subscription = eventHub.subscribe(TextChangeEvent.class, listener)
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
 
         then:
-        count == 1
+
+        1 * listener.accept(_)
 
         when:
+
         subscription.remove()
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
 
         then:
-        count == 1
+
+        0 * listener.accept(_)
     }
 
     def "repeated subscription"() {
         def eventHub = new EventHub()
+        def listener = Mock(Consumer)
 
         when:
-        def count = 0
-        def listener = { TextChangeEvent event ->
-            count++
-        }
 
         def subscription1 = eventHub.subscribe(TextChangeEvent.class, listener)
         def subscription2 = eventHub.subscribe(TextChangeEvent.class, listener)
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
 
         then:
-        count == 1
+
+        1 * listener.accept(_)
 
         when:
+
         subscription1.remove()
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
         subscription2.remove()
         eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
 
         then:
-        count == 1
+
+        0 * listener.accept(_)
     }
 
     def "remove event listener when empty"() {
         def eventHub = new EventHub()
+        def listener = Mock(Consumer)
 
         when:
-        def listener = { TextChangeEvent event ->
-            count++
-        }
+
         eventHub.unsubscribe(TextChangeEvent.class, listener)
 
         then:
+
         eventHub.hasSubscriptions(TextChangeEvent.class) == false
+    }
+
+    def "trigger once event listeners removed after invocation"() {
+        def eventHub = new EventHub()
+        def listener = Mock(Consumer)
+
+        when:
+
+        eventHub.subscribe(InitEvent.class, listener)
+        eventHub.publish(InitEvent.class, new InitEvent(this))
+
+        then:
+
+        1 * listener.accept(_)
+
+        when:
+
+        eventHub.publish(InitEvent.class, new InitEvent(this))
+
+        then:
+
+        0 * listener.accept(_)
     }
 }

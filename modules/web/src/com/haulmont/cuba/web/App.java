@@ -17,17 +17,21 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Events;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
+import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -41,6 +45,7 @@ import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.sys.WebScreens;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -86,30 +91,26 @@ public abstract class App {
 
     @Inject
     protected GlobalConfig globalConfig;
-
     @Inject
     protected WebConfig webConfig;
-
     @Inject
     protected WebAuthConfig webAuthConfig;
 
     @Inject
     protected WindowConfig windowConfig;
-
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
-
     @Inject
     protected UserSessionService userSessionService;
-
     @Inject
     protected MessageTools messageTools;
-
     @Inject
     protected SettingsClient settingsClient;
 
     @Inject
     protected Events events;
+    @Inject
+    protected BeanLocator beanLocator;
 
     protected AppCookies cookies;
 
@@ -172,7 +173,7 @@ public abstract class App {
     /**
      * @return currently displayed top-level window
      */
-    public Window.TopLevelWindow getTopLevelWindow() {
+    public RootWindow getTopLevelWindow() {
         return getAppUI().getTopLevelWindow();
     }
 
@@ -280,29 +281,47 @@ public abstract class App {
      * Called on each browser tab initialization.
      */
     public void createTopLevelWindow(AppUI ui) {
-        WebWindowManager wm = AppBeans.getPrototype(WebWindowManager.NAME);
-        wm.setUi(ui);
+        setUiServices(ui);
 
         String topLevelWindowId = routeTopLevelWindowId();
-        wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
+        WindowInfo windowInfo = windowConfig.getWindowInfo(topLevelWindowId);
+
+        Screens screens = ui.getScreens();
+
+        Screen screen = screens.create(windowInfo, OpenMode.ROOT);
+        screens.show(screen);
+    }
+
+    protected void setUiServices(AppUI ui) {
+        // screens depends on the previous beans
+        Screens screens = beanLocator.getPrototype(Screens.NAME, ui);
+        ui.setScreens(screens);
     }
 
     protected abstract String routeTopLevelWindowId();
 
+    // todo move to UI
     public void createTopLevelWindow() {
         createTopLevelWindow(AppUI.getCurrent());
     }
 
     /**
-     * Initialize new TopLevelWindow and replace current
+     * Initialize new TopLevelWindow and replace current.
+     *
+     * todo move to UI
      *
      * @param topLevelWindowId target top level window id
      */
     public void navigateTo(String topLevelWindowId) {
-        WebWindowManager wm = AppBeans.getPrototype(WebWindowManager.NAME);
-        wm.setUi(AppUI.getCurrent());
+        AppUI ui = AppUI.getCurrent();
+        setUiServices(ui);
 
-        wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
+        WindowInfo windowInfo = windowConfig.getWindowInfo(topLevelWindowId);
+
+        Screens screens = ui.getScreens();
+
+        Screen screen = screens.create(windowInfo.getScreenClass(), OpenMode.ROOT);
+        screens.show(screen);
     }
 
     /**
@@ -375,16 +394,17 @@ public abstract class App {
     }
 
     /**
-     * @return WindowManager instance or null if the current UI has no MainWindow
+     * @return WindowManagerImpl instance or null if the current UI has no MainWindow
      */
-    public WebWindowManager getWindowManager() {
+    public WebScreens getWindowManager() {
         if (getAppUI() == null) {
             return null;
         }
 
-        Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+        // todo change this, WindowManager should be bound to UI
+        RootWindow topLevelWindow = getTopLevelWindow();
 
-        return topLevelWindow != null ? (WebWindowManager) topLevelWindow.getWindowManager() : null;
+        return topLevelWindow != null ? (WebScreens) topLevelWindow.getWindowManager() : null;
     }
 
     public AppLog getAppLog() {
@@ -465,15 +485,18 @@ public abstract class App {
         try {
             for (AppUI ui : getAppUIs()) {
                 ui.accessSynchronously(() -> {
-                    Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
-                    if (topLevelWindow != null) {
-                        WebWindowManager webWindowManager = (WebWindowManager) topLevelWindow.getWindowManager();
-                        webWindowManager.disableSavingScreenHistory = true;
-                        webWindowManager.closeAll();
+                    WindowManager wm = ui.getWindowManager();
+                    if (wm != null) {
+                        //  todo implement
+                        wm.removeAll();
+
+//                        WebWindowManagerImpl webWindowManager = (WebWindowManagerImpl) topLevelWindow.getWindowManager();
+//                        webWindowManager.setDisableSavingScreenHistory(true);
+//                        webWindowManager.closeAll();
                     }
 
                     // also remove all native Vaadin windows, that is not under CUBA control
-                    for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
+                    for (com.vaadin.ui.Window win : ui.getWindows().toArray(new com.vaadin.ui.Window[0])) {
                         ui.removeWindow(win);
                     }
                 });
@@ -490,44 +513,54 @@ public abstract class App {
     /**
      * Try to perform logout. If there are unsaved changes in opened windows then logout will not be performed and
      * unsaved changes dialog will appear.
+     *
+     * @deprecated Use {@link #logout()} instead.
+     *
+     * @param runWhenLoggedOut runnable that will be invoked if user decides to logout
      */
-    public void logout() {
-        logout(null);
+    @Deprecated
+    public void logout(@Nullable Runnable runWhenLoggedOut) {
+        logout().then(runWhenLoggedOut);
     }
 
     /**
      * Try to perform logout. If there are unsaved changes in opened windows then logout will not be performed and
      * unsaved changes dialog will appear.
      *
-     * @param runWhenLoggedOut runnable that will be invoked if user decides to logout
+     * @return operation result object
      */
-    public void logout(@Nullable Runnable runWhenLoggedOut) {
+    public OperationResult logout() {
         try {
-            Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+            RootWindow topLevelWindow = getTopLevelWindow();
             if (topLevelWindow != null) {
                 topLevelWindow.saveSettings();
 
-                WebWindowManager wm = (WebWindowManager) topLevelWindow.getWindowManager();
-                wm.checkModificationsAndCloseAll(() -> {
+                WebScreens windowManager = (WebScreens) topLevelWindow.getWindowManager();
+
+                if (!windowManager.hasUnsavedChanges()) {
+                    closeAllWindows();
+
                     Connection connection = getConnection();
                     connection.logout();
 
-                    if (runWhenLoggedOut != null) {
-                        runWhenLoggedOut.run();
-                    }
-                });
+                    return OperationResult.success();
+                }
+
+                return OperationResult.fail();
             } else {
                 Connection connection = getConnection();
                 connection.logout();
 
-                if (runWhenLoggedOut != null) {
-                    runWhenLoggedOut.run();
-                }
+                return OperationResult.success();
             }
         } catch (Exception e) {
             log.error("Error on logout", e);
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
-            AppUI.getCurrent().getPage().open(url, "_self");
+            AppUI ui = AppUI.getCurrent();
+            if (ui != null) {
+                ui.getPage().open(url, "_self");
+            }
+            return new UnknownOperationResult();
         }
     }
 }

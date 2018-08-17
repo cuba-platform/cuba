@@ -31,7 +31,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
     @Override
     public void createComponent() {
-        resultComponent = (DateField) factory.createComponent(DateField.NAME);
+        resultComponent = factory.createComponent(DateField.NAME);
         loadId(resultComponent, element);
     }
 
@@ -67,7 +67,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         if (StringUtils.isNotEmpty(dateFormat)) {
             formatStr = loadResourceString(dateFormat);
         } else if (StringUtils.isNotEmpty(mainDateFormat)) {
-            formatStr = messages.getMainMessage(mainDateFormat);
+            formatStr = getMessages().getMainMessage(mainDateFormat);
         }
         if (StringUtils.isNotEmpty(formatStr)) {
             resultComponent.setDateFormat(formatStr);

@@ -19,42 +19,51 @@ package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.sys.BeanLocatorImpl;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
-import mockit.Expectations;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.emptyMap;
+import static org.junit.Assert.assertEquals;
+
+@SuppressWarnings("ReassignmentInjectVariable")
 public class XmlInheritanceTest extends CubaClientTestCase {
 
-    private Resources resources;
-    private ScreenXmlParser screenXmlParser;
+    protected Resources resources;
+    protected ScreenXmlParser screenXmlParser;
+    protected BeanLocator beanLocator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
         resources = new ResourcesImpl(getClass().getClassLoader());
         screenXmlParser = new ScreenXmlParser();
+        beanLocator = new BeanLocatorImpl() {
+            @Override
+            public <T> T getPrototype(String name, Object... args) {
+                if (XmlInheritanceProcessor.NAME.equals(name)) {
+                    XmlInheritanceProcessor processor = new XmlInheritanceProcessor((Document) args[0], (Map) args[1]) {
+                        {
+                            resources = XmlInheritanceTest.this.resources;
+                            screenXmlParser = XmlInheritanceTest.this.screenXmlParser;
+                            beanLocator = XmlInheritanceTest.this.beanLocator;
+                        }
+                    };
+                    return (T) processor;
+                }
 
-        new Expectations() {
-            {
-                AppBeans.get(Resources.NAME); result = resources; minTimes = 0;
-                AppBeans.get(Resources.class); result = resources; minTimes = 0;
-                AppBeans.get(Resources.NAME, Resources.class); result = resources; minTimes = 0;
-
-                AppBeans.get(ScreenXmlParser.NAME); result = screenXmlParser; minTimes = 0;
-                AppBeans.get(ScreenXmlParser.class); result = screenXmlParser; minTimes = 0;
-                AppBeans.get(ScreenXmlParser.NAME, ScreenXmlParser.class); result = screenXmlParser; minTimes = 0;
+                return super.getPrototype(name, args);
             }
         };
     }
@@ -63,28 +72,34 @@ public class XmlInheritanceTest extends CubaClientTestCase {
     public void testExtIndexNew() {
         int index = getIndexOfMovedField("com/haulmont/cuba/gui/xml/test-extends-screen-new.xml", "test");
 
-        Assert.assertEquals(3, index);
+        assertEquals(3, index);
     }
 
     @Test
     public void testExtIndexExtended() {
         int index = getIndexOfMovedField("com/haulmont/cuba/gui/xml/test-extends-screen-old.xml", "login");
 
-        Assert.assertEquals(3, index);
+        assertEquals(3, index);
     }
 
     @Test
     public void testExtIndexExtendedDown() {
         int index = getIndexOfMovedField("com/haulmont/cuba/gui/xml/test-extends-screen-old-down.xml", "name");
 
-        Assert.assertEquals(0, index);
+        assertEquals(0, index);
     }
 
     @Test
     public void testExtIndexExtendedUp() {
         Document document = Dom4j.readDocument(resources.getResourceAsStream("com/haulmont/cuba/gui/xml/test-extends-screen-old-up.xml"));
 
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, Collections.emptyMap());
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, emptyMap()) {
+            {
+                resources = XmlInheritanceTest.this.resources;
+                screenXmlParser = XmlInheritanceTest.this.screenXmlParser;
+                beanLocator = XmlInheritanceTest.this.beanLocator;
+            }
+        };
         Element resultXml = processor.getResultRoot();
 
         Element layoutElement = resultXml.element("layout");
@@ -101,13 +116,19 @@ public class XmlInheritanceTest extends CubaClientTestCase {
             index++;
         }
 
-        Assert.assertEquals(7, index);
+        assertEquals(7, index);
     }
 
     private int getIndexOfMovedField(String extendedXml, String fieldName) {
         Document document = Dom4j.readDocument(resources.getResourceAsStream(extendedXml));
 
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, Collections.emptyMap());
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, emptyMap()) {
+            {
+                resources = XmlInheritanceTest.this.resources;
+                screenXmlParser = XmlInheritanceTest.this.screenXmlParser;
+                beanLocator = XmlInheritanceTest.this.beanLocator;
+            }
+        };
         Element resultXml = processor.getResultRoot();
 
         Element layoutElement = resultXml.element("layout");

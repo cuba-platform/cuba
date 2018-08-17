@@ -48,9 +48,6 @@ import java.util.Set;
 
 public abstract class AbstractDataGridLoader<T extends DataGrid> extends ActionsHolderLoader<T> {
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
-
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
 
@@ -368,8 +365,9 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                             categoryAttribute.getLocaleName() :
                             StringUtils.capitalize(categoryAttribute.getName());
                 } else {
-                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(column.getPropertyPath());
-                    columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
+                    MetaClass propertyMetaClass = getMetadataTools().getPropertyEnclosingMetaClass(column.getPropertyPath());
+
+                    columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);
                 }
             } else {
                 Class<?> declaringClass = ds.getMetaClass().getJavaClass();
@@ -378,7 +376,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 if (i > -1) {
                     className = className.substring(i + 1);
                 }
-                columnCaption = messages.getMessage(declaringClass, className + "." + id);
+                columnCaption = getMessages().getMessage(declaringClass, className + "." + id);
             }
             column.setCaption(columnCaption);
         } else {
@@ -434,10 +432,18 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         return null;
     }
 
+    protected MetadataTools getMetadataTools() {
+        return beanLocator.get(MetadataTools.NAME);
+    }
+
+    protected DynamicAttributesGuiTools getDynamicAttributesGuiTools() {
+        return beanLocator.get(DynamicAttributesGuiTools.NAME);
+    }
+
     protected void addDynamicAttributes(DataGrid component, Datasource ds, List<Column> availableColumns) {
-        if (metadataTools.isPersistent(ds.getMetaClass())) {
+        if (getMetadataTools().isPersistent(ds.getMetaClass())) {
             Set<CategoryAttribute> attributesToShow =
-                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(),
+                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(),
                             context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 ds.setLoadDynamicAttributes(true);
@@ -463,7 +469,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 }
             }
 
-            dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
+            getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
         }
     }
 

@@ -35,6 +35,7 @@ import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingListener;
 import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -51,7 +52,9 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.sys.ScreenHistorySupport;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -82,9 +85,8 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
 import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml;
 
-public class DesktopWindowManager extends WindowManager {
+public class DesktopWindowManager extends WindowManagerImpl {
 
     private static final Logger log = LoggerFactory.getLogger(DesktopWindowManager.class);
     private Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
@@ -1025,8 +1027,8 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     protected void showFrame(Component parent, Frame frame) {
         // the same as web window manager does
-        if (parent instanceof Component.Container) {
-            Component.Container container = (Component.Container) parent;
+        if (parent instanceof ComponentContainer) {
+            ComponentContainer container = (ComponentContainer) parent;
             for (Component c : container.getComponents()) {
                 if (c instanceof Component.Disposable) {
                     Component.Disposable disposable =
@@ -1094,7 +1096,6 @@ public class DesktopWindowManager extends WindowManager {
                 tabs.remove(layout);
                 stacks.remove(windowBreadCrumbs);
 
-                fireListeners(window, tabs.size() != 0);
                 if (!isMainWindowManager) {
                     closeFrame(getFrame());
                 }
@@ -1148,7 +1149,6 @@ public class DesktopWindowManager extends WindowManager {
                     }
                 }
 
-                fireListeners(window, tabs.size() != 0);
                 break;
             }
 
@@ -1198,8 +1198,8 @@ public class DesktopWindowManager extends WindowManager {
         DesktopConfig config = configuration.getConfig(DesktopConfig.class);
 
         if (!NotificationType.isHTML(type)) {
-            caption = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(caption)));
-            description = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(description)));
+            caption = preprocessHtmlMessage(StringEscapeUtils.escapeHtml4(Strings.nullToEmpty(caption)));
+            description = preprocessHtmlMessage(StringEscapeUtils.escapeHtml4(Strings.nullToEmpty(description)));
         }
 
         String text = preparePopupText(caption, description);
@@ -1432,7 +1432,7 @@ public class DesktopWindowManager extends WindowManager {
 
         String msg = message;
         if (!MessageType.isHTML(messageType)) {
-            msg = StringEscapeUtils.escapeHtml(msg);
+            msg = StringEscapeUtils.escapeHtml4(msg);
             msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
         } else {
             msg = "<html>" + msg + "</html>";
@@ -1778,7 +1778,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     /**
-     * Release resources right before throwing away this WindowManager instance.
+     * Release resources right before throwing away this WindowManagerImpl instance.
      */
     public void dispose() {
         for (WindowOpenInfo openInfo : windowOpenMode.values()) {
@@ -2148,21 +2148,21 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         @Override
-        public Component.ActionOwner getOwner() {
+        public ActionOwner getOwner() {
             return null;
         }
 
         @Override
-        public Collection<Component.ActionOwner> getOwners() {
+        public Collection<ActionOwner> getOwners() {
             return Collections.emptyList();
         }
 
         @Override
-        public void addOwner(Component.ActionOwner actionOwner) {
+        public void addOwner(ActionOwner actionOwner) {
         }
 
         @Override
-        public void removeOwner(Component.ActionOwner actionOwner) {
+        public void removeOwner(ActionOwner actionOwner) {
         }
 
         @Override

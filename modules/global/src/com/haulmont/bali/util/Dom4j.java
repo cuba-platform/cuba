@@ -144,16 +144,28 @@ public final class Dom4j {
         }
     }
 
+    /**
+     * @deprecated Use Dom4j API.
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element) {
         return element.elements();
     }
 
+    /**
+     * @deprecated Use Dom4j API.
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element, String name) {
         return element.elements(name);
     }
 
+    /**
+     * @deprecated Use Dom4j API.
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static List<Attribute> attributes(Element element) {
         return element.attributes();

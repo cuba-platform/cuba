@@ -21,7 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.springframework.context.annotation.Scope;
 
@@ -62,7 +63,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
     protected Window.Lookup.Handler handler;
-    protected WindowManager.OpenType openType;
+    protected OpenType openType;
     protected AfterAddHandler afterAddHandler;
 
     protected String windowId;
@@ -98,7 +99,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param openType  how to open the editor screen
      */
     public static AddAction create(ListComponent target, @Nullable Window.Lookup.Handler handler,
-                                   WindowManager.OpenType openType) {
+                                   OpenType openType) {
         return AppBeans.getPrototype("cuba_AddAction", target, handler, openType);
     }
 
@@ -110,7 +111,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param id        action's name
      */
     public static AddAction create(ListComponent target, @Nullable Window.Lookup.Handler handler,
-                                   WindowManager.OpenType openType, String id) {
+                                   OpenType openType, String id) {
         return AppBeans.getPrototype("cuba_AddAction", target, handler, openType, id);
     }
 
@@ -122,7 +123,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param target    component containing this action
      */
     public AddAction(ListComponent target) {
-        this(target, null, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+        this(target, null, OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
@@ -131,7 +132,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      */
     public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler) {
-        this(target, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+        this(target, handler, OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
@@ -140,7 +141,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      * @param openType  how to open the editor screen
      */
-    public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler, OpenType openType) {
         this(target, handler, openType, ACTION_ID);
     }
 
@@ -152,12 +153,14 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param id        action's name
      */
     public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler,
-                     WindowManager.OpenType openType, String id) {
+                     OpenType openType, String id) {
         super(id, null);
 
         this.target = target;
         this.handler = handler;
         this.openType = openType;
+
+        Messages messages = AppBeans.get(Messages.NAME);
         this.caption = messages.getMainMessage("actions.Add");
 
         this.icon = AppBeans.get(Icons.class).get(CubaIcon.ADD_ACTION);
@@ -214,7 +217,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
         Window.Lookup.Handler handler = getHandler();
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
-        Window lookupWindow = target.getFrame().openLookup(getWindowId(), itemsHandler, getOpenType(), params);
+        Window lookupWindow = LegacyFrame.of(target.getFrame()).openLookup(getWindowId(), itemsHandler, getOpenType(), params);
         if (target instanceof Component.Focusable) {
             lookupWindow.addCloseListener(actionId -> {
                 // move focus to owner
@@ -258,7 +261,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @return  lookup screen open type
      */
     @Override
-    public WindowManager.OpenType getOpenType() {
+    public OpenType getOpenType() {
         return openType;
     }
 
@@ -266,7 +269,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      * @param openType  lookup screen open type
      */
     @Override
-    public void setOpenType(WindowManager.OpenType openType) {
+    public void setOpenType(OpenType openType) {
         this.openType = openType;
     }
 

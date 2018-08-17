@@ -18,12 +18,18 @@
 package com.haulmont.cuba.gui;
 
 /**
- * Provides current client specific WindowManager
+ * Provides current client specific WindowManagerImpl.
  *
+ * @deprecated Use {@link com.haulmont.cuba.core.global.BeanLocator} with {@link Screens#NAME} instead.
  */
+@Deprecated
 public interface WindowManagerProvider {
 
     String NAME = "cuba_WindowManagerProvider";
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.core.global.BeanLocator} with {@link Screens#NAME} instead.
+     */
+    @Deprecated
     WindowManager get();
 }

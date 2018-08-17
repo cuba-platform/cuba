@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -76,27 +75,21 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected String messagesPack;
     protected Context context;
 
-    // todo create loaders with Spring
-    protected Security security = AppBeans.get(Security.NAME);
-
-    protected Messages messages = AppBeans.get(Messages.NAME);
-    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-    protected Scripting scripting = AppBeans.get(Scripting.NAME);
-    protected Resources resources = AppBeans.get(Resources.NAME);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected Configuration configuration = AppBeans.get(Configuration.NAME);
-    protected ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-    protected ThemeConstants themeConstants;
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig layoutLoaderConfig;
     protected Element element;
 
     protected T resultComponent;
 
+    protected BeanLocator beanLocator;
+
     protected AbstractComponentLoader() {
-        ThemeConstantsManager themeConstantsManager = AppBeans.get(ThemeConstantsManager.NAME);
-        this.themeConstants = themeConstantsManager.getConstants();
+
+    }
+
+    @Override
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 
     @Override
@@ -164,6 +157,31 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         this.layoutLoaderConfig = layoutLoaderConfig;
     }
 
+    protected Security getSecurity() {
+        return beanLocator.get(Security.NAME);
+    }
+
+    protected Messages getMessages() {
+        return beanLocator.get(Messages.NAME);
+    }
+
+    protected MessageTools getMessageTools() {
+        return beanLocator.get(MessageTools.NAME);
+    }
+
+    protected Scripting getScripting() {
+        return beanLocator.get(Scripting.NAME);
+    }
+
+    protected Configuration getConfiguration() {
+        return beanLocator.get(Configuration.NAME);
+    }
+
+    protected ThemeConstants getTheme() {
+        ThemeConstantsManager manager = beanLocator.get(ThemeConstantsManager.NAME);
+        return manager.getConstants();
+    }
+
     protected void loadId(Component component, Element element) {
         String id = element.attributeValue("id");
         component.setId(id);
@@ -199,13 +217,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
                 // vaadin8 move to ValueBinder !
                 if (propertyPath != null
-                        && !security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+                        && !getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                     ((Component.Editable) component).setEditable(false);
                     return;
                 }
             }
 
-            final String editable = element.attributeValue("editable");
+            String editable = element.attributeValue("editable");
             if (!StringUtils.isEmpty(editable)) {
                 ((Component.Editable) component).setEditable(Boolean.parseBoolean(editable));
             }
@@ -252,7 +270,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             MetaPropertyPath propertyPath = wiredComponent.getMetaPropertyPath();
 
             if (propertyPath != null
-                    && !security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
+                    && !getSecurity().isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                 component.setVisible(false);
                 return false;
             }
@@ -286,19 +304,19 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             return caption;
         }
 
-        return messageTools.loadString(messagesPack, caption);
+        return getMessageTools().loadString(messagesPack, caption);
     }
 
     protected String loadThemeString(String value) {
         if (value != null && value.startsWith(ThemeConstants.PREFIX)) {
-            value = themeConstants.get(value.substring(ThemeConstants.PREFIX.length()));
+            value = getTheme().get(value.substring(ThemeConstants.PREFIX.length()));
         }
         return value;
     }
 
     protected int loadThemeInt(String value) {
         if (value != null && value.startsWith(ThemeConstants.PREFIX)) {
-            value = themeConstants.get(value.substring(ThemeConstants.PREFIX.length()));
+            value = getTheme().get(value.substring(ThemeConstants.PREFIX.length()));
         }
         return value == null ? 0 : Integer.parseInt(value);
     }
@@ -315,7 +333,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
-        final String height = element.attributeValue("height");
+        String height = element.attributeValue("height");
         if ("auto".equalsIgnoreCase(height)) {
             component.setHeight(Component.AUTO_SIZE);
         } else if (!StringUtils.isBlank(height)) {
@@ -441,8 +459,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         String iconPath = null;
 
         if (ICON_NAME_REGEX.matcher(icon).matches()) {
-            iconPath = AppBeans.get(Icons.class)
-                    .get(icon);
+            iconPath = beanLocator.get(Icons.class).get(icon);
         }
 
         if (StringUtils.isEmpty(iconPath)) {
@@ -455,18 +472,18 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     @SuppressWarnings("unchecked")
     protected Field.Validator loadValidator(Element validatorElement) {
-        final String className = validatorElement.attributeValue("class");
-        final String scriptPath = validatorElement.attributeValue("script");
-        final String script = validatorElement.getText();
+        String className = validatorElement.attributeValue("class");
+        String scriptPath = validatorElement.attributeValue("script");
+        String script = validatorElement.getText();
 
         Field.Validator validator = null;
 
         if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
             validator = new ScriptValidator(validatorElement, getMessagesPack());
         } else {
-            Class aClass = scripting.loadClass(className);
+            Class aClass = getScripting().loadClass(className);
             if (aClass == null)
-                throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
+                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
                     validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
@@ -480,12 +497,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     try {
                         validator = (Field.Validator) ReflectionHelper.newInstance(aClass);
                     } catch (NoSuchMethodException e1) {
-                        //
+                        // todo log warn
                     }
                 }
             }
             if (validator == null) {
-                throw new GuiDevelopmentException("Validator class " + aClass + " has no supported constructors",
+                throw new GuiDevelopmentException(
+                        String.format("Validator class %s has no supported constructors", aClass),
                         context.getFullFrameId());
             }
         }
@@ -495,6 +513,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected Field.Validator getDefaultValidator(MetaProperty property) {
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
+            Messages messages = getMessages();
+
             Class type = property.getRange().asDatatype().getJavaClass();
             if (type.equals(Integer.class)) {
                 validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
@@ -517,7 +537,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         if (actionsEl == null)
             return;
 
-        for (Element actionEl : Dom4j.elements(actionsEl, "action")) {
+        for (Element actionEl : actionsEl.elements("action")) {
             actionsHolder.addAction(loadDeclarativeAction(actionsHolder, actionEl));
         }
     }
@@ -629,12 +649,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             String methodName = splittedShortcut[1].substring(0, splittedShortcut[1].length() - 1);
 
             //noinspection unchecked
-            Class<Config> configClass = (Class<Config>) scripting.loadClass(fqnConfigName);
+            Class<Config> configClass = (Class<Config>) getScripting().loadClass(fqnConfigName);
             if (configClass != null) {
-                Config config = configuration.getConfig(configClass);
+                Config config = getConfiguration().getConfig(configClass);
 
                 try {
-                    String shortcutValue = (String) MethodUtils.invokeMethod(config, methodName, (Object[]) null);
+                    String shortcutValue = (String) MethodUtils.invokeMethod(config, methodName);
                     if (StringUtils.isNotEmpty(shortcutValue)) {
                         return shortcutValue;
                     }
@@ -660,6 +680,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         if (shortcut.endsWith("_SHORTCUT}")) {
             String alias = shortcut.substring(2, shortcut.length() - 1);
             if (shortcutAliases.containsKey(alias)) {
+                ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
                 return shortcutAliases.get(alias).apply(clientConfig);
             } else {
                 String message = String.format("An error occurred while loading shortcut. " +
@@ -718,7 +739,9 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                         openType = WindowManager.OpenType.valueOf(openTypeString);
                     } catch (IllegalArgumentException e) {
                         throw new GuiDevelopmentException(
-                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
+                                String.format("Unknown open type: '%s' for action: '%s'", openTypeString, id),
+                                context.getFullFrameId()
+                        );
                     }
 
                     if (action instanceof PickerField.LookupAction) {
@@ -735,7 +758,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected Function<?, String> loadFormatter(Element element) {
-        final Element formatterElement = element.element("formatter");
+        Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
 
@@ -743,7 +766,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentFrameId());
             }
 
-            Class<?> aClass = scripting.loadClass(className);
+            Class<?> aClass = getScripting().loadClass(className);
             if (aClass == null) {
                 throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
             }
@@ -754,7 +777,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     //noinspection unchecked
                     return (Function<?, String>) constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
-                    throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e.toString(),
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e.toString()),
                             context.getFullFrameId());
                 }
             } catch (NoSuchMethodException e) {
@@ -762,7 +786,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     //noinspection unchecked
                     return (Function<?, String>) aClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e1) {
-                    throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e1.toString(),
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e1.toString()),
                             context.getFullFrameId());
                 }
             }
@@ -796,21 +821,32 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return getLoader(element, loaderClass);
     }
 
+    // todo move to LayoutLoaderConfig
     protected ComponentLoader getLoader(Element element, Class<? extends ComponentLoader> loaderClass) {
+        Constructor<? extends ComponentLoader> constructor;
+        try {
+            constructor = loaderClass.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new GuiDevelopmentException(
+                    String.format("Unable to find constructor for loader: %s %s", loaderClass, e),
+                    context.getFullFrameId());
+        }
+
         ComponentLoader loader;
         try {
-            Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor();
             loader = constructor.newInstance();
-
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-            loader.setContext(context);
-            loader.setLayoutLoaderConfig(layoutLoaderConfig);
-            loader.setFactory(factory);
-            loader.setElement(element);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
+        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("Loader instantiate error in: " + context.getFullFrameId(), e);
         }
+
+        loader.setBeanLocator(beanLocator);
+
+        loader.setLocale(locale);
+        loader.setMessagesPack(messagesPack);
+        loader.setContext(context);
+        loader.setLayoutLoaderConfig(layoutLoaderConfig);
+        loader.setFactory(factory);
+        loader.setElement(element);
 
         return loader;
     }
@@ -825,7 +861,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected void loadFocusable(Component.Focusable component, Element element) {
         String focusable = element.attributeValue("focusable");
         if (StringUtils.isNotBlank(focusable)) {
-            component.setFocusable(Boolean.valueOf(focusable));
+            component.setFocusable(Boolean.parseBoolean(focusable));
         }
     }
 }

@@ -17,13 +17,14 @@
 
 package com.haulmont.cuba.web.app.ui.jmxinstance.browse;
 
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 
 import javax.inject.Named;
 import java.util.Map;
+
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class JmxInstanceBrowser extends AbstractLookup {
 
@@ -37,7 +38,7 @@ public class JmxInstanceBrowser extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        createInstanceAction.setOpenType(WindowManager.OpenType.DIALOG);
-        editInstanceAction.setOpenType(WindowManager.OpenType.DIALOG);
+        createInstanceAction.setOpenType(OpenType.DIALOG);
+        editInstanceAction.setOpenType(OpenType.DIALOG);
     }
 }

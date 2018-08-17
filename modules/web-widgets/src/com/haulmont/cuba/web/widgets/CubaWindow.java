@@ -68,7 +68,7 @@ public class CubaWindow extends Window {
         public void performContextMenuAction(String actionKey) {
             if (contextActionMapper != null) {
                 Action action = contextActionMapper.get(actionKey);
-                Action.Handler[] handlers = contextActionHandlers.toArray(new Action.Handler[contextActionHandlers.size()]);
+                Action.Handler[] handlers = contextActionHandlers.toArray(new Action.Handler[0]);
                 for (Action.Handler handler : handlers) {
                     handler.handleAction(action, this, CubaWindow.this);
                 }
@@ -204,6 +204,9 @@ public class CubaWindow extends Window {
         }
     }
 
+    /**
+     * Remove window from UI without firing close listeners.
+     */
     public void forceClose() {
         super.close();
     }

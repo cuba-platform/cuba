@@ -43,7 +43,7 @@ public interface RelatedEntitiesAPI {
      * @param selectedEntities set of entities which represents one side of relation
      * @param metaClass        metaClass of single entity from <code>selectedEntities</code>
      * @param metaProperty     chosen field to find related entities. Can be obtained from <code>metaClass</code>
-     * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
+     * @param descriptor       descriptor contains screen id, {@link WindowManager.OpenType} and
      *                         generated filter caption
      */
     void openRelatedScreen(Collection<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
@@ -64,7 +64,7 @@ public interface RelatedEntitiesAPI {
      * @param selectedEntities set of entities which represents one side of relation
      * @param clazz            class of single entity from <code>selectedEntities</code>
      * @param property         chosen field to find related entities
-     * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
+     * @param descriptor       descriptor contains screen id, {@link WindowManager.OpenType} and
      *                         generated filter caption
      */
     <T extends Entity> void openRelatedScreen(Collection<T> selectedEntities, Class<T> clazz, String property,

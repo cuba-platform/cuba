@@ -328,7 +328,7 @@ public class GroupBrowser extends AbstractWindow {
                 "exclude", groupsTree.getSelected().iterator().next(),
                 "excludeChildren", false);
 
-        Lookup lookupWindow = openLookup(Group.class, items -> {
+        AbstractLookup lookupWindow = openLookup(Group.class, items -> {
             if (items.size() == 1) {
                 Group group = (Group) items.iterator().next();
                 List<UUID> usersForModify = new ArrayList<>();
@@ -456,7 +456,7 @@ public class GroupBrowser extends AbstractWindow {
                 "exclude", groupsTree.getSelected().iterator().next(),
                 "excludeChildren", false);
 
-        Lookup lookupWindow = openLookup(Group.class, items -> {
+        AbstractLookup lookupWindow = openLookup(Group.class, items -> {
             if (items.isEmpty()) {
                 return;
             }

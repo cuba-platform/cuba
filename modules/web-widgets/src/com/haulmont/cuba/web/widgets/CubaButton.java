@@ -63,7 +63,8 @@ public class CubaButton extends com.vaadin.ui.Button {
     }
 
     @Override
-    protected void fireClick(MouseEventDetails details) {// check if it cannot be clicked at all due to modal dialogs
+    protected void fireClick(MouseEventDetails details) {
+        // check if it cannot be clicked at all due to modal dialogs
         CubaUI ui = (CubaUI) getUI();
         if (ui.isAccessibleForUser(this)) {
             try {

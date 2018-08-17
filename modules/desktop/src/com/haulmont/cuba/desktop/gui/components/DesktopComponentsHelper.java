@@ -280,13 +280,13 @@ public class DesktopComponentsHelper {
      */
     public static TopLevelFrame getTopLevelFrame(Frame frame) {
         if (frame instanceof DesktopWindow) {
-            return ((DesktopWindow) frame).getWindowManager().getFrame();
+            return ((DesktopWindow) frame).getWindowManagerImpl().getFrame();
         } else if (frame instanceof DesktopFrame) {
             return getTopLevelFrame((frame).getFrame());
         } else if (frame instanceof AbstractFrame) {
             Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
             if (wrapper instanceof DesktopWindow) {
-                return ((DesktopWindow) wrapper).getWindowManager().getFrame();
+                return ((DesktopWindow) wrapper).getWindowManagerImpl().getFrame();
             } else if (wrapper instanceof DesktopFrame) {
                 return getTopLevelFrame(((DesktopFrame) wrapper).getFrame());
             } else {

@@ -99,7 +99,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
-        Editor w = openEditor("jmxConsoleEditAttribute", mba, OpenType.DIALOG);
+        AbstractEditor w = openEditor("jmxConsoleEditAttribute", mba, OpenType.DIALOG);
         w.addCloseListener(actionId -> {
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 Object item = w.getItem();

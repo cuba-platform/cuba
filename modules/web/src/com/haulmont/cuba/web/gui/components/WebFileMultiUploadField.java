@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -115,11 +116,11 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         });
         impl.addFileSizeLimitExceededListener(e -> {
             String warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), getFileSizeLimitString());
-            getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
+            LegacyFrame.of(this).showNotification(warningMsg, Frame.NotificationType.WARNING);
         });
         impl.addFileExtensionNotAllowedListener(e -> {
             String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
-            getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
+            LegacyFrame.of(this).showNotification(warningMsg, Frame.NotificationType.WARNING);
         });
 
         component = impl;
@@ -148,12 +149,10 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     public void setIcon(String icon) {
         this.icon = icon;
 
-        if (component instanceof CubaFileUpload) {
-            if (!StringUtils.isEmpty(icon)) {
-                component.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
-            } else {
-                component.setIcon(null);
-            }
+        if (!StringUtils.isEmpty(icon)) {
+            component.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon)); // todo replace with beanLocator
+        } else {
+            component.setIcon(null);
         }
     }
 

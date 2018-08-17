@@ -87,6 +87,17 @@ public class EventHub {
     }
 
     /**
+     * Remove all listeners with the specified event type
+     *
+     * @param eventType event type
+     */
+    public void unsubscribe(Class<?> eventType) {
+        if (events != null) {
+            events.removeIf(t -> t.isType(eventType));
+        }
+    }
+
+    /**
      * Check if there are listeners for event type T.
      *
      * @param eventType event class
@@ -134,6 +145,11 @@ public class EventHub {
                     Consumer<T> listener = (Consumer<T>) tag.getListener();
                     listener.accept(event);
                 }
+            }
+
+            TriggerOnce triggerOnce = eventType.getAnnotation(TriggerOnce.class);
+            if (triggerOnce != null) {
+                unsubscribe(eventType);
             }
         }
     }

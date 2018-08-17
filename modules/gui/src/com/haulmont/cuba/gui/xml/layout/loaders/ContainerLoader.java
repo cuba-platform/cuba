@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public abstract class ContainerLoader<T extends Component> extends AbstractComponentLoader<T> {
@@ -61,7 +60,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
     }
 
     protected void createSubComponents(ComponentContainer container, Element containerElement) {
-        LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
+        LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 

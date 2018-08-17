@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.app.security.ds;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.ScreensHelper;
+import com.haulmont.cuba.gui.sys.ScreensHelper;
 import com.haulmont.cuba.gui.components.ScreenComponentDescriptor;
 import com.haulmont.cuba.gui.data.impl.CustomHierarchicalDatasource;
 

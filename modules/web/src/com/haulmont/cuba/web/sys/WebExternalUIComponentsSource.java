@@ -79,6 +79,8 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     protected Resources resources;
     @Inject
     protected WebComponentsFactory webComponentsFactory;
+    @Inject
+    protected LayoutLoaderConfig layoutLoaderConfig;
 
     @EventListener
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
@@ -182,7 +184,7 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
                 if (ComponentLoader.class.isAssignableFrom(componentLoaderClass)) {
                     log.trace("Register tag {} loader {}", tag, componentLoaderClass.getCanonicalName());
 
-                    LayoutLoaderConfig.registerLoader(tag, (Class<? extends ComponentLoader>) componentLoaderClass);
+                    layoutLoaderConfig.registerLoader(tag, (Class<? extends ComponentLoader>) componentLoaderClass);
                 } else {
                     log.warn("Component loader {} is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader",
                             componentLoaderClassName);
@@ -197,22 +199,22 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     protected void _loadWindowLoaders(Element rootElement) {
         Class loader = loadWindowLoader(rootElement, WINDOW_LOADER_EL);
         if (loader != null) {
-            LayoutLoaderConfig.registerWindowLoader(loader);
+            layoutLoaderConfig.registerWindowLoader(loader);
         }
 
         loader = loadWindowLoader(rootElement, FRAME_LOADER_EL);
         if (loader != null) {
-            LayoutLoaderConfig.registerFrameLoader(loader);
+            layoutLoaderConfig.registerFrameLoader(loader);
         }
 
         loader = loadWindowLoader(rootElement, EDITOR_LOADER_EL);
         if (loader != null) {
-            LayoutLoaderConfig.registerEditorLoader(loader);
+            layoutLoaderConfig.registerEditorLoader(loader);
         }
 
         loader = loadWindowLoader(rootElement, LOOKUP_LOADER_EL);
         if (loader != null) {
-            LayoutLoaderConfig.registerLookupLoader(loader);
+            layoutLoaderConfig.registerLookupLoader(loader);
         }
     }
 

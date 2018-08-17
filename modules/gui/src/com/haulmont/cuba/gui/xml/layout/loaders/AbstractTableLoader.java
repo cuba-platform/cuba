@@ -19,11 +19,11 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -48,9 +48,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
-
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
 
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
@@ -160,7 +157,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 if (StringUtils.isNotEmpty(generatorMethod)) {
                     //noinspection unchecked
                     resultComponent.addGeneratedColumn(String.valueOf(column),
-                            AppBeans.getPrototype(DeclarativeColumnGenerator.NAME, resultComponent, generatorMethod));
+                            beanLocator.getPrototype(DeclarativeColumnGenerator.NAME, resultComponent, generatorMethod));
                 }
             }
         }
@@ -171,6 +168,14 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    protected MetadataTools getMetadataTools() {
+        return beanLocator.get(MetadataTools.NAME);
+    }
+
+    protected DynamicAttributesGuiTools getDynamicAttributesGuiTools() {
+        return beanLocator.get(DynamicAttributesGuiTools.NAME);
+    }
+
     protected void loadTextSelectionEnabled(Table table, Element element) {
         String textSelectionEnabled = element.attributeValue("textSelectionEnabled");
         if (StringUtils.isNotEmpty(textSelectionEnabled)) {
@@ -179,9 +184,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
-        if (metadataTools.isPersistent(ds.getMetaClass())) {
+        if (getMetadataTools().isPersistent(ds.getMetaClass())) {
             Set<CategoryAttribute> attributesToShow =
-                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
+                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
@@ -201,6 +206,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                             StringUtils.capitalize(attribute.getName()));
 
                     if (attribute.getDataType().equals(PropertyType.STRING)) {
+                        ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
                         column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
                     }
 
@@ -213,7 +219,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 }
             }
 
-            dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
+            getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
         }
     }
 
@@ -304,6 +310,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadRequired(Table component, Table.Column column) {
         Element element = column.getXmlDescriptor();
         String required = element.attributeValue("required");
@@ -341,8 +348,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected Table.Column loadColumn(Element element, Datasource ds) {
         String id = element.attributeValue("id");
 
-        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                .resolveMetaPropertyPath(ds.getMetaClass(), id);
+        MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(ds.getMetaClass(), id);
 
         Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
@@ -383,8 +389,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                             categoryAttribute.getLocaleName() :
                             StringUtils.capitalize(categoryAttribute.getName());
                 } else {
-                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
-                    columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
+                    MetaClass propertyMetaClass = getMetadataTools().getPropertyEnclosingMetaClass(mpp);
+                    columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);
                 }
             } else {
                 Class<?> declaringClass = ds.getMetaClass().getJavaClass();
@@ -392,7 +398,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 int i = className.lastIndexOf('.');
                 if (i > -1)
                     className = className.substring(i + 1);
-                columnCaption = messages.getMessage(declaringClass, className + "." + id);
+                columnCaption = getMessages().getMessage(declaringClass, className + "." + id);
             }
             column.setCaption(columnCaption);
         }
@@ -449,7 +455,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
             String strategyClass = aggregationElement.attributeValue("strategyClass");
             if (StringUtils.isNotEmpty(strategyClass)) {
-                Class<?> aggregationClass = scripting.loadClass(strategyClass);
+                Class<?> aggregationClass = getScripting().loadClass(strategyClass);
                 if (aggregationClass == null) {
                     throw new GuiDevelopmentException(String.format("Class %s is not found", strategyClass), context.getFullFrameId());
                 }

@@ -16,35 +16,35 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManager.OpenMode;
+import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
+import com.haulmont.cuba.gui.components.compatibility.CloseListenerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.screen.events.AfterCloseEvent;
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.gui.util.OperationResult;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Represents an independent screen opened inside the main application window.
  */
 public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
-
-    /**
-     * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
-     */
-    String NAME = "window";
-
     /**
      * Constant that should be passed to {@link #close(String)} and {@link #close(String, boolean)} methods when
      * the screen is closed after commit of changes. Propagated to {@link CloseListener#windowClosed}.
@@ -71,6 +71,12 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     String CREATE_WINDOW_SUFFIX = ".create";
 
+    void setCloseable(boolean closeable);
+    boolean isCloseable();
+
+    @Override
+    Screen getFrameOwner();
+
     /**
      * @return current window context
      */
@@ -81,47 +87,73 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Add a listener that will be notified when this screen is closed.
      *
      * @param listener listener instance
-     * @deprecated Use {@link #addCloseListener(CloseListener)}
+     * @deprecated Use {@link Screen#addAfterCloseListener(Consumer)} instead.
      */
     @Deprecated
-    void addListener(CloseListener listener);
+    default void addListener(CloseListener listener) {
+        getFrameOwner().addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
 
     @Deprecated
-    void removeListener(CloseListener listener);
+    default void removeListener(CloseListener listener) {
+        EventHub eventHub = ScreenUtils.getEventHub(getFrameOwner());
+        eventHub.unsubscribe(AfterCloseEvent.class, new AfterCloseListenerAdapter(listener));
+    }
 
     /**
      * Add a listener that will be notified when this screen is closed.
      *
      * @param listener listener instance
+     * @deprecated Use {@link Screen#addAfterCloseListener(Consumer)} instead.
      */
-    void addCloseListener(CloseListener listener);
+    @Deprecated
+    default void addCloseListener(CloseListener listener) {
+        getFrameOwner().addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
 
-    void removeCloseListener(CloseListener listener);
+    @Deprecated
+    default void removeCloseListener(CloseListener listener) {
+        EventHub eventHub = ScreenUtils.getEventHub(getFrameOwner());
+        eventHub.unsubscribe(AfterCloseEvent.class, new AfterCloseListenerAdapter(listener));
+    }
 
     /**
      * Add a listener that will be notified when this screen is closed with actionId {@link #COMMIT_ACTION_ID}.
      *
      * @param listener listener instance
+     * @deprecated Use {@link Screen#addAfterCloseListener(Consumer)} instead.
      */
-    void addCloseWithCommitListener(CloseWithCommitListener listener);
+    @Deprecated
+    default void addCloseWithCommitListener(CloseWithCommitListener listener) {
+        addCloseListener(new CloseListenerAdapter(listener));
+    }
 
-    void removeCloseWithCommitListener(CloseWithCommitListener listener);
+    @Deprecated
+    default void removeCloseWithCommitListener(CloseWithCommitListener listener) {
+        removeCloseListener(new CloseListenerAdapter(listener));
+    }
 
     /**
      * This method is called by the framework after opening the screen to apply user settings to all components.
      */
-    void applySettings(Settings settings);
+    default void applySettings(Settings settings) {
+        ScreenUtils.applySettings(getFrameOwner(), settings);
+    }
 
     /**
      * This method is called by the framework when closing the screen
      * to save user settings if they have been changed.
      */
-    void saveSettings();
+    default void saveSettings() {
+        ScreenUtils.saveSettings(getFrameOwner());
+    }
 
     /**
      * This method is called by the framework on reset to defaults action
      */
-    void deleteSettings();
+    default void deleteSettings() {
+        ScreenUtils.deleteSettings(getFrameOwner());
+    }
 
     /**
      * Set a component to be focused after the screen is opened.
@@ -138,19 +170,27 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * @return object encapsulating user settings for the current screen
      */
-    Settings getSettings();
+    @Deprecated
+    default Settings getSettings() {
+        return ScreenUtils.getSettings(getFrameOwner());
+    }
 
     /**
      * Close the screen.
      * <br> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
      * the confirmation dialog will be shown.
+     * <br> Don't override this method in subclasses, use hook {@link AbstractWindow#preClose(String)}
      *
      * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
      *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
      *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
      *                 framework.
      */
-    boolean close(String actionId);
+    @Deprecated
+    default boolean close(String actionId) {
+        OperationResult result = getFrameOwner().close(new StandardCloseAction(actionId));
+        return result.getStatus() == OperationResult.Status.SUCCESS;
+    }
 
     /**
      * Close the screen.
@@ -163,12 +203,22 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      *                 framework.
      * @param force    if true, no confirmation dialog will be shown even if the screen has uncommitted changes
      */
-    boolean close(String actionId, boolean force);
+    @Deprecated
+    default boolean close(String actionId, boolean force) {
+        OperationResult result = getFrameOwner().close(new StandardCloseAction(actionId, force));
+        return result.getStatus() == OperationResult.Status.SUCCESS;
+    }
 
     /**
      * INTERNAL. Don't call from application code.
+     *
+     * todo deprecate and use "Promise close()" method instead.
      */
-    void closeAndRun(String actionId, Runnable runnable);
+    @Deprecated
+    default void closeAndRun(String actionId, Runnable runnable) {
+        getFrameOwner().close(new StandardCloseAction(actionId))
+                .then(runnable);
+    }
 
     /**
      * Add a {@link Timer} component to this screen.
@@ -211,17 +261,14 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     WindowManager getWindowManager();
 
     /**
-     * INTERNAL. Don't call from application code.
-     */
-    void setWindowManager(WindowManager windowManager);
-
-    /**
      * @return dialog options of window. Options will be applied only if window opened with {@link OpenMode#DIALOG}.
      */
     DialogOptions getDialogOptions();
 
     /**
      * Returns how the managed main TabSheet switches a tab with this window: hides or unloads its content.
+     *
+     * vaadin8 Move to TabWindow interface
      *
      * @return one of the {@link ContentSwitchMode} enum values
      */
@@ -232,6 +279,8 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * <p>
      * Note that: a method invocation will take effect only if {@code cuba.web.mainTabSheetMode} property
      * is set to 'MANAGED'.
+     *
+     * vaadin8 Move to TabWindow interface
      *
      * @param mode one of the {@link ContentSwitchMode} enum values
      */
@@ -261,7 +310,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Implement this interface in controller if you want to support saving uncommitted changes on window close.
      * {@link AbstractEditor} already implements it.
      */
-    interface Committable extends Window {
+    interface Committable {
 
         /**
          * @return whether the window contains uncommitted changes
@@ -377,7 +426,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Represents a lookup screen.
      */
-    interface Lookup extends Window {
+    interface Lookup {
 
         /**
          * Name that is used to register a client type specific screen implementation in
@@ -429,7 +478,8 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
         /**
          * Callback interface to receive selected entities.
-         * <br> Implementations of this interface must be passed to {@link #openLookup} methods or set directly in
+         * <br> Implementations of this interface must be passed to
+         * {@link LegacyFrame#openLookup} methods or set directly in
          * the screen instance via {@link #setLookupHandler}.
          */
         interface Handler {
@@ -459,8 +509,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Marker interface implemented by top-level windows of the application: login window and main window. Only one
      * top-level window exists at a time, depending on the connection state.
+     *
+     * @deprecated Is not required for screen controllers anymore
      */
-    interface TopLevelWindow extends Window {
+    @Deprecated
+    interface TopLevelWindow {
     }
 
     interface HasWorkArea {
@@ -478,7 +531,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         FoldersPane getFoldersPane();
     }
 
-    interface MainWindow extends TopLevelWindow, HasWorkArea, HasUserIndicator, HasFoldersPane {
+    /**
+     * @deprecated Use {@link MainScreen}
+     */
+    @Deprecated
+    interface MainWindow extends MainScreen {
     }
 
     /**
@@ -539,7 +596,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          */
         void beforeCloseWithShortcut(BeforeCloseWithShortcutEvent event);
     }
-
 
     /**
      * An event that is fired before a screen is closed with {@link ClientConfig#getCloseShortcut()}.
@@ -614,6 +670,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Interface implemented by screen controllers which are not themselves windows,
      * but has {@link Window} interface and delegate work to wrapped real window.
      */
+    @Deprecated
     interface Wrapper {
         Window getWrappedWindow();
     }

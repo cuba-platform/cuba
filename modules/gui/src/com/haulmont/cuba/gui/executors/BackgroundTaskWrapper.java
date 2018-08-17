@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.executors;
 
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class BackgroundTaskWrapper<T, V> {
 
     public BackgroundTaskWrapper(@Nullable BackgroundTask<T, V> task) {
         this.task = task;
-        this.backgroundWorker = AppConfig.getBackgroundWorker();
+        this.backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
     }
 
     public BackgroundTaskWrapper() {

@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.core.sys.jpql.DomainModelWithCaptionsBuilder;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
@@ -355,7 +356,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         ParamType type = typeSelect.getValue();
         if (ParamType.ENTITY.equals(type) && entitySelect.getValue() == null) {
-            showNotification("Select entity", NotificationType.HUMANIZED);
+            showNotification("Select entity", Frame.NotificationType.HUMANIZED);
             return false;
         }
 

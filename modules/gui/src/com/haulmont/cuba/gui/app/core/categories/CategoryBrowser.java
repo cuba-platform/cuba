@@ -103,7 +103,7 @@ public class CategoryBrowser extends AbstractLookup {
         public void actionPerform(Component component) {
             Category category = metadata.create(Category.class);
             Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
-            editor.addCloseListener(actionId -> {
+            ((AbstractWindow) editor).addCloseListener(actionId -> {
                 categoriesDs.refresh();
                 categoryTable.focus();
             });
@@ -127,7 +127,7 @@ public class CategoryBrowser extends AbstractLookup {
             if (!selected.isEmpty()) {
                 Category category = selected.iterator().next();
                 Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
-                editor.addCloseListener(actionId -> {
+                ((AbstractWindow) editor).addCloseListener(actionId -> {
                     categoriesDs.refresh();
                     categoryTable.focus();
                 });

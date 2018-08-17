@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.security.events.AppLoggedInEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,7 @@ public class ChangePasswordAfterLoginListener implements ApplicationListener<App
             User user = connection.getSessionNN().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
-                WebWindowManager wm = app.getWindowManager();
+                WindowManager wm = app.getWindowManager();
                 for (Window window : wm.getOpenWindows()) {
                     window.setEnabled(false);
                 }

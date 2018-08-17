@@ -27,7 +27,6 @@ import java.util.UUID;
 /**
  * Describes special window parameters that are set by system mechanisms such as {@link WindowManager}.
  * Some of the parameters are intended for use by application code, others affect low-level window opening behaviour.
- *
  */
 public enum WindowParams {
 

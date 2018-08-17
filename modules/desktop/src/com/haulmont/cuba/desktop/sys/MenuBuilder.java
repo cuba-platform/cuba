@@ -96,8 +96,8 @@ public class MenuBuilder {
         }
     }
 
-    private void assignCommand(final JMenuItem jMenuItem, MenuItem item) {
-        final MenuCommand command = new MenuCommand(item);
+    private void assignCommand(JMenuItem jMenuItem, MenuItem item) {
+        MenuCommand command = new MenuCommand(item);
         jMenuItem.addActionListener(new ValidationAwareActionListener() {
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {

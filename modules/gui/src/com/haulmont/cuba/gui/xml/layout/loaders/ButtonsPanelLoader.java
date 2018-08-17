@@ -22,19 +22,11 @@ import com.haulmont.cuba.gui.components.Component;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.function.Supplier;
 
 public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
-
-    protected void applyButtonsProvider(ButtonsPanel panel, Supplier<Collection<Component>> buttonsProvider)
-            throws IllegalAccessException, InstantiationException {
-
-        Collection<Component> buttons = buttonsProvider.get();
-        for (Component button : buttons) {
-            panel.add(button);
-        }
-    }
 
     @Override
     public void createComponent() {
@@ -70,14 +62,24 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
             if (StringUtils.isNotEmpty(className)) {
                 Class<Supplier<Collection<Component>>> clazz = ReflectionHelper.getClass(className);
 
+                Supplier<Collection<Component>> instance;
                 try {
                     Constructor<Supplier<Collection<Component>>> constructor = clazz.getConstructor();
-                    Supplier<Collection<Component>> instance = constructor.newInstance();
-                    applyButtonsProvider(resultComponent, instance);
-                } catch (Throwable e) {
+                    instance = constructor.newInstance();
+                } catch (NoSuchMethodException | InstantiationException
+                        | InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException("Unable to apply buttons provider", e);
                 }
+
+                applyButtonsProvider(resultComponent, instance);
             }
+        }
+    }
+
+    protected void applyButtonsProvider(ButtonsPanel panel, Supplier<Collection<Component>> buttonsProvider) {
+        Collection<Component> buttons = buttonsProvider.get();
+        for (Component button : buttons) {
+            panel.add(button);
         }
     }
 }

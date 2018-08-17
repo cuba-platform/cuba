@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -248,7 +249,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
                 Messages messages = beanLocator.get(Messages.NAME);
 
-                getFrame().showOptionDialog(
+                LegacyFrame.of(WebUserIndicator.this).showOptionDialog(
                         messages.getMainMessage("substUserSelectDialog.title"),
                         messages.formatMainMessage("substUserSelectDialog.msg", newUserName),
                         Frame.MessageType.WARNING,

@@ -23,6 +23,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
@@ -132,6 +134,8 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
 
         this.target = target;
         this.autocommit = autocommit;
+
+        Messages messages = AppBeans.get(Messages.NAME);
         this.caption = messages.getMainMessage("actions.Remove");
 
         this.icon = AppBeans.get(Icons.class).get(CubaIcon.REMOVE_ACTION);
@@ -214,7 +218,7 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     }
 
     protected void confirmAndRemove(Set<Entity> selected) {
-        target.getFrame().showOptionDialog(
+        LegacyFrame.of(target.getFrame()).showOptionDialog(
                 getConfirmationTitle(),
                 getConfirmationMessage(),
                 MessageType.CONFIRMATION,
@@ -292,8 +296,10 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     public String getConfirmationMessage() {
         if (confirmationMessage != null)
             return confirmationMessage;
-        else
+        else {
+            Messages messages = AppBeans.get(Messages.NAME);
             return messages.getMainMessage("dialogs.Confirmation.Remove");
+        }
     }
 
     /**
@@ -310,8 +316,10 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     public String getConfirmationTitle() {
         if (confirmationTitle != null)
             return confirmationTitle;
-        else
+        else {
+            Messages messages = AppBeans.get(Messages.NAME);
             return messages.getMainMessage("dialogs.Confirmation");
+        }
     }
 
     /**

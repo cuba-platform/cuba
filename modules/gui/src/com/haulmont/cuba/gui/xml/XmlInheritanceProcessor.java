@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
@@ -27,7 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
@@ -35,7 +39,11 @@ import java.util.*;
 /**
  * Provides inheritance of screen XML descriptors.
  */
+@Component(XmlInheritanceProcessor.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class XmlInheritanceProcessor {
+
+    public static final String NAME = "cuba_XmlInheritanceProcessor";
 
     private static final Logger log = LoggerFactory.getLogger(XmlInheritanceProcessor.class);
 
@@ -43,11 +51,14 @@ public class XmlInheritanceProcessor {
     private Namespace extNs;
     private Map<String, Object> params;
 
-    private List<ElementTargetLocator> targetLocators = new ArrayList<>();
+    private List<ElementTargetLocator> targetLocators;
 
-    private Resources resources = AppBeans.get(Resources.NAME);
-
-    private ScreenXmlParser screenXmlParser = AppBeans.get(ScreenXmlParser.NAME);
+    @Inject
+    protected Resources resources;
+    @Inject
+    protected ScreenXmlParser screenXmlParser;
+    @Inject
+    protected BeanLocator beanLocator;
 
     public XmlInheritanceProcessor(Document document, Map<String, Object> params) {
         this.document = document;
@@ -55,10 +66,12 @@ public class XmlInheritanceProcessor {
 
         extNs = document.getRootElement().getNamespaceForPrefix("ext");
 
-        targetLocators.add(new ViewPropertyElementTargetLocator());
-        targetLocators.add(new ViewElementTargetLocator());
-        targetLocators.add(new ButtonElementTargetLocator());
-        targetLocators.add(new CommonElementTargetLocator());
+        this.targetLocators = Arrays.asList(
+                new ViewPropertyElementTargetLocator(),
+                new ViewElementTargetLocator(),
+                new ButtonElementTargetLocator(),
+                new CommonElementTargetLocator()
+        );
     }
 
     public Element getResultRoot() {
@@ -80,7 +93,8 @@ public class XmlInheritanceProcessor {
             } finally {
                 IOUtils.closeQuietly(ancestorStream);
             }
-            XmlInheritanceProcessor processor = new XmlInheritanceProcessor(ancestorDocument, params);
+            XmlInheritanceProcessor processor = beanLocator.getPrototype(XmlInheritanceProcessor.NAME,
+                    ancestorDocument, params);
             result = processor.getResultRoot();
             process(result, root);
 
@@ -96,7 +110,7 @@ public class XmlInheritanceProcessor {
         return result;
     }
 
-    private void process(Element resultElem, Element extElem) {
+    protected void process(Element resultElem, Element extElem) {
         // set text
         if (!StringUtils.isBlank(extElem.getText()))
             resultElem.setText(extElem.getText());
@@ -160,7 +174,7 @@ public class XmlInheritanceProcessor {
         }
     }
 
-    private void addNewElement(Element resultElem, Element element, Set<Element> justAdded) {
+    protected void addNewElement(Element resultElem, Element element, Set<Element> justAdded) {
         String idx = element.attributeValue(new QName("index", extNs));
         Element newElement;
         if (StringUtils.isBlank(idx)) {
@@ -185,12 +199,12 @@ public class XmlInheritanceProcessor {
         process(newElement, element);
     }
 
-    private interface ElementTargetLocator {
+    protected interface ElementTargetLocator {
         boolean suitableFor(Element extElem);
         Element locate(Element resultParentElem, Element extElem);
     }
 
-    private static class CommonElementTargetLocator implements ElementTargetLocator {
+    protected static class CommonElementTargetLocator implements ElementTargetLocator {
 
         @Override
         public boolean suitableFor(Element extElem) {
@@ -209,7 +223,7 @@ public class XmlInheritanceProcessor {
         }
     }
 
-    private static class ViewElementTargetLocator implements ElementTargetLocator {
+    protected static class ViewElementTargetLocator implements ElementTargetLocator {
 
         @Override
         public boolean suitableFor(Element extElem) {
@@ -234,7 +248,7 @@ public class XmlInheritanceProcessor {
         }
     }
 
-    private static class ViewPropertyElementTargetLocator implements ElementTargetLocator {
+    protected static class ViewPropertyElementTargetLocator implements ElementTargetLocator {
 
         @Override
         public boolean suitableFor(Element extElem) {
@@ -253,7 +267,7 @@ public class XmlInheritanceProcessor {
         }
     }
 
-    private static class ButtonElementTargetLocator implements ElementTargetLocator {
+    protected static class ButtonElementTargetLocator implements ElementTargetLocator {
 
         @Override
         public boolean suitableFor(Element extElem) {

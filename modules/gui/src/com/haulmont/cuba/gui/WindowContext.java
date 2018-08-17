@@ -17,14 +17,20 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.gui.Screens.LaunchMode;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+
 /**
  * Provides access to window parameters and component values.
- *
  */
 public interface WindowContext extends FrameContext {
-
     /**
      * How the window is opened.
      */
-    WindowManager.OpenType getOpenType();
+    LaunchMode getLaunchMode();
+
+    /**
+     * @return options passed to window
+     */
+    ScreenOptions getOptions();
 }

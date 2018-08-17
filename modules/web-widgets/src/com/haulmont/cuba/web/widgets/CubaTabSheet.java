@@ -17,6 +17,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDTabSheet;
 import com.haulmont.cuba.web.widgets.client.tabsheet.ClientAction;
 import com.haulmont.cuba.web.widgets.client.tabsheet.CubaTabSheetClientRpc;
 import com.haulmont.cuba.web.widgets.client.tabsheet.CubaTabSheetServerRpc;
@@ -28,7 +29,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import org.slf4j.LoggerFactory;
 import com.vaadin.ui.TabSheet;
-import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -87,7 +87,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
                     Action.Handler[] handlers;
 
                     if (actionHandlers != null) {
-                        handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
+                        handlers = actionHandlers.toArray(new Action.Handler[0]);
                     } else {
                         handlers = new Action.Handler[0];
                     }
@@ -315,7 +315,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
     }
 
     public interface TabCloseHandler {
-        void onClose(com.vaadin.ui.TabSheet tabSheet, Component tabContent);
+        void onClose(CubaTabSheet tabSheet, Component tabContent);
     }
 
     public Consumer<ComponentContainer> getCloseOthersHandler() {
@@ -460,6 +460,11 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         }
 
         @Override
+        public Iterator<Component> getTabComponents() {
+            return tabSheet.iterator();
+        }
+
+        @Override
         public void setSelectedTab(Component component) {
             tabSheet.setSelectedTab(component);
         }
@@ -491,8 +496,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public void setTabCloseHandler(Component tabContent, BiConsumer<HasTabSheetBehaviour, Component> closeHandler) {
-            tabSheet.setTabCloseHandler(tabContent, (tabSheet1, tabContent1) ->
-                    closeHandler.accept(tabSheet, tabContent));
+            tabSheet.setTabCloseHandler(tabContent, closeHandler::accept);
         }
 
         @Override

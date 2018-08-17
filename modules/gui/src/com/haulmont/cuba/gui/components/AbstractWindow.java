@@ -16,24 +16,485 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.screen.events.AfterShowEvent;
+import com.haulmont.cuba.gui.screen.events.InitEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
+import org.springframework.context.ApplicationListener;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for simple screen controllers.
  */
-public class AbstractWindow extends AbstractFrame 
-        implements Window, Component.HasXmlDescriptor, Window.Wrapper, SecuredActionsHolder {
+public class AbstractWindow extends Screen implements Window, LegacyFrame, Component.HasXmlDescriptor, Window.Wrapper,
+        SecuredActionsHolder {
+
+    protected Frame frame;
+    private Object _companion;
+
+    private Component parent;
+    private List<ApplicationListener> uiEventListeners;
+
+    private DsContext dsContext;
+
+    @Inject
+    protected Messages messages;
+    @Inject
+    private MessageBundle messageBundle;
 
     public AbstractWindow() {
+    }
+
+    @Override
+    protected void setWindow(Window window) {
+        super.setWindow(window);
+
+        this.frame = window;
+    }
+
+    @Override
+    public WindowManager getWindowManager() {
+        return frame.getWindowManager();
+    }
+
+    @Override
+    public Frame getWrappedFrame() {
+        return frame;
+    }
+
+    @Subscribe
+    protected void init(InitEvent initEvent) {
+        Map<String, Object> params = Collections.emptyMap();
+        ScreenOptions options = initEvent.getOptions();
+        if (options instanceof MapScreenOptions) {
+            params = ((MapScreenOptions) options).getParams();
+        }
+
+        init(params);
+    }
+
+    @Subscribe
+    protected void afterShow(AfterShowEvent event) {
+        ready();
+    }
+
+    /**
+     * Called by the framework after creation of all components and before showing the screen.
+     * <br> Override this method and put initialization logic here.
+     *
+     * @param params parameters passed from caller's code, usually from
+     *               {@link #openWindow(String, WindowManager.OpenType)} and similar methods, or set in
+     *               {@code screens.xml} for this registered screen
+     */
+    public void init(Map<String, Object> params) {
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return frame.isEnabled();
+    }
+
+    @Override
+    public boolean isEnabledRecursive() {
+        return frame.isEnabledRecursive();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        frame.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return frame.isVisible();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        frame.setVisible(visible);
+    }
+
+    @Override
+    public boolean isVisibleRecursive() {
+        return frame.isVisibleRecursive();
+    }
+
+    @Override
+    public float getHeight() {
+        return frame.getHeight();
+    }
+
+    @Override
+    public SizeUnit getHeightSizeUnit() {
+        return frame.getHeightSizeUnit();
+    }
+
+    @Override
+    public void setHeight(String height) {
+        frame.setHeight(height);
+    }
+
+    @Override
+    public float getWidth() {
+        return frame.getWidth();
+    }
+
+    @Override
+    public SizeUnit getWidthSizeUnit() {
+        return frame.getWidthSizeUnit();
+    }
+
+    @Override
+    public void setWidth(String width) {
+        frame.setWidth(width);
+    }
+
+    @Override
+    public Alignment getAlignment() {
+        return frame.getAlignment();
+    }
+
+    @Override
+    public void setAlignment(Alignment alignment) {
+        frame.setAlignment(alignment);
+    }
+
+    @Override
+    public boolean isResponsive() {
+        return frame.isResponsive();
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        frame.setResponsive(responsive);
+    }
+
+    @Override
+    public String getIcon() {
+        return frame.getIcon();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        frame.setIcon(icon);
+    }
+
+    @Override
+    public void setIconFromSet(Icons.Icon icon) {
+        frame.setIconFromSet(icon);
+    }
+
+    @Override
+    public void add(Component component) {
+        frame.add(component);
+    }
+
+    @Override
+    public void remove(Component component) {
+        frame.remove(component);
+    }
+
+    @Override
+    public void removeAll() {
+        frame.removeAll();
+    }
+
+    @Override
+    public Component getOwnComponent(String id) {
+        return frame.getOwnComponent(id);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return frame.getComponent(id);
+    }
+
+    @Override
+    public Collection<Component> getOwnComponents() {
+        return frame.getOwnComponents();
+    }
+
+    @Override
+    public Collection<Component> getComponents() {
+        return frame.getComponents();
+    }
+
+    @Override
+    public Object getComponent() {
+        return frame;
+    }
+
+    @Override
+    public Object getComposition() {
+        return frame;
+    }
+
+    @Override
+    public void expand(Component component, String height, String width) {
+        frame.expand(component, height, width);
+    }
+
+    @Override
+    public void expand(Component component) {
+        frame.expand(component);
+    }
+
+    @Override
+    public void resetExpanded() {
+        frame.resetExpanded();
+    }
+
+    @Override
+    public boolean isExpanded(Component component) {
+        return frame.isExpanded(component);
+    }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
+    @Override
+    public String getMessagesPack() {
+        return messageBundle.getMessagesPack();
+    }
+
+    @Override
+    public void setMessagesPack(String name) {
+        messageBundle.setMessagesPack(name);
+    }
+
+    /**
+     * Get localized message from the message pack associated with this frame or window.
+     *
+     * @param key message key
+     * @return localized message
+     * @see Messages#getMessage(String, String)
+     */
+    protected String getMessage(String key) {
+        return messageBundle.getMessage(key);
+    }
+
+    /**
+     * Get localized message from the message pack associated with this frame or window, and use it as a format
+     * string for parameters provided.
+     *
+     * @param key    message key
+     * @param params parameter values
+     * @return formatted string or the key in case of IllegalFormatException
+     * @see Messages#formatMessage(String, String, Object...)
+     */
+    protected String formatMessage(String key, Object... params) {
+        return messageBundle.formatMessage(key, params);
+    }
+
+    @Override
+    public boolean isValid() {
+        return frame.isValid();
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        frame.validate();
+    }
+
+    /**
+     * Show validation errors alert. Can be overriden in subclasses.
+     *
+     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
+     */
+    public void showValidationErrors(ValidationErrors errors) {
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            buffer.append(error.description).append("\n");
+        }
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        NotificationType notificationType = NotificationType.valueOf(clientConfig.getValidationNotificationType());
+        showNotification(messages.getMainMessage("validationFail.caption"), buffer.toString(), notificationType);
+    }
+
+    @Override
+    public void add(Component childComponent, int index) {
+        frame.add(childComponent, index);
+    }
+
+    @Override
+    public int indexOf(Component component) {
+        return frame.indexOf(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return frame.getComponent(index);
+    }
+
+    /**
+     * @return a companion implementation, specific for the current client type
+     */
+    @Nullable
+    public <T> T getCompanion() {
+        //noinspection unchecked
+        return (T) _companion;
+    }
+
+    /** INTERNAL. Don't call from application code. */
+    public void setCompanion(Object companion) {
+        this._companion = companion;
+    }
+
+    /** INTERNAL. Don't call from application code. */
+    @Nullable
+    public List<ApplicationListener> getUiEventListeners() {
+        return uiEventListeners;
+    }
+
+    /** INTERNAL. Don't call from application code. */
+    public void setUiEventListeners(List<ApplicationListener> uiEventListeners) {
+        this.uiEventListeners = uiEventListeners;
+    }
+
+    @Override
+    public Frame getFrame() {
+        return this.frame.getFrame();
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        // do nothing
+    }
+
+    @Override
+    public String getStyleName() {
+        return frame.getStyleName();
+    }
+
+    @Override
+    public void setStyleName(String styleName) {
+        frame.setStyleName(styleName);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        frame.addStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        frame.removeStyleName(styleName);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        if (getComponent() instanceof Component.Wrapper) {
+            return (X) ((Component.Wrapper) frame).getComponent();
+        }
+
+        return (X) frame;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        if (getComposition() instanceof Component.Wrapper) {
+            return (X) ((Component.Wrapper) frame).getComposition();
+        }
+
+        return (X) frame;
+    }
+
+    @Override
+    public void setSpacing(boolean enabled) {
+        frame.setSpacing(enabled);
+    }
+
+    @Override
+    public boolean getSpacing() {
+        return frame.getSpacing();
+    }
+
+    @Override
+    public void setMargin(MarginInfo marginInfo) {
+        frame.setMargin(marginInfo);
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return frame.getMargin();
+    }
+
+    @Override
+    public void addAction(Action action) {
+        frame.addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        frame.addAction(action, index);
+    }
+
+    @Override
+    public void removeAction(@Nullable Action action) {
+        frame.removeAction(action);
+    }
+
+    @Override
+    public void removeAction(@Nullable String id) {
+        frame.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        frame.removeAllActions();
+    }
+
+    @Override
+    public Collection<Action> getActions() {
+        return frame.getActions();
+    }
+
+    @Override
+    @Nullable
+    public Action getAction(String id) {
+        return frame.getAction(id);
     }
 
     @Override
@@ -47,56 +508,33 @@ public class AbstractWindow extends AbstractFrame
     }
 
     @Override
+    public void setCloseable(boolean closeable) {
+        ((Window)this.frame).setCloseable(closeable);
+    }
+
+    @Override
+    public boolean isCloseable() {
+        return ((Window)this.frame).isCloseable();
+    }
+
+    @Override
+    public Screen getFrameOwner() {
+        return this;
+    }
+
+    @Override
     public WindowContext getContext() {
         return (WindowContext) frame.getContext();
     }
 
     @Override
     public DsContext getDsContext() {
-        return frame.getDsContext();
+        return dsContext;
     }
 
     @Override
     public void setDsContext(DsContext dsContext) {
-        frame.setDsContext(dsContext);
-    }
-
-    /**
-     * @deprecated Use {@link #addCloseListener(CloseListener)}
-     */
-    @Deprecated
-    @Override
-    public void addListener(CloseListener listener) {
-        addCloseListener(listener);
-    }
-
-    /**
-     * @deprecated Use {@link #removeCloseListener(CloseListener)}
-     */
-    @Deprecated
-    @Override
-    public void removeListener(CloseListener listener) {
-        removeCloseListener(listener);
-    }
-
-    @Override
-    public void addCloseListener(CloseListener listener) {
-        ((Window) frame).addCloseListener(listener);
-    }
-
-    @Override
-    public void removeCloseListener(CloseListener listener) {
-        ((Window) frame).removeCloseListener(listener);
-    }
-
-    @Override
-    public void addCloseWithCommitListener(CloseWithCommitListener listener) {
-        ((Window) frame).addCloseWithCommitListener(listener);
-    }
-
-    @Override
-    public void removeCloseWithCommitListener(CloseWithCommitListener listener) {
-        ((Window) frame).removeCloseWithCommitListener(listener);
+        this.dsContext = dsContext;
     }
 
     /**
@@ -156,7 +594,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public void applySettings(Settings settings) {
-        ((Window) frame).applySettings(settings);
+        super.applySettings(settings);
     }
 
     /**
@@ -164,12 +602,17 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public void saveSettings() {
-        ((Window) frame).saveSettings();
+        super.saveSettings();
     }
 
     @Override
     public void deleteSettings() {
-        ((Window) frame).deleteSettings();
+        super.deleteSettings();
+    }
+
+    @Override
+    public Settings getSettings() {
+        return super.getSettings();
     }
 
     @Override
@@ -180,14 +623,6 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public String getFocusComponent() {
         return ((Window) frame).getFocusComponent();
-    }
-
-    /**
-     * @return  the screen settings interface. Never null.
-     */
-    @Override
-    public Settings getSettings() {
-        return ((Window) frame).getSettings();
     }
 
     @Override
@@ -211,21 +646,12 @@ public class AbstractWindow extends AbstractFrame
      * support additional validation.
      * <p>You should override this method in subclasses ONLY if you want to completely replace the validation process,
      * otherwise use {@link #postValidate(ValidationErrors)}.
+     *
      * @return true if the validation was successful, false if there were any problems
      */
     @Override
     public boolean validateAll() {
         return frame.validateAll();
-    }
-
-    @Override
-    public WindowManager getWindowManager() {
-        return ((Window) frame).getWindowManager();
-    }
-
-    @Override
-    public void setWindowManager(WindowManager windowManager) {
-        ((Window) frame).setWindowManager(windowManager);
     }
 
     @Override
@@ -259,52 +685,14 @@ public class AbstractWindow extends AbstractFrame
 
     /**
      * Hook to be implemented in subclasses. Called by the framework before closing the screen.
-     * @param actionId  a string that is passed to one of {@link #close} methods by calling code to identify itself.
-     *                  Can be an {@link Action} ID, or a constant like {@link #COMMIT_ACTION_ID} or
-     *                  {@link #CLOSE_ACTION_ID}.
-     * @return          true to proceed with closing, false to interrupt and leave the screen open
+     *
+     * @param actionId a string that is passed to one of {@link #close} methods by calling code to identify itself.
+     *                 Can be an {@link Action} ID, or a constant like {@link #COMMIT_ACTION_ID} or
+     *                 {@link #CLOSE_ACTION_ID}.
+     * @return true to proceed with closing, false to interrupt and leave the screen open
      */
     protected boolean preClose(String actionId) {
         return true;
-    }
-
-    /**
-     * Close the screen.
-     * <br> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
-     * the confirmation dialog will be shown.
-     * <br> Don't override this method in subclasses, use hook {@link #preClose(String)}
-     *
-     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
-     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
-     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
-     *                 framework.
-     */
-    @Override
-    public boolean close(String actionId) {
-        return ((Window) frame).close(actionId);
-    }
-
-    /** 
-     * Close the screen.
-     * <br> If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
-     * and force=false, the confirmation dialog will be shown.
-     * <br> Don't override this method in subclasses, use hook {@link #preClose(String)}
-     *
-     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
-     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
-     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
-     *                 framework.
-     * @param force    if true, no confirmation dialog will be shown even if the screen has uncommitted changes
-     */
-    @Override
-    public boolean close(String actionId, boolean force) {
-        return ((Window) frame).close(actionId, force);
-    }
-
-    /** INTERNAL. Don't call or override in application code. */
-    @Override
-    public void closeAndRun(String actionId, Runnable runnable) {
-        ((Window) frame).closeAndRun(actionId, runnable);
     }
 
     @Override
@@ -314,21 +702,6 @@ public class AbstractWindow extends AbstractFrame
         } else {
             throw new UnsupportedOperationException();
         }
-    }
-
-    @Override
-    public String getIcon() {
-        return frame.getIcon();
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        frame.setIcon(icon);
-    }
-
-    @Override
-    public void setIconFromSet(Icons.Icon icon) {
-        frame.setIconFromSet(icon);
     }
 
     @Override

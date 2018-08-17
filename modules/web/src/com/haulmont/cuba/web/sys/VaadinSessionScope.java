@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.sys;
 import com.vaadin.server.VaadinSession;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.stereotype.Component;
 
 public class VaadinSessionScope implements Scope {
 
@@ -26,26 +27,28 @@ public class VaadinSessionScope implements Scope {
 
     @Override
     public Object get(String name, ObjectFactory<?> objectFactory) {
-        if (VaadinSession.getCurrent() == null || !VaadinSession.getCurrent().hasLock()) {
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session == null || !session.hasLock()) {
             throw new IllegalStateException("Unable to use VaadinSessionScope from non-Vaadin thread");
         }
 
-        Object object = VaadinSession.getCurrent().getAttribute(name);
+        Object object = session.getAttribute(name);
         if (object == null) {
             object = objectFactory.getObject();
-            VaadinSession.getCurrent().setAttribute(name, object);
+            session.setAttribute(name, object);
         }
         return object;
     }
 
     @Override
     public Object remove(String name) {
-        if (VaadinSession.getCurrent() == null || !VaadinSession.getCurrent().hasLock()) {
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session == null || !session.hasLock()) {
             throw new IllegalStateException("Unable to use VaadinSessionScope from non-Vaadin thread");
         }
 
-        Object bean = VaadinSession.getCurrent().getAttribute(name);
-        VaadinSession.getCurrent().setAttribute(name, null);
+        Object bean = session.getAttribute(name);
+        session.setAttribute(name, null);
         return bean;
     }
 

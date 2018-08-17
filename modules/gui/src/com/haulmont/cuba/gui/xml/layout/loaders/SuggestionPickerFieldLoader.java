@@ -16,9 +16,11 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsHolder;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -26,7 +28,7 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
 
     @Override
     public void createComponent() {
-        resultComponent = (SuggestionPickerField) factory.createComponent(SuggestionPickerField.NAME);
+        resultComponent = factory.createComponent(SuggestionPickerField.NAME);
         loadId(resultComponent, element);
     }
 
@@ -52,6 +54,10 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
         loadPopupWidth(resultComponent, element);
 
         loadQuery(resultComponent, element);
+    }
+
+    protected Metadata getMetadata() {
+        return beanLocator.get(Metadata.NAME);
     }
 
     protected void loadPopupWidth(SuggestionPickerField suggestionField, Element element) {
@@ -80,8 +86,7 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
     protected void loadMetaClass(SuggestionPickerField suggestionField, Element element) {
         String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            suggestionField.setMetaClass(metadata.getSession().getClass(metaClass));
+            suggestionField.setMetaClass(getMetadata().getClass(metaClass));
         }
     }
 

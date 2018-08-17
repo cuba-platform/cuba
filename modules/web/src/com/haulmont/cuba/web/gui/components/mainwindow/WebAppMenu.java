@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;

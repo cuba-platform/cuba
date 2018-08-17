@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.widgets;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 
+import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 public interface TabSheetBehaviour {
@@ -66,6 +67,8 @@ public interface TabSheetBehaviour {
     void setSelectedTab(Component component);
 
     Component getSelectedTab();
+
+    Iterator<Component> getTabComponents();
 
     void closeTab(Component target);
 

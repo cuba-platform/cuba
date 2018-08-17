@@ -45,9 +45,10 @@ public class WebComponentsFactory implements ComponentsFactory {
     protected Map<Class, String> names = new ConcurrentHashMap<>();
 
     {
-        classes.put(Window.NAME, WebWindow.class);
-        classes.put(Window.Editor.NAME, WebWindow.Editor.class);
-        classes.put(Window.Lookup.NAME, WebWindow.Lookup.class);
+        classes.put(RootWindow.NAME, WebRootWindow.class);
+        classes.put(TabWindow.NAME, WebTabWindow.class);
+        classes.put(DialogWindow.NAME, WebDialogWindow.class);
+        classes.put(Fragment.NAME, WebFragment.class);
 
         classes.put(HBoxLayout.NAME, WebHBoxLayout.class);
         classes.put(VBoxLayout.NAME, WebVBoxLayout.class);
@@ -165,16 +166,17 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(name, componentClass);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Component createComponent(String name) {
-        final Class<? extends Component> componentClass = classes.get(name);
+    public <T extends Component> T createComponent(String name) {
+        Class<? extends Component> componentClass = classes.get(name);
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
         try {
             Component instance = componentClass.newInstance();
             autowireContext(instance);
-            return instance;
+            return (T) instance;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error creating the '" + name + "' component instance", e);
         }

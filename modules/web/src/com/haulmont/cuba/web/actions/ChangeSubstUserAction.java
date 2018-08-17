@@ -17,7 +17,8 @@
 
 package com.haulmont.cuba.web.actions;
 
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -35,19 +36,18 @@ public class ChangeSubstUserAction extends AbstractAction {
 
     @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-        final App app = App.getInstance();
+        App app = App.getInstance();
         app.getWindowManager().checkModificationsAndCloseAll(
                 new Runnable() {
                     @Override
                     public void run() {
-                        app.closeAllWindows();
                         try {
                             app.getConnection().substituteUser(user);
                             doAfterChangeUser();
                         } catch (javax.persistence.NoResultException e) {
+                            Messages messages = AppBeans.get(Messages.NAME);
                             app.getWindowManager().showNotification(
-                                    messages.formatMessage(AppConfig.getMessagesPack(), "substitutionNotPerformed",
-                                            user.getName()),
+                                    messages.formatMainMessage("substitutionNotPerformed", user.getName()),
                                     Frame.NotificationType.WARNING
                             );
                             doRevert();

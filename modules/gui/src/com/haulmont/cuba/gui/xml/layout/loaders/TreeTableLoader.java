@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.TreeTable;
 public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
     @Override
     public void createComponent() {
-        resultComponent = (TreeTable) factory.createComponent(TreeTable.NAME);
+        resultComponent = factory.createComponent(TreeTable.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }

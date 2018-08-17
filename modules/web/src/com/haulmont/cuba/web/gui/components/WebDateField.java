@@ -22,7 +22,8 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DateComponents;
@@ -252,7 +253,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     protected void handleDateOutOfRange(V value) {
         if (getFrame() != null) {
             Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
-            getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+            LegacyFrame.of(this).showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
                     Frame.NotificationType.TRAY);
         }
 

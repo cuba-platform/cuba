@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
+import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.vaadin.ui.CustomLayout;
 
 import javax.annotation.Nullable;
@@ -73,7 +74,7 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
                     && ((BelongToFrame) childComponent).getFrame() == null) {
                 ((BelongToFrame) childComponent).setFrame(frame);
             } else {
-                frame.registerComponent(childComponent);
+                ((FrameImplementation) frame).registerComponent(childComponent);
             }
         }
 
@@ -98,7 +99,7 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     public void removeAll() {
         component.removeAllComponents();
 
-        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
+        Component[] components = ownComponents.toArray(new Component[0]);
         ownComponents.clear();
 
         for (Component childComponent : components) {

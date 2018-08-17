@@ -18,6 +18,9 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
 
     <menu id="administration">
+        <!-- todo demo -->
+        <item screen="user-list"/>
+
         <item screen="tableApiScreen1"/>
         <item id="dcScreen1"/>
         <item id="dcScreen2"/>

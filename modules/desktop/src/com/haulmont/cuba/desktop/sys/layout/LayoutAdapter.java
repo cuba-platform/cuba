@@ -23,9 +23,8 @@ import java.awt.*;
 
 public abstract class LayoutAdapter
         implements
-            com.haulmont.cuba.gui.components.Component.Margin,
-            com.haulmont.cuba.gui.components.Component.Spacing
-{
+            com.haulmont.cuba.gui.components.HasMargin,
+            com.haulmont.cuba.gui.components.HasSpacing {
 
     protected boolean[] margins = new boolean[4];
     protected boolean spacing;

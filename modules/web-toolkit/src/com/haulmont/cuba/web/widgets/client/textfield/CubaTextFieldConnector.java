@@ -18,12 +18,16 @@
 package com.haulmont.cuba.web.widgets.client.textfield;
 
 import com.haulmont.cuba.web.widgets.CubaTextField;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.annotations.OnStateChange;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaTextField.class)
-public class CubaTextFieldConnector extends TextFieldConnector {
+public class CubaTextFieldConnector extends TextFieldConnector implements Paintable {
 
     @Override
     public CubaTextFieldState getState() {
@@ -35,11 +39,8 @@ public class CubaTextFieldConnector extends TextFieldConnector {
         return (CubaTextFieldWidget) super.getWidget();
     }
 
-    /* vaadin8
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
         // We may have actions attached to this text field
         if (uidl.getChildCount() > 0) {
             final int cnt = uidl.getChildCount();
@@ -53,7 +54,7 @@ public class CubaTextFieldConnector extends TextFieldConnector {
                 }
             }
         }
-    }*/
+    }
 
     @OnStateChange("readOnlyFocusable")
     void updateReadOnlyFocusable() {

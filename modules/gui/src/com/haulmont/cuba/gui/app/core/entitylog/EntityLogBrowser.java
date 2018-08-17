@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
@@ -219,14 +220,14 @@ public class EntityLogBrowser extends AbstractWindow {
                     };
 
                     if (config.hasWindow(currentWindowAlias)) {
-                        lookupWindow.openLookup(
+                        ((LegacyFrame) lookupWindow).openLookup(
                                 currentWindowAlias,
                                 lookupWindowHandler,
                                 lookupScreenOpenType,
                                 lookupScreenParams != null ? lookupScreenParams : Collections.emptyMap()
                         );
                     } else {
-                        lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
+                        ((LegacyFrame) lookupWindow).openLookup(EntityInspectorBrowse.SCREEN_NAME,
                                 lookupWindowHandler,
                                 WindowManager.OpenType.THIS_TAB,
                                 ParamsMap.of("entity", metaClass.getName())

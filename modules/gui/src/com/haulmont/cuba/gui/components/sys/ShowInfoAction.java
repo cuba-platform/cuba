@@ -18,12 +18,13 @@ package com.haulmont.cuba.gui.components.sys;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 
 public class ShowInfoAction extends BaseAction {
 
@@ -32,11 +33,9 @@ public class ShowInfoAction extends BaseAction {
 
     public ShowInfoAction() {
         super(ACTION_ID);
-    }
 
-    @Override
-    public String getCaption() {
-        return messages.getMessage(AppConfig.getMessagesPack(), "table.showInfoAction");
+        Messages messages = AppBeans.get(Messages.NAME);
+        setCaption(messages.getMainMessage("table.showInfoAction"));
     }
 
     @Override
@@ -52,8 +51,7 @@ public class ShowInfoAction extends BaseAction {
     }
 
     public void showInfo(Entity entity, MetaClass metaClass, Component.BelongToFrame component) {
-        Frame frame = component.getFrame();
-        frame.openWindow("sysInfoWindow", OpenType.DIALOG,
+        LegacyFrame.of(component).openWindow("sysInfoWindow", OpenType.DIALOG,
                 ParamsMap.of(
                         "metaClass", metaClass,
                         "item", entity));

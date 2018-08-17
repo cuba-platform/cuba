@@ -17,8 +17,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Frame;
@@ -27,17 +25,23 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.LoggerFactory;
 
+/**
+ * todo rename to FragmentLoader
+ */
 public class FrameComponentLoader extends ContainerLoader<Frame> {
 
     protected String frameId;
     protected ComponentLoader frameLoader;
+
+    protected WindowConfig getWindowConfig() {
+        return beanLocator.get(WindowConfig.NAME);
+    }
 
     @Override
     public void createComponent() {
@@ -47,11 +51,13 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
             throw new GuiDevelopmentException("Either 'src' or 'screen' must be specified for 'frame'", context.getFullFrameId());
         }
         if (src == null) {
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+            WindowInfo windowInfo = getWindowConfig().getWindowInfo(screenId);
             src = windowInfo.getTemplate();
             if (src == null) {
-                throw new GuiDevelopmentException("Screen " + screenId + " doesn't have template path configured", context.getFullFrameId());
+                throw new GuiDevelopmentException(
+                        String.format("Screen %s doesn't have template path configured", screenId),
+                        context.getFullFrameId()
+                );
             }
         }
 
@@ -59,7 +65,7 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
             frameId = element.attributeValue("id");
         }
 
-        LayoutLoader layoutLoader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
+        LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, context);
         layoutLoader.setLocale(getLocale());
         layoutLoader.setMessagesPack(getMessagesPack());
 
@@ -76,9 +82,10 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
 
     @Override
     public void loadComponent() {
-        if (resultComponent.getMessagesPack() == null) {
+        // todo
+        /*if (resultComponent.getMessagesPack() == null) {
             resultComponent.setMessagesPack(messagesPack);
-        }
+        }*/
 
         assignXmlDescriptor(resultComponent, element);
         loadVisible(resultComponent, element);
@@ -88,7 +95,7 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
 
         loadAlign(resultComponent, element);
 
-        loadHeight(resultComponent, element, ComponentsHelper.getComponentHeigth(resultComponent));
+        loadHeight(resultComponent, element, ComponentsHelper.getComponentHeight(resultComponent));
         loadWidth(resultComponent, element, ComponentsHelper.getComponentWidth(resultComponent));
 
         loadIcon(resultComponent, element);
@@ -132,12 +139,12 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
     protected void loadAliases() {
         if (frameLoader instanceof FrameLoader) {
             ComponentLoaderContext frameLoaderInnerContext = ((FrameLoader) frameLoader).getInnerContext();
-            for (Element aliasElement : Dom4j.elements(element, "dsAlias")) {
-                    String aliasDatasourceId = aliasElement.attributeValue("alias");
-                    String originalDatasourceId = aliasElement.attributeValue("datasource");
-                    if (StringUtils.isNotBlank(aliasDatasourceId) && StringUtils.isNotBlank(originalDatasourceId)) {
-                        frameLoaderInnerContext.getAliasesMap().put(aliasDatasourceId, originalDatasourceId);
-                    }
+            for (Element aliasElement : element.elements("dsAlias")) {
+                String aliasDatasourceId = aliasElement.attributeValue("alias");
+                String originalDatasourceId = aliasElement.attributeValue("datasource");
+                if (StringUtils.isNotBlank(aliasDatasourceId) && StringUtils.isNotBlank(originalDatasourceId)) {
+                    frameLoaderInnerContext.getAliasesMap().put(aliasDatasourceId, originalDatasourceId);
+                }
             }
         }
     }

@@ -17,9 +17,10 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 
 /**
- * Visitor used in {@link ComponentsHelper#walkComponents(com.haulmont.cuba.gui.components.Component.Container, ComponentVisitor)}
+ * Visitor used in {@link ComponentsHelper#walkComponents(ComponentContainer, ComponentVisitor)}
  */
 public interface ComponentVisitor {
 

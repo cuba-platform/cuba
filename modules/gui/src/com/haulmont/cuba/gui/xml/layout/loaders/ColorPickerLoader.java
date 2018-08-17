@@ -25,7 +25,7 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
 
     @Override
     public void createComponent() {
-        resultComponent = (ColorPicker) factory.createComponent(ColorPicker.NAME);
+        resultComponent = factory.createComponent(ColorPicker.NAME);
         loadId(resultComponent, element);
     }
 
@@ -163,35 +163,35 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
     protected void loadSwatchesVisibility(ColorPicker component, Element element) {
         String swatchesVisible = element.attributeValue("swatchesVisible");
         if (StringUtils.isNotEmpty(swatchesVisible)) {
-            component.setSwatchesVisible(BooleanUtils.toBoolean(swatchesVisible));
+            component.setSwatchesVisible(Boolean.parseBoolean(swatchesVisible));
         }
     }
 
     protected void loadRGBVisibility(ColorPicker component, Element element) {
         String rgbVisible = element.attributeValue("rgbVisible");
         if (StringUtils.isNotEmpty(rgbVisible)) {
-            component.setRGBVisible(BooleanUtils.toBoolean(rgbVisible));
+            component.setRGBVisible(Boolean.parseBoolean(rgbVisible));
         }
     }
 
     protected void loadHSVVisibility(ColorPicker component, Element element) {
         String hsvVisible = element.attributeValue("hsvVisible");
         if (StringUtils.isNotEmpty(hsvVisible)) {
-            component.setHSVVisible(BooleanUtils.toBoolean(hsvVisible));
+            component.setHSVVisible(Boolean.parseBoolean(hsvVisible));
         }
     }
 
     protected void loadHistoryVisibility(ColorPicker component, Element element) {
         String historyVisible = element.attributeValue("historyVisible");
         if (StringUtils.isNotEmpty(historyVisible)) {
-            component.setHistoryVisible(BooleanUtils.toBoolean(historyVisible));
+            component.setHistoryVisible(Boolean.parseBoolean(historyVisible));
         }
     }
 
     protected void loadDefaultCaptionEnabled(ColorPicker component, Element element) {
         String defaultCaptionEnabled = element.attributeValue("defaultCaptionEnabled");
         if (StringUtils.isNotEmpty(defaultCaptionEnabled)) {
-            component.setDefaultCaptionEnabled(BooleanUtils.toBoolean(defaultCaptionEnabled));
+            component.setDefaultCaptionEnabled(Boolean.parseBoolean(defaultCaptionEnabled));
         }
     }
 

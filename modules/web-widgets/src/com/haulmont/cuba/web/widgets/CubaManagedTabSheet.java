@@ -29,10 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -361,7 +358,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
     }
 
     public interface CloseHandler extends Serializable {
-        void onTabClose(final CubaManagedTabSheet tabSheet, final Component tabContent);
+        void onTabClose(CubaManagedTabSheet tabSheet, Component tabContent);
     }
 
     @Override
@@ -686,6 +683,11 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         }
 
         @Override
+        public Iterator<Component> getTabComponents() {
+            return tabSheet.tabComponents.iterator();
+        }
+
+        @Override
         public void setSelectedTab(Component component) {
             tabSheet.setSelectedTab(tabSheet.tabs.get(component));
         }
@@ -721,8 +723,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         public void setTabCloseHandler(Component tabContent, BiConsumer<HasTabSheetBehaviour, Component> closeHandler) {
             Tab tab = tabSheet.tabs.get(tabContent);
             if (tab != null) {
-                ((TabImpl) tab).setCloseHandler((tabSheet1, tabContent1) ->
-                        closeHandler.accept(tabSheet, tabContent1));
+                ((TabImpl) tab).setCloseHandler(closeHandler::accept);
             }
         }
 

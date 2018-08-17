@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui;
 
 /**
  * Raised on attempt to open an unknown screen.
- *
- *
  */
 public class NoSuchScreenException extends RuntimeException {
 
@@ -28,7 +26,8 @@ public class NoSuchScreenException extends RuntimeException {
     private final String screenId;
 
     public NoSuchScreenException(String screenId) {
-        super("Screen '" + screenId + "' is not defined");
+        super(String.format("Screen '%s' is not defined", screenId));
+
         this.screenId = screenId;
     }
 

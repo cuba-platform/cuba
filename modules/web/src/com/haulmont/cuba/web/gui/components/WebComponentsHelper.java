@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.*;
-import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.*;
 import com.vaadin.server.FileResource;
@@ -43,7 +42,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -251,32 +253,6 @@ public class WebComponentsHelper {
         } else {
             return null;
         }
-    }
-
-    /**
-     * Add actions to vaadin action container.
-     *
-     * @param container any {@link Action.Container}
-     * @param actions   map of actions
-     */
-    @Deprecated
-    public static void setActions(Action.Container container,
-                                  Map<Action, Runnable> actions) {
-        container.addActionHandler(new Action.Handler() {
-            @Override
-            public Action[] getActions(Object target, Object sender) {
-                Set<Action> shortcuts = actions.keySet();
-                return shortcuts.toArray(new Action[0]);
-            }
-
-            @Override
-            public void handleAction(Action action, Object sender, Object target) {
-                Runnable runnable = actions.get(action);
-                if (runnable != null) {
-                    runnable.run();
-                }
-            }
-        });
     }
 
     /**

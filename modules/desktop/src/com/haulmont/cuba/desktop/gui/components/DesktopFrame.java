@@ -25,7 +25,7 @@ import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerImpl;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -279,100 +279,100 @@ public class DesktopFrame
         return false;
     }
 
-    private DesktopWindowManager getWindowManager() {
+    private DesktopWindowManager getWindowManagerImpl() {
         return DesktopComponentsHelper.getTopLevelFrame((Frame) this).getWindowManager();
     }
 
     @Override
     public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openWindow(windowInfo, openType, params);
+        return getWindowManagerImpl().openWindow(windowInfo, openType, params);
     }
 
     @Override
     public Window.Editor openEditor(Entity item, WindowManager.OpenType openType) {
         WindowInfo editorScreen = windowConfig.getEditorScreen(item);
-        return getWindowManager().openEditor(editorScreen, item, openType);
+        return getWindowManagerImpl().openEditor(editorScreen, item, openType);
     }
 
     @Override
     public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo editorScreen = windowConfig.getEditorScreen(item);
-        return getWindowManager().openEditor(editorScreen, item, openType, params);
+        return getWindowManagerImpl().openEditor(editorScreen, item, openType, params);
     }
 
     @Override
     public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo editorScreen = windowConfig.getEditorScreen(item);
-        return getWindowManager().openEditor(editorScreen, item, openType, params, parentDs);
+        return getWindowManagerImpl().openEditor(editorScreen, item, openType, params, parentDs);
     }
 
     @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
+        return getWindowManagerImpl().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openEditor(windowInfo, item, openType, params);
+        return getWindowManagerImpl().openEditor(windowInfo, item, openType, params);
     }
 
     @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openEditor(windowInfo, item, openType, parentDs);
+        return getWindowManagerImpl().openEditor(windowInfo, item, openType, parentDs);
     }
 
     @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openEditor(windowInfo, item, openType);
+        return getWindowManagerImpl().openEditor(windowInfo, item, openType);
     }
 
     @Override
     public Window openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openWindow(windowInfo, openType);
+        return getWindowManagerImpl().openWindow(windowInfo, openType);
     }
 
     @Override
     public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
-        return getWindowManager().openLookup(lookupScreen, handler, openType);
+        return getWindowManagerImpl().openLookup(lookupScreen, handler, openType);
     }
 
     @Override
     public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
-        return getWindowManager().openLookup(lookupScreen, handler, openType, params);
+        return getWindowManagerImpl().openLookup(lookupScreen, handler, openType, params);
     }
 
     @Override
     public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openLookup(windowInfo, handler, openType, params);
+        return getWindowManagerImpl().openLookup(windowInfo, handler, openType, params);
     }
 
     @Override
     public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openLookup(windowInfo, handler, openType);
+        return getWindowManagerImpl().openLookup(windowInfo, handler, openType);
     }
 
     @Override
     public Frame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
-        return getWindowManager().openFrame(wrappedFrame, parent, windowInfo);
+        return getWindowManagerImpl().openFrame(wrappedFrame, parent, windowInfo);
     }
 
     @Override
     public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
-        return getWindowManager().openFrame(wrappedFrame, parent, windowInfo, params);
+        return getWindowManagerImpl().openFrame(wrappedFrame, parent, windowInfo, params);
     }
 
     @Override
@@ -459,37 +459,37 @@ public class DesktopFrame
 
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        getWindowManager().showMessageDialog(title, message, messageType);
+        getWindowManagerImpl().showMessageDialog(title, message, messageType);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        getWindowManager().showOptionDialog(title, message, messageType, actions);
+        getWindowManagerImpl().showOptionDialog(title, message, messageType, actions);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
-        getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+        getWindowManagerImpl().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        getWindowManager().showNotification(caption, description, type);
+        getWindowManagerImpl().showNotification(caption, description, type);
     }
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        getWindowManager().showWebPage(url, params);
+        getWindowManagerImpl().showWebPage(url, params);
     }
 
     @Override
     public void showNotification(String caption) {
-        getWindowManager().showNotification(caption);
+        getWindowManagerImpl().showNotification(caption);
     }
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        getWindowManager().showNotification(caption, type);
+        getWindowManagerImpl().showNotification(caption, type);
     }
 
     @Override

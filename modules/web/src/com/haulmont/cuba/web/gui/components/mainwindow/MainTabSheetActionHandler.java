@@ -25,9 +25,11 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
+import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.widgets.HasTabSheetBehaviour;
@@ -126,7 +128,7 @@ public class MainTabSheetActionHandler implements Action.Handler {
     }
 
     protected void showInfo(Object target) {
-        com.haulmont.cuba.gui.components.Window.Editor editor = findEditor((Layout) target);
+        AbstractEditor editor = (AbstractEditor) findEditor((Layout) target);
         Entity entity = editor.getItem();
 
         Metadata metadata = AppBeans.get(Metadata.NAME);
@@ -142,9 +144,9 @@ public class MainTabSheetActionHandler implements Action.Handler {
             List<LayoutTip> tipsList = analyzer.analyze(window);
 
             if (tipsList.isEmpty()) {
-                window.showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
+                LegacyFrame.of(window).showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
             } else {
-                window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                LegacyFrame.of(window).openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
             }
         }
     }

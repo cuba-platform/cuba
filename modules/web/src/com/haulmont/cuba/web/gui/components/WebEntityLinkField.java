@@ -28,14 +28,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.EntityLinkField;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.web.widgets.CubaButtonField;
 import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +43,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
+
 public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> implements EntityLinkField<V> {
 
     protected static final String EMPTY_VALUE_STYLENAME = "empty-value";
@@ -52,7 +52,7 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
     protected EntityLinkClickHandler clickHandler;
 
     protected String screen;
-    protected WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
+    protected OpenType screenOpenType = OpenType.THIS_TAB;
     protected ScreenCloseListener screenCloseListener;
     protected Map<String, Object> screenParams;
 
@@ -196,12 +196,12 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
     }
 
     @Override
-    public WindowManager.OpenType getScreenOpenType() {
+    public OpenType getScreenOpenType() {
         return screenOpenType;
     }
 
     @Override
-    public void setScreenOpenType(WindowManager.OpenType screenOpenType) {
+    public void setScreenOpenType(OpenType screenOpenType) {
         this.screenOpenType = screenOpenType;
     }
 
@@ -256,7 +256,7 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
             return;
         }
 
-        DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
+        DataSupplier dataSupplier = LegacyFrame.of(window).getDsContext().getDataSupplier();
         entity = dataSupplier.reload(entity, View.MINIMAL);
 
         String windowAlias = screen;
@@ -265,11 +265,11 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
             windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
         }
 
-        final Window.Editor editor = wm.openEditor(
+        AbstractEditor editor = (AbstractEditor) wm.openEditor(
                 windowConfig.getWindowInfo(windowAlias),
                 entity,
                 screenOpenType,
-                screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
+                screenParams != null ? screenParams : Collections.emptyMap()
         );
         editor.addCloseListener(actionId -> {
             // move focus to component

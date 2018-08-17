@@ -31,11 +31,13 @@ import javax.annotation.Nullable;
 /**
  * GenericUI class holding common information about client application configuration,
  * as well as some static helper methods to obtain infrastructure objects.
- *
  */
-public abstract class AppConfig {
+public final class AppConfig {
 
     public static final String CLIENT_TYPE_PROP = "cuba.clientType";
+
+    private AppConfig() {
+    }
 
     /**
      * Current client type.
@@ -77,14 +79,18 @@ public abstract class AppConfig {
      * Client-specific BackgroundWorker
      * @return  BackgroundWorker instance
      */
+    @Deprecated
     public static BackgroundWorker getBackgroundWorker() {
         return AppBeans.get(BackgroundWorker.NAME);
     }
 
     /**
      * Client-specific components factory
+     *
      * @return  ComponentsFactory instance
+     * @deprecated todo
      */
+    @Deprecated
     public static ComponentsFactory getFactory() {
         return AppBeans.get(ComponentsFactory.NAME);
     }

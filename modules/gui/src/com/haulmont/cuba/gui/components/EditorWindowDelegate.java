@@ -21,20 +21,18 @@ import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
@@ -66,9 +64,10 @@ public class EditorWindowDelegate extends WindowDelegate {
         super(window);
     }
 
-    @Override
-    public Window wrapBy(Class<?> wrapperClass) {
-        final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
+//    @Override
+//    public Window wrapBy(Class<?> wrapperClass) {
+        // todo
+        /*final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
 
         final Component commitAndCloseButton = ComponentsHelper.findComponent(editor,
                 Window.Editor.WINDOW_COMMIT_AND_CLOSE);
@@ -77,27 +76,40 @@ public class EditorWindowDelegate extends WindowDelegate {
             commitAndCloseButtonExists = true;
 
             this.window.addAction(
-                    new BaseAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE)
-                            .withCaption(messages.getMainMessage("actions.OkClose"))
-                            .withPrimary(true)
-                            .withShortcut(commitShortcut)
-                            .withHandler(e ->
-                                    editor.commitAndClose()));
-        }
+                    new AbstractAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE, commitShortcut) {
+                        @Override
+                        public String getCaption() {
+                            return messages.getMainMessage("actions.OkClose");
+                        }
 
-        AbstractAction commitAction = new BaseAction(Window.Editor.WINDOW_COMMIT)
-                .withCaption(messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok"))
-                .withPrimary(!commitAndCloseButtonExists)
-                .withShortcut(commitAndCloseButtonExists ? null : commitShortcut)
-                .withHandler(e -> {
-                    if (!commitAndCloseButtonExists) {
-                        editor.commitAndClose();
-                    } else {
-                        if (editor.commit()) {
-                            commitActionPerformed = true;
+                        @Override
+                        public void actionPerform(Component component) {
+                            editor.commitAndClose();
                         }
                     }
-                });
+            );
+        }
+
+        AbstractAction commitAction = new AbstractAction(Window.Editor.WINDOW_COMMIT) {
+            @Override
+            public String getCaption() {
+                return messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok");
+            }
+
+            @Override
+            public void actionPerform(Component component) {
+                if (!commitAndCloseButtonExists) {
+                    editor.commitAndClose();
+                } else {
+                    if (editor.commit()) {
+                        commitActionPerformed = true;
+                    }
+                }
+            }
+        };
+        if (!commitAndCloseButtonExists) {
+            commitAction.setShortcut(commitShortcut);
+        }
         this.window.addAction(commitAction);
 
         this.window.addAction(
@@ -113,10 +125,10 @@ public class EditorWindowDelegate extends WindowDelegate {
                         editor.close(commitActionPerformed ? Window.COMMIT_ACTION_ID : getId());
                     }
                 }
-        );
+        );*/
 
-        return editor;
-    }
+//        return null;
+//    }
 
     public Entity getItem() {
         return getDatasource().getItem();
@@ -267,7 +279,7 @@ public class EditorWindowDelegate extends WindowDelegate {
             return false;
 
         boolean committed;
-        final DsContext context = window.getDsContext();
+        final DsContext context = LegacyFrame.of(window).getDsContext();
         if (context != null) {
             committed = context.commit();
         } else {
@@ -280,7 +292,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     }
 
     protected DataSupplier getDataService() {
-        final DsContext context = window.getDsContext();
+        final DsContext context = LegacyFrame.of(window).getDsContext();
         if (context == null) {
             throw new UnsupportedOperationException();
         } else {

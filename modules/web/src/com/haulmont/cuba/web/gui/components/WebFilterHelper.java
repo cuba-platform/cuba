@@ -73,7 +73,7 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     @Nullable
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
-        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
         FoldersPane foldersPane = null;
         if (topLevelWindow instanceof Window.HasFoldersPane) {
             foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
@@ -210,7 +210,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public Object getFoldersPane() {
-        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
         FoldersPane foldersPane = null;
         if (topLevelWindow instanceof Window.HasFoldersPane) {
             foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
@@ -225,7 +225,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void removeFolderFromFoldersPane(Folder folder) {
-        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
         FoldersPane foldersPane = null;
         if (topLevelWindow instanceof Window.HasFoldersPane) {
             foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();

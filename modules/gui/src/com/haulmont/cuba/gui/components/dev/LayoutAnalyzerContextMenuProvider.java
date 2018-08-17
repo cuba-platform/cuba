@@ -16,11 +16,11 @@
 
 package com.haulmont.cuba.gui.components.dev;
 
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 
 public interface LayoutAnalyzerContextMenuProvider {
     String NAME = "cuba_LayoutAnalyzerContextMenuProvider";
 
-    void initContextMenu(Window window, Component contextMenuTarget);
+    void initContextMenu(AbstractWindow window, Component contextMenuTarget);
 }

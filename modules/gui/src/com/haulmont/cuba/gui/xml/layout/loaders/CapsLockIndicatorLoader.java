@@ -43,7 +43,7 @@ public class CapsLockIndicatorLoader extends AbstractComponentLoader<CapsLockInd
             capsLockOnMessage = loadResourceString(capsLockOnMessage);
             resultComponent.setCapsLockOnMessage(capsLockOnMessage);
         } else {
-            resultComponent.setCapsLockOnMessage(messages.getMainMessage("capsLockIndicator.capsLockOnMessage"));
+            resultComponent.setCapsLockOnMessage(getMessages().getMainMessage("capsLockIndicator.capsLockOnMessage"));
         }
 
         String capsLockOffMessage = element.attributeValue("capsLockOffMessage");

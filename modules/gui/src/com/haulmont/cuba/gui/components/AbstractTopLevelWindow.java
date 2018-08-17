@@ -17,18 +17,4 @@
 package com.haulmont.cuba.gui.components;
 
 public class AbstractTopLevelWindow extends AbstractWindow implements Window.TopLevelWindow {
-    @Override
-    public boolean close(String actionId) {
-        throw new UnsupportedOperationException("Close operation for TopLevelWindow is unsupported");
-    }
-
-    @Override
-    public boolean close(String actionId, boolean force) {
-        throw new UnsupportedOperationException("Close operation for TopLevelWindow is unsupported");
-    }
-
-    @Override
-    public void closeAndRun(String actionId, Runnable runnable) {
-        throw new UnsupportedOperationException("Close operation for TopLevelWindow is unsupported");
-    }
 }

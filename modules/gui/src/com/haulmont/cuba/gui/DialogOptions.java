@@ -36,7 +36,10 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
  * getDialogOptions()
  *     .setForceDialog(true);
  * </pre>
+ *
+ * @deprecated JavaDoc
  */
+@Deprecated
 public class DialogOptions {
     private Float width;
     private SizeUnit widthUnit;

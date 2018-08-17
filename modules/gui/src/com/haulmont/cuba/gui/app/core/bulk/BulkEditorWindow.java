@@ -634,13 +634,13 @@ public class BulkEditorWindow extends AbstractWindow {
 
                                 @Override
                                 public void actionPerform(Component component) {
-                                    commitChanges();
+                                    commitBulkChanges();
                                 }
                             },
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     });
         } else {
-            commitChanges();
+            commitBulkChanges();
         }
     }
 
@@ -662,7 +662,7 @@ public class BulkEditorWindow extends AbstractWindow {
         return dataSupplier.loadList(lc);
     }
 
-    protected void commitChanges() {
+    protected void commitBulkChanges() {
         List<String> fields = new ArrayList<>();
         for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
             Field field = fieldEntry.getValue();

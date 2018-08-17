@@ -23,17 +23,21 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
+
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class LinkCellClickListener implements Table.CellClickListener {
 
@@ -82,7 +86,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
             return;
         }
 
-        DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
+        DataSupplier dataSupplier = LegacyFrame.of(window).getDsContext().getDataSupplier();
         entity = dataSupplier.reload(entity, View.MINIMAL);
 
         WindowConfig windowConfig = applicationContext.getBean(WindowConfig.NAME, WindowConfig.class);
@@ -95,15 +99,15 @@ public class LinkCellClickListener implements Table.CellClickListener {
             windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
         }
 
-        WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
+        OpenType screenOpenType = OpenType.THIS_TAB;
         if (column.getXmlDescriptor() != null) {
             String openTypeAttribute = column.getXmlDescriptor().attributeValue("linkScreenOpenType");
             if (StringUtils.isNotEmpty(openTypeAttribute)) {
-                screenOpenType = WindowManager.OpenType.valueOf(openTypeAttribute);
+                screenOpenType = OpenType.valueOf(openTypeAttribute);
             }
         }
 
-        Window.Editor editor = wm.openEditor(
+        AbstractEditor editor = (AbstractEditor) wm.openEditor(
                 windowConfig.getWindowInfo(windowAlias),
                 entity,
                 screenOpenType

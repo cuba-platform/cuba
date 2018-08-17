@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -30,7 +29,7 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
     @Override
     public void createComponent() {
-        resultComponent = (PopupView) factory.createComponent(PopupView.NAME);
+        resultComponent = factory.createComponent(PopupView.NAME);
         loadId(resultComponent, element);
         createContent();
     }
@@ -84,11 +83,11 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
     protected void createContent() {
         if (element != null) {
-            LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
+            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
             loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
-            List<Element> elements = Dom4j.elements(element);
+            List<Element> elements = element.elements();
             if (elements.size() != 0) {
                 Element innerElement = elements.get(0);
                 if (innerElement != null) {

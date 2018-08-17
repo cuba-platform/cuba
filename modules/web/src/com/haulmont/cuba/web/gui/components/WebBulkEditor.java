@@ -17,20 +17,23 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.BulkEditor;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BulkEditAction;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class WebBulkEditor extends WebButton implements BulkEditor {
 
     protected String exclude;
     protected List<String> includeProperties = Collections.emptyList();
-    protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
+    protected OpenType openType = OpenType.DIALOG;
     protected BulkEditAction bulkEditAction;
     protected ListComponent listComponent;
     protected Map<String, Field.Validator> fieldValidators;
@@ -40,12 +43,12 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     protected boolean useConfirmDialog = true;
 
     @Override
-    public WindowManager.OpenType getOpenType() {
+    public OpenType getOpenType() {
         return openType;
     }
 
     @Override
-    public void setOpenType(WindowManager.OpenType openType) {
+    public void setOpenType(OpenType openType) {
         this.openType = openType;
         if (bulkEditAction != null) {
             bulkEditAction.setOpenType(openType);

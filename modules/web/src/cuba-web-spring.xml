@@ -36,12 +36,15 @@
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.restapi\..*"/>
     </context:component-scan>
 
+    <bean id="vaadinSessionScope" class="com.haulmont.cuba.web.sys.VaadinSessionScope"/>
+    <bean id="uiScope" class="com.haulmont.cuba.web.sys.UIScope"/>
+
     <!-- Various beans with non-standard configuration -->
-    <bean id="vaadin" class="com.haulmont.cuba.web.sys.VaadinSessionScope"/>
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
         <property name="scopes">
             <map>
-                <entry key="vaadin" value-ref="vaadin"/>
+                <entry key="vaadin" value-ref="vaadinSessionScope"/>
+                <entry key="ui" value-ref="uiScope"/>
             </map>
         </property>
     </bean>
@@ -55,6 +58,20 @@
     </bean>
 
     <bean id="cuba_Events" class="com.haulmont.cuba.web.sys.WebEvents"/>
+
+    <!-- Screens registry -->
+
+    <!-- todo custom XSD for screen configuration: scanning/defining screens -->
+
+    <bean id="cuba_web_ScreensConfiguration"
+          class="com.haulmont.cuba.gui.sys.ScreensConfiguration">
+        <property name="packages">
+            <list>
+                <value>com.haulmont.cuba.gui.app</value>
+                <value>com.haulmont.cuba.web.app</value>
+            </list>
+        </property>
+    </bean>
 
     <!-- MBeans registration -->
 

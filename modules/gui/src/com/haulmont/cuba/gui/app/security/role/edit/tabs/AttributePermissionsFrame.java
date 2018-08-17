@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
@@ -413,7 +414,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected void compileEditPane(MultiplePermissionTarget item) {
         GridLayout editGrid = componentsFactory.createComponent(GridLayout.class);
-        editGrid.setFrame(this);
+        editGrid.setFrame(frame);
         editGrid.setId("editGrid");
         editGrid.setWidth("100%");
         editGrid.setColumns(4);

@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -43,7 +44,6 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -944,7 +944,7 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-            WebWindowManager wm = App.getInstance().getWindowManager();
+            WindowManager wm = App.getInstance().getWindowManager();
             WindowInfo windowInfo = windowConfig.getWindowInfo("fileUploadDialog");
             FileUploadDialog dialog = (FileUploadDialog) wm.openWindow(windowInfo, OpenType.DIALOG);
 

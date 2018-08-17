@@ -16,15 +16,16 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.sys.AppContext;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.BeansWrapperBuilder;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.collections4.map.LazyMap;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ import java.util.Map;
  */
 public class TemplateHelper {
     public static String processTemplate(String templateStr, Map<String, ?> parameterValues) {
-        final StringTemplateLoader templateLoader = new StringTemplateLoader();
+        StringTemplateLoader templateLoader = new StringTemplateLoader();
         templateLoader.putTemplate("template", templateStr);
         return __processTemplate(templateLoader, "template", parameterValues);
     }
@@ -47,7 +48,12 @@ public class TemplateHelper {
         final FileTemplateLoader templateLoader;
         try {
             String rootPath = AppContext.getProperty("cuba.templateRootDir");
-            if (StringUtils.isEmpty(rootPath)) rootPath = AppContext.getProperty("cuba.confDir");
+            if (Strings.isNullOrEmpty(rootPath)) {
+                rootPath = AppContext.getProperty("cuba.confDir");
+            }
+            if (Strings.isNullOrEmpty(rootPath)) {
+                throw new IllegalStateException("Unable to get template root path");
+            }
             templateLoader = new FileTemplateLoader(new File(rootPath), true);
         } catch (IOException e) {
             throw new RuntimeException("Unable to process template from file", e);
@@ -59,12 +65,12 @@ public class TemplateHelper {
                                               Map<String, ?> parameterValues) {
         Map<String, Object> params = prepareParams(parameterValues);
 
-        final StringWriter writer = new StringWriter();
+        StringWriter writer = new StringWriter();
 
         try {
-            final Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
             configuration.setTemplateLoader(templateLoader);
-            final Template template = configuration.getTemplate(templateName);
+            Template template = configuration.getTemplate(templateName);
             template.process(params, writer);
 
             return writer.toString();
@@ -75,7 +81,8 @@ public class TemplateHelper {
 
     protected static Map<String, Object> prepareParams(Map<String, ?> parameterValues) {
         Map<String, Object> parameterValuesWithStats = new HashMap<>(parameterValues);
-        parameterValuesWithStats.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+        BeansWrapper beansWrapper = new BeansWrapperBuilder(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build();
+        parameterValuesWithStats.put("statics", beansWrapper.getStaticModels());
 
         @SuppressWarnings("unchecked")
         Map<String, Object> params = LazyMap.lazyMap(parameterValuesWithStats, propertyName -> {

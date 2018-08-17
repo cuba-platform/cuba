@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -46,6 +48,8 @@ public class FilterApplyAction extends AbstractAction {
     public FilterApplyAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
+
+        Messages messages = AppBeans.get(Messages.NAME);
         this.caption = messages.getMainMessage("actions.Apply");
     }
 
