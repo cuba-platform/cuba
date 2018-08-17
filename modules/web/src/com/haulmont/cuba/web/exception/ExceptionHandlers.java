@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.sys.WebWindowManagerImpl;
 import com.vaadin.server.ErrorEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

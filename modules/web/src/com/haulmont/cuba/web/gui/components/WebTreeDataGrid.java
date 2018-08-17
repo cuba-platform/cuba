@@ -131,7 +131,7 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     protected void onItemExpand(com.vaadin.event.ExpandEvent<E> e) {
         ExpandEvent<E> event = new ExpandEvent<>(WebTreeDataGrid.this,
                 e.getExpandedItem(), e.isUserOriginated());
-        publish(ExpandEvent.class, event);
+        fireEvent(ExpandEvent.class, event);
     }
 
     @SuppressWarnings("unchecked")
@@ -147,6 +147,6 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     protected void onItemCollapse(com.vaadin.event.CollapseEvent<E> e) {
         CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
                 e.getCollapsedItem(), e.isUserOriginated());
-        publish(CollapseEvent.class, event);
+        fireEvent(CollapseEvent.class, event);
     }
 }

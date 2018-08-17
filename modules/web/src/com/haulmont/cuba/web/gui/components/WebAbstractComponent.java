@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -37,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
@@ -77,6 +79,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
             eventHub = new EventHub();
         }
         return eventHub;
+    }
+
+    protected <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
+        return getEventHub().subscribe(eventType, listener);
+    }
+
+    protected <E> void fireEvent(Class<E> eventType, E event) {
+        if (eventHub != null) {
+            eventHub.publish(eventType, event);
+        }
     }
 
     @Override

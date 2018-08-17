@@ -33,7 +33,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.sys.WebWindowManagerImpl;
 import com.haulmont.cuba.web.widgets.CubaTabSheet;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Layout;
@@ -605,13 +604,13 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     });
 
                     // init debug ids after all
-                    AppUI appUI = AppUI.getCurrent();
+                    /*AppUI appUI = AppUI.getCurrent();
                     if (appUI.isPerformanceTestMode()) {
                         context.addPostInitTask((localContext, localWindow) -> {
                             RootWindow appWindow = appUI.getTopLevelWindow();
                             ((WebWindowManagerImpl) appWindow.getWindowManager()).initDebugIds(localWindow);
                         });
-                    }
+                    }*/
                 }
             }
         }

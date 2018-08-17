@@ -16,23 +16,23 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenUtils;
-import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -60,9 +60,9 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebWindow implements Window, Component.Wrapper,
-                                  Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
-                                  SecuredActionsHolder, Component.HasIcon,
-        FrameImplementation, WindowImplementation {
+        Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
+        SecuredActionsHolder, Component.HasIcon,
+        FrameImplementation, WindowImplementation, EventHubOwner {
 
     protected static final String C_WINDOW_LAYOUT = "c-window-layout";
 
@@ -93,15 +93,19 @@ public class WebWindow implements Window, Component.Wrapper,
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder(this);
     protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
-    protected Messages messages;
     protected Icons icons;
 
     protected boolean disposed = false;
-    protected DialogOptions dialogOptions = new WebDialogOptions();
+
+    protected DialogOptions dialogOptions; // lazily initialized
+
     protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
     protected boolean closeable = true;
+
     // todo remove
     private EventRouter eventRouter;
+
+    private EventHub eventHub;
 
     public WebWindow() {
         component = createLayout();
@@ -112,9 +116,12 @@ public class WebWindow implements Window, Component.Wrapper,
         setupEventListeners();
     }
 
-    @Inject
-    protected void setMessages(Messages messages) {
-        this.messages = messages;
+    @Override
+    public EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
+        }
+        return eventHub;
     }
 
     @Inject
@@ -418,6 +425,9 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public DialogOptions getDialogOptions() {
+        if (dialogOptions == null) {
+             dialogOptions = new WebDialogOptions();
+        }
         return dialogOptions;
     }
 
@@ -903,6 +913,8 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setCaption(String caption) {
         this.caption = caption;
 
+        // todo check that everything gets updated: breadcrumbs, titlebar, dialog caption, etc
+
         if (component.isAttached()) {
             TabSheet.Tab tabWindow = asTabWindow();
             if (tabWindow != null) {
@@ -1039,251 +1051,6 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         this.contentSwitchMode = mode;
-    }
-
-    // todo remove
-    /*public static class Editor extends WebWindow implements Window.Editor {
-        @Override
-        public Entity getItem() {
-            return null; // todo
-            // return ((EditorWindowDelegate) delegate).getItem();
-        }
-
-        @Override
-        public void setItem(Entity item) {
-//            ((EditorWindowDelegate) delegate).setItem(item);
-            // todo
-        }
-
-        @Override
-        protected boolean onClose(String actionId) {
-            releaseLock();
-            return super.onClose(actionId);
-        }
-
-        public void releaseLock() {
-            // todo
-//            ((EditorWindowDelegate) delegate).releaseLock();
-        }
-
-        @Nullable
-        @Override
-        public Datasource getParentDs() {
-            return ((EditorWindowDelegate) delegate).getParentDs();
-        }
-
-        @Override
-        public void setParentDs(Datasource parentDs) {
-            ((EditorWindowDelegate) delegate).setParentDs(parentDs);
-        }
-
-        protected MetaClass getMetaClass() {
-            return getDatasource().getMetaClass();
-        }
-
-        protected Datasource getDatasource() {
-            return delegate.getDatasource();
-        }
-
-        protected MetaClass getMetaClass(Object item) {
-            final MetaClass metaClass;
-            if (item instanceof Datasource) {
-                metaClass = ((Datasource) item).getMetaClass();
-            } else {
-                metaClass = ((Instance) item).getMetaClass();
-            }
-            return metaClass;
-        }
-
-        protected Instance getInstance(Object item) {
-            if (item instanceof Datasource) {
-                return ((Datasource) item).getItem();
-            } else {
-                return (Instance) item;
-            }
-        }
-
-        @Override
-        public boolean commit() {
-            return commit(true);
-        }
-
-        @Override
-        public boolean commit(boolean validate) {
-            if (validate && !getWrapper().validateAll())
-                return false;
-
-            return ((EditorWindowDelegate) delegate).commit(false);
-        }
-
-        @Override
-        public void commitAndClose() {
-            if (!getWrapper().validateAll())
-                return;
-
-            if (((EditorWindowDelegate) delegate).commit(true))
-                close(COMMIT_ACTION_ID);
-        }
-
-        @Override
-        public boolean isLocked() {
-            return ((EditorWindowDelegate) delegate).isLocked();
-        }
-
-        @Override
-        public boolean isCrossFieldValidate() {
-            return ((EditorWindowDelegate) delegate).isCrossFieldValidate();
-        }
-
-        @Override
-        public void setCrossFieldValidate(boolean crossFieldValidate) {
-            ((EditorWindowDelegate) delegate).setCrossFieldValidate(crossFieldValidate);
-        }
-
-        @Override
-        protected void validateAdditionalRules(ValidationErrors errors) {
-            ((EditorWindowDelegate) delegate).validateAdditionalRules(errors);
-        }
-    }*/
-
-    // todo remove
-    public static class Lookup extends WebWindow implements Window.Lookup {
-
-        protected Handler handler;
-
-        protected Validator validator;
-
-        protected Component lookupComponent;
-        protected VerticalLayout container;
-        protected CubaVerticalActionsLayout rootLayout;
-
-        public Lookup() {
-            addAction(new SelectAction((AbstractLookup) this.getFrameOwner())); // todo
-
-            // todo use BaseAction instead
-            addAction(new AbstractAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID) {
-                @Override
-                public void actionPerform(Component component) {
-                    close("cancel");
-                }
-            });
-        }
-
-        @Nullable
-        protected Action getSelectAction() {
-            return getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
-        }
-
-        @Nullable
-        protected Action getCancelAction() {
-            return getAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID);
-        }
-
-        @Override
-        public com.haulmont.cuba.gui.components.Component getLookupComponent() {
-            return lookupComponent;
-        }
-
-        @Override
-        public void setLookupComponent(Component lookupComponent) {
-        }
-
-        @Override
-        public Handler getLookupHandler() {
-            return handler;
-        }
-
-        @Override
-        public void setLookupHandler(Handler handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        protected com.vaadin.ui.ComponentContainer getContainer() {
-            return container;
-        }
-
-        @Override
-        public void initLookupLayout() {
-            // todo reimplement
-            /*Action selectAction = getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
-            if (selectAction == null || selectAction.getOwner() == null) {
-                Frame frame = openFrame(null, "lookupWindowActions");
-                com.vaadin.ui.Component vFrame = frame.unwrapComposition(com.vaadin.ui.Component.class);
-                rootLayout.addComponent(vFrame);
-
-                if (AppUI.getCurrent().isTestMode()) {
-                    Component selectButton = frame.getComponent("selectButton");
-                    if (selectButton instanceof com.haulmont.cuba.gui.components.Button) {
-                        selectButton.unwrap(Button.class).setCubaId("selectButton");
-                    }
-                    Component cancelButton = frame.getComponent("cancelButton");
-                    if (cancelButton instanceof com.haulmont.cuba.gui.components.Button) {
-                        cancelButton.unwrap(Button.class).setCubaId("cancelButton");
-                    }
-                }
-            }*/
-        }
-
-        @Override
-        public Validator getLookupValidator() {
-            return validator;
-        }
-
-        @Override
-        public void setLookupValidator(Validator validator) {
-            this.validator = validator;
-        }
-
-        @Override
-        public String getStyleName() {
-            return StringUtils.normalizeSpace(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
-        }
-
-        @Override
-        protected com.vaadin.ui.ComponentContainer createLayout() {
-            rootLayout = new CubaVerticalActionsLayout();
-            rootLayout.setStyleName("c-lookup-window-wrapper");
-            rootLayout.setSizeFull();
-            rootLayout.setSpacing(true);
-
-            container = new VerticalLayout();
-            container.setMargin(false);
-            container.setSpacing(false);
-            container.setStyleName(C_WINDOW_LAYOUT);
-            container.setSizeFull();
-
-            rootLayout.addComponent(container);
-            rootLayout.setExpandRatio(container, 1);
-
-            return rootLayout;
-        }
-
-        @Override
-        public void setId(String id) {
-            super.setId(id);
-
-            if (debugId != null) {
-                AppUI ui = AppUI.getCurrent();
-                if (ui.isPerformanceTestMode()) {
-                    TestIdManager testIdManager = ui.getTestIdManager();
-                    Action selectAction = getSelectAction();
-                    if (selectAction != null) {
-                        ActionOwner selectActionOwner = selectAction.getOwner();
-                        if (selectActionOwner instanceof com.haulmont.cuba.gui.components.Button) {
-                            ((com.haulmont.cuba.gui.components.Button) selectActionOwner).setId(testIdManager.getTestId(debugId + "_selectButton"));
-                        }
-                    }
-                    Action cancelAction = getCancelAction();
-                    if (cancelAction != null) {
-                        ActionOwner cancelActionOwner = cancelAction.getOwner();
-                        if (cancelActionOwner instanceof com.haulmont.cuba.gui.components.Button) {
-                            ((com.haulmont.cuba.gui.components.Button) cancelActionOwner).setId(testIdManager.getTestId(debugId + "_cancelButton"));
-                        }
-                    }
-                }
-            }
-        }
     }
 
     protected class WebDialogOptions extends DialogOptions {
