@@ -122,4 +122,18 @@ class DataManagerTest extends Specification {
 
         list.size() > 0
     }
+
+    def "more than one parameter without implicit conversion #1163"() {
+
+        when:
+
+        LoadContext.Query query = LoadContext.createQuery('select e from test$Foo e where e.ref1 = :ref1 and e.ref2 = :ref2')
+                .setParameter('ref1', 'val1', false)
+                .setParameter('ref2', 'val2', false)
+                .setParameter('ref3', 'val3', false)
+
+        then:
+
+        query.getNoConversionParams() == ['ref1', 'ref2', 'ref3'].toArray(new String[0])
+    }
 }

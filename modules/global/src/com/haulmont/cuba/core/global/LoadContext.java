@@ -342,7 +342,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
                 // this is a rare case, so let's save some memory by using an array instead of a list
                 if (noConversionParams == null)
                     noConversionParams = new String[0];
-                noConversionParams = new String[noConversionParams.length + 1];
+                noConversionParams = Arrays.copyOfRange(noConversionParams, 0, noConversionParams.length + 1);
                 noConversionParams[noConversionParams.length - 1] = name;
             }
             return this;
