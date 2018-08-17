@@ -39,7 +39,6 @@ import org.dom4j.Element;
 import java.util.Objects;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
-        extends EventHub // todo remove this inheritance, use composition
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption, HasDebugId, EventHubOwner {
 
@@ -58,10 +57,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     // todo remove
     private EventRouter eventRouter = null;
 
-    @Override
-    public EventHub getEventHub() {
-        return this;
-    }
+    private EventHub eventHub = null;
 
     /**
      * Use EventRouter for listeners instead of fields with listeners List.
@@ -73,6 +69,14 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
             eventRouter = new EventRouter();
         }
         return eventRouter;
+    }
+
+    @Override
+    public EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
+        }
+        return eventHub;
     }
 
     @Override
