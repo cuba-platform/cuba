@@ -16,6 +16,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+
+import java.util.EventObject;
+import java.util.function.Consumer;
+
 public interface Button extends Component, Component.HasCaption, Component.BelongToFrame, ActionOwner,
                                 Component.HasIcon, Component.Focusable {
     String NAME = "button";
@@ -54,4 +59,24 @@ public interface Button extends Component, Component.HasCaption, Component.Belon
      * @return true if caption is inserted to DOM as HTML
      */
     boolean isCaptionAsHtml();
+
+    Subscription addClickListener(Consumer<ClickEvent> listener);
+
+    /**
+     * Click event that is thrown, when the button is clicked.
+     */
+    class ClickEvent extends EventObject {
+        public ClickEvent(Button source) {
+            super(source);
+        }
+
+        @Override
+        public Button getSource() {
+            return (Button) super.getSource();
+        }
+
+        public Button getButton() {
+            return (Button) super.getSource();
+        }
+    }
 }

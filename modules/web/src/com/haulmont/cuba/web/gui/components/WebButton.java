@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
@@ -26,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
@@ -57,6 +59,7 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
         if (action != null) {
             action.actionPerform(getActionEventTarget());
         }
+        getEventHub().publish(ClickEvent.class, new ClickEvent(this));
         afterActionPerformed();
     }
 
@@ -210,5 +213,10 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     @Override
     public boolean isCaptionAsHtml() {
         return component.isCaptionAsHtml();
+    }
+
+    @Override
+    public Subscription addClickListener(Consumer<ClickEvent> listener) {
+        return getEventHub().subscribe(ClickEvent.class, listener);
     }
 }

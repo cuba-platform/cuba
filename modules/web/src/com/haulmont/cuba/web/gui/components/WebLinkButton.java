@@ -18,23 +18,23 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.LinkButton;
-import com.vaadin.v7.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 
 public class WebLinkButton extends WebButton implements LinkButton {
 
     public WebLinkButton() {
-        component.addStyleName(BaseTheme.BUTTON_LINK);
+        component.addStyleName(ValoTheme.BUTTON_LINK);
     }
 
     @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
-        component.addStyleName(BaseTheme.BUTTON_LINK);
+        component.addStyleName(ValoTheme.BUTTON_LINK);
     }
 
     @Override
     public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(BaseTheme.BUTTON_LINK, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(ValoTheme.BUTTON_LINK, ""));
     }
 }
