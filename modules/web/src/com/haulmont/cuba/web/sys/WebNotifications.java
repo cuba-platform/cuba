@@ -30,8 +30,8 @@ import javax.inject.Inject;
 @Scope(UIScope.NAME)
 public class WebNotifications implements Notifications {
 
-    public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
-    public static final int WARNING_NOTIFICATION_DELAY_MSEC = -1;
+    protected static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
+    protected static final int WARNING_NOTIFICATION_DELAY_MSEC = -1;
 
     protected AppUI ui;
 
@@ -58,7 +58,8 @@ public class WebNotifications implements Notifications {
         protected String description;
         protected String styleName;
 
-        protected Position position = Position.MIDDLE_CENTER;
+        protected Position position = Position.DEFAULT;
+        protected int hideDelayMs = Integer.MIN_VALUE;
 
         protected ContentMode contentMode = ContentMode.TEXT;
         protected NotificationType notificationType = NotificationType.HUMANIZED;
@@ -92,10 +93,6 @@ public class WebNotifications implements Notifications {
         public Notification setType(NotificationType notificationType) {
             this.notificationType = notificationType;
 
-            // todo set default position here
-
-            // todo set default timeout here
-
             return this;
         }
 
@@ -106,6 +103,10 @@ public class WebNotifications implements Notifications {
 
         @Override
         public Notification setContentMode(ContentMode contentMode) {
+            if (contentMode == ContentMode.PREFORMATTED) {
+                throw new UnsupportedOperationException("ContentMode.PREFORMATTED unsupported for Notification");
+            }
+
             this.contentMode = contentMode;
             return this;
         }
@@ -135,6 +136,17 @@ public class WebNotifications implements Notifications {
         @Override
         public Position getPosition() {
             return position;
+        }
+
+        @Override
+        public Notification setHideDelayMs(int hideDelayMs) {
+            this.hideDelayMs = hideDelayMs;
+            return this;
+        }
+
+        @Override
+        public int getHideDelayMs() {
+            return hideDelayMs;
         }
 
         protected com.vaadin.ui.Notification.Type convertType(NotificationType notificationType) {
@@ -172,12 +184,20 @@ public class WebNotifications implements Notifications {
             com.vaadin.ui.Notification vNotification =
                     new com.vaadin.ui.Notification(caption, description, convertType(notificationType));
 
-            setNotificationDelayMsec(vNotification, notificationType);
+            if (hideDelayMs != DELAY_DEFAULT) {
+                vNotification.setDelayMsec(hideDelayMs);
+            } else {
+                setNotificationDelayMsec(vNotification, notificationType);
+            }
+
+            if (position != Position.DEFAULT) {
+                vNotification.setPosition(com.vaadin.shared.Position.valueOf(position.name()));
+            }
 
             vNotification.setHtmlContentAllowed(contentMode == ContentMode.HTML);
-            vNotification.setStyleName(styleName);
-
-            vNotification.setPosition(com.vaadin.shared.Position.valueOf(position.name()));
+            if (styleName != null) {
+                vNotification.setStyleName(styleName);
+            }
 
             vNotification.show(ui.getPage());
         }

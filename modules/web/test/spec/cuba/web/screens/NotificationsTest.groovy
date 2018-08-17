@@ -27,7 +27,7 @@ import spock.lang.Specification
 import static com.haulmont.cuba.gui.Notifications.NotificationType.WARNING
 import static com.haulmont.cuba.gui.Notifications.Position.BOTTOM_CENTER
 
-class NotificationsSpec extends Specification {
+class NotificationsTest extends Specification {
 
     @SuppressWarnings("GroovyPointlessBoolean")
     def "Notification can be show"() {
@@ -80,5 +80,23 @@ class NotificationsSpec extends Specification {
         vNotification.position == Position.BOTTOM_CENTER
         vNotification.styleName == 'open-notification'
         vNotification.htmlContentAllowed == true
+    }
+
+    def "Notification does not support ContentMode.PREFORMATTED"() {
+        def testBackgroundWorker = Mock(BackgroundWorker)
+        def notifications = new WebNotifications(new AppUI()) {
+            {
+                backgroundWorker = testBackgroundWorker
+            }
+        }
+
+        when:
+
+        def notification = notifications.create()
+        notification.setContentMode(ContentMode.PREFORMATTED)
+
+        then:
+
+        thrown UnsupportedOperationException
     }
 }
