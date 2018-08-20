@@ -104,16 +104,16 @@
   }
 
   .#{$primary-stylename} {
-    &.v-has-width .c-tokenlist-scrollbox {
+    &.v-has-width .v-slot-c-tokenlist-scrollbox {
       max-width: none;
     }
 
-    &.v-has-height .c-tokenlist-scrollbox {
+    &.v-has-height .v-slot-c-tokenlist-scrollbox {
       max-height: none;
     }
   }
 
-  .#{$primary-stylename}-scrollbox {
+  .v-slot-c-tokenlist-scrollbox {
     max-width: 400px;
     max-height: 250px;
     overflow: auto;
