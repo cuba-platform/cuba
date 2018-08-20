@@ -17,7 +17,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.components.DialogWindow;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaWindow;
@@ -71,6 +73,54 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
     @Override
     public Component getComposition() {
         return dialogWindow;
+    }
+
+    @Override
+    public DialogOptions getDialogOptions() {
+        if (dialogOptions == null) {
+            dialogOptions = new WebDialogOptions();
+        }
+        return dialogOptions;
+    }
+
+    @Override
+    public void setDialogWidth(String dialogWidth) {
+        dialogWindow.setWidth(dialogWidth);
+    }
+
+    @Override
+    public float getDialogWidth() {
+        return dialogWindow.getWidth();
+    }
+
+    @Override
+    public SizeUnit getDialogWidthUnit() {
+        return WebWrapperUtils.toSizeUnit(dialogWindow.getWidthUnits());
+    }
+
+    @Override
+    public void setDialogHeight(String dialogHeight) {
+        dialogWindow.setHeight(dialogHeight);
+    }
+
+    @Override
+    public float getDialogHeight() {
+        return dialogWindow.getHeight();
+    }
+
+    @Override
+    public SizeUnit getDialogHeightUnit() {
+        return WebWrapperUtils.toSizeUnit(dialogWindow.getHeightUnits());
+    }
+
+    @Override
+    public void setDialogStylename(String stylename) {
+        dialogWindow.setStyleName(stylename);
+    }
+
+    @Override
+    public String getDialogStylename() {
+        return dialogWindow.getStyleName();
     }
 
     @Override
@@ -153,5 +203,117 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
     @Override
     public int getPositionY() {
         return dialogWindow.getPositionY();
+    }
+
+    protected class WebDialogOptions extends DialogOptions {
+        @Override
+        public Float getWidth() {
+            return getDialogWidth();
+        }
+
+        @Override
+        public SizeUnit getWidthUnit() {
+            return getDialogWidthUnit();
+        }
+
+        @Override
+        protected DialogOptions setWidth(Float width, SizeUnit sizeUnit) {
+            setDialogWidth(width + sizeUnit.getSymbol());
+
+            return this;
+        }
+
+        @Override
+        public Float getHeight() {
+            return getDialogHeight();
+        }
+
+        @Override
+        public SizeUnit getHeightUnit() {
+            return getDialogHeightUnit();
+        }
+
+        @Override
+        protected DialogOptions setHeight(Float height, SizeUnit sizeUnit) {
+            setDialogHeight(height + sizeUnit.getSymbol());
+
+            return this;
+        }
+
+        @Override
+        public Boolean getModal() {
+            return WebDialogWindow.this.isModal();
+        }
+
+        @Override
+        public DialogOptions setModal(Boolean modal) {
+            WebDialogWindow.this.setModal(modal);
+
+            return this;
+        }
+
+        @Override
+        public Boolean getResizable() {
+            return WebDialogWindow.this.isResizable();
+        }
+
+        @Override
+        public DialogOptions setResizable(Boolean resizable) {
+            WebDialogWindow.this.setResizable(resizable);
+
+            return this;
+        }
+
+        @Override
+        public Boolean getCloseable() {
+            return WebDialogWindow.this.isCloseable();
+        }
+
+        @Override
+        public DialogOptions setCloseable(Boolean closeable) {
+            WebDialogWindow.this.setCloseable(closeable);
+
+            return this;
+        }
+
+        @Override
+        public DialogOptions center() {
+            WebDialogWindow.this.center();
+
+            return this;
+        }
+
+        @Override
+        public Integer getPositionX() {
+            return WebDialogWindow.this.getPositionX();
+        }
+
+        @Override
+        public DialogOptions setPositionX(Integer positionX) {
+            WebDialogWindow.this.setPositionX(positionX);
+            return this;
+        }
+
+        @Override
+        public Integer getPositionY() {
+            return WebDialogWindow.this.getPositionY();
+        }
+
+        @Override
+        public DialogOptions setPositionY(Integer positionY) {
+            WebDialogWindow.this.setPositionY(positionY);
+            return this;
+        }
+
+        @Override
+        public DialogOptions setMaximized(Boolean maximized) {
+            setWindowMode(maximized ? WindowMode.MAXIMIZED : WindowMode.NORMAL);
+            return this;
+        }
+
+        @Override
+        public Boolean getMaximized() {
+            return getWindowMode() == WindowMode.MAXIMIZED;
+        }
     }
 }

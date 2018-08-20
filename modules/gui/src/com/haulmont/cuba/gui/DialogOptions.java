@@ -255,7 +255,9 @@ public class DialogOptions {
      * Force a window manager to open a window as a dialog. Can be set from {@link AbstractWindow#init} method before the window is shown.
      *
      * @param forceDialog force dialog option
+     * @deprecated todo does not make sense anymore
      */
+    @Deprecated
     public DialogOptions setForceDialog(Boolean forceDialog) {
         this.forceDialog = forceDialog;
         return this;

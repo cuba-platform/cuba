@@ -263,12 +263,13 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * @return dialog options of window. Options will be applied only if window opened with {@link OpenMode#DIALOG}.
      */
+    @Deprecated
     DialogOptions getDialogOptions();
 
     /**
      * Returns how the managed main TabSheet switches a tab with this window: hides or unloads its content.
      *
-     * vaadin8 Move to TabWindow interface
+     * todo Move to TabWindow interface
      *
      * @return one of the {@link ContentSwitchMode} enum values
      */
@@ -280,7 +281,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Note that: a method invocation will take effect only if {@code cuba.web.mainTabSheetMode} property
      * is set to 'MANAGED'.
      *
-     * vaadin8 Move to TabWindow interface
+     * todo Move to TabWindow interface
      *
      * @param mode one of the {@link ContentSwitchMode} enum values
      */

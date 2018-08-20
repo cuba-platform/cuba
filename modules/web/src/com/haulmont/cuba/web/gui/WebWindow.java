@@ -41,13 +41,10 @@ import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.vaadin.server.ClientConnector;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -72,13 +69,13 @@ public class WebWindow implements Window, Component.Wrapper,
     protected String debugId;
 
     protected List<Component> ownComponents = new ArrayList<>();
-    protected Map<String, Component> allComponents = new HashMap<>();
+    protected Map<String, Component> allComponents = new HashMap<>(4);
 
     protected List<Timer> timers = null; // lazy initialized timers list
 
     protected String focusComponentId;
 
-    protected com.vaadin.ui.Component component;
+    protected AbstractOrderedLayout component;
 
     protected Screen frameOwner;
 
@@ -109,9 +106,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
     public WebWindow() {
         component = createLayout();
-        if (component instanceof com.vaadin.event.Action.Container) {
-            ((com.vaadin.event.Action.Container) component).addActionHandler(actionsHolder);
-        }
 
         setupEventListeners();
     }
@@ -166,15 +160,18 @@ public class WebWindow implements Window, Component.Wrapper,
         }*/
     }
 
-    protected com.vaadin.ui.ComponentContainer createLayout() {
+    protected AbstractOrderedLayout createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
         layout.setStyleName(C_WINDOW_LAYOUT);
         layout.setSizeFull();
+
+        layout.addActionHandler(actionsHolder);
+
         return layout;
     }
 
     protected com.vaadin.ui.ComponentContainer getContainer() {
-        return (com.vaadin.ui.ComponentContainer) component;
+        return component;
     }
 
     @Nullable
@@ -426,9 +423,13 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public DialogOptions getDialogOptions() {
         if (dialogOptions == null) {
-             dialogOptions = new WebDialogOptions();
+            dialogOptions = new DialogOptions();
         }
         return dialogOptions;
+    }
+
+    public boolean hasDialogOptions() {
+        return dialogOptions != null;
     }
 
     @Override
@@ -641,7 +642,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         if (ownComponents.contains(childComponent)) {
-            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(childComponent);
+            com.vaadin.ui.Component composition = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
             int existingIndex = ((AbstractOrderedLayout)getContainer()).getComponentIndex(composition);
             if (index > existingIndex) {
                 index--;
@@ -651,7 +652,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         com.vaadin.ui.ComponentContainer container = getContainer();
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
         ((AbstractOrderedLayout)container).addComponent(vComponent, index);
 
         com.vaadin.ui.Alignment alignment = WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment());
@@ -686,7 +687,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void remove(Component childComponent) {
-        getContainer().removeComponent(WebComponentsHelper.getComposition(childComponent));
+        getContainer().removeComponent(childComponent.unwrapComposition(com.vaadin.ui.Component.class));
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -849,7 +850,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
+        final com.vaadin.ui.Component expandedComponent = component.unwrapComposition(com.vaadin.ui.Component.class);;
         if (getContainer() instanceof AbstractOrderedLayout) {
             WebComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
         } else {
@@ -1051,241 +1052,5 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         this.contentSwitchMode = mode;
-    }
-
-    protected class WebDialogOptions extends DialogOptions {
-        @Override
-        public Float getWidth() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.getWidth();
-            }
-
-            return super.getWidth();
-        }
-
-        @Override
-        public SizeUnit getWidthUnit() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return WebWrapperUtils.toSizeUnit(dialogWindow.getWidthUnits());
-            }
-
-            return super.getWidthUnit();
-        }
-
-        @Override
-        protected DialogOptions setWidth(Float width, SizeUnit sizeUnit) {
-            super.setWidth(width, sizeUnit);
-
-            if (width != null) {
-                com.vaadin.ui.Window dialogWindow = asDialogWindow();
-                if (dialogWindow != null) {
-                    if (width < 0) {
-                        dialogWindow.setWidthUndefined();
-                        component.setWidthUndefined();
-                        getContainer().setWidthUndefined();
-                    } else {
-                        Unit unit = sizeUnit != null
-                                ? WebWrapperUtils.toVaadinUnit(sizeUnit)
-                                : Unit.PIXELS;
-                        dialogWindow.setWidth(width, unit);
-                        component.setWidth(100, Unit.PERCENTAGE);
-                    }
-                }
-            }
-
-            return this;
-        }
-
-        @Override
-        public Float getHeight() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.getHeight();
-            }
-
-            return super.getHeight();
-        }
-
-        @Override
-        public SizeUnit getHeightUnit() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return WebWrapperUtils.toSizeUnit(dialogWindow.getHeightUnits());
-            }
-
-            return super.getHeightUnit();
-        }
-
-        @Override
-        protected DialogOptions setHeight(Float height, SizeUnit sizeUnit) {
-            super.setHeight(height, sizeUnit);
-
-            if (height != null) {
-                com.vaadin.ui.Window dialogWindow = asDialogWindow();
-                if (dialogWindow != null) {
-                    if (height < 0) {
-                        dialogWindow.setHeightUndefined();
-                        component.setHeightUndefined();
-                        getContainer().setHeightUndefined();
-                    } else {
-                        Unit unit = sizeUnit != null
-                                ? WebWrapperUtils.toVaadinUnit(sizeUnit)
-                                : Unit.PIXELS;
-                        dialogWindow.setHeight(height, unit);
-                        component.setHeight(100, Unit.PERCENTAGE);
-                    }
-                }
-            }
-
-            return this;
-        }
-
-        @Override
-        public Boolean getModal() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.isModal();
-            }
-
-            return super.getModal();
-        }
-
-        @Override
-        public DialogOptions setModal(Boolean modal) {
-            super.setModal(modal);
-
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.setModal(BooleanUtils.isTrue(modal));
-            }
-
-            return this;
-        }
-
-        @Override
-        public Boolean getResizable() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.isResizable();
-            }
-
-            return super.getResizable();
-        }
-
-        @Override
-        public DialogOptions setResizable(Boolean resizable) {
-            super.setResizable(resizable);
-
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.setResizable(BooleanUtils.isTrue(resizable));
-            }
-
-            return this;
-        }
-
-        @Override
-        public Boolean getCloseable() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.isClosable();
-            }
-
-            return super.getCloseable();
-        }
-
-        @Override
-        public DialogOptions setCloseable(Boolean closeable) {
-            super.setCloseable(closeable);
-
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.setClosable(BooleanUtils.isTrue(closeable));
-            }
-
-            return this;
-        }
-
-        @Override
-        public DialogOptions center() {
-            super.center();
-
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.center();
-            }
-
-            return this;
-        }
-
-        @Override
-        public Integer getPositionX() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.getPositionX();
-            }
-
-            return super.getPositionX();
-        }
-
-        @Override
-        public DialogOptions setPositionX(Integer positionX) {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.setPositionX(positionX != null ? positionX : 0);
-            }
-
-            return super.setPositionX(positionX);
-        }
-
-        @Override
-        public Integer getPositionY() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                return dialogWindow.getPositionY();
-            }
-
-            return super.getPositionY();
-        }
-
-        @Override
-        public DialogOptions setPositionY(Integer positionY) {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                dialogWindow.setPositionY(positionY != null ? positionY : 0);
-            }
-
-            return super.setPositionY(positionY);
-        }
-
-        @Override
-        public DialogOptions setMaximized(Boolean maximized) {
-            super.setMaximized(maximized);
-
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                if (BooleanUtils.isTrue(maximized)) {
-                    dialogWindow.setWindowMode(WindowMode.MAXIMIZED);
-                } else {
-                    dialogWindow.setWindowMode(WindowMode.NORMAL);
-                }
-            }
-            return this;
-        }
-
-        @Override
-        public Boolean getMaximized() {
-            com.vaadin.ui.Window dialogWindow = asDialogWindow();
-            if (dialogWindow != null) {
-                if (dialogWindow.getWindowMode() == WindowMode.MAXIMIZED) {
-                    return true;
-                }
-                return false;
-            }
-
-            return super.getMaximized();
-        }
     }
 }

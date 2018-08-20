@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * JavaDoc
+ * JavaDoc for all properties
  */
 public interface DialogWindow extends Window {
     /**
@@ -26,7 +26,16 @@ public interface DialogWindow extends Window {
      */
     String NAME = "dialogWindow";
 
-    // todo new dialog window API
+    void setDialogWidth(String dialogWidth);
+    float getDialogWidth();
+    SizeUnit getDialogWidthUnit();
+
+    void setDialogHeight(String dialogHeight);
+    float getDialogHeight();
+    SizeUnit getDialogHeightUnit();
+
+    void setDialogStylename(String stylename);
+    String getDialogStylename();
 
     void setResizable(boolean resizable);
     boolean isResizable();
