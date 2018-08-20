@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class MapScreenOptions implements ScreenOptions {
@@ -28,6 +29,9 @@ public class MapScreenOptions implements ScreenOptions {
     }
 
     public Map<String, Object> getParams() {
+        if (params == null) {
+            return Collections.emptyMap();
+        }
         return params;
     }
 }

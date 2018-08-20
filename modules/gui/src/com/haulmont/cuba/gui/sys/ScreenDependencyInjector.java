@@ -74,9 +74,6 @@ public class ScreenDependencyInjector {
     protected Screen screen;
     protected ScreenOptions options;
 
-    // todo get rif of legacy here
-    protected Map<String, Object> params;
-
     protected BeanLocator beanLocator;
     protected ScreenReflectionInspector screenReflectionInspector;
 
@@ -284,8 +281,11 @@ public class ScreenDependencyInjector {
         Window window = screen.getWindow();
 
         if (annotationClass == WindowParam.class) {
+            if (options instanceof MapScreenOptions) {
+                return ((MapScreenOptions) options).getParams().get(name);
+            }
             //Injecting a parameter
-            return params.get(name);
+            return null;
 
         } else if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
