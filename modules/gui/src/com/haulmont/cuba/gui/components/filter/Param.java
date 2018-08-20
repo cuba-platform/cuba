@@ -95,6 +95,7 @@ public class Param {
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
     protected Component editComponent;
+    protected boolean isFoldersFilterEntitiesSet = false;
 
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -243,6 +244,22 @@ public class Param {
         this.inExpr = inExpr;
     }
 
+    /**
+     * @return true if param is used for folder's filter entities set
+     */
+    public boolean isFoldersFilterEntitiesSet() {
+        return isFoldersFilterEntitiesSet;
+    }
+
+    /**
+     * Set true if param should be used for folder's filter entities set
+     *
+     * @param isFoldersFilterEntitiesSet filter entities set value
+     */
+    public void setFoldersFilterEntitiesSet(boolean isFoldersFilterEntitiesSet) {
+        this.isFoldersFilterEntitiesSet = isFoldersFilterEntitiesSet;
+    }
+
     public boolean isUseUserTimeZone() {
         return useUserTimeZone;
     }
@@ -317,7 +334,12 @@ public class Param {
                         }
                     }
                 }
-                value = list.isEmpty() ? null : list;
+
+                if (isFoldersFilterEntitiesSet) {
+                    value = list;
+                } else {
+                    value = list.isEmpty() ? null : list;
+                }
             }
         } else {
             value = parseSingleValue(text);
