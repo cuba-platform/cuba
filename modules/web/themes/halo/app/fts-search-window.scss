@@ -16,12 +16,45 @@
 
 @mixin fts-search-window {
   .c-fts-current-page {
+    text-decoration: none;
+
     .v-button-caption {
-        font-weight:bold !important;
+        color: $v-font-color;
+        font-size: $v-font-size--large;
     }
   }
-  .c-fts-navigation-box {
-    background-color: $v-background-color;
-    border: valo-border();
+  .c-fts-page {
+      text-decoration: none;
+
+      .v-button-caption {
+          font-size: $v-font-size--large;
+      }
+  }
+
+  .c-fts-entities-container {
+      padding-left: 200px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      border-top: 1px inset #f1f1f1;
+
+      .c-fts-entities-type {
+        overflow: hidden;
+        width: 200px;
+        margin-left: -200px;
+      }
+  }
+
+  .c-fts-navigation-container {
+      border-top: 1px inset #f1f1f1;
+      padding-top: 5px;
+      height: 25px;
+  }
+
+  .c-fts-entity {
+      margin-top: 5px;
+  }
+
+  .c-fts-hit {
+      display: block;
   }
 }
