@@ -700,8 +700,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         lookupPickerField.setWidthFull();
                         editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
                     }
-
-                    tokenContainer.setWidth("100%");
                 } else {
                     composition.setWidthUndefined();
                     editor.setWidthUndefined();
@@ -710,8 +708,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         lookupPickerField.setWidthAuto();
                         editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
                     }
-
-                    tokenContainer.setWidthUndefined();
                 }
             }
         }
@@ -964,8 +960,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     lookupPickerField.setWidthFull();
                     editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
                 }
-
-                tokenContainer.setWidth("100%");
             } else {
                 composition.setWidthUndefined();
                 editor.setWidthUndefined();
@@ -974,8 +968,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     lookupPickerField.setWidthAuto();
                     editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
                 }
-
-                tokenContainer.setWidthUndefined();
             }
         }
 
