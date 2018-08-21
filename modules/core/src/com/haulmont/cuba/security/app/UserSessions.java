@@ -169,8 +169,10 @@ public class UserSessions implements UserSessionsAPI {
     }
 
     protected void receiveClusterState(byte[] state) {
-        if (state == null || state.length == 0)
+        if (state == null || state.length == 0) {
+            log.debug("Received empty user sessions cache");
             return;
+        }
 
         ByteArrayInputStream bis = new ByteArrayInputStream(state);
         try {
@@ -180,6 +182,7 @@ public class UserSessions implements UserSessionsAPI {
                 UserSessionInfo usi = (UserSessionInfo) ois.readObject();
                 receiveClusterMessage(usi);
             }
+            log.debug("Received user sessions cache: {} sessions, {} bytes. Cache now contains {} sessions", size, state.length, cache.size());
         } catch (IOException | ClassNotFoundException e) {
             log.error("Error receiving state", e);
         }
@@ -200,7 +203,9 @@ public class UserSessions implements UserSessionsAPI {
         } catch (IOException e) {
             throw new RuntimeException("Error sending state", e);
         }
-        return bos.toByteArray();
+        byte[] bytes = bos.toByteArray();
+        log.debug("Sending user sessions cache to cluster: {} sessions, {} bytes", infoList.size(), bytes.length);
+        return bytes;
     }
 
     @Override
