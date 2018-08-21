@@ -1,0 +1,94 @@
+[
+  {
+    "line": "at com.vaadin.server.ServerRpcManager.applyInvocation(ServerRpcManager.java:162)",
+    "pattern": "at com[\\.]vaadin[\\.]server[\\.]ServerRpcManager"
+  },
+  {
+    "line": "at com.vaadin.event.EventRouter.fireEvent(EventRouter.java:164)",
+    "pattern": "at com[\\.]vaadin[\\.]event[\\.]EventRouter[\\.]fireEvent"
+  },
+  {
+    "line": "at sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)",
+    "pattern": "at sun[\\.]rmi[\\.]"
+  },
+  {
+    "line": "at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)",
+    "pattern": "at sun[\\.]reflect[\\.]"
+  },
+  {
+    "line": "at org.gradle.internal.progress.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java)",
+    "pattern": "at org[\\.]gradle[\\.]"
+  },
+  {
+    "line": "at org.codehaus.groovy.tools.GroovyStarter.rootLoader(GroovyStarter.java:109)",
+    "pattern": "at org[\\.]codehaus[\\.]groovy[\\.]"
+  },
+  {
+    "line": "at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:174)",
+    "pattern": "at java[\\.]util[\\.]stream[\\.]ReferencePipeline[\\$]"
+  },
+  {
+    "line": "at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708)",
+    "pattern": "at java[\\.]util[\\.]stream[\\.]ReduceOps[\\$]"
+  },
+  {
+    "line": "at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:502)",
+    "pattern": "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]wrapAndCopyInto"
+  },
+  {
+    "line": "at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)",
+    "pattern": "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]evaluate"
+  },
+  {
+    "line": "[na:1.8.0_77] at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)",
+    "pattern": "at java[\\.]util[\\.]stream[\\.]AbstractPipeline[\\.]copyInto"
+  },
+  {
+    "line": "at java.util.Spliterators$",
+    "pattern": "at java[\\.]util[\\.]Spliterators[\\$]"
+  },
+  {
+    "line": "at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(Unknown Source)",
+    "pattern": "at java[\\.]security[\\.]ProtectionDomain[\\$]JavaSecurityAccessImpl[\\.]doIntersectionPrivilege"
+  },
+  {
+    "line": "at java.security.AccessController.doPrivileged",
+    "pattern": "at java[\\.]security[\\.]AccessController[\\.]doPrivileged"
+  },
+  {
+    "line": "at java.security.AccessControlContext$1.doIntersectionPrivilege(AccessControlContext.java:87)",
+    "pattern": "at java[\\.]security[\\.]AccessControlContext[\\$]1[\\.]doIntersectionPrivilege"
+  },
+  {
+    "line": "at java.rmi.server.SkeletonNotFoundException",
+    "pattern": "at java[\\.]rmi[\\.]|"
+  },
+  {
+    "line": "at java.lang.reflect.Method.invoke(Unknown Source)",
+    "pattern": "at java[\\.]lang[\\.]reflect[\\.]Method[\\.]invoke|"
+  },
+  {
+    "line": "at groovy.myPackage.error.",
+    "pattern": "at groovy[\\.]|"
+  },
+  {
+    "line": "at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)",
+    "pattern": "at java[\\.]security[\\.]ProtectionDomain[\\$]1[\\.]doIntersectionPrivilege|"
+  },
+  {
+    "line": "at java.lang.reflect.Constructor.newInstance(Constructor.java:408)",
+    "pattern": "at java[\\.]lang[\\.]reflect[\\.]Constructor[\\.]newInstance"
+  },
+  {
+    "line": "at com.sun.proxy.$Proxy28.executeUpdate (Unknown Source)",
+    "pattern": "at com[\\.]sun[\\.]proxy[\\.][\\$]Proxy"
+  },
+  {
+    "line": "12:36:27.955 DEBUG [http-nio-8080-exec-7] com.haulmont.cuba.gui.theme.ThemeConstantsRepository",
+    "pattern": "http-nio-8080-exec-\\d*"
+  },
+  {
+    "line": "myLine consists of some-symbols",
+    "pattern": ".*some-symbol."
+  }
+]

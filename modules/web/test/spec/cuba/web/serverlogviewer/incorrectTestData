@@ -1,0 +1,14 @@
+[
+  {
+    "line": "2018-07-20 12:36:27.955 DEBUG [http-nio-8080-exec-77]",
+    "pattern": "http-nio-8080-exec-\\D"
+  },
+  {
+    "line": "at java.security.AccessController.doPrivileged",
+    "pattern": "security\\d"
+  },
+  {
+    "line": "at groovy.myPackage.error.",
+    "pattern": "atgroovy"
+  }
+]
