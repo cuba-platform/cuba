@@ -70,24 +70,26 @@
                 </table>
             </vbox>
 
-            <scrollBox width="100%" height="100%" margin="false;false;false;true">
-                <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="100%">
-                    <column width="100%">
-                        <field id="address"/>
-                        <field id="from"/>
-                        <field id="caption"/>
-                        <field id="contentText" custom="true"/>
-                        <field id="bodyContentType"/>
-                        <field id="status"/>
-                        <field id="attachmentsName"/>
-                        <field id="dateSent"/>
-                        <field id="updateTs"/>
-                        <field id="deadline"/>
-                        <field id="attemptsCount"/>
-                        <field id="attemptsMade"/>
-                    </column>
-                </fieldGroup>
-            </scrollBox>
+            <vbox id="rightBox" width="100%" height="100%" margin="false;false;false;true">
+                <scrollBox width="100%" height="100%">
+                    <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="100%">
+                        <column width="100%">
+                            <field id="address"/>
+                            <field id="from"/>
+                            <field id="caption"/>
+                            <field id="contentText" custom="true"/>
+                            <field id="bodyContentType"/>
+                            <field id="status"/>
+                            <field id="attachmentsName"/>
+                            <field id="dateSent"/>
+                            <field id="updateTs"/>
+                            <field id="deadline"/>
+                            <field id="attemptsCount"/>
+                            <field id="attemptsMade"/>
+                        </column>
+                    </fieldGroup>
+                </scrollBox>
+            </vbox>
         </split>
     </layout>
 </window>
