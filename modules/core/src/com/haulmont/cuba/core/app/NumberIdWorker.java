@@ -67,7 +67,6 @@ public class NumberIdWorker implements NumberIdSequence {
     @Inject
     protected ServerConfig serverConfig;
 
-    protected Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
 
     @Override
     public Long createLongId(String entityName) {
@@ -105,79 +104,5 @@ public class NumberIdWorker implements NumberIdSequence {
             throw new IllegalArgumentException("entityName is blank");
 
         return "seq_id_" + entityName.replace("$", "_");
-    }
-
-    protected long getResult(String entityName, String sqlScript, long startValue, long increment) {
-        Transaction tx = persistence.getTransaction(getDataStore(entityName));
-        try {
-            checkSequenceExists(entityName, startValue, increment);
-
-            Object value = executeScript(entityName, sqlScript);
-            tx.commit();
-            if (value instanceof Long)
-                return (Long) value;
-            else if (value instanceof BigDecimal)
-                return ((BigDecimal) value).longValue();
-            else if (value instanceof String)
-                return Long.parseLong((String) value);
-            else if (value == null)
-                throw new IllegalStateException("No value returned");
-            else
-                throw new IllegalStateException("Unsupported value type: " + value.getClass());
-        } finally {
-            tx.end();
-        }
-    }
-
-    protected void checkSequenceExists(String entityName, long startValue, long increment) {
-        String seqName = getSequenceName(entityName);
-        if (existingSequences.contains(seqName))
-            return;
-
-        synchronized (this) {
-            // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
-            // regardless of possible errors in the invoking code
-            Transaction tx = persistence.createTransaction(getDataStore(entityName));
-            try {
-                EntityManager em = persistence.getEntityManager(getDataStore(entityName));
-                SequenceSupport sequenceSupport = getSequenceSupport(entityName);
-                Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
-                List list = query.getResultList();
-                if (list.isEmpty()) {
-                    query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, startValue, increment));
-                    query.executeUpdate();
-                }
-                existingSequences.add(seqName);
-
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        }
-    }
-
-    protected Object executeScript(String entityName, String sqlScript) {
-        EntityManager em = persistence.getEntityManager(getDataStore(entityName));
-        StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
-        Object value = null;
-        Connection connection = em.getConnection();
-        while (tokenizer.hasNext()) {
-            String sql = tokenizer.nextToken();
-            try {
-                PreparedStatement statement = connection.prepareStatement(sql);
-                try {
-                    if (statement.execute()) {
-                        ResultSet rs = statement.getResultSet();
-                        if (rs.next())
-                            value = rs.getLong(1);
-                    }
-                } finally {
-                    DbUtils.closeQuietly(statement);
-                }
-            } catch (SQLException e) {
-                throw new IllegalStateException("Error executing SQL for getting next number", e);
-            }
-        }
-        return value;
     }
 }
