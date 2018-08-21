@@ -3,9 +3,9 @@ package com.haulmont.cuba.gui.sys;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.UiDescriptor;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -16,13 +16,23 @@ public final class ScreenDescriptorUtils {
 
     public static String getInferredScreenId(UiController uiController, Class<? extends Screen> annotatedScreenClass) {
         checkNotNullArgument(uiController);
+        checkNotNullArgument(annotatedScreenClass);
 
-        String id = uiController.value();
+        return getInferredScreenId(uiController.id(), uiController.value(), annotatedScreenClass.getName());
+    }
+
+    public static String getInferredScreenId(String idAttribute, String valueAttribute, String className) {
+        String id = valueAttribute;
         if (Strings.isNullOrEmpty(id)) {
-            id = uiController.id();
+            id = idAttribute;
 
             if (Strings.isNullOrEmpty(id)) {
-                throw new DevelopmentException("Screen class annotated with @UiController without id " + annotatedScreenClass);
+                int indexOfDot = className.lastIndexOf('.');
+                if (indexOfDot < 0) {
+                    id = className;
+                } else {
+                    id = className.substring(indexOfDot + 1);
+                }
             }
         }
 

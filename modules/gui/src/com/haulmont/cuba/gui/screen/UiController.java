@@ -12,10 +12,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface UiController {
-    @AliasFor("id")
+    String ID_ATTRIBUTE = "id";
+    String VALUE_ATTRIBUTE = "value";
+
+    @AliasFor(ID_ATTRIBUTE)
     String value() default "";
 
-    @AliasFor("value")
+    @AliasFor(VALUE_ATTRIBUTE)
     String id() default "";
 
     // todo move to separate annotation

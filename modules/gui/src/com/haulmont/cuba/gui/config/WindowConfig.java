@@ -30,8 +30,8 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
 import com.haulmont.cuba.gui.sys.ScreenDescriptorUtils;
-import com.haulmont.cuba.gui.sys.ScreensConfiguration;
-import com.haulmont.cuba.gui.sys.ScreensConfiguration.UiControllerDefinition;
+import com.haulmont.cuba.gui.sys.UiControllerDefinition;
+import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +78,7 @@ public class WindowConfig {
     @Inject
     protected Metadata metadata;
     @Inject
-    protected List<ScreensConfiguration> screensConfigurations;
+    protected List<UiControllersConfiguration> configurations;
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
 
@@ -221,7 +221,7 @@ public class WindowConfig {
     }
 
     protected void loadScreenConfigurations() {
-        for (ScreensConfiguration provider : screensConfigurations) {
+        for (UiControllersConfiguration provider : configurations) {
             List<UiControllerDefinition> uiControllers = provider.getUIControllers();
 
             for (UiControllerDefinition definition : uiControllers) {
