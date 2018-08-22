@@ -106,7 +106,7 @@ public class WebJarResourceResolver {
 
     @EventListener
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 200)
-    protected void init(@SuppressWarnings("unused") AppContextInitializedEvent event) {
+    protected void init(AppContextInitializedEvent event) {
         StopWatch stopWatch = new Slf4JStopWatch("WebJARs");
         try {
             ApplicationContext applicationContext = event.getApplicationContext();
@@ -119,7 +119,7 @@ public class WebJarResourceResolver {
 
             log.debug("Loaded {} WebJAR paths", mapping.size());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load WebJAR resources");
+            throw new RuntimeException("Unable to load WebJAR resources", e);
         } finally {
             stopWatch.stop();
         }
@@ -234,8 +234,7 @@ public class WebJarResourceResolver {
 
     protected void throwNotFoundException(String partialPath) {
         throw new IllegalArgumentException(
-                partialPath
-                        + " could not be found. Make sure you've added the corresponding WebJar and please check for typos."
+                partialPath + " could not be found. Make sure you've added the corresponding WebJar and please check for typos."
         );
     }
 
@@ -289,7 +288,7 @@ public class WebJarResourceResolver {
     public static class MultipleMatchesException extends IllegalArgumentException {
         private final List<String> matches;
 
-        public MultipleMatchesException(final String message, List<String> matches) {
+        public MultipleMatchesException(String message, List<String> matches) {
             super(message);
             this.matches = matches;
         }
