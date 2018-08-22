@@ -16,6 +16,11 @@
 
 package com.haulmont.cuba.core.global;
 
+/**
+ * Represent sequence with name, store, start value and increment
+ * Default data store for sequence is MAIN data store
+ * Default start value 1, and default increment 1
+ */
 public class Sequence {
     protected String name;
     protected String dataStore;

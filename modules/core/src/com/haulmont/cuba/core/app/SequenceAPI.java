@@ -24,34 +24,37 @@ public interface SequenceAPI {
 
     /**
      * Returns the next sequence value.
-     *
-     * @param sequence  sequence identifier
+     * For example:
+     * {@code
+     *      sequenceAPI.createNextValue(Sequence.withName("seq_name").setStartValue(10).setIncrement(1))
+     * }
+     * @param sequence  sequence object
      * @return          next value
      */
     long createNextValue(Sequence sequence);
 
     /**
      * Returns the current value of the sequence. For some implementations
-     * {@link #getNextNumber(String)} must be called at least once beforehand.
+     * {@link #createNextValue(Sequence)} must be called at least once beforehand.
      *
-     * @param sequenceName    sequence identifier
+     * @param sequence object {@link Sequence}
      * @return          current value
      */
     long getCurrentValue(Sequence sequence);
 
     /**
      * Set current value for the sequence.
-     * Next {@link #getCurrentNumber(String)} invocation will return {@code value}
-     * Next {@link #getNextNumber(String)} invocation will return {@code value + increment}
+     * Next {@link #getCurrentValue(Sequence)} invocation will return {@code value}
+     * Next {@link #createNextValue(Sequence)} invocation will return {@code value + increment}
      *
-     * @param domain    sequence identifier
+     * @param sequence sequence object {@link Sequence}
      * @param value     value
      */
     void setCurrentValue(Sequence sequence, long value);
 
     /**
      * Removes sequence with specified identifier
-     * @param domain sequence identifier
+     * @param sequence sequence object {@link Sequence}
      * @throws java.lang.IllegalStateException if sequence does not exist
      */
     void deleteSequence(Sequence sequence);
