@@ -32,13 +32,13 @@ class EventHubTest extends Specification {
 
         when:
 
-        def subscription = eventHub.subscribe(TextChangeEvent.class, { TextChangeEvent event ->
+        def subscription = eventHub.subscribe(TextChangeEvent, { TextChangeEvent event ->
             // do nothing
         })
 
         then:
 
-        eventHub.hasSubscriptions(TextChangeEvent.class) == true
+        eventHub.hasSubscriptions(TextChangeEvent) == true
 
         when:
 
@@ -46,7 +46,7 @@ class EventHubTest extends Specification {
 
         then:
 
-        eventHub.hasSubscriptions(TextChangeEvent.class) == false
+        eventHub.hasSubscriptions(TextChangeEvent) == false
     }
 
     def "add and publish listener"() {
@@ -56,9 +56,9 @@ class EventHubTest extends Specification {
 
         when:
 
-        eventHub.subscribe(TextChangeEvent.class, tListener)
-        eventHub.subscribe(ButtonClickEvent.class, bListener)
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        eventHub.subscribe(TextChangeEvent, tListener)
+        eventHub.subscribe(ButtonClickEvent, bListener)
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
 
         then:
 
@@ -72,8 +72,8 @@ class EventHubTest extends Specification {
 
         when:
 
-        def subscription = eventHub.subscribe(TextChangeEvent.class, listener)
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        def subscription = eventHub.subscribe(TextChangeEvent, listener)
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
 
         then:
 
@@ -82,7 +82,7 @@ class EventHubTest extends Specification {
         when:
 
         subscription.remove()
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
 
         then:
 
@@ -95,9 +95,9 @@ class EventHubTest extends Specification {
 
         when:
 
-        def subscription1 = eventHub.subscribe(TextChangeEvent.class, listener)
-        def subscription2 = eventHub.subscribe(TextChangeEvent.class, listener)
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        def subscription1 = eventHub.subscribe(TextChangeEvent, listener)
+        def subscription2 = eventHub.subscribe(TextChangeEvent, listener)
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
 
         then:
 
@@ -106,9 +106,9 @@ class EventHubTest extends Specification {
         when:
 
         subscription1.remove()
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
         subscription2.remove()
-        eventHub.publish(TextChangeEvent.class, new TextChangeEvent(eventHub))
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(eventHub))
 
         then:
 
@@ -121,11 +121,11 @@ class EventHubTest extends Specification {
 
         when:
 
-        eventHub.unsubscribe(TextChangeEvent.class, listener)
+        eventHub.unsubscribe(TextChangeEvent, listener)
 
         then:
 
-        eventHub.hasSubscriptions(TextChangeEvent.class) == false
+        eventHub.hasSubscriptions(TextChangeEvent) == false
     }
 
     def "trigger once event listeners removed after invocation"() {
@@ -134,8 +134,8 @@ class EventHubTest extends Specification {
 
         when:
 
-        eventHub.subscribe(InitEvent.class, listener)
-        eventHub.publish(InitEvent.class, new InitEvent(this))
+        eventHub.subscribe(InitEvent, listener)
+        eventHub.publish(InitEvent, new InitEvent(this))
 
         then:
 
@@ -148,5 +148,46 @@ class EventHubTest extends Specification {
         then:
 
         0 * listener.accept(_)
+    }
+
+    def "listeners are called in order of addition"() {
+        def eventHub = new EventHub()
+        def order = 0
+
+        when:
+        eventHub.subscribe(TextChangeEvent, { TextChangeEvent e ->
+            if (order != 0) {
+                throw new RuntimeException("Incorrect order ${order}")
+            }
+            order += 1
+        })
+        eventHub.subscribe(TextChangeEvent, { TextChangeEvent e ->
+            if (order != 1) {
+                throw new RuntimeException("Incorrect order ${order}")
+            }
+            order += 1
+        })
+        eventHub.subscribe(TextChangeEvent, { TextChangeEvent e ->
+            if (order != 2) {
+                throw new RuntimeException("Incorrect order ${order}")
+            }
+            order += 1
+        })
+        eventHub.subscribe(TextChangeEvent, { TextChangeEvent e ->
+            if (order != 3) {
+                throw new RuntimeException("Incorrect order ${order}")
+            }
+            order += 1
+        })
+        eventHub.subscribe(TextChangeEvent, { TextChangeEvent e ->
+            if (order != 4) {
+                throw new RuntimeException("Incorrect order ${order}")
+            }
+            order += 1
+        })
+        eventHub.publish(TextChangeEvent, new TextChangeEvent(this))
+
+        then:
+        order == 5
     }
 }

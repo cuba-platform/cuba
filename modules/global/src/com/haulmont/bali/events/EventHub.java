@@ -18,7 +18,7 @@ package com.haulmont.bali.events;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -29,7 +29,11 @@ import java.util.function.Consumer;
 public class EventHub {
     protected static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
 
-    protected LinkedHashSet<Tag<?>> events = null;
+    // Dummy value to associate with an Object in the backing Map
+    private static final Object PRESENT = new Object();
+
+    // Use LinkedHashMap as backing Set directly without LinkedHashSet wrapper
+    protected LinkedHashMap<Tag<?>, Object> events = null;
 
     /**
      * Add an event listener for events with type T.
@@ -37,7 +41,7 @@ public class EventHub {
      * @param eventType event class
      * @param listener  listener
      * @param <T>       type of event
-     * @return registration object
+     * @return subscription object
      */
     public <T> Subscription subscribe(Class<T> eventType, Consumer<T> listener) {
         if (eventType == null) {
@@ -48,11 +52,11 @@ public class EventHub {
         }
 
         if (events == null) {
-            events = new LinkedHashSet<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
+            events = new LinkedHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }
 
         Tag<T> tag = new Tag<>(eventType, listener);
-        events.add(tag);
+        events.put(tag, PRESENT);
 
         return new SubscriptionImpl<>(this, eventType, listener);
     }
@@ -74,7 +78,7 @@ public class EventHub {
         }
 
         if (events != null) {
-            Iterator<Tag<?>> i = events.iterator();
+            Iterator<Tag<?>> i = events.keySet().iterator();
             while (i.hasNext()) {
                 Tag t = i.next();
                 if (t.matches(eventType, listener)) {
@@ -87,13 +91,13 @@ public class EventHub {
     }
 
     /**
-     * Remove all listeners with the specified event type
+     * Remove all listeners with the specified event type.
      *
      * @param eventType event type
      */
     public void unsubscribe(Class<?> eventType) {
         if (events != null) {
-            events.removeIf(t -> t.isType(eventType));
+            events.keySet().removeIf(t -> t.isType(eventType));
         }
     }
 
@@ -113,7 +117,7 @@ public class EventHub {
             return false;
         }
 
-        for (Tag<?> event : events) {
+        for (Tag<?> event : events.keySet()) {
             if (event.isType(eventType)) {
                 return true;
             }
@@ -137,7 +141,7 @@ public class EventHub {
         }
 
         if (events != null) {
-            Tag<?>[] tags = events.toArray(new Tag[0]);
+            Tag<?>[] tags = events.keySet().toArray(new Tag[0]);
 
             for (Tag<?> tag : tags) {
                 if (tag.isType(eventType)) {
