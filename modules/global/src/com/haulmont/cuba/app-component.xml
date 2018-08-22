@@ -88,7 +88,7 @@
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-idp" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-web-themes" configuration="themes"/>
-        <artifact name="cuba-web-themes" configuration="provided"/>
+        <artifact name="cuba-web-themes" configuration="compileOnly"/>
         <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
                   skipIfExists="web-toolkit"/>
 
