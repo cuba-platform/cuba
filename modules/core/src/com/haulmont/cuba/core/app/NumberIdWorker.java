@@ -22,10 +22,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.NumberIdSequence;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
@@ -53,38 +50,32 @@ public class NumberIdWorker implements NumberIdSequence {
     public static final String NAME = "cuba_NumberIdWorker";
 
     @Inject
-    protected Persistence persistence;
-
-    @Inject
     protected Metadata metadata;
 
     @Inject
     protected MetadataTools metadataTools;
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected SequenceAPI sequenceAPI;
 
     @Inject
     protected ServerConfig serverConfig;
 
-
     @Override
-    public Long createLongId(String entityName) {
-       return createLongId(entityName, 0);
-    }
+    public Long createLongId(String entityName, String sequenceName, long startValue, long cacheSize) {
+        Sequence sequence = Sequence.withName(getSequenceName(entityName, sequenceName))
+                .setStore(getDataStore(entityName))
+                .setStartValue(startValue)
+                .setIncrement(cacheSize == 0 ? 1 : cacheSize);
 
-    @Override
-    public Long createLongId(String entityName, long startValue) {
-        String sqlScript = getSequenceSupport(entityName).getNextValueSql(getSequenceName(entityName));
-        int cacheSize = globalConfig.getNumberIdCacheSize();
-        return getResult(entityName, sqlScript, startValue, cacheSize == 0 ? 1 : cacheSize);
+        return sequenceAPI.createNextValue(sequence);
     }
 
     /**
      * INTERNAL. Used by tests.
      */
     public void reset() {
-        existingSequences.clear();
+        ((SequenceWorker) sequenceAPI).reset();
     }
 
     protected String getDataStore(String entityName) {
@@ -95,13 +86,12 @@ public class NumberIdWorker implements NumberIdSequence {
         }
     }
 
-    protected SequenceSupport getSequenceSupport(String entityName) {
-        return DbmsSpecificFactory.getSequenceSupport(getDataStore(entityName));
-    }
-
-    protected String getSequenceName(String entityName) {
+    protected String getSequenceName(String entityName, String sequenceName) {
         if (StringUtils.isBlank(entityName))
             throw new IllegalArgumentException("entityName is blank");
+
+        if (StringUtils.isNotBlank(sequenceName))
+            return sequenceName;
 
         return "seq_id_" + entityName.replace("$", "_");
     }

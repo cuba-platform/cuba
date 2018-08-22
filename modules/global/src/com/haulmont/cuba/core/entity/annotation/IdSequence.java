@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.entity.annotation;
 
-public interface NumberIdSequence {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    Long createLongId(String entityName, String sequenceName, long startValue, long cacheSize);
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@MetaAnnotation
+public @interface IdSequence {
+    String name();
+    boolean cached() default false;
 }

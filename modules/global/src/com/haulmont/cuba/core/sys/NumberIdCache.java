@@ -17,10 +17,14 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.IdSequence;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Metadata;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -33,32 +37,46 @@ public class NumberIdCache {
 
     public static final String NAME = "cuba_NumberIdCache";
 
+    @Inject
+    protected Metadata metadata;
+
     protected class Generator {
         protected long counter;
         protected long sequenceValue;
         protected String entityName;
-        protected NumberIdSequence sequence;
+        protected String sequenceName;
+        protected boolean cached;
+        protected NumberIdSequence numberIdSequence;
 
-        public Generator(String entityName, NumberIdSequence sequence) {
+        public Generator(String entityName,
+                         String sequenceName,
+                         boolean cached,
+                         NumberIdSequence sequence) {
             this.entityName = entityName;
-            this.sequence = sequence;
-            if (config.getNumberIdCacheSize() != 0) {
-                createCounter();
+            this.sequenceName = sequenceName;
+            this.cached = cached;
+            this.numberIdSequence = sequence;
+            if (useIdCache()) {
+                createCachedCounter();
             }
         }
 
-        protected void createCounter() {
-            sequenceValue = sequence.createLongId(entityName);
+        protected boolean useIdCache() {
+            return config.getNumberIdCacheSize() != 0 && cached;
+        }
+
+        protected void createCachedCounter() {
+            sequenceValue = numberIdSequence.createLongId(entityName, sequenceName, 0, config.getNumberIdCacheSize());
             counter = sequenceValue;
         }
 
         public synchronized long getNext() {
-            if (config.getNumberIdCacheSize() == 0) {
-                return sequence.createLongId(entityName, 1);
+            if (!useIdCache()) {
+                return numberIdSequence.createLongId(entityName, sequenceName, 1, 0);
             } else {
                 long next = ++counter;
                 if (next > sequenceValue + config.getNumberIdCacheSize()) {
-                    createCounter();
+                    createCachedCounter();
                     next = ++counter;
                 }
                 return next;
@@ -74,12 +92,25 @@ public class NumberIdCache {
     /**
      * Generates next id.
      *
-     * @param entityName    entity name
-     * @param sequence      sequence provider
-     * @return  next id
+     * @param entityName entity name
+     * @param sequence   sequence provider
+     * @return next id
      */
     public Long createLongId(String entityName, NumberIdSequence sequence) {
-        Generator gen = cache.computeIfAbsent(entityName, s -> new Generator(entityName, sequence));
+        MetaClass metaClass = metadata.getClassNN(entityName);
+        Map attributes = (Map) metaClass.getAnnotations().get(IdSequence.class.getName());
+
+        final boolean cached;
+        final String sequenceName;
+        if (attributes != null) {
+            sequenceName = (String) attributes.get("name");
+            cached = Boolean.TRUE.equals(attributes.get("cached"));
+        } else {
+            cached = true;
+            sequenceName = null;
+        }
+
+        Generator gen = cache.computeIfAbsent(getCacheKey(entityName, sequenceName), s -> new Generator(entityName, sequenceName, cached, sequence));
         return gen.getNext();
     }
 
@@ -88,5 +119,9 @@ public class NumberIdCache {
      */
     public void reset() {
         cache.clear();
+    }
+
+    protected String getCacheKey(String entityName, String sequenceName) {
+        return sequenceName == null ? entityName : sequenceName;
     }
 }

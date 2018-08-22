@@ -939,6 +939,22 @@ create table TEST_NUMBER_ID_SINGLE_TABLE_ROOT (
     primary key (ID)
 )^
 
+create table TEST_NUMBER_ID_SEQ_NAME_FIRST (
+    ID bigint not null,
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_NUMBER_ID_SEQ_NAME_SECOND (
+    ID bigint not null,
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
 ------------------------------------------------------------------------------------------------------------------------
 
 create table TEST_JPA_CASCADE_FOO (
