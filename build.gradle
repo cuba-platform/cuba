@@ -830,14 +830,14 @@ configure(webToolkitModule) {
         from sourceSets.main.allJava
     }
 
-    task webArchive(dependsOn: buildWidgetSet, type: Zip) {
+    task webArchive(dependsOn: buildWidgetSet, type: Jar) {
         from file("$buildDir/web")
-        classifier = 'web'
+        classifier = 'client'
     }
 
-    task webDebugArchive(dependsOn: buildDebugWidgetSet, type: Zip) {
+    task webDebugArchive(dependsOn: buildDebugWidgetSet, type: Jar) {
         from file("$buildDir/web-debug")
-        classifier = 'debug'
+        classifier = 'debug-client'
     }
 
     artifacts {
@@ -847,16 +847,9 @@ configure(webToolkitModule) {
         }
     }
 
-    task deploy(dependsOn: buildWidgetSet) {
-        doLast {
-            delete {
-                "$cuba.tomcat.dir/webapps/cuba/VAADIN/widgetsets"
-            }
-            copy {
-                from "$buildDir/web"
-                into "$cuba.tomcat.dir/webapps/cuba"
-            }
-        }
+    task deploy(dependsOn: webArchive, type: Copy) {
+        from webArchive
+        into "$cuba.tomcat.dir/webapps/cuba/WEB-INF/lib"
     }
 
     task cleanWidgetSet(dependsOn: clean) {
