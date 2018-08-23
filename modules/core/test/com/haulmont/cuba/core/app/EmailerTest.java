@@ -132,6 +132,29 @@ public class EmailerTest {
         doTestAsynchronous(true);
     }
 
+    @Test
+    public void testFileStorageEmailBodyReturningToDbColumn() {
+        emailerConfig.setFileStorageUsed(true);
+        testMailSender.clearBuffer();
+
+        String body = "Test Email Body";
+        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        List<SendingMessage> messages = emailer.sendEmailAsync(myInfo);
+        assertEquals(1, messages.size());
+
+        // not sent yet
+        SendingMessage sendingMsg = reload(messages.get(0), "sendingMessage.loadFromQueue");
+        assertNotNull(sendingMsg.getContentTextFile());
+        assertNull(sendingMsg.getContentText());             // null
+
+        // run scheduler
+        emailer.processQueuedEmails();
+
+        sendingMsg = reload(messages.get(0), "sendingMessage.loadFromQueue");
+        assertNotNull(sendingMsg.getContentTextFile());
+        assertNull(sendingMsg.getContentText());             // null??
+    }
+
     private void doTestAsynchronous(boolean useFs) throws Exception {
         emailerConfig.setFileStorageUsed(useFs);
         testMailSender.clearBuffer();
