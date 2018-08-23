@@ -28,10 +28,12 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -117,26 +119,46 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         loadRowsCount(resultComponent, element); // must be before datasource setting
 
-        String datasource = rowsElement.attributeValue("datasource");
-        if (StringUtils.isBlank(datasource)) {
-            throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
-                    context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+        MetaClass metaClass;
+        CollectionContainer collectionContainer = null;
+        CollectionLoader collectionLoader = null;
+        Datasource datasource = null;
+
+        String containerId = rowsElement.attributeValue("container");
+        if (containerId != null) {
+            ScreenData screenData = context.getFrame().getFrameOwner().getScreenData();
+            InstanceContainer container = screenData.getContainer(containerId);
+            if (container instanceof CollectionContainer) {
+                collectionContainer = (CollectionContainer) container;
+            } else {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+            }
+            metaClass = collectionContainer.getEntityMetaClass();
+            collectionLoader = screenData.findLoaderOf(collectionContainer);
+
+        } else {
+            String datasourceId = rowsElement.attributeValue("datasource");
+            if (StringUtils.isBlank(datasourceId)) {
+                throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
+                        context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+            }
+
+            datasource = context.getDsContext().get(datasourceId);
+            if (datasource == null) {
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context.getCurrentFrameId());
+            }
+
+            if (!(datasource instanceof CollectionDatasource)) {
+                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasourceId, context.getCurrentFrameId());
+            }
+
+            metaClass = datasource.getMetaClass();
         }
 
-        Datasource ds = context.getDsContext().get(datasource);
-        if (ds == null) {
-            throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
-        }
-
-        if (!(ds instanceof CollectionDatasource)) {
-            throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());
-        }
-
-        CollectionDatasource cds = (CollectionDatasource) ds;
         List<Table.Column> availableColumns;
 
         if (columnsElement != null) {
-            availableColumns = loadColumns(resultComponent, columnsElement, cds);
+            availableColumns = loadColumns(resultComponent, columnsElement, metaClass);
         } else {
             availableColumns = new ArrayList<>();
         }
@@ -147,9 +169,14 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             loadRequired(resultComponent, column);
         }
 
-        addDynamicAttributes(resultComponent, ds, availableColumns);
-
-        resultComponent.setDatasource(cds);
+        if (collectionContainer != null) {
+            addDynamicAttributes(resultComponent, metaClass, null, collectionLoader, availableColumns);
+            //noinspection unchecked
+            resultComponent.setTableSource(new CollectionContainerTableSource((CollectionContainer) collectionContainer));
+        } else {
+            addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
+            resultComponent.setDatasource((CollectionDatasource) datasource);
+        }
 
         for (Table.Column column : availableColumns) {
             if (column.getXmlDescriptor() != null) {
@@ -183,14 +210,19 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
-        if (getMetadataTools().isPersistent(ds.getMetaClass())) {
+    protected void addDynamicAttributes(Table component, MetaClass metaClass, Datasource ds, CollectionLoader collectionLoader,
+                                        List<Table.Column> availableColumns) {
+        if (getMetadataTools().isPersistent(metaClass)) {
             Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
+                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass, context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
-                ds.setLoadDynamicAttributes(true);
+                if (collectionLoader != null) {
+                    collectionLoader.setLoadDynamicAttributes(true);
+                } else if (ds != null) {
+                    ds.setLoadDynamicAttributes(true);
+                }
                 for (CategoryAttribute attribute : attributesToShow) {
-                    final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+                    final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, attribute);
 
                     Object columnWithSameId = IterableUtils.find(availableColumns,
                             o -> o.getId().equals(metaPropertyPath));
@@ -219,7 +251,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 }
             }
 
-            getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
+            if (ds != null) {
+                getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
+            }
         }
     }
 
@@ -246,13 +280,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected List<Table.Column> loadColumns(Table component, Element columnsElement, CollectionDatasource ds) {
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass) {
         List<Table.Column> columns = new ArrayList<>();
         //noinspection unchecked
         for (Element columnElement : columnsElement.elements("column")) {
             String visible = columnElement.attributeValue("visible");
             if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
-                columns.add(loadColumn(columnElement, ds));
+                columns.add(loadColumn(columnElement, metaClass));
             }
         }
         return columns;
@@ -345,10 +379,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected Table.Column loadColumn(Element element, Datasource ds) {
+    protected Table.Column loadColumn(Element element, MetaClass metaClass) {
         String id = element.attributeValue("id");
 
-        MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(ds.getMetaClass(), id);
+        MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(metaClass, id);
 
         Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
@@ -393,7 +427,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);
                 }
             } else {
-                Class<?> declaringClass = ds.getMetaClass().getJavaClass();
+                Class<?> declaringClass = metaClass.getJavaClass();
                 String className = declaringClass.getName();
                 int i = className.lastIndexOf('.');
                 if (i > -1)

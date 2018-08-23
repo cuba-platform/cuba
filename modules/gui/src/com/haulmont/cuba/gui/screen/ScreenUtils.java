@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.settings.Settings;
 
 /**
@@ -47,6 +48,10 @@ public final class ScreenUtils {
 
     public static ScreenContext getScreenContext(Screen screen) {
         return screen.getScreenContext();
+    }
+
+    public static void setScreenData(Screen screen, ScreenData screenData) {
+        screen.setScreenData(screenData);
     }
 
     public static void applySettings(Screen screen, Settings settings) {

@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,8 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
     public void loadComponent() {
         context.setFrame(resultComponent);
 
+        loadScreenData(resultComponent, element);
+
         loadDialogOptions(resultComponent, element);
 
         assignXmlDescriptor(resultComponent, element);
@@ -91,6 +94,14 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
 
         loadFocusedComponent(resultComponent, element);
         loadCrossFieldValidate(resultComponent, element);
+    }
+
+    protected void loadScreenData(Window window, Element element) {
+        Element dataEl = element.element("data");
+        if (dataEl != null) {
+            ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
+            screenDataXmlLoader.load(window.getFrameOwner().getScreenData(), dataEl);
+        }
     }
 
     protected void loadDialogOptions(Window resultComponent, Element element) {

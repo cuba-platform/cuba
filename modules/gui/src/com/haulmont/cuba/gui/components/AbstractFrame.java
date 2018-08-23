@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.screen.MessageBundle;
 import org.apache.commons.lang3.StringUtils;
@@ -524,5 +525,10 @@ public class AbstractFrame implements Frame.Wrapper, LegacyFrame {
     @Nullable
     public Action getAction(String id) {
         return frame.getAction(id);
+    }
+
+    @Override
+    public ScreenData getScreenData() {
+        throw new UnsupportedOperationException();
     }
 }

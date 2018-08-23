@@ -24,6 +24,9 @@ import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.ScreenData;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -87,13 +90,23 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
             resultComponent.setFolderActionsEnabled(Boolean.parseBoolean(folderActionsEnabled));
         }
 
-        String datasource = element.attributeValue("datasource");
-        if (!StringUtils.isBlank(datasource)) {
-            CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
-            if (ds == null) {
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
+        String dataLoaderId = element.attributeValue("dataLoader");
+        if (!StringUtils.isBlank(dataLoaderId)) {
+            ScreenData screenData = context.getFrame().getFrameOwner().getScreenData();
+            DataLoader dataLoader = screenData.getLoader(dataLoaderId);
+            if (!(dataLoader instanceof CollectionLoader))
+                throw new IllegalStateException(String.format("Filter cannot work with %s because it is not a CollectionLoader", dataLoaderId));
+            resultComponent.setDataLoader((CollectionLoader) dataLoader);
+
+        } else {
+            String datasource = element.attributeValue("datasource");
+            if (!StringUtils.isBlank(datasource)) {
+                CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
+                if (ds == null) {
+                    throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
+                }
+                resultComponent.setDatasource(ds);
             }
-            resultComponent.setDatasource(ds);
         }
 
         Frame frame = context.getFrame();

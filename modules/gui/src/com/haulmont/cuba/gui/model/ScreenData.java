@@ -16,15 +16,27 @@
 
 package com.haulmont.cuba.gui.model;
 
+import javax.annotation.Nullable;
+import java.util.Set;
+
 public interface ScreenData {
 
     String NAME = "cuba_ScreenData";
 
     DataContext getDataContext();
 
+    void loadAll();
+
     <T extends InstanceContainer> T getContainer(String id);
 
     <T extends DataLoader> T getLoader(String id);
+
+    Set<String> getContainerIds();
+
+    Set<String> getLoaderIds();
+
+    @Nullable
+    <T extends DataLoader> T findLoaderOf(InstanceContainer container);
 
     void registerContainer(String id, InstanceContainer container);
 

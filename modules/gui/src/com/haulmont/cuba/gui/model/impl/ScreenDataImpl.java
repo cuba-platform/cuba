@@ -21,10 +21,12 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Component(ScreenData.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -67,6 +69,36 @@ public class ScreenDataImpl implements ScreenData {
             throw new IllegalArgumentException("Loader '" + id + "' not found");
         }
         return loader;
+    }
+
+    @Override
+    public Set<String> getContainerIds() {
+        return containers.keySet();
+    }
+
+    @Override
+    public Set<String> getLoaderIds() {
+        return loaders.keySet();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T extends DataLoader> T findLoaderOf(InstanceContainer container) {
+        for (String loaderId : getLoaderIds()) {
+            DataLoader loader = getLoader(loaderId);
+            if (loader.getContainer() == container) {
+                return (T) loader;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void loadAll() {
+        for (DataLoader loader : loaders.values()) {
+            loader.load();
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.data.HasValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -38,7 +39,8 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default Datasource getDatasource() {
         ValueSource<V> valueSource = getValueSource();
-        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getDatasource();
+        return !(valueSource instanceof DatasourceValueSource) ?
+                null : ((DatasourceValueSource) valueSource).getDatasource();
     }
 
     /**
@@ -50,7 +52,11 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default MetaProperty getMetaProperty() {
         ValueSource<V> valueSource = getValueSource();
-        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+        if (valueSource instanceof DatasourceValueSource)
+            return ((DatasourceValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+        if (valueSource instanceof ContainerValueSource)
+            return ((ContainerValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+        return null;
     }
 
     /**
@@ -61,7 +67,11 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default MetaPropertyPath getMetaPropertyPath() {
         ValueSource<V> valueSource = getValueSource();
-        return valueSource == null ? null : ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+        if (valueSource instanceof DatasourceValueSource)
+            return ((DatasourceValueSource) valueSource).getMetaPropertyPath();
+        if (valueSource instanceof ContainerValueSource)
+            return ((ContainerValueSource) valueSource).getMetaPropertyPath();
+        return null;
     }
 
     /**

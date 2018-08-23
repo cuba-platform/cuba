@@ -18,8 +18,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -31,7 +35,11 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     public void loadComponent() {
         assignFrame(resultComponent);
         assignXmlDescriptor(resultComponent, element);
-        loadDatasource(resultComponent, element);
+
+        loadContainer(resultComponent, element);
+        if (resultComponent.getValueSource() == null) {
+            loadDatasource(resultComponent, element);
+        }
 
         loadVisible(resultComponent, element);
         loadEditable(resultComponent, element);
@@ -51,6 +59,23 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
         loadResponsive(resultComponent, element);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadContainer(T component, Element element) {
+        String containerId = element.attributeValue("container");
+        if (containerId != null) {
+            ScreenData screenData = context.getFrame().getFrameOwner().getScreenData();
+            InstanceContainer container = screenData.getContainer(containerId);
+            String property = element.attributeValue("property");
+            if (property == null) {
+                throw new GuiDevelopmentException(
+                        String.format("Can't set container '%s' for component '%s' because 'property' " +
+                                "attribute is not defined", containerId, component.getId()),
+                        context.getFullFrameId());
+            }
+            component.setValueSource(new ContainerValueSource<>(container, property));
+        }
     }
 
     protected void loadRequired(Field component, Element element) {

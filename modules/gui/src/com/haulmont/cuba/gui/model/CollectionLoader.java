@@ -51,6 +51,10 @@ public interface CollectionLoader<E extends Entity> extends DataLoader {
      */
     void setMaxResults(int maxResults);
 
+    boolean isLoadDynamicAttributes();
+
+    void setLoadDynamicAttributes(boolean loadDynamicAttributes);
+
     boolean isCacheable();
 
     void setCacheable(boolean cacheable);

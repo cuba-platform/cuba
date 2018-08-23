@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
@@ -45,12 +46,12 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     }
 
     @Override
-    protected List<Table.Column> loadColumns(final Table component, Element columnsElement, CollectionDatasource ds) {
+    protected List<Table.Column> loadColumns(final Table component, Element columnsElement, MetaClass metaClasss) {
         List<Table.Column> columns = new ArrayList<>();
 
         Element groupElement = columnsElement.element("group");
         if (groupElement != null) {
-            columns.addAll(super.loadColumns(component, groupElement, ds));
+            columns.addAll(super.loadColumns(component, groupElement, metaClasss));
             final List<Object> groupProperties = new ArrayList<>(columns.size());
             for (Table.Column column : columns) {
                 if (column.isCollapsed()) {
@@ -65,7 +66,7 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             context.addPostInitTask((context1, window) -> ((GroupTable) component).groupBy(groupProperties.toArray()));
         }
 
-        columns.addAll(super.loadColumns(component, columnsElement, ds));
+        columns.addAll(super.loadColumns(component, columnsElement, metaClasss));
 
         return columns;
     }

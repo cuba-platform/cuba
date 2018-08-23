@@ -16,11 +16,9 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -46,6 +44,7 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     private Map<String, Object> parameters = new HashMap<>();
     private Object entityId;
     private boolean softDeletion = true;
+    private boolean loadDynamicAttributes;
     private View view;
     private String viewName;
 
@@ -77,6 +76,29 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
         if (container == null)
             throw new IllegalStateException("container is null");
 
+        if (!needLoad())
+            return;
+
+        LoadContext<E> loadContext = createLoadContext();
+
+        E entity = getDataManager().load(loadContext);
+
+        if (entity == null) {
+            throw new EntityAccessException(container.getEntityMetaClass(), entityId);
+        }
+
+        if (dataContext != null) {
+            entity = dataContext.merge(entity);
+        }
+        container.setItem(entity);
+    }
+
+    protected boolean needLoad() {
+        return entityId != null || !Strings.isNullOrEmpty(query);
+    }
+
+    public LoadContext<E> createLoadContext() {
+
         @SuppressWarnings("unchecked")
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
@@ -88,19 +110,22 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
             query.setParameters(parameters);
         }
 
+        loadContext.setView(resolveView());
+        loadContext.setSoftDeletion(softDeletion);
+        loadContext.setLoadDynamicAttributes(loadDynamicAttributes);
+
+        return loadContext;
+    }
+
+    protected View resolveView() {
+        View view = this.view;
         if (view == null && viewName != null) {
-            this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
+            view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
         }
-        if (view != null) {
-            loadContext.setView(view);
+        if (view == null) {
+            view = container.getView();
         }
-
-        E entity = getDataManager().load(loadContext);
-
-        if (dataContext != null) {
-            entity = dataContext.merge(entity);
-        }
-        container.setItem(entity);
+        return view;
     }
 
     @Override
@@ -178,6 +203,16 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    @Override
+    public boolean isLoadDynamicAttributes() {
+        return loadDynamicAttributes;
+    }
+
+    @Override
+    public void setLoadDynamicAttributes(boolean loadDynamicAttributes) {
+        this.loadDynamicAttributes = loadDynamicAttributes;
     }
 
     @Override

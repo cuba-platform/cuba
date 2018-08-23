@@ -68,6 +68,7 @@
             <list>
                 <value>com.haulmont.cuba.gui.app</value>
                 <value>com.haulmont.cuba.web.app</value>
+                <value>com.haulmont.cuba.web.tmp</value>
             </list>
         </property>
     </bean>

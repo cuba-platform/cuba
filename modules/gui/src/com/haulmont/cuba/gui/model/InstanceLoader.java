@@ -34,4 +34,8 @@ public interface InstanceLoader<E extends Entity> extends DataLoader {
     void setView(View view);
 
     void setView(String viewName);
+
+    boolean isLoadDynamicAttributes();
+
+    void setLoadDynamicAttributes(boolean loadDynamicAttributes);
 }

@@ -28,6 +28,8 @@ public interface DataLoader {
 
     void load();
 
+    InstanceContainer getContainer();
+
     @Nullable
     DataContext getDataContext();
 

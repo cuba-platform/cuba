@@ -45,6 +45,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     private int firstResult = 0;
     private int maxResults = Integer.MAX_VALUE;
     private boolean softDeletion = true;
+    private boolean loadDynamicAttributes;
     private boolean cacheable;
     private View view;
     private String viewName;
@@ -80,6 +81,20 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (query == null)
             throw new IllegalStateException("query is null");
 
+        LoadContext<E> loadContext = createLoadContext();
+
+        List<E> list = getDataManager().loadList(loadContext);
+
+        if (dataContext != null) {
+            for (E entity : list) {
+                dataContext.merge(entity);
+            }
+        }
+        container.setItems(list);
+    }
+
+    public LoadContext<E> createLoadContext() {
+
         @SuppressWarnings("unchecked")
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
@@ -96,23 +111,22 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (maxResults < Integer.MAX_VALUE)
             query.setMaxResults(maxResults);
 
+        loadContext.setView(resolveView());
         loadContext.setSoftDeletion(softDeletion);
+        loadContext.setLoadDynamicAttributes(loadDynamicAttributes);
 
+        return loadContext;
+    }
+
+    protected View resolveView() {
+        View view = this.view;
         if (view == null && viewName != null) {
-            this.view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
+            view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
         }
-        if (view != null) {
-            loadContext.setView(view);
+        if (view == null) {
+            view = container.getView();
         }
-
-        List<E> list = getDataManager().loadList(loadContext);
-
-        if (dataContext != null) {
-            for (E entity : list) {
-                dataContext.merge(entity);
-            }
-        }
-        container.setItems(list);
+        return view;
     }
 
     @Override
@@ -201,6 +215,16 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    @Override
+    public boolean isLoadDynamicAttributes() {
+        return loadDynamicAttributes;
+    }
+
+    @Override
+    public void setLoadDynamicAttributes(boolean loadDynamicAttributes) {
+        this.loadDynamicAttributes = loadDynamicAttributes;
     }
 
     @Override

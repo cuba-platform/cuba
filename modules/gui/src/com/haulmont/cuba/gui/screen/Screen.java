@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.screen.events.*;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -51,6 +52,8 @@ public abstract class Screen implements FrameOwner {
     private String id;
 
     private ScreenContext screenContext;
+
+    private ScreenData screenData;
 
     private Window window;
 
@@ -88,6 +91,15 @@ public abstract class Screen implements FrameOwner {
 
     protected ScreenContext getScreenContext() {
         return screenContext;
+    }
+
+    @Override
+    public ScreenData getScreenData() {
+        return screenData;
+    }
+
+    protected void setScreenData(ScreenData data) {
+        this.screenData = data;
     }
 
     protected <E> void fireEvent(Class<E> eventType, E event) {

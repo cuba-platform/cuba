@@ -17,8 +17,11 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.bali.util.Dom4j
+import com.haulmont.cuba.core.global.ViewRepository
 import com.haulmont.cuba.gui.model.*
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader
+import com.haulmont.cuba.gui.model.impl.StandardCollectionLoader
+import com.haulmont.cuba.gui.model.impl.StandardInstanceLoader
 import com.haulmont.cuba.security.entity.Permission
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
@@ -157,11 +160,13 @@ class ScreenDataTest extends WebSpec {
 
         userLoader.entityId == UUID.fromString('60885987-1b61-4247-94c7-dff348347f93')
         !userLoader.softDeletion
+        ((StandardInstanceLoader) userLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.edit')
 
         !usersLoader.softDeletion
         usersLoader.firstResult == 100
         usersLoader.maxResults == 1000
         usersLoader.cacheable
+        ((StandardCollectionLoader) usersLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.browse')
     }
 
     def "nested containers"() {

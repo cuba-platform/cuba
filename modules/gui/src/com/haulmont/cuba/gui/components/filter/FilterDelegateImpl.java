@@ -511,14 +511,17 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (defaultFilter != adHocFilter && (filterMode == FilterMode.GENERIC_MODE)) {
-            Window window = ComponentsHelper.getWindow(filter);
+            Window window = getWindow();
             if (!WindowParams.DISABLE_AUTO_REFRESH.getBool(window.getContext())) {
                 if (getResultingManualApplyRequired()) {
                     if (BooleanUtils.isTrue(defaultFilter.getApplyDefault())) {
+                        adapter.beforeApplyDefault();
                         apply(true);
                     }
-                } else
+                } else {
+                    adapter.beforeApplyDefault();
                     apply(true);
+                }
                 if (filterEntity != null) {
                     window.setDescription(getFilterCaption(filterEntity));
                 } else
@@ -578,7 +581,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         // If there are window parameters named as filter parameters, assign values to the corresponding
         // filter params. Together with passing a filter code in 'filter' window parameter it allows to open an
         // arbitrary filter with parameters regardless of a user defined default filter.
-        Window window = ComponentsHelper.getWindow(filter);
+        Window window = getWindow();
         for (AbstractCondition condition : conditions.toConditionsList()) {
             if (condition.getParam() != null) {
                 for (Map.Entry<String, Object> entry : window.getContext().getParams().entrySet()) {
@@ -618,6 +621,13 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         updateWindowCaption();
+    }
+
+    protected Window getWindow() {
+        Window window = ComponentsHelper.getWindowImplementation(filter);
+        if (window == null)
+            throw new IllegalStateException(String.format("Cannot get window for filter %s", filter.getId()));
+        return window;
     }
 
     /**
@@ -2151,7 +2161,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void updateWindowCaption() {
-        Window window = ComponentsHelper.getWindow(filter);
+        Window window = getWindow();
         String filterTitle;
         if (filterMode == FilterMode.GENERIC_MODE && filterEntity != null && filterEntity != adHocFilter) {
             filterTitle = getFilterCaption(filterEntity);
@@ -2819,6 +2829,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         void pinQuery();
         void unpinAllQuery();
         String getQuery();
+        void beforeApplyDefault();
     }
 
     protected static class LoaderAdapter implements Adapter {
@@ -2826,6 +2837,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected CollectionLoader loader;
         protected Filter filter;
         protected QueryFilter queryFilter;
+        protected boolean applyingDefault;
 
         /**
          * Condition which was set on DataLoader before applying the filter
@@ -2924,7 +2936,11 @@ public class FilterDelegateImpl implements FilterDelegate {
                 loader.setCondition(dataLoaderCondition);
             }
 
-            loader.load();
+            if (applyingDefault) {
+                applyingDefault = false;
+            } else {
+                loader.load();
+            }
         }
 
         /**
@@ -2969,6 +2985,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public String getQuery() {
             return loader.getQuery();
+        }
+
+        @Override
+        public void beforeApplyDefault() {
+            applyingDefault = true;
         }
     }
 
@@ -3055,6 +3076,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public String getQuery() {
             return datasource.getQuery();
+        }
+
+        @Override
+        public void beforeApplyDefault() {
+
         }
     }
 }

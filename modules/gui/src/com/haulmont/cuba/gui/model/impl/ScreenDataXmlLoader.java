@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -49,6 +50,9 @@ public class ScreenDataXmlLoader {
     protected ConditionXmlLoader conditionXmlLoader;
 
     public void load(ScreenData screenData, Element element) {
+        Preconditions.checkNotNullArgument(screenData, "screenData is null");
+        Preconditions.checkNotNullArgument(element, "element is null");
+
         for (Element el : element.elements()) {
             if (el.getName().equals("collection")) {
                 loadNestedContainer(screenData, el);

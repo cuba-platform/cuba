@@ -35,6 +35,9 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.events.sys.UiEventListenerMethodAdapter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -290,6 +293,18 @@ public class ScreenDependencyInjector {
         } else if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
             return window.getComponent(name);
+
+        } else if (InstanceContainer.class.isAssignableFrom(type)) {
+            // Injecting a container
+            return window.getFrameOwner().getScreenData().getContainer(name);
+
+        } else if (DataLoader.class.isAssignableFrom(type)) {
+            // Injecting a loader
+            return window.getFrameOwner().getScreenData().getLoader(name);
+
+        } else if (DataContext.class.isAssignableFrom(type)) {
+            // Injecting the data context
+            return window.getFrameOwner().getScreenData().getDataContext();
 
         } else if (Datasource.class.isAssignableFrom(type)) {
             // Injecting a datasource
