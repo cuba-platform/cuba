@@ -63,7 +63,7 @@ public class UnknownOperationResult implements OperationResult {
         if (status == Status.FAIL) {
             runnable.run();
         } else {
-            thenListeners.add(runnable);
+            otherwiseListeners.add(runnable);
         }
         return this;
     }

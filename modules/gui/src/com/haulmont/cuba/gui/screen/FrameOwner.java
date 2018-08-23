@@ -30,7 +30,7 @@ public interface FrameOwner {
 
     CloseAction WINDOW_COMMIT_AND_CLOSE_ACTION = new StandardCloseAction(Window.COMMIT_ACTION_ID);
 
-    CloseAction WINDOW_DISCARD_AND_CLOSE_ACTION = new StandardCloseAction(Window.CLOSE_ACTION_ID);
+    CloseAction WINDOW_DISCARD_AND_CLOSE_ACTION = new StandardCloseAction(Window.CLOSE_ACTION_ID, false);
 
     ScreenOptions NO_OPTIONS = new ScreenOptions() {
         @Override
