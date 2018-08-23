@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
@@ -131,6 +132,8 @@ todo
 /*
     @Override
     public void setOptionsMap(Map<String, ?> options) {
+        Preconditions.checkNotNullArgument(options);
+
         if (getMetaProperty() != null && getMetaProperty().getRange().isEnum()) {
             List constants = Arrays.asList(getMetaProperty().getRange().asEnumeration().getJavaClass().getEnumConstants());
             List opts = new ArrayList();
@@ -170,6 +173,8 @@ todo
 
     @Override
     public void setOptionsList(List optionsList) {
+        Preconditions.checkNotNullArgument(optionsList);
+
         if (getMetaProperty() != null) {
             Object currentValue = component.getValue();
             if (getMetaProperty().getRange().isEnum()) {
@@ -206,6 +211,8 @@ todo
 
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        Preconditions.checkNotNullArgument(optionsEnum);
+
         Object currentValue = null;
         if (getMetaProperty() != null) {
             currentValue = component.getValue();
