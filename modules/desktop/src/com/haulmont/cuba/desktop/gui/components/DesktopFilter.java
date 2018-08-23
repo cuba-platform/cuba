@@ -21,16 +21,11 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.FilterImplementation;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.MarginInfo;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
-import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -55,6 +50,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     // just stub
     protected boolean borderVisible = true;
+    protected PropertiesFilterPredicate propertiesFilterPredicate;
 
     public DesktopFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
@@ -68,7 +64,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         MigLayout topLayout = new MigLayout(topLc);
         impl = new JPanel(topLayout);
 
-        Container layout = delegate.getLayout();
+        ComponentContainer layout = delegate.getLayout();
         JComponent unwrap = DesktopComponentsHelper.getComposition(layout);
         impl.add(unwrap, "width 100%");
 
@@ -426,5 +422,15 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(DesktopFilter.class).warn("Filter is embedded in a frame without ID");
         }
+    }
+
+    @Override
+    public void setPropertiesFilterPredicate(PropertiesFilterPredicate predicate) {
+        propertiesFilterPredicate = predicate;
+    }
+
+    @Override
+    public PropertiesFilterPredicate getPropertiesFilterPredicate() {
+        return propertiesFilterPredicate;
     }
 }

@@ -68,6 +68,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected final boolean hideDynamicAttributes;
     protected final boolean hideCustomConditions;
     protected ConditionsTree conditionsTree;
+    protected boolean excludePropertiesRecursively;
 
     /**
      * @param filter                filter
@@ -157,7 +158,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
 
             if (isPropertyAllowed(propertyEnclosingMetaClass, metaProperty)
-                    && !excludedProperties.contains(metaProperty.getName())) {
+                    && !excludedProperties.contains(metaProperty.getName())
+                    && filter.getPropertiesFilterPredicate() == null || filter.getPropertiesFilterPredicate().test(propertyPath)) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);
 
@@ -211,8 +213,12 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             for (MetaProperty property : childMetaClass.getProperties()) {
                 if (isPropertyAllowed(childMetaClass, property)) {
                     String propertyPath = mpp.toString() + "." + property.getName();
-                    if (excludedProperties.contains(propertyPath))
+                    if (excludedProperties.contains(propertyPath)
+                            || excludePropertiesRecursively && excludedProperties.contains(property.getName())
+                            || filter.getPropertiesFilterPredicate() != null
+                            && !filter.getPropertiesFilterPredicate().test(entityMetaClass.getPropertyPath(propertyPath))) {
                         continue;
+                    }
 
                     PropertyConditionDescriptor childPropertyConditionDescriptor =
                             new PropertyConditionDescriptor(propertyPath, null, filter.getFrame().getMessagesPack(),
@@ -252,6 +258,11 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             String excludeProperties = element.attributeValue("excludeProperties");
             if (StringUtils.isNotEmpty(excludeProperties)) {
                 excludedProperties = Arrays.asList(excludeProperties.replace(" ", "").split(","));
+            }
+
+            String excludeRecursively = element.attributeValue("excludeRecursively");
+            if (excludeProperties != null && !excludeProperties.isEmpty()) {
+                excludePropertiesRecursively = Boolean.parseBoolean(excludeRecursively);
             }
         }
     }

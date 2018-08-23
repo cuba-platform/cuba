@@ -45,6 +45,7 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     protected boolean settingsEnabled = true;
 
     protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
+    protected PropertiesFilterPredicate propertiesFilterPredicate;
 
     public WebFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
@@ -427,5 +428,15 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(WebFilter.class).warn("Filter is embedded in a frame without ID");
         }
+    }
+
+    @Override
+    public void setPropertiesFilterPredicate(PropertiesFilterPredicate predicate) {
+        propertiesFilterPredicate = predicate;
+    }
+
+    @Override
+    public PropertiesFilterPredicate getPropertiesFilterPredicate() {
+        return propertiesFilterPredicate;
     }
 }
