@@ -52,6 +52,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     // just stub
     protected boolean borderVisible = true;
+    protected PropertiesFilterPredicate propertiesFilterPredicate;
 
     public DesktopFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
@@ -403,5 +404,15 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(DesktopFilter.class).warn("Filter is embedded in a frame without ID");
         }
+    }
+
+    @Override
+    public void setPropertiesFilterPredicate(PropertiesFilterPredicate predicate) {
+        propertiesFilterPredicate = predicate;
+    }
+
+    @Override
+    public PropertiesFilterPredicate getPropertiesFilterPredicate() {
+        return propertiesFilterPredicate;
     }
 }

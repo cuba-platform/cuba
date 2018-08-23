@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -190,4 +191,29 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
      * @return <code>true</code> if the border is visible
      */
     boolean isBorderVisible();
+
+    /**
+     * Enables to setup which properties should be available for filtering.
+     *
+     * @param predicate properties filter predicate
+     */
+    void setPropertiesFilterPredicate(PropertiesFilterPredicate predicate);
+
+    /**
+     * @return properties filter predicate
+     */
+    PropertiesFilterPredicate getPropertiesFilterPredicate();
+
+    /**
+     * A predicate that tests whether a property with the given path should be available for filtering.
+     */
+    @FunctionalInterface
+    interface PropertiesFilterPredicate {
+
+        /**
+         * @param metaPropertyPath {@link MetaPropertyPath} instance
+         * @return true if property with given {@code metaPropertyPath} should be available for filtering or false otherwise
+         */
+        boolean test(MetaPropertyPath metaPropertyPath);
+    }
 }
