@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
@@ -146,6 +147,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     @Override
     public void setOptionsMap(Map<String, ?> options) {
+        Preconditions.checkNotNullArgument(options);
+
         if (metaProperty != null && metaProperty.getRange().isEnum()) {
             List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
             List opts = new ArrayList();
@@ -185,6 +188,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     @Override
     public void setOptionsList(List optionsList) {
+        Preconditions.checkNotNullArgument(optionsList);
+
         if (metaProperty != null) {
             Object currentValue = component.getValue();
             if (metaProperty.getRange().isEnum()) {
@@ -220,6 +225,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        Preconditions.checkNotNullArgument(optionsEnum);
+
         Object currentValue = null;
         if (metaProperty != null) {
             currentValue = component.getValue();
