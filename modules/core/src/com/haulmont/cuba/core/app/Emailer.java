@@ -499,6 +499,9 @@ public class Emailer implements EmailerAPI {
 
             msg.setAttemptsMade(msg.getAttemptsMade() + 1);
             msg.setStatus(SendingStatus.QUEUE);
+            if (config.isFileStorageUsed()) {
+                msg.setContentText(null);
+            }
 
             tx.commit();
         } catch (Exception e) {
@@ -514,6 +517,9 @@ public class Emailer implements EmailerAPI {
             msg.setStatus(SendingStatus.SENT);
             msg.setAttemptsMade(msg.getAttemptsMade() + 1);
             msg.setDateSent(timeSource.currentTimestamp());
+            if (config.isFileStorageUsed()) {
+                msg.setContentText(null);
+            }
 
             tx.commit();
         } catch (Exception e) {
@@ -528,6 +534,10 @@ public class Emailer implements EmailerAPI {
 
             msg.setStatus(SendingStatus.NOTSENT);
             msg.setAttemptsMade(msg.getAttemptsMade() + 1);
+            if (config.isFileStorageUsed()) {
+                msg.setContentText(null);
+            }
+
 
             tx.commit();
         } catch (Exception e) {
