@@ -16,9 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
@@ -29,10 +27,12 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.screen.events.AfterShowEvent;
+import com.haulmont.cuba.gui.screen.events.CloseTriggeredEvent;
 import com.haulmont.cuba.gui.screen.events.InitEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,6 +46,8 @@ import java.util.Map;
  */
 public class AbstractWindow extends Screen implements Window, LegacyFrame, Component.HasXmlDescriptor, Window.Wrapper,
         SecuredActionsHolder {
+
+    public static final String UNKNOWN_CLOSE_ACTION_ID = "unknown";
 
     protected Frame frame;
     private Object _companion;
@@ -80,6 +82,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         return frame;
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @Subscribe
     protected void init(InitEvent initEvent) {
         Map<String, Object> params = Collections.emptyMap();
@@ -91,9 +94,21 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         init(params);
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @Subscribe
     protected void afterShow(AfterShowEvent event) {
         ready();
+    }
+
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
+    @Subscribe
+    protected void onCloseTriggered(CloseTriggeredEvent event) {
+        String actionId = event.getCloseAction() instanceof StandardCloseAction ?
+            ((StandardCloseAction) event.getCloseAction()).getActionId() : UNKNOWN_CLOSE_ACTION_ID;
+
+        if (!preClose(actionId)) {
+            event.preventWindowClose();
+        }
     }
 
     /**
@@ -330,24 +345,6 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     @Override
     public void validate() throws ValidationException {
         frame.validate();
-    }
-
-    /**
-     * Show validation errors alert. Can be overriden in subclasses.
-     *
-     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
-     */
-    public void showValidationErrors(ValidationErrors errors) {
-        StringBuilder buffer = new StringBuilder();
-        for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("\n");
-        }
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-        NotificationType notificationType = NotificationType.valueOf(clientConfig.getValidationNotificationType());
-        showNotification(messages.getMainMessage("validationFail.caption"), buffer.toString(), notificationType);
     }
 
     @Override
@@ -640,20 +637,6 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         return frame.validate(fields);
     }
 
-    /**
-     * Check validity by invoking validators on all components which support them
-     * and show validation result notification. This method also calls {@link #postValidate(ValidationErrors)} hook to
-     * support additional validation.
-     * <p>You should override this method in subclasses ONLY if you want to completely replace the validation process,
-     * otherwise use {@link #postValidate(ValidationErrors)}.
-     *
-     * @return true if the validation was successful, false if there were any problems
-     */
-    @Override
-    public boolean validateAll() {
-        return frame.validateAll();
-    }
-
     @Override
     public DialogOptions getDialogOptions() {
         return ((Window) frame).getDialogOptions();
@@ -693,6 +676,40 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
      */
     protected boolean preClose(String actionId) {
         return true;
+    }
+
+    protected void validateAdditionalRules(ValidationErrors errors) {
+    }
+
+    /**
+     * Check validity by invoking validators on all components which support them
+     * and show validation result notification. This method also calls {@link #postValidate(ValidationErrors)} hook to
+     * support additional validation.
+     * <p>You should override this method in subclasses ONLY if you want to completely replace the validation process,
+     * otherwise use {@link #postValidate(ValidationErrors)}.
+     *
+     * @return true if the validation was successful, false if there were any problems
+     */
+    @Override
+    public boolean validateAll() {
+        ValidationErrors errors = getValidationErrors();
+
+        validateAdditionalRules(errors);
+
+        return handleValidationErrors(errors);
+    }
+
+    protected boolean handleValidationErrors(ValidationErrors errors) {
+        postValidate(errors);
+
+        if (errors.isEmpty())
+            return true;
+
+        showValidationErrors(errors);
+
+        focusProblemComponent(errors);
+
+        return false;
     }
 
     @Override

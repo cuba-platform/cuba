@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.ScreenUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.sys.TestIdManager;
@@ -47,7 +48,9 @@ import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
-public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion, UiPermissionAware {
+public class WebAccordion extends WebAbstractComponent<CubaAccordion>
+        implements Accordion, UiPermissionAware, SupportsChildrenSelection {
+
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
 
@@ -163,6 +166,11 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void activateChildComponent(Component childComponent) {
+        component.setSelectedTab(childComponent.unwrap(com.vaadin.ui.Component.class));
     }
 
     protected class Tab implements Accordion.Tab {
@@ -531,7 +539,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                     walkComponents(tabContent, (settingsComponent, name) -> {
                         if (settingsComponent.getId() != null
                                 && settingsComponent instanceof HasSettings) {
-                            Settings settings = window.getSettings();
+                            Settings settings = ScreenUtils.getSettings(window.getFrameOwner());
                             if (settings != null) {
                                 Element e = settings.get(name);
                                 ((HasSettings) settingsComponent).applySettings(e);
@@ -548,7 +556,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                         }
                     });
 
-                    // init debug ids after all
+                    // todo init debug ids after all
                     /*AppUI appUI = AppUI.getCurrent();
                     if (appUI.isPerformanceTestMode()) {
                         context.addPostInitTask((context1, window1) -> {

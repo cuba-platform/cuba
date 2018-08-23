@@ -641,4 +641,40 @@ public abstract class ComponentsHelper {
                 throw new IllegalArgumentException("Unsupported unit: " + unit);
         }
     }
+
+    /**
+     * Focus component and activate all its parents, for instance: select Tab, expand GroupBox.
+     *
+     * @param component component
+     */
+    public static void focusComponent(Component component) {
+        Component parent = component;
+        Component previousComponent = null;
+
+        // activate all parent containers, select Tab in TabSheet, expand GroupBox
+        while (parent != null) {
+            if (parent instanceof Collapsable
+                    && ((Collapsable) parent).isCollapsable()
+                    && !((Collapsable) parent).isExpanded()) {
+                ((Collapsable) parent).setExpanded(true);
+            }
+
+            if (parent instanceof SupportsChildrenSelection
+                    && previousComponent != null) {
+                ((SupportsChildrenSelection) parent).activateChildComponent(previousComponent);
+            }
+
+            previousComponent = parent;
+            parent = parent.getParent();
+        }
+
+        // focus first focusable parent
+        parent = component;
+        while (parent != null && !(parent instanceof Component.Focusable)) {
+            parent = parent.getParent();
+        }
+        if (parent != null) {
+            ((Component.Focusable) parent).focus();
+        }
+    }
 }

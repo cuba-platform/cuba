@@ -69,4 +69,8 @@ public final class ScreenUtils {
     public static Settings getSettings(Screen screen) {
         return screen.getSettings();
     }
+
+    public static ScreenData getScreenData(FrameOwner screen) {
+        return ((Screen) screen).getScreenData(); // todo support Fragment
+    }
 }

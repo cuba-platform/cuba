@@ -93,7 +93,6 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 import static com.haulmont.cuba.gui.components.Window.CLOSE_ACTION_ID;
-import static com.haulmont.cuba.gui.screen.FrameOwner.NO_OPTIONS;
 
 @Scope(UIScope.NAME)
 @Component(Screens.NAME)
@@ -555,7 +554,10 @@ public class WebScreens implements Screens, WindowManager {
     @SuppressWarnings("IncorrectCreateGuiComponent")
     @Override
     public Window openWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        Screen screen = create(windowInfo, openType.getOpenMode(), new MapScreenOptions(params));
+        params = createParametersMap(windowInfo, params);
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
         show(screen);
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
@@ -563,31 +565,80 @@ public class WebScreens implements Screens, WindowManager {
     @SuppressWarnings("IncorrectCreateGuiComponent")
     @Override
     public Window openWindow(WindowInfo windowInfo, OpenType openType) {
-        Screen screen = create(windowInfo, openType.getOpenMode(), NO_OPTIONS);
+        Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
         show(screen);
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Datasource parentDs) {
-        throw new UnsupportedOperationException();
+        Map<String, Object> params = createParametersMap(windowInfo,
+                Collections.singletonMap(WindowParams.ITEM.name(), item)
+        );
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        EditorScreen editorScreen = (EditorScreen) screen;
+        if (editorScreen instanceof AbstractEditor) {
+            ((AbstractEditor) editorScreen).setParentDs(parentDs);
+        }
+        editorScreen.setEntityToEdit(item);
+        show(screen);
+        return (Window.Editor) screen; // todo wrapper for new Screen
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
-        throw new UnsupportedOperationException();
+        Map<String, Object> params = createParametersMap(windowInfo,
+                Collections.singletonMap(WindowParams.ITEM.name(), item)
+        );
+
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        EditorScreen editorScreen = (EditorScreen) screen;
+        editorScreen.setEntityToEdit(item);
+        show(screen);
+        return (Window.Editor) screen; // todo wrapper for new Screen
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
-        throw new UnsupportedOperationException();
+        params = createParametersMap(windowInfo, params);
+        params.put(WindowParams.ITEM.name(), item);
+
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        EditorScreen editorScreen = (EditorScreen) screen;
+        editorScreen.setEntityToEdit(item);
+        show(screen);
+        return (Window.Editor) screen; // todo wrapper for new Screen
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params,
                                     Datasource parentDs) {
-         // todo
-        return null;
+        params = createParametersMap(windowInfo, params);
+        params.put(WindowParams.ITEM.name(), item);
+
+        MapScreenOptions options = new MapScreenOptions(params);
+
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        EditorScreen editorScreen = (EditorScreen) screen;
+        if (editorScreen instanceof AbstractEditor) {
+            ((AbstractEditor) editorScreen).setParentDs(parentDs);
+        }
+        editorScreen.setEntityToEdit(item);
+        show(screen);
+        return (Window.Editor) screen; // todo wrapper for new Screen
     }
 
     @Override
@@ -625,7 +676,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void openDefaultScreen() {
-        // todo
+        // todo move to separate bean
     }
 
     @Override
@@ -935,6 +986,34 @@ public class WebScreens implements Screens, WindowManager {
             actionsLayout.addShortcutListener(createPreviousWindowTabShortcut(topLevelWindow));
         }
         actionsLayout.addShortcutListener(createCloseShortcut(topLevelWindow));
+    }
+
+    // used only for legacy screens
+    @Deprecated
+    protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
+        Map<String, Object> map = new HashMap<>(params.size());
+
+        Element element = windowInfo.getDescriptor();
+        if (element != null) {
+            Element paramsElement = element.element("params") != null ? element.element("params") : element;
+            if (paramsElement != null) {
+                @SuppressWarnings({"unchecked"})
+                List<Element> paramElements = paramsElement.elements("param");
+                for (Element paramElement : paramElements) {
+                    String name = paramElement.attributeValue("name");
+                    String value = paramElement.attributeValue("value");
+                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                        Boolean booleanValue = Boolean.valueOf(value);
+                        map.put(name, booleanValue);
+                    } else {
+                        map.put(name, value);
+                    }
+                }
+            }
+        }
+        map.putAll(params);
+
+        return map;
     }
 
     protected ShortcutListener createCloseShortcut(RootWindow topLevelWindow) {

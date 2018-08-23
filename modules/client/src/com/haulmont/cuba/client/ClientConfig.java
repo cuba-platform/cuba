@@ -372,7 +372,7 @@ public interface ClientConfig extends Config {
     /**
      * Standard Window validation error notification type.
      *
-     * @return one of com.haulmont.cuba.gui.components.Frame.NotificationType values
+     * @return one of Notifications.NotificationType values
      */
     @Property("cuba.gui.validationNotificationType")
     @Default("TRAY")

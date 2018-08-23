@@ -259,7 +259,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                 com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
                 if (lookupComponent != this)
                     action.actionPerform(WebAbstractTree.this);
-                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
                     action.actionPerform(WebAbstractTree.this);
                 }
             }

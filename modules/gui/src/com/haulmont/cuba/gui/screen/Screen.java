@@ -19,10 +19,14 @@ package com.haulmont.cuba.gui.screen;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs.MessageType;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -35,9 +39,11 @@ import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -68,6 +74,10 @@ public abstract class Screen implements FrameOwner {
         this.beanLocator = beanLocator;
     }
 
+    protected BeanLocator getBeanLocator() {
+        return beanLocator;
+    }
+
     protected EventHub getEventHub() {
         return eventHub;
     }
@@ -93,8 +103,7 @@ public abstract class Screen implements FrameOwner {
         return screenContext;
     }
 
-    @Override
-    public ScreenData getScreenData() {
+    protected ScreenData getScreenData() {
         return screenData;
     }
 
@@ -147,6 +156,26 @@ public abstract class Screen implements FrameOwner {
      */
     protected Subscription addBeforeCloseListener(Consumer<BeforeCloseEvent> listener) {
         return eventHub.subscribe(BeforeCloseEvent.class, listener);
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
+    protected Subscription addBeforeShowListener(Consumer<BeforeShowEvent> listener) {
+        return eventHub.subscribe(BeforeShowEvent.class, listener);
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
+    protected Subscription addAfterShowListener(Consumer<AfterShowEvent> listener) {
+        return eventHub.subscribe(AfterShowEvent.class, listener);
     }
 
     /**
@@ -381,5 +410,81 @@ public abstract class Screen implements FrameOwner {
      */
     protected void deleteSettings() {
         settings.delete();
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @return validation errors
+     */
+    protected ValidationErrors getValidationErrors() {
+        return getUiValidationErrors();
+    }
+
+    protected ValidationErrors getUiValidationErrors() {
+        ValidationErrors errors = new ValidationErrors();
+
+        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
+                if (validatable.isValidateOnCommit()) {
+                    try {
+                        validatable.validate();
+                    } catch (ValidationException e) {
+                        Logger log = LoggerFactory.getLogger(Screen.class);
+
+                        if (log.isTraceEnabled()) {
+                            log.trace("Validation failed", e);
+                        } else if (log.isDebugEnabled()) {
+                            log.debug("Validation failed: " + e);
+                        }
+
+                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                    }
+                }
+            }
+        }
+        return errors;
+    }
+
+    /**
+     * Show validation errors alert. Can be overridden in subclasses.
+     *
+     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
+     */
+    protected void showValidationErrors(ValidationErrors errors) {
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            buffer.append(error.description).append("\n");
+        }
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        String validationNotificationType = clientConfig.getValidationNotificationType();
+        if (validationNotificationType.endsWith("_HTML")) {
+            // HTML validation notification types are not supported
+            validationNotificationType = validationNotificationType.replace("_HTML", "");
+        }
+
+        Messages messages = getBeanLocator().get(Messages.NAME);
+        Notifications notifications = getScreenContext().getNotifications();
+
+        notifications.create()
+                .setType(NotificationType.valueOf(validationNotificationType))
+                .setCaption(messages.getMainMessage("validationFail.caption"))
+                .setDescription(buffer.toString())
+                .show();
+    }
+
+    protected void focusProblemComponent(ValidationErrors errors) {
+        com.haulmont.cuba.gui.components.Component component = null;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().get(0).component;
+        }
+        if (component != null) {
+            ComponentsHelper.focusComponent(component);
+        }
     }
 }

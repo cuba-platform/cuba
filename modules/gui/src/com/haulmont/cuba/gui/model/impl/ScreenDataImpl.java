@@ -56,7 +56,7 @@ public class ScreenDataImpl implements ScreenData {
     public <T extends InstanceContainer> T getContainer(String id) {
         T container = (T) containers.get(id);
         if (container == null) {
-            throw new IllegalArgumentException("Container '" + id + "' not found");
+            throw new IllegalArgumentException(String.format("Container '%s' not found", id));
         }
         return container;
     }
@@ -66,7 +66,7 @@ public class ScreenDataImpl implements ScreenData {
     public <T extends DataLoader> T getLoader(String id) {
         T loader = (T) loaders.get(id);
         if (loader == null) {
-            throw new IllegalArgumentException("Loader '" + id + "' not found");
+            throw new IllegalArgumentException(String.format("Loader '%s' not found", id));
         }
         return loader;
     }

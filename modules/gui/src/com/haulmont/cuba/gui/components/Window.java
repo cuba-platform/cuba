@@ -308,6 +308,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Represents a window that can be committed on close.
      * <br>
+     * todo support in AbstractWindow
      * Implement this interface in controller if you want to support saving uncommitted changes on window close.
      * {@link AbstractEditor} already implements it.
      */
@@ -325,49 +326,14 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     * Represents an edit screen.
+     * Only for compatibility with old screens.
      */
-    interface Editor extends Committable {
-
-        /**
-         * Name that is used to register a client type specific screen implementation in
-         * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
-         */
-        String NAME = "window.editor";
-
-        /**
-         * Name of action that commits changes.
-         * <br> If the screen doesn't contain a component with {@link #WINDOW_COMMIT_AND_CLOSE} ID, this action also
-         * closes the screen after commit.
-         */
-        String WINDOW_COMMIT = "windowCommit";
-
-        /**
-         * Name of action that commits changes and closes the screen.
-         */
-        String WINDOW_COMMIT_AND_CLOSE = "windowCommitAndClose";
-
-        /**
-         * Name of action that closes the screen.
-         */
-        String WINDOW_CLOSE = "windowClose";
-
+    @Deprecated
+    interface Editor<T extends Entity> extends EditorScreen<T>, Window.Committable {
         /**
          * @return currently edited entity instance
          */
-        Entity getItem();
-
-        /**
-         * @return parent datasource if it is set
-         */
-        @Nullable
-        Datasource getParentDs();
-
-        /**
-         * This method is called by the framework to set parent datasource to commit into this datasource instead
-         * of directly to the database.
-         */
-        void setParentDs(Datasource parentDs);
+        T getItem();
 
         /**
          * Called by the framework to set an edited entity after creation of all components and datasources, and
@@ -393,26 +359,26 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         boolean commit(boolean validate);
 
         /**
-         * Called by the framework to validate, commit and close the screen if commit was successful.
-         * <br> Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s.
+         * @return parent datasource if it is set
          */
-        @Override
-        void commitAndClose();
+        @Nullable
+        Datasource getParentDs();
 
         /**
-         * @return true if the edited item has been pessimistically locked when the screen is opened
+         * This method is called by the framework to set parent datasource to commit into this datasource instead
+         * of directly to the database.
          */
-        boolean isLocked();
+        void setParentDs(Datasource parentDs);
 
         /**
-         * @return true if Editor will perform additional validation on {@link #validateAll()}
+         * @return true if Editor will perform additional validation on {@link Window#validateAll()}
          * call using {@link com.haulmont.cuba.core.global.BeanValidation}.
          * @see com.haulmont.cuba.core.global.BeanValidation
          */
         boolean isCrossFieldValidate();
 
         /**
-         * Enable/disable cross field validation on {@link #validateAll()} call. <br>
+         * Enable/disable cross field validation on {@link Window#validateAll()} call. <br>
          * Cross field validation is triggered for item of main datasource with {@link UiCrossFieldChecks} group only
          * (without {@link javax.validation.groups.Default} group) when there are no other validation errors in UI components. <br>
          * <p>
@@ -428,6 +394,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Represents a lookup screen.
      */
     interface Lookup {
+
+        String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
+        String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
+        String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
+        String LOOKUP_CANCEL_ACTION_ID = "lookupCancelAction";
 
         /**
          * Name that is used to register a client type specific screen implementation in
@@ -483,6 +454,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * {@link LegacyFrame#openLookup} methods or set directly in
          * the screen instance via {@link #setLookupHandler}.
          */
+        // todo replace with typed API
         interface Handler {
             /**
              * Called upon selection.
@@ -497,6 +469,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * {@link Handler#handleLookup(java.util.Collection)} method.
          * <br> Implementations of this interface must be set in the screen instance via {@link #setLookupValidator}.
          */
+        // todo replace with typed API
         interface Validator {
             /**
              * Called upon selection.

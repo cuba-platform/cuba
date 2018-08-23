@@ -16,42 +16,115 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.collect.Iterables;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.LockService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.events.InitEvent;
+import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import javax.validation.ConstraintViolation;
+import javax.validation.ElementKind;
+import javax.validation.Path;
+import javax.validation.Validator;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Base class for edit screen controllers.
  */
-public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor {
+public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor<T> {
 
     protected boolean showSaveNotification = true;
 
+    protected boolean readOnly = false;
+    protected boolean justLocked = false;
+    protected boolean crossFieldValidate = false;
+
+    protected boolean commitActionPerformed = false;
+
     public AbstractEditor() {
+        addInitListener(this::initCommitActions);
+    }
+
+    protected void initCommitActions(@SuppressWarnings("unused") InitEvent event) {
+        Component commitAndCloseButton =
+                ComponentsHelper.findComponent(getFrame(), WINDOW_COMMIT_AND_CLOSE);
+
+        Configuration configuration = getBeanLocator().get(Configuration.NAME);
+
+        boolean commitAndCloseButtonExists = false;
+        String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
+        if (commitAndCloseButton != null) {
+            commitAndCloseButtonExists = true;
+
+            getFrame().addAction(
+                    new BaseAction(WINDOW_COMMIT_AND_CLOSE)
+                            .withCaption(messages.getMainMessage("actions.OkClose"))
+                            .withPrimary(true)
+                            .withShortcut(commitShortcut)
+                            .withHandler(e -> commitAndClose()));
+        }
+
+        boolean finalCommitAndCloseButtonExists = commitAndCloseButtonExists;
+
+        Action commitAction = new BaseAction(WINDOW_COMMIT)
+                .withCaption(messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok"))
+                .withPrimary(!commitAndCloseButtonExists)
+                .withShortcut(commitAndCloseButtonExists ? null : commitShortcut)
+                .withHandler(e -> {
+                    if (!finalCommitAndCloseButtonExists) {
+                        commitAndClose();
+                    } else {
+                        if (commit()) {
+                            commitActionPerformed = true;
+                        }
+                    }
+                });
+        getFrame().addAction(commitAction);
+
+        Action closeAction = new BaseAction(WINDOW_CLOSE)
+                .withCaption(messages.getMainMessage("actions.Cancel"))
+                .withHandler(e ->
+                        close(commitActionPerformed ? Window.COMMIT_ACTION_ID : getId())
+                );
+
+        getFrame().addAction(closeAction);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T getItem() {
-        return (T) ((Editor) frame).getItem();
+        return (T) getDatasourceInternal().getItem();
     }
 
     @Nullable
     @Override
     public Datasource getParentDs() {
-        return ((Editor) frame).getParentDs();
-    }
-
-    @Override
-    public void setParentDs(Datasource parentDs) {
-        ((Editor) frame).setParentDs(parentDs);
+        Datasource ds = getDatasourceInternal();
+        return ((DatasourceImplementation) ds).getParent();
     }
 
     /**
@@ -61,17 +134,183 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * and {@link #postInit()} instead.</p>
      * @param item  entity instance
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void setItem(Entity item) {
         if (PersistenceHelper.isNew(item)) {
-            DatasourceImplementation parentDs = (DatasourceImplementation) ((Editor) frame).getParentDs();
+            DatasourceImplementation parentDs = (DatasourceImplementation) getParentDs();
             if (parentDs == null || !parentDs.getItemsToCreate().contains(item)) {
-                //noinspection unchecked
                 initNewItem((T) item);
             }
         }
-        ((Editor) frame).setItem(item);
+
+        setItemInternal(item);
+
         postInit();
+    }
+
+    protected Datasource getDatasourceInternal() {
+        Datasource ds = null;
+        Element element = ((Component.HasXmlDescriptor) getFrame()).getXmlDescriptor();
+        String datasourceName = element.attributeValue("datasource");
+        if (!StringUtils.isEmpty(datasourceName)) {
+            DsContext context = getDsContext();
+            if (context != null) {
+                ds = context.get(datasourceName);
+            }
+        }
+
+        if (ds == null) {
+            throw new GuiDevelopmentException("Can't find main datasource", getFrame().getId());
+        }
+
+        return ds;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void setItemInternal(Entity item) {
+        Datasource ds = getDatasourceInternal();
+        DataSupplier dataservice = ds.getDataSupplier();
+
+        DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
+
+        DynamicAttributesGuiTools dynamicAttributesGuiTools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
+        if (dynamicAttributesGuiTools.screenContainsDynamicAttributes(ds.getView(), getFrame().getId())) {
+            ds.setLoadDynamicAttributes(true);
+        }
+
+        Class<? extends Entity> entityClass = item.getClass();
+        Object entityId = item.getId();
+
+        EntityStates entityStates = getBeanLocator().get(EntityStates.class);
+
+        if (parentDs != null) {
+            if (!PersistenceHelper.isNew(item)
+                    && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
+                    && parentDs instanceof CollectionDatasource
+                    && ((CollectionDatasource) parentDs).containsItem(item.getId())
+                    && !entityStates.isLoadedWithView(item, ds.getView())) {
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
+                if (parentDs instanceof CollectionPropertyDatasourceImpl) {
+                    ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                } else {
+                    ((CollectionDatasource) parentDs).updateItem(item);
+                }
+            }
+            item = EntityCopyUtils.copyCompositions(item);
+            handlePreviouslyDeletedCompositionItems(item, parentDs);
+        } else if (!PersistenceHelper.isNew(item)) {
+            item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
+        }
+
+        if (item == null) {
+            throw new EntityAccessException(entityClass, entityId);
+        }
+
+        if (PersistenceHelper.isNew(item)
+                && !ds.getMetaClass().equals(item.getMetaClass())) {
+            Entity newItem = ds.getDataSupplier().newInstance(ds.getMetaClass());
+            MetadataTools metadataTools = getBeanLocator().get(MetadataTools.NAME);
+            metadataTools.copy(item, newItem);
+            item = newItem;
+        }
+
+        if (ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
+            if (PersistenceHelper.isNew(item)) {
+                dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item, item.getMetaClass());
+            }
+            if (item instanceof Categorized) {
+                dynamicAttributesGuiTools.listenCategoryChanges(ds);
+            }
+        }
+
+        ds.setItem(item);
+
+        if (PersistenceHelper.isNew(item)) {
+            // The new item may contain references which were created in initNewItem() and are also new. Below we
+            // make sure that they will be saved on commit.
+            for (Datasource datasource : ds.getDsContext().getAll()) {
+                if (datasource instanceof NestedDatasource && ((NestedDatasource) datasource).getMaster() == ds) {
+                    if (datasource.getItem() != null && PersistenceHelper.isNew(datasource.getItem()))
+                        ((DatasourceImplementation) datasource).modified(datasource.getItem());
+                }
+            }
+        }
+
+        ((DatasourceImplementation) ds).setModified(false);
+
+        Security security = getBeanLocator().get(Security.NAME);
+        if (!PersistenceHelper.isNew(item) && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+            readOnly = false;
+
+            LockService lockService = getBeanLocator().get(LockService.NAME);
+
+            LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
+            if (lockInfo == null) {
+                justLocked = true;
+            } else if (!(lockInfo instanceof LockNotSupported)) {
+                UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.NAME);
+
+                getFrame().getWindowManager().showNotification(
+                        messages.getMainMessage("entityLocked.msg"),
+                        String.format(messages.getMainMessage("entityLocked.desc"),
+                                lockInfo.getUser().getLogin(),
+                                Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
+                        ),
+                        Frame.NotificationType.HUMANIZED
+                );
+                Action action = getFrame().getAction(WINDOW_COMMIT);
+                if (action != null)
+                    action.setEnabled(false);
+                action = getFrame().getAction(WINDOW_COMMIT_AND_CLOSE);
+                if (action != null)
+                    action.setEnabled(false);
+                readOnly = true;
+            }
+        }
+    }
+
+    /**
+     * This method is required for multi-level composition, when a user deletes records from nested editors, saves them
+     * and then reopens. When an editor is opened, we reload the item from the database, hence we need to remove
+     * nested items previously deleted by the user.
+     */
+    protected void handlePreviouslyDeletedCompositionItems(Entity entity, DatasourceImplementation parentDs) {
+        Metadata metadata = getBeanLocator().get(Metadata.NAME);
+        for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
+            if (!PersistenceHelper.isLoaded(entity, property.getName()))
+                return;
+
+            if (property.getType() == MetaProperty.Type.COMPOSITION) {
+                for (Datasource datasource : parentDs.getDsContext().getAll()) {
+                    if (datasource instanceof NestedDatasource
+                            && ((NestedDatasource) datasource).getMaster().equals(parentDs)) {
+                        Object value = entity.getValue(property.getName());
+                        if (value instanceof Collection) {
+                            Collection collection = (Collection) value;
+                            //noinspection unchecked
+                            collection.removeAll(((DatasourceImplementation) datasource).getItemsToDelete());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setParentDs(Datasource parentDs) {
+        Datasource ds = getDatasourceInternal();
+        ((DatasourceImplementation) ds).setParent(parentDs);
+    }
+
+    protected MetaClass getMetaClassForLocking(Datasource ds) {
+        Metadata metadata = getBeanLocator().get(Metadata.NAME);
+        // lock original metaClass, if any, because by convention all the configuration is based on original entities
+        MetaClass metaClass = metadata.getExtendedEntities().getOriginalMetaClass(ds.getMetaClass());
+        if (metaClass == null) {
+            metaClass = ds.getMetaClass();
+        }
+        return metaClass;
     }
 
     @Override
@@ -88,11 +327,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * Called by the framework to validate and commit changes.
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
+     *
      * @return true if commit was successful
      */
     @Override
     public boolean commit() {
-        return ((Editor) frame).commit();
+        return commit(true);
     }
 
     /**
@@ -104,7 +344,61 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      */
     @Override
     public boolean commit(boolean validate) {
-        return ((Editor) frame).commit(validate);
+        if (validate && !validateAll())
+            return false;
+
+        return commitInternal(false);
+    }
+
+    protected boolean commitInternal(boolean close) {
+        if (!preCommit())
+            return false;
+
+        boolean committed;
+        final DsContext context = getDsContext();
+        if (context != null) {
+            committed = context.commit();
+        } else {
+            DataSupplier supplier = getDataService();
+            supplier.commit(getItem());
+            committed = true;
+        }
+
+        return postCommit(committed, close);
+    }
+
+    public void validateAdditionalRules(ValidationErrors errors) {
+        // all previous validations return no errors
+        if (crossFieldValidate && errors.isEmpty()) {
+            BeanValidation beanValidation = getBeanLocator().get(BeanValidation.NAME);
+
+            Validator validator = beanValidation.getValidator();
+            Set<ConstraintViolation<Entity>> violations = validator.validate(getItem(), UiCrossFieldChecks.class);
+
+            violations.stream()
+                    .filter(violation -> {
+                        Path propertyPath = violation.getPropertyPath();
+
+                        Path.Node lastNode = Iterables.getLast(propertyPath);
+                        return lastNode.getKind() == ElementKind.BEAN;
+                    })
+                    .forEach(violation -> errors.add(violation.getMessage()));
+        }
+    }
+
+    private DataSupplier getDataService() {
+        DsContext context = getDsContext();
+        if (context == null) {
+            throw new UnsupportedOperationException();
+        } else {
+            return context.getDataSupplier();
+        }
+    }
+
+    @Override
+    protected OperationResult commitChanges() {
+        boolean committed = commit(true);
+        return committed ? OperationResult.success() : OperationResult.fail();
     }
 
     /**
@@ -119,18 +413,28 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     @Override
+    public void setEntityToEdit(T entity) {
+        setItem(entity);
+    }
+
+    @Override
+    public T getEditedEntity() {
+        return getItem();
+    }
+
+    @Override
     public boolean isLocked() {
-        return ((Editor) frame).isLocked();
+        return justLocked;
     }
 
     @Override
     public boolean isCrossFieldValidate() {
-        return ((Editor) frame).isCrossFieldValidate();
+        return crossFieldValidate;
     }
 
     @Override
     public void setCrossFieldValidate(boolean crossFieldValidate) {
-        ((Editor) frame).setCrossFieldValidate(crossFieldValidate);
+        this.crossFieldValidate = crossFieldValidate;
     }
 
     /**
@@ -183,7 +487,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         if (committed && !close) {
             if (showSaveNotification) {
                 Entity entity = getItem();
-                MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+                MetadataTools metadataTools = getBeanLocator().get(MetadataTools.class);
 
                 showNotification(
                         messages.formatMainMessage("info.EntitySave",

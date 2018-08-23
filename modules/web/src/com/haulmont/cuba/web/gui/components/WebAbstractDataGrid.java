@@ -342,9 +342,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
             LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
             publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
 
-            if (hasSubscriptions(SelectionEvent.class)) {
-                fireSelectionEvent(e);
-            }
+            fireSelectionEvent(e);
         };
     }
 
@@ -537,7 +535,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                 com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
                 if (lookupComponent != this)
                     action.actionPerform(WebAbstractDataGrid.this);
-                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
                     action.actionPerform(WebAbstractDataGrid.this);
                 }
             }
@@ -551,14 +549,14 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void setLookupSelectHandler(Runnable selectHandler) {
-        setEnterPressAction(new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
+        setEnterPressAction(new AbstractAction(Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID) {
             @Override
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 selectHandler.run();
             }
         });
 
-        setItemClickAction(new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
+        setItemClickAction(new AbstractAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID) {
             @Override
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 selectHandler.run();

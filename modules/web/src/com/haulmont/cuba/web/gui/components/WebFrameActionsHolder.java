@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.KeyCombination;
 
 import java.util.*;
 
@@ -58,10 +59,23 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         }
 
         if (action.getShortcutCombination() != null) {
-            actions.put(WebComponentsHelper.createShortcutAction(action), action);
+            actions.put(createShortcutAction(action), action);
         }
 
         actionList.add(index, action);
+    }
+
+    public com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
+        KeyCombination keyCombination = action.getShortcutCombination();
+        if (keyCombination != null) {
+            return new com.vaadin.event.ShortcutAction(
+                    action.getCaption(),
+                    keyCombination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(keyCombination.getModifiers())
+            );
+        } else {
+            return null;
+        }
     }
 
     public void removeAction(Action action) {

@@ -399,21 +399,12 @@ public class WebWindow implements Window, Component.Wrapper,
             }
         }
 
-        validateAdditionalRules(errors);
-
         return handleValidationErrors(errors);
     }
 
-    protected void validateAdditionalRules(ValidationErrors errors) {
-    }
-
     protected boolean handleValidationErrors(ValidationErrors errors) {
-//        delegate.postValidate(errors); todo
-
         if (errors.isEmpty())
             return true;
-
-//        delegate.showValidationErrors(errors); todo
 
         WebComponentsHelper.focusProblemComponent(errors);
 

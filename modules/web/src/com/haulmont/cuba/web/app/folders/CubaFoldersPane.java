@@ -46,8 +46,8 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.event.Action;
@@ -92,7 +92,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected VerticalSplitPanel vertSplit;
 
-    protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
+    protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
@@ -105,6 +105,8 @@ public class CubaFoldersPane extends VerticalLayout {
     protected FoldersService foldersService = AppBeans.get(FoldersService.NAME);
 
     protected DataService dataService = AppBeans.get(DataService.NAME);
+
+    protected IconResolver iconResolver = AppBeans.get(IconResolver.NAME);
 
     protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
 
@@ -549,12 +551,12 @@ public class CubaFoldersPane extends VerticalLayout {
             if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
-                        tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/set-small.png"));
+                        tree.setItemIcon(folder, iconResolver.getIconResource("icons/set-small.png"));
                     } else {
-                        tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/search-folder-small.png"));
+                        tree.setItemIcon(folder, iconResolver.getIconResource("icons/search-folder-small.png"));
                     }
                 } else if (folder instanceof AppFolder) {
-                    tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/app-folder-small.png"));
+                    tree.setItemIcon(folder, iconResolver.getIconResource("icons/app-folder-small.png"));
                 }
             }
         }

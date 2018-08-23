@@ -59,7 +59,7 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
         if (action != null) {
             action.actionPerform(getActionEventTarget());
         }
-        fireEvent(ClickEvent.class, new ClickEvent(this));
+        publish(ClickEvent.class, new ClickEvent(this));
         afterActionPerformed();
     }
 

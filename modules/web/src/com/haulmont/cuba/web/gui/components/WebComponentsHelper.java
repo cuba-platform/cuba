@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 
 public class WebComponentsHelper {
 
@@ -158,12 +161,12 @@ public class WebComponentsHelper {
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
         if (!isHorizontalLayout(layout)
-                && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
+                && (StringUtils.isEmpty(height) || AUTO_SIZE.equals(height) || height.endsWith("%"))) {
             component.setHeight(100, Sizeable.Unit.PERCENTAGE);
         }
 
         if (!isVerticalLayout(layout)
-                && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
+                && (StringUtils.isEmpty(width) || AUTO_SIZE.equals(width) || width.endsWith("%"))) {
             component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         }
 
@@ -190,29 +193,6 @@ public class WebComponentsHelper {
                 || (layout instanceof CubaHorizontalActionsLayout);
     }
 
-    public static Notification.Type convertNotificationType(Frame.NotificationType type) {
-        switch (type) {
-            case TRAY:
-            case TRAY_HTML:
-                return Notification.Type.TRAY_NOTIFICATION;
-            case HUMANIZED:
-            case HUMANIZED_HTML:
-                return Notification.Type.HUMANIZED_MESSAGE;
-            case WARNING:
-            case WARNING_HTML:
-                return Notification.Type.WARNING_MESSAGE;
-            case ERROR:
-            case ERROR_HTML:
-                return Notification.Type.ERROR_MESSAGE;
-            default:
-                return Notification.Type.WARNING_MESSAGE;
-        }
-    }
-
-    public static CubaButton createButton() {
-        return createButton(null);
-    }
-
     /**
      * todo rework, do not use WebButton here
      */
@@ -223,36 +203,6 @@ public class WebComponentsHelper {
                 cf.createComponent(com.haulmont.cuba.gui.components.Button.class);
         button.setIcon(icon);
         return (CubaButton) unwrap(button);
-    }
-
-    public static Frame getControllerFrame(Frame frame) {
-        if (frame instanceof AbstractFrame) {
-            return frame;
-        } else if (frame instanceof WrappedWindow) {
-            Frame wrapper = ((WrappedWindow) frame).getWrapper();
-            if (wrapper != null) {
-                return wrapper;
-            }
-        } else if (frame instanceof WrappedFrame) {
-            Frame wrapper = ((WrappedFrame) frame).getWrapper();
-            if (wrapper != null) {
-                return wrapper;
-            }
-        }
-        return getControllerFrame(frame.getFrame());
-    }
-
-    public static com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
-        KeyCombination keyCombination = action.getShortcutCombination();
-        if (keyCombination != null) {
-            return new com.vaadin.event.ShortcutAction(
-                    action.getCaption(),
-                    keyCombination.getKey().getCode(),
-                    Modifier.codes(keyCombination.getModifiers())
-            );
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -434,42 +384,14 @@ public class WebComponentsHelper {
                     ));
     }
 
+    @Deprecated
     public static void focusProblemComponent(ValidationErrors errors) {
         com.haulmont.cuba.gui.components.Component component = null;
         if (!errors.getAll().isEmpty()) {
             component = errors.getAll().get(0).component;
         }
-
         if (component != null) {
-            try {
-                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-                com.vaadin.ui.Component c = vComponent;
-                com.vaadin.ui.Component prevC = null;
-                while (c != null) {
-                    if (c instanceof com.vaadin.ui.TabSheet && !((com.vaadin.ui.TabSheet) c).getSelectedTab().equals(prevC)) {
-                        ((com.vaadin.ui.TabSheet) c).setSelectedTab(prevC);
-                        break;
-                    }
-                    if (c instanceof CubaGroupBox && !((CubaGroupBox) c).isExpanded()) {
-                        ((CubaGroupBox) c).setExpanded(true);
-                        break;
-                    }
-                    prevC = c;
-                    c = c.getParent();
-                }
-
-                // focus first up component
-                c = vComponent;
-                while (c != null) {
-                    if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
-                        break;
-                    }
-                    c = c.getParent();
-                }
-            } catch (Exception e) {
-                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Error while validation handling ", e);
-            }
+            ComponentsHelper.focusComponent(component);
         }
     }
 

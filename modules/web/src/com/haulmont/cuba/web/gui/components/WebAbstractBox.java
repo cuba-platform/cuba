@@ -157,19 +157,19 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
 
     @Override
     public void expand(Component childComponent, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(childComponent);
         WebComponentsHelper.expand(component, expandedComponent, height, width);
     }
 
     @Override
-    public void expand(Component component) {
-        expand(component, "", "");
+    public void expand(Component childComponent) {
+        component.setExpandRatio(childComponent.unwrapComposition(com.vaadin.ui.Component.class), 1);
     }
 
     @Override
     public void resetExpanded() {
         for (com.vaadin.ui.Component child : component) {
-            component.setExpandRatio(child, 0.0f);
+            component.setExpandRatio(child, 0);
         }
     }
 

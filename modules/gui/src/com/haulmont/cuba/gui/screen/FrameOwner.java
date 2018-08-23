@@ -39,6 +39,4 @@ public interface FrameOwner {
             return "{NO OPTIONS}";
         }
     };
-
-    ScreenData getScreenData();
 }

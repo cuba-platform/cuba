@@ -54,15 +54,16 @@ import java.util.Map;
 public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractWindow {
 
     @Inject
-    protected Label text;
+    protected Label<String> text;
     @Inject
     protected Label<String> progressText;
     @Inject
     protected Button cancelButton;
     @Inject
-    protected BackgroundWorker backgroundWorker;
-    @Inject
     protected ProgressBar taskProgressBar;
+
+    @Inject
+    protected BackgroundWorker backgroundWorker;
 
     protected BackgroundTaskHandler<V> taskHandler;
     protected boolean cancelAllowed = false;

@@ -21,8 +21,13 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.screen.CloseAction;
+import com.haulmont.cuba.gui.screen.StandardCloseAction;
 
 import java.util.Collection;
+
+import static com.haulmont.cuba.gui.components.Window.Lookup;
+import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
 
 /**
  * An action used in the lookup screens to select an item.
@@ -31,13 +36,17 @@ import java.util.Collection;
  */
 public class SelectAction extends AbstractAction {
 
+    public static final CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
+
     protected AbstractLookup window;
 
     public SelectAction(AbstractLookup window) {
-        super(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
+        super(Lookup.LOOKUP_SELECT_ACTION_ID);
         this.window = window;
         this.primary = true;
-        setShortcut(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCommitShortcut());
+
+        Configuration configuration = AppBeans.get(Configuration.class);
+        setShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut());
     }
 
     @Override
@@ -45,14 +54,9 @@ public class SelectAction extends AbstractAction {
         if (!validate())
             return;
 
-        LookupComponent lookupComponent = getLookupComponent();
-        Window.Lookup.Handler lookupHandler = getLookupHandler();
-
-        window.close(Window.SELECT_ACTION_ID);
-
-        Collection selected = getSelectedItems(lookupComponent);
-        removeListeners(selected);
-        lookupHandler.handleLookup(selected);
+        window.getFrameOwner()
+                .close(LOOKUP_SELECT_CLOSE_ACTION)
+                .then(this::handleSelection);
     }
 
     protected Collection getSelectedItems(LookupComponent lookupComponent) {
@@ -60,25 +64,29 @@ public class SelectAction extends AbstractAction {
     }
 
     protected boolean validate() {
-        Window.Lookup.Validator validator = window.getLookupValidator();
-        if (validator != null && !validator.validate())
+        Lookup.Validator validator = window.getLookupValidator();
+        if (validator != null && !validator.validate()) {
             return false;
+        }
         return true;
     }
 
     protected LookupComponent getLookupComponent() {
         Component lookupComponent = window.getLookupComponent();
-        if (lookupComponent == null)
+        if (lookupComponent == null) {
             throw new IllegalStateException("lookupComponent is not set");
-        if (!(lookupComponent instanceof LookupComponent))
+        }
+        if (!(lookupComponent instanceof LookupComponent)) {
             throw new UnsupportedOperationException("Unsupported lookupComponent type: " + lookupComponent.getClass());
+        }
         return (LookupComponent) lookupComponent;
     }
 
-    protected Window.Lookup.Handler getLookupHandler() {
-        Window.Lookup.Handler lookupHandler = window.getLookupHandler();
-        if (lookupHandler == null)
+    protected Lookup.Handler getLookupHandler() {
+        Lookup.Handler lookupHandler = window.getLookupHandler();
+        if (lookupHandler == null) {
             throw new DevelopmentException("Lookup.Handler was not passed to lookup window " + window.getId());
+        }
         return lookupHandler;
     }
 
@@ -89,5 +97,14 @@ public class SelectAction extends AbstractAction {
                 metadataTools.traverseAttributes((Entity) obj, (entity, property) -> entity.removeAllListeners());
             }
         }
+    }
+
+    protected void handleSelection() {
+        Lookup.Handler lookupHandler = getLookupHandler();
+        LookupComponent lookupComponent = getLookupComponent();
+
+        Collection selected = getSelectedItems(lookupComponent);
+        removeListeners(selected);
+        lookupHandler.handleLookup(selected);
     }
 }

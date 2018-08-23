@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,30 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+
 package com.haulmont.cuba.gui.components;
 
 /**
- * Component container which can expand enclosing components
+ * Utility interface for components that show only selected child.
+ *
+ * @see TabSheet
+ * @see Accordion
  */
-public interface ExpandingLayout extends ComponentContainer {
-
-    void expand(Component component);
-
-    /**
-     * @deprecated Use {@link SupportsExpandRatio#setExpandRatio(Component, float)} instead.
-     */
-    @Deprecated
-    void expand(Component component, String height, String width);
-    void resetExpanded();
-
-    boolean isExpanded(Component component);
-
-    ExpandDirection getExpandDirection();
-
-    enum ExpandDirection {
-        VERTICAL,
-        HORIZONTAL
-    }
+public interface SupportsChildrenSelection extends Component {
+    void activateChildComponent(Component childComponent);
 }

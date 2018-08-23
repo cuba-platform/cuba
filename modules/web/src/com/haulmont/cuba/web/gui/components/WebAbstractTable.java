@@ -1125,7 +1125,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                 com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
                 if (lookupComponent != this
-                        || WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID.equals(action.getId())) {
+                        || Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID.equals(action.getId())) {
                     action.actionPerform(WebAbstractTable.this);
                 }
             }
@@ -1137,12 +1137,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         Consumer<Action.ActionPerformedEvent> actionHandler = event -> selectHandler.run();
 
         setEnterPressAction(
-                new BaseAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID)
+                new BaseAction(Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID)
                         .withHandler(actionHandler)
         );
 
         setItemClickAction(
-                new BaseAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)
+                new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
                         .withHandler(actionHandler)
         );
     }

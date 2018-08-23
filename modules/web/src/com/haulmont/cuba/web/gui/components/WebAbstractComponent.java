@@ -85,10 +85,14 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         return getEventHub().subscribe(eventType, listener);
     }
 
-    protected <E> void fireEvent(Class<E> eventType, E event) {
+    protected <E> void publish(Class<E> eventType, E event) {
         if (eventHub != null) {
             eventHub.publish(eventType, event);
         }
+    }
+
+    protected boolean hasSubscriptions(Class<?> eventClass) {
+        return eventHub != null && eventHub.hasSubscriptions(eventClass);
     }
 
     @Override

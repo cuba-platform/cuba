@@ -33,7 +33,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenUtils;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -126,7 +131,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         String containerId = rowsElement.attributeValue("container");
         if (containerId != null) {
-            ScreenData screenData = context.getFrame().getFrameOwner().getScreenData();
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = ScreenUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (container instanceof CollectionContainer) {
                 collectionContainer = (CollectionContainer) container;
@@ -172,7 +178,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (collectionContainer != null) {
             addDynamicAttributes(resultComponent, metaClass, null, collectionLoader, availableColumns);
             //noinspection unchecked
-            resultComponent.setTableSource(new CollectionContainerTableSource((CollectionContainer) collectionContainer));
+            resultComponent.setTableSource(new CollectionContainerTableSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);

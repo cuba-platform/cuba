@@ -27,6 +27,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -92,10 +94,12 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
         String dataLoaderId = element.attributeValue("dataLoader");
         if (!StringUtils.isBlank(dataLoaderId)) {
-            ScreenData screenData = context.getFrame().getFrameOwner().getScreenData();
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = ScreenUtils.getScreenData(frameOwner);
             DataLoader dataLoader = screenData.getLoader(dataLoaderId);
-            if (!(dataLoader instanceof CollectionLoader))
+            if (!(dataLoader instanceof CollectionLoader)) {
                 throw new IllegalStateException(String.format("Filter cannot work with %s because it is not a CollectionLoader", dataLoaderId));
+            }
             resultComponent.setDataLoader((CollectionLoader) dataLoader);
 
         } else {
@@ -127,7 +131,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         context.addPostInitTask((context1, window) -> {
             ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
             String defaultMode = element.attributeValue("defaultMode");
-            if (defaultMode != null &&"fts".equals(defaultMode)) {
+            if ("fts".equals(defaultMode)) {
                 resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
             }
         });
