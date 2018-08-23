@@ -16,11 +16,14 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.StackTrace;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -46,6 +49,8 @@ public class EntityStates {
     @Inject
     protected MetadataTools metadataTools;
 
+    private static final Logger log = LoggerFactory.getLogger(EntityStates.class);
+
     /**
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      *
@@ -62,6 +67,11 @@ public class EntityStates {
             return BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity);
         } else if (entity instanceof AbstractNotPersistentEntity) {
             return BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) entity);
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("EntityStates.isNew is called for unsupported type '{}'. Stacktrace:\n{}",
+                        entity.getClass().getSimpleName(), StackTrace.asString());
+            }
         }
         return false;
     }
@@ -78,6 +88,11 @@ public class EntityStates {
         checkNotNullArgument(entity, "entity is null");
         if (entity instanceof BaseGenericIdEntity) {
             return BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) entity);
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("EntityStates.isManaged is called for unsupported type '{}'. Stacktrace:\n{}",
+                        entity.getClass().getSimpleName(), StackTrace.asString());
+            }
         }
         return false;
     }
@@ -95,6 +110,11 @@ public class EntityStates {
         checkNotNullArgument(entity, "entity is null");
         if (entity instanceof BaseGenericIdEntity && BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) entity)) {
             return true;
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("EntityStates.isDetached is called for unsupported type '{}'. Stacktrace:\n{}",
+                        entity.getClass().getSimpleName(), StackTrace.asString());
+            }
         }
         return false;
     }
