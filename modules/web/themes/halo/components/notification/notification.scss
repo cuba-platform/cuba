@@ -82,6 +82,11 @@
     @include animation(none);
   }
 
+  .#{$primary-stylename}.error:after {
+    margin-top: 0;
+    top: $v-unit-size/3;
+  }
+
   .c-notification-modalitycurtain {
     position: fixed;
   	top: 0;
