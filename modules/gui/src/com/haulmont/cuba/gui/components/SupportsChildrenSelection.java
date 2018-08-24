@@ -23,5 +23,7 @@ package com.haulmont.cuba.gui.components;
  * @see Accordion
  */
 public interface SupportsChildrenSelection extends Component {
-    void activateChildComponent(Component childComponent);
+    void setChildSelected(Component childComponent);
+
+    boolean isChildSelected(Component component);
 }

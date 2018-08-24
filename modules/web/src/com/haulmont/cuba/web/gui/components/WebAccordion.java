@@ -169,8 +169,13 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     }
 
     @Override
-    public void activateChildComponent(Component childComponent) {
+    public void setChildSelected(Component childComponent) {
         component.setSelectedTab(childComponent.unwrap(com.vaadin.ui.Component.class));
+    }
+
+    @Override
+    public boolean isChildSelected(Component component) {
+        return getSelectedTab().getComponent() == component;
     }
 
     protected class Tab implements Accordion.Tab {

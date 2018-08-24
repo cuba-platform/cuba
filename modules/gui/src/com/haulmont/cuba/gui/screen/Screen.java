@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.screen;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
@@ -194,7 +193,7 @@ public abstract class Screen implements FrameOwner {
 
         screenContext.getDialogs().createOptionDialog()
                 .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                .setMessage(messages.getMainMessage("saveUnsaved"))
+                .setMessage(messages.getMainMessage("closeUnsaved"))
                 .setType(MessageType.WARNING)
                 .setActions(
                         new DialogAction(DialogAction.Type.YES)
@@ -205,8 +204,9 @@ public abstract class Screen implements FrameOwner {
                                 }),
                         new DialogAction(DialogAction.Type.NO, Action.Status.PRIMARY)
                                 .withHandler(e -> {
-                                    // todo try to move focus back
-                                    // findAndFocusChildComponent();
+                                    ComponentsHelper.focusChildComponent(getWindow());
+
+                                    result.fail();
                                 })
                 )
                 .show();
@@ -242,8 +242,7 @@ public abstract class Screen implements FrameOwner {
                         new DialogAction(DialogAction.Type.CANCEL)
                                 .withIcon(null)
                                 .withHandler(e -> {
-                                    // todo try to move focus back
-                                    // findAndFocusChildComponent();
+                                    ComponentsHelper.focusChildComponent(getWindow());
 
                                     result.fail();
                                 })
@@ -459,7 +458,7 @@ public abstract class Screen implements FrameOwner {
             buffer.append(error.description).append("\n");
         }
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
+        Configuration configuration = getBeanLocator().get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         String validationNotificationType = clientConfig.getValidationNotificationType();

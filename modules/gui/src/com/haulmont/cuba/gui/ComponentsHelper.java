@@ -643,7 +643,8 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     * Focus component and activate all its parents, for instance: select Tab, expand GroupBox.
+     * Focus component (or its nearest focusable parent) and activate all its parents,
+     * for instance: select Tab, expand GroupBox.
      *
      * @param component component
      */
@@ -661,7 +662,7 @@ public abstract class ComponentsHelper {
 
             if (parent instanceof SupportsChildrenSelection
                     && previousComponent != null) {
-                ((SupportsChildrenSelection) parent).activateChildComponent(previousComponent);
+                ((SupportsChildrenSelection) parent).setChildSelected(previousComponent);
             }
 
             previousComponent = parent;
@@ -676,5 +677,45 @@ public abstract class ComponentsHelper {
         if (parent != null) {
             ((Component.Focusable) parent).focus();
         }
+    }
+
+    @Nullable
+    public static Component.Focusable focusChildComponent(ComponentContainer container) {
+         if (!container.isEnabledRecursive()) {
+             return null;
+         }
+         if (!container.isVisibleRecursive()) {
+             return null;
+         }
+
+        for (Component component : container.getOwnComponents()) {
+            if (component.isVisible()
+                && component.isEnabled()) {
+
+                boolean reachable = true;
+                if (component.getParent() instanceof SupportsChildrenSelection) {
+                    reachable = ((SupportsChildrenSelection) component.getParent()).isChildSelected(component);
+                } else if (component.getParent() instanceof Collapsable) {
+                    reachable = ((Collapsable) component.getParent()).isExpanded();
+                }
+
+                if (reachable) {
+                    if (component instanceof Component.Focusable) {
+                        Component.Focusable focusable = (Component.Focusable) component;
+
+                        focusable.focus();
+                        return focusable;
+                    }
+
+                    if (component instanceof ComponentContainer) {
+                        Component.Focusable focused = focusChildComponent((ComponentContainer) component);
+                        if (focused != null) {
+                            return focused;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
