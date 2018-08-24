@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
+import com.haulmont.cuba.core.sys.jpql.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.NoJpqlEntityModel;
@@ -129,16 +129,16 @@ public class HintProvider {
     }
 
     private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) throws RecognitionException {
-        QueryTreeAnalyzer queryAnalyzer = new QueryTreeAnalyzer();
+        QueryTree queryTree = null;
         try {
-            queryAnalyzer.prepare(model, input, false);
-        } catch (RecognitionException | JPA2RecognitionException e) {
+            queryTree = new QueryTree(model, input, false);
+        } catch (JPA2RecognitionException e) {
             List<String> errorMessages = new ArrayList<>();
             errorMessages.add(e.getMessage());
             return new HintResponse("Query error", errorMessages);
         }
-        List<ErrorRec> errorRecs = queryAnalyzer.getInvalidIdVarNodes();
-        QueryVariableContext root = queryAnalyzer.getRootQueryVariableContext();
+        List<ErrorRec> errorRecs = queryTree.getInvalidIdVarNodes();
+        QueryVariableContext root = queryTree.getQueryVariableContext();
         if (root == null) {
             List<String> errorMessages = prepareErrorMessages(errorRecs);
             errorMessages.add(0, "Query variable context is null");

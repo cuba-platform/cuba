@@ -4,10 +4,8 @@ package com.haulmont.cuba.core.sys.jpql.antlr2;
 
 
 
+import com.haulmont.cuba.core.sys.jpql.JPA2RecognitionException;
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 @SuppressWarnings("all")
 public class JPA2Lexer extends Lexer {

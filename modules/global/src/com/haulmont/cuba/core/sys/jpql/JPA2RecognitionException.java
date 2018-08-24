@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.jpql.antlr2;
+package com.haulmont.cuba.core.sys.jpql;
 
 public class JPA2RecognitionException extends RuntimeException {
     public JPA2RecognitionException(String message) {
         super(message);
+    }
+
+    public JPA2RecognitionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

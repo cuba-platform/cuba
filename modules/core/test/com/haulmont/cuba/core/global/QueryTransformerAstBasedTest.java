@@ -509,7 +509,7 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
-    public void getResult_noChangesMade_join_fetch() throws RecognitionException {
+    public void getResult_noChangesMade_join_fetch() {
         DomainModel model = prepareDomainModel();
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
@@ -518,6 +518,19 @@ public class QueryTransformerAstBasedTest {
         String res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h join fetch h.parent.constraints where h.userGroup = :par",
+                res);
+    }
+
+    @Test
+    public void testAddJoinWithSameAlias() {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h join h.parent p"
+        );
+        transformer.addJoinAndWhere("h.parent p", "p.createdBy = :createdBy");
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p where p.createdBy = :createdBy",
                 res);
     }
 

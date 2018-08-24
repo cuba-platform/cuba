@@ -26,7 +26,11 @@ public class NodesFinder<T> implements TreeVisitorAction {
     protected Class<T> nodeClassToFind;
     protected List<T> foundNodes = new ArrayList<>();
 
-    public NodesFinder(Class<T> nodeClassToFind) {
+    public static <T> NodesFinder<T> of(Class<T> clazz) {
+        return new NodesFinder<>(clazz);
+    }
+
+    private NodesFinder(Class<T> nodeClassToFind) {
         this.nodeClassToFind = nodeClassToFind;
     }
 
