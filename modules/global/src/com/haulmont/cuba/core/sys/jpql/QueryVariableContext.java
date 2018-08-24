@@ -84,13 +84,14 @@ public class QueryVariableContext {
      */
     public void addEntityVariable(String variableName, JpqlEntityModel entity) {
         if (variableName == null) {
-            throw new NullPointerException("No entity variable name passed");
+            throw new JPA2RecognitionException("No entity variable name passed");
         }
         if (entity == null) {
-            throw new NullPointerException("No entity passed");
+            throw new JPA2RecognitionException("No entity passed");
         }
         if (entityVariableName2entity.containsKey(variableName))
-            throw new IllegalArgumentException(String.format("Trying to rebind variable [%s]", variableName));
+            throw new JPA2RecognitionException(
+                    String.format("The identification variable '%s' cannot be declared more than once", variableName));
         
         entityVariableName2entity.put(variableName, entity);
     }

@@ -19,8 +19,8 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.InferredType;
-import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModelImpl;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
@@ -798,11 +798,8 @@ public class HintProviderTest {
         DomainModel model = new DomainModel(car, driver);
 
         HintProvider hintProvider = createTestHintProvider(model);
-        try {
-            hintProvider.requestHint("select a.~ from Car a, in(a.drivers) a where a.model = ?1");
-            Assert.fail();
-        } catch (IllegalArgumentException ignored) {
-        }
+        HintResponse hintResponse = hintProvider.requestHint("select a.~ from Car a, in(a.drivers) a where a.model = ?1");
+        Assert.assertNotNull(hintResponse.getErrorMessage());
     }
 
     @Test

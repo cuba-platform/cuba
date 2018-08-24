@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.Parser;
+import com.haulmont.cuba.core.sys.jpql.QueryTree;
 import com.haulmont.cuba.core.sys.jpql.TreeToQuery;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
@@ -40,23 +41,23 @@ public class QueryAnalyzerTest {
     public void testTree() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
         String query = "select f from sec$SearchFolder f " +
                 "left join f.user u " +
                 "left join f.presentation p " +
                 "where (f.user.id = ?1 or f.user is null) " +
                 "order by f.sortOrder, f.name";
-        qa.prepare(model, query);
+        QueryTree queryTree = new QueryTree(model, query);
     }
 
     @Test
     public void mixinJoinIntoTree() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select c from Car c");
 
-        CommonTree tree = qa.getTree();
+        QueryTree queryTree = new QueryTree(model, "select c from Car c");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
+
+        CommonTree tree = queryTree.getAstTree();
         CommonTree sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(1, sources.getChildCount());
         assertTrue(sources.getChild(0) instanceof SelectionSourceNode);
@@ -66,7 +67,7 @@ public class QueryAnalyzerTest {
         JoinVariableNode join = Parser.parseJoinClause("join a.drivers d").get(0);
         qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
 
-        tree = qa.getTree();
+        tree = queryTree.getAstTree();
         sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(1, sources.getChildCount());
         SelectionSourceNode sourceNode = (SelectionSourceNode) sources.getChild(0);
@@ -82,10 +83,10 @@ public class QueryAnalyzerTest {
     public void mixinJoinOnIntoTree() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select c from Car c");
+        QueryTree queryTree = new QueryTree(model, "select c from Car c");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         CommonTree sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(1, sources.getChildCount());
         assertTrue(sources.getChild(0) instanceof SelectionSourceNode);
@@ -95,7 +96,7 @@ public class QueryAnalyzerTest {
         JoinVariableNode join = Parser.parseJoinClause("join Driver d on d.car.id = c.id").get(0);
         qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
 
-        tree = qa.getTree();
+        tree = queryTree.getAstTree();
         sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(1, sources.getChildCount());
         SelectionSourceNode sourceNode = (SelectionSourceNode) sources.getChild(0);
@@ -132,10 +133,10 @@ public class QueryAnalyzerTest {
 
         JoinVariableNode join = Parser.parseJoinClause("join c.station h").get(0);
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select d.name from Car c, in(c.drivers) d");
+        QueryTree queryTree = new QueryTree(model, "select d.name from Car c, in(c.drivers) d");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         CommonTree sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(2, sources.getChildCount());
 
@@ -150,7 +151,7 @@ public class QueryAnalyzerTest {
 
         qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
 
-        tree = qa.getTree();
+        tree = queryTree.getAstTree();
         sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         assertEquals(2, sources.getChildCount());
         assertTrue(sources.getChild(0) instanceof SelectionSourceNode);
@@ -169,17 +170,17 @@ public class QueryAnalyzerTest {
     public void mixinWhereConditionsIntoTree() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select c from Car c");
+        QueryTree queryTree = new QueryTree(model, "select c from Car c");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
         WhereNode where = (WhereNode) Parser.parseWhereClause("where c.model = ?1");
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         assertNull(tree.getFirstChildWithType(JPA2Lexer.T_CONDITION));
 
         qa.mixinWhereConditionsIntoTree(where);
 
-        tree = qa.getTree();
+        tree = queryTree.getAstTree();
         assertNotNull(tree.getFirstChildWithType(JPA2Lexer.T_CONDITION));
     }
 
@@ -187,10 +188,10 @@ public class QueryAnalyzerTest {
     public void replaceOrderBy() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select c from Car c order by c.model");
+        QueryTree queryTree = new QueryTree(model, "select c from Car c order by c.model");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         CommonTree orderByNode = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
         Tree orderByField = orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD);
         assertEquals(1, orderByField.getChildCount());
@@ -215,10 +216,10 @@ public class QueryAnalyzerTest {
     public void replaceWithCount() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select c from Car c order by c.model");
+        QueryTree queryTree = new QueryTree(model, "select c from Car c order by c.model");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         CommonTree selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         Tree selectedItem = selectedItems.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEM);
         PathNode pathNode = (PathNode) selectedItem.getChild(0);
@@ -228,7 +229,7 @@ public class QueryAnalyzerTest {
 
         assertNotNull(orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD));
 
-        qa.replaceWithCount(new VariableEntityReference("Car", "c"));
+        qa.replaceWithCount(new VariableEntityReference("Car", "c").createNode());
 
         assertTrue(selectedItem.getChild(0) instanceof AggregateExpressionNode);
         AggregateExpressionNode countExpr = (AggregateExpressionNode) selectedItem.getChild(0);
@@ -243,10 +244,10 @@ public class QueryAnalyzerTest {
     public void replaceWithCount_distinct() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
-        QueryTreeTransformer qa = new QueryTreeTransformer();
-        qa.prepare(model, "select distinct d from Car c, in(c.drivers) d order by d.name");
+        QueryTree queryTree = new QueryTree(model, "select distinct d from Car c, in(c.drivers) d order by d.name");
+        QueryTreeTransformer qa = new QueryTreeTransformer(queryTree);
 
-        CommonTree tree = qa.getTree();
+        CommonTree tree = queryTree.getAstTree();
         CommonTree selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         Tree selectedItem = selectedItems.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEM);
         PathNode pathNode = (PathNode) selectedItem.getChild(0);
@@ -256,7 +257,7 @@ public class QueryAnalyzerTest {
 
         assertNotNull(orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD));
 
-        qa.replaceWithCount(new VariableEntityReference("Driver", "d"));
+        qa.replaceWithCount(new VariableEntityReference("Driver", "d").createNode());
 
         selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         assertEquals(1, selectedItems.getChildCount());

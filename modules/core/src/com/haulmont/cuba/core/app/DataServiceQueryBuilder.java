@@ -187,7 +187,7 @@ public class DataServiceQueryBuilder {
         boolean constraintsApplied = security.applyConstraints(query);
         if (constraintsApplied && singleResult) {
             QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
-            if (parser.hasJoins()) {
+            if (parser.isQueryWithJoins()) {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(query.getQueryString());
                 transformer.addDistinct();
                 query.setQueryString(transformer.getResult());

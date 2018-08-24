@@ -56,7 +56,7 @@ public interface QueryParser {
     /**
      * Returns true if SELECT query contains joins
      */
-    boolean hasJoins();
+    boolean isQueryWithJoins();
 
     /**
      * @return Entity name if not main entity name is returned, otherwise null

@@ -136,7 +136,7 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
-    public boolean hasJoins() {
+    public boolean isQueryWithJoins() {
         return false;
     }
 

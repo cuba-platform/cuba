@@ -18,27 +18,18 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
-import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
+import com.haulmont.cuba.core.sys.jpql.transform.NodesFinder;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.Tree;
-import org.antlr.runtime.tree.TreeVisitor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.String.format;
 
@@ -48,7 +39,8 @@ import static java.lang.String.format;
 public class QueryParserAstBased implements QueryParser {
     protected DomainModel model;
     protected String query;
-    protected QueryTreeAnalyzer queryTreeAnalyzer;
+    protected QueryTree queryTree;
+    protected QueryTreeAnalyzer queryAnalyzer;
 
     protected class EntityNameAndPath {
 
@@ -72,172 +64,141 @@ public class QueryParserAstBased implements QueryParser {
         this.query = query;
     }
 
-    private QueryTreeAnalyzer getQueryAnalyzer() {
-        if (queryTreeAnalyzer == null) {
-            queryTreeAnalyzer = new QueryTreeAnalyzer();
+    protected QueryTree getTree() {
+        if (queryTree == null) {
             try {
-                queryTreeAnalyzer.prepare(model, query);
-            } catch (RecognitionException e) {
-                throw new RuntimeException("Internal error while init queryTreeAnalyzer", e);
+                queryTree = new QueryTree(model, query);
             } catch (JPA2RecognitionException e) {
-                throw new JpqlSyntaxException(format("Errors found for input jpql:[%s]\n%s", StringUtils.strip(query), e.getMessage()));
+                throw new JpqlSyntaxException(format("Errors found for input JPQL:[%s]\n%s", StringUtils.strip(query), e.getMessage()));
             }
-            List<ErrorRec> errors = new ArrayList<>(queryTreeAnalyzer.getInvalidIdVarNodes());
+            List<ErrorRec> errors = new ArrayList<>(queryTree.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {
-                throw new JpqlSyntaxException(format("Errors found for input jpql:[%s]", StringUtils.strip(query)), errors);
+                throw new JpqlSyntaxException(format("Errors found for input JPQL:[%s]", StringUtils.strip(query)), errors);
             }
         }
-        return queryTreeAnalyzer;
+        return queryTree;
+    }
+
+    protected QueryTreeAnalyzer getAnalyzer() {
+        if (queryAnalyzer == null) {
+            queryAnalyzer = new QueryTreeAnalyzer(getTree());
+        }
+        return queryAnalyzer;
     }
 
     @Override
     public Set<String> getParamNames() {
-        TreeVisitor visitor = new TreeVisitor();
-        ParameterCounter parameterCounter = new ParameterCounter(true);
-        visitor.visit(getQueryAnalyzer().getTree(), parameterCounter);
-        return parameterCounter.getParameterNames();
+        return getAnalyzer().getParamNames();
     }
 
     @Override
     public Set<String> getAllEntityNames() {
-        TreeVisitor visitor = new TreeVisitor();
-        EntitiesFinder finder = new EntitiesFinder();
-        visitor.visit(getQueryAnalyzer().getTree(), finder);
-        return finder.resolveEntityNames(model, getQueryAnalyzer().getRootQueryVariableContext());
+        return getAnalyzer().getEntityNames();
     }
 
     @Override
     public String getEntityName() {
-        IdentificationVariableNode mainEntityIdentification = getQueryAnalyzer().getMainEntityIdentification();
-        if (mainEntityIdentification != null) {
-            return mainEntityIdentification.getEntityNameFromQuery();
-        }
-        throw new RuntimeException(format("Unable to find entity name [%s]", StringUtils.strip(query)));
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        return getAnalyzer().getMainEntityName(identificationVariable);
     }
 
     @Override
-    public String getEntityAlias(String targetEntity) {
-        return getQueryAnalyzer().getRootEntityVariableName(targetEntity);
+    public String getEntityAlias(String entityType) {
+        return getTree().getVariableNameByEntity(entityType);
     }
 
     @Override
     public String getEntityAlias() {
-        IdentificationVariableNode mainEntityIdentification = getQueryAnalyzer().getMainEntityIdentification();
-        if (mainEntityIdentification != null) {
-            return mainEntityIdentification.getVariableName();
-        }
-        throw new RuntimeException(format("Unable to find entity alias [%s]", StringUtils.strip(query)));
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        return getAnalyzer().getMainEntityVariable(identificationVariable);
     }
 
     @Override
     public boolean isEntitySelect(String targetEntity) {
-        List<PathNode> returnedPathNodes = getQueryAnalyzer().getReturnedPathNodes();
-        if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
-            return false;
-        }
-
-        PathNode pathNode = returnedPathNodes.get(0);
-        String targetEntityAlias = getQueryAnalyzer().getRootEntityVariableName(targetEntity);
-        return targetEntityAlias.equals(pathNode.getEntityVariableName())
-                && CollectionUtils.isEmpty(pathNode.getChildren());
-    }
-
-    @Override
-    public boolean hasIsNullCondition(String attribute) {
-        List<SimpleConditionNode> allConditions = getQueryAnalyzer().findAllConditionsForMainEntityAttribute(attribute);
-        for (SimpleConditionNode allCondition : allConditions) {
-            List<?> children = allCondition.getChildren();
-            for (int i = 0; i < children.size(); i++) {
-                Object child = children.get(i);
-                if (i < children.size() - 1
-                        && child.toString().equalsIgnoreCase("is")
-                        && children.get(i + 1).toString().equalsIgnoreCase("null")) {
-                    return true;
-                }
-
-
-            }
+        PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        if (pathNode != null && identificationVariable != null) {
+            return queryAnalyzer.isVariablePathNode(pathNode)
+                    && StringUtils.equalsIgnoreCase(identificationVariable.getVariableName(), pathNode.getEntityVariableName())
+                    && Objects.equals(identificationVariable.getEntityNameFromQuery(), targetEntity);
         }
         return false;
     }
 
     @Override
-    public boolean hasJoins() {
-        return getQueryAnalyzer().hasJoins();
+    public boolean hasIsNullCondition(String attribute) {
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        if (identificationVariable != null) {
+            String variableName = identificationVariable.getVariableName();
+            return queryTree.visit(NodesFinder.of(SimpleConditionNode.class)).getFoundNodes().stream()
+                    .filter(condition -> getAnalyzer().isConditionForEntityProperty(condition, variableName, attribute))
+                    .anyMatch(condition -> getAnalyzer().isConditionISNULL(condition));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isQueryWithJoins() {
+        return getAnalyzer().isQueryWithJoins();
     }
 
     @Override
     public String getOriginalEntityName() {
-        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        EntityNameAndPath entityNameAndAlias = getOriginEntityNameAndPath();
         return entityNameAndAlias != null ? entityNameAndAlias.entityName : null;
     }
 
     @Override
     public String getOriginalEntityPath() {
-        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        EntityNameAndPath entityNameAndAlias = getOriginEntityNameAndPath();
         return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
     }
 
     @Override
     public boolean isParameterInCondition(String parameterName) {
-        List<SimpleConditionNode> conditions = getQueryAnalyzer().findConditionsForParameter(parameterName);
-        for (SimpleConditionNode condition : conditions) {
-            Tree inToken = condition.getFirstChildWithType(JPA2Lexer.IN);
-            if (inToken != null) {
-                return true;
-            }
-        }
-        return false;
+        return getAnalyzer().getConditions().stream()
+                .filter(condition -> getAnalyzer().isConditionForParameter(condition, parameterName))
+                .anyMatch(condition -> getAnalyzer().isConditionIN(condition));
     }
 
     @Override
     public boolean isCollectionOriginalEntitySelect() {
-        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        EntityNameAndPath entityNameAndAlias = getOriginEntityNameAndPath();
         return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
     }
 
     @Override
     public List<QueryPath> getQueryPaths() {
         List<QueryPath> queryPaths = new ArrayList<>();
-        QueryVariableContext context = getQueryAnalyzer().getRootQueryVariableContext();
-        TreeVisitor visitor = new TreeVisitor();
-        PathNodeFinder finder = new PathNodeFinder();
-        visitor.visit(getQueryAnalyzer().getTree(), finder);
+        QueryVariableContext variableContext = getTree().getQueryVariableContext();
+        PathNodeFinder finder = getTree().visit(new PathNodeFinder());
         for (PathNode node : finder.getSelectedPathNodes()) {
-            JpqlEntityModel model = context.getEntityByVariableNameHierarchically(node.getEntityVariableName());
+            JpqlEntityModel model = variableContext.getEntityByVariableNameHierarchically(node.getEntityVariableName());
             QueryPath queryPath = new QueryPath(model.getName(), node.getEntityVariableName(), node.asPathString(), true);
             queryPaths.add(queryPath);
         }
         for (PathNode node : finder.getOtherPathNodes()) {
-            JpqlEntityModel model = context.getEntityByVariableNameHierarchically(node.getEntityVariableName());
+            JpqlEntityModel model = variableContext.getEntityByVariableNameHierarchically(node.getEntityVariableName());
             QueryPath queryPath = new QueryPath(model.getName(), node.getEntityVariableName(), node.asPathString(), false);
             queryPaths.add(queryPath);
         }
         return queryPaths;
     }
 
-    protected EntityNameAndPath getEntityNameAndPathIfSecondaryReturnedInsteadOfMain() {
-        List<PathNode> returnedPathNodes = getQueryAnalyzer().getReturnedPathNodes();
-        if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
+    protected EntityNameAndPath getOriginEntityNameAndPath() {
+        PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+
+        if (pathNode == null) {
             return null;
         }
 
-        QueryVariableContext rootQueryVariableContext = getQueryAnalyzer().getRootQueryVariableContext();
-        PathNode pathNode = returnedPathNodes.get(0);
-        if (pathNode.getChildren() == null) {
-            JpqlEntityModel entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
-            if (entity != null) {
-                if (!Objects.equals(entity.getName(), getEntityName())) {
+        QueryVariableContext variableContext = getTree().getQueryVariableContext();
+        if (queryAnalyzer.isVariablePathNode(pathNode)) {
+            JpqlEntityModel entity = variableContext.getEntityByVariableName(pathNode.getEntityVariableName());
+            if (entity != null && entity.getName() != null && identificationVariable != null) {
+                if (!StringUtils.equalsIgnoreCase(pathNode.getEntityVariableName(), identificationVariable.getVariableName())) {
                     return new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName());
-                }
-
-                //fix for scary Eclipselink which consider "select p from sec$GroupHierarchy h join h.parent p"
-                //(even if h.parent is also sec$GroupHierarchy)
-                //as report query and does not allow to set view
-                IdentificationVariableNode mainEntityIdentification = getQueryAnalyzer().getMainEntityIdentification();
-                if (mainEntityIdentification != null
-                        && !pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())) {
-                    return entity.getName() != null ? new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName()) : null;
                 }
             }
             return null;
@@ -247,7 +208,7 @@ public class QueryParserAstBased implements QueryParser {
         String entityPath;
         boolean collectionSelect = false;
         try {
-            entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
+            entity = variableContext.getEntityByVariableName(pathNode.getEntityVariableName());
             if (entity != null) {
                 entityPath = pathNode.asPathString();
 

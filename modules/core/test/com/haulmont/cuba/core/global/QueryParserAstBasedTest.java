@@ -354,17 +354,17 @@ public class QueryParserAstBasedTest {
         QueryParserAstBased parser = new QueryParserAstBased(model,
                 "select h.group from sec$Constraint u, sec$GroupHierarchy h"
         );
-        assertTrue(parser.hasJoins());
+        assertTrue(parser.isQueryWithJoins());
 
         parser = new QueryParserAstBased(model,
                 "select g.group from sec$GroupHierarchy h join h.group g"
         );
-        assertTrue(parser.hasJoins());
+        assertTrue(parser.isQueryWithJoins());
 
         parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h"
         );
-        assertFalse(parser.hasJoins());
+        assertFalse(parser.isQueryWithJoins());
     }
 
     @Test
@@ -374,6 +374,19 @@ public class QueryParserAstBasedTest {
                 "select c.int1 + c.int2 * c.int1 from sec$User u"
         );
         transformer.getParamNames();
+    }
+
+    @Test
+    public void testSameAliasSeveralTimes() {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select g.group from sec$GroupHierarchy h join h.group g join h.group g");
+        try {
+            parser.getEntityAlias();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //success
+        }
     }
 
     private DomainModel prepareDomainModel() {

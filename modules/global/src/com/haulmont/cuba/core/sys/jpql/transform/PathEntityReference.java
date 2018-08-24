@@ -54,7 +54,7 @@ public class PathEntityReference implements EntityReference {
     }
 
     @Override
-    public boolean isJoinableTo(IdentificationVariableNode node) {
+    public boolean supportsJoinTo(IdentificationVariableNode node) {
         return pathStartingEntityName.equals(node.getEffectiveEntityName()) &&
                 pathNode.getEntityVariableName().equals(node.getVariableName());
     }
