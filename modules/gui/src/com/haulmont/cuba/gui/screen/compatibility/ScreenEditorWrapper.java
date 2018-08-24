@@ -16,8 +16,13 @@
 
 package com.haulmont.cuba.gui.screen.compatibility;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
+import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.events.InitEvent;
 
 /**
  * Wrapper object for compatibility with legacy code.
@@ -30,5 +35,28 @@ public class ScreenEditorWrapper extends AbstractEditor {
         this.screen = screen;
     }
 
-    // todo
+    @Override
+    protected void initCommitActions(InitEvent event) {
+        // do nothing
+    }
+
+    @Override
+    public Frame getWrappedFrame() {
+        return screen.getWindow();
+    }
+
+    @Override
+    public void addListener(CloseListener listener) {
+        screen.addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
+
+    @Override
+    public void addCloseListener(CloseListener listener) {
+        screen.addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
+
+    @Override
+    public Entity getItem() {
+        return ((EditorScreen) screen).getEditedEntity();
+    }
 }

@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.Component.Disposable;
 import com.haulmont.cuba.gui.components.Window.BeforeCloseWithCloseButtonEvent;
 import com.haulmont.cuba.gui.components.Window.BeforeCloseWithShortcutEvent;
 import com.haulmont.cuba.gui.components.Window.HasWorkArea;
+import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
@@ -49,6 +50,8 @@ import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.screen.compatibility.ScreenEditorWrapper;
+import com.haulmont.cuba.gui.screen.compatibility.ScreenLookupWrapper;
 import com.haulmont.cuba.gui.screen.compatibility.ScreenWrapper;
 import com.haulmont.cuba.gui.screen.events.AfterInitEvent;
 import com.haulmont.cuba.gui.screen.events.AfterShowEvent;
@@ -588,7 +591,7 @@ public class WebScreens implements Screens, WindowManager {
         }
         editorScreen.setEntityToEdit(item);
         show(screen);
-        return (Window.Editor) screen; // todo wrapper for new Screen
+        return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
     @SuppressWarnings("unchecked")
@@ -604,7 +607,7 @@ public class WebScreens implements Screens, WindowManager {
         EditorScreen editorScreen = (EditorScreen) screen;
         editorScreen.setEntityToEdit(item);
         show(screen);
-        return (Window.Editor) screen; // todo wrapper for new Screen
+        return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
     @SuppressWarnings("unchecked")
@@ -619,7 +622,7 @@ public class WebScreens implements Screens, WindowManager {
         EditorScreen editorScreen = (EditorScreen) screen;
         editorScreen.setEntityToEdit(item);
         show(screen);
-        return (Window.Editor) screen; // todo wrapper for new Screen
+        return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
     @SuppressWarnings("unchecked")
@@ -638,18 +641,34 @@ public class WebScreens implements Screens, WindowManager {
         }
         editorScreen.setEntityToEdit(item);
         show(screen);
-        return (Window.Editor) screen; // todo wrapper for new Screen
+        return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType,
                                     Map<String, Object> params) {
-        throw new UnsupportedOperationException();
+        params = createParametersMap(windowInfo, params);
+
+        MapScreenOptions options = new MapScreenOptions(params);
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
+
+        show(screen);
+
+        return screen instanceof Window.Lookup ? (Window.Lookup) screen : new ScreenLookupWrapper(screen);
     }
 
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
-        throw new UnsupportedOperationException();
+        Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
+
+        MapScreenOptions options = new MapScreenOptions(params);
+        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
+
+        show(screen);
+
+        return screen instanceof Window.Lookup ? (Window.Lookup) screen : new ScreenLookupWrapper(screen);
     }
 
     @Override
@@ -1381,6 +1400,8 @@ public class WebScreens implements Screens, WindowManager {
         DialogWindow window = (DialogWindow) screen.getWindow();
 
         CubaWindow vWindow = window.unwrapComposition(CubaWindow.class);
+        // centered by default
+        vWindow.center();
         vWindow.setErrorHandler(ui);
         vWindow.addContextActionHandler(new DialogWindowActionHandler(window));
 

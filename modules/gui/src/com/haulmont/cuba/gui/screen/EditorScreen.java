@@ -31,12 +31,6 @@ import javax.annotation.Nullable;
  */
 public interface EditorScreen<T extends Entity> {
     /**
-     * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
-     */
-    String NAME = "window.editor";
-
-    /**
      * Name of action that commits changes.
      * <br> If the screen doesn't contain a component with {@link #WINDOW_COMMIT_AND_CLOSE} ID, this action also
      * closes the screen after commit.

@@ -17,7 +17,14 @@
 package com.haulmont.cuba.gui.screen.compatibility;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.events.InitEvent;
+
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class ScreenLookupWrapper extends AbstractLookup {
     private Screen screen;
@@ -26,5 +33,33 @@ public class ScreenLookupWrapper extends AbstractLookup {
         this.screen = screen;
     }
 
-    // todo
+    @Override
+    protected void initLookupActions(InitEvent event) {
+        // do nothing
+    }
+
+    @Override
+    public Frame getWrappedFrame() {
+        return screen.getWindow();
+    }
+
+    @Override
+    public void addListener(CloseListener listener) {
+        screen.addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
+
+    @Override
+    public void addCloseListener(CloseListener listener) {
+        screen.addAfterCloseListener(new AfterCloseListenerAdapter(listener));
+    }
+
+    @Override
+    public void setSelectValidator(Predicate lookupValidator) {
+        ((LookupScreen) screen).setSelectValidator(lookupValidator);
+    }
+
+    @Override
+    public void setSelectHandler(Consumer lookupHandler) {
+        ((LookupScreen) screen).setSelectHandler(lookupHandler);
+    }
 }

@@ -77,8 +77,6 @@
         <xs:all>
             <xs:element name="windowLoader" type="loaderType" minOccurs="0"/>
             <xs:element name="frameLoader" type="loaderType" minOccurs="0"/>
-            <xs:element name="editorLoader" type="loaderType" minOccurs="0"/>
-            <xs:element name="lookupLoader" type="loaderType" minOccurs="0"/>
         </xs:all>
     </xs:group>
 

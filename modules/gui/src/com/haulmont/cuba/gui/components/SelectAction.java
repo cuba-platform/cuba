@@ -17,17 +17,12 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.screen.CloseAction;
-import com.haulmont.cuba.gui.screen.StandardCloseAction;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 
 import java.util.Collection;
 
 import static com.haulmont.cuba.gui.components.Window.Lookup;
-import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
 
 /**
  * An action used in the lookup screens to select an item.
@@ -35,8 +30,6 @@ import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
  * This action is automatically added to a screen if it is open via the {@code openLookup()} method.
  */
 public class SelectAction extends AbstractAction {
-
-    public static final CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
 
     protected AbstractLookup window;
 
@@ -47,6 +40,9 @@ public class SelectAction extends AbstractAction {
 
         Configuration configuration = AppBeans.get(Configuration.class);
         setShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut());
+
+        Messages messages = AppBeans.get(Messages.NAME);
+        setCaption(messages.getMainMessage("actions.Select"));
     }
 
     @Override
@@ -55,7 +51,7 @@ public class SelectAction extends AbstractAction {
             return;
 
         window.getFrameOwner()
-                .close(LOOKUP_SELECT_CLOSE_ACTION)
+                .close(LookupScreen.LOOKUP_SELECT_CLOSE_ACTION)
                 .then(this::handleSelection);
     }
 

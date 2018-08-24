@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Window;
 
+@Deprecated
 public class CloseListenerAdapter implements Window.CloseListener {
 
     protected Window.CloseWithCommitListener closeWithCommitListener;

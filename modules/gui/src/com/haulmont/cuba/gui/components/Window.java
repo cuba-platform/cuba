@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
 import com.haulmont.cuba.gui.components.compatibility.CloseListenerAdapter;
+import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
+import com.haulmont.cuba.gui.components.compatibility.SelectValidatorAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -331,6 +333,13 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     @Deprecated
     interface Editor<T extends Entity> extends EditorScreen<T>, Window.Committable {
         /**
+         * Name that is used to register a client type specific screen implementation in
+         * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+         */
+        @Deprecated
+        String NAME = "window.editor";
+
+        /**
          * @return currently edited entity instance
          */
         T getItem();
@@ -393,7 +402,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Represents a lookup screen.
      */
-    interface Lookup {
+    interface Lookup<T extends Entity> extends LookupScreen<T> {
 
         String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
         String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
@@ -420,27 +429,46 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * @return current lookup handler
          */
         @Nullable
-        Handler getLookupHandler();
+        @Deprecated
+        default Handler getLookupHandler() {
+            if (getSelectHandler() == null) {
+                return null;
+            }
+
+            return ((SelectHandlerAdapter) getSelectHandler()).getHandler();
+        }
 
         /**
          * Set a lookup handler.
          *
          * @param handler handler implementation
          */
-        void setLookupHandler(Handler handler);
+        @Deprecated
+        default void setLookupHandler(Handler handler) {
+            setSelectHandler(new SelectHandlerAdapter<>(handler));
+        }
 
         /**
          * @return current lookup validator
          */
+        @Deprecated
         @Nullable
-        Validator getLookupValidator();
+        default Validator getLookupValidator() {
+            if (getSelectValidator() == null) {
+                return null;
+            }
+            return ((SelectValidatorAdapter<T>) getSelectValidator()).getValidator();
+        }
 
         /**
          * Set a lookup validator
          *
          * @param validator validator implementation
          */
-        void setLookupValidator(Validator validator);
+        @Deprecated
+        default void setLookupValidator(Validator validator) {
+            setSelectValidator(new SelectValidatorAdapter(validator));
+        }
 
         /**
          * INTERNAL.
@@ -454,7 +482,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * {@link LegacyFrame#openLookup} methods or set directly in
          * the screen instance via {@link #setLookupHandler}.
          */
-        // todo replace with typed API
         interface Handler {
             /**
              * Called upon selection.
@@ -469,7 +496,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * {@link Handler#handleLookup(java.util.Collection)} method.
          * <br> Implementations of this interface must be set in the screen instance via {@link #setLookupValidator}.
          */
-        // todo replace with typed API
         interface Validator {
             /**
              * Called upon selection.

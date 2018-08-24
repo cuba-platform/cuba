@@ -33,8 +33,6 @@ public class LayoutLoaderConfig {
 
     protected Class<? extends WindowLoader> windowLoader = WindowLoader.class;
     protected Class<? extends FrameLoader> frameLoader = FrameLoader.class;
-    protected Class<? extends WindowLoader.Editor> editorLoader = WindowLoader.Editor.class;
-    protected Class<? extends WindowLoader.Lookup> lookupLoader = WindowLoader.Lookup.class;
 
     public LayoutLoaderConfig() {
         initStandardLoaders();
@@ -133,16 +131,8 @@ public class LayoutLoaderConfig {
         return windowLoader;
     }
 
-    public Class<? extends ComponentLoader> getEditorLoader() {
-        return editorLoader;
-    }
-
     public Class<? extends ComponentLoader> getFrameLoader() {
         return frameLoader;
-    }
-
-    public Class<? extends ComponentLoader> getLookupLoader() {
-        return lookupLoader;
     }
 
     public Class<? extends ComponentLoader> getLoader(String name) {
@@ -155,14 +145,6 @@ public class LayoutLoaderConfig {
 
     public void registerFrameLoader(Class<? extends FrameLoader> loader) {
         frameLoader = loader;
-    }
-
-    public void registerEditorLoader(Class<? extends WindowLoader.Editor> loader) {
-        editorLoader = loader;
-    }
-
-    public void registerLookupLoader(Class<? extends WindowLoader.Lookup> loader) {
-        lookupLoader = loader;
     }
 
     protected void register(String tagName, Class<? extends ComponentLoader> loaderClass) {

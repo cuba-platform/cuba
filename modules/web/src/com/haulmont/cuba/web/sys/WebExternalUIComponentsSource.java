@@ -197,24 +197,14 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
 
     @SuppressWarnings("unchecked")
     protected void _loadWindowLoaders(Element rootElement) {
-        Class loader = loadWindowLoader(rootElement, WINDOW_LOADER_EL);
-        if (loader != null) {
-            layoutLoaderConfig.registerWindowLoader(loader);
+        Class windowLoader = loadWindowLoader(rootElement, WINDOW_LOADER_EL);
+        if (windowLoader != null) {
+            layoutLoaderConfig.registerWindowLoader(windowLoader);
         }
 
-        loader = loadWindowLoader(rootElement, FRAME_LOADER_EL);
-        if (loader != null) {
-            layoutLoaderConfig.registerFrameLoader(loader);
-        }
-
-        loader = loadWindowLoader(rootElement, EDITOR_LOADER_EL);
-        if (loader != null) {
-            layoutLoaderConfig.registerEditorLoader(loader);
-        }
-
-        loader = loadWindowLoader(rootElement, LOOKUP_LOADER_EL);
-        if (loader != null) {
-            layoutLoaderConfig.registerLookupLoader(loader);
+        Class frameLoader = loadWindowLoader(rootElement, FRAME_LOADER_EL);
+        if (frameLoader != null) {
+            layoutLoaderConfig.registerFrameLoader(frameLoader);
         }
     }
 
