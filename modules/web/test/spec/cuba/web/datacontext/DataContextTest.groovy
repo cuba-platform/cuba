@@ -26,6 +26,8 @@ import com.haulmont.cuba.gui.model.impl.DataContextAccessor
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.testmodel.sales.Product
+import com.haulmont.cuba.web.testmodel.sales.ProductTag
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import org.junit.ClassRule
@@ -599,6 +601,38 @@ class DataContextTest extends Specification {
         then:
 
         removed.isEmpty()
+    }
+
+    def "track many-to-many"() {
+        DataContext context = factory.createDataContext()
+
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            commit(_) >> Collections.emptySet()
+        })
+
+        Product product = new Product(name: 'p1', price: 100, tags: [])
+        makeDetached(product)
+        context.merge(product)
+
+        ProductTag tag = new ProductTag(name: 't1')
+        context.merge(tag)
+
+        when:
+
+        Collection modified = []
+
+        context.addPreCommitListener({ e->
+            modified.addAll(e.modifiedInstances)
+        })
+
+        product.tags.add(tag)
+
+        context.commit()
+
+        then:
+
+        modified.contains(product)
+        modified.contains(tag)
     }
 
     private <T> T createDetached(Class<T> entityClass) {
