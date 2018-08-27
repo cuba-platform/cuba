@@ -284,13 +284,13 @@ public class UserSessions implements UserSessionsAPI {
             if (touch) {
                 long now = timeSource.currentTimeMillis();
 
-                if (now > (usi.lastUsedTs + touchTimeout * 1000)) {
+                if (now > (usi.lastUsedTs + toMillis(touchTimeout))) {
                     usi.lastUsedTs = now;
                     putSessionInfo(id, usi);
                 }
 
                 if (propagate && !usi.session.isSystem()) {
-                    if (now > (usi.lastSentTs + sendTimeout * 1000)) {
+                    if (now > (usi.lastSentTs + toMillis(sendTimeout))) {
                         usi.lastSentTs = now;
                         clusterManager.send(usi);
                     }
@@ -398,7 +398,7 @@ public class UserSessions implements UserSessionsAPI {
         long now = timeSource.currentTimeMillis();
 
         getSessionInfoStream()
-                .filter(info -> !info.session.isSystem() && now > (info.lastUsedTs + expirationTimeout * 1000))
+                .filter(info -> !info.session.isSystem() && now > (info.lastUsedTs + toMillis(expirationTimeout)))
                 .forEach(usi -> {
                     log.debug("Removing session due to timeout: {}", usi);
 
@@ -426,5 +426,9 @@ public class UserSessions implements UserSessionsAPI {
 
     protected Stream<UserSessionInfo> getSessionInfoStream() {
         return cache.values().stream();
+    }
+
+    protected long toMillis(int seconds) {
+        return seconds * 1000L;
     }
 }
