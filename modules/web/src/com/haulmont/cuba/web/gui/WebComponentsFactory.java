@@ -68,8 +68,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(PasswordField.NAME, WebPasswordField.class);
 
         classes.put(ResizableTextArea.NAME, WebResizableTextArea.class);
-        // vaadin8 - PL-9217
-//        classes.put(TextArea.NAME, WebTextArea.class);
+        classes.put(TextArea.NAME, WebTextArea.class);
         classes.put(RichTextArea.NAME, WebRichTextArea.class);
         classes.put(MaskedField.NAME, WebMaskedField.class);
 

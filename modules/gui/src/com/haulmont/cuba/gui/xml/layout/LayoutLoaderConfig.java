@@ -65,6 +65,7 @@ public class LayoutLoaderConfig {
         sharedLoaders.register(TextField.NAME, TextFieldLoader.class);
         sharedLoaders.register(MaskedField.NAME, MaskedFieldLoader.class);
         sharedLoaders.register(TextArea.NAME, ResizableTextAreaLoader.class);
+        sharedLoaders.register(ResizableTextArea.NAME, ResizableTextAreaLoader.class);
         sharedLoaders.register(SourceCodeEditor.NAME, SourceCodeEditorLoader.class);
         sharedLoaders.register(PasswordField.NAME, PasswordFieldLoader.class);
         sharedLoaders.register(RichTextArea.NAME, RichTextAreaLoader.class);

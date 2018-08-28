@@ -1377,6 +1377,13 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- ResizableTextArea -->
+    <xs:complexType name="resizableTextAreaComponent">
+        <xs:complexContent>
+            <xs:extension base="textAreaComponent"/>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- TextArea -->
     <xs:complexType name="sourceCodeEditorComponent">
         <xs:complexContent>
@@ -2933,6 +2940,7 @@
                 <xs:element name="datePicker" type="datePickerComponent"/>
 
                 <xs:element name="textArea" type="textAreaComponent"/>
+                <xs:element name="resizableTextArea" type="resizableTextAreaComponent"/>
                 <xs:element name="textField" type="textFieldComponent"/>
                 <xs:element name="currencyField" type="currencyFieldComponent"/>
                 <xs:element name="passwordField" type="passwordFieldComponent"/>

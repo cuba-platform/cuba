@@ -17,13 +17,34 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import org.apache.commons.lang3.StringUtils;
+import com.haulmont.cuba.gui.components.TextArea;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.haulmont.cuba.gui.components.ResizableTextArea.ResizeDirection;
 
 public class ResizableTextAreaLoader extends TextAreaLoader {
+
+    private static final Logger log = LoggerFactory.getLogger(ResizableTextAreaLoader.class);
+
     @Override
     public void createComponent() {
-        resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+        if (element.getName().equals(ResizableTextArea.NAME)) {
+            resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+        }
+
+        if (element.getName().equals(TextArea.NAME)) {
+            if (isResizable() || hasResizableDirection()) {
+                resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+                log.warn("The 'resizableTextArea' element must be used in order to create a resizable text area " +
+                        "instead of 'textArea'");
+            } else {
+                resultComponent = (TextArea) factory.createComponent(TextArea.NAME);
+            }
+        }
+
         loadId(resultComponent, element);
     }
 
@@ -31,17 +52,37 @@ public class ResizableTextAreaLoader extends TextAreaLoader {
     public void loadComponent() {
         super.loadComponent();
 
-        ResizableTextArea textArea = (ResizableTextArea) resultComponent;
+        if (resultComponent instanceof ResizableTextArea) {
+            ResizableTextArea textArea = (ResizableTextArea) resultComponent;
+            String resizable = element.attributeValue("resizable");
+            if (!Strings.isNullOrEmpty(resizable)) {
+                textArea.setResizable(Boolean.parseBoolean(resizable));
+            }
+
+            String resizableDirection = element.attributeValue("resizableDirection");
+            if (!Strings.isNullOrEmpty(resizableDirection)) {
+                textArea.setResizableDirection(ResizeDirection.valueOf(resizableDirection));
+            }
+
+            loadSettingsEnabled(textArea, element);
+        }
+    }
+
+    protected boolean isResizable() {
         String resizable = element.attributeValue("resizable");
-        if (StringUtils.isNotEmpty(resizable)) {
-            textArea.setResizable(Boolean.parseBoolean(resizable));
+        if (!Strings.isNullOrEmpty(resizable)) {
+            return Boolean.parseBoolean(resizable);
         }
 
+        return false;
+    }
+
+    protected boolean hasResizableDirection() {
         String resizableDirection = element.attributeValue("resizableDirection");
-        if (StringUtils.isNotEmpty(resizableDirection)) {
-            textArea.setResizableDirection(ResizableTextArea.ResizeDirection.valueOf(resizableDirection));
+        if (!Strings.isNullOrEmpty(resizableDirection)) {
+            return ResizeDirection.valueOf(resizableDirection) != ResizeDirection.NONE;
         }
 
-        loadSettingsEnabled(textArea, element);
+        return false;
     }
 }

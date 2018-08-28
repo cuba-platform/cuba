@@ -20,7 +20,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 
 public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
-    String NAME = TextArea.NAME;
+    String NAME = "resizableTextArea";
 
     /**
      * @deprecated Use {@link ResizableTextArea#setResizableDirection(ResizeDirection)} instead.
@@ -36,12 +36,14 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
 
     /**
      * Allows resizing textArea in a given direction.
+     *
      * @param direction the direction in which resizes textArea.
      */
     void setResizableDirection(ResizeDirection direction);
 
     /**
      * Get the direction in which the textArea size changes.
+     *
      * @return direction.
      */
     ResizeDirection getResizableDirection();
@@ -95,7 +97,7 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
     /**
      * Represents directions in which textArea can be resized.
      */
-    enum ResizeDirection{
+    enum ResizeDirection {
         HORIZONTAL, VERTICAL, BOTH, NONE
     }
 
