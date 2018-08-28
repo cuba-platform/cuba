@@ -61,12 +61,25 @@ public class NumberIdWorker implements NumberIdSequence {
     @Inject
     protected ServerConfig serverConfig;
 
+    @Inject
+    protected GlobalConfig config;
+
     @Override
-    public Long createLongId(String entityName, String sequenceName, long startValue, long cacheSize) {
+    public Long createLongId(String entityName, String sequenceName) {
         Sequence sequence = Sequence.withName(getSequenceName(entityName, sequenceName))
                 .setStore(getDataStore(entityName))
-                .setStartValue(startValue)
-                .setIncrement(cacheSize == 0 ? 1 : cacheSize);
+                .setStartValue(1)
+                .setIncrement(1);
+
+        return sequenceAPI.createNextValue(sequence);
+    }
+
+    @Override
+    public Long createCachedLongId(String entityName, String sequenceName) {
+        Sequence sequence = Sequence.withName(getSequenceName(entityName, sequenceName))
+                .setStore(getDataStore(entityName))
+                .setStartValue(0)
+                .setIncrement(config.getNumberIdCacheSize());
 
         return sequenceAPI.createNextValue(sequence);
     }

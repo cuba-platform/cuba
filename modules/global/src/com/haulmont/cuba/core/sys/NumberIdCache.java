@@ -66,13 +66,13 @@ public class NumberIdCache {
         }
 
         protected void createCachedCounter() {
-            sequenceValue = numberIdSequence.createLongId(entityName, sequenceName, 0, config.getNumberIdCacheSize());
+            sequenceValue = numberIdSequence.createCachedLongId(entityName, sequenceName);
             counter = sequenceValue;
         }
 
         public synchronized long getNext() {
             if (!useIdCache()) {
-                return numberIdSequence.createLongId(entityName, sequenceName, 1, 0);
+                return numberIdSequence.createLongId(entityName, sequenceName);
             } else {
                 long next = ++counter;
                 if (next > sequenceValue + config.getNumberIdCacheSize()) {
