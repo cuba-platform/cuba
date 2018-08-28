@@ -102,6 +102,11 @@ class FluentLoaderTest extends Specification {
                 .firstResult(10)
                 .maxResults(100)
                 .list() instanceof List
+
+        // count
+
+        dataManager.load(Customer).query('select c from test$Customer c').count() == 1l
+        dataManager.load(Customer).count() == 1l
     }
 
     def "test LoadContext when loading all"() {
