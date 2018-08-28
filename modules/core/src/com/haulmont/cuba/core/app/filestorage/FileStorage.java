@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -193,14 +194,6 @@ public class FileStorage implements FileStorageAPI {
     }
 
     protected synchronized void writeLog(File file, boolean remove) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(df.format(timeSource.currentTimestamp())).append(" ");
-        sb.append("[").append(userSessionSource.getUserSession().getUser()).append("] ");
-        sb.append(remove ? "REMOVE" : "CREATE").append(" ");
-        sb.append("\"").append(file.getAbsolutePath()).append("\"\n");
-
         File rootDir;
         try {
             rootDir = file.getParentFile().getParentFile().getParentFile().getParentFile();
@@ -208,10 +201,24 @@ public class FileStorage implements FileStorageAPI {
             log.error("Unable to write log: invalid file storage structure", e);
             return;
         }
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        UserSession userSession = userSessionSource.getUserSession();
+        String userLogin = userSession.getUser().getLogin();
+        String userId = userSession.getUser().getId().toString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(df.format(timeSource.currentTimestamp())).append(" ");
+
+        sb.append("[").append(userLogin).append("--").append(userId).append("] ");
+        sb.append(remove ? "REMOVE" : "CREATE").append(" ");
+        sb.append("\"").append(file.getAbsolutePath()).append("\"\n");
+
         File logFile = new File(rootDir, "storage.log");
         try {
             try (FileOutputStream fos = new FileOutputStream(logFile, true)) {
-                IOUtils.write(sb.toString(), fos, StandardCharsets.UTF_8.name());
+                IOUtils.write(sb.toString(), fos, StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
             log.error("Unable to write log", e);
