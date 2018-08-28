@@ -46,12 +46,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption, HasDebugId, EventHubOwner {
 
-    @Deprecated
-    public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
-            Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
-            Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
-            Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE));
-
     public static final String ICON_STYLE = "icon";
 
     protected String id;
