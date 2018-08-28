@@ -103,6 +103,14 @@ public class FluentLoader<E extends Entity<K>, K> {
     }
 
     /**
+     * Returns number of entities for the given query
+     */
+    public long count(){
+        LoadContext<E> loadContext = createLoadContext();
+        return dataManager.getCount(loadContext);
+    }
+
+    /**
      * Sets a view.
      */
     public FluentLoader<E, K> view(View view) {
@@ -286,6 +294,14 @@ public class FluentLoader<E extends Entity<K>, K> {
                 return entity;
             else
                 throw new IllegalStateException("No results");
+        }
+
+        /**
+         * Returns number of entities for the given query
+         */
+        public long count(){
+            LoadContext<E> loadContext = createLoadContext();
+            return loader.dataManager.getCount(loadContext);
         }
 
         /**
