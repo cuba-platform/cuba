@@ -19,12 +19,10 @@ package com.haulmont.cuba.core.app;
 
 import com.google.common.base.Joiner;
 import com.haulmont.bali.util.StringHelper;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.ConditionJpqlGenerator;
@@ -155,34 +153,11 @@ public class RdbmsQueryBuilder {
             if (paramNames.contains(name)) {
                 Object value = entry.getValue();
 
-                boolean convert = noConversionParams == null
-                        || Arrays.stream(noConversionParams).noneMatch(s -> s.equals(name));
-                if (convert) {
-                    if (value instanceof Entity) {
-                        value = ((Entity) value).getId();
-
-                    } else if (value instanceof EnumClass) {
-                        value = ((EnumClass) value).getId();
-
-                    } else if (value instanceof Collection) {
-                        List<Object> list = new ArrayList<>(((Collection) value).size());
-                        for (Object item : (Collection) value) {
-                            if (item instanceof Entity)
-                                list.add(((Entity) item).getId());
-                            else if (item instanceof EnumClass)
-                                list.add(((EnumClass) item).getId());
-                            else
-                                list.add(item);
-                        }
-                        value = list;
-                    }
-                }
-
                 if (value instanceof TemporalValue) {
                     TemporalValue temporalValue = (TemporalValue) value;
                     query.setParameter(name, temporalValue.date, temporalValue.type);
                 } else {
-                    if (!convert) {
+                    if (noConversionParams != null && Arrays.asList(noConversionParams).contains(name)) {
                         query.setParameter(name, value, false);
                     } else {
                         query.setParameter(name, value);

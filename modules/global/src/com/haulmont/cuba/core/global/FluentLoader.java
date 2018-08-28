@@ -354,10 +354,12 @@ public class FluentLoader<E extends Entity<K>, K> {
         /**
          * Sets value for a query parameter.
 
+         * @deprecated implicit conversions are deprecated, do not use this feature
          * @param name  parameter name
          * @param value parameter value
          * @param implicitConversion whether to do parameter value conversions, e.g. convert an entity to its ID
          */
+        @Deprecated
         public ByQuery<E, K> parameter(String name, Object value, boolean implicitConversion) {
             parameters.put(name, value);
             if (!implicitConversion) {

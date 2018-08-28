@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.ValueLoadContext
+import com.haulmont.cuba.core.sys.AppContext
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.testsupport.TestContainer
@@ -43,6 +44,50 @@ class DataManagerTest extends Specification {
         def group = dataManager.load(LoadContext.create(Group).setId(TestSupport.COMPANY_GROUP_ID))
 
         LoadContext.Query query
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "condition by reference object"
+
+        query = LoadContext.createQuery('select u from sec$User u where u.group = :group')
+        query.setParameter('group', group)
+        def users = dataManager.loadList(LoadContext.create(User).setQuery(query).setView('user.browse'))
+
+        then: "ok"
+
+        users.size() > 0
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "condition by reference id"
+
+        query = LoadContext.createQuery('select u from sec$User u where u.group.id = :groupId')
+        query.setParameter('groupId', group.id)
+        users = dataManager.loadList(LoadContext.create(User).setQuery(query).setView('user.browse'))
+
+        then: "ok"
+
+        users.size() > 0
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "wrong condition by reference id"
+
+        query = LoadContext.createQuery('select u from sec$User u where u.group.id = :group')
+        query.setParameter('group', group)
+        users = dataManager.loadList(LoadContext.create(User).setQuery(query).setView('user.browse'))
+
+        then: "fail"
+
+        thrown(IllegalArgumentException)
+    }
+
+    def "loadList query parameter without implicit conversion - legacy behavior"() {
+        def group = dataManager.load(LoadContext.create(Group).setId(TestSupport.COMPANY_GROUP_ID))
+
+        LoadContext.Query query
+
+        AppContext.setProperty('cuba.implicitConversionOfJpqlParams', 'true')
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,12 +124,18 @@ class DataManagerTest extends Specification {
         then: "ok"
 
         users.size() > 0
+
+        cleanup:
+
+        AppContext.setProperty('cuba.implicitConversionOfJpqlParams', null)
     }
 
-    def "loadValues query parameter without implicit conversion"() {
+    def "loadValues query parameter without implicit conversion - legacy behavior"() {
         def group = dataManager.load(LoadContext.create(Group).setId(TestSupport.COMPANY_GROUP_ID))
 
         ValueLoadContext.Query query
+
+        AppContext.setProperty('cuba.implicitConversionOfJpqlParams', 'true')
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -121,6 +172,52 @@ class DataManagerTest extends Specification {
         then: "ok"
 
         list.size() > 0
+
+        cleanup:
+
+        AppContext.setProperty('cuba.implicitConversionOfJpqlParams', null)
+    }
+
+    def "loadValues query parameter without implicit conversion"() {
+        def group = dataManager.load(LoadContext.create(Group).setId(TestSupport.COMPANY_GROUP_ID))
+
+        ValueLoadContext.Query query
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "condition by reference object"
+
+        query = ValueLoadContext.createQuery('select u.id, u.login from sec$User u where u.group = :group')
+        query.setParameter('group', group)
+        def list = dataManager.loadValues(ValueLoadContext.create().setQuery(query).addProperty('id').addProperty('login'))
+
+        then: "ok"
+
+        list.size() > 0
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "condition by reference id"
+
+        query = ValueLoadContext.createQuery('select u.id, u.login from sec$User u where u.group.id = :groupId')
+        query.setParameter('groupId', group.id)
+        list = dataManager.loadValues(ValueLoadContext.create().setQuery(query).addProperty('id').addProperty('login'))
+
+        then: "ok"
+
+        list.size() > 0
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        when: "wrong condition by reference id"
+
+        query = ValueLoadContext.createQuery('select u.id, u.login from sec$User u where u.group.id = :group')
+        query.setParameter('group', group)
+        list = dataManager.loadValues(ValueLoadContext.create().setQuery(query).addProperty('id').addProperty('login'))
+
+        then: "fail"
+
+        thrown(IllegalArgumentException)
     }
 
     def "load without query and id"() {

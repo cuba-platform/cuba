@@ -124,6 +124,7 @@ public interface Query {
      * In the query text, named parameters are marked with colon (e.g. {@code :foo}) in JPQL queries or with
      * number sign in native SQL queries (e.g. {@code #foo}).
      *
+     * @deprecated implicit conversions are deprecated, do not use this feature
      * @param name                parameter name
      * @param value               parameter value
      * @param implicitConversions whether to make parameter value conversions, e.g. convert an entity to its ID
@@ -131,6 +132,7 @@ public interface Query {
      * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
      *                                  or argument is of incorrect type
      */
+    @Deprecated
     Query setParameter(String name, Object value, boolean implicitConversions);
 
     /**
@@ -165,6 +167,7 @@ public interface Query {
      * <p>
      * In the query text, positional parameters are marked with ?N (e.g. {@code ?1}).
      *
+     * @deprecated implicit conversions are deprecated, do not use this feature
      * @param position            parameter position, starting with 1
      * @param value               parameter value
      * @param implicitConversions whether to make parameter value conversions, e.g. convert an entity to its ID
@@ -172,6 +175,7 @@ public interface Query {
      * @throws IllegalArgumentException if position does not correspond to positional parameter of query
      *                                  or argument is of incorrect type
      */
+    @Deprecated
     Query setParameter(int position, Object value, boolean implicitConversions);
 
     /**

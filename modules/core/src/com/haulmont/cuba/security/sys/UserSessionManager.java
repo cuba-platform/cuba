@@ -178,7 +178,7 @@ public class UserSessionManager {
     protected void compileConstraints(UserSession session, Group group) {
         EntityManager em = persistence.getEntityManager();
         TypedQuery<Constraint> q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
-                "where h.group.id = ?1", Constraint.class);
+                "where h.group = ?1", Constraint.class);
         q.setParameter(1, group);
         List<Constraint> constraints = q.getResultList();
         List<Constraint> list = new ArrayList<>(constraints);
@@ -195,7 +195,7 @@ public class UserSessionManager {
 
         EntityManager em = persistence.getEntityManager();
         TypedQuery<SessionAttribute> q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
-                "where h.group.id = ?1 order by h.level desc", SessionAttribute.class);
+                "where h.group = ?1 order by h.level desc", SessionAttribute.class);
         q.setParameter(1, group);
         List<SessionAttribute> attributes = q.getResultList();
         list.addAll(attributes);

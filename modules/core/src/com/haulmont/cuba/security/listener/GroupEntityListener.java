@@ -99,7 +99,7 @@ public class GroupEntityListener implements
 
         TypedQuery<GroupHierarchy> q = em.createQuery(
                 "select h from sec$GroupHierarchy h join fetch h.group " +
-                        "where h.parent.id = ?1", GroupHierarchy.class);
+                        "where h.parent = ?1", GroupHierarchy.class);
         q.setParameter(1, entity);
         List<GroupHierarchy> list = q.getResultList();
         for (GroupHierarchy hierarchy : list) {

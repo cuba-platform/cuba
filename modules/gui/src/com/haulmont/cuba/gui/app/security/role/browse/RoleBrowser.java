@@ -196,7 +196,7 @@ public class RoleBrowser extends AbstractLookup {
         for (User user : items) {
             LoadContext<UserRole> ctx = LoadContext.create(UserRole.class)
                     .setView("user.edit")
-                    .setQuery(new LoadContext.Query("select ur from sec$UserRole ur where ur.user.id = :user")
+                    .setQuery(new LoadContext.Query("select ur from sec$UserRole ur where ur.user = :user")
                             .setParameter("user", user)
                     );
 

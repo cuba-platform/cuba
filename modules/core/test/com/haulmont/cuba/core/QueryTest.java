@@ -90,7 +90,7 @@ public class QueryTest {
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-            Query query = em.createQuery("select r from sec$UserRole r where r.user.id = :user");
+            Query query = em.createQuery("select r from sec$UserRole r where r.user = :user");
             query.setParameter("user", user);
             List list = query.getResultList();
 
@@ -564,19 +564,6 @@ public class QueryTest {
             List<Role> roles = query.getResultList();
             assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
         });
-
-        // no implicit conversions - fails
-        try (Transaction tx = cont.persistence().createTransaction()) {
-            TypedQuery<Role> query = cont.entityManager().createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
-            query.setParameter("roleType", RoleType.SUPER, false);
-            List<Role> roles = null;
-            try {
-                roles = query.getResultList();
-                fail();
-            } catch (Exception e) {
-                // ok
-            }
-        }
     }
 
 

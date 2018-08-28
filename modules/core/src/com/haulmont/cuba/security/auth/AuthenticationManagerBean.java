@@ -295,8 +295,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     protected User loadSubstitutedUser(User substitutedUser, UserSession currentSession, EntityManager em) {
         TypedQuery<User> query = em.createQuery(
                 "select su from sec$User su where " +
-                        "su.id in (select s.substitutedUser.id from sec$User u join u.substitutions s " +
-                        "where u.id = ?1 and s.substitutedUser.id = ?2)",
+                        "su in (select s.substitutedUser from sec$User u join u.substitutions s " +
+                        "where u = ?1 and s.substitutedUser = ?2)",
                 User.class
         );
         query.setParameter(1, currentSession.getUser());

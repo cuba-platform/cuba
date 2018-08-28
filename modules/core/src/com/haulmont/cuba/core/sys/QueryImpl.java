@@ -22,6 +22,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -52,6 +53,7 @@ import javax.inject.Inject;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
@@ -74,6 +76,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
     protected QueryCacheManager queryCacheMgr;
     @Inject
     protected QueryTransformerFactory queryTransformerFactory;
+    @Inject
+    protected ServerConfig serverConfig;
 
     protected javax.persistence.EntityManager emDelegate;
     protected JpaQuery query;
@@ -454,19 +458,33 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> setParameter(String name, Object value) {
-        return setParameter(name, value, true);
+        return internalSetParameter(name, value, serverConfig.getImplicitConversionOfJpqlParams());
     }
 
     @Override
     public TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions) {
+        return internalSetParameter(name, value, implicitConversions);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected TypedQuery<T> internalSetParameter(String name, Object value, boolean implicitConversions) {
         checkState();
 
         if (value instanceof IdProxy) {
             value = ((IdProxy) value).get();
+
         } else if (value instanceof Id) {
             value = ((Id) value).getValue();
+
         } else if (value instanceof Ids) {
             value = ((Ids) value).getValues();
+
+        } else if (value instanceof EnumClass) {
+            value = ((EnumClass) value).getId();
+
+        } else if (isCollectionOfEntitiesOrEnums(value)) {
+            value = convertToCollectionOfIds(value);
+
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
@@ -498,11 +516,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> setParameter(int position, Object value) {
-        return setParameter(position, value, true);
+        return internalSetParameter(position, value, serverConfig.getImplicitConversionOfJpqlParams());
     }
 
     @Override
     public TypedQuery<T> setParameter(int position, Object value, boolean implicitConversions) {
+        return internalSetParameter(position, value, implicitConversions);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected TypedQuery<T> internalSetParameter(int position, Object value, boolean implicitConversions) {
         checkState();
         DbmsFeatures dbmsFeatures = DbmsSpecificFactory.getDbmsFeatures();
         if (isNative && (value instanceof UUID) && (dbmsFeatures.getUuidTypeClassName() != null)) {
@@ -512,8 +535,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException("Error setting parameter value", e);
             }
+
         } else if (value instanceof IdProxy) {
             value = ((IdProxy) value).get();
+
+        } else if (value instanceof EnumClass) {
+            value = ((EnumClass) value).getId();
+
+        } else if (isCollectionOfEntitiesOrEnums(value)) {
+            value = convertToCollectionOfIds(value);
+
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
@@ -665,6 +696,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
             fetcher.accept(result);
         }
         return result;
+    }
+
+    protected boolean isCollectionOfEntitiesOrEnums(Object value) {
+        return value instanceof Collection
+                && ((Collection<?>) value).stream().allMatch(it -> it instanceof Entity || it instanceof EnumClass);
+    }
+
+    protected Object convertToCollectionOfIds(Object value) {
+        return ((Collection<?>) value).stream()
+                .map(it -> it instanceof Entity ? ((Entity) it).getId() : ((EnumClass) it).getId())
+                .collect(Collectors.toList());
     }
 
     protected static class Param {

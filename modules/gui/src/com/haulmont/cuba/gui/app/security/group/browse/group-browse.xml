@@ -40,21 +40,21 @@
                 class="com.haulmont.cuba.security.entity.User"
                 view="group.browse"
                 maxResults="50">
-            <query>select u from sec$User u where u.group.id = :ds$groupsDs</query>
+            <query>select u from sec$User u where u.group = :ds$groupsDs</query>
         </collectionDatasource>
 
         <collectionDatasource
                 id="constraintsDs"
                 class="com.haulmont.cuba.security.entity.Constraint"
                 view="group.browse">
-            <query>select c from sec$Constraint c where c.group.id = :ds$groupsDs</query>
+            <query>select c from sec$Constraint c where c.group = :ds$groupsDs</query>
         </collectionDatasource>
 
         <collectionDatasource
                 id="attributesDs"
                 class="com.haulmont.cuba.security.entity.SessionAttribute"
                 view="_local">
-            <query>select a from sec$SessionAttribute a where a.group.id = :ds$groupsDs</query>
+            <query>select a from sec$SessionAttribute a where a.group = :ds$groupsDs</query>
         </collectionDatasource>
     </dsContext>
 

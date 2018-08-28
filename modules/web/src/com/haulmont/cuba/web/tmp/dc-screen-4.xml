@@ -28,7 +28,7 @@
                     cacheable="false" softDeletion="true">
                 <query>
                     select u from sec$User u
-                    where u.group.id = :groupId
+                    where u.group = :groupId
                     order by u.name
                     <condition>
                         <and>

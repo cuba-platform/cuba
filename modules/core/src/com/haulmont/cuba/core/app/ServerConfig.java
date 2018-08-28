@@ -301,4 +301,11 @@ public interface ServerConfig extends Config {
     @Property("cuba.enableDeleteStatementInSoftDeleteMode")
     @DefaultBoolean(false)
     boolean getEnableDeleteStatementInSoftDeleteMode();
+
+    /**
+     * Compatibility toggle. If true, JPQL parameters are converted implicitly, e.g. an entity is converted to its ID.
+     */
+    @Property("cuba.implicitConversionOfJpqlParams")
+    @DefaultBoolean(false)
+    boolean getImplicitConversionOfJpqlParams();
 }

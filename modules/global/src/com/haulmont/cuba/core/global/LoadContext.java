@@ -167,7 +167,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      * @return this instance for chaining
      */
     public LoadContext<E> setId(Object id) {
-        this.id = id;
+        this.id = id instanceof Entity ? ((Entity) id).getId() : id; // for compatibility with legacy code relying on implicit conversions
         return this;
     }
 
@@ -356,11 +356,13 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
 
         /**
          * Set value for a query parameter.
+         * @deprecated implicit conversions are deprecated, do not use this feature
          * @param name  parameter name
          * @param value parameter value
          * @param implicitConversions whether to do parameter value conversions, e.g. convert an entity to its ID
          * @return  this query instance for chaining
          */
+        @Deprecated
         public Query setParameter(String name, Object value, boolean implicitConversions) {
             parameters.put(name, value);
             if (!implicitConversions) {
