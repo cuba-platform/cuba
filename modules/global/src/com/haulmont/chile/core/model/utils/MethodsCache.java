@@ -36,8 +36,7 @@ public class MethodsCache {
                 name = StringUtils.uncapitalize(name.substring(3));
                 method.setAccessible(true);
                 getters.put(name, method);
-            }
-            if (name.startsWith("is") && method.getParameterTypes().length == 0) {
+            } else if (name.startsWith("is") && method.getParameterTypes().length == 0) {
                 name = StringUtils.uncapitalize(name.substring(2));
                 method.setAccessible(true);
                 getters.put(name, method);
