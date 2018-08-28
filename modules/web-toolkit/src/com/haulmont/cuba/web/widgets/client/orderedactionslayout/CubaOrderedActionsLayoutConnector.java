@@ -22,9 +22,7 @@ import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
-import com.vaadin.client.ui.AbstractFieldConnector;
-import com.vaadin.client.ui.Icon;
-import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.*;
 import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.CaptionPosition;
@@ -72,15 +70,17 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
         List<String> styles = child.getState().styles;
         String error = child.getState().errorMessage;
         boolean showError = error != null;
-        if (child.getState() instanceof AbstractFieldState) {
-            AbstractFieldState abstractFieldState = (AbstractFieldState) child
-                    .getState();
-            // vaadin8 rework
-//            showError = showError && !abstractFieldState.hideErrors;
+        if (child instanceof HasErrorIndicator) {
+            showError = ((HasErrorIndicator) child).isErrorIndicatorVisible();
         }
         boolean required = false;
-        if (child instanceof AbstractFieldConnector) {
-            required = ((AbstractFieldConnector) child).isRequiredIndicatorVisible();
+        if (child instanceof HasRequiredIndicator) {
+            required = ((HasRequiredIndicator) child)
+                    .isRequiredIndicatorVisible();
+        }
+        // For compatibility components
+        if (child instanceof com.vaadin.v7.client.ui.AbstractFieldConnector) {
+            required = ((com.vaadin.v7.client.ui.AbstractFieldConnector) child).isRequiredIndicatorVisible();
         }
         boolean enabled = child.isEnabled();
 

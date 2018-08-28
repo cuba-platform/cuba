@@ -299,21 +299,6 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         container.removeActionHandler(actionHandler);
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    public ErrorMessage getErrorMessage() {
-        *//*ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-
-        return superError;*//*
-    }*/
-
     @Override
     public boolean isEmpty() {
         return getValue() == null;

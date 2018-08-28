@@ -44,20 +44,6 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
 //        setShowErrorForDisabledState(false);
     }
 
-    /* vaadin8
-    @Override
-    public ErrorMessage getErrorMessage() {
-        ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-        return superError;
-    }*/
-
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         if (shortcutsManager != null) {

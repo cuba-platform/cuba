@@ -212,18 +212,14 @@ public class CubaCurrencyField extends CustomField {
 
     @Override
     public void setRequiredError(String requiredMessage) {
-//        vaadin8
-//        textField.setRequiredError(requiredMessage);
+        textField.setRequiredError(requiredMessage);
 
         markAsDirty();
     }
 
     @Override
     public String getRequiredError() {
-        //        vaadin8
-//        return textField.getRequiredError();
-
-        return null;
+        return textField.getRequiredError();
     }
 
     @Override

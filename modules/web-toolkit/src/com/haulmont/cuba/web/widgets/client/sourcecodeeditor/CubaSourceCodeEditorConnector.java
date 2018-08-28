@@ -27,6 +27,7 @@ import com.vaadin.client.MouseEventDetailsBuilder;
 import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.HasContextHelpConnector;
+import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.Connect;
@@ -35,7 +36,8 @@ import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorConnector;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorWidget;
 
 @Connect(CubaSourceCodeEditor.class)
-public class CubaSourceCodeEditorConnector extends AceEditorConnector implements HasContextHelpConnector {
+public class CubaSourceCodeEditorConnector extends AceEditorConnector
+        implements HasContextHelpConnector, HasRequiredIndicator {
     private boolean resetEditHistory = false;
 
     public CubaSourceCodeEditorConnector() {
@@ -64,6 +66,15 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector implements
             getWidget().resetEditHistory();
             resetEditHistory = false;
         }
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().required && !isReadOnly();
+    }
+
+    public boolean isReadOnly() {
+        return getState().readOnly;
     }
 
     @Override

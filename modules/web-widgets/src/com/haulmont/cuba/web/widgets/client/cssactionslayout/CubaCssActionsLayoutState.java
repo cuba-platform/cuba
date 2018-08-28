@@ -22,4 +22,5 @@ public class CubaCssActionsLayoutState extends CssLayoutState {
     public int marginsBitmask = 0;
 
     public boolean spacing = false;
+    public boolean requiredIndicatorVisible = false;
 }

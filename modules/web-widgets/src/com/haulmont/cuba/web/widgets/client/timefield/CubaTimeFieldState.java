@@ -24,4 +24,5 @@ public class CubaTimeFieldState extends CubaMaskedTextFieldState {
     }
 
     public TimeResolution resolution = TimeResolution.MINUTE;
+    public boolean captionManagedByLayout = true;
 }

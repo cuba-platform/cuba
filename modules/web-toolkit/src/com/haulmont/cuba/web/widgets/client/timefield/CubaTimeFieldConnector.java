@@ -35,6 +35,11 @@ public class CubaTimeFieldConnector extends CubaMaskedFieldConnector {
     }
 
     @Override
+    public boolean delegateCaptionHandling() {
+        return getState().captionManagedByLayout;
+    }
+
+    @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 

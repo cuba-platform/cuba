@@ -23,4 +23,5 @@ import com.vaadin.shared.ui.datefield.LocalDateFieldState;
 public class CubaDateFieldState extends LocalDateFieldState {
     @NoLayout
     public String dateMask = "";
+    public boolean captionManagedByLayout = true;
 }

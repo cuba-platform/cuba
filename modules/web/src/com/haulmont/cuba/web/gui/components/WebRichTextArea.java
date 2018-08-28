@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.RichTextArea;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.widgets.CubaRichTextArea;
 import com.haulmont.cuba.web.widgets.client.richtextarea.CubaRichTextAreaState;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,6 +27,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String>
         implements RichTextArea, InitializingBean {
@@ -81,6 +84,11 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
         }
 
         return labels;
+    }
+
+    @Override
+    protected String convertToPresentation(String modelValue) throws ConversionException {
+        return nullToEmpty(super.convertToPresentation(modelValue));
     }
 
     @Override

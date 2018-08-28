@@ -39,20 +39,6 @@ public class CubaTextArea extends TextArea {
         return (CubaTextAreaState) super.getState(markAsDirty);
     }
 
-    // vaadin8
-    /*@Override
-    public ErrorMessage getErrorMessage() {
-        ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-        return superError;
-    }*/
-
     public CaseConversion getCaseConversion() {
         return CaseConversion.valueOf(getState(false).caseConversion);
     }

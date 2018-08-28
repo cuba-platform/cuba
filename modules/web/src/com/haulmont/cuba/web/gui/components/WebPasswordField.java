@@ -19,10 +19,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.PasswordField;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, String, String> implements PasswordField {
 
@@ -49,6 +52,11 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
     //    @Override
     protected CubaPasswordField createTextFieldImpl() {
         return new CubaPasswordField();
+    }
+
+    @Override
+    protected String convertToPresentation(String modelValue) throws ConversionException {
+        return nullToEmpty(super.convertToPresentation(modelValue));
     }
 
     @Override

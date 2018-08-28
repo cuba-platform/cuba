@@ -50,23 +50,6 @@ public class CubaPasswordField extends PasswordField {
         }
     }
 
-    // vaadin8
-    /*@Override
-    public ErrorMessage getErrorMessage() {
-        ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
-
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-
-        return superError;
-    }
-    */
-
     public void setCapsLockIndicator(Connector capsLockIndicator) {
         getState().capsLockIndicator = capsLockIndicator;
     }

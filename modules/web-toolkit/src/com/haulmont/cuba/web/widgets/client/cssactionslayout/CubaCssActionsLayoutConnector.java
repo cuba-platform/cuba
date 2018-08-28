@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.shared.AbstractComponentState;
@@ -28,7 +29,7 @@ import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.MarginInfo;
 
 @Connect(CubaCssActionsLayout.class)
-public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements Paintable {
+public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements Paintable, HasRequiredIndicator {
 
     @Override
     public CubaCssActionsLayoutWidget getWidget() {
@@ -38,6 +39,11 @@ public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements
     @Override
     public CubaCssActionsLayoutState getState() {
         return (CubaCssActionsLayoutState) super.getState();
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
     }
 
     @Override

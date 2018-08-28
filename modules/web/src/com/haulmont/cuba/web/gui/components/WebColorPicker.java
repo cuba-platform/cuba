@@ -42,6 +42,7 @@ public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, C
 
     protected void setCaptions() {
         Messages messages = applicationContext.getBean(Messages.class);
+
         component.setPopupCaption(messages.getMainMessage("colorPicker.popupCaption"));
         component.setSwatchesTabCaption(messages.getMainMessage("colorPicker.swatchesTabCaption"));
         component.setConfirmButtonCaption(messages.getMainMessage("colorPicker.confirmButtonCaption"));

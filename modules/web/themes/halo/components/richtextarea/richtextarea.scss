@@ -28,6 +28,10 @@
     font-size: $v-font-size;
   }
 
+  .#{$primary-stylename}-error {
+    @include valo-textfield-error-style;
+  }
+
   .#{$primary-stylename} {
     div[icon-id="richTextArea.boldLabel"]:before {
       content: "\f032";

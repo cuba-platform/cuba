@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.ui.Component;
 import com.vaadin.shared.ui.colorpicker.Color;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
 import java.util.Objects;
@@ -26,18 +26,36 @@ public class CubaColorPickerWrapper extends CustomField<Color> {
 
     protected CubaColorPicker field;
 
+    // The internalValue is used to store the 'null' value,
+    // because the ColorPicker doesn't accept null values
+    protected Color internalValue;
+
     public CubaColorPickerWrapper() {
-        initColorPicker();
+        field = createColorPicker();
+        initColorPicker(field);
+        // We need to sync 'internalValue' with the default field value, otherwise,
+        // the first time we set 'null', it doesn't change the color to Black
+        setInternalValue(field.getValue());
         setFocusDelegate(field);
         setPrimaryStyleName("c-color-picker");
         setWidthUndefined();
     }
 
-    protected void initColorPicker() {
-        field = new CubaColorPicker();
-        field.addValueChangeListener((ValueChangeListener<Color>) event ->
-                fireEvent(createValueChange(event.getOldValue(), event.isUserOriginated())));
+    private CubaColorPicker createColorPicker() {
+        return new CubaColorPicker();
+    }
+
+    protected void initColorPicker(CubaColorPicker field) {
+        field.addValueChangeListener((ValueChangeListener<Color>) event -> {
+            setInternalValue(event.getValue());
+            fireEvent(createValueChange(event.getOldValue(), event.isUserOriginated()));
+        });
         field.setCaption(null);
+    }
+
+    @Override
+    protected Component initContent() {
+        return field;
     }
 
     @Override
@@ -53,11 +71,23 @@ public class CubaColorPickerWrapper extends CustomField<Color> {
         if (!Objects.equals(field.getValue(), value)) {
             field.setValue(value);
         }
+        setInternalValue(value);
     }
 
     @Override
     public Color getValue() {
-        return field.getValue();
+        return getInternalValue();
+    }
+
+    public Color getInternalValue() {
+        return internalValue;
+    }
+
+    public void setInternalValue(Color internalValue) {
+        if (!Objects.equals(this.internalValue, internalValue)) {
+            this.internalValue = internalValue;
+            markAsDirty();
+        }
     }
 
     @Override
@@ -84,11 +114,6 @@ public class CubaColorPickerWrapper extends CustomField<Color> {
                 field.setHeight("100%");
             }
         }
-    }
-
-    @Override
-    protected Component initContent() {
-        return field;
     }
 
     public void setDefaultCaptionEnabled(boolean value) {

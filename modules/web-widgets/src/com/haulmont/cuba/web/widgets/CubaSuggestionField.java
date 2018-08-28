@@ -20,7 +20,8 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldClientRpc;
 import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldServerRpc;
 import com.haulmont.cuba.web.widgets.client.suggestionfield.CubaSuggestionFieldState;
-import com.vaadin.server.*;
+import com.vaadin.server.KeyMapper;
+import com.vaadin.server.SizeWithUnit;
 import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -121,21 +122,6 @@ public class CubaSuggestionField<T> extends AbstractField<T> {
         if (!Objects.equals(getState(false).text, stringValue)) {
             getState().text = stringValue;
         }
-    }
-
-    @Override
-    public ErrorMessage getErrorMessage() {
-        // VAADIN8: gg, implement
-        /*ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-        return superError;*/
-        return super.getErrorMessage();
     }
 
     public void setTextViewConverter(Function<T, String> converter) {
