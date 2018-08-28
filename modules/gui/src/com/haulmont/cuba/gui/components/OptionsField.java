@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
@@ -108,6 +109,8 @@ public interface OptionsField<V, I> extends Field<V> {
     }
     @Deprecated
     default void setOptionsMap(Map<String, I> map) {
+        Preconditions.checkNotNullArgument(map);
+
         BiMap<String, I> biMap = ImmutableBiMap.copyOf(map);
 
         setOptionsSource(new MapOptions<>(map));
@@ -125,6 +128,8 @@ public interface OptionsField<V, I> extends Field<V> {
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setOptionsEnum(Class<V> optionsEnum) {
+        Preconditions.checkNotNullArgument(optionsEnum);
+
         setOptionsSource(new EnumOptions(optionsEnum));
     }
 }
