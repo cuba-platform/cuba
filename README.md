@@ -79,14 +79,13 @@ gradlew install
 Edit the `build.gradle` file of your project. Change the `ext.cubaVersion` property and add `mavenLocal()` to the `repositories` section, for example:
 ```
 buildscript {
-    ext.cubaVersion = '6.10-SNAPSHOT'
+    ext.cubaVersion = '7.0-SNAPSHOT'
     repositories {
         mavenLocal()
         maven { ...
 ```
-That's all. Now you can generate IDE project files and build and deploy your application based on the snapshot version of the platform from your local repository:
+That's all. Now you can build and deploy your application based on the snapshot version of the platform from your local repository:
  ```
- gradlew idea
  gradlew deploy
  ```
 
