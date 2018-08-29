@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.*;
+
 /**
  * Base class for entities.
  * <br>
@@ -52,15 +54,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     private static final long serialVersionUID = -8400641366148656528L;
 
     @Transient
-    protected boolean __new = true;
-
-    @Transient
-    protected boolean __detached;
-
-    protected transient boolean __managed;
-
-    @Transient
-    protected boolean __removed;
+    protected byte __state = BaseEntityInternalAccess.NEW;
 
     @Transient
     protected SecurityState __securityState;
@@ -71,8 +65,10 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     public abstract void setId(T id);
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        if (__managed)
-            __detached = true;
+        if (isManaged(this)) {
+            setManaged(this, false);
+            setDetached(this, true);
+        }
         out.defaultWriteObject();
     }
 
@@ -168,13 +164,13 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Override
     public String toString() {
         String state = "";
-        if (__new)
+        if (isNew(this))
             state += "new,";
-        if (__managed)
+        if (isManaged(this))
             state += "managed,";
-        if (__detached)
+        if (isDetached(this))
             state += "detached,";
-        if (__removed)
+        if (isRemoved(this))
             state += "removed,";
         if (state.length() > 0)
             state = state.substring(0, state.length() - 1);

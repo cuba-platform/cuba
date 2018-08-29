@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -87,7 +88,9 @@ public class CascadeDeleteTest {
 
         try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
-            List r = em.createQuery("select e from test$CascadeEntity e").getResultList();
+            List r = em.createQuery("select e from test$CascadeEntity e where e.id in ?1")
+                    .setParameter(1, Arrays.asList(root, first, second, third))
+                    .getResultList();
             assertEquals(0, r.size());
             tx.commit();
         }
