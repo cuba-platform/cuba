@@ -535,6 +535,19 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testAddWhereWhenEntityJoinSelf() {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h join h.parent p"
+        );
+        transformer.addWhere("{E}.createdBy = :createdBy");
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p where h.createdBy = :createdBy",
+                res);
+    }
+
+    @Test
     public void getResult_noChangesMade_update() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$Car");
