@@ -82,7 +82,7 @@
         <property name="cuba.metadataConfig" value="+cuba-gui-metadata.xml"/>
     </module>
 
-    <module name="web" dependsOn="gui,rest-api,web-auth,idp" blocks="web">
+    <module name="web" dependsOn="gui,rest-api,idp" blocks="web">
         <artifact name="cuba-web" appJar="true"/>
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
