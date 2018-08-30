@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.core.app;
 
 /**
- * Represent sequence with name, store, start value and increment
- * Default data store for sequence is MAIN data store
- * Default start value 1, and default increment 1
+ * Represents sequence with name, store, start value and increment.
+ * Default data store for sequence is MAIN data store.
+ * Default start value 1, and default increment 1.
  */
 public class Sequence {
     protected String name;

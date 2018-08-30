@@ -39,7 +39,7 @@ public class NumberIdWorker implements NumberIdSequence {
     protected MetadataTools metadataTools;
 
     @Inject
-    protected SequenceAPI sequenceAPI;
+    protected Sequences sequences;
 
     @Inject
     protected ServerConfig serverConfig;
@@ -54,7 +54,7 @@ public class NumberIdWorker implements NumberIdSequence {
                 .setStartValue(1)
                 .setIncrement(1);
 
-        return sequenceAPI.createNextValue(sequence);
+        return sequences.createNextValue(sequence);
     }
 
     @Override
@@ -64,14 +64,14 @@ public class NumberIdWorker implements NumberIdSequence {
                 .setStartValue(0)
                 .setIncrement(config.getNumberIdCacheSize());
 
-        return sequenceAPI.createNextValue(sequence);
+        return sequences.createNextValue(sequence);
     }
 
     /**
      * INTERNAL. Used by tests.
      */
     public void reset() {
-        ((SequenceWorker) sequenceAPI).reset();
+        ((SequencesImpl) sequences).reset();
     }
 
     protected String getDataStore(String entityName) {

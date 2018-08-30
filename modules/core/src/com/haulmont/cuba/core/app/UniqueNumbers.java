@@ -16,27 +16,12 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.bali.db.DbUtils;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.Sequence;
 import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
 
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Provides unique numbers based on database sequences.
@@ -45,7 +30,7 @@ import java.util.List;
 public class UniqueNumbers implements UniqueNumbersAPI {
 
     @Inject
-    protected SequenceAPI sequenceAPI;
+    protected Sequences sequences;
 
     @Override
     public long getNextNumber(String domain) {
@@ -53,28 +38,28 @@ public class UniqueNumbers implements UniqueNumbersAPI {
                 .setStore(getDataStore(domain))
                 .setStartValue(1)
                 .setIncrement(1);
-        return sequenceAPI.createNextValue(sequence);
+        return sequences.createNextValue(sequence);
     }
 
     @Override
     public long getCurrentNumber(String domain) {
         Sequence sequence = Sequence.withName(getSequenceName(domain))
                 .setStore(getDataStore(domain));
-        return sequenceAPI.getCurrentValue(sequence);
+        return sequences.getCurrentValue(sequence);
     }
 
     @Override
     public void setCurrentNumber(String domain, long value) {
         Sequence sequence = Sequence.withName(getSequenceName(domain))
                 .setStore(getDataStore(domain));
-        sequenceAPI.setCurrentValue(sequence, value);
+        sequences.setCurrentValue(sequence, value);
     }
 
     @Override
     public void deleteSequence(String domain) {
         Sequence sequence = Sequence.withName(getSequenceName(domain))
                 .setStore(getDataStore(domain));
-        sequenceAPI.deleteSequence(sequence);
+        sequences.deleteSequence(sequence);
     }
 
     /**

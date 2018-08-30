@@ -16,17 +16,18 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.Sequence;
-
-public interface SequenceAPI {
-    String NAME = "cuba_SequenceAPI";
+/**
+ * Provides access to the database sequences.
+ */
+public interface Sequences {
+    String NAME = "cuba_Sequences";
 
 
     /**
      * Returns the next sequence value.
      * For example:
      * {@code
-     *      sequenceAPI.createNextValue(Sequence.withName("seq_name").setStartValue(10).setIncrement(1))
+     *      sequences.createNextValue(Sequence.withName("seq_name").setStartValue(10).setIncrement(1))
      * }
      * @param sequence  sequence object
      * @return          next value

@@ -30,5 +30,9 @@ import java.lang.annotation.Target;
 @MetaAnnotation
 public @interface IdSequence {
     String name();
+
+    /**
+     * If true, the sequence will be incremented by cuba.numberIdCacheSize to cache intermediate values in memory.
+     */
     boolean cached() default false;
 }

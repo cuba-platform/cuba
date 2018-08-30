@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.Sequence;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
@@ -44,8 +43,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
-@Component(SequenceAPI.NAME)
-public class SequenceWorker implements SequenceAPI {
+@Component(Sequences.NAME)
+public class SequencesImpl implements Sequences {
 
     @Inject
     protected Persistence persistence;
