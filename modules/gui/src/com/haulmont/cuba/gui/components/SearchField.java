@@ -23,28 +23,99 @@ public interface SearchField<V> extends LookupField<V> {
 
     String SEARCH_STRING_PARAM = "searchString";
 
+    /**
+     * Sets minimal required search string length.
+     *
+     * @param searchStringLength minimal string length
+     */
     void setMinSearchStringLength(int searchStringLength);
+
+    /**
+     * @return minimal required search string length
+     */
     int getMinSearchStringLength();
 
+    /**
+     * Sets notifications configuration object that determines what messages will be shown in case of too small
+     * search string or absence of matches.
+     * <p>
+     * {@link Frame.NotificationType#TRAY} is the default value.
+     *
+     * @param searchNotifications {@link SearchNotifications} instance
+     */
     void setSearchNotifications(SearchNotifications searchNotifications);
+
+    /**
+     * @return notifications configuration object
+     */
     SearchNotifications getSearchNotifications();
 
-    Frame.NotificationType getDefaultNotificationType();
+    /**
+     * Sets a type of notifications ({@code TRAY}, {@code WARNING}, etc) that will be shown in case of too small
+     * search string or absence of matches.
+     *
+     * @param defaultNotificationType notification type
+     */
     void setDefaultNotificationType(Frame.NotificationType defaultNotificationType);
 
-    Mode getMode();
+    /**
+     * @return notification type
+     */
+    Frame.NotificationType getDefaultNotificationType();
+
+    /**
+     * Sets whether search string case should be considered or it should be converted to upper or lower case.
+     * <p>
+     * {@link Mode#CASE_SENSITIVE} is the default mode.
+     *
+     * @param mode search mode
+     */
     void setMode(Mode mode);
 
-    boolean isEscapeValueForLike();
+    /**
+     * @return search string case mode
+     */
+    Mode getMode();
+
+    /**
+     * Sets whether special symbols (like %, \, _) should be escaped in a search string.
+     *
+     * @param escapeValueForLike escape special symbols if true, don't otherwise
+     */
     void setEscapeValueForLike(boolean escapeValueForLike);
 
+    /**
+     * @return whether special symbols (like %, \, _) should be escaped in a search string.
+     */
+    boolean isEscapeValueForLike();
+
+    /**
+     * Notifications configuration object. Enables to determine what messages will be shown in case of too small
+     * search string or absence of matches.
+     */
     interface SearchNotifications {
+
+        /**
+         * Sets a message that will be shown in case of absence of matches.
+         *
+         * @param filterString search string
+         */
         void notFoundSuggestions(String filterString);
 
+        /**
+         * Sets a message that will be shown in case of too small search string.
+         *
+         * @param filterString          search string
+         * @param minSearchStringLength minimal search string length
+         */
         void needMinSearchStringLength(String filterString, int minSearchStringLength);
     }
 
+    /**
+     * Determines how search string case should be considered.
+     */
     enum Mode {
+
         CASE_SENSITIVE,
         LOWER_CASE,
         UPPER_CASE

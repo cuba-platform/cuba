@@ -19,10 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SearchPickerField;
@@ -31,7 +28,10 @@ import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.haulmont.cuba.web.widgets.CubaSearchSelectPickerField;
@@ -40,6 +40,7 @@ import com.vaadin.ui.ItemCaptionGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,7 +52,9 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     protected V nullOption;
     protected boolean nullOptionVisible = true;
 
+    // just stub
     protected FilterMode filterMode = FilterMode.CONTAINS;
+    // just stub
     protected FilterPredicate filterPredicate;
 
     protected NewOptionHandler newOptionHandler;
@@ -105,11 +108,60 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     protected void initComponent(CubaPickerField<V> component) {
-        // FIXME: gg, wait for WebSearchField implementation
-//        ((CubaSearchSelectPickerField<V>) component).setFilterHandler(this::executeSearch);
-
         Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
         setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
+
+        getComponent().setItemCaptionGenerator(this::generateDefaultItemCaption);
+        getComponent().setFilterHandler(this::executeSearch);
+    }
+
+    protected void executeSearch(final String newFilter) {
+        if (optionsBinding == null || optionsBinding.getSource() == null) {
+            return;
+        }
+
+        String filterForDs = newFilter;
+        if (mode == Mode.LOWER_CASE) {
+            filterForDs = StringUtils.lowerCase(newFilter);
+        } else if (mode == Mode.UPPER_CASE) {
+            filterForDs = StringUtils.upperCase(newFilter);
+        }
+
+        if (escapeValueForLike && StringUtils.isNotEmpty(filterForDs)) {
+            filterForDs = QueryUtils.escapeForLike(filterForDs);
+        }
+
+        CollectionDatasource optionsDatasource = ((CollectionDatasourceOptions) optionsBinding.getSource()).getDatasource();
+
+        if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
+            setValue(null);
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                optionsDatasource.clear();
+            }
+            return;
+        }
+
+        if (StringUtils.length(filterForDs) >= minSearchStringLength) {
+            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, filterForDs));
+
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                if (optionsDatasource.size() == 0) {
+                    if (searchNotifications != null) {
+                        searchNotifications.notFoundSuggestions(newFilter);
+                    }
+                } else if (optionsDatasource.size() == 1) {
+                    setValue((V) optionsDatasource.getItems().iterator().next());
+                }
+            }
+        } else {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                optionsDatasource.clear();
+            }
+
+            if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
+                searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
+            }
+        }
     }
 
     protected SearchNotifications createSearchNotifications() {
@@ -232,11 +284,13 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         return generateDefaultItemCaption(item);
     }
 
+    // just stub
     @Override
     public FilterMode getFilterMode() {
         return filterMode;
     }
 
+    // just stub
     @Override
     public void setFilterMode(FilterMode mode) {
         this.filterMode = mode;
@@ -245,14 +299,13 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public boolean isNewOptionAllowed() {
         return false;
-        // VAADIN8: gg, implement
-//        return component.isNewItemsAllowed();
     }
 
     @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
-        // VAADIN8: gg, implement
-//        component.setNewItemsAllowed(newItemAllowed);
+        if (newOptionAllowed) {
+            throw new UnsupportedOperationException("New options are not allowed for SearchPickerField");
+        }
     }
 
     @Override
@@ -262,7 +315,7 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     public void setTextInputAllowed(boolean textInputAllowed) {
-        throw new UnsupportedOperationException("Option textInputAllowed is unsupported for Search field");
+        throw new UnsupportedOperationException("Text input is not allowed for SearchPickerField");
     }
 
     @Override
@@ -335,18 +388,13 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         return iconResolver.getIconResource(resourceId);
     }
 
+    // just stub
     @Override
     public void setFilterPredicate(FilterPredicate filterPredicate) {
         this.filterPredicate = filterPredicate;
-
-        if (filterPredicate != null) {
-            // VAADIN8: gg, implement
-//            component.setFilterPredicate(filterPredicate::test);
-        } else {
-//            component.setFilterPredicate(null);
-        }
     }
 
+    // just stub
     @Override
     public FilterPredicate getFilterPredicate() {
         return filterPredicate;
@@ -369,13 +417,12 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
         this.optionsStyleProvider = optionsStyleProvider;
 
-//        vaadin8
-        /*if (optionsStyleProvider != null) {
-            component.setItemStyleGenerator((comboBox, item) ->
+        if (optionsStyleProvider != null) {
+            getComponent().setOptionsStyleProvider(item ->
                     optionsStyleProvider.getItemStyleName(this, item));
         } else {
-            component.setItemStyleGenerator(null);
-        }*/
+            getComponent().setOptionsStyleProvider(null);
+        }
     }
 
     @Override

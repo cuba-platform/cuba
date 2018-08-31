@@ -16,20 +16,26 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CComboBox;
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class WebSearchField<V> extends WebLookupField<V> implements SearchField<V> {
+public class WebSearchField<V extends Entity> extends WebLookupField<V> implements SearchField<V> {
 
     protected static final String SEARCHSELECT_STYLENAME = "c-searchselect";
 
@@ -47,15 +53,6 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
 
         /* vaadin8
         this.component = new CubaSearchSelect() {
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null) {
-                    super.setPropertyDataSource(null);
-                } else {
-                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource));
-                }
-            }
-
             @Override
             public void setComponentError(ErrorMessage componentError) {
                 boolean handled = false;
@@ -101,9 +98,9 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
     }
 
     protected void executeSearch(final String newFilter) {
-//        vaadin8
-        /*if (optionsDatasource == null)
+        if (optionsBinding == null || optionsBinding.getSource() == null) {
             return;
+        }
 
         String filterForDs = newFilter;
         if (mode == Mode.LOWER_CASE) {
@@ -116,9 +113,11 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
             filterForDs = QueryUtils.escapeForLike(filterForDs);
         }
 
+        CollectionDatasource optionsDatasource = ((CollectionDatasourceOptions) optionsBinding.getSource()).getDatasource();
+
         if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
             setValue(null);
-            if (optionsDatasource.getState() == State.VALID) {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
                 optionsDatasource.clear();
             }
             return;
@@ -127,24 +126,24 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
         if (StringUtils.length(filterForDs) >= minSearchStringLength) {
             optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, filterForDs));
 
-            if (optionsDatasource.getState() == State.VALID) {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
                 if (optionsDatasource.size() == 0) {
                     if (searchNotifications != null) {
                         searchNotifications.notFoundSuggestions(newFilter);
                     }
                 } else if (optionsDatasource.size() == 1) {
-                    setValue(optionsDatasource.getItems().iterator().next());
+                    setValue((V) optionsDatasource.getItems().iterator().next());
                 }
             }
         } else {
-            if (optionsDatasource.getState() == State.VALID) {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
                 optionsDatasource.clear();
             }
 
             if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
                 searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
             }
-        }*/
+        }
     }
 
     protected CubaSearchSelect<V> getSearchComponent() {
@@ -235,13 +234,9 @@ public class WebSearchField<V> extends WebLookupField<V> implements SearchField<
 
     @Override
     public void setOptionsSource(OptionsSource<V> optionsSource) {
+        if (optionsSource != null && !(optionsSource instanceof CollectionDatasourceOptions)) {
+            throw new UnsupportedOperationException("SearchField supports only CollectionDatasourceOptions as options source");
+        }
         super.setOptionsSource(optionsSource);
     }
-
-    // VAADIN8: gg, implement
-    /*@Override
-    protected void setupDsAutoRefresh(OptionsDsWrapper ds) {
-        ds.setAutoRefresh(false);
-        ds.setExecuteAutoRefreshInvalid(false);
-    }*/
 }

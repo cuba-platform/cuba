@@ -19,15 +19,13 @@ package com.haulmont.cuba.web.widgets;
 import com.haulmont.cuba.web.widgets.client.searchselect.CubaSearchSelectState;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CubaSearchSelect<V> extends CComboBox<V> {
 
-    protected FilterHandler filterHandler = null;
-    protected boolean repaintOptions = false;
+    protected Consumer<String> filterHandler = null;
 
     public CubaSearchSelect() {
-//        super.setFilteringMode(FilteringMode.OFF);
-
         setStyleName("c-searchselect");
     }
 
@@ -43,60 +41,34 @@ public class CubaSearchSelect<V> extends CComboBox<V> {
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-        this.repaintOptions = false;
         super.changeVariables(source, variables);
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    protected void requestRepaintOptions(String caseSensitiveFilter) {
-        if (!repaintOptions && currentPage < 0) {
-            String aPrevFilter = this.prevfilterstring;
-            String aFilter = this.filterstring;
-
-            if (filterHandler != null) {
-                filterHandler.onFilterChange(caseSensitiveFilter);
-            }
-
-            this.repaintOptions = true;
-            this.currentPage = 0;
-            this.prevfilterstring = aPrevFilter;
-            this.filterstring = aFilter;
+    @Override
+    protected void filterChanged(String filter) {
+        if (filterHandler != null) {
+            filterHandler.accept(filter);
         }
-    }*/
-
-    /*@Override
-    public void setFilteringMode(FilteringMode filteringMode) {
-        // ignore filter mode change
-    }*/
+    }
 
     @Override
     public boolean isTextInputAllowed() {
         return false;
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    public boolean isNewItemsAllowed() {
-        return false;
+    @Override
+    public NewItemProvider<V> getNewItemProvider() {
+        return null;
     }
 
     @Override
-    public void setNewItemsAllowed(boolean allowNewOptions) {
-        if (allowNewOptions) {
+    public void setNewItemProvider(NewItemProvider<V> newItemProvider) {
+        if (newItemProvider != null) {
             throw new UnsupportedOperationException();
         }
-    }*/
-
-    public FilterHandler getFilterHandler() {
-        return filterHandler;
     }
 
-    public void setFilterHandler(FilterHandler filterHandler) {
+    public void setFilterHandler(Consumer<String> filterHandler) {
         this.filterHandler = filterHandler;
-    }
-
-    public interface FilterHandler {
-        void onFilterChange(String newFilter);
     }
 }

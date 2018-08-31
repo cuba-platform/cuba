@@ -23,8 +23,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.vaadin.client.ui.VComboBox;
-import com.vaadin.client.ui.menubar.MenuItem;
 
 public class CubaSearchSelectWidget extends VComboBox {
 
@@ -38,65 +38,37 @@ public class CubaSearchSelectWidget extends VComboBox {
 
     protected int tabIndex = 0;
 
-    public CubaSearchSelectWidget() {
-//        this.filterOptionsOnPaste = false;
-    }
-
     @Override
     public void filterOptions(int page, String filter) {
         if (preventFilterAfterSelect) {
             return;
         }
-
-        if (!filter.equals(lastFilter)) {
-            page = -1;
-        }
-
-        // VAADIN8: gg, implement
-        /*waitingForFilteringResponse = true;
-        client.updateVariable(paintableId, "filter", filter, false);
-        client.updateVariable(paintableId, "page", page, immediate);
-        afterUpdateClientVariables();*/
-
-        lastFilter = filter;
-        currentPage = page;
+        super.filterOptions(page, filter);
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    protected boolean isShowNullItem() {
-        return false;
-    }*/
-
-    // VAADIN8: gg, implement
-    /*@Override
     public void applyNewSuggestions() {
-        if (totalMatches == 1 || currentSuggestions.size() == 1) {
-            onSuggestionSelected(currentSuggestions.get(0));
+        if (currentSuggestions.size() == 1) {
+            performSelection(currentSuggestions.get(0).getOptionKey(), true, true);
+            suggestionPopup.hide();
         } else {
-            if (totalMatches > 1) {
+            if (!currentSuggestions.isEmpty()) {
                 if (!("".equals(lastFilter))) {
-                    suggestionPopup.showSuggestions(currentSuggestions, currentPage, totalMatches);
                     if (!keyboardNavigation) {
-                        suggestionPopup.menu.selectItem(null);
-                        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                            @Override
-                            public void execute() {
-                                suggestionPopup.selectFirstItem();
+                        Scheduler.get().scheduleDeferred(() -> {
+                            String selectedItemCaption = suggestionPopup.menu
+                                    .getSelectedItem()
+                                    .getText();
 
-                                MenuItem selectedItem = suggestionPopup.menu.getSelectedItem();
-                                suggestionPopup.menu.selectItem(selectedItem);
+                            tb.setText(selectedItemCaption);
 
-                                tb.setText(selectedItem.getText());
-
-                                updateEditState();
-                            }
+                            updateEditState();
                         });
                     }
-                } else if (nullSelectionAllowed) {
-                    suggestionPopup.menu.doSelectedItemAction();
                 }
             } else {
+                if (getSelectedCaption() != null) {
+                    tb.setText(getSelectedCaption());
+                }
                 suggestionPopup.hide();
             }
         }
@@ -104,7 +76,26 @@ public class CubaSearchSelectWidget extends VComboBox {
         keyboardNavigation = false;
 
         updateEditState();
-    }*/
+    }
+
+    @Override
+    protected boolean hasNewData() {
+        if (currentSuggestions.isEmpty()) {
+            return false;
+        }
+
+        return currentSuggestions.size() != 1
+                || !currentSuggestions.get(0).getReplacementString().equals(getSelectedCaption());
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        if (event.getTypeInt() == Event.ONPASTE) {
+            // ignore paste
+            return;
+        }
+        super.onBrowserEvent(event);
+    }
 
     @Override
     public void updateReadOnly() {
@@ -117,33 +108,25 @@ public class CubaSearchSelectWidget extends VComboBox {
         this.tabIndex = tabIndex;
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    public void onSuggestionSelected(FilterSelectSuggestion suggestion) {
+    @Override
+    public void onSuggestionSelected(ComboBoxSuggestion suggestion) {
         super.onSuggestionSelected(suggestion);
 
         lastFilter = tb.getText();
-    }*/
+    }
 
     @Override
     public void onClick(ClickEvent event) {
         // do nothing
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
+    @Override
     protected void inputFieldKeyDown(KeyDownEvent event) {
-        switch (event.getNativeKeyCode()) {
-            case KeyCodes.KEY_ENTER:
-                //case KeyCodes.KEY_ESCAPE:
-                //refs platform #1197
-                //ESC shortcut used by window
-                if (!event.isAnyModifierKeyDown()) {
-                    event.stopPropagation();
-                }
-                break;
+        if (KeyCodes.KEY_ENTER == event.getNativeKeyCode()
+                && !event.isAnyModifierKeyDown()) {
+            event.stopPropagation();
         }
-    }*/
+    }
 
     protected void updateEditState() {
         if (enabled && !readonly) {
@@ -154,7 +137,8 @@ public class CubaSearchSelectWidget extends VComboBox {
                     addStyleDependentName(INPUT_STATE);
                 }
             } else {
-                if ("".equals(tb.getText())) {
+                String selectedCaption = getSelectedCaption();
+                if (selectedCaption != null && selectedCaption.equals(tb.getText())) {
                     removeStyleDependentName(INPUT_STATE);
                 } else {
                     addStyleDependentName(INPUT_STATE);
@@ -165,8 +149,7 @@ public class CubaSearchSelectWidget extends VComboBox {
         }
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
+    @Override
     protected void popupKeyDown(KeyDownEvent event) {
         // Propagation of handled events is stopped so other handlers such as
         // shortcut key handlers do not also handle the same events.
@@ -221,20 +204,23 @@ public class CubaSearchSelectWidget extends VComboBox {
                 event.stopPropagation();
                 break;
         }
-    }*/
+    }
 
     @Override
     public void onKeyUp(KeyUpEvent event) {
         if (enabled && !readonly) {
             switch (event.getNativeKeyCode()) {
                 case KeyCodes.KEY_ENTER:
-                    String tbText = tb.getText() == null ? "" : tb.getText();
-                    String currentText = currentSuggestion == null ? "" : currentSuggestion.getReplacementString();
-                    if (!this.preventFilterAfterSelect && !tbText.equals(currentText))
+                    String tbText = tb.getText() == null ? ""
+                            : tb.getText();
+                    String currentText = currentSuggestion == null ? ""
+                            : currentSuggestion.getReplacementString();
+                    if (!this.preventFilterAfterSelect && !tbText.equals(currentText)) {
                         filterOptions(currentPage);
-                    else {
-                        if (!event.isAnyModifierKeyDown())
+                    } else {
+                        if (!event.isAnyModifierKeyDown()) {
                             event.stopPropagation();
+                        }
                     }
                     this.preventFilterAfterSelect = false;
                     break;
@@ -249,12 +235,22 @@ public class CubaSearchSelectWidget extends VComboBox {
                     // NOP
                     break;
                 case KeyCodes.KEY_ESCAPE:
-                    // VAADIN8: gg, implement
-//                    reset();
+                    reset();
                     break;
             }
-
             updateEditState();
         }
+    }
+
+    @Override
+    protected void performSelection(String selectedKey, boolean forceUpdateText, boolean updatePromptAndSelectionIfMatchFound) {
+        super.performSelection(selectedKey, forceUpdateText, updatePromptAndSelectionIfMatchFound);
+        updateEditState();
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        updateEditState();
     }
 }

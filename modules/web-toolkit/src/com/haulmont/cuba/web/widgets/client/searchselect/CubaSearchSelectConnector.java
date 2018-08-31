@@ -18,10 +18,8 @@
 package com.haulmont.cuba.web.widgets.client.searchselect;
 
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
-import com.vaadin.client.ui.combobox.ComboBoxConnector;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaSearchSelect.class, loadStyle = Connect.LoadStyle.LAZY)
@@ -37,23 +35,6 @@ public class CubaSearchSelectConnector extends ComboBoxConnector {
         return (CubaSearchSelectWidget) super.getWidget();
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    protected void performSelection(String selectedKey) {
-        super.performSelection(selectedKey);
-
-        getWidget().updateEditState();
-    }*/
-
-    // VAADIN8: gg, implement
-    /*@Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
-        // update read only, cause tabIndex on the TextBox sets after updateReadOnly
-        getWidget().updateReadOnly();
-    }*/
-
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
@@ -63,15 +44,17 @@ public class CubaSearchSelectConnector extends ComboBoxConnector {
         }
     }
 
-    // VAADIN8: gg, implement
-    /*@Override
-    protected void resetSelection() {
-        if (getWidget().nullSelectionAllowed) {
-            getWidget().currentSuggestion = null;
+    @Override
+    protected void refreshData() {
+        String filterInState = getState().currentFilterText != null ?
+                getState().currentFilterText : "";
+        if (!filterInState.equals(getWidget().lastFilter)) {
+            return;
         }
 
-        super.resetSelection();
-
-        getWidget().updateEditState();
-    }*/
+        if (getDataSource().size() > 0) {
+            super.refreshData();
+        }
+        getWidget().applyNewSuggestions();
+    }
 }

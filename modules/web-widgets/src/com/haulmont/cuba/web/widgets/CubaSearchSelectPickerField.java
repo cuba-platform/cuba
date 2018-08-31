@@ -22,7 +22,6 @@ import com.vaadin.ui.IconGenerator;
 import com.vaadin.ui.ItemCaptionGenerator;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -143,5 +142,19 @@ public class CubaSearchSelectPickerField<T> extends CubaPickerField<T> {
 
     public void setItemCaptionGenerator(ItemCaptionGenerator<T> itemCaptionGenerator) {
         getFieldInternal().setItemCaptionGenerator(itemCaptionGenerator);
+    }
+
+    public void setFilterHandler(Consumer<String> filterHandler) {
+        getFieldInternal().setFilterHandler(filter -> {
+            if (filterHandler != null) {
+                filterHandler.accept(filter);
+            }
+        });
+    }
+
+    public void setOptionsStyleProvider(Function<T, String> styleProvider) {
+        getFieldInternal().setStyleGenerator(item ->
+                styleProvider != null ?
+                        styleProvider.apply(item) : "");
     }
 }
