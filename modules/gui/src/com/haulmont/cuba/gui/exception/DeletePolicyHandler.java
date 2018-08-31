@@ -68,7 +68,7 @@ public class DeletePolicyHandler implements GenericExceptionHandler, Ordered {
 
     protected Pattern getPattern() {
         return Pattern.compile(
-                DeletePolicyException.class.getName() + ": " + DeletePolicyException.ERR_MESSAGE.replace("%s", "(\\w+\\$\\w+)"));
+                DeletePolicyException.class.getName() + ": " + DeletePolicyException.ERR_MESSAGE.replace("%s", "([A-Za-z0-9]+[\\$_]\\w+)"));
     }
 
     protected void doHandle(String message, WindowManager windowManager) {

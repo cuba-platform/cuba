@@ -145,7 +145,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalDate"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localDate = :dt')
+                .query('select e from test_LocalDateTimeEntity e where e.localDate = :dt')
                 .parameter('dt', localDate)
                 .view(View.LOCAL).one()
 
@@ -156,7 +156,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalDateTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localDateTime = :dt')
+                .query('select e from test_LocalDateTimeEntity e where e.localDateTime = :dt')
                 .parameter('dt', localDateTime)
                 .view(View.LOCAL).one()
 
@@ -167,7 +167,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localTime = :dt')
+                .query('select e from test_LocalDateTimeEntity e where e.localTime = :dt')
                 .parameter('dt', localTime)
                 .view(View.LOCAL).one()
 
@@ -179,7 +179,7 @@ class LocalDateTimeTest extends Specification {
     def "find by OffsetDateTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.offsetDateTime = :dt')
+                .query('select e from test_LocalDateTimeEntity e where e.offsetDateTime = :dt')
                 .parameter('dt', offsetDateTime)
                 .view(View.LOCAL).one()
 
@@ -193,7 +193,7 @@ class LocalDateTimeTest extends Specification {
     def "find by OffsetTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.offsetTime = :dt')
+                .query('select e from test_LocalDateTimeEntity e where e.offsetTime = :dt')
                 .parameter('dt', offsetTime)
                 .view(View.LOCAL).one()
 
@@ -206,7 +206,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalDate greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localDate > :dt and e.id = :id')
+                .query('select e from test_LocalDateTimeEntity e where e.localDate > :dt and e.id = :id')
                 .parameter('dt', minLocalDate)
                 .parameter('id', entity.id)
                 .view(View.LOCAL).one()
@@ -218,7 +218,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalTime greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localTime > :dt and e.id = :id')
+                .query('select e from test_LocalDateTimeEntity e where e.localTime > :dt and e.id = :id')
                 .parameter('dt', minLocalTime)
                 .parameter('id', entity.id)
                 .view(View.LOCAL).one()
@@ -230,7 +230,7 @@ class LocalDateTimeTest extends Specification {
     def "find by LocalDateTime greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.localDateTime > :dt and e.id = :id')
+                .query('select e from test_LocalDateTimeEntity e where e.localDateTime > :dt and e.id = :id')
                 .parameter('dt', minLocalDateTime)
                 .parameter('id', entity.id)
                 .view(View.LOCAL).one()
@@ -243,7 +243,7 @@ class LocalDateTimeTest extends Specification {
     def "find by OffsetDateTime greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.offsetDateTime > :dt and e.id = :id')
+                .query('select e from test_LocalDateTimeEntity e where e.offsetDateTime > :dt and e.id = :id')
                 .parameter('dt', minOffsetDateTime)
                 .parameter('id', entity.id)
                 .view(View.LOCAL).one()
@@ -258,7 +258,7 @@ class LocalDateTimeTest extends Specification {
     def "find by OffsetTime greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
-                .query('select e from test$LocalDateTimeEntity e where e.offsetTime > :dt and e.id = :id')
+                .query('select e from test_LocalDateTimeEntity e where e.offsetTime > :dt and e.id = :id')
                 .parameter('dt', minOffsetTime)
                 .parameter('id', entity.id)
                 .view(View.LOCAL).one()

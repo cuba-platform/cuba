@@ -25,7 +25,7 @@ import java.util.Date;
 
 @NamePattern("%s|name")
 @Table(name = "TEST_LOCAL_DATE_TIME_ENTITY")
-@Entity(name = "test$LocalDateTimeEntity")
+@Entity(name = "test_LocalDateTimeEntity")
 public class LocalDateTimeEntity extends StandardEntity {
     private static final long serialVersionUID = -543881549652353366L;
 

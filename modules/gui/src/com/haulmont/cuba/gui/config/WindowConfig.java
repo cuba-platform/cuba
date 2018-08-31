@@ -58,7 +58,7 @@ public class WindowConfig {
 
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
 
-    public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)\\..+");
+    public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([A-Za-z0-9]+[$_][A-Z][_A-Za-z0-9]*)\\..+");
 
     private final Logger log = LoggerFactory.getLogger(WindowConfig.class);
 

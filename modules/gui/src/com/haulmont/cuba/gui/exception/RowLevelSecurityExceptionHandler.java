@@ -71,8 +71,9 @@ public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHa
                     ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
                     MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(entityClass);
                     String originalEntity = mainMetaClass.getName();
-                    String entityName = originalEntity.split("\\$")[1];
-
+                    String entityName = originalEntity.contains("$") ?
+                            StringUtils.substringAfter(originalEntity, "$"):
+                            StringUtils.substringAfter(originalEntity, "_");
                     ConstraintOperationType operationType = exception.getOperationType();
                     if (operationType != null) {
                         ConstraintLocalizationService service = AppBeans.get(ConstraintLocalizationService.NAME);
