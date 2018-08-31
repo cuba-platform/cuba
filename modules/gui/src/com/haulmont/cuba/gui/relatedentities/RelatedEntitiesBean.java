@@ -334,7 +334,10 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         conditionElement.addAttribute("name", conditionName);
         conditionElement.addAttribute("width", "1");
         conditionElement.addAttribute("type", "CUSTOM");
-        String conditionCaption = String.format("%s ids", metaClass.getName().split("\\$")[1]);
+        String entityName = metaClass.getName().contains("$") ?
+                StringUtils.substringAfter(metaClass.getName(), "$"):
+                StringUtils.substringAfter(metaClass.getName(), "_");
+        String conditionCaption = String.format("%s ids", entityName);
         // condition will be hidden so we don't have to load localized condition caption
         conditionElement.addAttribute("locCaption", conditionCaption);
         return conditionElement;

@@ -59,7 +59,8 @@ public class MetaClassRepresentation {
     public String getParent() {
         MetaClass ancestor = meta.getAncestor();
 
-        if (ancestor == null || !ancestor.getName().contains("$") ||
+        if (ancestor == null ||
+                !ancestor.getName().contains("$") && !ancestor.getName().contains("_") ||
                 ancestor.getJavaClass().isAnnotationPresent(MappedSuperclass.class))
             return "";
 
