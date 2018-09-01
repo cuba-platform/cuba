@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -148,12 +149,15 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             }
         });
 
-        joinClause.setContextHelpIconClickHandler(event ->
-                getJoinClauseHelp());
-        whereClause.setContextHelpIconClickHandler(event ->
-                getWhereClauseHelp());
-        groovyScript.setContextHelpIconClickHandler(event ->
-                getGroovyScriptHelp());
+        // temporary hide for desktop #1218
+        if (AppConfig.getClientType() == ClientType.WEB) {
+            joinClause.setContextHelpIconClickHandler(event ->
+                    getJoinClauseHelp());
+            whereClause.setContextHelpIconClickHandler(event ->
+                    getWhereClauseHelp());
+            groovyScript.setContextHelpIconClickHandler(event ->
+                    getGroovyScriptHelp());
+        }
     }
 
     protected void setupVisibility() {
