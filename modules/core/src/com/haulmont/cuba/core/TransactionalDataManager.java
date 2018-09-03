@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
@@ -172,6 +173,39 @@ public interface TransactionalDataManager {
      * @param entity    entity instance
      */
     void remove(Entity entity);
+
+    /**
+     * Creates a new entity instance. This is a shortcut to {@code Metadata.create()}.
+     * @param entityClass   entity class
+     */
+    default <T> T create(Class<T> entityClass) {
+        return AppBeans.get(Metadata.class).create(entityClass);
+    }
+
+    /**
+     * Returns an entity instance which can be used as a reference to an object which exists in the database.
+     * <p>
+     * For example, if you are creating a User, you have to set a Group the user belongs to. If you know the group id,
+     * you could load it from the database and set to the user. This method saves you from unneeded database round trip:
+     * <pre>
+     * user.setGroup(dataManager.getReference(Group.class, groupId));
+     * dataManager.commit(user);
+     * </pre>
+     *
+     * A reference can also be used to delete an existing object by id:
+     * <pre>
+     * dataManager.remove(dataManager.getReference(Customer.class, customerId));
+     * </pre>
+     *
+     * @param entityClass   entity class
+     * @param id            id of an existing object
+     */
+    default <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id) {
+        T entity = AppBeans.get(Metadata.class).create(entityClass);
+        entity.setId(id);
+        AppBeans.get(EntityStates.class).makePatch(entity);
+        return entity;
+    }
 
     /**
      * By default, DataManager does not apply security restrictions on entity operations and attributes, only row-level

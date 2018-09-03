@@ -48,9 +48,6 @@ public class DataManagerTransactionalUsageTest {
         @Inject
         private TransactionalDataManager txDataManager;
 
-        @Inject
-        private Metadata metadata;
-
         @Transactional
         public Id<OrderLine, UUID> sell(String productName, Integer quantity) {
             Product product = txDataManager.load(Product.class)
@@ -58,13 +55,13 @@ public class DataManagerTransactionalUsageTest {
                     .parameter("name", productName)
                     .optional()
                     .orElseGet(() -> {
-                        Product p = metadata.create(Product.class);
+                        Product p = txDataManager.create(Product.class);
                         p.setName(productName);
                         p.setQuantity(100); // initial quantity of a new product
                         return txDataManager.save(p);
                     });
 
-            OrderLine orderLine = metadata.create(OrderLine.class);
+            OrderLine orderLine = txDataManager.create(OrderLine.class);
             orderLine.setProduct(product);
             orderLine.setQuantity(quantity);
             txDataManager.save(orderLine);
@@ -80,13 +77,13 @@ public class DataManagerTransactionalUsageTest {
                         .parameter("name", productName)
                         .optional()
                         .orElseGet(() -> {
-                            Product p = metadata.create(Product.class);
+                            Product p = txDataManager.create(Product.class);
                             p.setName(productName);
                             p.setQuantity(100); // initial quantity of a new product
                             return secureDm.save(p);
                         });
 
-                OrderLine orderLine = metadata.create(OrderLine.class);
+                OrderLine orderLine = txDataManager.create(OrderLine.class);
                 orderLine.setProduct(product);
                 orderLine.setQuantity(quantity);
                 secureDm.save(orderLine);
@@ -154,13 +151,11 @@ public class DataManagerTransactionalUsageTest {
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected DataManager dataManager;
-    private Metadata metadata;
     private Persistence persistence;
 
     @Before
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
-        metadata = cont.metadata();
         persistence = cont.persistence();
 
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
@@ -181,7 +176,7 @@ public class DataManagerTransactionalUsageTest {
 
         // change Product in OrderLIne
 
-        Product product2 = metadata.create(Product.class);
+        Product product2 = dataManager.create(Product.class);
         product2.setName("def");
         product2.setQuantity(100);
         dataManager.commit(product2);
@@ -216,7 +211,7 @@ public class DataManagerTransactionalUsageTest {
                 .one();
         assertEquals(90, (int) product1.getQuantity());
 
-        Product product2 = metadata.create(Product.class);
+        Product product2 = dataManager.create(Product.class);
         product2.setName("def");
         product2.setQuantity(100);
         dataManager.commit(product2);
