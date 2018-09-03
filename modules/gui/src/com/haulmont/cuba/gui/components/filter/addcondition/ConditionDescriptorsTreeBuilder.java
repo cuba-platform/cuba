@@ -152,7 +152,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
             if (isPropertyAllowed(propertyEnclosingMetaClass, metaProperty)
                     && !excludedProperties.contains(metaProperty.getName())
-                    && filter.getPropertiesFilterPredicate() == null || filter.getPropertiesFilterPredicate().test(propertyPath)) {
+                    && (filter.getPropertiesFilterPredicate() == null || filter.getPropertiesFilterPredicate().test(propertyPath))) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);
 
