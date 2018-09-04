@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaSuggestionField;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,10 +45,9 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
     protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
     protected UserSession userSession = AppBeans.get(UserSession.class);
-    protected BackgroundTaskHandler<List<?>> handler;
+    protected BackgroundTaskHandler<List<V>> handler;
 
-    // TODO: gg, generic?
-    protected SearchExecutor<?> searchExecutor;
+    protected SearchExecutor<V> searchExecutor;
 
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
@@ -73,7 +71,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -88,9 +86,17 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         component.setCancelSearchHandler(this::cancelSearch);
     }
 
+    @Override
+    public V getValue() {
+        V value = super.getValue();
+        return value instanceof OptionWrapper
+                ? (V) ((OptionWrapper) value).getValue()
+                : value;
+    }
+
     protected String convertToTextView(V value) {
         if (value == null) {
-            return StringUtils.EMPTY;
+            return "";
         }
 
         if (value instanceof Entity) {
@@ -99,7 +105,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
                 return entityConverter.convertToPresentation(entity, String.class, userSession.getLocale());
             }
 
-            if (StringUtils.isNotEmpty(captionProperty)) {
+            if (captionProperty != null && !"".equals(captionProperty)) {
                 MetaPropertyPath propertyPath = entity.getMetaClass().getPropertyPath(captionProperty);
                 if (propertyPath == null) {
                     throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
@@ -114,14 +120,6 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         }
 
         return metadataTools.format(value);
-    }
-
-    @Override
-    public V getValue() {
-        V value = super.getValue();
-        return value instanceof OptionWrapper
-                ? (V) ((OptionWrapper) value).getValue()
-                : value;
     }
 
     @Override
@@ -143,7 +141,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
 
-        if (StringUtils.isNotEmpty(captionProperty)) {
+        if (captionProperty != null && !"".equals(captionProperty)) {
             captionMode = CaptionMode.PROPERTY;
         } else {
             captionMode = CaptionMode.ITEM;
@@ -160,18 +158,18 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     }
 
     protected void searchSuggestions(final String query) {
-        BackgroundTask<Long, List<?>> task = getSearchSuggestionsTask(query);
+        BackgroundTask<Long, List<V>> task = getSearchSuggestionsTask(query);
         if (task != null) {
             handler = backgroundWorker.handle(task);
             handler.execute();
         }
     }
 
-    protected BackgroundTask<Long, List<?>> getSearchSuggestionsTask(final String query) {
+    protected BackgroundTask<Long, List<V>> getSearchSuggestionsTask(final String query) {
         if (this.searchExecutor == null)
             return null;
 
-        final SearchExecutor<?> currentSearchExecutor = this.searchExecutor;
+        final SearchExecutor<V> currentSearchExecutor = this.searchExecutor;
 
         Map<String, Object> params;
         if (currentSearchExecutor instanceof ParametrizedSearchExecutor) {
@@ -180,13 +178,11 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
             params = Collections.emptyMap();
         }
 
-        return new BackgroundTask<Long, List<?>>(0) {
+        return new BackgroundTask<Long, List<V>>(0) {
             @Override
-            public List<?> run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
-                List<?> result;
+            public List<V> run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                List<V> result;
                 try {
-                    // todo: remove after fixing #PLI-213
-                    //noinspection ChangingGuiFromBackgroundTask
                     result = asyncSearch(currentSearchExecutor, query, params);
                 } catch (RuntimeException e) {
                     log.error("Error in async search thread", e);
@@ -198,10 +194,9 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
             }
 
             @Override
-            public void done(List<?> result) {
+            public void done(List<V> result) {
                 log.debug("Search results for '{}'", query);
-                // TODO: gg, to do to do do do
-                handleSearchResult((List<V>) result);
+                handleSearchResult(result);
             }
 
             @Override
@@ -216,18 +211,18 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         };
     }
 
-    protected List<?> asyncSearch(SearchExecutor<?> searchExecutor, String searchString,
-                                       Map<String, Object> params) throws Exception {
+    protected List<V> asyncSearch(SearchExecutor<V> searchExecutor, String searchString,
+                                  Map<String, Object> params) throws Exception {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
         }
 
         log.debug("Search '{}'", searchString);
 
-        List<?> searchResultItems;
+        List<V> searchResultItems;
         if (searchExecutor instanceof ParametrizedSearchExecutor) {
             //noinspection unchecked
-            ParametrizedSearchExecutor<?> pSearchExecutor = (ParametrizedSearchExecutor<?>) searchExecutor;
+            ParametrizedSearchExecutor<V> pSearchExecutor = (ParametrizedSearchExecutor<V>) searchExecutor;
             searchResultItems = pSearchExecutor.search(searchString, params);
         } else {
             searchResultItems = searchExecutor.search(searchString, Collections.emptyMap());
@@ -258,18 +253,6 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     @Override
     public void setSuggestionsLimit(int suggestionsLimit) {
         component.setSuggestionsLimit(suggestionsLimit);
-    }
-
-    @Override
-    @Deprecated
-    public int getAsyncSearchTimeoutMs() {
-        return component.getAsyncSearchDelayMs();
-    }
-
-    @Override
-    @Deprecated
-    public void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs) {
-        component.setAsyncSearchDelayMs(asyncSearchTimeoutMs);
     }
 
     @Override

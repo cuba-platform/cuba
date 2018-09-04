@@ -26,6 +26,11 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
 
     String NAME = "suggestionField";
 
+    /**
+     * Custom suggestions search action interface.
+     *
+     * @param <E> items type
+     */
     interface SearchExecutor<E> {
 
         /**
@@ -33,54 +38,55 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
          *
          * @param searchString search string as is
          * @param searchParams additional parameters, empty if SearchExecutor is not instance of {@link ParametrizedSearchExecutor}
-         * @return list with found items. Item can be any type. {@link OptionWrapper} instances can be used as
-         * items to provide different value for displaying purpose.
+         * @return list with found items. {@link OptionWrapper} instances can be used as items to provide
+         * different value for displaying purpose.
          */
         List<E> search(String searchString, Map<String, Object> searchParams);
     }
 
+    /**
+     * Extended version of {@link SuggestionField.SearchExecutor} that allows to pass parameters.
+     *
+     * @param <E> items type
+     */
     interface ParametrizedSearchExecutor<E> extends SearchExecutor<E> {
+
         /**
-         * Called by the execution environment in UI thread to prepare execution parameters for {@link SearchExecutor#search(String, Map)}.
+         * Called by the execution environment in UI thread to prepare execution parameters for
+         * {@link SearchExecutor#search(String, Map)}.
          *
-         * @return map with parameters.
+         * @return map with parameters
          */
         Map<String, Object> getParams();
     }
 
+    /**
+     * ENTER key pressed listener.
+     */
+    @FunctionalInterface
     interface EnterActionHandler {
+
         /**
          * Called by component if user entered a search string and pressed ENTER key without selection of a suggestion.
          *
-         * @param currentSearchString search string as is.
+         * @param searchString search string as is
          */
-        void onEnterKeyPressed(String currentSearchString);
+        void onEnterKeyPressed(String searchString);
     }
 
+    /**
+     * ARROW_DOWN key pressed listener.
+     */
+    @FunctionalInterface
     interface ArrowDownActionHandler {
+
         /**
          * Called by component if user pressed ARROW_DOWN key without search action.
          *
-         * @param currentSearchString search string as is.
+         * @param searchString search string as is
          */
-        void onArrowDownKeyPressed(String currentSearchString);
+        void onArrowDownKeyPressed(String searchString);
     }
-
-    /**
-     * @return delay between the last key press action and async search
-     * @deprecated Use {@link SuggestionField#getAsyncSearchDelayMs()} instead.
-     */
-    @Deprecated
-    int getAsyncSearchTimeoutMs();
-
-    /**
-     * Sets delay between the last key press action and async search.
-     *
-     * @param asyncSearchTimeoutMs delay in ms
-     * @deprecated Use {@link SuggestionField#setAsyncSearchDelayMs(int)} instead.
-     */
-    @Deprecated
-    void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs);
 
     /**
      * @return delay between the last key press action and async search
@@ -104,6 +110,7 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
      *
      * @param searchExecutor SearchExecutor instance
      */
+    // Use raw type until #391 will be fixed
     void setSearchExecutor(SearchExecutor searchExecutor);
 
     /**
@@ -147,7 +154,6 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
      */
     int getSuggestionsLimit();
 
-
     /**
      * Sets limit of suggestions which will be shown.
      *
@@ -163,7 +169,8 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
     void showSuggestions(List<V> suggestions);
 
     /**
-     * Sets the given {@code width} to the component popup.
+     * Sets the given {@code width} to the component popup. There are two predefined settings available:
+     * {@link SuggestionField#POPUP_AUTO_WIDTH} and {@link SuggestionField#POPUP_PARENT_WIDTH}.
      *
      * @param width width of the component popup
      */
@@ -177,22 +184,41 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
      */
     String getPopupWidth();
 
+    /**
+     * @return option captions mode generation
+     */
     CaptionMode getCaptionMode();
+
+    /**
+     * Sets how option captions should be generated.
+     *
+     * @param captionMode mode
+     */
     void setCaptionMode(CaptionMode captionMode);
 
+    /**
+     * @return a property that is used for caption generation
+     */
     String getCaptionProperty();
+
+    /**
+     * Sets a property that will be used for option caption generation when {@link CaptionMode#PROPERTY} is used.
+     *
+     * @param captionProperty property
+     */
     void setCaptionProperty(String captionProperty);
 
     /**
-     * Represent value and its string representation.
+     * Represents a value and its string representation.
      */
     class OptionWrapper<V> {
+
         protected String caption;
         protected V value;
 
         public OptionWrapper(String caption, V value) {
-            Preconditions.checkNotNullArgument(caption);
-            Preconditions.checkNotNullArgument(value);
+            Preconditions.checkNotNullArgument(caption, "Caption should not be null");
+            Preconditions.checkNotNullArgument(value, "Value should not be null");
 
             this.caption = caption;
             this.value = value;
@@ -230,9 +256,7 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
 
         @Override
         public int hashCode() {
-            int result = caption.hashCode();
-            result = 31 * result + value.hashCode();
-            return result;
+            return 17 * caption.hashCode() + 31 * value.hashCode();
         }
 
         @Override

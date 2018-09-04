@@ -16,20 +16,28 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.haulmont.cuba.web.widgets.CubaSuggestionPickerField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V>
         implements SuggestionPickerField<V>, SecuredActionsHolder {
@@ -39,14 +47,17 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     /* Beans */
     protected BackgroundWorker backgroundWorker;
 
-    protected BackgroundTaskHandler<List<?>> handler;
+    protected BackgroundTaskHandler<List<V>> handler;
 
-    protected SearchExecutor<?> searchExecutor;
+    protected SearchExecutor<V> searchExecutor;
 
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
 
     protected OptionsStyleProvider optionsStyleProvider;
+
+    protected StringToEntityConverter entityConverter = new StringToEntityConverter();
+    protected Locale locale;
 
     public WebSuggestionPickerField() {
     }
@@ -79,9 +90,38 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         getComponent().setCancelSearchHandler(this::cancelSearch);
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
+        UserSessionSource userSessionSource =
+                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+
+        this.locale = userSessionSource.getLocale();
+    }
+
     protected String convertToTextView(V value) {
-        // TODO: gg, wait for WebSuggestionField implementation
-        return metadataTools.format(value);
+        if (value == null) {
+            return "";
+        }
+
+        if (captionMode == CaptionMode.ITEM) {
+            return entityConverter.convertToPresentation(value, String.class, locale);
+        }
+
+        if (captionProperty != null && !"".equals(captionProperty)) {
+            MetaPropertyPath propertyPath = value.getMetaClass().getPropertyPath(captionProperty);
+            if (propertyPath == null) {
+                throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
+            }
+
+            return metadataTools.format(value.getValueEx(captionProperty), propertyPath.getMetaProperty());
+        }
+
+        log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
+                "while caption mode is \"PROPERTY\"");
+
+        return entityConverter.convertToPresentation(value, String.class, locale);
     }
 
     protected void cancelSearch() {
@@ -94,16 +134,81 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     }
 
     protected void searchSuggestions(final String query) {
-        BackgroundTask<Long, List<?>> task = getSearchSuggestionsTask(query);
+        BackgroundTask<Long, List<V>> task = getSearchSuggestionsTask(query);
         if (task != null) {
             handler = backgroundWorker.handle(task);
             handler.execute();
         }
     }
 
-    protected BackgroundTask<Long, List<?>> getSearchSuggestionsTask(final String query) {
-        // TODO: gg, wait for WebSuggestionField implementation
-        return null;
+    protected BackgroundTask<Long, List<V>> getSearchSuggestionsTask(final String query) {
+        if (this.searchExecutor == null)
+            return null;
+
+        final SearchExecutor<V> currentSearchExecutor = this.searchExecutor;
+
+        Map<String, Object> params;
+        if (currentSearchExecutor instanceof ParametrizedSearchExecutor) {
+            params = ((ParametrizedSearchExecutor<?>) currentSearchExecutor).getParams();
+        } else {
+            params = Collections.emptyMap();
+        }
+
+        return new BackgroundTask<Long, List<V>>(0) {
+            @Override
+            public List<V> run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                List<V> result;
+                try {
+                    result = asyncSearch(currentSearchExecutor, query, params);
+                } catch (RuntimeException e) {
+                    log.error("Error in async search thread", e);
+
+                    result = Collections.emptyList();
+                }
+
+                return result;
+            }
+
+            @Override
+            public void done(List<V> result) {
+                log.debug("Search results for '{}'", query);
+                handleSearchResult(result);
+            }
+
+            @Override
+            public void canceled() {
+            }
+
+            @Override
+            public boolean handleException(Exception ex) {
+                log.error("Error in async search thread", ex);
+                return true;
+            }
+        };
+    }
+
+    protected List<V> asyncSearch(SearchExecutor<V> searchExecutor, String searchString,
+                                  Map<String, Object> params) throws Exception {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException();
+        }
+
+        log.debug("Search '{}'", searchString);
+
+        List<V> searchResultItems;
+        if (searchExecutor instanceof ParametrizedSearchExecutor) {
+            //noinspection unchecked
+            ParametrizedSearchExecutor<V> pSearchExecutor = (ParametrizedSearchExecutor<V>) searchExecutor;
+            searchResultItems = pSearchExecutor.search(searchString, params);
+        } else {
+            searchResultItems = searchExecutor.search(searchString, Collections.emptyMap());
+        }
+
+        return searchResultItems;
+    }
+
+    protected void handleSearchResult(List<V> results) {
+        showSuggestions(results);
     }
 
     @Override
@@ -114,18 +219,6 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     @Override
     public void setFieldEditable(boolean editable) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    @Deprecated
-    public int getAsyncSearchTimeoutMs() {
-        return getComponent().getAsyncSearchDelayMs();
-    }
-
-    @Override
-    @Deprecated
-    public void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs) {
-        getComponent().setAsyncSearchDelayMs(asyncSearchTimeoutMs);
     }
 
     @Override
