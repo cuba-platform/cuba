@@ -23,7 +23,10 @@ import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.sys.ControllerDependencyInjector;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.MessageBundle;
+import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
+import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.Before;
@@ -33,15 +36,18 @@ import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import static com.haulmont.cuba.gui.screen.FrameOwner.NO_OPTIONS;
 import static org.junit.Assert.assertSame;
 
 @SuppressWarnings("IncorrectCreateGuiComponent")
 public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
-    private Messages messages = new MessagesClientImpl();
-
     @Mocked
     BeanLocator beanLocator;
+    private Messages messages = new MessagesClientImpl();
+    @SuppressWarnings("unused")
+    @Mocked
+    private MessageBundle messageBundle;
 
     @Before
     public void setUp() {
@@ -49,7 +55,12 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
         new Expectations() {
             {
                 beanLocator.getAll(Messages.class);
-                result = ImmutableMap.of(Messages.NAME, messages); minTimes = 0;
+                result = ImmutableMap.of(Messages.NAME, messages);
+                minTimes = 0;
+
+                beanLocator.getPrototype(MessageBundle.NAME);
+                result = messageBundle;
+                minTimes = 0;
             }
         };
     }
@@ -57,7 +68,8 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
     @Test
     public void testInjectMessagesIntoAbstractFrame() throws Exception {
         TestController controller = new TestController();
-        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller, new HashMap<>());
+        UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, NO_OPTIONS);
+        injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
 
         injector.inject();
@@ -71,10 +83,12 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
     @Test
     public void testInjectWindowParamsIntoAbstractFrame() {
-        HashMap<String,Object> testMap = new HashMap<>();
-        testMap.put("someObj",new Object());
+        HashMap<String, Object> testMap = new HashMap<>();
+        testMap.put("someObj", new Object());
         WindowParamTestController controller = new WindowParamTestController();
-        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller, testMap);
+
+        UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, new MapScreenOptions(testMap));
+        injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
         injector.inject();
 
@@ -89,7 +103,7 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
     private class WindowParamTestController extends AbstractWindow {
 
-        @WindowParam(name = "someObj",required = true)
+        @WindowParam(name = "someObj", required = true)
         public Object someObj;
     }
 }

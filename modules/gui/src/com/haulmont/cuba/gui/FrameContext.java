@@ -27,7 +27,6 @@ import java.util.function.Consumer;
  * Provides access to frame parameters and component values.
  */
 public interface FrameContext {
-
     Frame getFrame();
 
     /**

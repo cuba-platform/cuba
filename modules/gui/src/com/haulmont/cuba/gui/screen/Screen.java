@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
@@ -32,7 +33,6 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.screen.events.*;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -51,6 +52,8 @@ import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
 /**
  * Base class for all screen controllers.
+ *
+ * @see Window
  */
 public abstract class Screen implements FrameOwner {
 
@@ -68,13 +71,13 @@ public abstract class Screen implements FrameOwner {
 
     private BeanLocator beanLocator;
 
+    protected BeanLocator getBeanLocator() {
+        return beanLocator;
+    }
+
     @Inject
     protected void setBeanLocator(BeanLocator beanLocator) {
         this.beanLocator = beanLocator;
-    }
-
-    protected BeanLocator getBeanLocator() {
-        return beanLocator;
     }
 
     protected EventHub getEventHub() {
@@ -94,12 +97,12 @@ public abstract class Screen implements FrameOwner {
         this.id = id;
     }
 
-    protected void setScreenContext(ScreenContext screenContext) {
-        this.screenContext = screenContext;
-    }
-
     protected ScreenContext getScreenContext() {
         return screenContext;
+    }
+
+    protected void setScreenContext(ScreenContext screenContext) {
+        this.screenContext = screenContext;
     }
 
     protected ScreenData getScreenData() {
@@ -187,7 +190,7 @@ public abstract class Screen implements FrameOwner {
         return eventHub.subscribe(AfterCloseEvent.class, listener);
     }
 
-    protected OperationResult showUnsavedChangesDialog() {
+    protected OperationResult showUnsavedChangesDialog(CloseAction closeAction) {
         UnknownOperationResult result = new UnknownOperationResult();
         Messages messages = beanLocator.get(Messages.NAME);
 
@@ -214,7 +217,7 @@ public abstract class Screen implements FrameOwner {
         return result;
     }
 
-    protected OperationResult showSaveConfirmationDialog() {
+    protected OperationResult showSaveConfirmationDialog(CloseAction closeAction) {
         UnknownOperationResult result = new UnknownOperationResult();
         Messages messages = beanLocator.get(Messages.NAME);
 
@@ -266,13 +269,14 @@ public abstract class Screen implements FrameOwner {
         }
 
         if (action.isCheckForUnsavedChanges() && hasUnsavedChanges()) {
+            // todo extract to Dialogs bean
             Configuration configuration = beanLocator.get(Configuration.NAME);
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
             if (clientConfig.getUseSaveConfirmation()) {
-                return showSaveConfirmationDialog();
+                return showSaveConfirmationDialog(action);
             } else {
-                return showUnsavedChangesDialog();
+                return showUnsavedChangesDialog(action);
             }
         }
 
@@ -484,6 +488,178 @@ public abstract class Screen implements FrameOwner {
         }
         if (component != null) {
             ComponentsHelper.focusComponent(component);
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    @TriggerOnce
+    public static class InitEvent extends EventObject {
+        protected final ScreenOptions options;
+
+        public InitEvent(Screen source, ScreenOptions options) {
+            super(source);
+            this.options = options;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public ScreenOptions getOptions() {
+            return options;
+        }
+    }
+
+    /**
+     * JavaDoc
+     *
+     * Used by UI components to perform actions after UiController initialized
+     */
+    @TriggerOnce
+    public static class AfterInitEvent extends EventObject {
+        protected final ScreenOptions options;
+
+        public AfterInitEvent(Screen source, ScreenOptions options) {
+            super(source);
+            this.options = options;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public ScreenOptions getOptions() {
+            return options;
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    public static class CloseTriggeredEvent extends EventObject {
+
+        protected final CloseAction closeAction;
+        protected boolean closePrevented = false;
+
+        public CloseTriggeredEvent(Screen screen, CloseAction closeAction) {
+            super(screen);
+            this.closeAction = closeAction;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public Screen getScreen() {
+            return (Screen) super.getSource();
+        }
+
+        public CloseAction getCloseAction() {
+            return closeAction;
+        }
+
+        public void preventWindowClose() {
+            this.closePrevented = true;
+        }
+
+        public boolean isClosePrevented() {
+            return closePrevented;
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    @TriggerOnce
+    public static class BeforeShowEvent extends EventObject {
+        public BeforeShowEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    @TriggerOnce
+    public static class AfterShowEvent extends EventObject {
+        public AfterShowEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    public static class BeforeCloseEvent extends EventObject {
+
+        protected final CloseAction closeAction;
+        protected boolean closePrevented = false;
+
+        public BeforeCloseEvent(Screen source, CloseAction closeAction) {
+            super(source);
+            this.closeAction = closeAction;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public Screen getScreen() {
+            return (Screen) super.getSource();
+        }
+
+        public CloseAction getCloseAction() {
+            return closeAction;
+        }
+
+        public void preventWindowClose() {
+            this.closePrevented = true;
+        }
+
+        public boolean isClosePrevented() {
+            return closePrevented;
+        }
+    }
+
+    /**
+     * JavaDoc
+     */
+    public static class AfterCloseEvent extends EventObject {
+
+        protected final CloseAction closeAction;
+
+        public AfterCloseEvent(Screen source, CloseAction closeAction) {
+            super(source);
+            this.closeAction = closeAction;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public Screen getScreen() {
+            return (Screen) super.getSource();
+        }
+
+        public CloseAction getCloseAction() {
+            return closeAction;
         }
     }
 }

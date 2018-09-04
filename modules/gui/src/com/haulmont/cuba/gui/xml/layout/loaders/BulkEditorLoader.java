@@ -133,13 +133,12 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
             resultComponent.setUseConfirmDialog(Boolean.parseBoolean(useConfirmDialog));
         }
 
-        context.addPostInitTask((context1, window) -> {
-            // todo artamonov here we can use post wrap instead of post init
+        context.addPostInitTask((c, w) -> {
             if (resultComponent.getListComponent() == null) {
                 Component bindComponent = resultComponent.getFrame().getComponent(listComponent);
                 if (!(bindComponent instanceof ListComponent)) {
                     throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
-                            context1.getFullFrameId(), "componentId", resultComponent.getId());
+                            context.getFullFrameId(), "componentId", resultComponent.getId());
                 }
 
                 resultComponent.setListComponent((ListComponent) bindComponent);

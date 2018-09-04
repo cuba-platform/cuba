@@ -281,8 +281,6 @@ public abstract class App {
      * Called on each browser tab initialization.
      */
     public void createTopLevelWindow(AppUI ui) {
-        setUiServices(ui);
-
         String topLevelWindowId = routeTopLevelWindowId();
         WindowInfo windowInfo = windowConfig.getWindowInfo(topLevelWindowId);
 
@@ -290,12 +288,6 @@ public abstract class App {
 
         Screen screen = screens.create(windowInfo, OpenMode.ROOT);
         screens.show(screen);
-    }
-
-    protected void setUiServices(AppUI ui) {
-        // screens depends on the previous beans
-        Screens screens = beanLocator.getPrototype(Screens.NAME, ui);
-        ui.setScreens(screens);
     }
 
     protected abstract String routeTopLevelWindowId();
@@ -308,19 +300,18 @@ public abstract class App {
     /**
      * Initialize new TopLevelWindow and replace current.
      *
-     * todo move to UI
-     *
      * @param topLevelWindowId target top level window id
+     * @deprecated Use {@link Screens#create(Class, Screens.LaunchMode)} with {@link OpenMode#ROOT}
      */
+    @Deprecated
     public void navigateTo(String topLevelWindowId) {
         AppUI ui = AppUI.getCurrent();
-        setUiServices(ui);
 
         WindowInfo windowInfo = windowConfig.getWindowInfo(topLevelWindowId);
 
         Screens screens = ui.getScreens();
 
-        Screen screen = screens.create(windowInfo.getScreenClass(), OpenMode.ROOT);
+        Screen screen = screens.create(windowInfo.asScreen(), OpenMode.ROOT);
         screens.show(screen);
     }
 
@@ -489,16 +480,14 @@ public abstract class App {
                     if (wm != null) {
                         //  todo implement
                         wm.removeAll();
-
-//                        WebWindowManagerImpl webWindowManager = (WebWindowManagerImpl) topLevelWindow.getWindowManager();
-//                        webWindowManager.setDisableSavingScreenHistory(true);
-//                        webWindowManager.closeAll();
                     }
 
                     // also remove all native Vaadin windows, that is not under CUBA control
                     for (com.vaadin.ui.Window win : ui.getWindows().toArray(new com.vaadin.ui.Window[0])) {
                         ui.removeWindow(win);
                     }
+
+                    // todo also remove all notifications
                 });
             }
         } catch (Throwable e) {

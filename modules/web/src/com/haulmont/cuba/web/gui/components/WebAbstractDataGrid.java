@@ -97,7 +97,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, E extends Entity>
         extends WebAbstractComponent<T>
         implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier,
-        DataGridSourceEventsDelegate<E>, InitializingBean {
+        DataGridSourceEventsDelegate<E>, HasInnerComponents, InitializingBean {
 
     protected static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
     protected static final String TEXT_SELECTION_ENABLED_STYLE = "text-selection-enabled";
@@ -443,6 +443,14 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                 publish(ColumnReorderEvent.class, event);
             }
         };
+    }
+
+    @Override
+    public Collection<com.haulmont.cuba.gui.components.Component> getInnerComponents() {
+        if (buttonsPanel != null) {
+            return Collections.singletonList(buttonsPanel);
+        }
+        return Collections.emptyList();
     }
 
     protected void initEditor(Grid<E> component) {

@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -152,7 +153,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
     }
 
     protected void callControllerInvoke(Entity rowItem, String columnId, String invokeMethodName) {
-        Object controller = ComponentsHelper.getFrameController(table.getFrame());
+        FrameOwner controller = table.getFrame().getFrameOwner();
         Method method;
         method = findLinkInvokeMethod(controller.getClass(), invokeMethodName);
         if (method != null) {
@@ -176,7 +177,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
     }
 
     protected Method findLinkInvokeMethod(Class cls, String methodName) {
-        Method exactMethod = MethodUtils.getAccessibleMethod(cls, methodName, new Class[]{Entity.class, String.class});
+        Method exactMethod = MethodUtils.getAccessibleMethod(cls, methodName, Entity.class, String.class);
         if (exactMethod != null) {
             return exactMethod;
         }

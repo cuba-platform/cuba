@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.screen.events;
+package com.haulmont.cuba.gui.components.sys;
 
-import com.haulmont.bali.events.TriggerOnce;
-import com.haulmont.cuba.gui.screen.Screen;
-
-import java.util.EventObject;
+import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 
 /**
- * JavaDoc
+ * Internal. Provides API for WindowManager implementations.
  */
-@TriggerOnce
-public class AfterShowEvent extends EventObject {
-    public AfterShowEvent(Screen source) {
-        super(source);
-    }
-
-    @Override
-    public Screen getSource() {
-        return (Screen) super.getSource();
-    }
+public interface FragmentImplementation extends Fragment, FrameImplementation {
+    void setFrameOwner(ScreenFragment controller);
 }

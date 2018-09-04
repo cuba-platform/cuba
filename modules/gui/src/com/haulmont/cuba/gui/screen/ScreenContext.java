@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -31,4 +32,6 @@ public interface ScreenContext {
     Dialogs getDialogs();
 
     Notifications getNotifications();
+
+    Fragments getFragments();
 }

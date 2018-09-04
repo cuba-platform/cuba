@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.screen.Screen;
 /**
  * Wrapper object for compatibility with legacy code.
  */
+@Deprecated
 public class ScreenWrapper extends AbstractWindow {
 
     private Screen screen;

@@ -22,13 +22,14 @@ import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.FragmentLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
@@ -59,22 +60,20 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 @org.springframework.stereotype.Component(ExternalUIComponentsSource.NAME)
 public class WebExternalUIComponentsSource implements ExternalUIComponentsSource {
 
+    protected static final String WINDOW_LOADER_EL = "windowLoader";
+    protected static final String FRAGMENT_LOADER_EL = "fragmentLoader";
+
+    protected static final Map<String, Class<? extends ComponentLoader>> loaders = ImmutableMap.of(
+            WINDOW_LOADER_EL, WindowLoader.class,
+            FRAGMENT_LOADER_EL, FragmentLoader.class
+    );
+
     private static final String WEB_COMPONENTS_CONFIG_XML_PROP = "cuba.web.componentsConfig";
 
     private final Logger log = LoggerFactory.getLogger(WebExternalUIComponentsSource.class);
 
-    protected static final String WINDOW_LOADER_EL = "windowLoader";
-    protected static final String FRAME_LOADER_EL = "frameLoader";
-    protected static final String EDITOR_LOADER_EL = "editorLoader";
-    protected static final String LOOKUP_LOADER_EL = "lookupLoader";
-
-    protected static final Map<String, Class<? extends FrameLoader>> loaders = ImmutableMap.of(
-            WINDOW_LOADER_EL, WindowLoader.class,
-            FRAME_LOADER_EL, FrameLoader.class,
-            EDITOR_LOADER_EL, WindowLoader.Editor.class,
-            LOOKUP_LOADER_EL, WindowLoader.Lookup.class
-    );
-
+    @Inject
+    protected Scripting scripting;
     @Inject
     protected Resources resources;
     @Inject
@@ -202,33 +201,26 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
             layoutLoaderConfig.registerWindowLoader(windowLoader);
         }
 
-        Class frameLoader = loadWindowLoader(rootElement, FRAME_LOADER_EL);
-        if (frameLoader != null) {
-            layoutLoaderConfig.registerFrameLoader(frameLoader);
+        Class fragmentLoader = loadWindowLoader(rootElement, FRAGMENT_LOADER_EL);
+        if (fragmentLoader != null) {
+            layoutLoaderConfig.registerFragmentLoader(fragmentLoader);
         }
     }
 
     protected Class loadWindowLoader(Element rootElement, String loaderElem) {
-        ClassLoader classLoader = App.class.getClassLoader();
-
         Element elem = rootElement.element(loaderElem);
         if (elem == null) {
             return null;
         }
 
         String loaderClass = elem.element("class").getStringValue();
-        try {
-            Class clazz = classLoader.loadClass(loaderClass);
+        Class clazz = scripting.loadClassNN(loaderClass);
 
-            if (loaders.get(loaderElem).isAssignableFrom(clazz)) {
-                //noinspection unchecked
-                return clazz;
-            }
-
-            log.warn("Class {} is not suitable as {}", loaderClass, loaderElem);
-        } catch (ClassNotFoundException e) {
-            log.warn("Unable to load window loader class: {}", loaderClass);
+        if (loaders.get(loaderElem).isAssignableFrom(clazz)) {
+            return clazz;
         }
+
+        log.warn("Class {} is not suitable as {}", loaderClass, loaderElem);
 
         return null;
     }

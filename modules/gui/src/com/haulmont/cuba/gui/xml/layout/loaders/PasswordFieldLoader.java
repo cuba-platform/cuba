@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
     @Override
     public void createComponent() {
-        resultComponent = (PasswordField) factory.createComponent(PasswordField.NAME);
+        resultComponent = factory.createComponent(PasswordField.NAME);
         loadId(resultComponent, element);
     }
 
@@ -42,17 +42,15 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
 
         String capsLockIndicator = element.attributeValue("capsLockIndicator");
         if (StringUtils.isNotEmpty(capsLockIndicator)) {
-            context.addPostWrapTask((context, window) -> {
-                if (resultComponent.getCapsLockIndicator() == null) {
-                    Component bindComponent = resultComponent.getFrame().getComponent(capsLockIndicator);
-                    if (!(bindComponent instanceof CapsLockIndicator)) {
-                        throw new GuiDevelopmentException("Specify 'capsLockIndicator' attribute: id of " +
-                                "CapsLockIndicator component", context.getFullFrameId(), "componentId", resultComponent
-                                .getId());
-                    }
-                    resultComponent.setCapsLockIndicator((CapsLockIndicator) bindComponent);
+            if (resultComponent.getCapsLockIndicator() == null) {
+                Component bindComponent = resultComponent.getFrame().getComponent(capsLockIndicator);
+                if (!(bindComponent instanceof CapsLockIndicator)) {
+                    throw new GuiDevelopmentException("Specify 'capsLockIndicator' attribute: id of " +
+                            "CapsLockIndicator component", context.getFullFrameId(), "componentId", resultComponent
+                            .getId());
                 }
-            });
+                resultComponent.setCapsLockIndicator((CapsLockIndicator) bindComponent);
+            }
         }
     }
 }

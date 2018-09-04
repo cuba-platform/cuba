@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.screen.events;
+package com.haulmont.cuba.gui.screen.compatibility;
 
-import com.haulmont.cuba.gui.screen.CloseAction;
-import com.haulmont.cuba.gui.screen.Screen;
-
-import java.util.EventObject;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 
 /**
- * JavaDoc
+ * Wrapper object for compatibility with legacy code.
  */
-public class AfterCloseEvent extends EventObject {
+@Deprecated
+public class ScreenFragmentWrapper extends AbstractFrame {
 
-    protected final CloseAction closeAction;
+    private ScreenFragment screen;
 
-    public AfterCloseEvent(Screen source, CloseAction closeAction) {
-        super(source);
-        this.closeAction = closeAction;
+    public ScreenFragmentWrapper(ScreenFragment screen) {
+        this.screen = screen;
     }
 
     @Override
-    public Screen getSource() {
-        return (Screen) super.getSource();
-    }
-
-    public Screen getScreen() {
-        return (Screen) super.getSource();
-    }
-
-    public CloseAction getCloseAction() {
-        return closeAction;
+    public Frame getWrappedFrame() {
+        return screen.getFragment();
     }
 }

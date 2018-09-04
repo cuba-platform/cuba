@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.screen.events;
+package com.haulmont.cuba.gui.components;
 
-import com.haulmont.bali.events.TriggerOnce;
-import com.haulmont.cuba.gui.screen.Screen;
-
-import java.util.EventObject;
+import java.util.Collection;
 
 /**
- * JavaDoc
+ * Component which can contain other components.
  */
-@TriggerOnce
-public class BeforeShowEvent extends EventObject {
-    public BeforeShowEvent(Screen source) {
-        super(source);
-    }
-
-    @Override
-    public Screen getSource() {
-        return (Screen) super.getSource();
-    }
+public interface HasInnerComponents {
+    Collection<Component> getInnerComponents();
 }

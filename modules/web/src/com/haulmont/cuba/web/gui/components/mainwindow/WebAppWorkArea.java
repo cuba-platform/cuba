@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasInnerComponents;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -49,11 +50,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea {
+public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea, HasInnerComponents {
 
     public static final String WORKAREA_STYLENAME = "c-app-workarea";
 
@@ -325,6 +324,14 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     @Override
     public State getState() {
         return state;
+    }
+
+    @Override
+    public Collection<com.haulmont.cuba.gui.components.Component> getInnerComponents() {
+        if (state == State.INITIAL_LAYOUT) {
+            return Collections.singletonList(getInitialLayout());
+        }
+        return Collections.emptyList();
     }
 
     // Allows Tabs reordering, do not support component / text drop to Tabs panel

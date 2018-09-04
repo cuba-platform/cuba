@@ -46,7 +46,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         super.setMessagesPack(messagesPack);
 
         for (ComponentLoader loader : pendingLoadComponents) {
-            if (!(loader instanceof FrameComponentLoader) && !(loader instanceof RuntimePropertiesFrameLoader)) {
+            if (!(loader instanceof FragmentComponentLoader) && !(loader instanceof RuntimePropertiesFrameLoader)) {
                 loader.setMessagesPack(messagesPack);
             }
         }

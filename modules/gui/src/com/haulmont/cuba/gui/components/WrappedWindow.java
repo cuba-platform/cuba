@@ -18,6 +18,4 @@ package com.haulmont.cuba.gui.components;
 
 @Deprecated
 public interface WrappedWindow {
-    @Deprecated
-    Window getWrapper();
 }

@@ -30,7 +30,7 @@ import java.util.List;
 public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     @Override
     public void createComponent() {
-        resultComponent = (GroupTable) factory.createComponent(GroupTable.NAME);
+        resultComponent = factory.createComponent(GroupTable.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }
@@ -46,7 +46,7 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     }
 
     @Override
-    protected List<Table.Column> loadColumns(final Table component, Element columnsElement, MetaClass metaClasss) {
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClasss) {
         List<Table.Column> columns = new ArrayList<>();
 
         Element groupElement = columnsElement.element("group");
@@ -63,7 +63,9 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
                     groupProperties.add(column.getId());
                 }
             }
-            context.addPostInitTask((context1, window) -> ((GroupTable) component).groupBy(groupProperties.toArray()));
+            context.addPostInitTask((context1, window) ->
+                    ((GroupTable) component).groupBy(groupProperties.toArray())
+            );
         }
 
         columns.addAll(super.loadColumns(component, columnsElement, metaClasss));

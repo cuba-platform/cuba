@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.screen.StandardEditor;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
-import com.haulmont.cuba.gui.screen.events.BeforeShowEvent;
 import com.haulmont.cuba.security.entity.UserRole;
 
 @UiController("tmpUserRoleEdit")

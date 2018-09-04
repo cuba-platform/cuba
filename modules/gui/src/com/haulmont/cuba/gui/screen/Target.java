@@ -20,7 +20,13 @@ package com.haulmont.cuba.gui.screen;
  * JavaDoc
  */
 public enum Target {
+    /**
+     * Default option.
+     */
     COMPONENT,
+
     CONTROLLER,
-    WINDOW
+    WINDOW,
+    FRAGMENT,
+    SCREEN
 }

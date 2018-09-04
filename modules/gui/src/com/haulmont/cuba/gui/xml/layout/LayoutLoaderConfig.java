@@ -32,13 +32,17 @@ public class LayoutLoaderConfig {
     protected Map<String, Class<? extends ComponentLoader>> loaders = new ConcurrentHashMap<>();
 
     protected Class<? extends WindowLoader> windowLoader = WindowLoader.class;
-    protected Class<? extends FrameLoader> frameLoader = FrameLoader.class;
+    protected Class<? extends FragmentLoader> fragmentLoader = FragmentLoader.class;
 
     public LayoutLoaderConfig() {
         initStandardLoaders();
     }
 
     protected void initStandardLoaders() {
+        loaders.put("iframe", FragmentComponentLoader.class); // for backward compatibility
+        loaders.put(Frame.NAME, FragmentComponentLoader.class); // for backward compatibility
+        loaders.put(Fragment.NAME, FragmentComponentLoader.class);
+
         loaders.put(HBoxLayout.NAME, HBoxLayoutLoader.class);
         loaders.put(VBoxLayout.NAME, VBoxLayoutLoader.class);
         loaders.put(GridLayout.NAME, GridLayoutLoader.class);
@@ -86,8 +90,6 @@ public class LayoutLoaderConfig {
 
         loaders.put(Calendar.NAME, CalendarLoader.class);
 
-        loaders.put(Frame.NAME, FrameComponentLoader.class);
-        loaders.put("iframe", FrameComponentLoader.class); // for backward compatibility
         loaders.put(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
         loaders.put(SplitPanel.NAME, SplitPanelLoader.class);
         loaders.put(Tree.NAME, TreeLoader.class);
@@ -131,8 +133,8 @@ public class LayoutLoaderConfig {
         return windowLoader;
     }
 
-    public Class<? extends ComponentLoader> getFrameLoader() {
-        return frameLoader;
+    public Class<? extends ComponentLoader> getFragmentLoader() {
+        return fragmentLoader;
     }
 
     public Class<? extends ComponentLoader> getLoader(String name) {
@@ -143,8 +145,8 @@ public class LayoutLoaderConfig {
         windowLoader = loader;
     }
 
-    public void registerFrameLoader(Class<? extends FrameLoader> loader) {
-        frameLoader = loader;
+    public void registerFragmentLoader(Class<? extends FragmentLoader> loader) {
+        fragmentLoader = loader;
     }
 
     protected void register(String tagName, Class<? extends ComponentLoader> loaderClass) {

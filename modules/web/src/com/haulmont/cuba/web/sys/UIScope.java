@@ -17,10 +17,7 @@
 
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.gui.Dialogs;
-import com.haulmont.cuba.gui.Notifications;
-import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WebBrowserTools;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.VaadinSession;
 import org.springframework.beans.factory.ObjectFactory;
@@ -38,6 +35,9 @@ public class UIScope implements Scope {
         }
 
         AppUI ui = AppUI.getCurrent();
+        if (ui == null) {
+            throw new IllegalStateException("Unable to use UIScope - there is no UI instance");
+        }
 
         switch (name) {
             case Screens.NAME:
@@ -60,6 +60,13 @@ public class UIScope implements Scope {
                     notifications = (Notifications) objectFactory.getObject();
                 }
                 return notifications;
+
+            case Fragments.NAME:
+                Fragments fragments = ui.getFragments();
+                if (fragments == null) {
+                    fragments = (Fragments) objectFactory.getObject();
+                }
+                return fragments;
 
             case WebBrowserTools.NAME:
                 WebBrowserTools webBrowserTools = ui.getWebBrowserTools();

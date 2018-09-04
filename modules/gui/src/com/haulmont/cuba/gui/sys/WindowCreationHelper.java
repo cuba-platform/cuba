@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.sys;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
@@ -32,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -40,13 +40,18 @@ import java.util.regex.Pattern;
 /**
  * Utility class used by the framework when it creates frames and windows. Not for use in application code.
  */
-// todo refactor to bean
-public final class WindowCreationHelper {
+@org.springframework.stereotype.Component(WindowCreationHelper.NAME)
+public class WindowCreationHelper {
 
-    private static final Pattern INNER_COMPONENT_PATTERN = Pattern.compile("(.+?)\\[(.+?)]");
-    private static final Pattern COMPONENT_ACTION_PATTERN = Pattern.compile("(.+?)<(.+?)>");
+    public static final String NAME = "cuba_WindowCreationHelper";
 
-    private static final Logger log = LoggerFactory.getLogger(WindowCreationHelper.class);
+    private final Pattern INNER_COMPONENT_PATTERN = Pattern.compile("(.+?)\\[(.+?)]");
+    private final Pattern COMPONENT_ACTION_PATTERN = Pattern.compile("(.+?)<(.+?)>");
+
+    private final Logger log = LoggerFactory.getLogger(WindowCreationHelper.class);
+
+    @Inject
+    protected UserSessionSource sessionSource;
 
     private WindowCreationHelper() {
     }
@@ -56,14 +61,13 @@ public final class WindowCreationHelper {
      *
      * @param container frame
      */
-    public static void applyUiPermissions(Frame container) {
+    public void applyUiPermissions(Frame container) {
         Window window = container instanceof Window ? (Window) container : ComponentsHelper.getWindow(container);
         if (window == null) {
             log.warn(String.format("Unable to find window for container %s with id '%s'", container.getClass(), container.getId()));
             return;
         }
 
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         UserSession userSession = sessionSource.getUserSession();
 
         String screenId = window.getId();
@@ -84,7 +88,7 @@ public final class WindowCreationHelper {
     }
 
     @Nullable
-    private static String getTargetComponentId(String target, String screenId) {
+    protected String getTargetComponentId(String target, String screenId) {
         if (StringUtils.isNotBlank(target)) {
             int delimiterIndex = target.indexOf(Permission.TARGET_PATH_DELIMETER);
             if (delimiterIndex >= 0) {
@@ -97,8 +101,8 @@ public final class WindowCreationHelper {
         return null;
     }
 
-    private static void applyComponentPermission(Window window, String screenId,
-                                                 Integer permissionValue, String targetComponentId) {
+    protected void applyComponentPermission(Window window, String screenId,
+                                            Integer permissionValue, String targetComponentId) {
         Component component = window.getComponent(targetComponentId);
 
         if (component != null) {
@@ -116,8 +120,8 @@ public final class WindowCreationHelper {
         }
     }
 
-    private static void applyCompositeComponentPermission(Window window, String screenId,
-                                                          Integer permissionValue, String componentId) {
+    protected void applyCompositeComponentPermission(Window window, String screenId,
+                                                     Integer permissionValue, String componentId) {
         final Matcher matcher = INNER_COMPONENT_PATTERN.matcher(componentId);
         if (matcher.find()) {
             final String customComponentId = matcher.group(1);
@@ -162,9 +166,9 @@ public final class WindowCreationHelper {
      * @param permissionValue Permission value
      * @param componentId     Component Id
      */
-    private static void applyComponentActionPermission(Window window, String screenId,
-                                                       Integer permissionValue, String componentId) {
-        final Matcher matcher = COMPONENT_ACTION_PATTERN.matcher(componentId);
+    protected void applyComponentActionPermission(Window window, String screenId,
+                                                  Integer permissionValue, String componentId) {
+        Matcher matcher = COMPONENT_ACTION_PATTERN.matcher(componentId);
         if (matcher.find()) {
             final String customComponentId = matcher.group(1);
             final String actionId = matcher.group(2);

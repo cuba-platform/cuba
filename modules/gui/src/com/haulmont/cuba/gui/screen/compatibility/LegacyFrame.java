@@ -45,9 +45,10 @@ public interface LegacyFrame extends Component.HasXmlDescriptor,
         return ((LegacyFrame) frame.getFrameOwner());
     }
 
-    default WindowManager getWindowManager() {
-        return getWrappedFrame().getWindowManager();
-    }
+    /**
+     * JavaDoc
+     */
+    WindowManager getWindowManager();
 
     FrameContext getContext();
 

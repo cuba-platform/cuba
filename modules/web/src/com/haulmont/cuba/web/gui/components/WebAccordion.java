@@ -27,17 +27,17 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.ScreenUtils;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaAccordion;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
@@ -366,16 +366,15 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     public Accordion.Tab addLazyTab(String name,
                                    Element descriptor,
                                    ComponentLoader loader) {
-        WebVBoxLayout tabContent = new WebVBoxLayout();
-
-        Layout layout = (Layout) tabContent.getComponent();
-        layout.setSizeFull();
+        ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME); // todo replace
+        CssLayout tabContent = cf.createComponent(CssLayout.NAME);
+        tabContent.setStyleName("c-tabsheet-lazytab");
+        tabContent.setSizeFull();
 
         Tab tab = new Tab(name, tabContent);
         tabs.put(name, tab);
 
-        com.vaadin.ui.Component tabComponent = WebComponentsHelper.getComposition(tabContent);
-        tabComponent.setSizeFull();
+        com.vaadin.ui.Component tabComponent = tabContent.unwrapComposition(com.vaadin.ui.Component.class);
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
         com.vaadin.ui.Accordion.Tab tabControl = this.component.addTab(tabComponent);
@@ -385,7 +384,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
-            context.addPostInitTask((context1, window) -> initComponentTabChangeListener());
+            context.addPostInitTask((c, w) -> initComponentTabChangeListener());
             postInitTaskAdded = true;
         }
 
@@ -477,7 +476,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
             component.addSelectedTabChangeListener(event -> {
                 if (context != null) {
                     context.executeInjectTasks();
-                    context.executePostWrapTasks();
                     context.executeInitTasks();
                 }
                 // Fire GUI listener
@@ -512,11 +510,11 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {
-        protected WebAbstractBox tabContent;
+        protected ComponentContainer tabContent;
         protected Element descriptor;
         protected ComponentLoader loader;
 
-        public LazyTabChangeListener(WebAbstractBox tabContent, Element descriptor, ComponentLoader loader) {
+        public LazyTabChangeListener(ComponentContainer tabContent, Element descriptor, ComponentLoader loader) {
             this.tabContent = tabContent;
             this.descriptor = descriptor;
             this.loader = loader;
@@ -525,7 +523,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
         @Override
         public void selectedTabChange(com.vaadin.ui.Accordion.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebAccordion.this.component.getSelectedTab();
-            com.vaadin.ui.Component tabComponent = tabContent.getComponent();
+            com.vaadin.ui.Component tabComponent = tabContent.unwrap(com.vaadin.ui.Component.class);
             if (selectedTab == tabComponent && getLazyTabs().remove(tabComponent)) {
                 loader.createComponent();
 
@@ -541,11 +539,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
                 Window window = ComponentsHelper.getWindow(WebAccordion.this);
                 if (window != null) {
-                    walkComponents(tabContent, (settingsComponent, name) -> {
-                        if (settingsComponent.getId() != null
-                                && settingsComponent instanceof HasSettings) {
-                            Settings settings = ScreenUtils.getSettings(window.getFrameOwner());
-                            if (settings != null) {
+                    Settings settings = UiControllerUtils.getSettings(window.getFrameOwner());
+
+                    if (settings != null) {
+                        walkComponents(tabContent, (settingsComponent, name) -> {
+                            if (settingsComponent.getId() != null
+                                    && settingsComponent instanceof HasSettings) {
                                 Element e = settings.get(name);
                                 ((HasSettings) settingsComponent).applySettings(e);
 
@@ -558,17 +557,8 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
                                     }
                                 }
                             }
-                        }
-                    });
-
-                    // todo init debug ids after all
-                    /*AppUI appUI = AppUI.getCurrent();
-                    if (appUI.isPerformanceTestMode()) {
-                        context.addPostInitTask((context1, window1) -> {
-                            RootWindow appWindow = appUI.getTopLevelWindow();
-                            ((WebWindowManagerImpl) appWindow.getWindowManager()).initDebugIds(window1);
                         });
-                    }*/
+                    }
                 }
             }
         }

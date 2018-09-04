@@ -2,10 +2,7 @@ package com.haulmont.cuba.gui.sys;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -14,7 +11,8 @@ public final class ScreenDescriptorUtils {
     private ScreenDescriptorUtils() {
     }
 
-    public static String getInferredScreenId(UiController uiController, Class<? extends Screen> annotatedScreenClass) {
+    public static String getInferredScreenId(UiController uiController,
+                                             Class<? extends FrameOwner> annotatedScreenClass) {
         checkNotNullArgument(uiController);
         checkNotNullArgument(annotatedScreenClass);
 
@@ -39,7 +37,8 @@ public final class ScreenDescriptorUtils {
         return id;
     }
 
-    public static String getInferredDesignTemplate(UiDescriptor uiDescriptor, Class<? extends Screen> annotatedScreenClass) {
+    public static String getInferredTemplate(UiDescriptor uiDescriptor,
+                                             Class<? extends FrameOwner> annotatedScreenClass) {
         checkNotNullArgument(uiDescriptor);
 
         String templateLocation = uiDescriptor.value();

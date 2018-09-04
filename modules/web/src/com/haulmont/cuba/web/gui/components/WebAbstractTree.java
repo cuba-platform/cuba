@@ -36,14 +36,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
-        extends WebAbstractList<T, E> implements Tree<E> {
+        extends WebAbstractList<T, E> implements Tree<E>, HasInnerComponents {
 
     private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
     // Style names used by tree itself
@@ -127,6 +124,14 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         if (getComposition() instanceof AbstractComponent) {
             ((AbstractComponent) getComposition()).setDescription(description);
         }
+    }
+
+    @Override
+    public Collection<com.haulmont.cuba.gui.components.Component> getInnerComponents() {
+        if (buttonsPanel != null) {
+            return Collections.singletonList(buttonsPanel);
+        }
+        return Collections.emptyList();
     }
 
     @Override

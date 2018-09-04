@@ -415,7 +415,7 @@ public class ScreensHelper {
                 return getScreenCaption(window, src);
         }
 
-        Class screenClass = windowInfo.getScreenClass();
+        Class screenClass = windowInfo.getControllerClass();
         if (screenClass != null)
             return screenClass.getSimpleName();
 

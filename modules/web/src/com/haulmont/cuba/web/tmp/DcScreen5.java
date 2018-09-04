@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.screen.events.BeforeShowEvent;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 

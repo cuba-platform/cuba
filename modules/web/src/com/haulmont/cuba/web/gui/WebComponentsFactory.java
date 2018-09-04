@@ -73,7 +73,6 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(RichTextArea.NAME, WebRichTextArea.class);
         classes.put(MaskedField.NAME, WebMaskedField.class);
 
-        classes.put(Frame.NAME, WebFrame.class);
         classes.put(Table.NAME, WebTable.class);
         classes.put(TreeTable.NAME, WebTreeTable.class);
         classes.put(GroupTable.NAME, WebGroupTable.class);

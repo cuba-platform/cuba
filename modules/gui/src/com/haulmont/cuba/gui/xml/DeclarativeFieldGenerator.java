@@ -16,12 +16,12 @@
 
 package com.haulmont.cuba.gui.xml;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 
 import java.lang.reflect.Method;
 
@@ -42,10 +42,10 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
         if (frame == null) {
             throw new IllegalStateException("Table should be attached to frame");
         }
-        Frame controller = ComponentsHelper.getFrameController(frame);
+        FrameOwner controller = frame.getFrameOwner();
 
-        Class<? extends Frame> cCls = controller.getClass();
-        Method exactMethod = getAccessibleMethod(cCls, methodName, new Class[]{Datasource.class, String.class});
+        Class<? extends FrameOwner> cCls = controller.getClass();
+        Method exactMethod = getAccessibleMethod(cCls, methodName, Datasource.class, String.class);
         if (exactMethod != null) {
             checkGeneratorMethodResultType(exactMethod, frame);
 
@@ -56,7 +56,7 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
             }
         }
 
-        Method dsMethod = getAccessibleMethod(cCls, methodName, new Class[]{Datasource.class});
+        Method dsMethod = getAccessibleMethod(cCls, methodName, Datasource.class);
         if (dsMethod != null) {
             checkGeneratorMethodResultType(dsMethod, frame);
 
@@ -67,7 +67,7 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
             }
         }
 
-        Method parameterLessMethod = getAccessibleMethod(cCls, methodName, new Class[]{});
+        Method parameterLessMethod = getAccessibleMethod(cCls, methodName);
         if (parameterLessMethod != null) {
             checkGeneratorMethodResultType(parameterLessMethod, frame);
 

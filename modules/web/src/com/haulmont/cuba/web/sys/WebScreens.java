@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.client.ClientConfig;
@@ -47,16 +46,14 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
-import com.haulmont.cuba.gui.screen.compatibility.ScreenEditorWrapper;
-import com.haulmont.cuba.gui.screen.compatibility.ScreenLookupWrapper;
-import com.haulmont.cuba.gui.screen.compatibility.ScreenWrapper;
-import com.haulmont.cuba.gui.screen.events.AfterInitEvent;
-import com.haulmont.cuba.gui.screen.events.AfterShowEvent;
-import com.haulmont.cuba.gui.screen.events.BeforeShowEvent;
-import com.haulmont.cuba.gui.screen.events.InitEvent;
+import com.haulmont.cuba.gui.screen.Screen.AfterInitEvent;
+import com.haulmont.cuba.gui.screen.Screen.AfterShowEvent;
+import com.haulmont.cuba.gui.screen.Screen.BeforeShowEvent;
+import com.haulmont.cuba.gui.screen.Screen.InitEvent;
+import com.haulmont.cuba.gui.screen.compatibility.*;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.sys.*;
@@ -84,6 +81,7 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+import org.perf4j.StopWatch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -96,6 +94,7 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 import static com.haulmont.cuba.gui.components.Window.CLOSE_ACTION_ID;
+import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
 @Scope(UIScope.NAME)
 @Component(Screens.NAME)
@@ -123,13 +122,10 @@ public class WebScreens implements Screens, WindowManager {
     protected IconResolver iconResolver;
     @Inject
     protected Messages messages;
-
     @Inject
-    protected Dialogs dialogs;
+    protected WindowCreationHelper windowCreationHelper;
     @Inject
-    protected Notifications notifications;
-    @Inject
-    protected WebBrowserTools webBrowserTools;
+    protected AttributeAccessSupport attributeAccessSupport;
 
     @Inject
     protected WebConfig webConfig;
@@ -179,63 +175,76 @@ public class WebScreens implements Screens, WindowManager {
         // todo perf4j stop watches for lifecycle
 
         @SuppressWarnings("unchecked")
-        Class<T> resolvedScreenClass = (Class<T>) windowInfo.getScreenClass();
+        Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
 
         Window window = createWindow(windowInfo, resolvedScreenClass, launchMode);
 
-        ui.beforeTopLevelWindowInit();
-
         T controller = createController(windowInfo, window, resolvedScreenClass, launchMode);
 
-        ScreenUtils.setWindowId(controller, windowInfo.getId());
-        ScreenUtils.setWindow(controller, window);
-        ScreenUtils.setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, options, this, dialogs, notifications)
+        // setup screen and controller
+
+        UiControllerUtils.setWindowId(controller, windowInfo.getId());
+        UiControllerUtils.setFrame(controller, window);
+        UiControllerUtils.setScreenContext(controller,
+                new ScreenContextImpl(windowInfo, options, this, ui.getDialogs(), ui.getNotifications(), ui.getFragments())
         );
-        ScreenUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        UiControllerUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
 
         WindowImplementation windowImpl = (WindowImplementation) window;
         windowImpl.setFrameOwner(controller);
         windowImpl.setId(controller.getId());
 
-        WindowContext windowContext = new WindowContextImpl(window, launchMode, options);
+        WindowContextImpl windowContext = new WindowContextImpl(window, launchMode);
         ((WindowImplementation) window).setContext(windowContext);
 
-        loadScreenXml(windowInfo, window, controller, options);
+        // load from XML
 
-        ScreenDependencyInjector dependencyInjector =
-                beanLocator.getPrototype(ScreenDependencyInjector.NAME, controller, options);
+        ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(options);
+        componentLoaderContext.setFullFrameId(windowInfo.getId());
+        componentLoaderContext.setCurrentFrameId(windowInfo.getId());
+        componentLoaderContext.setFrame(window);
+
+        loadScreenXml(windowInfo, window, controller, componentLoaderContext);
+
+        // inject top level screen dependencies
+
+        StopWatch injectStopWatch = createStopWatch(LifeCycle.INJECTION, windowInfo.getId());
+
+        UiControllerDependencyInjector dependencyInjector =
+                beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
         dependencyInjector.inject();
 
+        injectStopWatch.stop();
+
+        // injection in fragments
+        componentLoaderContext.executeInjectTasks();
+
+        // run init
+
         InitEvent initEvent = new InitEvent(controller, options);
-        ScreenUtils.fireEvent(controller, InitEvent.class, initEvent);
+        UiControllerUtils.fireEvent(controller, InitEvent.class, initEvent);
+
+        componentLoaderContext.executeInitTasks();
+        componentLoaderContext.executePostInitTasks();
 
         AfterInitEvent afterInitEvent = new AfterInitEvent(controller, options);
-        ScreenUtils.fireEvent(controller, AfterInitEvent.class, afterInitEvent);
+        UiControllerUtils.fireEvent(controller, AfterInitEvent.class, afterInitEvent);
 
         return controller;
     }
 
     protected <T extends Screen> void loadScreenXml(WindowInfo windowInfo, Window window, T controller,
-                                                    ScreenOptions options) {
+                                                    ComponentLoaderContext componentLoaderContext) {
         String templatePath = windowInfo.getTemplate();
 
         if (StringUtils.isNotEmpty(templatePath)) {
-            // todo support relative design path
+            Element element = screenXmlLoader.load(templatePath, windowInfo.getId(), componentLoaderContext.getParams());
 
-            Map<String, Object> params = Collections.emptyMap();
-            if (options instanceof MapScreenOptions) {
-                params = ((MapScreenOptions) options).getParams();
-            }
+            LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
+            layoutLoader.setLocale(getLocale());
+            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
 
-            Element element = screenXmlLoader.load(templatePath, windowInfo.getId(), params);
-
-            ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(params);
-            componentLoaderContext.setFullFrameId(windowInfo.getId());
-            componentLoaderContext.setCurrentFrameId(windowInfo.getId());
-            componentLoaderContext.setFrame(window);
-
-            ComponentLoader windowLoader = createLayoutStructure(windowInfo, window, element, componentLoaderContext);
+            ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element, windowInfo.getId());
 
             if (controller instanceof LegacyFrame) {
                 screenViewsLoader.deployViews(element);
@@ -249,18 +258,10 @@ public class WebScreens implements Screens, WindowManager {
             }
 
             windowLoader.loadComponent();
-
-            if (!componentLoaderContext.getPostInitTasks().isEmpty()) {
-                EventHub eventHub = ScreenUtils.getEventHub(controller);
-                eventHub.subscribe(AfterInitEvent.class, event ->
-                        componentLoaderContext.executePostInitTasks()
-                );
-            }
         }
     }
 
-    protected  <T extends Screen> void initDsContext(Window window, Element element,
-                                                     ComponentLoaderContext componentLoaderContext) {
+    protected void initDsContext(Window window, Element element, ComponentLoaderContext componentLoaderContext) {
         DsContext dsContext = loadDsContext(element);
         initDatasources(window, dsContext, componentLoaderContext.getParams());
 
@@ -297,27 +298,15 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    protected ComponentLoader createLayoutStructure(WindowInfo windowInfo, Window window, Element rootElement,
-                                                    ComponentLoader.Context context) {
-        String descriptorPath = windowInfo.getTemplate();
-
-        LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-        layoutLoader.setLocale(getLocale());
-
-        if (StringUtils.isNotEmpty(descriptorPath)) {
-            if (descriptorPath.contains("/")) {
-                descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
-            }
-
-            String path = descriptorPath.replaceAll("/", ".");
-            int start = path.startsWith(".") ? 1 : 0;
-            path = path.substring(start);
-
-            layoutLoader.setMessagesPack(path);
+    protected String getMessagePack(String descriptorPath) {
+        if (descriptorPath.contains("/")) {
+            descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
         }
-        //noinspection UnnecessaryLocalVariable
-        ComponentLoader windowLoader = layoutLoader.createWindowContent(window, rootElement, windowInfo.getId());
-        return windowLoader;
+
+        String messagesPack = descriptorPath.replaceAll("/", ".");
+        int start = messagesPack.startsWith(".") ? 1 : 0;
+        messagesPack = messagesPack.substring(start);
+        return messagesPack;
     }
 
     protected Locale getLocale() {
@@ -330,10 +319,14 @@ public class WebScreens implements Screens, WindowManager {
 
         checkMultiOpen(screen);
 
-        // todo UI security
+        StopWatch uiPermissionsWatch = createStopWatch(LifeCycle.UI_PERMISSIONS, screen.getId());
+
+        windowCreationHelper.applyUiPermissions(screen.getWindow());
+
+        uiPermissionsWatch.stop();
 
         BeforeShowEvent beforeShowEvent = new BeforeShowEvent(screen);
-        ScreenUtils.fireEvent(screen, BeforeShowEvent.class, beforeShowEvent);
+        UiControllerUtils.fireEvent(screen, BeforeShowEvent.class, beforeShowEvent);
 
         LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
 
@@ -366,14 +359,14 @@ public class WebScreens implements Screens, WindowManager {
         afterShowWindow(screen);
 
         AfterShowEvent afterShowEvent = new AfterShowEvent(screen);
-        ScreenUtils.fireEvent(screen, AfterShowEvent.class, afterShowEvent);
+        UiControllerUtils.fireEvent(screen, AfterShowEvent.class, afterShowEvent);
     }
 
     protected void afterShowWindow(Screen screen) {
         WindowContext windowContext = screen.getWindow().getContext();
 
         if (!WindowParams.DISABLE_APPLY_SETTINGS.getBool(windowContext)) {
-            ScreenUtils.applySettings(screen, getSettingsImpl(screen.getId()));
+            UiControllerUtils.applySettings(screen, getSettingsImpl(screen.getId()));
         }
 
         if (screen instanceof LegacyFrame) {
@@ -389,7 +382,6 @@ public class WebScreens implements Screens, WindowManager {
             AbstractWindow abstractWindow = (AbstractWindow) screen;
 
             if (abstractWindow.isAttributeAccessControlEnabled()) {
-                AttributeAccessSupport attributeAccessSupport = AppBeans.get(AttributeAccessSupport.NAME);
                 attributeAccessSupport.applyAttributeAccess(abstractWindow, false);
             }
         }
@@ -673,24 +665,55 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public Frame openFrame(Frame parentFrame, com.haulmont.cuba.gui.components.Component parent, WindowInfo windowInfo) {
-        throw new UnsupportedOperationException();
+        return openFrame(parentFrame, parent, windowInfo, Collections.emptyMap());
     }
 
     @Override
     public Frame openFrame(Frame parentFrame, com.haulmont.cuba.gui.components.Component parent, WindowInfo windowInfo,
                            Map<String, Object> params) {
-        throw new UnsupportedOperationException();
+        return openFrame(parentFrame, parent, null, windowInfo, params);
     }
 
     @Override
     public Frame openFrame(Frame parentFrame, com.haulmont.cuba.gui.components.Component parent, @Nullable String id,
                            WindowInfo windowInfo, Map<String, Object> params) {
-        throw new UnsupportedOperationException();
+        ScreenFragment screenFragment;
+
+        Fragments fragments = ui.getFragments();
+
+        if (params != null && !params.isEmpty()) {
+            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo, new MapScreenOptions(params));
+        } else {
+            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo);
+        }
+
+        if (id != null) {
+            screenFragment.getFragment().setId(id);
+        }
+
+        if (parent instanceof ComponentContainer) {
+            ComponentContainer container = (ComponentContainer) parent;
+            for (com.haulmont.cuba.gui.components.Component c : container.getComponents()) {
+                if (c instanceof com.haulmont.cuba.gui.components.Component.Disposable) {
+                    com.haulmont.cuba.gui.components.Component.Disposable disposable =
+                            (com.haulmont.cuba.gui.components.Component.Disposable) c;
+                    if (!disposable.isDisposed()) {
+                        disposable.dispose();
+                    }
+                }
+                container.remove(c);
+            }
+            container.add(screenFragment.getFragment());
+        }
+
+        fragments.initialize(screenFragment);
+
+        return screenFragment instanceof Frame ? (Frame) screenFragment : new ScreenFragmentWrapper(screenFragment);
     }
 
     @Override
     public void close(Window window) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(); // todo
     }
 
     @Override
@@ -700,14 +723,14 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showNotification(String caption) {
-        notifications.create()
+        ui.getNotifications().create()
                 .setCaption(caption)
                 .show();
     }
 
     @Override
     public void showNotification(String caption, Frame.NotificationType type) {
-        notifications.create()
+        ui.getNotifications().create()
                 .setCaption(caption)
                 .setContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
                 .setType(convertNotificationType(type))
@@ -716,7 +739,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showNotification(String caption, String description, Frame.NotificationType type) {
-        notifications.create()
+        ui.getNotifications().create()
                 .setCaption(caption)
                 .setDescription(description)
                 .setContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
@@ -749,7 +772,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showMessageDialog(String title, String message, Frame.MessageType messageType) {
-        MessageDialog messageDialog = dialogs.createMessageDialog()
+        MessageDialog messageDialog = ui.getDialogs().createMessageDialog()
                 .setCaption(title)
                 .setMessage(message)
                 .setType(convertMessageType(messageType.getMessageMode()))
@@ -790,7 +813,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions) {
-        OptionDialog optionDialog = dialogs.createOptionDialog()
+        OptionDialog optionDialog = ui.getDialogs().createOptionDialog()
                 .setCaption(title)
                 .setMessage(message)
                 .setType(convertMessageType(messageType.getMessageMode()))
@@ -813,7 +836,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        dialogs.createExceptionDialog()
+        ui.getDialogs().createExceptionDialog()
                 .setCaption(caption)
                 .setMessage(message)
                 .setThrowable(throwable)
@@ -822,7 +845,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        webBrowserTools.showWebPage(url, params);
+        ui.getWebBrowserTools().showWebPage(url, params);
     }
 
     /**
@@ -1292,7 +1315,7 @@ public class WebScreens implements Screens, WindowManager {
 
             String tabId;
 
-            ScreenContext screenContext = ScreenUtils.getScreenContext(screen);
+            ScreenContext screenContext = UiControllerUtils.getScreenContext(screen);
 
             ScreenOptions options = screenContext.getScreenOptions();
             WindowInfo windowInfo = screenContext.getWindowInfo();
@@ -1652,10 +1675,10 @@ public class WebScreens implements Screens, WindowManager {
             if (initialized) {
                 if (saveSettingsAction == action) {
                     Screen screen = window.getFrameOwner();
-                    ScreenUtils.saveSettings(screen);
+                    UiControllerUtils.saveSettings(screen);
                 } else if (restoreToDefaultsAction == action) {
                     Screen screen = window.getFrameOwner();
-                    ScreenUtils.deleteSettings(screen);
+                    UiControllerUtils.deleteSettings(screen);
                 } else if (analyzeAction == action) {
                     LayoutAnalyzer analyzer = new LayoutAnalyzer();
                     List<LayoutTip> tipsList = analyzer.analyze(window);

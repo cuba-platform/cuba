@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -434,7 +435,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 throw new IllegalStateException("Please specify Frame for EntityLinkField");
             }
 
-            Object controller = ComponentsHelper.getFrameController(frame);
+            FrameOwner controller = frame.getFrameOwner();
             Method method;
             try {
                 method = controller.getClass().getMethod(invokeMethodName, EntityLinkField.class);

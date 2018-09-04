@@ -66,6 +66,7 @@
     <bean id="cuba_web_UiControllersConfiguration" class="com.haulmont.cuba.gui.sys.UiControllersConfiguration">
         <property name="packages">
             <list>
+                <value>com.haulmont.cuba.gui.screen.actions</value>
                 <value>com.haulmont.cuba.gui.app</value>
                 <value>com.haulmont.cuba.web.app</value>
                 <value>com.haulmont.cuba.web.tmp</value>

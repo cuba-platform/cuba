@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.context.annotation.Scope;
 
@@ -56,7 +57,7 @@ public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
         if (frame == null) {
             throw new IllegalStateException("Table should be attached to frame");
         }
-        Frame controller = ComponentsHelper.getFrameController(frame);
+        FrameOwner controller = frame.getFrameOwner();
 
         if (method == null) {
             method = findGeneratorMethod(controller.getClass(), methodName);

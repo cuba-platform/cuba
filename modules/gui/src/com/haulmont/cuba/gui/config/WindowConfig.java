@@ -25,10 +25,9 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ScreenDescriptorUtils;
 import com.haulmont.cuba.gui.sys.UiControllerDefinition;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
@@ -58,8 +57,6 @@ import java.util.regex.Pattern;
  */
 @Component(WindowConfig.NAME)
 public class WindowConfig {
-
-    // todo Support FrameOwner here instead of Screen
 
     public static final String NAME = "cuba_WindowConfig";
 
@@ -105,18 +102,28 @@ public class WindowConfig {
 
         @Nonnull
         @Override
-        public Class<? extends Screen> getScreenClass(WindowInfo windowInfo) {
-            return extractScreenClass(windowInfo);
+        public Class<? extends FrameOwner> getControllerClass(WindowInfo windowInfo) {
+            return extractControllerClass(windowInfo);
         }
     };
 
     protected WindowInfo.Type extractWindowInfoType(WindowInfo windowInfo) {
-        return WindowInfo.Type.SCREEN; // todo support fragment
+        Class<? extends FrameOwner> controllerClass = extractControllerClass(windowInfo);
+
+        if (Screen.class.isAssignableFrom(controllerClass)) {
+            return WindowInfo.Type.SCREEN;
+        }
+
+        if (ScreenFragment.class.isAssignableFrom(controllerClass)) {
+            return WindowInfo.Type.FRAGMENT;
+        }
+
+        throw new IllegalStateException("Unknown type of screen " + windowInfo.getId());
     }
 
     @Nonnull
     @SuppressWarnings("unchecked")
-    protected Class<? extends Screen> extractScreenClass(WindowInfo windowInfo) {
+    protected Class<? extends FrameOwner> extractControllerClass(WindowInfo windowInfo) {
         if (windowInfo.getDescriptor() != null) {
             String className = windowInfo.getDescriptor().attributeValue("class");
 
@@ -127,14 +134,15 @@ public class WindowConfig {
             }
 
             if (Strings.isNullOrEmpty(className)) {
-                throw new IllegalStateException("Window descriptor does not declare class attribute");
+                // fallback for legacy frames
+                return AbstractFrame.class;
             }
 
-            return (Class<? extends Screen>) scripting.loadClassNN(className);
+            return (Class<? extends FrameOwner>) scripting.loadClassNN(className);
         }
 
-        if (windowInfo.getScreenClassName() != null) {
-            return loadDefinedScreenClass(windowInfo.getScreenClassName());
+        if (windowInfo.getControllerClassName() != null) {
+            return loadDefinedScreenClass(windowInfo.getControllerClassName());
         }
 
         throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
@@ -145,8 +153,8 @@ public class WindowConfig {
             return Boolean.parseBoolean(windowInfo.getDescriptor().attributeValue("multipleOpen"));
         }
 
-        if (windowInfo.getScreenClassName() != null) {
-            Class<? extends Screen> screenClass = loadDefinedScreenClass(windowInfo.getScreenClassName());
+        if (windowInfo.getControllerClassName() != null) {
+            Class<? extends FrameOwner> screenClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
 
             UiController uiController = screenClass.getAnnotation(UiController.class);
             if (uiController == null) {
@@ -166,14 +174,14 @@ public class WindowConfig {
             return windowInfo.getDescriptor().attributeValue("template");
         }
 
-        if (windowInfo.getScreenClassName() != null) {
-            Class<? extends Screen> screenClass = loadDefinedScreenClass(windowInfo.getScreenClassName());
+        if (windowInfo.getControllerClassName() != null) {
+            Class<? extends FrameOwner> screenClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
 
             UiDescriptor annotation = screenClass.getAnnotation(UiDescriptor.class);
             if (annotation == null) {
                 return null;
             }
-            String template = ScreenDescriptorUtils.getInferredDesignTemplate(annotation, screenClass);
+            String template = ScreenDescriptorUtils.getInferredTemplate(annotation, screenClass);
             if (!template.startsWith("/")) {
                 String packageName = screenClass.getPackage().getName();
                 if (StringUtils.isNotEmpty(packageName)) {
@@ -189,8 +197,8 @@ public class WindowConfig {
     }
 
     @SuppressWarnings("unchecked")
-    protected Class<? extends Screen> loadDefinedScreenClass(String className) {
-        return (Class<? extends Screen>) scripting.loadClassNN(className);
+    protected Class<? extends FrameOwner> loadDefinedScreenClass(String className) {
+        return (Class<? extends FrameOwner>) scripting.loadClassNN(className);
     }
 
     protected void checkInitialized() {

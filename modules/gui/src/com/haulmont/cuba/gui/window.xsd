@@ -2612,7 +2612,7 @@
     </xs:complexType>
 
     <!-- Frame -->
-    <xs:complexType name="frameContainer">
+    <xs:complexType name="fragmentContainer">
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:sequence>
@@ -2623,7 +2623,9 @@
                         </xs:complexType>
                     </xs:element>
                 </xs:sequence>
+                <!-- src is here only for compatibility with the previous versions -->
                 <xs:attribute name="src" type="xs:string"/>
+
                 <xs:attribute name="screen" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
@@ -2918,7 +2920,10 @@
                 <xs:element name="split" type="splitContainer"/>
                 <xs:element name="tabSheet" type="tabsheetContainer"/>
                 <xs:element name="accordion" type="accordionContainer"/>
-                <xs:element name="frame" type="frameContainer"/>
+
+                <xs:element name="fragment" type="fragmentContainer"/>
+                <!-- frame is here for compatibility with the previous versions -->
+                <xs:element name="frame" type="fragmentContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
             </xs:choice>
@@ -2928,7 +2933,7 @@
     <!-- Component -->
     <xs:group name="component">
         <xs:sequence>
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:choice maxOccurs="unbounded">
                 <xs:element name="button" type="buttonComponent"/>
                 <xs:element name="linkButton" type="buttonComponent"/>
                 <xs:element name="popupButton" type="popupButtonComponent"/>

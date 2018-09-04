@@ -115,6 +115,7 @@ public class AppUI extends CubaUI
 
     protected RootWindow topLevelWindow;
 
+    protected Fragments fragments;
     protected Screens screens;
     protected Dialogs dialogs;
     protected Notifications notifications;
@@ -210,20 +211,21 @@ public class AppUI extends CubaUI
         this.webBrowserTools = webBrowserTools;
     }
 
+    public Fragments getFragments() {
+        return fragments;
+    }
+
+    public void setFragments(Fragments fragments) {
+        this.fragments = fragments;
+    }
+
     @Override
     protected void init(VaadinRequest request) {
         log.trace("Initializing UI {}", this);
 
-        Dialogs dialogs = beanLocator.getPrototype(Dialogs.NAME, this);
-        setDialogs(dialogs);
-
-        Notifications notifications = beanLocator.getPrototype(Notifications.NAME, this);
-        setNotifications(notifications);
-
-        WebBrowserTools webBrowserTools = beanLocator.getPrototype(WebBrowserTools.NAME, this);
-        setWebBrowserTools(webBrowserTools);
-
         try {
+            initUiScope();
+
             this.testMode = globalConfig.getTestMode();
             this.performanceTestMode = globalConfig.getPerformanceTestMode();
             // init error handlers
@@ -267,6 +269,24 @@ public class AppUI extends CubaUI
         }
 
         processExternalLink(request);
+    }
+
+    protected void initUiScope() {
+        Dialogs dialogs = beanLocator.getPrototype(Dialogs.NAME, this);
+        setDialogs(dialogs);
+
+        Notifications notifications = beanLocator.getPrototype(Notifications.NAME, this);
+        setNotifications(notifications);
+
+        WebBrowserTools webBrowserTools = beanLocator.getPrototype(WebBrowserTools.NAME, this);
+        setWebBrowserTools(webBrowserTools);
+
+        Fragments fragments = beanLocator.getPrototype(Fragments.NAME, this);
+        setFragments(fragments);
+
+        // screens initialized in the end since it implements legacy compatibility layer for WindowManager
+        Screens screens = beanLocator.getPrototype(Screens.NAME, this);
+        setScreens(screens);
     }
 
     protected boolean isUserSessionAlive(Connection connection) {

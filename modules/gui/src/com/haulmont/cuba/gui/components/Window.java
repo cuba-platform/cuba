@@ -32,8 +32,8 @@ import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.Screen.AfterCloseEvent;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
-import com.haulmont.cuba.gui.screen.events.AfterCloseEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
 
@@ -98,7 +98,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     @Deprecated
     default void removeListener(CloseListener listener) {
-        EventHub eventHub = ScreenUtils.getEventHub(getFrameOwner());
+        EventHub eventHub = UiControllerUtils.getEventHub(getFrameOwner());
         eventHub.unsubscribe(AfterCloseEvent.class, new AfterCloseListenerAdapter(listener));
     }
 
@@ -115,7 +115,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     @Deprecated
     default void removeCloseListener(CloseListener listener) {
-        EventHub eventHub = ScreenUtils.getEventHub(getFrameOwner());
+        EventHub eventHub = UiControllerUtils.getEventHub(getFrameOwner());
         eventHub.unsubscribe(AfterCloseEvent.class, new AfterCloseListenerAdapter(listener));
     }
 
@@ -138,23 +138,26 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * This method is called by the framework after opening the screen to apply user settings to all components.
      */
+    @Deprecated
     default void applySettings(Settings settings) {
-        ScreenUtils.applySettings(getFrameOwner(), settings);
+        UiControllerUtils.applySettings(getFrameOwner(), settings);
     }
 
     /**
      * This method is called by the framework when closing the screen
      * to save user settings if they have been changed.
      */
+    @Deprecated
     default void saveSettings() {
-        ScreenUtils.saveSettings(getFrameOwner());
+        UiControllerUtils.saveSettings(getFrameOwner());
     }
 
     /**
      * This method is called by the framework on reset to defaults action
      */
+    @Deprecated
     default void deleteSettings() {
-        ScreenUtils.deleteSettings(getFrameOwner());
+        UiControllerUtils.deleteSettings(getFrameOwner());
     }
 
     /**
@@ -174,7 +177,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      */
     @Deprecated
     default Settings getSettings() {
-        return ScreenUtils.getSettings(getFrameOwner());
+        return UiControllerUtils.getSettings(getFrameOwner());
     }
 
     /**
@@ -402,6 +405,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Represents a lookup screen.
      */
+    @Deprecated
     interface Lookup<T extends Entity> extends LookupScreen<T> {
 
         String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";

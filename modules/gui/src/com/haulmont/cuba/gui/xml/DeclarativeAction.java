@@ -17,12 +17,11 @@
 
 package com.haulmont.cuba.gui.xml;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -78,8 +77,7 @@ public class DeclarativeAction extends BaseAction {
             return;
         }
 
-        // todo support for legacy Frame
-        Screen controller = ComponentsHelper.getUIController(frame);
+        FrameOwner controller = frame.getFrameOwner();
         Method method;
         try {
             method = controller.getClass().getMethod(methodName, Component.class);

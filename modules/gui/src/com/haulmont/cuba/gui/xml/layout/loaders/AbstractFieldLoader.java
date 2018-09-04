@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenUtils;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -68,7 +68,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         String containerId = element.attributeValue("container");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
-            ScreenData screenData = ScreenUtils.getScreenData(frameOwner);
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             String property = element.attributeValue("property");
             if (property == null) {

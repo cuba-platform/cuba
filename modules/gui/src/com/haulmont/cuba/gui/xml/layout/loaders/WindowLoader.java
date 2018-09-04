@@ -20,11 +20,13 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
-import com.haulmont.cuba.gui.screen.ScreenUtils;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class WindowLoader extends FrameLoader<Window> implements ComponentRootLoader<Window> {
+public class WindowLoader extends ContainerLoader<Window> implements ComponentRootLoader<Window> {
 
     protected String windowId;
 
@@ -64,8 +66,6 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
 
     @Override
     public void loadComponent() {
-        context.setFrame(resultComponent);
-
         loadScreenData(resultComponent, element);
 
         loadDialogOptions(resultComponent, element);
@@ -98,11 +98,22 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
         loadCrossFieldValidate(resultComponent, element);
     }
 
+    protected void loadMessagesPack(Frame frame, Element element) {
+        String msgPack = element.attributeValue("messagesPack");
+        if (msgPack != null) {
+//            frame.setMessagesPack(msgPack); todo
+            setMessagesPack(msgPack);
+        } else {
+//            frame.setMessagesPack(this.messagesPack); todo
+            setMessagesPack(this.messagesPack);
+        }
+    }
+
     protected void loadScreenData(Window window, Element element) {
         Element dataEl = element.element("data");
         if (dataEl != null) {
             ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
-            ScreenData screenData = ScreenUtils.getScreenData(window.getFrameOwner());
+            ScreenData screenData = UiControllerUtils.getScreenData(window.getFrameOwner());
             screenDataXmlLoader.load(screenData, dataEl);
         }
     }
@@ -241,7 +252,7 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
         String autostart = element.attributeValue("autostart");
         if (StringUtils.isNotEmpty(autostart)
                 && Boolean.parseBoolean(autostart)) {
-            addAutoStartTimerTask(timer);
+            timer.start();
         }
 
         timer.setFrame(context.getFrame());
@@ -267,29 +278,27 @@ public class WindowLoader extends FrameLoader<Window> implements ComponentRootLo
     }
 
     protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
-        context.addPostInitTask((windowContext, window) -> {
-            Method timerMethod;
-            try {
-                timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
-            } catch (NoSuchMethodException e) {
-                throw new GuiDevelopmentException("Unable to find invoke method for timer",
-                        windowContext.getFullFrameId(),
-                        ParamsMap.of(
-                                "Timer Id", timer.getId(),
-                                "Method name", timerMethodName));
-            }
+        FrameOwner controller = context.getFrame().getFrameOwner();
+        Class<? extends FrameOwner> windowClass = controller.getClass();
 
-            timer.addActionListener(t -> {
-                try {
-                    timerMethod.invoke(window, t);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("Unable to invoke onTimer", e);
-                }
-            });
+        Method timerMethod;
+        try {
+            timerMethod = windowClass.getMethod(timerMethodName, Timer.class);
+        } catch (NoSuchMethodException e) {
+            throw new GuiDevelopmentException("Unable to find invoke method for timer",
+                    context.getFullFrameId(),
+                    ParamsMap.of(
+                            "Timer Id", timer.getId(),
+                            "Method name", timerMethodName));
+        }
+
+        timer.addActionListener(t -> {
+            try {
+                timerMethod.invoke(controller, t);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Unable to invoke onTimer", e);
+            }
         });
     }
 
-    protected void addAutoStartTimerTask(Timer timer) {
-        context.addPostInitTask((windowContext, window) -> timer.start());
-    }
 }

@@ -32,4 +32,12 @@ public final class UiControllerDefinition {
     public String getControllerClass() {
         return controllerClass;
     }
+
+    @Override
+    public String toString() {
+        return "UiControllerDefinition{" +
+                "id='" + id + '\'' +
+                ", controllerClass='" + controllerClass + '\'' +
+                '}';
+    }
 }

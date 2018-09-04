@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2008-2017 Haulmont.
+  ~ Copyright (c) 2008-2018 Haulmont.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
+
+    <!-- DEPRECATED -->
+
     <layout>
         <hbox id="lookupActionsBox" spacing="true" stylename="c-lookup-window-actions">
             <button id="selectButton" action="lookupSelectAction" caption="mainMsg://actions.Select"

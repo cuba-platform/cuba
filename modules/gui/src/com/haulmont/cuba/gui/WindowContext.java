@@ -28,9 +28,4 @@ public interface WindowContext extends FrameContext {
      * How the window is opened.
      */
     LaunchMode getLaunchMode();
-
-    /**
-     * @return options passed to window
-     */
-    ScreenOptions getOptions();
 }

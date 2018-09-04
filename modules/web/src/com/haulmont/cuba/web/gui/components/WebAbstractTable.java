@@ -98,7 +98,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @SuppressWarnings("deprecation")
 public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractActionsHolderComponent<T>
-        implements Table<E>, TableSourceEventsDelegate<E>, LookupSelectionChangeNotifier, InitializingBean {
+        implements Table<E>, TableSourceEventsDelegate<E>, LookupSelectionChangeNotifier, HasInnerComponents, InitializingBean {
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -233,6 +233,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Inject
     public void setDynamicAttributesTools(DynamicAttributesTools dynamicAttributesTools) {
         this.dynamicAttributesTools = dynamicAttributesTools;
+    }
+
+    @Override
+    public Collection<com.haulmont.cuba.gui.components.Component> getInnerComponents() {
+        if (buttonsPanel != null) {
+            return Collections.singletonList(buttonsPanel);
+        }
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")

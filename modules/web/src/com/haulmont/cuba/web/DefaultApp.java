@@ -17,6 +17,8 @@
 package com.haulmont.cuba.web;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
@@ -223,6 +225,10 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
         }
     }
 
+    /**
+     * @deprecated Use {@link Screens#create(Class, Screens.LaunchMode)} with {@link OpenMode#ROOT}
+     */
+    @Deprecated
     @Override
     public void navigateTo(String topLevelWindowId) {
         cleanupBackgroundTasks();

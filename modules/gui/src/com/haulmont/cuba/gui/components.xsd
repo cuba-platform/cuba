@@ -76,7 +76,7 @@
     <xs:group name="loadersGroup">
         <xs:all>
             <xs:element name="windowLoader" type="loaderType" minOccurs="0"/>
-            <xs:element name="frameLoader" type="loaderType" minOccurs="0"/>
+            <xs:element name="fragmentLoader" type="loaderType" minOccurs="0"/>
         </xs:all>
     </xs:group>
 

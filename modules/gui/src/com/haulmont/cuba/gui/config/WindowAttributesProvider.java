@@ -1,6 +1,6 @@
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,5 +15,5 @@ public interface WindowAttributesProvider {
     boolean isMultiOpen(WindowInfo windowInfo);
 
     @Nonnull
-    Class<? extends Screen> getScreenClass(WindowInfo windowInfo);
+    Class<? extends FrameOwner> getControllerClass(WindowInfo windowInfo);
 }

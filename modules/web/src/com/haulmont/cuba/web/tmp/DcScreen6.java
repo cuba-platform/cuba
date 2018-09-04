@@ -17,14 +17,12 @@
 package com.haulmont.cuba.web.tmp;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.screen.events.BeforeShowEvent;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 
@@ -56,7 +54,7 @@ public class DcScreen6 extends StandardEditor<User> {
             TmpUserRoleEdit userRoleEdit = screens.create(TmpUserRoleEdit.class, OpenMode.THIS_TAB);
             userRoleEdit.setEntityToEdit(selectedUserRole);
 
-            ScreenUtils.getScreenData(userRoleEdit).getDataContext().setParent(getScreenData().getDataContext());
+            UiControllerUtils.getScreenData(userRoleEdit).getDataContext().setParent(getScreenData().getDataContext());
 
             userRoleEdit.addAfterCloseListener(afterCloseEvent -> {
                 CloseAction closeAction = afterCloseEvent.getCloseAction();

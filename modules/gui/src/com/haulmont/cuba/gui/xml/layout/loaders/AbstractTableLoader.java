@@ -38,7 +38,7 @@ import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenUtils;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -132,7 +132,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String containerId = rowsElement.attributeValue("container");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
-            ScreenData screenData = ScreenUtils.getScreenData(frameOwner);
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (container instanceof CollectionContainer) {
                 collectionContainer = (CollectionContainer) container;

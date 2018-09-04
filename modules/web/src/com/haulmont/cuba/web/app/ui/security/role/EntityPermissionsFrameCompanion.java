@@ -30,7 +30,6 @@ import javax.inject.Inject;
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
     @Inject
     protected Messages messages;
-
     @Inject
     protected ComponentsFactory componentsFactory;
 

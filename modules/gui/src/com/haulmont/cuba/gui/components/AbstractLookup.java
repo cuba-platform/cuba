@@ -18,12 +18,12 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.components.Window.Lookup;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.events.AfterInitEvent;
-import com.haulmont.cuba.gui.screen.events.InitEvent;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.springframework.core.annotation.Order;
@@ -75,16 +75,19 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
     @Override
     public void initLookupLayout() {
-        Action selectAction = getAction(Window.Lookup.LOOKUP_SELECT_ACTION_ID);
+        Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
 
         if (selectAction != null && selectAction.getOwner() == null) {
-            // todo load `lookupWindowActions` here and insert at the end of layout
+            WindowConfig windowConfig = getBeanLocator().get(WindowConfig.NAME);
+            Fragments fragments = getBeanLocator().get(Fragments.NAME);
 
-            // todo for demo only - adding simple button
-            ComponentsFactory componentsFactory = getBeanLocator().get(ComponentsFactory.NAME);
-            Button selectBtn = componentsFactory.createComponent(Button.NAME);
-            selectBtn.setAction(selectAction);
-            getFrame().add(selectBtn);
+            ScreenFragment lookupWindowActions = fragments.create(this, windowConfig.getWindowInfo("lookupWindowActions"));
+            lookupWindowActions.getFragment().setId("lookupWindowActions");
+            lookupWindowActions.getFragment().setVisible(false);
+
+            getFrame().add(lookupWindowActions.getFragment());
+
+            fragments.initialize(lookupWindowActions);
         }
 
         Element element = ((Component.HasXmlDescriptor) getFrame()).getXmlDescriptor();
@@ -113,5 +116,9 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
     @Override
     public void setSelectHandler(Consumer lookupHandler) {
         this.lookupHandler = lookupHandler;
+
+        if (lookupHandler != null) {
+            getComponentNN("lookupWindowActions").setVisible(true);
+        }
     }
 }

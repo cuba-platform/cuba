@@ -49,7 +49,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Button) factory.createComponent(Button.NAME);
+        resultComponent = factory.createComponent(Button.NAME);
         loadId(resultComponent, element);
     }
 

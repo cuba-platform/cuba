@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 public class UserIndicatorLoader extends AbstractComponentLoader<UserIndicator> {
     @Override
     public void createComponent() {
-        resultComponent = (UserIndicator) factory.createComponent(UserIndicator.NAME);
+        resultComponent = factory.createComponent(UserIndicator.NAME);
         loadId(resultComponent, element);
     }
 
@@ -39,6 +39,8 @@ public class UserIndicatorLoader extends AbstractComponentLoader<UserIndicator> 
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
 
-        context.addPostInitTask((context1, window) -> resultComponent.refreshUserSubstitutions());
+        context.addPostInitTask((context1, window) ->
+                resultComponent.refreshUserSubstitutions()
+        );
     }
 }

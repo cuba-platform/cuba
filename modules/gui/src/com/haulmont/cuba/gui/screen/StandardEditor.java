@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
-import com.haulmont.cuba.gui.screen.events.BeforeShowEvent;
 import com.haulmont.cuba.gui.util.OperationResult;
 
 import javax.validation.ConstraintViolation;

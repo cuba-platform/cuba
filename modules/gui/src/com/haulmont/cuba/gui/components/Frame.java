@@ -18,8 +18,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 
 import java.util.List;
 
@@ -39,6 +41,7 @@ public interface Frame
                 Component.HasCaption {
 
     /** XML element name used to show a frame in an enclosing screen. */
+    @Deprecated
     String NAME = "frame";
 
     FrameOwner getFrameOwner();
@@ -74,6 +77,10 @@ public interface Frame
      */
     boolean validateAll();
 
+    /**
+     * @deprecated Use {@link Screens} instead, it can be obtained from {@link ScreenContext} of {@link FrameOwner}.
+     */
+    @Deprecated
     WindowManager getWindowManager();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

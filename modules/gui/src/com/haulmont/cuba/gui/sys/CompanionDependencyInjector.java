@@ -19,18 +19,17 @@ package com.haulmont.cuba.gui.sys;
 
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -48,16 +47,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * @deprecated Companions supported only for old-fashioned AbstractWindow and AbstractFrame
+ */
+@Deprecated
 public class CompanionDependencyInjector {
 
     private static final Logger log = LoggerFactory.getLogger(CompanionDependencyInjector.class);
 
     protected Object companion;
-    protected AbstractFrame frame;
+    protected LegacyFrame frameOwner;
 
-    public CompanionDependencyInjector(AbstractFrame frame, Object companion) {
+    protected BeanLocator beanLocator;
+
+    public CompanionDependencyInjector(LegacyFrame frameOwner, Object companion) {
         this.companion = companion;
-        this.frame = frame;
+        this.frameOwner = frameOwner;
+    }
+
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 
     public void inject() {
@@ -159,50 +168,50 @@ public class CompanionDependencyInjector {
     private Object getInjectedInstance(Class<?> type, String name, AnnotatedElement element) {
         if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
-            return frame.getComponent(name);
+            return frameOwner.getComponent(name);
 
         } else if (Datasource.class.isAssignableFrom(type)) {
             // Injecting a datasource
-            return ((LegacyFrame) frame).getDsContext().get(name);
+            return frameOwner.getDsContext().get(name);
 
         } else if (DsContext.class.isAssignableFrom(type)) {
             // Injecting the DsContext
-            return ((LegacyFrame) frame).getDsContext();
+            return frameOwner.getDsContext();
 
         } else if (DataSupplier.class.isAssignableFrom(type)) {
             // Injecting the DataSupplier
-            return ((LegacyFrame) frame).getDsContext().getDataSupplier();
+            return frameOwner.getDsContext().getDataSupplier();
 
         } else if (FrameContext.class.isAssignableFrom(type)) {
             // Injecting the FrameContext
-            return frame.getContext();
+            return frameOwner.getContext();
 
         } else if (Action.class.isAssignableFrom(type)) {
             // Injecting an action
-//            return ComponentsHelper.findAction(name, frame); // todo
-            return null;
+            return ComponentsHelper.findAction(name, frameOwner.getWrappedFrame());
 
         } else if (ExportDisplay.class.isAssignableFrom(type)) {
             // Injecting an ExportDisplay
-//            return AppConfig.createExportDisplay(frame); // todo
-            return null;
+            ExportDisplay exportDisplay = beanLocator.get(ExportDisplay.NAME);
+            exportDisplay.setFrame(frameOwner.getWrappedFrame());
+            return exportDisplay;
 
         } else if (ThemeConstants.class.isAssignableFrom(type)) {
             // Injecting a Theme
-            ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+            ThemeConstantsManager themeManager = beanLocator.get(ThemeConstantsManager.NAME);
             return themeManager.getConstants();
 
         } else if (Logger.class == type && element instanceof Field) {
             return LoggerFactory.getLogger(((Field) element).getDeclaringClass());
         } else if (Config.class.isAssignableFrom(type)) {
+            ClientConfiguration configuration = beanLocator.get(Configuration.NAME);
             //noinspection unchecked
-            ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
             return configuration.getConfigCached((Class<? extends Config>) type);
 
         } else {
             Object instance;
             // Try to find a Spring bean
-            Map<String, ?> beans = AppContext.getApplicationContext().getBeansOfType(type, true, true);
+            Map<String, ?> beans = beanLocator.getAll(type);
             if (!beans.isEmpty()) {
                 instance = beans.get(name);
                 // If a bean with required name found, return it. Otherwise return first found.
@@ -212,8 +221,8 @@ public class CompanionDependencyInjector {
                     return beans.values().iterator().next();
             }
             // There are no Spring beans of required type - the last option is Frame
-            if (type.isAssignableFrom(Frame.class)) {
-                return frame;
+            if (type.isAssignableFrom(FrameOwner.class)) {
+                return frameOwner;
             }
             return null;
         }

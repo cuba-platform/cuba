@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
-import groovy.lang.Binding;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
 import org.dom4j.Element;
 
 import java.util.Locale;
@@ -32,15 +32,13 @@ import java.util.Map;
 public interface ComponentLoader<T extends Component> {
 
     interface Context {
+        ScreenOptions getOptions();
+
         Map<String, Object> getParams();
         DsContext getDsContext();
-        Binding getBinding();
 
         void addPostInitTask(PostInitTask task);
         void executePostInitTasks();
-
-        void addPostWrapTask(PostWrapTask task);
-        void executePostWrapTasks();
 
         void addInjectTask(InjectTask task);
         void executeInjectTasks();
@@ -57,11 +55,9 @@ public interface ComponentLoader<T extends Component> {
         void setFullFrameId(String frameId);
 
         String getCurrentFrameId();
-
         void setCurrentFrameId(String currentFrameId);
 
         Context getParent();
-
         void setParent(Context parent);
     }
 
@@ -85,7 +81,7 @@ public interface ComponentLoader<T extends Component> {
         /**
          * This method will be invoked after window components loading before window initialization.
          *
-         * @param context loader context
+         * @param context top-most loader context
          * @param window top-most window
          */
         void execute(Context context, Frame window);
@@ -97,19 +93,6 @@ public interface ComponentLoader<T extends Component> {
     interface InitTask {
         /**
          * This method will be invoked after window components loading before window initialization.
-         *
-         * @param context loader context
-         * @param window top-most window
-         */
-        void execute(Context context, Frame window);
-    }
-
-    /**
-     * PostInitTasks are used to perform deferred initialization of visual components that requires window controller.
-     */
-    interface PostWrapTask {
-        /**
-         * This method will be invoked after window wrapped with its controller.
          *
          * @param context loader context
          * @param window top-most window

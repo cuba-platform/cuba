@@ -33,7 +33,10 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,14 +74,15 @@ public abstract class ComponentsHelper {
 
     @Nullable
     public static Component getWindowComponent(Window window, String id) {
-        final String[] elements = ValuePathHelper.parse(id);
+        String[] elements = ValuePathHelper.parse(id);
         FrameImplementation frameImpl = (FrameImplementation) window;
         if (elements.length == 1) {
             Component component = frameImpl.getRegisteredComponent(id);
-            if (component != null)
+            if (component != null) {
                 return component;
-            else
+            } else {
                 return window.getTimer(id);
+            }
         } else {
             Component innerComponent = frameImpl.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof FieldGroup) {
@@ -116,7 +120,7 @@ public abstract class ComponentsHelper {
         } else {
             Component innerComponent = frameImpl.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof FieldGroup) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
 
                 FieldGroup fieldGroup = (FieldGroup) innerComponent;
@@ -124,11 +128,11 @@ public abstract class ComponentsHelper {
 
                 return field != null ? field.getComponent() : null;
             } else if (innerComponent instanceof ComponentContainer) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
                 return ((ComponentContainer) innerComponent).getComponent(subPath);
             } else if (innerComponent instanceof HasNamedComponents) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
                 return ((HasNamedComponents) innerComponent).getComponent(subPath);
             }
@@ -141,12 +145,13 @@ public abstract class ComponentsHelper {
     public static Component getComponent(ComponentContainer container, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            final com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
+            com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
 
-            if (component == null)
+            if (component == null) {
                 return getComponentByIteration(container, id);
-            else
+            } else {
                 return component;
+            }
 
         } else {
             Component innerComponent = container.getOwnComponent(elements[0]);
@@ -155,7 +160,7 @@ public abstract class ComponentsHelper {
                 return getComponentByIteration(container, id);
             } else {
                 if (innerComponent instanceof FieldGroup) {
-                    final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
 
                     FieldGroup fieldGroup = (FieldGroup) innerComponent;
@@ -163,11 +168,11 @@ public abstract class ComponentsHelper {
 
                     return field != null ? field.getComponent() : null;
                 } else if (innerComponent instanceof ComponentContainer) {
-                    final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
                     return ((com.haulmont.cuba.gui.components.ComponentContainer) innerComponent).getComponent(subPath);
                 } else if (innerComponent instanceof HasNamedComponents) {
-                    final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
                     return ((HasNamedComponents) innerComponent).getComponent(subPath);
                 }
@@ -179,11 +184,22 @@ public abstract class ComponentsHelper {
 
     @Nullable
     private static Component getComponentByIteration(ComponentContainer container, String id) {
-        for (Component component : container.getOwnComponents()) {
+        return getComponentByIterationInternal(container.getOwnComponents(), id);
+    }
+
+    private static Component getComponentByIterationInternal(Collection<Component> components, String id) {
+        for (Component component : components) {
             if (id.equals(component.getId())) {
                 return component;
             } else if (component instanceof ComponentContainer) {
-                Component innerComponent = getComponentByIteration((ComponentContainer) component, id);
+                Collection<Component> ownComponents = ((ComponentContainer) component).getOwnComponents();
+                Component innerComponent = getComponentByIterationInternal(ownComponents, id);
+                if (innerComponent != null) {
+                    return innerComponent;
+                }
+            } else if (component instanceof HasInnerComponents) {
+                Collection<Component> innerComponents = ((HasInnerComponents) component).getInnerComponents();
+                Component innerComponent = getComponentByIterationInternal(innerComponents, id);
                 if (innerComponent != null) {
                     return innerComponent;
                 }
@@ -205,9 +221,10 @@ public abstract class ComponentsHelper {
 
     /**
      * Searches for a component by identifier, down by the hierarchy of frames.
+     *
      * @param frame frame to start from
      * @param id    component identifier
-     * @return      component instance or null if not found
+     * @return component instance or null if not found
      */
     @Nullable
     public static Component findComponent(Frame frame, String id) {
@@ -231,6 +248,7 @@ public abstract class ComponentsHelper {
 
     /**
      * Visit all components below the specified container.
+     *
      * @param container container to start from
      * @param visitor   visitor instance
      */
@@ -263,6 +281,7 @@ public abstract class ComponentsHelper {
                         path;
                 __walkComponents(((com.haulmont.cuba.gui.components.ComponentContainer) component), visitor, p);
             } else if (component instanceof AppWorkArea) {
+                // todo support HasInnerComponents
                 AppWorkArea workArea = (AppWorkArea) component;
                 if (workArea.getState() == AppWorkArea.State.INITIAL_LAYOUT) {
                     VBoxLayout initialLayout = workArea.getInitialLayout();
@@ -277,10 +296,10 @@ public abstract class ComponentsHelper {
      * Find first component by predicate
      *
      * @param container container to start from
-     * @param finder   finder instance
+     * @param finder    finder instance
      */
     public static boolean walkComponents(com.haulmont.cuba.gui.components.ComponentContainer container,
-                                      ComponentFinder finder) {
+                                         ComponentFinder finder) {
         return __walkComponents(container, finder);
     }
 
@@ -320,9 +339,9 @@ public abstract class ComponentsHelper {
 
     /**
      * Get the topmost window for the specified component.
+     *
      * @param component component instance
-     * @return          topmost window in the hierarchy of frames for this component.
-     * <br>If the window has a controller class, an instance of the controller is returned.
+     * @return topmost window in the hierarchy of frames for this component.
      * <br>Can be null only if the component wasn't properly initialized.
      */
     @Nullable
@@ -330,8 +349,31 @@ public abstract class ComponentsHelper {
         Frame frame = component.getFrame();
         while (frame != null) {
             if (frame instanceof Window && frame.getFrame() == frame) {
-                Window window = (Window) frame;
-                return window instanceof WrappedWindow ? ((WrappedWindow) window).getWrapper() : window;
+                return (Window) frame;
+            }
+            frame = frame.getFrame();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Screen getScreen(ScreenFragment frameOwner) {
+        Frame frame = frameOwner.getFragment();
+        while (frame != null) {
+            if (frame instanceof Window && frame.getFrame() == frame) {
+                return ((Window) frame).getFrameOwner();
+            }
+            frame = frame.getFrame();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Window getParentWindow(ScreenFragment frameOwner) {
+        Frame frame = frameOwner.getFragment();
+        while (frame != null) {
+            if (frame instanceof Window && frame.getFrame() == frame) {
+                return (Window) frame;
             }
             frame = frame.getFrame();
         }
@@ -340,8 +382,9 @@ public abstract class ComponentsHelper {
 
     /**
      * Get the topmost window for the specified component.
+     *
      * @param component component instance
-     * @return          topmost client specific window in the hierarchy of frames for this component.
+     * @return topmost client specific window in the hierarchy of frames for this component.
      *
      * <br>Can be null only if the component wasn't properly initialized.
      */
@@ -358,41 +401,38 @@ public abstract class ComponentsHelper {
         return null;
     }
 
-    // todo support legacy Frame
-    public static Screen getUIController(Frame frame) {
-        if (frame instanceof Window) {
-            return ((Window) frame).getFrameOwner();
-        }
-        return null;
-    }
-
-    public static Frame getFrameController(Frame frame) {
-        if (frame instanceof WrappedFrame) {
-            return  ((WrappedFrame) frame).getWrapper();
-        } else if (frame instanceof WrappedWindow) {
-            return ((WrappedWindow) frame).getWrapper();
-        } else {
-            return frame;
-        }
+    /**
+     * @deprecated Simply use {@link Frame#getFrameOwner()} call.
+     */
+    @Deprecated
+    public static FrameOwner getFrameController(Frame frame) {
+        return frame.getFrameOwner();
     }
 
     public static String getFullFrameId(Frame frame) {
-        LinkedList<String> frameIds = new LinkedList<>();
-        frameIds.addFirst(frame.getId());
+        if (frame instanceof Window) {
+            return frame.getId();
+        }
+
+        List<String> frameIds = new ArrayList<>(4);
+        frameIds.add(frame.getId());
         while (frame != null && !(frame instanceof Window) && frame != frame.getFrame()) {
             frame = frame.getFrame();
-            if (frame != null)
-                frameIds.addFirst(frame.getId());
+            if (frame != null) {
+                frameIds.add(frame.getId());
+            }
         }
-        return StringUtils.join(frameIds, '.');
+
+        return StringUtils.join(new ReverseListIterator<>(frameIds), '.');
     }
 
     /**
      * Searches for an action by name.
-     * @param actionName    action name, can be a path to an action contained in some {@link ActionsHolder}
-     * @param frame         current frame
-     * @return              action instance or null if there is no action with the specified name
-     * @throws IllegalStateException    if the component denoted by the path doesn't exist or is not an ActionsHolder
+     *
+     * @param actionName action name, can be a path to an action contained in some {@link ActionsHolder}
+     * @param frame      current frame
+     * @return action instance or null if there is no action with the specified name
+     * @throws IllegalStateException if the component denoted by the path doesn't exist or is not an ActionsHolder
      */
     @Nullable
     public static Action findAction(String actionName, Frame frame) {
@@ -428,11 +468,13 @@ public abstract class ComponentsHelper {
             while (frame != null) {
                 sb.insert(0, ".");
                 String s = frame.getId();
-                if (s.contains("."))
+                if (s.contains(".")) {
                     s = "[" + s + "]";
+                }
                 sb.insert(0, s);
-                if (frame instanceof Window)
+                if (frame instanceof Window) {
                     break;
+                }
                 frame = frame.getFrame();
             }
         }
@@ -461,6 +503,7 @@ public abstract class ComponentsHelper {
 
     /**
      * Creates standard Create, Edit and Remove actions for the component
+     *
      * @param owner List, Table or Tree component
      */
     public static void createActions(ListComponent owner) {
@@ -469,21 +512,23 @@ public abstract class ComponentsHelper {
 
     /**
      * Creates standard actions for the component
-     * @param owner List, Table or Tree component
+     *
+     * @param owner   List, Table or Tree component
      * @param actions set of actions to create
      */
     public static void createActions(ListComponent owner, EnumSet<ListActionType> actions) {
-        if (actions.contains(ListActionType.CREATE))
+        if (actions.contains(ListActionType.CREATE)) {
             owner.addAction(CreateAction.create(owner));
-
-        if (actions.contains(ListActionType.EDIT))
+        }
+        if (actions.contains(ListActionType.EDIT)) {
             owner.addAction(EditAction.create(owner));
-
-        if (actions.contains(ListActionType.REMOVE))
+        }
+        if (actions.contains(ListActionType.REMOVE)) {
             owner.addAction(RemoveAction.create(owner));
-
-        if (actions.contains(ListActionType.REFRESH))
+        }
+        if (actions.contains(ListActionType.REFRESH)) {
             owner.addAction(RefreshAction.create(owner));
+        }
     }
 
     /**
@@ -493,8 +538,9 @@ public abstract class ComponentsHelper {
      * @return HTML text or null if the input is null
      */
     public static String preprocessHtmlMessage(String message) {
-        if (message == null)
+        if (message == null) {
             return null;
+        }
         String html = StringUtils.replace(message, "\n", "<br/>");
         html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
         return html;
@@ -600,8 +646,9 @@ public abstract class ComponentsHelper {
      */
     public static boolean createActionsByMetaAnnotations(PickerField pickerField) {
         MetaPropertyPath mpp = pickerField.getMetaPropertyPath();
-        if (mpp == null)
+        if (mpp == null) {
             return false;
+        }
 
         String[] actions = (String[]) AppBeans.get(MetadataTools.class)
                 .getMetaAnnotationAttributes(mpp.getMetaProperty().getAnnotations(), Lookup.class)
@@ -620,6 +667,7 @@ public abstract class ComponentsHelper {
         return false;
     }
 
+    @Deprecated
     public static SizeUnit convertToSizeUnit(int unit) {
         switch (unit) {
             case Component.UNITS_PIXELS:
@@ -631,6 +679,7 @@ public abstract class ComponentsHelper {
         }
     }
 
+    @Deprecated
     public static int convertFromSizeUnit(SizeUnit unit) {
         switch (unit) {
             case PIXELS:
@@ -681,16 +730,16 @@ public abstract class ComponentsHelper {
 
     @Nullable
     public static Component.Focusable focusChildComponent(ComponentContainer container) {
-         if (!container.isEnabledRecursive()) {
-             return null;
-         }
-         if (!container.isVisibleRecursive()) {
-             return null;
-         }
+        if (!container.isEnabledRecursive()) {
+            return null;
+        }
+        if (!container.isVisibleRecursive()) {
+            return null;
+        }
 
         for (Component component : container.getOwnComponents()) {
             if (component.isVisible()
-                && component.isEnabled()) {
+                    && component.isEnabled()) {
 
                 boolean reachable = true;
                 if (component.getParent() instanceof SupportsChildrenSelection) {
@@ -713,6 +762,8 @@ public abstract class ComponentsHelper {
                             return focused;
                         }
                     }
+
+                    // todo support HasInnerComponents
                 }
             }
         }

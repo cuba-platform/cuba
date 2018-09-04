@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.ScreenUtils;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -618,7 +618,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public WindowManager getWindowManager() {
-        return (WindowManager) ScreenUtils.getScreenContext(getFrameOwner()).getScreens();
+        return (WindowManager) UiControllerUtils.getScreenContext(getFrameOwner()).getScreens();
     }
 
     @Override
@@ -986,11 +986,6 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setFrame(Frame frame) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Window getWrapper() {
-        return ((Window) frameOwner);
     }
 
     @Override

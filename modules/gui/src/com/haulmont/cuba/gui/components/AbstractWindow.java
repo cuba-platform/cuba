@@ -26,9 +26,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
-import com.haulmont.cuba.gui.screen.events.AfterShowEvent;
-import com.haulmont.cuba.gui.screen.events.CloseTriggeredEvent;
-import com.haulmont.cuba.gui.screen.events.InitEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 import org.springframework.context.ApplicationListener;
@@ -61,6 +58,8 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     protected Messages messages;
     @Inject
     private MessageBundle messageBundle;
+    @Inject
+    private WindowManager windowManager;
 
     public AbstractWindow() {
     }
@@ -74,7 +73,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public WindowManager getWindowManager() {
-        return frame.getWindowManager();
+        return windowManager;
     }
 
     @Override

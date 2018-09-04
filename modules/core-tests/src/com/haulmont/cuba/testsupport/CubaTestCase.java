@@ -145,11 +145,11 @@ public abstract class CubaTestCase extends TestCase {
     }
 
     protected void deleteRecord(String table, UUID... ids) {
-        cont.deleteRecord(table, ids);
+        cont.deleteRecord(table, (Object[]) ids);
     }
 
     protected void deleteRecord(String table, String primaryKeyCol, UUID... ids) {
-        cont.deleteRecord(table, primaryKeyCol, ids);
+        cont.deleteRecord(table, primaryKeyCol, (Object[]) ids);
     }
 
     protected EntityManager entityManager() {

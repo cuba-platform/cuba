@@ -20,13 +20,12 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -61,9 +60,7 @@ public class ScreenXmlLoader {
      * @return root XML element
      */
     public Element load(String resourcePath, String id, Map<String, Object> params) {
-        StopWatch xmlLoadWatch = new Slf4JStopWatch(id + "#" +
-                UIPerformanceLogger.LifeCycle.XML,
-                LoggerFactory.getLogger(UIPerformanceLogger.class));
+        StopWatch xmlLoadWatch = UIPerformanceLogger.createStopWatch(LifeCycle.XML, id);
 
         String template = loadTemplate(resourcePath);
         Document document = getDocument(template, params);

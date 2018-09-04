@@ -151,6 +151,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         this.target = target;
         this.openType = openType;
 
+        Messages messages = AppBeans.get(Messages.NAME);
+        this.caption = messages.getMainMessage("actions.Edit");
+
         this.icon = AppBeans.get(Icons.class).get(CubaIcon.EDIT_ACTION);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);

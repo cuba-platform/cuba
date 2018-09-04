@@ -29,28 +29,14 @@ import java.util.Map;
 public class WindowContextImpl extends FrameContextImpl implements WindowContext {
 
     private final LaunchMode launchMode;
-    private final ScreenOptions options;
 
-    public WindowContextImpl(Frame window, LaunchMode launchMode, ScreenOptions options) {
-        super(window, getParams(options));
+    public WindowContextImpl(Frame window, LaunchMode launchMode) {
+        super(window);
         this.launchMode = launchMode;
-        this.options = options;
     }
 
     @Override
     public LaunchMode getLaunchMode() {
         return launchMode;
-    }
-
-    @Override
-    public ScreenOptions getOptions() {
-        return options;
-    }
-
-    private static Map<String, Object> getParams(ScreenOptions options) {
-        if (options instanceof MapScreenOptions) {
-            return ((MapScreenOptions) options).getParams();
-        }
-        return Collections.emptyMap();
     }
 }

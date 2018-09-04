@@ -16,8 +16,12 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+
 /**
- * JavaDoc
+ * Reusable part of {@link Window} with separate UI controller.
+ *
+ * @see ScreenFragment
  */
 public interface Fragment extends Frame {
     /**
@@ -25,4 +29,7 @@ public interface Fragment extends Frame {
      * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
      */
     String NAME = "fragment";
+
+    @Override
+    ScreenFragment getFrameOwner();
 }

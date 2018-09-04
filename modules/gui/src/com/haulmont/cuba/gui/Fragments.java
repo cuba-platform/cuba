@@ -17,9 +17,29 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+
 /**
  * JavaDoc
  */
 public interface Fragments {
 
+    String NAME = "cuba_Fragments";
+
+    default <T extends ScreenFragment> T create(FrameOwner parent, Class<T> fragmentClass) {
+        return create(parent, fragmentClass, FrameOwner.NO_OPTIONS);
+    }
+
+    default ScreenFragment create(FrameOwner parent, WindowInfo windowInfo) {
+        return create(parent, windowInfo, FrameOwner.NO_OPTIONS);
+    }
+
+    <T extends ScreenFragment> T create(FrameOwner parent, Class<T> fragmentClass, ScreenOptions options);
+
+    ScreenFragment create(FrameOwner parent, WindowInfo windowInfo, ScreenOptions options);
+
+    void initialize(ScreenFragment fragment);
 }

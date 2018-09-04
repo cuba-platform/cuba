@@ -178,11 +178,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             if (field.getXmlDescriptor() != null) {
                 String generator = field.getXmlDescriptor().attributeValue("generator");
                 if (generator != null) {
-                    context.addPostWrapTask((boundContext, window) -> {
-                        DeclarativeFieldGenerator fieldGenerator = new DeclarativeFieldGenerator(resultComponent, generator);
-                        Component fieldComponent = fieldGenerator.generateField(field.getTargetDatasource(), field.getProperty());
-                        field.setComponent(fieldComponent);
-                    });
+                    DeclarativeFieldGenerator fieldGenerator = new DeclarativeFieldGenerator(resultComponent, generator);
+                    Component fieldComponent = fieldGenerator.generateField(field.getTargetDatasource(), field.getProperty());
+                    field.setComponent(fieldComponent);
                 }
             }
         }

@@ -17,8 +17,8 @@
 package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.screen.Screen.AfterCloseEvent;
 import com.haulmont.cuba.gui.screen.StandardCloseAction;
-import com.haulmont.cuba.gui.screen.events.AfterCloseEvent;
 
 import java.util.Objects;
 import java.util.function.Consumer;
