@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
 
+import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, String, String> implements PasswordField {
@@ -57,6 +58,12 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
     @Override
     protected String convertToPresentation(String modelValue) throws ConversionException {
         return nullToEmpty(super.convertToPresentation(modelValue));
+    }
+
+    @Override
+    protected String convertToModel(String componentRawValue) throws ConversionException {
+        String value = emptyToNull(componentRawValue);
+        return super.convertToModel(value);
     }
 
     @Override

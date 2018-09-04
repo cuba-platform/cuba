@@ -24,6 +24,9 @@ import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
+
 public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, String, String> implements MaskedField {
 
     protected ShortcutListener enterShortcutListener;
@@ -71,7 +74,13 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
 
     @Override
     protected String convertToPresentation(String modelValue) throws ConversionException {
-        return modelValue == null ? "" : modelValue;
+        return nullToEmpty(modelValue);
+    }
+
+    @Override
+    protected String convertToModel(String componentRawValue) throws ConversionException {
+        String value = emptyToNull(componentRawValue);
+        return super.convertToModel(value);
     }
 
 //    vaadin8

@@ -127,14 +127,14 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(componentRawValue);
+                return propertyDataType.parse(value);
             } catch (ParseException e) {
                 // vaadin8 localized message
                 throw new ConversionException("Unable to convert value", e);
             }
         }
 
-        return super.convertToModel(componentRawValue);
+        return super.convertToModel(value);
     }
 
     @Override

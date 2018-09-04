@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String>
@@ -89,6 +90,12 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     @Override
     protected String convertToPresentation(String modelValue) throws ConversionException {
         return nullToEmpty(super.convertToPresentation(modelValue));
+    }
+
+    @Override
+    protected String convertToModel(String componentRawValue) throws ConversionException {
+        String value = emptyToNull(componentRawValue);
+        return super.convertToModel(value);
     }
 
     @Override
