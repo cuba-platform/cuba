@@ -16,36 +16,101 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CurrencyField;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.widgets.CubaTextField;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 
-public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> implements CurrencyField<V> {
-    protected TextField textField;
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
+
+public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, String, V>
+        implements CurrencyField<V>, InitializingBean {
+
+    protected Locale locale;
+    private Datatype<V> datatype = Datatypes.get("decimal");
 
     public WebCurrencyField() {
-        // todo rework
-        textField = AppBeans.get(ComponentsFactory.class).createComponent(TextField.class);
+        component = new CubaCurrencyField();
+        component.setCurrencyLabelPosition(toWidgetLabelPosition(CurrencyLabelPosition.RIGHT));
 
-        this.component = new CubaCurrencyField(textField.unwrap(CubaTextField.class));
+        attachValueChangeListener(component);
+    }
 
-        com.haulmont.cuba.web.widgets.CurrencyLabelPosition currencyLabelPosition =
-                com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(CurrencyLabelPosition.RIGHT.name());
-        this.component.setCurrencyLabelPosition(currencyLabelPosition);
+    @Override
+    protected void attachValueChangeListener(CubaCurrencyField component) {
+        component.getInternalComponent()
+                .addValueChangeListener(event ->
+                        componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated())
+                );
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        UserSessionSource userSessionSource =
+                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+
+        this.locale = userSessionSource.getLocale();
+    }
+
+    @Override
+    protected String convertToPresentation(V modelValue) throws ConversionException {
+        // Vaadin TextField does not permit `null` value
+        if (datatype != null) {
+            return nullToEmpty(datatype.format(modelValue, locale));
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            return nullToEmpty(propertyDataType.format(modelValue));
+        }
+
+        return nullToEmpty(super.convertToPresentation(modelValue));
+    }
+
+    @Override
+    protected V convertToModel(String componentRawValue) throws ConversionException {
+        String value = emptyToNull(componentRawValue);
+
+        value = StringUtils.trimToNull(value);
+
+        if (datatype != null) {
+            try {
+                return datatype.parse(value, locale);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            try {
+                return propertyDataType.parse(componentRawValue);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
+        return super.convertToModel(componentRawValue);
     }
 
     @Override
@@ -72,127 +137,77 @@ public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> 
     public void setCurrencyLabelPosition(CurrencyLabelPosition currencyLabelPosition) {
         Preconditions.checkNotNullArgument(currencyLabelPosition);
 
-        com.haulmont.cuba.web.widgets.CurrencyLabelPosition wAlign =
-                com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(currencyLabelPosition.name());
-
-        component.setCurrencyLabelPosition(wAlign);
+        component.setCurrencyLabelPosition(toWidgetLabelPosition(currencyLabelPosition));
     }
 
     @Override
     public CurrencyLabelPosition getCurrencyLabelPosition() {
-        return CurrencyLabelPosition.valueOf(component.getCurrencyLabelPosition().name());
+        return fromWidgetLabelPosition(component.getCurrencyLabelPosition());
     }
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        textField.setDatasource(datasource, property);
+        super.setDatasource(datasource, property);
 
         if (datasource != null && !DynamicAttributesUtils.isDynamicAttribute(property)) {
-            MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+            MetaProperty metaProperty = datasource.getMetaClass()
+                    .getPropertyNN(property);
 
-            Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
-            if (obj == null)
+            Object annotation = metaProperty.getAnnotations()
+                    .get(CurrencyValue.class.getName());
+            if (annotation == null) {
                 return;
+            }
 
             //noinspection unchecked
-            Map<String, Object> currencyValue = (Map<String, Object>) obj;
-            String currencyName = (String) currencyValue.get("currency");
+            Map<String, Object> currencyAnnotation = (Map<String, Object>) annotation;
+            String currencyName = (String) currencyAnnotation.get("currency");
             component.setCurrency(currencyName);
         }
     }
 
     @Override
-    public Datasource getDatasource() {
-        return textField.getDatasource();
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        return textField.getMetaProperty();
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        return textField.getMetaPropertyPath();
-    }
-
-    @Override
-    public void setDatatype(Datatype datatype) {
+    public void setDatatype(Datatype<V> datatype) {
         Preconditions.checkNotNullArgument(datatype);
 
-        component.setDatatype(datatype);
+        this.datatype = datatype;
     }
 
     @Override
-    public Datatype getDatatype() {
-        return component.getDatatype();
-    }
-
-    @Override
-    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
-        return textField.addValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
-        textField.removeValueChangeListener(listener);
-    }
-
-    @Override
-    public V getValue() {
-        return (V) textField.getValue();
-    }
-
-    @Override
-    public void setValue(V value) {
-        textField.setValue(value);
-    }
-
-    @Override
-    public void setBuffered(boolean buffered) {
-        textField.setBuffered(buffered);
-    }
-
-    @Override
-    public boolean isBuffered() {
-        return textField.isBuffered();
+    public Datatype<V> getDatatype() {
+        return datatype;
     }
 
     @Override
     public void commit() {
-        textField.commit();
+        super.commit();
     }
 
     @Override
     public void discard() {
-        textField.discard();
+        super.discard();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return super.isBuffered();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        super.setBuffered(buffered);
     }
 
     @Override
     public boolean isModified() {
-        return textField.isModified();
+        return super.isModified();
     }
 
-    @Override
-    public void validate() throws ValidationException {
-        if (hasValidationError()) {
-            setValidationError(null);
-        }
-
-        if (!isVisibleRecursive() || !isEditableWithParent() || !isEnabledRecursive()) {
-            return;
-        }
-
-        textField.validate();
+    protected com.haulmont.cuba.web.widgets.CurrencyLabelPosition toWidgetLabelPosition(CurrencyLabelPosition labelPosition) {
+        return com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(labelPosition.name());
     }
 
-    @Override
-    public boolean isRequired() {
-        return textField.isRequired();
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        textField.setRequired(required);
+    protected CurrencyLabelPosition fromWidgetLabelPosition(com.haulmont.cuba.web.widgets.CurrencyLabelPosition wLabelPosition) {
+        return CurrencyLabelPosition.valueOf(wLabelPosition.name());
     }
 }

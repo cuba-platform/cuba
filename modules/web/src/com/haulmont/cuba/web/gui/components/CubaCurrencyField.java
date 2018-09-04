@@ -16,20 +16,21 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.haulmont.cuba.web.widgets.CurrencyLabelPosition;
 import com.vaadin.server.*;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.ui.CustomField;
+import com.vaadin.ui.TextField;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.ParseException;
+import java.util.function.Supplier;
 
-public class CubaCurrencyField extends CustomField {
+public class CubaCurrencyField extends CustomField<String> {
+
     protected static final String CURRENCYFIELD_STYLENAME = "c-currencyfield";
     protected static final String CURRENCYFIELD_LAYOUT_STYLENAME = "c-currencyfield-layout";
     protected static final String CURRENCY_STYLENAME = "c-currencyfield-currency";
@@ -47,16 +48,13 @@ public class CubaCurrencyField extends CustomField {
     protected boolean showCurrencyLabel = true;
     protected CurrencyLabelPosition currencyLabelPosition = CurrencyLabelPosition.RIGHT;
 
-    protected Datatype datatype = Datatypes.get("decimal");
-
-    public CubaCurrencyField(CubaTextField textField) {
-        this.textField = textField;
+    public CubaCurrencyField() {
+        this.textField = new CubaTextField();
 
         init();
 
         initTextField();
         initCurrencyLabel();
-
         initLayout();
 
         updateCurrencyLabelVisibility();
@@ -68,23 +66,16 @@ public class CubaCurrencyField extends CustomField {
     }
 
     protected void initTextField() {
-        textField.setWidth("100%");
-
         textField.addStyleName(CURRENCYFIELD_TEXT_STYLENAME);
-
-//        vaadin8
-        /*textField.setValidationVisible(false);
-        textField.setShowBufferedSourceException(false);
-        textField.setShowErrorForDisabledState(false);
-        textField.setNullRepresentation(StringUtils.EMPTY);
-        textField.setConverter(new StringToDatatypeConverter(datatype));*/
+        textField.setWidth("100%");
+        textField.setValueChangeMode(ValueChangeMode.BLUR);
 
         textField.addValueChangeListener(event -> markAsDirty());
     }
 
     protected void initCurrencyLabel() {
         currencyLabel = new CubaLabel();
-        // allows to set to the table-cell element width by content
+        // enables to set to the table-cell element width by content
         currencyLabel.setWidth("1px");
         currencyLabel.setHeight("100%");
         currencyLabel.addStyleName(CURRENCY_STYLENAME);
@@ -177,11 +168,6 @@ public class CubaCurrencyField extends CustomField {
     }
 
     @Override
-    public Class getType() {
-        return Object.class;
-    }
-
-    @Override
     public void focus() {
         textField.focus();
     }
@@ -199,15 +185,13 @@ public class CubaCurrencyField extends CustomField {
     }
 
     @Override
-    public void setRequired(boolean required) {
-        textField.setRequiredIndicatorVisible(required);
-
-        markAsDirty();
+    protected void doSetValue(String value) {
+        textField.setValue(value);
     }
 
     @Override
-    public boolean isRequired() {
-        return textField.isRequiredIndicatorVisible();
+    public String getValue() {
+        return textField.getValue();
     }
 
     @Override
@@ -235,27 +219,27 @@ public class CubaCurrencyField extends CustomField {
         return superError;
     }
 
-    public void setTextField(CubaTextField textField) {
-        this.textField = textField;
+    @Override
+    public void setComponentError(ErrorMessage componentError) {
+        textField.setComponentError(componentError);
     }
 
-    public void setDatatype(Datatype datatype) {
-        this.datatype = datatype;
-
-        try {
-            Object parsedValue = datatype.parse(textField.getValue(), getLocale());
-
-//            vaadin8
-//            textField.setConverter(new StringToDatatypeConverter(datatype));
-//            textField.setConvertedValue(parsedValue);
-        } catch (ParseException e) {
-            String message = String.format("Value %s cannot be parsed as %s datatype",
-                    textField.getValue(), datatype);
-            throw new RuntimeException(message, e);
-        }
+    @Override
+    public ErrorMessage getComponentError() {
+        return textField.getComponentError();
     }
 
-    public Datatype getDatatype() {
-        return datatype;
+    public TextField getInternalComponent() {
+        return textField;
+    }
+
+    @Override
+    public void setComponentErrorProvider(Supplier<ErrorMessage> componentErrorProvider) {
+        textField.setComponentErrorProvider(componentErrorProvider);
+    }
+
+    @Override
+    public Supplier<ErrorMessage> getComponentErrorProvider() {
+        return textField.getComponentErrorProvider();
     }
 }

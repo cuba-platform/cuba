@@ -26,6 +26,7 @@ import org.dom4j.Element;
 import java.util.Map;
 
 public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
+
     @Override
     public void createComponent() {
         resultComponent = factory.createComponent(CurrencyField.class);

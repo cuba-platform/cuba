@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
  * The CurrencyField component is intended for displaying currency values.
  */
 public interface CurrencyField<V> extends Field<V>, Buffered {
+
     String NAME = "currencyField";
 
     /**
@@ -67,12 +68,12 @@ public interface CurrencyField<V> extends Field<V>, Buffered {
      *
      * @param datatype {@link Datatype} instance
      */
-    void setDatatype(Datatype datatype);
+    void setDatatype(Datatype<V> datatype);
 
     /**
      * @return a datatype that is used by this component
      */
-    Datatype getDatatype();
+    Datatype<V> getDatatype();
 
     /**
      * Defines where the currency label is located.
