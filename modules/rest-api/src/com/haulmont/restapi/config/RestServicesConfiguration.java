@@ -168,13 +168,14 @@ public class RestServicesConfiguration {
 
             for (Element methodElem : Dom4j.elements(serviceElem, "method")) {
                 String methodName = methodElem.attributeValue("name");
+                boolean anonymousAllowed = "true".equals(methodElem.attributeValue("anonymousAllowed"));
                 List<RestMethodParamInfo> params = new ArrayList<>();
                 for (Element paramEl : Dom4j.elements(methodElem, "param")) {
                     params.add(new RestMethodParamInfo(paramEl.attributeValue("name"), paramEl.attributeValue("type")));
                 }
                 Method method = _findMethod(serviceName, methodName, params);
                 if (method != null) {
-                    methodInfos.add(new RestMethodInfo(methodName, params, method));
+                    methodInfos.add(new RestMethodInfo(methodName, params, method, anonymousAllowed));
                 }
             }
 
@@ -303,13 +304,15 @@ public class RestServicesConfiguration {
     public static class RestMethodInfo {
         protected String name;
         protected List<RestMethodParamInfo> params = new ArrayList<>();
+        protected boolean anonymousAllowed;
         @JsonIgnore
         protected Method method;
 
-        public RestMethodInfo(String name, List<RestMethodParamInfo> params, Method method) {
+        public RestMethodInfo(String name, List<RestMethodParamInfo> params, Method method, boolean anonymousAllowed) {
             this.name = name;
             this.params = params;
             this.method = method;
+            this.anonymousAllowed = anonymousAllowed;
         }
 
         public String getName() {
@@ -334,6 +337,15 @@ public class RestServicesConfiguration {
 
         public void setMethod(Method method) {
             this.method = method;
+
+        }
+
+        public boolean isAnonymousAllowed() {
+            return anonymousAllowed;
+        }
+
+        public void setAnonymousAllowed(boolean anonymousAllowed) {
+            this.anonymousAllowed = anonymousAllowed;
         }
     }
 

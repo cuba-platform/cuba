@@ -21,7 +21,10 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestApiConfig;
+import com.haulmont.restapi.config.RestServicesConfiguration;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -29,7 +32,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.inject.Inject;
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and
@@ -45,7 +53,13 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
     protected RestApiConfig restApiConfig;
 
     @Inject
+    protected RestServicesConfiguration restServicesConfiguration;
+
+    @Inject
     protected TrustedClientService trustedClientService;
+
+    @Inject
+    protected RestParseUtils restParseUtils;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -55,7 +69,7 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (restApiConfig.getRestAnonymousEnabled()) {
+        if (restApiConfig.getRestAnonymousEnabled() || isAnonymousServiceMethodInvoked(request)) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserSession anonymousSession;
                 try {
@@ -76,6 +90,36 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
             log.trace("Anonymous access for CUBA REST API is disabled");
         }
         chain.doFilter(request, response);
+    }
+
+    protected boolean isAnonymousServiceMethodInvoked(ServletRequest request) {
+        if (request instanceof HttpServletRequest) {
+            String pathInfo = ((HttpServletRequest) request).getPathInfo();
+            if (pathInfo != null && pathInfo.startsWith("/v2/services/")) {
+                String[] parts = pathInfo.split("/");
+                if (parts.length != 5) return false;
+                String serviceName = parts[3];
+                String methodName = parts[4];
+                List<String> methodParamNames;
+                if ("GET".equals(((HttpServletRequest) request).getMethod())) {
+                    methodParamNames = Collections.list(request.getParameterNames());
+                } else if ("POST".equals(((HttpServletRequest) request).getMethod())) {
+                    try {
+                        String json = IOUtils.toString(request.getReader());
+                        Map<String, String> paramsMap = restParseUtils.parseParamsJson(json);
+                        methodParamNames = new ArrayList<>(paramsMap.keySet());
+                    } catch (IOException e) {
+                        log.error("Error on reading request body", e);
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+                RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, methodParamNames);
+                return restMethodInfo != null && restMethodInfo.isAnonymousAllowed();
+            }
+        }
+        return false;
     }
 
     @Override
