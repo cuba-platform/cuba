@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.google.common.collect.Sets;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.util.Numbers;
 import com.haulmont.bali.util.Preconditions;
@@ -25,6 +26,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.model.DataContext;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -139,6 +141,7 @@ public class StandardDataContext implements DataContext {
         if (managedInstance != null) {
             if (managedInstance != entity) {
                 copyState(entity, managedInstance);
+                copyReferences(entity, managedInstance);
             }
             return managedInstance;
         }
@@ -150,6 +153,31 @@ public class StandardDataContext implements DataContext {
             modifiedInstances.add(entity);
         }
         return entity;
+    }
+
+    protected void copyReferences(Entity srcEntity, Entity dstEntity) {
+        EntityStates entityStates = getEntityStates();
+
+        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
+            String propertyName = property.getName();
+            if (!property.getRange().isClass()
+                    || property.getRange().getCardinality().isMany()
+                    || !entityStates.isLoaded(srcEntity, propertyName)
+                    || !entityStates.isLoaded(dstEntity, propertyName)) {
+                continue;
+            }
+            Object value = srcEntity.getValue(propertyName);
+            boolean srcNew = entityStates.isNew(srcEntity);
+            if (!srcNew || value != null) {
+                if (value == null) {
+                    dstEntity.setValue(propertyName, null);
+                } else {
+                    Entity srcRef = (Entity) value;
+                    Entity dstRef = internalMerge(srcRef);
+                    ((AbstractInstance) dstEntity).setValue(propertyName, dstRef, false);
+                }
+            }
+        }
     }
 
     /**
@@ -424,6 +452,52 @@ public class StandardDataContext implements DataContext {
             resultList.addAll(entityMap.values());
         }
         return resultList;
+    }
+
+    public String printContent() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Class<?>, Map<Object, Entity>> entry : content.entrySet()) {
+            sb.append("=== ").append(entry.getKey().getSimpleName()).append(" ===\n");
+            for (Entity entity : entry.getValue().values()) {
+                sb.append(printEntity(entity, 1, Sets.newIdentityHashSet())).append('\n');
+            }
+        }
+        return sb.toString();
+    }
+
+    protected String printEntity(Entity entity, int level, Set<Entity> visited) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(printObject(entity)).append(" ").append(entity.toString()).append("\n");
+
+        if (visited.contains(entity)) {
+            return sb.toString();
+        }
+        visited.add(entity);
+
+        for (MetaProperty property : getMetadata().getClassNN(entity.getClass()).getProperties()) {
+            if (!property.getRange().isClass() || !getEntityStates().isLoaded(entity, property.getName()))
+                continue;
+            Object value = entity.getValue(property.getName());
+            String prefix = StringUtils.repeat("  ", level);
+            if (value instanceof Entity) {
+                String str = printEntity((Entity) value, level + 1, visited);
+                if (!str.equals(""))
+                    sb.append(prefix).append(str);
+            } else if (value instanceof Collection) {
+                sb.append(prefix).append(value.getClass().getSimpleName()).append("[\n");
+                for (Object item : (Collection) value) {
+                    String str = printEntity((Entity) item, level + 1, visited);
+                    if (!str.equals(""))
+                        sb.append(prefix).append(str);
+                }
+                sb.append(prefix).append("]\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    protected String printObject(Object object) {
+        return "{" + object.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(object)) + "}";
     }
 
     protected class ChangeListener implements Instance.PropertyChangeListener {

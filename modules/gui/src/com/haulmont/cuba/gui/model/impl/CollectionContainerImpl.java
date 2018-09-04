@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -48,8 +49,8 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public void setItem(@Nullable E item) {
         if (item != null) {
-            Integer idx = getItemIndex(item.getId());
-            if (idx < -1) {
+            int idx = getItemIndex(item.getId());
+            if (idx == -1) {
                 throw new IllegalArgumentException("CollectionContainer does not contain " + item);
             }
             E existingItem = collection.get(idx);
@@ -89,7 +90,7 @@ public class CollectionContainerImpl<E extends Entity>
     @Nullable
     @Override
     public E getItemOrNull(Object entityId) {
-        Integer idx = getItemIndex(entityId);
+        int idx = getItemIndex(entityId);
         return idx != -1 ? collection.get(idx) : null;
     }
 
@@ -97,6 +98,27 @@ public class CollectionContainerImpl<E extends Entity>
     public int getItemIndex(Object entityId) {
         Integer idx = idMap.get(entityId);
         return idx != null ? idx : -1;
+    }
+
+    @Override
+    public void replaceItem(E entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Object id = entity.getId();
+        int idx = getItemIndex(id);
+        if (idx > -1) {
+            E prev = collection.get(idx);
+            detachListener(prev);
+            if (prev == getItemOrNull()) {
+                this.item = entity;
+                fireItemChanged(prev);
+            }
+            collection.set(idx, entity);
+        } else {
+            collection.add(entity);
+        }
+        attachListener(entity);
+        buildIdMap();
+        fireCollectionChanged();
     }
 
     @Override
@@ -149,8 +171,23 @@ public class CollectionContainerImpl<E extends Entity>
     }
 
     protected void clearItemIfNotExists() {
-        if (item != null && getItemIndex(item.getId()) == -1) {
-            setItem(null);
+        if (item != null) {
+            int idx = getItemIndex(item.getId());
+            if (idx == -1) {
+                // item doesn't exist in the collection
+                E prevItem = item;
+                detachListener(prevItem);
+                item = null;
+                fireItemChanged(prevItem);
+            } else {
+                E newItem = collection.get(idx);
+                if (newItem != item) {
+                    E prevItem = item;
+                    detachListener(prevItem);
+                    item = newItem;
+                    fireItemChanged(prevItem);
+                }
+            }
         }
     }
 

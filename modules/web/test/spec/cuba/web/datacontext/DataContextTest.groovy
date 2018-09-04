@@ -16,7 +16,9 @@
 
 package spec.cuba.web.datacontext
 
+import com.haulmont.cuba.client.testsupport.TestSupport
 import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
@@ -26,8 +28,8 @@ import com.haulmont.cuba.gui.model.impl.DataContextAccessor
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
-import com.haulmont.cuba.web.testmodel.sales.ProductTag
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import org.junit.ClassRule
@@ -603,36 +605,36 @@ class DataContextTest extends Specification {
         removed.isEmpty()
     }
 
-    def "track many-to-many"() {
+    def "commit returns different reference"() {
         DataContext context = factory.createDataContext()
 
+        Product product1 = new Product(name: "p1", price: 100)
+        Product product2 = new Product(name: "p2", price: 200)
+        OrderLine line = new OrderLine(quantity: 10, product: product1)
+        makeDetached(product1, product2, line)
+        context.merge(line)
+
+        Collection committed = []
         TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
+            commit(_) >> { CommitContext cc ->
+                committed.addAll(cc.commitInstances)
+                def entities = TestServiceProxy.getDefault(DataService).commit(cc)
+                entities.find { it == line }.product = TestSupport.reserialize(product2)
+                entities
+            }
         })
-
-        Product product = new Product(name: 'p1', price: 100, tags: [])
-        makeDetached(product)
-        context.merge(product)
-
-        ProductTag tag = new ProductTag(name: 't1')
-        context.merge(tag)
 
         when:
 
-        Collection modified = []
-
-        context.addPreCommitListener({ e->
-            modified.addAll(e.modifiedInstances)
-        })
-
-        product.tags.add(tag)
-
+        line.quantity = 20
         context.commit()
 
         then:
 
-        modified.contains(product)
-        modified.contains(tag)
+        def line1 = context.find(OrderLine, line.id)
+        line1.quantity == 20
+        line1.product == product2
+
     }
 
     private <T> T createDetached(Class<T> entityClass) {
@@ -643,6 +645,12 @@ class DataContextTest extends Specification {
 
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
+    }
+
+    private void makeDetached(Entity... entities) {
+        for (Entity entity : entities) {
+            entityStates.makeDetached(entity)
+        }
     }
 
     private static <T> T makeSaved(T entity) {

@@ -43,6 +43,8 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
 
     int getItemIndex(Object entityId);
 
+    void replaceItem(E entity);
+
     /**
      *
      */

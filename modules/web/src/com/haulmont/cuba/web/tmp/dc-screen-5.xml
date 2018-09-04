@@ -14,13 +14,13 @@
   ~ limitations under the License.
   -->
 
-<window caption="Screen 5">
+<window caption="User Browser">
 
     <data>
         <collection id="usersCont"
                     class="com.haulmont.cuba.security.entity.User" view="user.browse">
 
-                <loader id="usersLoader">
+            <loader id="usersLoader">
                 <query>
                     select u from sec$User u
                     order by u.name

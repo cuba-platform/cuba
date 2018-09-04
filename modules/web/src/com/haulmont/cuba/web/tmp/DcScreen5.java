@@ -69,7 +69,7 @@ public class DcScreen5 extends Screen {
         dcScreen6.addAfterCloseListener(afterCloseEvent -> {
             CloseAction closeAction = afterCloseEvent.getCloseAction();
             if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                usersCont.getMutableItems().add(0, (User) dcScreen6.getEditedEntity());
+                usersCont.getMutableItems().add(0, dcScreen6.getEditedEntity());
             }
         });
         screens.show(dcScreen6);

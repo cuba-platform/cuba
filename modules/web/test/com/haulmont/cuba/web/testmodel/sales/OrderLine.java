@@ -62,6 +62,10 @@ public class OrderLine extends StandardEntity {
 
     @Override
     public String toString() {
-        return super.toString() + '@' + System.identityHashCode(this);
+        return "OrderLine{" +
+                "id=" + id +
+                ", version=" + version +
+                ", quantity=" + quantity +
+                "}@" + Integer.toHexString(System.identityHashCode(this));
     }
 }

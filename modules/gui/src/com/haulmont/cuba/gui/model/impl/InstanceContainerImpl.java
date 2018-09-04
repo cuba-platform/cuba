@@ -76,7 +76,7 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
             final MetaClass aClass = item.getMetaClass();
             if (!aClass.equals(entityMetaClass) && !entityMetaClass.getDescendants().contains(aClass)) {
                 throw new DevelopmentException(String.format("Invalid item's metaClass '%s'", aClass),
-                        ParamsMap.of("datasource", toString(), "metaClass", aClass));
+                        ParamsMap.of("container", toString(), "metaClass", aClass));
             }
             attachListener(item);
         }

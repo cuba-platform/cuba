@@ -340,6 +340,29 @@ class CompositionTest extends WebSpec {
         committed.upd.find { it == orderLine11}.quantity == 12
     }
 
+    def "one level of composition - changed reference"() {
+
+        def orderScreen = new OrderScreen()
+        def orderLineScreen = new LineScreen()
+
+        orderScreen.open(order1)
+
+        orderScreen.linesCnt.item = orderLine11
+        orderLineScreen.open(orderScreen.linesCnt.item, orderScreen.dataContext)
+        orderLineScreen.lineCnt.item.product = product12
+
+        when:
+
+        def committed = mockCommit()
+        orderLineScreen.dataContext.commit()
+        orderScreen.dataContext.commit()
+
+        then:
+
+        committed.upd.size() == 1
+        committed.upd[0].product == product12
+    }
+
     def "one level of composition - remove item"() {
 
         def orderScreen = new OrderScreen()

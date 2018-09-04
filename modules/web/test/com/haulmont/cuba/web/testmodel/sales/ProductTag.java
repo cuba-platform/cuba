@@ -38,4 +38,13 @@ public class ProductTag extends StandardEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "ProductTag{" +
+                "id=" + id +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                "}@" + Integer.toHexString(System.identityHashCode(this));
+    }
 }

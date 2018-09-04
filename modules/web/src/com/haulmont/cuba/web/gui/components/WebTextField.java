@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.TextField;
@@ -100,7 +101,13 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         if (valueBinding != null
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
-            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            Range range = entityValueSource.getMetaPropertyPath().getRange();
+            if (!range.isDatatype()) {
+                throw new IllegalStateException(String.format(
+                        "Property '%s' has %s. TextField can be bound only to a simple data type",
+                        entityValueSource.getMetaPropertyPath().getMetaProperty().getName(), range));
+            }
+            Datatype<V> propertyDataType = range.asDatatype();
             return nullToEmpty(propertyDataType.format(modelValue));
         }
 

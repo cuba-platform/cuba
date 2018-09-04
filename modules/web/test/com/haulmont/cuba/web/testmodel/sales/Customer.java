@@ -50,4 +50,14 @@ public class Customer extends StandardEntity {
     public void setStatus(Status status) {
         this.status = status.getId();
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                "}@" + Integer.toHexString(System.identityHashCode(this));
+    }
 }

@@ -22,8 +22,15 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.data.options.CollectionContainerOptions;
+import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -128,6 +135,24 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
                     }
                 });
             });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void loadContainer(LookupField component, Element element) {
+        super.loadContainer(component, element);
+
+        String containerId = element.attributeValue("optionsContainer");
+        if (containerId != null) {
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = ScreenUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+            if (!(container instanceof CollectionContainer)) {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+            }
+            component.setOptionsSource(
+                    new CollectionContainerOptions((CollectionContainer) container, screenData.findLoaderOf(container)));
         }
     }
 

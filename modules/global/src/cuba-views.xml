@@ -49,6 +49,11 @@
         </property>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.UserRole" name="tmp.user.edit">
+        <property name="user" view="_minimal"/>
+        <property name="role" view="_minimal"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.User" name="user.browse" extends="_local" systemProperties="true">
         <property name="group" view="_minimal"/>
     </view>

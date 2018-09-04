@@ -55,7 +55,7 @@ public class ScreenDataXmlLoader {
 
         for (Element el : element.elements()) {
             if (el.getName().equals("collection")) {
-                loadNestedContainer(screenData, el);
+                loadCollectionContainer(screenData, el);
             } else if (el.getName().equals("instance")) {
                 loadInstanceContainer(screenData, el);
             }
@@ -80,7 +80,7 @@ public class ScreenDataXmlLoader {
         }
     }
 
-    protected void loadNestedContainer(ScreenData screenData, Element element) {
+    protected void loadCollectionContainer(ScreenData screenData, Element element) {
         String containerId = getRequiredAttr(element, "id");
 
         CollectionContainer<Entity> container = factory.createCollectionContainer(getEntityClass(element));

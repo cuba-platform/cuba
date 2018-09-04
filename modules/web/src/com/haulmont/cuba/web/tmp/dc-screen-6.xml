@@ -14,21 +14,35 @@
   ~ limitations under the License.
   -->
 
-<window caption="Screen 6">
+<window caption="User Editor">
 
     <data>
         <instance id="userCont" class="com.haulmont.cuba.security.entity.User" view="user.edit">
             <loader id="userLoader"/>
+
+            <collection id="userRolesCont" property="userRoles"/>
         </instance>
     </data>
 
-    <layout spacing="true" expand="spacer">
+    <layout spacing="true" expand="userRolesTable">
         <textField id="loginField" container="userCont" property="login"/>
         <textField id="nameField" container="userCont" property="name"/>
+        <table id="userRolesTable"
+               width="100%">
+            <buttonsPanel>
+                <!--<button id="createBtn" caption="Create"/>-->
+                <button id="editBtn" caption="Edit"/>
+                <!--<button id="removeBtn" caption="Remove"/>-->
+            </buttonsPanel>
+            <columns>
+                <column id="role.name"/>
+                <column id="role.locName"/>
+            </columns>
+            <rows container="userRolesCont"/>
+        </table>
         <hbox spacing="true">
             <button id="okBtn" caption="OK"/>
             <button id="cancelBtn" caption="Cancel"/>
         </hbox>
-        <label id="spacer"/>
     </layout>
 </window>

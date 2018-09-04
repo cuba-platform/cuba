@@ -102,4 +102,15 @@ public class Order extends StandardEntity {
     public void setOrderLines(List<OrderLine> orderLines) {
         this.orderLines = orderLines;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", version=" + version +
+                ", number='" + number + '\'' +
+                ", date=" + date +
+                ", amount=" + amount +
+                "}@" + Integer.toHexString(System.identityHashCode(this));
+    }
 }
