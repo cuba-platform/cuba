@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -121,15 +120,16 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     protected void clearButtonClicked(@SuppressWarnings("unused") Button.ClickEvent clickEvent) {
         BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
-        getEventRouter().fireEvent(BeforeValueClearListener.class, BeforeValueClearListener::beforeValueClearPerformed, beforeValueClearEvent);
+        publish(BeforeValueClearEvent.class, beforeValueClearEvent);
 
         if (!beforeValueClearEvent.isClearPrevented()) {
             setValue(null);
             fileName = null;
         }
 
-        AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this, !beforeValueClearEvent.isClearPrevented());
-        getEventRouter().fireEvent(AfterValueClearListener.class, AfterValueClearListener::afterValueClearPerformed, afterValueClearEvent);
+        AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this,
+                !beforeValueClearEvent.isClearPrevented());
+        publish(AfterValueClearEvent.class, afterValueClearEvent);
     }
 
     protected void saveFile(FileDescriptor fileDescriptor) {
@@ -245,26 +245,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         return strings[strings.length - 1];
     }
 
-    @Override
-    public void addListener(Listener listener) {
-        FileUploadFieldListenerWrapper wrapper = new FileUploadFieldListenerWrapper(listener);
-
-        addFileUploadStartListener(wrapper);
-        addFileUploadErrorListener(wrapper);
-        addFileUploadFinishListener(wrapper);
-        addFileUploadSucceedListener(wrapper);
-    }
-
-    @Override
-    public void removeListener(Listener listener) {
-        FileUploadFieldListenerWrapper wrapper = new FileUploadFieldListenerWrapper(listener);
-
-        removeFileUploadStartListener(wrapper);
-        removeFileUploadErrorListener(wrapper);
-        removeFileUploadFinishListener(wrapper);
-        removeFileUploadSucceedListener(wrapper);
-    }
-
     /**
      * Get content bytes for uploaded file
      *
@@ -363,62 +343,22 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
         FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
-        getEventRouter().fireEvent(FileUploadStartListener.class, FileUploadStartListener::fileUploadStart, e);
+        publish(FileUploadStartEvent.class, e);
     }
 
     protected void fireFileUploadFinish(String fileName, long contentLength) {
         FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
-        getEventRouter().fireEvent(FileUploadFinishListener.class, FileUploadFinishListener::fileUploadFinish, e);
+        publish(FileUploadFinishEvent.class, e);
     }
 
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
         FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
-        getEventRouter().fireEvent(FileUploadErrorListener.class, FileUploadErrorListener::fileUploadError, e);
+        publish(FileUploadErrorEvent.class, e);
     }
 
     protected void fireFileUploadSucceed(String fileName, long contentLength) {
         FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
-        getEventRouter().fireEvent(FileUploadSucceedListener.class, FileUploadSucceedListener::fileUploadSucceed, e);
-    }
-
-    @Override
-    public void addFileUploadStartListener(FileUploadStartListener listener) {
-        getEventRouter().addListener(FileUploadStartListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadStartListener(FileUploadStartListener listener) {
-        getEventRouter().removeListener(FileUploadStartListener.class, listener);
-    }
-
-    @Override
-    public void addFileUploadFinishListener(FileUploadFinishListener listener) {
-        getEventRouter().addListener(FileUploadFinishListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
-        getEventRouter().removeListener(FileUploadFinishListener.class, listener);
-    }
-
-    @Override
-    public void addFileUploadErrorListener(FileUploadErrorListener listener) {
-        getEventRouter().addListener(FileUploadErrorListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
-        getEventRouter().removeListener(FileUploadErrorListener.class, listener);
-    }
-
-    @Override
-    public void addFileUploadSucceedListener(FileUploadSucceedListener listener) {
-        getEventRouter().addListener(FileUploadSucceedListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadSucceedListener(FileUploadSucceedListener listener) {
-        getEventRouter().removeListener(FileUploadSucceedListener.class, listener);
+        publish(FileUploadSucceedEvent.class, e);
     }
 
     @Override
@@ -553,26 +493,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public String getClearButtonDescription() {
         return component.getClearButtonDescription();
-    }
-
-    @Override
-    public void addBeforeValueClearListener(BeforeValueClearListener listener) {
-        getEventRouter().addListener(BeforeValueClearListener.class, listener);
-    }
-
-    @Override
-    public void removeBeforeValueClearListener(BeforeValueClearListener listener) {
-        getEventRouter().removeListener(BeforeValueClearListener.class, listener);
-    }
-
-    @Override
-    public void addAfterValueClearListener(AfterValueClearListener listener) {
-        getEventRouter().addListener(AfterValueClearListener.class, listener);
-    }
-
-    @Override
-    public void removeAfterValueClearListener(AfterValueClearListener listener) {
-        getEventRouter().removeListener(AfterValueClearListener.class, listener);
     }
 
     @Override

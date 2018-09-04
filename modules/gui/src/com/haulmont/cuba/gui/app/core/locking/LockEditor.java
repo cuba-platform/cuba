@@ -43,7 +43,7 @@ public class LockEditor extends AbstractEditor {
     protected Datasource<LockDescriptor> lockDescriptorDs;
 
     @Inject
-    protected OptionsGroup nameTypeOptionsGroup;
+    protected OptionsGroup<LockDescriptorNameType, LockDescriptorNameType> nameTypeOptionsGroup;
 
     @Inject
     protected FieldGroup fieldGroup;

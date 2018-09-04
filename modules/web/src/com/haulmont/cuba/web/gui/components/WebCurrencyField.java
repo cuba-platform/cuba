@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> implements CurrencyField<V> {
     protected TextField textField;
@@ -128,14 +129,12 @@ public class WebCurrencyField<V> extends WebAbstractField<CubaCurrencyField, V> 
     }
 
     @Override
-    public Subscription addValueChangeListener(ValueChangeListener listener) {
-        textField.addValueChangeListener(listener);
-        // todo
-        return () -> {};
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
+        return textField.addValueChangeListener(listener);
     }
 
     @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
+    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
         textField.removeValueChangeListener(listener);
     }
 

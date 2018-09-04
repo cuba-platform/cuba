@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,7 @@ public class ParamWrapper implements Component, HasValue<Object> {
     }
 
    @Override
-    public Subscription addValueChangeListener(HasValue.ValueChangeListener listener) {
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
         param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
 
         // todo
@@ -126,23 +127,24 @@ public class ParamWrapper implements Component, HasValue<Object> {
     }
 
     @Override
-    public void removeValueChangeListener(HasValue.ValueChangeListener listener) {
+    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
         param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
     }
 
     protected static class ParamValueChangeListenerWrapper implements Param.ParamValueChangeListener {
 
         protected final ParamWrapper paramWrapper;
-        protected final ValueChangeListener valueChangeListener;
+        protected final Consumer<ValueChangeEvent> valueChangeListener;
 
-        public ParamValueChangeListenerWrapper(ParamWrapper paramWrapper, ValueChangeListener valueChangeListener) {
+        public ParamValueChangeListenerWrapper(ParamWrapper paramWrapper,
+                                               Consumer<ValueChangeEvent> valueChangeListener) {
             this.paramWrapper = paramWrapper;
             this.valueChangeListener = valueChangeListener;
         }
 
         @Override
         public void valueChanged(@Nullable Object prevValue, @Nullable Object value) {
-            valueChangeListener.valueChanged(new ValueChangeEvent(paramWrapper, prevValue, value));
+            valueChangeListener.accept(new ValueChangeEvent(paramWrapper, prevValue, value));
         }
 
         @Override

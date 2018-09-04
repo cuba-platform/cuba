@@ -16,9 +16,9 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.compatibility.TimerListenerWrapper;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaTimer;
@@ -26,6 +26,8 @@ import com.vaadin.ui.Label;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Consumer;
 
 public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
 
@@ -89,39 +91,31 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
     }
 
     @Override
-    public void addTimerListener(TimerListener listener) {
-        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
-
-        addActionListener(wrapper);
-        addStopListener(wrapper);
-    }
-
-    @Override
-    public void removeTimerListener(TimerListener listener) {
-        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
-
-        removeActionListener(wrapper);
-        removeStopListener(wrapper);
-    }
-
-    @Override
-    public void addActionListener(ActionListener listener) {
+    public Subscription addTimerActionListener(Consumer<TimerActionEvent> listener) {
         timerImpl.addActionListener(new CubaTimerActionListenerWrapper(listener));
+
+        return Timer.super.addTimerActionListener(listener);
     }
 
     @Override
-    public void removeActionListener(ActionListener listener) {
+    public void removeTimerActionListener(Consumer<TimerActionEvent> listener) {
         timerImpl.removeActionListener(new CubaTimerActionListenerWrapper(listener));
+
+        Timer.super.removeTimerActionListener(listener);
     }
 
     @Override
-    public void addStopListener(StopListener listener) {
+    public Subscription addTimerStopListener(Consumer<TimerStopEvent> listener) {
         timerImpl.addStopListener(new CubaTimerStopListenerWrapper(listener));
+
+        return Timer.super.addTimerStopListener(listener);
     }
 
     @Override
-    public void removeStopListener(StopListener listener) {
+    public void removeTimerStopListener(Consumer<TimerStopEvent> listener) {
         timerImpl.removeStopListeners(new CubaTimerStopListenerWrapper(listener));
+
+        Timer.super.removeTimerStopListener(listener);
     }
 
     @Override
@@ -137,15 +131,15 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
 
     protected class CubaTimerActionListenerWrapper implements CubaTimer.ActionListener {
 
-        private final Timer.ActionListener listener;
+        private final Consumer<TimerActionEvent> listener;
 
-        public CubaTimerActionListenerWrapper(ActionListener listener) {
+        public CubaTimerActionListenerWrapper(Consumer<TimerActionEvent> listener) {
             this.listener = listener;
         }
 
         @Override
         public void timerAction(CubaTimer timer) {
-            listener.timerAction(WebTimer.this);
+            listener.accept(new TimerActionEvent(WebTimer.this));
         }
 
         @Override
@@ -171,15 +165,15 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
 
     protected class CubaTimerStopListenerWrapper implements CubaTimer.StopListener {
 
-        private final Timer.StopListener listener;
+        private final Consumer<TimerStopEvent> listener;
 
-        public CubaTimerStopListenerWrapper(StopListener listener) {
+        public CubaTimerStopListenerWrapper(Consumer<TimerStopEvent> listener) {
             this.listener = listener;
         }
 
         @Override
         public void timerStopped(CubaTimer timer) {
-            listener.timerStopped(WebTimer.this);
+            listener.accept(new TimerStopEvent(WebTimer.this));
         }
 
         @Override

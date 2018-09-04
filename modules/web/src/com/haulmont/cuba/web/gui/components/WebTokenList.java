@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList, V> implements TokenList<V> {
 
@@ -90,7 +91,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     protected boolean multiselect;
     protected PickerField.LookupAction lookupAction;
 
-    protected final ValueChangeListener lookupSelectListener = e -> {
+    protected final Consumer<ValueChangeEvent> lookupSelectListener = e -> {
         if (isEditable()) {
             addValueFromLookupPickerField();
         }
@@ -265,7 +266,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     @Override
-    public Subscription addValueChangeListener(ValueChangeListener listener) {
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
         LoggerFactory.getLogger(WebTokenList.class).warn("addValueChangeListener not implemented for TokenList");
 
         // todo
@@ -273,7 +274,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
+    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
         LoggerFactory.getLogger(WebTokenList.class).warn("removeValueChangeListener not implemented for TokenList");
     }
 

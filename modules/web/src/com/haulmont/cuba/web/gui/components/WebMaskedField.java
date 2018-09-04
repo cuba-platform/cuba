@@ -17,12 +17,15 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+
+import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
@@ -105,25 +108,27 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
     }
 
     @Override
-    public void addEnterPressListener(EnterPressListener listener) {
-        getEventRouter().addListener(EnterPressListener.class, listener);
-
+    public Subscription addEnterPressListener(Consumer<EnterPressEvent> listener) {
         if (enterShortcutListener == null) {
             enterShortcutListener = new ShortcutListenerDelegate("enter", KeyCode.ENTER, null)
                     .withHandler((sender, target) -> {
                         EnterPressEvent event = new EnterPressEvent(WebMaskedField.this);
-                        getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                        publish(EnterPressEvent.class, event);
                     });
             component.addShortcutListener(enterShortcutListener);
         }
+
+        return MaskedField.super.addEnterPressListener(listener);
     }
 
     @Override
-    public void removeEnterPressListener(EnterPressListener listener) {
-        getEventRouter().removeListener(EnterPressListener.class, listener);
+    public void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
+        MaskedField.super.removeEnterPressListener(listener);
 
-        if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
+        if (enterShortcutListener != null
+                && !hasSubscriptions(EnterPressEvent.class)) {
             component.removeShortcutListener(enterShortcutListener);
+            enterShortcutListener = null;
         }
     }
 

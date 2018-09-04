@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class MbeansDisplayWindow extends AbstractWindow {
 
@@ -154,9 +155,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
         });
     }
 
-    private class ObjectNameFieldListener implements HasValue.ValueChangeListener {
+    private class ObjectNameFieldListener implements Consumer<HasValue.ValueChangeEvent> {
         @Override
-        public void valueChanged(HasValue.ValueChangeEvent e) {
+        public void accept(HasValue.ValueChangeEvent e) {
             mbeanDs.refresh(ParamsMap.of("objectName", e.getValue()));
 
             if (StringUtils.isNotEmpty((String) e.getValue())) {

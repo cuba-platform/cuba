@@ -16,6 +16,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
+import java.util.function.Consumer;
+
 /**
  * Is able to collapse (folding).
  */
@@ -26,28 +31,18 @@ public interface Collapsable extends Component {
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
 
-    @Deprecated
-    void addListener(ExpandListener listener);
-    @Deprecated
-    void removeListener(ExpandListener listener);
-
-    @Deprecated
-    void addListener(CollapseListener listener);
-    @Deprecated
-    void removeListener(CollapseListener listener);
-
-    @Deprecated
-    interface ExpandListener {
-        void onExpand(Collapsable component);
+    default Subscription addExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ExpandedStateChangeEvent.class, listener);
     }
 
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
     @Deprecated
-    interface CollapseListener {
-        void onCollapse(Collapsable component);
+    default void removeExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ExpandedStateChangeEvent.class, listener);
     }
-
-    void addExpandedStateChangeListener(ExpandedStateChangeListener listener);
-    void removeExpandedStateChangeListener(ExpandedStateChangeListener listener);
 
     class ExpandedStateChangeEvent {
         private final Collapsable component;
@@ -68,15 +63,5 @@ public interface Collapsable extends Component {
         public boolean isExpanded() {
             return expanded;
         }
-    }
-
-    @FunctionalInterface
-    interface ExpandedStateChangeListener {
-        /**
-         * Called when expanded state of {@link com.haulmont.cuba.gui.components.Collapsable} changed.
-         *
-         * @param e event object
-         */
-        void expandedStateChanged(ExpandedStateChangeEvent e);
     }
 }

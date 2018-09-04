@@ -2206,12 +2206,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         this.captionChangedListener = captionChangedListener;
     }
 
-    protected class FiltersLookupChangeListener implements HasValue.ValueChangeListener {
+    protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent> {
         public FiltersLookupChangeListener() {
         }
 
         @Override
-        public void valueChanged(HasValue.ValueChangeEvent e) {
+        public void accept(HasValue.ValueChangeEvent e) {
             if (!filtersLookupListenerEnabled) return;
             if (e.getValue() instanceof FilterEntity) {
                 setFilterEntity((FilterEntity) e.getValue());

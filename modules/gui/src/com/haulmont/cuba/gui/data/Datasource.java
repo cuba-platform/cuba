@@ -145,24 +145,6 @@ public interface Datasource<T extends Entity> {
     @Nullable
     View getView();
 
-    /**
-     * Add listener to datasource events.
-     *
-     * @deprecated See new methods <br>
-     * {@link #addItemChangeListener(ItemChangeListener)} <br>
-     * {@link #addItemPropertyChangeListener(ItemPropertyChangeListener)} <br>
-     * {@link #addStateChangeListener(StateChangeListener)} <br>
-     * {@link CollectionDatasource#addCollectionChangeListener(CollectionDatasource.CollectionChangeListener)}
-     */
-    @Deprecated
-    void addListener(DatasourceListener<T> listener);
-
-    /**
-     * Remove listener to datasource events
-     */
-    @Deprecated
-    void removeListener(DatasourceListener<T> listener);
-
     class ItemChangeEvent<T extends Entity> {
         private final Datasource<T> ds;
         private final T prevItem;

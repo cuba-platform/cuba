@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -32,10 +33,12 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.compatibility.PickerFieldFieldListenerWrapper;
 import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -49,10 +52,8 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -121,12 +122,60 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         return (OpenAction) getActionNN(OpenAction.NAME);
     }
 
-    void addFieldListener(FieldListener listener);
+    /**
+     * @deprecated Use {@link #addFieldValueChangeListener(Consumer)} instead
+     */
+    @Deprecated
+    default void addFieldListener(FieldListener listener) {
+        addFieldValueChangeListener(new PickerFieldFieldListenerWrapper<>(listener));
+    }
 
     void setFieldEditable(boolean editable);
 
+    /**
+     * @deprecated Use {@link #addFieldValueChangeListener(Consumer)} instead
+     */
+    @Deprecated
     interface FieldListener {
         void actionPerformed(String text, Object prevValue);
+    }
+
+    /**
+     * Adds a listener that will be fired in case field is editable.
+     *
+     * @param listener a listener to add
+     * @return a {@link Subscription} object
+     * @see #setFieldEditable(boolean)
+     */
+    default Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener) {
+        //noinspection unchecked
+        return ((EventHubOwner) this).getEventHub().subscribe(FieldValueChangeEvent.class, (Consumer) listener);
+    }
+
+    class FieldValueChangeEvent<V extends Entity> extends EventObject {
+
+        protected final String text;
+        protected final V prevValue;
+
+        public FieldValueChangeEvent(PickerField<V> source, String text, V prevValue) {
+            super(source);
+            this.text = text;
+            this.prevValue = prevValue;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public PickerField<V> getSource() {
+            return (PickerField<V>) super.getSource();
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public V getPrevValue() {
+            return prevValue;
+        }
     }
 
     /**

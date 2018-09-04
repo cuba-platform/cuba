@@ -16,9 +16,13 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -91,17 +95,21 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
     String getEditorWindowId();
 
     /**
-     * Adds {@link com.haulmont.cuba.gui.components.ListEditor.EditorCloseListener} that invoked after editor window
-     * closing.
+     * Adds a listener that invoked after editor window closing.
      *
      * @param listener listener instance
      */
-    void addEditorCloseListener(EditorCloseListener listener);
+    default Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(EditorCloseEvent.class, listener);
+    }
 
     /**
      * @param listener listener to be removed
      */
-    void removeEditorCloseListener(EditorCloseListener listener);
+    @Deprecated
+    default void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(EditorCloseEvent.class, listener);
+    }
 
     /**
      * @param paramsSupplier additional params map for editor screen.
@@ -138,20 +146,6 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
     void setItemType(ItemType itemType);
 
     ItemType getItemType();
-
-    /**
-     * Listener that will be notified when editor window is closed.
-     */
-    @FunctionalInterface
-    interface EditorCloseListener {
-
-        /**
-         * Called when a editor screen is closed.
-         *
-         * @param closeEvent event instance
-         */
-        void editorClosed(EditorCloseEvent closeEvent);
-    }
 
     class EditorCloseEvent {
 

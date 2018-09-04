@@ -18,36 +18,37 @@ package com.haulmont.cuba.web.gui.components.renderers;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.gui.components.DataGrid.RendererClickListener;
 import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.AbstractRenderer;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.vaadin.ui.renderers.ClickableRenderer;
 
+import java.util.function.Consumer;
+
 public abstract class WebAbstractClickableRenderer<T extends Entity, V> extends AbstractRenderer<T, V>
         implements DataGrid.HasRendererClickListener<T> {
 
-    protected RendererClickListener<T> listener;
+    protected Consumer<DataGrid.RendererClickEvent<T>> listener;
 
     public WebAbstractClickableRenderer() {
         this(null);
     }
 
-    public WebAbstractClickableRenderer(RendererClickListener<T> listener) {
+    public WebAbstractClickableRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         super(null);
         this.listener = listener;
     }
 
-    protected ClickableRenderer.RendererClickListener<T> createClickListenerWrapper(RendererClickListener<T> listener) {
+    protected ClickableRenderer.RendererClickListener<T> createClickListenerWrapper(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         return (ClickableRenderer.RendererClickListener<T>) e -> {
             DataGrid.Column column = getColumnByGridColumn(e.getColumn());
             DataGrid.RendererClickEvent<T> event = new DataGrid.RendererClickEvent<>(getDataGrid(),
                     WebWrapperUtils.toMouseEventDetails(e), e.getItem(), column.getId());
-            listener.onClick(event);
+            listener.accept(event);
         };
     }
 
     @Override
-    public void setRendererClickListener(RendererClickListener<T> listener) {
+    public void setRendererClickListener(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         checkRendererNotSet();
         this.listener = listener;
     }

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.ListEditor;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEditor, List<V>> implements ListEditor<V> {
@@ -159,7 +161,7 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
             internalValue = newValue;
 
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, newValue);
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+            publish(ValueChangeEvent.class, event);
         }
     }
 
@@ -228,12 +230,12 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
     }
 
     @Override
-    public void addEditorCloseListener(EditorCloseListener listener) {
-        delegate.addEditorCloseListener(listener);
+    public Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        return delegate.addEditorCloseListener(listener);
     }
 
     @Override
-    public void removeEditorCloseListener(EditorCloseListener listener) {
+    public void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
         delegate.removeEditorCloseListener(listener);
     }
 

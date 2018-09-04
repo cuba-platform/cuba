@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.vaadin.ui.renderers.ButtonRenderer;
 
+import java.util.function.Consumer;
+
 /**
  * A Renderer that displays a button with a textual caption. The value of the
  * corresponding property is used as the caption. Click listeners can be added
@@ -37,11 +39,11 @@ public class WebButtonRenderer<T extends Entity>
         this(null, nullRepresentation);
     }
 
-    public WebButtonRenderer(DataGrid.RendererClickListener<T> listener) {
+    public WebButtonRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         this(listener, "");
     }
 
-    public WebButtonRenderer(DataGrid.RendererClickListener<T> listener, String nullRepresentation) {
+    public WebButtonRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener, String nullRepresentation) {
         super(listener);
         this.nullRepresentation = nullRepresentation;
     }

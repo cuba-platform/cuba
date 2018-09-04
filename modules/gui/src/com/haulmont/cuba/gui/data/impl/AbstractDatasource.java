@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.bali.events.EventRouter;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -26,7 +25,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,26 +190,6 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
                 }
             }
         }
-    }
-
-    @Override
-    public void addListener(DatasourceListener<T> listener) {
-        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
-
-        CompatibleDatasourceListenerWrapper wrapper = new CompatibleDatasourceListenerWrapper(listener);
-
-        addItemChangeListener(wrapper);
-        addItemPropertyChangeListener(wrapper);
-        addStateChangeListener(wrapper);
-    }
-
-    @Override
-    public void removeListener(DatasourceListener<T> listener) {
-        CompatibleDatasourceListenerWrapper wrapper = new CompatibleDatasourceListenerWrapper(listener);
-
-        removeItemChangeListener(wrapper);
-        removeItemPropertyChangeListener(wrapper);
-        removeStateChangeListener(wrapper);
     }
 
     @Override

@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.web.widgets.CubaGroupBox;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaOrderedActionsLayout;
@@ -246,39 +245,9 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         component.setCollapsable(collapsable);
     }
 
-    @Override
-    public void addListener(ExpandListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ExpandListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
-    }
-
-    @Override
-    public void addListener(CollapseListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(CollapseListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
-    }
-
-    @Override
-    public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
-        getEventRouter().addListener(ExpandedStateChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
-        getEventRouter().removeListener(ExpandedStateChangeListener.class, listener);
-    }
-
     protected void fireExpandStateChange(boolean expanded) {
         ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
-        getEventRouter().fireEvent(ExpandedStateChangeListener.class, ExpandedStateChangeListener::expandedStateChanged, event);
+        publish(ExpandedStateChangeEvent.class, event);
     }
 
     @Override

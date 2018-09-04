@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -27,6 +28,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
         extends WebAbstractComponent<T> implements BoxLayout {
@@ -200,18 +202,20 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     }
 
     @Override
-    public void addLayoutClickListener(LayoutClickListener listener) {
-        getEventRouter().addListener(LayoutClickListener.class, listener);
+    public Subscription addLayoutClickListener(Consumer<LayoutClickEvent> listener) {
         if (layoutClickListener == null) {
             layoutClickListener = event -> {
                 Component childComponent = findChildComponent(event.getChildComponent());
                 MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
+
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
-                getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
+                publish(LayoutClickEvent.class, layoutClickEvent);
             };
             component.addLayoutClickListener(layoutClickListener);
         }
+
+        return BoxLayout.super.addLayoutClickListener(listener);
     }
 
     protected Component findChildComponent(com.vaadin.ui.Component childComponent) {
@@ -224,10 +228,10 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     }
 
     @Override
-    public void removeLayoutClickListener(LayoutClickListener listener) {
-        getEventRouter().removeListener(LayoutClickListener.class, listener);
+    public void removeLayoutClickListener(Consumer<LayoutClickEvent> listener) {
+        BoxLayout.super.removeLayoutClickListener(listener);
 
-        if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
+        if (!hasSubscriptions(LayoutClickEvent.class)) {
             component.removeLayoutClickListener(layoutClickListener);
             layoutClickListener = null;
         }

@@ -16,14 +16,34 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * Layout having a mouse click listener.
  */
 public interface LayoutClickNotifier {
-    void addLayoutClickListener(LayoutClickListener listener);
-    void removeLayoutClickListener(LayoutClickListener listener);
+
+    /**
+     * Adds a listener that is fired when user clicks inside the layout at any place.
+     *
+     * @param listener a listener to add
+     */
+    default Subscription addLayoutClickListener(Consumer<LayoutClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(LayoutClickEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeLayoutClickListener(Consumer<LayoutClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(LayoutClickEvent.class, listener);
+    }
 
     class LayoutClickEvent extends EventObject {
         private final Component childComponent;
@@ -48,13 +68,5 @@ public interface LayoutClickNotifier {
         public MouseEventDetails getMouseEventDetails() {
             return mouseEventDetails;
         }
-    }
-
-    /**
-     * Listener fired when user clicks inside the layout at any place.
-     */
-    @FunctionalInterface
-    interface LayoutClickListener {
-        void layoutClick(LayoutClickEvent event);
     }
 }

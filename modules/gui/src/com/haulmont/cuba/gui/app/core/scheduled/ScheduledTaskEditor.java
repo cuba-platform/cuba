@@ -32,11 +32,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
-    protected LookupField beanNameField;
+    protected LookupField<String> beanNameField;
 
     @Inject
     protected LookupField<MethodInfo> methodNameField;
@@ -45,7 +46,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField userNameField;
 
     @Inject
-    protected OptionsGroup definedByField;
+    protected OptionsGroup<ScheduledTaskDefinedBy, ScheduledTaskDefinedBy> definedByField;
 
     @Inject
     protected TextField classNameField;
@@ -78,7 +79,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected ComponentsFactory componentsFactory;
 
     @Inject
-    protected OptionsGroup schedulingTypeField;
+    protected OptionsGroup<SchedulingType, SchedulingType> schedulingTypeField;
 
     @Inject
     protected TextField cronField;
@@ -276,7 +277,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             Label nameLabel = componentsFactory.createComponent(Label.class);
             nameLabel.setValue(parameterInfo.getType().getSimpleName() + " " + parameterInfo.getName());
 
-            TextField valueTextField = componentsFactory.createComponent(TextField.class);
+            TextField<Object> valueTextField = componentsFactory.createComponent(TextField.class);
             valueTextField.setWidth(themeConstants.get("cuba.gui.ScheduledTaskEditor.valueTextField.width"));
             valueTextField.setValue(parameterInfo.getValue());
 

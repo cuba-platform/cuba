@@ -25,10 +25,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -36,7 +33,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.ManyToMany;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -745,24 +741,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void removeCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         if (collectionChangeListeners != null) {
             collectionChangeListeners.remove(listener);
-        }
-    }
-
-    @Override
-    public void addListener(DatasourceListener<T> listener) {
-        super.addListener(listener);
-
-        if (listener instanceof CollectionDatasourceListener) {
-            addCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
-        }
-    }
-
-    @Override
-    public void removeListener(DatasourceListener<T> listener) {
-        super.removeListener(listener);
-
-        if (listener instanceof CollectionDatasourceListener) {
-            removeCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
         }
     }
 

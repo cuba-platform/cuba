@@ -633,7 +633,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             this.editable = editable;
 
             EditableChangeEvent event = new EditableChangeEvent(this);
-            getEventRouter().fireEvent(EditableChangeListener.class, EditableChangeListener::editableChanged, event);
+            publish(EditableChangeEvent.class, event);
         }
     }
 
@@ -800,16 +800,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 permissions.addDisabledActionPermission(actionId);
             }
         }
-    }
-
-    @Override
-    public void addEditableChangeListener(EditableChangeListener listener) {
-        getEventRouter().addListener(EditableChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeEditableChangeListener(EditableChangeListener listener) {
-        getEventRouter().removeListener(EditableChangeListener.class, listener);
     }
 
     public class FieldConfigImpl implements FieldConfig {

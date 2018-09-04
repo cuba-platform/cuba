@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -14,6 +13,8 @@ import com.haulmont.cuba.security.entity.RoleType;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class OptionsGroupDsTest extends DsApiConsistencyTestCase {
 
         optionsGroup.setDatasource(null, null);
 
-        HasValue.ValueChangeListener listener = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         optionsGroup.addValueChangeListener(listener);
@@ -72,7 +73,7 @@ public class OptionsGroupDsTest extends DsApiConsistencyTestCase {
         optionsGroup.setDatasource(roleDs, "type");
 
         boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
         optionsGroup.addValueChangeListener(listener);
 
         roleDs.getItem().setType(RoleType.READONLY);
@@ -116,7 +117,7 @@ public class OptionsGroupDsTest extends DsApiConsistencyTestCase {
         // listener before datasource
 
         boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
         optionsGroup.addValueChangeListener(listener);
 
         Datasource<Role> roleDs = getTestRoleDatasource();

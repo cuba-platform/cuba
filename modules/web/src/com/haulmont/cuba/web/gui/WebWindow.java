@@ -68,6 +68,7 @@ import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -1775,7 +1776,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
     }
 
-    public static class Lookup extends WebWindow implements Window.Lookup, LookupComponent.LookupSelectionChangeListener {
+    public static class Lookup extends WebWindow implements Window.Lookup, Consumer<LookupComponent.LookupSelectionChangeEvent> {
 
         protected Handler handler;
 
@@ -1843,7 +1844,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        public void lookupValueChanged(LookupComponent.LookupSelectionChangeEvent event) {
+        public void accept(LookupComponent.LookupSelectionChangeEvent event) {
             Action selectAction = getSelectAction();
             if (selectAction != null)
                 selectAction.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());

@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -124,7 +125,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
         AtomicInteger counter = new AtomicInteger(0);
 
-        HasValue.ValueChangeListener okListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> okListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals("OK", e.getValue());
 
@@ -149,7 +150,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        HasValue.ValueChangeListener dsLoadListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> dsLoadListener = e -> {
             assertEquals("Test", e.getPrevValue());
             assertNull(e.getValue());
 
@@ -162,7 +163,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
         component.removeValueChangeListener(dsLoadListener);
 
-        HasValue.ValueChangeListener dsListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> dsListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals("dsValue", e.getValue());
 

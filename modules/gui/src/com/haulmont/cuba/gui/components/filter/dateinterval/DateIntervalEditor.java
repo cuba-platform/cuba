@@ -39,19 +39,19 @@ public class DateIntervalEditor extends AbstractWindow {
     protected String dateIntervalDescription;
 
     @Inject
-    protected TextField numberField;
+    protected TextField<Integer> numberField;
 
     @Inject
-    protected LookupField timeUnitLookup;
+    protected LookupField<DateIntervalValue.TimeUnit> timeUnitLookup;
 
     @Inject
-    protected OptionsGroup typeOptionsGroup;
+    protected OptionsGroup<DateIntervalValue.Type, DateIntervalValue.Type> typeOptionsGroup;
 
     @Inject
     protected CheckBox includingCurrentCheckBox;
 
     @Inject
-    protected LookupField predefinedIntervalsLookup;
+    protected LookupField<PredefinedDateInterval> predefinedIntervalsLookup;
 
     @Inject
     protected Messages messages;

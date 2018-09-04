@@ -29,6 +29,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -168,7 +169,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         final Group g1 = new Group();
         final Group g2 = new Group();
 
-        HasValue.ValueChangeListener listener1 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -182,7 +183,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(listener1);
         assertEquals(1, counter.get());
 
-        HasValue.ValueChangeListener listener2 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener2 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g, e.getValue());
 
@@ -201,7 +202,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
         assertEquals(2, counter.get());
 
-        HasValue.ValueChangeListener listener3 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener3 = e -> {
             assertEquals(g1, e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -218,7 +219,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         component.setValue(g);
         Group gCopy = (Group) SerializationSupport.deserialize(SerializationSupport.serialize(g));
 
-        HasValue.ValueChangeListener listener4 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener4 = e -> {
             assertEquals(g, e.getPrevValue());
             assertEquals(gCopy, e.getValue());
 
@@ -229,7 +230,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         assertEquals(4, counter.get());
         component.removeValueChangeListener(listener4);
 
-        HasValue.ValueChangeListener listener5 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener5 = e -> {
             assertEquals(g, e.getPrevValue());
             assertEquals(gCopy, e.getValue());
 

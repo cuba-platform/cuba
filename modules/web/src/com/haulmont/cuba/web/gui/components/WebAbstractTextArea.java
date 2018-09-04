@@ -117,7 +117,7 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     protected void fireTextChangeEvent(String newComponentValue) {
         // call it before value change due to compatibility with the previous versions
         TextChangeEvent event = new TextChangeEvent(this, newComponentValue, component.getCursorPosition());
-        getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
+        publish(TextChangeEvent.class, event);
     }
 
     @Override
@@ -256,16 +256,6 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     @Override
     public void setSelectionRange(int pos, int length) {
         component.setSelection(pos, length);
-    }
-
-    @Override
-    public void addTextChangeListener(TextChangeListener listener) {
-        getEventRouter().addListener(TextChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeTextChangeListener(TextChangeListener listener) {
-        getEventRouter().removeListener(TextChangeListener.class, listener);
     }
 
     @Override

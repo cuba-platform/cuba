@@ -16,8 +16,12 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * A component which can be set as lookup component for a screen.
@@ -39,8 +43,19 @@ public interface LookupComponent extends Component {
      * Component that fires {@link LookupSelectionChangeEvent} when lookup selected items set is changed.
      */
     interface LookupSelectionChangeNotifier extends LookupComponent {
-        void addLookupValueChangeListener(LookupSelectionChangeListener listener);
-        void removeLookupValueChangeListener(LookupSelectionChangeListener listener);
+
+        default Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+            return ((EventHubOwner) this).getEventHub().subscribe(LookupSelectionChangeEvent.class, listener);
+        }
+
+        /**
+         * @param listener a listener to remove
+         * @deprecated Use {@link Subscription} instead
+         */
+        @Deprecated
+        default void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+            ((EventHubOwner) this).getEventHub().unsubscribe(LookupSelectionChangeEvent.class, listener);
+        }
     }
 
     class LookupSelectionChangeEvent extends EventObject {
@@ -52,10 +67,5 @@ public interface LookupComponent extends Component {
         public LookupComponent getSource() {
             return (LookupComponent) super.getSource();
         }
-    }
-
-    @FunctionalInterface
-    interface LookupSelectionChangeListener {
-        void lookupValueChanged(LookupSelectionChangeEvent event);
     }
 }

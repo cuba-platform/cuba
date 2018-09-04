@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -122,7 +123,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         AtomicInteger counter = new AtomicInteger(0);
 
         Date value1 = new SimpleDateFormat("dd.MM.yyyy").parse("12.12.2000");
-        HasValue.ValueChangeListener okListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> okListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals(value1, e.getValue());
 
@@ -148,7 +149,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        HasValue.ValueChangeListener dsLoadListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> dsLoadListener = e -> {
             assertEquals(value2, e.getPrevValue());
             assertNull(e.getValue());
 
@@ -162,7 +163,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(dsLoadListener);
 
         Date value3 = new SimpleDateFormat("dd.MM.yyyy").parse("01.01.2000");
-        HasValue.ValueChangeListener dsListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> dsListener = e -> {
             assertNull(e.getPrevValue());
             assertEquals(value3, e.getValue());
 

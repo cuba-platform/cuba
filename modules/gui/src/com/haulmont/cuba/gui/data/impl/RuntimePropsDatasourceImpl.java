@@ -227,36 +227,31 @@ public class RuntimePropsDatasourceImpl
         dynamicAttributesGuiTools.listenDynamicAttributesChanges(mainDs);
 
         //noinspection unchecked
-        mainDs.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void stateChanged(Datasource ds, State prevState, State state) {
-                        if (State.VALID.equals(state)) {
-                            if (!State.VALID.equals(prevState))
-                                initMetaClass(mainDs.getItem());
-                            else
-                                valid();
-                        }
-                    }
+        mainDs.addStateChangeListener(e -> {
+            if (State.VALID.equals(state)) {
+                if (!State.VALID.equals(e.getPrevState()))
+                    initMetaClass(mainDs.getItem());
+                else
+                    valid();
+            }
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (property.equals("category")) {
-                            categoryChanged = true;
-                            try {
-                                initMetaClass(mainDs.getItem());
-                            } finally {
-                                categoryChanged = false;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void itemChanged(Datasource ds, @Nullable Entity prevItem, @Nullable Entity item) {
-                        initMetaClass(item);
-                    }
+        //noinspection unchecked
+        mainDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals("category")) {
+                categoryChanged = true;
+                try {
+                    initMetaClass(mainDs.getItem());
+                } finally {
+                    categoryChanged = false;
                 }
-        );
+            }
+        });
+
+        //noinspection unchecked
+        mainDs.addItemChangeListener(e -> {
+            initMetaClass(item);
+        });
     }
 
     protected void initMetaClass(Entity entity) {

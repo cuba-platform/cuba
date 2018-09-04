@@ -43,7 +43,8 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
 
     protected boolean editable = true;
 
-    protected EditableChangeNotifier.EditableChangeListener parentEditableChangeListener;
+    // VAADIN8: gg, replace with Subscription
+    protected Consumer<EditableChangeNotifier.EditableChangeEvent> parentEditableChangeListener;
 
     @Override
     public boolean isRequired() {

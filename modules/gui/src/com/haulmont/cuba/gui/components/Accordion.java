@@ -17,11 +17,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * An accordion is a component similar to a {@link TabSheet}, but with a vertical orientation and the selected component
@@ -131,31 +134,20 @@ public interface Accordion extends ComponentContainer, Component.BelongToFrame, 
 
     /**
      * Add a listener that will be notified when a selected tab is changed.
-     *
-     * @deprecated Use {@link Accordion#addSelectedTabChangeListener(Accordion.SelectedTabChangeListener)} instead
      */
-    @Deprecated
-    void addListener(TabChangeListener listener);
-
-    @Deprecated
-    void removeListener(TabChangeListener listener);
-
-    /**
-     * Add a listener that will be notified when a selected tab is changed.
-     */
-    void addSelectedTabChangeListener(Accordion.SelectedTabChangeListener listener);
+    default Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SelectedTabChangeEvent.class, listener);
+    }
 
     /**
      * Remove previously added SelectedTabChangeListener.
+     *
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeSelectedTabChangeListener(Accordion.SelectedTabChangeListener listener);
-
-    /**
-     * Listener that will be notified when a selected tab is changed.
-     */
-    @FunctionalInterface
-    interface SelectedTabChangeListener {
-        void selectedTabChanged(Accordion.SelectedTabChangeEvent event);
+    @Deprecated
+    default void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(SelectedTabChangeEvent.class, listener);
     }
 
     /**
@@ -221,15 +213,5 @@ public interface Accordion extends ComponentContainer, Component.BelongToFrame, 
          */
         void setStyleName(String styleName);
         String getStyleName();
-    }
-
-    /**
-     * Listener notified when a selected tab is changed.
-     *
-     * @deprecated Use {@link SelectedTabChangeListener} instead
-     */
-    @Deprecated
-    interface TabChangeListener {
-        void tabChanged(Tab newTab);
     }
 }

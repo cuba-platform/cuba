@@ -16,69 +16,18 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.compatibility.FileMultiUploadFieldQueueUploadCompleteListener;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
+import java.util.EventObject;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface FileMultiUploadField extends UploadField {
 
     String NAME = "multiUpload";
-
-    /**
-     * @deprecated Use {@link UploadField.FileUploadStartListener},
-     *                 {@link UploadField.FileUploadFinishListener},
-     *                 {@link UploadField.FileUploadErrorListener},
-     *                 {@link QueueUploadCompleteListener}
-     */
-    @Deprecated
-    abstract class UploadListener {
-        /**
-         * File upload finished. Executed in uploading thread. <br>
-         * <b>Do not perform progress indication here!</b>
-         *
-         * @param fileName file name
-         */
-        public void fileUploaded(String fileName) {
-        }
-
-        /**
-         * File uploading started. Executed in uploading thread. <br>
-         * <b>Do not perform progress indication here!</b>
-         *
-         * @param fileName file name
-         */
-        public void fileUploadStart(String fileName) {
-        }
-
-        /**
-         * Queue upload completed
-         */
-        public void queueUploadComplete() {
-        }
-
-        /**
-         * Handle uploading error.
-         *
-         * @param fileName file name
-         * @return true if error handled by listener.
-         *         If returned false then component shows default upload error notification.
-         */
-        @Deprecated
-        public boolean uploadError(String fileName) {
-            return false;
-        }
-    }
-
-    /**
-     * @deprecated Use {@link #addQueueUploadCompleteListener(QueueUploadCompleteListener)},
-     *                 {@link #addFileUploadErrorListener(FileUploadErrorListener)},
-     *                 {@link #addFileUploadFinishListener(FileUploadFinishListener)},
-     *                 {@link #addFileUploadStartListener(FileUploadStartListener)}
-     */
-    @Deprecated
-    void addListener(UploadListener listener);
-
-    @Deprecated
-    void removeListener(UploadListener listener);
 
     /**
      * Get uploads map
@@ -92,11 +41,50 @@ public interface FileMultiUploadField extends UploadField {
      */
     void clearUploads();
 
+    @Deprecated
     @FunctionalInterface
     interface QueueUploadCompleteListener {
         void queueUploadComplete();
     }
 
-    void addQueueUploadCompleteListener(QueueUploadCompleteListener listener);
-    void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener);
+    /**
+     * @deprecated Use {@link #addQueueUploadCompleteListener(Consumer)} instead
+     */
+    @Deprecated
+    default void addQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
+        addQueueUploadCompleteListener(new FileMultiUploadFieldQueueUploadCompleteListener(listener));
+    }
+
+    /**
+     * @deprecated Use {@link #removeFileUploadErrorListener(Consumer)} instead
+     */
+    @Deprecated
+    default void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
+        removeQueueUploadCompleteListener(new FileMultiUploadFieldQueueUploadCompleteListener(listener));
+    }
+
+    default Subscription addQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(QueueUploadCompleteEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(QueueUploadCompleteEvent.class, listener);
+    }
+
+    class QueueUploadCompleteEvent extends EventObject {
+
+        public QueueUploadCompleteEvent(FileMultiUploadField source) {
+            super(source);
+        }
+
+        @Override
+        public FileMultiUploadField getSource() {
+            return (FileMultiUploadField) super.getSource();
+        }
+    }
 }

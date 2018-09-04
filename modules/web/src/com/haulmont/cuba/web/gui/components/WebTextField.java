@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
@@ -235,17 +237,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     protected void fireTextChangeEvent(String newComponentValue) {
         // call it before value change due to compatibility with the previous versions
         TextChangeEvent event = new TextChangeEvent(this, newComponentValue, component.getCursorPosition());
-        getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
-    }
-
-    @Override
-    public void addTextChangeListener(TextChangeListener listener) {
-        getEventRouter().addListener(TextChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeTextChangeListener(TextChangeListener listener) {
-        getEventRouter().removeListener(TextChangeListener.class, listener);
+        publish(TextChangeEvent.class, event);
     }
 
     @Override
@@ -269,25 +261,27 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     }
 
     @Override
-    public void addEnterPressListener(EnterPressListener listener) {
-        getEventRouter().addListener(EnterPressListener.class, listener);
-
+    public Subscription addEnterPressListener(Consumer<EnterPressEvent> listener) {
         if (enterShortcutListener == null) {
             enterShortcutListener = new ShortcutListenerDelegate("", KeyCode.ENTER, null)
                     .withHandler((sender, target) -> {
                         EnterPressEvent event = new EnterPressEvent(WebTextField.this);
-                        getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                        publish(EnterPressEvent.class, event);
                     });
             component.addShortcutListener(enterShortcutListener);
         }
+
+        return TextField.super.addEnterPressListener(listener);
     }
 
     @Override
-    public void removeEnterPressListener(EnterPressListener listener) {
-        getEventRouter().removeListener(EnterPressListener.class, listener);
+    public void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
+        TextField.super.removeEnterPressListener(listener);
 
-        if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
+        if (enterShortcutListener != null
+                && !hasSubscriptions(EnterPressEvent.class)) {
             component.removeShortcutListener(enterShortcutListener);
+            enterShortcutListener = null;
         }
     }
 

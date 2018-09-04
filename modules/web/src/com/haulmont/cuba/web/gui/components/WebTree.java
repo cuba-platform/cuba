@@ -98,8 +98,7 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
             }
 
             LookupSelectionChangeEvent lvChangeEvent = new LookupSelectionChangeEvent(this);
-            getEventRouter().fireEvent(LookupSelectionChangeListener.class,
-                    LookupSelectionChangeListener::lookupValueChanged, lvChangeEvent);
+            publish(LookupSelectionChangeEvent.class, lvChangeEvent);
         });
 
         initComponent(component);
@@ -266,16 +265,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
 
             this.doubleClickAction = action;
         }
-    }
-
-    @Override
-    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
     @Override

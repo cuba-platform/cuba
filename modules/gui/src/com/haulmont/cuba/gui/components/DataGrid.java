@@ -16,11 +16,13 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -30,11 +32,8 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
@@ -592,19 +591,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * DataGrid editor pre commit listener. Works in buffered mode only.
-     */
-    @FunctionalInterface
-    interface EditorPreCommitListener {
-        /**
-         * Called before the item is updated.
-         *
-         * @param event an event providing more information
-         */
-        void preCommit(EditorPreCommitEvent event);
-    }
-
-    /**
      * An event that is fired before the item is updated.
      */
     class EditorPreCommitEvent extends AbstractDataGridEditorEvent {
@@ -624,26 +610,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addEditorPreCommitListener(EditorPreCommitListener listener);
+    default Subscription addEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(EditorPreCommitEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered DataGrid editor pre commit listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeEditorPreCommitListener(EditorPreCommitListener listener);
-
-    /**
-     * DataGrid editor post commit listener. Works in buffered mode only.
-     */
-    @FunctionalInterface
-    interface EditorPostCommitListener {
-        /**
-         * Called after the item is updated.
-         *
-         * @param event an event providing more information
-         */
-        void postCommit(EditorPostCommitEvent event);
+    @Deprecated
+    default void removeEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(EditorPreCommitEvent.class, listener);
     }
 
     /**
@@ -666,26 +645,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addEditorPostCommitListener(EditorPostCommitListener listener);
+    default Subscription addEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(EditorPostCommitEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered DataGrid editor post commit listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeEditorPostCommitListener(EditorPostCommitListener listener);
-
-    /**
-     * DataGrid editor close listener.
-     */
-    @FunctionalInterface
-    interface EditorCloseListener {
-        /**
-         * Called when a DataGrid editor UI have been closed.
-         *
-         * @param event an event providing more information
-         */
-        void editorClosed(EditorCloseEvent event);
+    @Deprecated
+    default void removeEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(EditorPostCommitEvent.class, listener);
     }
 
     /**
@@ -708,14 +680,20 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addEditorCloseListener(EditorCloseListener listener);
+    default Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(EditorCloseEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered DataGrid editor close listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeEditorCloseListener(EditorCloseListener listener);
+    @Deprecated
+    default void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(EditorCloseEvent.class, listener);
+    }
 
     /**
      * An event that is fired before the DataGrid editor is opened.
@@ -757,26 +735,24 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * DataGrid editor open listener.
-     */
-    @FunctionalInterface
-    interface EditorOpenListener {
-        void beforeEditorOpened(EditorOpenEvent event);
-    }
-
-    /**
      * Registers a new DataGrid editor open listener.
      *
      * @param listener the listener to register
      */
-    void addEditorOpenListener(EditorOpenListener listener);
+    default Subscription addEditorOpenListener(Consumer<EditorOpenEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(EditorOpenEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered DataGrid editor open listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeEditorOpenListener(EditorOpenListener listener);
+    @Deprecated
+    default void removeEditorOpenListener(Consumer<EditorOpenEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(EditorOpenEvent.class, listener);
+    }
 
     /**
      * Repaint UI representation of the DataGrid without refreshing the table data.
@@ -1292,20 +1268,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * Renderer listens to clicks.
-     */
-    @FunctionalInterface
-    interface RendererClickListener<T extends Entity> {
-
-        /**
-         * Called when a renderer is clicked.
-         *
-         * @param event the event representing the click
-         */
-        void onClick(RendererClickEvent<T> event);
-    }
-
-    /**
      * Click event fired by a {@link HasRendererClickListener}
      */
     class RendererClickEvent<T extends Entity> extends DataGridClickEvent {
@@ -1362,7 +1324,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          *
          * @param listener the listener to set
          */
-        void setRendererClickListener(RendererClickListener<T> listener);
+        void setRendererClickListener(Consumer<RendererClickEvent<T>> listener);
     }
 
     /**
@@ -1562,19 +1524,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * An event listener for column collapsing change events in the DataGrid.
-     */
-    @FunctionalInterface
-    interface ColumnCollapsingChangeListener {
-        /**
-         * Called when a column has become hidden or unhidden.
-         *
-         * @param event an event providing more information
-         */
-        void columnCollapsingChanged(ColumnCollapsingChangeEvent event);
-    }
-
-    /**
      * An event that is fired when a column's collapsing changes.
      */
     class ColumnCollapsingChangeEvent extends AbstractDataGridEvent {
@@ -1618,26 +1567,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener);
+    default Subscription addColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ColumnCollapsingChangeEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered column collapsing change listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener);
-
-    /**
-     * An event listener for column reorder events in the DataGrid.
-     */
-    @FunctionalInterface
-    interface ColumnReorderListener {
-        /**
-         * Called when the columns of the DataGrid have been reordered.
-         *
-         * @param event an event providing more information
-         */
-        void columnReordered(ColumnReorderEvent event);
+    @Deprecated
+    default void removeColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnCollapsingChangeEvent.class, listener);
     }
 
     /**
@@ -1660,26 +1602,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addColumnReorderListener(ColumnReorderListener listener);
+    default Subscription addColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ColumnReorderEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered column reorder listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeColumnReorderListener(ColumnReorderListener listener);
-
-    /**
-     * An event listener for column resize events in the DataGrid.
-     */
-    @FunctionalInterface
-    interface ColumnResizeListener {
-        /**
-         * Called when the columns of the DataGrid have been resized.
-         *
-         * @param event an event providing more information
-         */
-        void columnResized(ColumnResizeEvent event);
+    @Deprecated
+    default void removeColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnReorderEvent.class, listener);
     }
 
     /**
@@ -1713,26 +1648,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addColumnResizeListener(ColumnResizeListener listener);
+    default Subscription addColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ColumnResizeEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered column resize listener.
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeColumnResizeListener(ColumnResizeListener listener);
-
-    /**
-     * An event listener for selection events in the DataGrid.
-     */
-    @FunctionalInterface
-    interface SelectionListener<E> {
-        /**
-         * Called when the selection state has changed.
-         *
-         * @param event an event providing more information
-         */
-        void selected(SelectionEvent<E> event);
+    @Deprecated
+    default void removeColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnResizeEvent.class, listener);
     }
 
     /**
@@ -1800,26 +1728,21 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addSelectionListener(SelectionListener<E> listener);
+    @SuppressWarnings("unchecked")
+    default Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
+    }
 
     /**
      * Removes a previously registered selection change listener
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeSelectionListener(SelectionListener<E> listener);
-
-    /**
-     * Listener for sort order change events.
-     */
-    @FunctionalInterface
-    interface SortListener {
-        /**
-         * Called when the sort order has changed.
-         *
-         * @param event an event providing more information
-         */
-        void sorted(SortEvent event);
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void removeSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(SelectionEvent.class, (Consumer) listener);
     }
 
     /**
@@ -1904,26 +1827,19 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addSortListener(SortListener listener);
+    default Subscription addSortListener(Consumer<SortEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SortEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered sort order change listener
      *
      * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeSortListener(SortListener listener);
-
-    /**
-     * Listener for context click events.
-     */
-    @FunctionalInterface
-    interface ContextClickListener {
-        /**
-         * Called when the context click happens.
-         *
-         * @param event an event providing more information
-         */
-        void onContextClick(ContextClickEvent event);
+    @Deprecated
+    default void removeSortListener(Consumer<SortEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(SortEvent.class, listener);
     }
 
     /**
@@ -1948,25 +1864,17 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addContextClickListener(ContextClickListener listener);
+    default Subscription addContextClickListener(Consumer<ContextClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ContextClickEvent.class, listener);
+    }
 
     /**
      * Removes a previously registered context click listener
      *
      * @param listener the listener to remove
      */
-    void removeContextClickListener(ContextClickListener listener);
-
-    /**
-     * Listener for item click events.
-     */
-    interface ItemClickListener<E> {
-        /**
-         * Called when the item click happens.
-         *
-         * @param event an event providing more information
-         */
-        void onItemClick(ItemClickEvent<E> event);
+    default void removeContextClickListener(Consumer<ContextClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ContextClickEvent.class, listener);
     }
 
     /**
@@ -2022,14 +1930,20 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    void addItemClickListener(ItemClickListener<E> listener);
+    @SuppressWarnings("unchecked")
+    default Subscription addItemClickListener(Consumer<ItemClickEvent<E>> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ItemClickEvent.class, (Consumer) listener);
+    }
 
     /**
      * Removes a previously registered item click listener
      *
      * @param listener the listener to remove
      */
-    void removeItemClickListener(ItemClickListener<E> listener);
+    @SuppressWarnings("unchecked")
+    default void removeItemClickListener(Consumer<ItemClickEvent<E>> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ItemClickEvent.class, (Consumer) listener);
+    }
 
     /**
      * Class for holding information about a mouse click event. A

@@ -84,7 +84,8 @@ public class OptionsBinder {
         public void bind() {
             if (source instanceof EntityOptionsSource
                     && component instanceof HasValue) {
-                this.componentValueChangeSubscription = ((HasValue) component).addValueChangeListener(this::componentValueChanged);
+                this.componentValueChangeSubscription =
+                        ((HasValue<?>) component).addValueChangeListener(this::componentValueChanged);
             }
             // vaadin8 weak references for listeners ?
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::optionsSourceStateChanged);

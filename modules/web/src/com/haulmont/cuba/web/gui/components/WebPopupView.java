@@ -30,9 +30,7 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
         component = new com.vaadin.ui.PopupView(new EmptyContent());
 
         component.addPopupVisibilityListener(e ->
-                getEventRouter().fireEvent(PopupVisibilityListener.class,
-                        PopupVisibilityListener::popupVisibilityChange,
-                        new PopupVisibilityEvent(this))
+                publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
         );
     }
 
@@ -134,16 +132,6 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     @Override
     public boolean isCaptionAsHtml() {
         return component.isCaptionAsHtml();
-    }
-
-    @Override
-    public void addPopupVisibilityListener(PopupVisibilityListener listener) {
-        getEventRouter().addListener(PopupVisibilityListener.class, listener);
-    }
-
-    @Override
-    public void removePopupVisibilityListener(PopupVisibilityListener listener) {
-        getEventRouter().removeListener(PopupVisibilityListener.class, listener);
     }
 
     protected class EmptyContent implements com.vaadin.ui.PopupView.Content {

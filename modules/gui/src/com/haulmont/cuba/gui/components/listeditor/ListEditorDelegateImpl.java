@@ -17,7 +17,8 @@
 package com.haulmont.cuba.gui.components.listeditor;
 
 import com.google.common.base.Joiner;
-import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -75,7 +77,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
 
     protected boolean editable = true;
 
-    private EventRouter eventRouter;
+    private EventHub eventHub;
 
     @PostConstruct
     public void init() {
@@ -126,10 +128,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
 
                     ListEditor.EditorCloseEvent editorCloseEvent =
                             new ListEditor.EditorCloseEvent(actionId, listEditorPopup);
-                    getEventRouter().fireEvent(
-                            ListEditor.EditorCloseListener.class,
-                            ListEditor.EditorCloseListener::editorClosed,
-                            editorCloseEvent);
+                    getEventHub().publish(ListEditor.EditorCloseEvent.class, editorCloseEvent);
                 });
             }
         });
@@ -139,11 +138,11 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
         layout.expand(displayValuesField);
     }
 
-    protected EventRouter getEventRouter() {
-        if (eventRouter == null) {
-            eventRouter = new EventRouter();
+    protected EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
         }
-        return eventRouter;
+        return eventHub;
     }
 
     @Override
@@ -344,13 +343,13 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     }
 
     @Override
-    public void addEditorCloseListener(ListEditor.EditorCloseListener listener) {
-        getEventRouter().addListener(ListEditor.EditorCloseListener.class, listener);
+    public Subscription addEditorCloseListener(Consumer<ListEditor.EditorCloseEvent> listener) {
+        return getEventHub().subscribe(ListEditor.EditorCloseEvent.class, listener);
     }
 
     @Override
-    public void removeEditorCloseListener(ListEditor.EditorCloseListener listener) {
-        getEventRouter().removeListener(ListEditor.EditorCloseListener.class, listener);
+    public void removeEditorCloseListener(Consumer<ListEditor.EditorCloseEvent> listener) {
+        getEventHub().unsubscribe(ListEditor.EditorCloseEvent.class, listener);
     }
 
     @Override

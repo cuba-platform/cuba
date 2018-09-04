@@ -17,7 +17,10 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
+import java.util.function.Consumer;
 
 public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
     String NAME = "resizableTextArea";
@@ -47,16 +50,6 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
      * @return direction.
      */
     ResizeDirection getResizableDirection();
-
-    @Deprecated
-    default void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        addResizeListener(new ResizeListenerWrapper(resizeListener));
-    }
-
-    @Deprecated
-    default void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        removeResizeListener(new ResizeListenerWrapper(resizeListener));
-    }
 
     class ResizeEvent {
         private final ResizableTextArea component;
@@ -101,17 +94,16 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
         HORIZONTAL, VERTICAL, BOTH, NONE
     }
 
-    /**
-     * Listener for size change events
-     */
-    @FunctionalInterface
-    interface ResizeListener {
-        /**
-         * Called by component on size change if ResizableTextArea isResizable equals true
-         */
-        void sizeChanged(ResizeEvent e);
+    default Subscription addResizeListener(Consumer<ResizeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ResizeEvent.class, listener);
     }
 
-    void addResizeListener(ResizeListener listener);
-    void removeResizeListener(ResizeListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeResizeListener(Consumer<ResizeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ResizeEvent.class, listener);
+    }
 }

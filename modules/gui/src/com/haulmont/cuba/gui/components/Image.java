@@ -16,10 +16,13 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * The Image component is intended for displaying graphic content.
@@ -80,12 +83,16 @@ public interface Image extends ResourceView {
         NONE
     }
 
-    void addClickListener(ClickListener listener);
-    void removeClickListener(ClickListener listener);
+    default Subscription addClickListener(Consumer<ClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ClickEvent.class, listener);
+    }
 
-    @FunctionalInterface
-    interface ClickListener {
-        void onClick(ClickEvent event);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    default void removeClickListener(Consumer<ClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ClickEvent.class, listener);
     }
 
     /**

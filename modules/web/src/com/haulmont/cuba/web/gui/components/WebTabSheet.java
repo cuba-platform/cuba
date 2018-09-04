@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -24,7 +25,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleTabSheetSelectedTabChangeListener;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
@@ -502,14 +503,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         component.setTabsVisible(tabsVisible);
     }
 
-    @Override
-    public void addListener(TabChangeListener listener) {
-        initComponentTabChangeListener();
-
-        getEventRouter().addListener(SelectedTabChangeListener.class,
-                new CompatibleTabSheetSelectedTabChangeListener(listener));
-    }
-
     private void initComponentTabChangeListener() {
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
@@ -540,24 +533,14 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
-    public void removeListener(TabChangeListener listener) {
-        getEventRouter().removeListener(SelectedTabChangeListener.class, new CompatibleTabSheetSelectedTabChangeListener(listener));
-    }
-
-    @Override
-    public void addSelectedTabChangeListener(SelectedTabChangeListener listener) {
+    public Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
         initComponentTabChangeListener();
 
-        getEventRouter().addListener(SelectedTabChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeSelectedTabChangeListener(SelectedTabChangeListener listener) {
-        getEventRouter().removeListener(SelectedTabChangeListener.class, listener);
+        return TabSheet.super.addSelectedTabChangeListener(listener);
     }
 
     protected void fireTabChanged(SelectedTabChangeEvent event) {
-        getEventRouter().fireEvent(SelectedTabChangeListener.class, SelectedTabChangeListener::selectedTabChanged, event);
+        publish(SelectedTabChangeEvent.class, event);
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {

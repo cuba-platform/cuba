@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.compatibility.MultiUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -48,8 +47,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     protected FileUploadingAPI fileUploading;
     protected UUID tempFileId;
     protected String accept;
-
-    protected List<QueueUploadCompleteListener> queueUploadCompleteListeners; // lazily initialized list
 
     public WebFileMultiUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -132,26 +129,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         return new CubaFileUpload();
     }
 
-    @Override
-    public void addListener(UploadListener listener) {
-        MultiUploadFieldListenerWrapper wrapper = new MultiUploadFieldListenerWrapper(listener);
-
-        addFileUploadStartListener(wrapper);
-        addFileUploadFinishListener(wrapper);
-        addFileUploadErrorListener(wrapper);
-        addQueueUploadCompleteListener(wrapper);
-    }
-
-    @Override
-    public void removeListener(UploadListener listener) {
-        MultiUploadFieldListenerWrapper wrapper = new MultiUploadFieldListenerWrapper(listener);
-
-        removeFileUploadStartListener(wrapper);
-        removeFileUploadFinishListener(wrapper);
-        removeFileUploadErrorListener(wrapper);
-        removeQueueUploadCompleteListener(wrapper);
-    }
-
     /**
      * Get uploads map
      *
@@ -231,72 +208,22 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
         FileUploadStartEvent event = new FileUploadStartEvent(fileName, contentLength);
-        getEventRouter().fireEvent(FileUploadStartListener.class, FileUploadStartListener::fileUploadStart, event);
+        publish(FileUploadStartEvent.class, event);
     }
 
     protected void fireFileUploadFinish(String fileName, long contentLength) {
         FileUploadFinishEvent event = new FileUploadFinishEvent(fileName, contentLength);
-        getEventRouter().fireEvent(FileUploadFinishListener.class, FileUploadFinishListener::fileUploadFinish, event);
+        publish(FileUploadFinishEvent.class, event);
     }
 
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
         FileUploadErrorEvent event = new FileUploadErrorEvent(fileName, contentLength, cause);
-        getEventRouter().fireEvent(FileUploadErrorListener.class, FileUploadErrorListener::fileUploadError, event);
+        publish(FileUploadErrorEvent.class, event);
     }
 
     protected void fireQueueUploadComplete() {
-        if (queueUploadCompleteListeners != null) {
-            for (QueueUploadCompleteListener listener : new ArrayList<>(queueUploadCompleteListeners)) {
-                listener.queueUploadComplete();
-            }
-        }
-    }
-
-    @Override
-    public void addFileUploadStartListener(FileUploadStartListener listener) {
-        getEventRouter().addListener(FileUploadStartListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadStartListener(FileUploadStartListener listener) {
-        getEventRouter().removeListener(FileUploadStartListener.class, listener);
-    }
-
-    @Override
-    public void addFileUploadFinishListener(FileUploadFinishListener listener) {
-        getEventRouter().addListener(FileUploadFinishListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
-        getEventRouter().removeListener(FileUploadFinishListener.class, listener);
-    }
-
-    @Override
-    public void addFileUploadErrorListener(FileUploadErrorListener listener) {
-        getEventRouter().removeListener(FileUploadErrorListener.class, listener);
-    }
-
-    @Override
-    public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
-        getEventRouter().removeListener(FileUploadErrorListener.class, listener);
-    }
-
-    @Override
-    public void addQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
-        if (queueUploadCompleteListeners == null) {
-            queueUploadCompleteListeners = new ArrayList<>();
-        }
-        if (!queueUploadCompleteListeners.contains(listener)) {
-            queueUploadCompleteListeners.add(listener);
-        }
-    }
-
-    @Override
-    public void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
-        if (queueUploadCompleteListeners != null) {
-            queueUploadCompleteListeners.remove(listener);
-        }
+        QueueUploadCompleteEvent event = new QueueUploadCompleteEvent(this);
+        publish(QueueUploadCompleteEvent.class, event);
     }
 
     @Override

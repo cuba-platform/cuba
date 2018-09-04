@@ -17,7 +17,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusable {
 
@@ -68,8 +72,20 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
 
     // vaadin8 - unsupported in Vaadin 8 text fields
     interface TextChangeNotifier {
-        void addTextChangeListener(TextChangeListener listener);
-        void removeTextChangeListener(TextChangeListener listener);
+
+        default Subscription addTextChangeListener(Consumer<TextChangeEvent> listener) {
+            return ((EventHubOwner) this).getEventHub().subscribe(TextChangeEvent.class, listener);
+        }
+
+        /**
+         * @param listener a listener to remove
+         * @deprecated Use {@link Subscription} instead
+         */
+
+        @Deprecated
+        default void removeTextChangeListener(Consumer<TextChangeEvent> listener) {
+            ((EventHubOwner) this).getEventHub().unsubscribe(TextChangeEvent.class, listener);
+        }
 
         /**
          * Gets the timeout used to fire {@link TextChangeEvent}s when the
@@ -98,11 +114,6 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
          * @param mode the new mode
          */
         void setTextChangeEventMode(TextChangeEventMode mode);
-    }
-
-    @FunctionalInterface
-    interface TextChangeListener {
-        void textChange(TextChangeEvent event);
     }
 
     /**
@@ -172,13 +183,18 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
     }
 
     interface EnterPressNotifier {
-        void addEnterPressListener(EnterPressListener listener);
-        void removeEnterPressListener(EnterPressListener listener);
-    }
+        default Subscription addEnterPressListener(Consumer<EnterPressEvent> listener) {
+            return ((EventHubOwner) this).getEventHub().subscribe(EnterPressEvent.class, listener);
+        }
 
-    @FunctionalInterface
-    interface EnterPressListener {
-        void enterPressed(EnterPressEvent e);
+        /**
+         * @param listener a listener to remove
+         * @deprecated Use {@link Subscription} instead
+         */
+        @Deprecated
+        default void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
+            ((EventHubOwner) this).getEventHub().unsubscribe(EnterPressEvent.class, listener);
+        }
     }
 
     /**

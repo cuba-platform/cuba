@@ -85,7 +85,7 @@ public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extend
             ((WebAbstractResource) value).setResourceUpdatedHandler(resourceUpdateHandler);
         }
 
-        getEventRouter().fireEvent(SourceChangeListener.class, SourceChangeListener::sourceChanged,
+        publish(SourceChangeEvent.class,
                 new SourceChangeEvent(this, oldValue, this.resource));
     }
 
@@ -111,16 +111,6 @@ public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extend
             throw new RuntimeException(String.format("Error creating the '%s' resource instance",
                     type.getTypeName()), e);
         }
-    }
-
-    @Override
-    public void addSourceChangeListener(SourceChangeListener listener) {
-        getEventRouter().addListener(SourceChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeSourceChangeListener(SourceChangeListener listener) {
-        getEventRouter().removeListener(SourceChangeListener.class, listener);
     }
 
     @Override

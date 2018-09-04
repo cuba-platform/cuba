@@ -21,13 +21,14 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.event.Action;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
+import com.vaadin.util.ReflectTools;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiConsumer;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static com.haulmont.cuba.web.widgets.CubaPickerField.FieldValueChangeListener.FIELD_VALUE_CHANGE_METHOD;
 
 public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements Action.Container {
 
@@ -51,6 +52,8 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
     protected boolean fieldReadOnly = true;
 
     protected boolean suppressTextChangeListener = false;
+
+    protected Registration fieldValueChangeListener;
 
     public CubaPickerField() {
         init();
@@ -254,24 +257,31 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         container.removeComponent(button);
     }
 
-    public void addFieldListener(BiConsumer<String, Object> listener) {
-        ((CubaTextField) field).addValueChangeListener(event -> {
-            String text = event.getValue();
+    public Registration addFieldListener(FieldValueChangeListener<T> listener) {
+        if (fieldValueChangeListener == null) {
+            fieldValueChangeListener = ((CubaTextField) field).addValueChangeListener(event -> {
+                String text = event.getValue();
 
-            if (!suppressTextChangeListener &&
-                    !Objects.equals(getStringRepresentation(), text)) {
-                suppressTextChangeListener = true;
+                if (!suppressTextChangeListener &&
+                        !Objects.equals(getStringRepresentation(), text)) {
+                    suppressTextChangeListener = true;
 
-                listener.accept(text, getValue());
+                    FieldValueChangeEvent<T> e = new FieldValueChangeEvent<>(CubaPickerField.this, text, getValue());
+                    fireEvent(e);
 
-                suppressTextChangeListener = false;
+                    suppressTextChangeListener = false;
 
-                // update text representation manually
-                if (field instanceof TextField) {
-                    updateTextRepresentation();
+                    // update text representation manually
+                    if (field instanceof TextField) {
+                        updateTextRepresentation();
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        addListener(FieldValueChangeEvent.class, listener, FIELD_VALUE_CHANGE_METHOD);
+
+        return fieldValueChangeListener;
     }
 
     @Override
@@ -310,5 +320,37 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
 
     public void setTextFieldValueProvider(ValueProvider<T, String> textFieldValueProvider) {
         this.textFieldValueProvider = textFieldValueProvider;
+    }
+
+    public interface FieldValueChangeListener<V> {
+        Method FIELD_VALUE_CHANGE_METHOD = ReflectTools
+                .findMethod(FieldValueChangeListener.class, "valueChange", FieldValueChangeEvent.class);
+
+        void valueChange(FieldValueChangeEvent<V> event);
+    }
+
+    public static class FieldValueChangeEvent<V> extends EventObject {
+        protected final String text;
+        protected final V prevValue;
+
+        public FieldValueChangeEvent(CubaPickerField<V> source, String text, V prevValue) {
+            super(source);
+            this.text = text;
+            this.prevValue = prevValue;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public CubaPickerField<V> getSource() {
+            return (CubaPickerField<V>) super.getSource();
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public V getPrevValue() {
+            return prevValue;
+        }
     }
 }

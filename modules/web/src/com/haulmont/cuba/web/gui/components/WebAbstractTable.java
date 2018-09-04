@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -156,7 +157,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Presentations presentations;
     protected Document defaultSettings;
 
-    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
+    protected com.vaadin.v7.ui.Table.ColumnCollapseListener columnCollapseListener;
 
     // Map column id to Printable representation
     // todo this functionality should be moved to Excel action
@@ -980,9 +981,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
-        getEventRouter().fireEvent(LookupSelectionChangeListener.class,
-                LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
-
+        publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
         // todo implement selection change events
     }
 
@@ -2403,32 +2402,36 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
-        if (columnCollapseListeners == null) {
-            columnCollapseListeners = new LinkedList<>();
-
-            component.addColumnCollapseListener((com.vaadin.v7.ui.Table.ColumnCollapseListener) event -> {
-                Column collapsedColumn = getColumn(event.getPropertyId().toString());
-                boolean collapsed = component.isColumnCollapsed(event.getPropertyId());
-
-                for (ColumnCollapseListener listener : columnCollapseListeners) {
-                    listener.columnCollapsed(collapsedColumn, collapsed);
-                }
-            });
+    public Subscription addColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
+        if (columnCollapseListener == null) {
+            columnCollapseListener = this::onColumnCollapseStateChange;
+            component.addColumnCollapseListener(columnCollapseListener);
         }
 
-        columnCollapseListeners.add(columnCollapsedListener);
+        return Table.super.addColumnCollapseListener(listener);
     }
 
     @Override
-    public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
-        if (columnCollapseListeners != null) {
-            columnCollapseListeners.remove(columnCollapseListener);
+    public void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
+        Table.super.removeColumnCollapseListener(listener);
+
+        if (!hasSubscriptions(ColumnCollapseEvent.class)
+                && columnCollapseListener != null) {
+            component.removeColumnCollapseListener(columnCollapseListener);
+            columnCollapseListener = null;
         }
     }
 
+    protected void onColumnCollapseStateChange(com.vaadin.v7.ui.Table.ColumnCollapseEvent e) {
+        Column collapsedColumn = getColumn(e.getPropertyId().toString());
+        boolean collapsed = component.isColumnCollapsed(e.getPropertyId());
+
+        ColumnCollapseEvent<E> event = new ColumnCollapseEvent<>(this, collapsedColumn, collapsed);
+        publish(ColumnCollapseEvent.class, event);
+    }
+
     @Override
-    public void setClickListener(String columnId, CellClickListener<? super E> clickListener) {
+    public void setClickListener(String columnId, Consumer<CellClickEvent<E>> clickListener) {
         checkNotNullArgument(getColumn(columnId), String.format("column with id '%s' not found", columnId));
 
         component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
@@ -2440,7 +2443,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             E item = tableSource.getItem(itemId);
-            clickListener.onClick(item, columnId1.toString());
+            CellClickEvent<E> event = new CellClickEvent<>(this, item, columnId1.toString());
+            clickListener.accept(event);
         });
     }
 
@@ -2622,16 +2626,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         component.setCurrentPageFirstItemId(item.getId());
-    }
-
-    @Override
-    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
     protected void handleColumnCollapsed(com.vaadin.v7.ui.Table.ColumnCollapseEvent event) {

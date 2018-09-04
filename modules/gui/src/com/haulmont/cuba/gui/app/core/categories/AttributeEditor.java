@@ -111,7 +111,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected LookupField dataTypeField;
     protected LookupField screenField;
     protected LookupField entityTypeField;
-    protected PickerField defaultEntityField;
+    protected PickerField<Entity> defaultEntityField;
     protected PickerField.LookupAction entityLookupAction;
     protected String fieldWidth;
 
@@ -171,7 +171,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected LocalizedNameFrame localizedFrame;
 
-    private ListEditor enumerationListEditor;
+    private ListEditor<String> enumerationListEditor;
     private SourceCodeEditor joinField;
     private SourceCodeEditor whereField;
 

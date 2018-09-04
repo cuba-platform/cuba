@@ -16,11 +16,14 @@
 
 package com.haulmont.cuba.gui.components.listeditor;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -78,8 +81,10 @@ public interface ListEditorDelegate {
     void setEditorWindowId(String windowId);
     String getEditorWindowId();
 
-    void addEditorCloseListener(ListEditor.EditorCloseListener listener);
-    void removeEditorCloseListener(ListEditor.EditorCloseListener listener);
+    Subscription addEditorCloseListener(Consumer<ListEditor.EditorCloseEvent> listener);
+
+    @Deprecated
+    void removeEditorCloseListener(Consumer<ListEditor.EditorCloseEvent> listener);
 
     void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier);
     Supplier<Map<String, Object>> getEditorParamsSupplier();

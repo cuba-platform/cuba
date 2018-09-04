@@ -35,13 +35,11 @@ import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
-import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -59,6 +57,7 @@ import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
 @org.springframework.stereotype.Component(Param.NAME)
 @Scope("prototype")
@@ -588,7 +587,7 @@ public class Param {
             return listEditor;
         }
 
-        TextField field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = componentsFactory.createComponent(TextField.class);
         field.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
 
         field.addValueChangeListener(e -> {
@@ -613,7 +612,7 @@ public class Param {
         if (_value instanceof List) {
             field.setValue(StringUtils.join((Collection) _value, ","));
         } else if (_value instanceof String) {
-            field.setValue(_value);
+            field.setValue((String) _value);
         } else {
             field.setValue("");
         }
@@ -649,7 +648,7 @@ public class Param {
             return listEditor;
         }
 
-        DateField dateField = componentsFactory.createComponent(DateField.class);
+        DateField<Date> dateField = componentsFactory.createComponent(DateField.class);
 
         DateField.Resolution resolution;
         String formatStr;
@@ -667,9 +666,10 @@ public class Param {
             dateField.setTimeZone(userSession.getTimeZone());
         }
 
-        dateField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
+        dateField.addValueChangeListener(e ->
+                _setValue(e.getValue(), valueProperty));
 
-        dateField.setValue(_getValue(valueProperty));
+        dateField.setValue((Date) _getValue(valueProperty));
         return dateField;
     }
 
@@ -680,7 +680,7 @@ public class Param {
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
-        TextField field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = componentsFactory.createComponent(TextField.class);
 
         field.addValueChangeListener(e -> {
             if (e.getValue() == null || e.getValue() instanceof Number) {
@@ -714,7 +714,7 @@ public class Param {
         Messages messages = AppBeans.get(Messages.NAME);
         ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
-        LookupField field = componentsFactory.createComponent(LookupField.class);
+        LookupField<Object> field = componentsFactory.createComponent(LookupField.class);
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = new HashMap<>();
@@ -722,7 +722,8 @@ public class Param {
         values.put(messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE);
 
         field.setOptionsMap(values);
-        field.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
+        field.addValueChangeListener(e ->
+                _setValue(e.getValue(), valueProperty));
 
         field.setValue(_getValue(valueProperty));
         return field;
@@ -736,7 +737,7 @@ public class Param {
             return listEditor;
         }
 
-        TextField field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = componentsFactory.createComponent(TextField.class);
 
         field.addValueChangeListener(e -> {
             String strValue = (String) e.getValue();
@@ -759,7 +760,7 @@ public class Param {
 
         Object _value = _getValue(valueProperty);
         if (_value instanceof String) {
-            field.setValue(_value);
+            field.setValue((String) _value);
         } else {
             field.setValue("");
         }
@@ -791,7 +792,7 @@ public class Param {
                 initListEditor(listEditor, valueProperty);
                 return listEditor;
             } else {
-                PickerField picker = componentsFactory.createComponent(PickerField.class);
+                PickerField<Entity> picker = componentsFactory.createComponent(PickerField.class);
                 picker.setMetaClass(metaClass);
 
                 picker.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
@@ -800,8 +801,9 @@ public class Param {
                 picker.addLookupAction();
                 picker.addClearAction();
 
-                picker.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
-                picker.setValue(_getValue(valueProperty));
+                picker.addValueChangeListener(e ->
+                        _setValue(e.getValue(), valueProperty));
+                picker.setValue((Entity) _getValue(valueProperty));
 
                 return picker;
             }
@@ -817,7 +819,7 @@ public class Param {
                 initListEditor(listEditor, valueProperty);
                 return listEditor;
             } else {
-                final LookupPickerField lookup = componentsFactory.createComponent(LookupPickerField.class);
+                final LookupPickerField<Entity> lookup = componentsFactory.createComponent(LookupPickerField.class);
                 lookup.addClearAction();
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(optionsDataSource);
@@ -825,8 +827,9 @@ public class Param {
                 //noinspection unchecked
                 optionsDataSource.addCollectionChangeListener(e -> lookup.setValue(null));
 
-                lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
-                lookup.setValue(_getValue(valueProperty));
+                lookup.addValueChangeListener(e ->
+                        _setValue(e.getValue(), valueProperty));
+                lookup.setValue((Entity) _getValue(valueProperty));
 
                 return lookup;
             }
@@ -870,7 +873,7 @@ public class Param {
             return listEditor;
 
         } else {
-            LookupField lookup = componentsFactory.createComponent(LookupField.class);
+            LookupField<Object> lookup = componentsFactory.createComponent(LookupField.class);
             List options = Arrays.asList(javaClass.getEnumConstants());
             lookup.setOptionsList(options);
 
@@ -912,7 +915,7 @@ public class Param {
             initListEditor(listEditor, valueProperty);
             return listEditor;
         } else {
-            LookupField lookup = componentsFactory.createComponent(LookupField.class);
+            LookupField<Object> lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
 
             lookup.addValueChangeListener(e -> {
@@ -925,7 +928,7 @@ public class Param {
         }
     }
 
-    protected void initListEditor(ListEditor listEditor, ValueProperty valueProperty) {
+    protected void initListEditor(ListEditor<List<?>> listEditor, ValueProperty valueProperty) {
         listEditor.addValueChangeListener(e -> {
             Object value = e.getValue();
             if (value instanceof List && ((List) value).isEmpty()) {
@@ -935,7 +938,8 @@ public class Param {
         });
         Object value = _getValue(valueProperty);
         if (value != null) {
-            listEditor.setValue(value);
+            //noinspection unchecked
+            listEditor.setValue((List<List<?>>) value);
         }
         listEditor.setClearButtonVisible(true);
     }

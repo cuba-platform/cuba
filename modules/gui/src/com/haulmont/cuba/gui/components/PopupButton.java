@@ -16,8 +16,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import javax.annotation.Nullable;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * A {@link Button} with a popup. The popup can contain actions.
@@ -128,15 +132,17 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
     @Nullable
     Component getPopupContent();
 
-    void addPopupVisibilityListener(PopupVisibilityListener listener);
-    void removePopupVisibilityListener(PopupVisibilityListener listener);
+    default Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(PopupVisibilityEvent.class, listener);
+    }
 
     /**
-     * Popup window visibility change listener.
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    @FunctionalInterface
-    interface PopupVisibilityListener {
-        void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
+    @Deprecated
+    default void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(PopupVisibilityEvent.class, listener);
     }
 
     /**

@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.widgets.renderers.CubaImageRenderer;
 import com.vaadin.ui.renderers.Renderer;
 
+import java.util.function.Consumer;
+
 /**
  * A renderer for presenting images. The value of the corresponding property
  * is used as the image location. Location can be a theme resource or URL.
@@ -32,7 +34,7 @@ public class WebImageRenderer<T extends Entity>
     public WebImageRenderer() {
     }
 
-    public WebImageRenderer(DataGrid.RendererClickListener<T> listener) {
+    public WebImageRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         super(listener);
     }
 

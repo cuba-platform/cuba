@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -197,7 +198,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setOptionsDatasource(groupsDs);
 
-        HasValue.ValueChangeListener listener1 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -209,7 +210,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
         component.removeValueChangeListener(listener1);
         assertEquals(1, counter.get());
 
-        HasValue.ValueChangeListener listener2 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener2 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g, e.getValue());
 
@@ -229,7 +230,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         assertEquals(2, counter.get());
 
-        HasValue.ValueChangeListener listener3 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener3 = e -> {
             assertEquals(g1, e.getPrevValue());
             assertEquals(g2, e.getValue());
 
@@ -284,7 +285,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setValue(g2);
 
-        HasValue.ValueChangeListener listener1 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener1 = e -> {
             assertEquals(g2, e.getPrevValue());
             assertEquals(g1, e.getValue());
         };

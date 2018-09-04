@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.widgets.renderers.CubaClickableTextRenderer;
 import com.vaadin.ui.renderers.Renderer;
 
+import java.util.function.Consumer;
+
 /**
  * A renderer for presenting simple plain-text string values as a link with call back handler.
  */
@@ -36,11 +38,11 @@ public class WebClickableTextRenderer<T extends Entity>
         this(null, nullRepresentation);
     }
 
-    public WebClickableTextRenderer(DataGrid.RendererClickListener<T> listener) {
+    public WebClickableTextRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener) {
         this(listener, "");
     }
 
-    public WebClickableTextRenderer(DataGrid.RendererClickListener<T> listener, String nullRepresentation) {
+    public WebClickableTextRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener, String nullRepresentation) {
         super(listener);
         this.nullRepresentation = nullRepresentation;
     }

@@ -17,7 +17,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.Set;
+import java.util.function.Consumer;
 
 public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
                                      Component.Focusable {
@@ -46,20 +50,10 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
-    @FunctionalInterface
-    interface FileUploadStartListener {
-        void fileUploadStart(FileUploadStartEvent e);
-    }
-
     class FileUploadFinishEvent extends FileUploadEvent {
         public FileUploadFinishEvent(String fileName, long contentLength) {
             super(fileName, contentLength);
         }
-    }
-
-    @FunctionalInterface
-    interface FileUploadFinishListener {
-        void fileUploadFinish(FileUploadFinishEvent e);
     }
 
     class FileUploadErrorEvent extends FileUploadEvent {
@@ -77,19 +71,44 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
-    @FunctionalInterface
-    interface FileUploadErrorListener {
-        void fileUploadError(FileUploadErrorEvent e);
+    default Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadStartEvent.class, listener);
     }
 
-    void addFileUploadStartListener(FileUploadStartListener listener);
-    void removeFileUploadStartListener(FileUploadStartListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadStartEvent.class, listener);
+    }
 
-    void addFileUploadFinishListener(FileUploadFinishListener listener);
-    void removeFileUploadFinishListener(FileUploadFinishListener listener);
+    default Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadFinishEvent.class, listener);
+    }
 
-    void addFileUploadErrorListener(FileUploadErrorListener listener);
-    void removeFileUploadErrorListener(FileUploadErrorListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    default Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadErrorEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadErrorEvent.class, listener);
+    }
 
     /**
      * Returns maximum allowed file size in bytes.

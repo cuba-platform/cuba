@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -43,6 +44,7 @@ import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.shared.Registration;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -77,6 +79,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected List<Action> actions = new ArrayList<>();
     protected Map<String, CubaButton> actionButtons = new HashMap<>();
     protected Map<String, PropertyChangeListener> actionPropertyChangeListeners = new HashMap<>();
+    protected Registration fieldListener;
 
     protected WebPickerFieldActionHandler actionHandler;
 
@@ -375,8 +378,18 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
-    public void addFieldListener(FieldListener listener) {
-        component.addFieldListener(listener::actionPerformed);
+    public Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener) {
+        if (fieldListener == null) {
+            fieldListener = component.addFieldListener(this::onFieldValueChange);
+        }
+
+        return PickerField.super.addFieldValueChangeListener(listener);
+    }
+
+    protected void onFieldValueChange(CubaPickerField.FieldValueChangeEvent <V> e) {
+        FieldValueChangeEvent<V> event = new FieldValueChangeEvent<>(WebPickerField.this,
+                e.getText(), e.getPrevValue());
+        publish(FieldValueChangeEvent.class, event);
     }
 
     @Override

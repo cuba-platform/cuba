@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
@@ -72,7 +73,6 @@ import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.ColumnVisibilityChangeListener;
 import com.vaadin.ui.components.grid.Footer;
 import com.vaadin.ui.components.grid.Header;
 import com.vaadin.ui.components.grid.StaticSection;
@@ -88,6 +88,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -340,10 +341,9 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
             }
 
             LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
-            getEventRouter().fireEvent(LookupSelectionChangeListener.class,
-                    LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
+            publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
 
-            if (getEventRouter().hasListeners(SelectionListener.class)) {
+            if (hasSubscriptions(SelectionEvent.class)) {
                 fireSelectionEvent(e);
             }
         };
@@ -367,8 +367,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
         SelectionEvent<E> event =
                 new SelectionEvent<>(WebAbstractDataGrid.this, addedItems, removedItems, selectedItems);
-        //noinspection unchecked
-        getEventRouter().fireEvent(SelectionListener.class, SelectionListener::selected, event);
+        publish(SelectionEvent.class, event);
     }
 
     protected ShortcutListenerDelegate createEnterShortcutListener() {
@@ -416,7 +415,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                 handleDoubleClickAction();
             }
 
-            if (getEventRouter().hasListeners(ItemClickListener.class)) {
+            if (hasSubscriptions(ItemClickEvent.class)) {
                 MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(vMouseEventDetails);
 
                 //noinspection unchecked
@@ -431,8 +430,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
                 ItemClickEvent<E> event = new ItemClickEvent<>(WebAbstractDataGrid.this,
                         mouseEventDetails, item, item.getId(), column != null ? column.getId() : null);
-                //noinspection unchecked
-                getEventRouter().fireEvent(ItemClickListener.class, ItemClickListener::onItemClick, event);
+                publish(ItemClickEvent.class, event);
             }
         };
     }
@@ -444,11 +442,8 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                 // so we need to return them back to they previous positions
                 columnsOrder = restoreColumnsOrder(getColumnsOrderInternal());
 
-                if (getEventRouter().hasListeners(ColumnReorderListener.class)) {
-                    ColumnReorderEvent event = new ColumnReorderEvent(WebAbstractDataGrid.this);
-                    getEventRouter().fireEvent(ColumnReorderListener.class,
-                            ColumnReorderListener::columnReordered, event);
-                }
+                ColumnReorderEvent event = new ColumnReorderEvent(WebAbstractDataGrid.this);
+                publish(ColumnReorderEvent.class, event);
             }
         };
     }
@@ -1153,10 +1148,10 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         component.getEditor().editRow(rowIndex);
     }
 
-    @Override
-    public void addEditorOpenListener(EditorOpenListener listener) {
-        getEventRouter().addListener(EditorOpenListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void addEditorOpenListener(EditorOpenListener listener) {
+//        getEventRouter().addListener(EditorOpenListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (beforeEditorOpenListener == null) {
 //            beforeEditorOpenListener = event -> {
 //                //noinspection ConstantConditions
@@ -1173,22 +1168,22 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 //            };
 //            component.addEditorOpenListener(beforeEditorOpenListener);
 //        }
-    }
+//    }
 
-    @Override
-    public void removeEditorOpenListener(EditorOpenListener listener) {
-        getEventRouter().removeListener(EditorOpenListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void removeEditorOpenListener(EditorOpenListener listener) {
+//        getEventRouter().removeListener(EditorOpenListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (!getEventRouter().hasListeners(EditorOpenListener.class)) {
 //            component.removeEditorOpenListener(beforeEditorOpenListener);
 //            beforeEditorOpenListener = null;
 //        }
-    }
+//    }
 
-    @Override
-    public void addEditorCloseListener(EditorCloseListener listener) {
-        getEventRouter().addListener(EditorCloseListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void addEditorCloseListener(EditorCloseListener listener) {
+//        getEventRouter().addListener(EditorCloseListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (editorCloseListener == null) {
 //            editorCloseListener = event -> {
 //                EditorCloseEvent e = new EditorCloseEvent(WebDataGrid.this, event.getItem());
@@ -1196,22 +1191,22 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 //            };
 //            component.addEditorCloseListener(editorCloseListener);
 //        }
-    }
+//    }
 
-    @Override
-    public void removeEditorCloseListener(EditorCloseListener listener) {
-        getEventRouter().removeListener(EditorCloseListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void removeEditorCloseListener(EditorCloseListener listener) {
+//        getEventRouter().removeListener(EditorCloseListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (!getEventRouter().hasListeners(EditorCloseListener.class)) {
 //            component.removeEditorCloseListener(editorCloseListener);
 //            editorCloseListener = null;
 //        }
-    }
+//    }
 
-    @Override
-    public void addEditorPreCommitListener(EditorPreCommitListener listener) {
-        getEventRouter().addListener(EditorPreCommitListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void addEditorPreCommitListener(EditorPreCommitListener listener) {
+//        getEventRouter().addListener(EditorPreCommitListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (editorPreCommitListener == null) {
 //            editorPreCommitListener = event -> {
 //                EditorPreCommitEvent e = new EditorPreCommitEvent(WebDataGrid.this, event.getItem());
@@ -1219,22 +1214,22 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 //            };
 //            component.addEditorPreCommitListener(editorPreCommitListener);
 //        }
-    }
+//    }
 
-    @Override
-    public void removeEditorPreCommitListener(EditorPreCommitListener listener) {
-        getEventRouter().removeListener(EditorPreCommitListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void removeEditorPreCommitListener(EditorPreCommitListener listener) {
+//        getEventRouter().removeListener(EditorPreCommitListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (!getEventRouter().hasListeners(EditorPreCommitListener.class)) {
 //            component.removeEditorPreCommitListener(editorPreCommitListener);
 //            editorPreCommitListener = null;
 //        }
-    }
+//    }
 
-    @Override
-    public void addEditorPostCommitListener(EditorPostCommitListener listener) {
-        getEventRouter().addListener(EditorPostCommitListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void addEditorPostCommitListener(EditorPostCommitListener listener) {
+//        getEventRouter().addListener(EditorPostCommitListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (editorPostCommitListener == null) {
 //            editorPostCommitListener = event -> {
 //                EditorPostCommitEvent e = new EditorPostCommitEvent(WebDataGrid.this, event.getItem());
@@ -1242,17 +1237,17 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 //            };
 //            component.addEditorPostCommitListener(editorPostCommitListener);
 //        }
-    }
+//    }
 
-    @Override
-    public void removeEditorPostCommitListener(EditorPostCommitListener listener) {
-        getEventRouter().removeListener(EditorPostCommitListener.class, listener);
-        // VAADIN8: gg, implement
+//    @Override
+//    public void removeEditorPostCommitListener(EditorPostCommitListener listener) {
+//        getEventRouter().removeListener(EditorPostCommitListener.class, listener);
+    // VAADIN8: gg, implement
 //        if (!getEventRouter().hasListeners(EditorPostCommitListener.class)) {
 //            component.removeEditorPostCommitListener(editorPostCommitListener);
 //            editorPostCommitListener = null;
 //        }
-    }
+//    }
 
     // VAADIN8: gg, implement
     /*protected static class WebDataGridEditorFieldFactory implements CubaGridEditorFieldFactory {
@@ -2291,131 +2286,120 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener) {
-        getEventRouter().addListener(ColumnCollapsingChangeListener.class, listener);
-
+    public Subscription addColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
         if (columnCollapsingChangeListenerRegistration == null) {
             columnCollapsingChangeListenerRegistration =
-                    component.addColumnVisibilityChangeListener((ColumnVisibilityChangeListener) e -> {
-                        if (e.isUserOriginated()) {
-                            ColumnCollapsingChangeEvent event = new ColumnCollapsingChangeEvent(WebAbstractDataGrid.this,
-                                    getColumnByGridColumn((Grid.Column<E, ?>) e.getColumn()), e.isHidden());
-                            getEventRouter().fireEvent(ColumnCollapsingChangeListener.class,
-                                    ColumnCollapsingChangeListener::columnCollapsingChanged, event);
-                        }
-                    });
+                    component.addColumnVisibilityChangeListener(this::onColumnVisibilityChanged);
+        }
+
+        return DataGrid.super.addColumnCollapsingChangeListener(listener);
+    }
+
+    protected void onColumnVisibilityChanged(Grid.ColumnVisibilityChangeEvent e) {
+        if (e.isUserOriginated()) {
+            //noinspection unchecked
+            ColumnCollapsingChangeEvent event = new ColumnCollapsingChangeEvent(WebAbstractDataGrid.this,
+                    getColumnByGridColumn((Grid.Column<E, ?>) e.getColumn()), e.isHidden());
+            publish(ColumnCollapsingChangeEvent.class, event);
         }
     }
 
     @Override
-    public void removeColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener) {
-        getEventRouter().removeListener(ColumnCollapsingChangeListener.class, listener);
+    public void removeColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
+        DataGrid.super.removeColumnCollapsingChangeListener(listener);
 
-        if (!getEventRouter().hasListeners(ColumnCollapsingChangeListener.class)) {
+        if (!hasSubscriptions(ColumnCollapsingChangeEvent.class)
+                && columnCollapsingChangeListenerRegistration != null) {
             columnCollapsingChangeListenerRegistration.remove();
             columnCollapsingChangeListenerRegistration = null;
         }
     }
 
     @Override
-    public void addColumnReorderListener(ColumnReorderListener listener) {
-        getEventRouter().addListener(ColumnReorderListener.class, listener);
-    }
-
-    @Override
-    public void removeColumnReorderListener(ColumnReorderListener listener) {
-        getEventRouter().removeListener(ColumnReorderListener.class, listener);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void addColumnResizeListener(ColumnResizeListener listener) {
-        getEventRouter().addListener(ColumnResizeListener.class, listener);
-
+    public Subscription addColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
         if (columnResizeListenerRegistration == null) {
             columnResizeListenerRegistration =
-                    component.addColumnResizeListener((com.vaadin.ui.components.grid.ColumnResizeListener) e -> {
-                        ColumnResizeEvent event = new ColumnResizeEvent(WebAbstractDataGrid.this,
-                                getColumnByGridColumn((Grid.Column<E, ?>) e.getColumn()));
-                        getEventRouter().fireEvent(ColumnResizeListener.class,
-                                ColumnResizeListener::columnResized, event);
-                    });
+                    component.addColumnResizeListener(this::onColumnResize);
         }
+
+        return DataGrid.super.addColumnResizeListener(listener);
+    }
+
+    protected void onColumnResize(Grid.ColumnResizeEvent e) {
+        //noinspection unchecked
+        ColumnResizeEvent event = new ColumnResizeEvent(WebAbstractDataGrid.this,
+                getColumnByGridColumn((Grid.Column<E, ?>) e.getColumn()));
+        publish(ColumnResizeEvent.class, event);
     }
 
     @Override
-    public void removeColumnResizeListener(ColumnResizeListener listener) {
-        getEventRouter().removeListener(ColumnResizeListener.class, listener);
+    public void removeColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
+        DataGrid.super.removeColumnResizeListener(listener);
 
-        if (!getEventRouter().hasListeners(ColumnResizeListener.class)) {
+        if (!hasSubscriptions(ColumnResizeEvent.class)
+                && columnResizeListenerRegistration != null) {
             columnResizeListenerRegistration.remove();
             columnResizeListenerRegistration = null;
         }
     }
 
     @Override
-    public void addSortListener(SortListener listener) {
-        getEventRouter().addListener(SortListener.class, listener);
-
+    public Subscription addSortListener(Consumer<SortEvent> listener) {
         if (sortListenerRegistration == null) {
             sortListenerRegistration =
-                    component.addSortListener((com.vaadin.event.SortEvent.SortListener<GridSortOrder<E>>) e -> {
-                        if (e.isUserOriginated()) {
-                            List<SortOrder> sortOrders = convertToDataGridSortOrder(e.getSortOrder());
+                    component.addSortListener(this::onSort);
+        }
 
-                            SortEvent event = new SortEvent(WebAbstractDataGrid.this, sortOrders);
-                            getEventRouter().fireEvent(SortListener.class, SortListener::sorted, event);
-                        }
-                    });
+        return DataGrid.super.addSortListener(listener);
+    }
+
+    protected void onSort(com.vaadin.event.SortEvent<GridSortOrder<E>> e) {
+        if (e.isUserOriginated()) {
+            List<SortOrder> sortOrders = convertToDataGridSortOrder(e.getSortOrder());
+
+            SortEvent event = new SortEvent(WebAbstractDataGrid.this, sortOrders);
+            publish(SortEvent.class, event);
         }
     }
 
     @Override
-    public void removeSortListener(SortListener listener) {
-        getEventRouter().removeListener(SortListener.class, listener);
+    public void removeSortListener(Consumer<SortEvent> listener) {
+        DataGrid.super.removeSortListener(listener);
 
-        if (!getEventRouter().hasListeners(SortListener.class)) {
+        if (!hasSubscriptions(SortEvent.class)
+                && sortListenerRegistration != null) {
             sortListenerRegistration.remove();
             sortListenerRegistration = null;
         }
     }
 
     @Override
-    public void addContextClickListener(ContextClickListener listener) {
-        getEventRouter().addListener(ContextClickListener.class, listener);
-
+    public Subscription addContextClickListener(Consumer<ContextClickEvent> listener) {
         if (contextClickListenerRegistration == null) {
             contextClickListenerRegistration =
-                    component.addContextClickListener(e -> {
-                        MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(e);
-
-                        ContextClickEvent event = new ContextClickEvent(WebAbstractDataGrid.this, mouseEventDetails);
-                        getEventRouter().fireEvent(ContextClickListener.class,
-                                ContextClickListener::onContextClick, event);
-                    });
+                    component.addContextClickListener(this::onContextClick);
         }
+
+        return DataGrid.super.addContextClickListener(listener);
+    }
+
+    protected void onContextClick(com.vaadin.event.ContextClickEvent e) {
+        MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(e);
+
+        ContextClickEvent event = new ContextClickEvent(WebAbstractDataGrid.this, mouseEventDetails);
+        publish(ContextClickEvent.class, event);
     }
 
     @Override
-    public void removeContextClickListener(ContextClickListener listener) {
-        getEventRouter().removeListener(ContextClickListener.class, listener);
+    public void removeContextClickListener(Consumer<ContextClickEvent> listener) {
+        DataGrid.super.removeContextClickListener(listener);
 
-        if (!getEventRouter().hasListeners(ContextClickListener.class)) {
+        if (!hasSubscriptions(ContextClickEvent.class)
+                && contextClickListenerRegistration != null) {
             contextClickListenerRegistration.remove();
             contextClickListenerRegistration = null;
         }
-    }
-
-    @Override
-    public void addItemClickListener(ItemClickListener<E> listener) {
-        getEventRouter().addListener(ItemClickListener.class, listener);
-    }
-
-    @Override
-    public void removeItemClickListener(ItemClickListener<E> listener) {
-        getEventRouter().removeListener(ItemClickListener.class, listener);
     }
 
     @Override
@@ -2548,16 +2532,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         return component.getFooterRowCount();
     }
 
-    @Override
-    public void addSelectionListener(SelectionListener<E> listener) {
-        getEventRouter().addListener(SelectionListener.class, listener);
-    }
-
-    @Override
-    public void removeSelectionListener(SelectionListener<E> listener) {
-        getEventRouter().removeListener(SelectionListener.class, listener);
-    }
-
     @Nullable
     @Override
     public DetailsGenerator<E> getDetailsGenerator() {
@@ -2595,16 +2569,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
-    }
-
-    @Override
-    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
-        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
     protected class RowStyleGeneratorAdapter<T extends E> implements StyleGenerator<T> {

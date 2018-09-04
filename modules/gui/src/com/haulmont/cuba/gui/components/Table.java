@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -23,8 +24,11 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
@@ -33,8 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -259,13 +265,80 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // todo rework with Event object
+    /**
+     * @deprecated Use {@link #addColumnCollapseListener(Consumer)} instead
+     */
+    @Deprecated
     interface ColumnCollapseListener {
         void columnCollapsed(Column collapsedColumn, boolean collapsed);
     }
 
-    void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
-    void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
+    /**
+     * @param columnCollapsedListener a listener to add
+     * @deprecated Use {@link #addColumnCollapseListener(Consumer)} instead
+     */
+    @Deprecated
+    default void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
+        addColumnCollapseListener(new TableColumnCollapseListenerWrapper(columnCollapsedListener));
+    }
+
+    /**
+     * @param columnCollapseListener a listener to remove
+     * @deprecated Use {@link #addColumnCollapseListener(Consumer)} instead
+     */
+    @Deprecated
+    default void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
+        removeColumnCollapseListener(new TableColumnCollapseListenerWrapper(columnCollapseListener));
+    }
+
+    /**
+     * Adds a listener for column collapse events.
+     *
+     * @param listener a listener to add
+     * @return a {@link Subscription} object
+     */
+    default Subscription addColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ColumnCollapseEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnCollapseEvent.class, listener);
+    }
+
+    /**
+     * An event that is fired every time column collapse state has been changed.
+     *
+     * @param <E> type of a table
+     */
+    class ColumnCollapseEvent<E extends Entity> extends EventObject {
+        protected final Column column;
+        protected final boolean collapsed;
+
+        public ColumnCollapseEvent(Table<E> source, Column column, boolean collapsed) {
+            super(source);
+            this.column = column;
+            this.collapsed = collapsed;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Table<E> getSource() {
+            return (Table<E>) super.getSource();
+        }
+
+        public Column getColumn() {
+            return column;
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
+        }
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -454,8 +527,23 @@ public interface Table<E extends Entity>
      *
      * @param columnId id of column
      * @param clickListener click listener
+     * @deprecated Use {@link #setClickListener(String, Consumer)} instead
      */
-    void setClickListener(String columnId, CellClickListener<? super E> clickListener);
+    @Deprecated
+    default void setClickListener(String columnId, CellClickListener<? super E> clickListener) {
+        //noinspection unchecked
+        setClickListener(columnId, new TableCellClickListenerWrapper(clickListener));
+    }
+
+    /**
+     * Add lightweight click handler for column cells.<br>
+     * Web specific: cell value will be wrapped in span with cuba-table-clickable-cell style name.<br>
+     * You can use .cuba-table-clickable-cell for CSS rules to specify custom representation of cell value.
+     *
+     * @param columnId id of column
+     * @param clickListener click listener
+     */
+    void setClickListener(String columnId, Consumer<CellClickEvent<E>> clickListener);
 
     /**
      * Remove click listener.
@@ -467,12 +555,38 @@ public interface Table<E extends Entity>
     /**
      * Lightweight click listener for table cells.
      */
+    @Deprecated
     interface CellClickListener<T extends Entity> {
         /**
          * @param item row item
          * @param columnId id of column
          */
         void onClick(T item, String columnId);
+    }
+
+    class CellClickEvent<T extends Entity> extends EventObject {
+        protected final T item;
+        protected final String columnId;
+
+        public CellClickEvent(Table<T> source, T item, String columnId) {
+            super(source);
+            this.item = item;
+            this.columnId = columnId;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Table<T> getSource() {
+            return (Table<T>) super.getSource();
+        }
+
+        public T getItem() {
+            return item;
+        }
+
+        public String getColumnId() {
+            return columnId;
+        }
     }
 
     /**

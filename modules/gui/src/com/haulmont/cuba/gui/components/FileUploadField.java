@@ -16,11 +16,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface FileUploadField extends UploadField, Field<FileDescriptor>, Component.Focusable, Buffered {
     String NAME = "upload";
@@ -40,66 +43,6 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     }
 
     /**
-     * @deprecated Use {@link UploadField.FileUploadStartListener},
-     *                 {@link UploadField.FileUploadFinishListener},
-     *                 {@link UploadField.FileUploadErrorListener}
-     */
-    @Deprecated
-    interface Listener {
-        class Event {
-            String filename;
-            Exception exception;
-
-            public Event(String filename) {
-                this.filename = filename;
-            }
-
-            public Event(String filename, Exception exception) {
-                this.filename = filename;
-                this.exception = exception;
-            }
-
-            public String getFilename() {
-                return filename;
-            }
-
-            public Exception getException() {
-                return exception;
-            }
-        }
-
-        void uploadStarted(Event event);
-        void uploadFinished(Event event);
-
-        void uploadSucceeded(Event event);
-        void uploadFailed(Event event);
-    }
-
-    /**
-     * @deprecated Use {@link UploadField.FileUploadStartListener},
-     *                 {@link UploadField.FileUploadFinishListener},
-     *                 {@link UploadField.FileUploadErrorListener}
-     */
-    @Deprecated
-    class ListenerAdapter implements Listener {
-        @Override
-        public void uploadStarted(Event event) {
-        }
-
-        @Override
-        public void uploadFinished(Event event) {
-        }
-
-        @Override
-        public void uploadSucceeded(Event event) {
-        }
-
-        @Override
-        public void uploadFailed(Event event) {
-        }
-    }
-
-    /**
      * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}.
      * @return File Id.
      */
@@ -114,24 +57,24 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     byte[] getBytes();
 
-    @Deprecated
-    void addListener(Listener listener);
-    @Deprecated
-    void removeListener(Listener listener);
-
     class FileUploadSucceedEvent extends FileUploadEvent {
         public FileUploadSucceedEvent(String fileName, long contentLength) {
             super(fileName, contentLength);
         }
     }
 
-    @FunctionalInterface
-    interface FileUploadSucceedListener {
-        void fileUploadSucceed(FileUploadSucceedEvent e);
+    default Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadSucceedEvent.class, listener);
     }
 
-    void addFileUploadSucceedListener(FileUploadSucceedListener listener);
-    void removeFileUploadSucceedListener(FileUploadSucceedListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadSucceedEvent.class, listener);
+    }
 
     /**
      * @return content of uploaded file.
@@ -233,18 +176,26 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     }
 
     /**
-     * Callback interface which is invoked by the {@link FileUploadField} before value clearing when user use clear button. <br>
+     * Sets a callback interface which is invoked by the {@link FileUploadField} before value
+     * clearing when user use clear button.
+     * <p>
      * Listener can prevent value clearing using {@link BeforeValueClearEvent#preventClearAction()}.
      *
+     * @param listener a listener to add
      * @see #setShowClearButton(boolean)
      */
-    @FunctionalInterface
-    interface BeforeValueClearListener {
-        void beforeValueClearPerformed(BeforeValueClearEvent event);
+    default Subscription addBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(BeforeValueClearEvent.class, listener);
     }
 
-    void addBeforeValueClearListener(BeforeValueClearListener listener);
-    void removeBeforeValueClearListener(BeforeValueClearListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(BeforeValueClearEvent.class, listener);
+    }
 
     class AfterValueClearEvent {
         private FileUploadField target;
@@ -265,17 +216,24 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     }
 
     /**
-     * Callback interface which is invoked by the {@link FileUploadField} after value has been cleared using clear button.
+     * Adds a callback interface which is invoked by the {@link FileUploadField} after value
+     * has been cleared using clear button.
      *
+     * @param listener a listener to add
      * @see #setShowClearButton(boolean)
      */
-    @FunctionalInterface
-    interface AfterValueClearListener {
-        void afterValueClearPerformed(AfterValueClearEvent event);
+    default Subscription addAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(AfterValueClearEvent.class, listener);
     }
 
-    void addAfterValueClearListener(AfterValueClearListener listener);
-    void removeAfterValueClearListener(AfterValueClearListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
+        ((EventHubOwner) this).getEventHub().subscribe(AfterValueClearEvent.class, listener);
+    }
 
     /**
      * Set mode which determines when {@link FileDescriptor} will be committed.

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -26,6 +27,7 @@ import com.vaadin.shared.ui.MarginInfo;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
 
@@ -240,9 +242,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     }
 
     @Override
-    public void addLayoutClickListener(LayoutClickListener listener) {
-        getEventRouter().addListener(LayoutClickListener.class, listener);
-
+    public Subscription addLayoutClickListener(Consumer<LayoutClickEvent> listener) {
         if (layoutClickListener == null) {
             layoutClickListener = event -> {
                 Component childComponent = findChildComponent(event.getChildComponent());
@@ -250,10 +250,12 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
-                getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
+                publish(LayoutClickEvent.class, layoutClickEvent);
             };
             component.addLayoutClickListener(layoutClickListener);
         }
+
+        return GridLayout.super.addLayoutClickListener(listener);
     }
 
     protected Component findChildComponent(com.vaadin.ui.Component vComponent) {
@@ -266,10 +268,10 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     }
 
     @Override
-    public void removeLayoutClickListener(LayoutClickListener listener) {
-        getEventRouter().removeListener(LayoutClickListener.class, listener);
+    public void removeLayoutClickListener(Consumer<LayoutClickEvent> listener) {
+        GridLayout.super.removeLayoutClickListener(listener);
 
-        if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
+        if (!hasSubscriptions(LayoutClickEvent.class)) {
             component.removeLayoutClickListener(layoutClickListener);
             layoutClickListener = null;
         }

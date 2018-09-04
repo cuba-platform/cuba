@@ -338,21 +338,10 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     @Override
-    public void addVisibilityChangeListener(VisibilityChangeListener listener) {
-        getEventRouter().addListener(VisibilityChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeVisibilityChangeListener(VisibilityChangeListener listener) {
-        getEventRouter().removeListener(VisibilityChangeListener.class, listener);
-    }
-
-    @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
 
-        getEventRouter().fireEvent(VisibilityChangeListener.class,
-                VisibilityChangeListener::componentVisibilityChanged,
+        publish(VisibilityChangeEvent.class,
                 new VisibilityChangeEvent(this, visible));
     }
 }

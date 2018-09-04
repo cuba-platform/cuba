@@ -16,11 +16,12 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.data.ValueListener;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Provides access to frame parameters and component values.
@@ -66,17 +67,20 @@ public interface FrameContext {
      */
     void setValue(String property, Object value);
 
-    /** Add the value listener to the specified component */
-    @Deprecated
-    void addValueListener(String componentName, ValueListener listener);
+    /**
+     * Add the value listener to the specified component
+     *
+     * @param componentName a component name
+     * @param listener      a listener to add
+     */
+    Subscription addValueChangeListener(String componentName, Consumer<HasValue.ValueChangeEvent> listener);
 
-    /** Remove the value listener from the specified component */
-    @Deprecated
-    void removeValueListener(String componentName, ValueListener listener);
-
-    /** Add the value listener to the specified component */
-    void addValueChangeListener(String componentName, HasValue.ValueChangeListener listener);
-
-    /** Remove the value listener from the specified component */
-    void removeValueChangeListener(String componentName, HasValue.ValueChangeListener listener);
+    /**
+     * Remove the value listener from the specified component
+     *
+     * @param componentName a component name
+     * @param listener      a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    void removeValueChangeListener(String componentName, Consumer<HasValue.ValueChangeEvent> listener);
 }

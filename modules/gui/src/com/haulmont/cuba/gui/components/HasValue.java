@@ -17,18 +17,19 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Object having a value.
  */
 public interface HasValue<V> {
     V getValue();
+
     void setValue(V value);
 
     default void clear() {
@@ -43,28 +44,22 @@ public interface HasValue<V> {
         return Objects.equals(getValue(), getEmptyValue());
     }
 
+    default Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ValueChangeEvent.class, listener);
+    }
+
     /**
-     * vaadin8 for removal
-     *
-     * @deprecated Use {@link #addValueChangeListener(ValueChangeListener)}
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueListenerWrapper(listener));
+    default void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ValueChangeEvent.class, listener);
     }
-
-    // vaadin8 for removal
-    @Deprecated
-    default void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
-    }
-
-    Subscription addValueChangeListener(ValueChangeListener listener);
-    void removeValueChangeListener(ValueChangeListener listener);
 
     /**
      * Describes value change event.
-     *
+     * <p>
      * todo V parameter
      */
     class ValueChangeEvent extends EventObject {
@@ -72,7 +67,7 @@ public interface HasValue<V> {
         private final Object prevValue;
         private final Object value;
 
-        // vaadin8 add isUserOriginated !!!
+        // vaadin8 add isUserOriginated !!!!!
 
         public ValueChangeEvent(HasValue component, Object prevValue, Object value) {
             super(component);
@@ -108,18 +103,5 @@ public interface HasValue<V> {
         public Object getValue() {
             return value;
         }
-    }
-
-    /**
-     * Listener to value change events.
-     */
-    @FunctionalInterface
-    interface ValueChangeListener {
-        /**
-         * Called when value of Component changed.
-         *
-         * @param e event object
-         */
-        void valueChanged(ValueChangeEvent e);
     }
 }

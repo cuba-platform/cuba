@@ -16,7 +16,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 public interface PopupView extends Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
     String NAME = "popupView";
@@ -76,15 +80,17 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
      */
     boolean isCaptionAsHtml();
 
-    void addPopupVisibilityListener(PopupVisibilityListener listener);
-    void removePopupVisibilityListener(PopupVisibilityListener listener);
+    default Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(PopupVisibilityEvent.class, listener);
+    }
 
     /**
-     * Popup window visibility change listener.
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    @FunctionalInterface
-    interface PopupVisibilityListener {
-        void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
+    @Deprecated
+    default void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(PopupVisibilityEvent.class, listener);
     }
 
     /**

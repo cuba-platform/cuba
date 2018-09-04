@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -692,9 +692,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         this.refreshMode = refreshMode;
     }
 
-    protected class ComponentValueListener implements HasValue.ValueChangeListener {
+    protected class ComponentValueListener implements Consumer<HasValue.ValueChangeEvent> {
         @Override
-        public void valueChanged(HasValue.ValueChangeEvent e) {
+        public void accept(HasValue.ValueChangeEvent e) {
             refresh();
         }
     }
@@ -707,23 +707,5 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void removeCollectionChangeListener(CollectionChangeListener<? super T, K> listener) {
         getEventRouter().removeListener(CollectionChangeListener.class, listener);
-    }
-
-    @Override
-    public void addListener(DatasourceListener<T> listener) {
-        super.addListener(listener);
-
-        if (listener instanceof CollectionDatasourceListener) {
-            addCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
-        }
-    }
-
-    @Override
-    public void removeListener(DatasourceListener<T> listener) {
-        super.removeListener(listener);
-
-        if (listener instanceof CollectionDatasourceListener) {
-            removeCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
-        }
     }
 }

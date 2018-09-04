@@ -163,7 +163,7 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
 
             if (!fieldValueEquals(value, oldValue)) {
                 ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
-                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+                publish(ValueChangeEvent.class, event);
             }
         }
     }

@@ -49,7 +49,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected GlobalConfig globalConfig;
 
     @Inject
-    protected LookupField entityType;
+    protected LookupField<MetaClass> entityType;
     @Inject
     protected CheckBox isDefault;
 
@@ -76,7 +76,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected void initEntityTypeField() {
         final ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
-        Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
+        Map<String, MetaClass> options = new TreeMap<>();//the map sorts meta classes by the string key
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
                 continue;

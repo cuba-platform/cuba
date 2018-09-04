@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,7 +41,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
         // unbind
         searchField.setDatasource(null, null);
 
-        HasValue.ValueChangeListener listener = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         searchField.addValueChangeListener(listener);
@@ -90,7 +90,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
         // setup
         boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
 
         // datasource before listener
         searchField.setDatasource(userDs, "group");
@@ -151,7 +151,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
         user.setGroup(groups.get(0));
 
         boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
         searchField.addValueChangeListener(listener);
 
         searchField.setDatasource(userDs, "group");

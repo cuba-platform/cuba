@@ -16,8 +16,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import javax.annotation.Nullable;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 public interface SplitPanel extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
         Component.HasCaption, HasSettings {
@@ -176,25 +180,6 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
     DockMode getDockMode();
 
     /**
-     * @deprecated Use {@link #addSplitPositionChangeListener}
-     */
-    @Deprecated
-    void setPositionUpdateListener(PositionUpdateListener positionListener);
-    /**
-     * @deprecated Use {@link #removeSplitPositionChangeListener}
-     */
-    @Deprecated
-    PositionUpdateListener getPositionUpdateListener();
-
-    /**
-     * @deprecated Use {@link SplitPositionChangeListener}
-     */
-    @Deprecated
-    interface PositionUpdateListener {
-        void updatePosition(float previousPosition, float newPosition);
-    }
-
-    /**
      * Event that indicates a change in SplitPanel's splitter position.
      */
     class SplitPositionChangeEvent extends EventObject {
@@ -222,13 +207,19 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
     }
 
     /**
-     * Interface for listening for {@link SplitPositionChangeEvent}s fired by a SplitPanel.
+     * Adds a listener for {@link SplitPositionChangeEvent}s fired by a SplitPanel.
+     *
+     * @param listener a listener to add
      */
-    @FunctionalInterface
-    interface SplitPositionChangeListener {
-        void onSplitPositionChanged(SplitPositionChangeEvent event);
+    default Subscription addSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SplitPositionChangeEvent.class, listener);
     }
 
-    void addSplitPositionChangeListener(SplitPositionChangeListener listener);
-    void removeSplitPositionChangeListener(SplitPositionChangeListener listener);
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    default void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(SplitPositionChangeEvent.class, listener);
+    }
 }

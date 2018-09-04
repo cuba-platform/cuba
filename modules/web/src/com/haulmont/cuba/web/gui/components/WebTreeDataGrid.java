@@ -8,6 +8,7 @@ import com.haulmont.cuba.gui.components.data.TreeDataGridSource;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.datagrid.HierarchicalDataGridDataProvider;
 import com.haulmont.cuba.web.widgets.CubaTreeGrid;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Grid;
 
 import javax.annotation.Nullable;
@@ -22,6 +23,9 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         implements TreeDataGrid<E> {
 
     protected Predicate<E> itemCollapseAllowedProvider = t -> true;
+
+    protected Registration expandListener;
+    protected Registration collapseListener;
 
     @Override
     protected CubaTreeGrid<E> createComponent() {
@@ -44,24 +48,6 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
         CubaTreeGrid<E> treeGrid = (CubaTreeGrid<E>) component;
         treeGrid.setItemCollapseAllowedProvider(itemCollapseAllowedProvider::test);
-        treeGrid.addExpandListener(createExpandListener());
-        treeGrid.addCollapseListener(createCollapseListener());
-    }
-
-    protected com.vaadin.event.ExpandEvent.ExpandListener<E> createExpandListener() {
-        return e -> {
-            ExpandEvent<E> event = new ExpandEvent<>(WebTreeDataGrid.this,
-                    e.getExpandedItem(), e.isUserOriginated());
-            publish(ExpandEvent.class, event);
-        };
-    }
-
-    protected com.vaadin.event.CollapseEvent.CollapseListener<E> createCollapseListener() {
-        return e -> {
-            CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
-                    e.getCollapsedItem(), e.isUserOriginated());
-            publish(CollapseEvent.class, event);
-        };
     }
 
     protected TreeDataGridSource<E> getTreeDataGridSource() {
@@ -135,12 +121,32 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addExpandListener(Consumer<ExpandEvent<E>> listener) {
-        return subscribe(ExpandEvent.class, (Consumer) listener);
+        if (expandListener == null) {
+            expandListener = component.addExpandListener(this::onItemExpand);
+        }
+
+        return TreeDataGrid.super.addExpandListener(listener);
+    }
+
+    protected void onItemExpand(com.vaadin.event.ExpandEvent<E> e) {
+        ExpandEvent<E> event = new ExpandEvent<>(WebTreeDataGrid.this,
+                e.getExpandedItem(), e.isUserOriginated());
+        publish(ExpandEvent.class, event);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener) {
-        return subscribe(CollapseEvent.class, (Consumer) listener);
+        if (collapseListener == null) {
+            collapseListener = component.addCollapseListener(this::onItemCollapse);
+        }
+
+        return TreeDataGrid.super.addCollapseListener(listener);
+    }
+
+    protected void onItemCollapse(com.vaadin.event.CollapseEvent<E> e) {
+        CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
+                e.getCollapsedItem(), e.isUserOriginated());
+        publish(CollapseEvent.class, event);
     }
 }

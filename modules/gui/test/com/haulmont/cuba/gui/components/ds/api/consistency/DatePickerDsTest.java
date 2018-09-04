@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -25,6 +24,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +46,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
         // unbind
         datePicker.setDatasource(null, null);
 
-        HasValue.ValueChangeListener valueChangeListener = e -> {
+        Consumer<HasValue.ValueChangeEvent> valueChangeListener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         datePicker.addValueChangeListener(valueChangeListener);
@@ -95,7 +95,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
         assertEquals(updateTs, datePicker.getValue());
 
         boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
         datePicker.addValueChangeListener(listener);
 
         Date updateTs2 = new Date();
@@ -153,7 +153,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
         // listener before datasource
         Boolean[] valueWasChanged = {false};
-        HasValue.ValueChangeListener listener = e -> valueWasChanged[0] = true;
+        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
         datePicker.addValueChangeListener(listener);
 
         datePicker.setDatasource(userDs, "updateTs");

@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Field generator that creates component for editing dynamic attributes with collection type.
@@ -46,7 +47,7 @@ public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFi
     @Override
     public Component generateField(Datasource datasource, String propertyId) {
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+        ListEditor<Object> listEditor = componentsFactory.createComponent(ListEditor.class);
 
         MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), propertyId);
         if (metaPropertyPath == null) {
@@ -85,7 +86,7 @@ public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFi
             if (e.getState() == Datasource.State.VALID) {
                 Object value = datasource.getItem().getValue(propertyId);
                 if (value != null && value instanceof Collection) {
-                    listEditor.setValue(value);
+                    listEditor.setValue((List<Object>) value);
                 }
             }
         });

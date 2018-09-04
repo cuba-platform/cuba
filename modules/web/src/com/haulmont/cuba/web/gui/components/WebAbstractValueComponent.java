@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.*;
@@ -74,17 +73,6 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
     }
 
     @Override
-    public Subscription addValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().addListener(ValueChangeListener.class, listener);
-        return () -> getEventRouter().removeListener(ValueChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
-        getEventRouter().removeListener(ValueChangeListener.class, listener);
-    }
-
-    @Override
     public V getValue() {
         return internalValue;
     }
@@ -99,7 +87,7 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
 
         if (!fieldValueEquals(value, oldValue)) {
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
-            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+            publish(ValueChangeEvent.class, event);
         }
     }
 
@@ -134,7 +122,7 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
 
             if (!fieldValueEquals(value, oldValue)) {
                 ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
-                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+                publish(ValueChangeEvent.class, event);
             }
         }
     }

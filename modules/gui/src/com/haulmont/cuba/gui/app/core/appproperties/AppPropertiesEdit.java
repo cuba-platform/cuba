@@ -103,7 +103,7 @@ public class AppPropertiesEdit extends AbstractWindow {
                         });
                         return passwordField;
                     } else {
-                        TextField textField = componentsFactory.createComponent(TextField.class);
+                        TextField<String> textField = componentsFactory.createComponent(TextField.class);
                         textField.setValue(item.getCurrentValue());
 
                         try {
@@ -142,7 +142,7 @@ public class AppPropertiesEdit extends AbstractWindow {
     }
 
     private Component createLookupField(List<String> values, String currentValue) {
-        LookupField lookupField = componentsFactory.createComponent(LookupField.class);
+        LookupField<String> lookupField = componentsFactory.createComponent(LookupField.class);
         lookupField.setOptionsList(values);
         lookupField.setValue(currentValue);
         lookupField.addValueChangeListener(e -> {

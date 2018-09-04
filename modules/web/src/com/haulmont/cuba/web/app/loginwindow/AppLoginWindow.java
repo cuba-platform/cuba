@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWindow {
 
@@ -113,7 +114,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected boolean loginByRememberMe = false;
 
-    protected HasValue.ValueChangeListener loginChangeListener;
+    protected Consumer<HasValue.ValueChangeEvent> loginChangeListener;
 
     @Override
     public void init(Map<String, Object> params) {

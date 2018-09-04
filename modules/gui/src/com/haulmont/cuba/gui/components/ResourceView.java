@@ -16,7 +16,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * A class that implements this interface is intended for viewing different resources, e.g.
@@ -75,19 +79,19 @@ public interface ResourceView extends Component, Component.HasCaption {
     /**
      * Adds a listener that will be notified when a source is changed.
      */
-    void addSourceChangeListener(SourceChangeListener listener);
+    default Subscription addSourceChangeListener(Consumer<SourceChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SourceChangeEvent.class, listener);
+    }
 
     /**
      * Removes a listener that will be notified when a source is changed.
+     *
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeSourceChangeListener(SourceChangeListener listener);
-
-    /**
-     * Listener that will be notified when a source is changed.
-     */
-    @FunctionalInterface
-    interface SourceChangeListener {
-        void sourceChanged(SourceChangeEvent event);
+    @Deprecated
+    default void removeSourceChangeListener(Consumer<SourceChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(SourceChangeEvent.class, listener);
     }
 
     /**

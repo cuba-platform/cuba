@@ -66,9 +66,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         };
 
         component.addPopupVisibilityListener(event ->
-                getEventRouter().fireEvent(PopupVisibilityListener.class,
-                        PopupVisibilityListener::popupVisibilityChange,
-                        new PopupVisibilityEvent(this))
+                publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
         );
 
         this.vActionsContainer = createActionsContainer();
@@ -205,16 +203,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     @Override
     public Component getPopupContent() {
         return popupComponent;
-    }
-
-    @Override
-    public void addPopupVisibilityListener(PopupVisibilityListener listener) {
-        getEventRouter().addListener(PopupVisibilityListener.class, listener);
-    }
-
-    @Override
-    public void removePopupVisibilityListener(PopupVisibilityListener listener) {
-        getEventRouter().removeListener(PopupVisibilityListener.class, listener);
     }
 
     @Override

@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstraintMessage> {
     @Named("fieldGroup.operationType")
@@ -88,7 +89,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
         localesSelect.setValue(userSessionSource.getLocale());
     }
 
-    protected HasValue.ValueChangeListener createLocaleSelectValueChangeListener() {
+    protected Consumer<HasValue.ValueChangeEvent> createLocaleSelectValueChangeListener() {
         return e -> {
             captionValueChangeListener.suspend();
             messageValueChangeListener.suspend();
@@ -138,11 +139,11 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
                         .width(480));
     }
 
-    protected abstract class LocalizationValueChangeListener implements HasValue.ValueChangeListener {
+    protected abstract class LocalizationValueChangeListener implements Consumer<HasValue.ValueChangeEvent> {
         protected boolean active = true;
 
         @Override
-        public void valueChanged(HasValue.ValueChangeEvent e) {
+        public void accept(HasValue.ValueChangeEvent e) {
             if (active) {
                 Locale selectedLocale = localesSelect.getValue();
                 String localeCode = messages.getTools().localeToString(selectedLocale);

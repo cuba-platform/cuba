@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -35,6 +36,7 @@ import com.haulmont.cuba.web.widgets.CubaImage;
 import com.vaadin.event.MouseEvents;
 
 import java.io.InputStream;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class WebImage extends WebAbstractResourceView<CubaImage> implements Image {
@@ -168,23 +170,23 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
     }
 
     @Override
-    public void addClickListener(ClickListener listener) {
-        getEventRouter().addListener(ClickListener.class, listener);
-
+    public Subscription addClickListener(Consumer<ClickEvent> listener) {
         if (vClickListener == null) {
             vClickListener = e -> {
                 ClickEvent event = new ClickEvent(WebImage.this, WebWrapperUtils.toMouseEventDetails(e));
-                getEventRouter().fireEvent(ClickListener.class, ClickListener::onClick, event);
+                publish(ClickEvent.class, event);
             };
             component.addClickListener(vClickListener);
         }
+
+        return Image.super.addClickListener(listener);
     }
 
     @Override
-    public void removeClickListener(ClickListener listener) {
-        getEventRouter().removeListener(ClickListener.class, listener);
+    public void removeClickListener(Consumer<ClickEvent> listener) {
+        Image.super.removeClickListener(listener);
 
-        if (!getEventRouter().hasListeners(ClickListener.class)) {
+        if (!hasSubscriptions(ClickEvent.class)) {
             component.removeClickListener(vClickListener);
             vClickListener = null;
         }

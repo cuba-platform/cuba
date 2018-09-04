@@ -16,11 +16,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * TabSheet component interface.
@@ -138,20 +141,6 @@ public interface TabSheet extends ComponentContainer, Component.BelongToFrame, C
     void setTabsVisible(boolean tabsVisible);
 
     /**
-     * Add a listener that will be notified when a selected tab is changed.
-     *
-     * @deprecated Use {@link TabSheet#addSelectedTabChangeListener(SelectedTabChangeListener)} instead
-     */
-    @Deprecated
-    void addListener(TabChangeListener listener);
-
-    /**
-     * @deprecated Use {@link TabSheet#removeSelectedTabChangeListener(SelectedTabChangeListener)} instead
-     */
-    @Deprecated
-    void removeListener(TabChangeListener listener);
-
-    /**
      * Tab interface.
      */
     interface Tab extends Component.HasIcon, Component.HasCaption {
@@ -207,16 +196,6 @@ public interface TabSheet extends ComponentContainer, Component.BelongToFrame, C
     }
 
     /**
-     * Listener that will be notified when a selected tab is changed.
-     *
-     * @deprecated Use {@link SelectedTabChangeListener} instead
-     */
-    @Deprecated
-    interface TabChangeListener {
-        void tabChanged(Tab newTab);
-    }
-
-    /**
      * Handler that overrides the default behavior if {@link Tab#isClosable()} is true and a user clicks the close button.
      */
     interface TabCloseHandler {
@@ -226,19 +205,19 @@ public interface TabSheet extends ComponentContainer, Component.BelongToFrame, C
     /**
      * Add a listener that will be notified when a selected tab is changed.
      */
-    void addSelectedTabChangeListener(SelectedTabChangeListener listener);
+    default Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(SelectedTabChangeEvent.class, listener);
+    }
 
     /**
      * Remove previously added SelectedTabChangeListener.
+     *
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    void removeSelectedTabChangeListener(SelectedTabChangeListener listener);
-
-    /**
-     * Listener that will be notified when a selected tab is changed.
-     */
-    @FunctionalInterface
-    interface SelectedTabChangeListener {
-        void selectedTabChanged(SelectedTabChangeEvent event);
+    @Deprecated
+    default void removeSelectedTabChangeListener(Consumer<Accordion.SelectedTabChangeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(Accordion.SelectedTabChangeEvent.class, listener);
     }
 
     /**

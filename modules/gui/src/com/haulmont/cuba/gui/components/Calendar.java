@@ -16,9 +16,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
+import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
@@ -27,6 +29,7 @@ import java.time.Month;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
     String NAME = "calendar";
@@ -160,40 +163,112 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
      */
     void setMonthNames(Map<Month, String> monthNames);
 
-    void addDateClickListener(CalendarDateClickListener listener);
-    void removeDateClickListener(CalendarDateClickListener listener);
-
-    void addEventClickListener(CalendarEventClickListener listener);
-    void removeEventClickListener(CalendarEventClickListener listener);
-
-    void addEventResizeListener(CalendarEventResizeListener listener);
-    void removeEventResizeListener(CalendarEventResizeListener listener);
-
-    void addEventMoveListener(CalendarEventMoveListener listener);
-    void removeEventMoveListener(CalendarEventMoveListener listener);
-
-    void addWeekClickListener(CalendarWeekClickListener listener);
-    void removeWeekClickListener(CalendarWeekClickListener listener);
-
-    void addForwardClickListener(CalendarForwardClickListener listener);
-    void removeForwardClickListener(CalendarForwardClickListener listener);
-
-    void addBackwardClickListener(CalendarBackwardClickListener listener);
-    void removeBackwardClickListener(CalendarBackwardClickListener listener);
-
-    void addRangeSelectListener(CalendarRangeSelectListener listener);
-    void removeRangeSelectListener(CalendarRangeSelectListener listener);
-
-    enum TimeFormat {
-        FORMAT_12H, FORMAT_24H
+    default Subscription addDateClickListener(Consumer<CalendarDateClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarDateClickEvent.class, listener);
     }
 
     /**
-     * Event mouse drag listener.
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
      */
-    @FunctionalInterface
-    interface CalendarEventMoveListener {
-        void eventMove(CalendarEventMoveEvent event);
+    @Deprecated
+    default void removeDateClickListener(Consumer<CalendarDateClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarDateClickEvent.class, listener);
+    }
+
+    default Subscription addEventClickListener(Consumer<CalendarEventClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarEventClickEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeEventClickListener(Consumer<CalendarEventClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarEventClickEvent.class, listener);
+    }
+
+    default Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarEventResizeEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarEventResizeEvent.class, listener);
+    }
+
+    default Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarEventMoveEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarEventMoveEvent.class, listener);
+    }
+
+    default Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarWeekClickEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarWeekClickEvent.class, listener);
+    }
+
+    default Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarForwardClickEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarForwardClickEvent.class, listener);
+    }
+
+    default Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarBackwardClickEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarBackwardClickEvent.class, listener);
+    }
+
+    default Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(CalendarRangeSelectEvent.class, listener);
+    }
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    default void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(CalendarRangeSelectEvent.class, listener);
+    }
+
+    enum TimeFormat {
+        FORMAT_12H, FORMAT_24H
     }
 
     class CalendarEventMoveEvent {
@@ -220,14 +295,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    /**
-     * Backward icon click listener.
-     */
-    @FunctionalInterface
-    interface CalendarBackwardClickListener {
-        void backwardClick(CalendarBackwardClickEvent event);
-    }
-
     class CalendarBackwardClickEvent {
         protected Calendar calendar;
 
@@ -238,14 +305,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         public Calendar getCalendar() {
             return calendar;
         }
-    }
-
-    /**
-     * Date labels click listener of the component.
-     */
-    @FunctionalInterface
-    interface CalendarDateClickListener {
-        void dateClick(CalendarDateClickEvent event);
     }
 
     class CalendarDateClickEvent {
@@ -264,14 +323,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         public Calendar getCalendar() {
             return calendar;
         }
-    }
-
-    /**
-     * Event labels click listener of the component.
-     */
-    @FunctionalInterface
-    interface CalendarEventClickListener {
-        void eventClick(CalendarEventClickEvent event);
     }
 
     class CalendarEventClickEvent {
@@ -298,14 +349,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    /**
-     * Forward icon click listener.
-     */
-    @FunctionalInterface
-    interface CalendarForwardClickListener {
-        void forwardClick(CalendarForwardClickEvent event);
-    }
-
     class CalendarForwardClickEvent {
         protected Calendar calendar;
 
@@ -316,14 +359,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         public Calendar getCalendar() {
             return calendar;
         }
-    }
-
-    /**
-     * Event range change listener.
-     */
-    @FunctionalInterface
-    interface CalendarEventResizeListener {
-        void eventResize(CalendarEventResizeEvent event);
     }
 
     class CalendarEventResizeEvent {
@@ -363,14 +398,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    /**
-     * Week labels click listener.
-     */
-    @FunctionalInterface
-    interface CalendarWeekClickListener {
-        void weekClick(CalendarWeekClickEvent event);
-    }
-
     class CalendarWeekClickEvent {
         protected Calendar calendar;
         protected int week;
@@ -393,14 +420,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         public int getYear() {
             return year;
         }
-    }
-
-    /**
-     * Time range mouse select listener.
-     */
-    @FunctionalInterface
-    interface CalendarRangeSelectListener {
-        void rangeSelect(CalendarRangeSelectEvent event);
     }
 
     class CalendarRangeSelectEvent {

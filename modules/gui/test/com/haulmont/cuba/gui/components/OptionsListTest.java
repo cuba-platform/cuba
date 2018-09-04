@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -187,7 +188,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
         assertNull(component.getValue());
 
-        HasValue.ValueChangeListener listener1 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener1 = e -> {
             assertNull(e.getPrevValue());
             assertEquals("Two", e.getValue());
 
@@ -202,7 +203,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
         assertEquals(1, counter.get());
 
-        HasValue.ValueChangeListener listener2 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener2 = e -> {
             assertEquals("Two", e.getPrevValue());
             assertEquals("One", e.getValue());
 
@@ -216,7 +217,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
         assertEquals(2, counter.get());
 
         component.removeValueChangeListener(listener2);
-        HasValue.ValueChangeListener listener3 = e -> {
+        Consumer<HasValue.ValueChangeEvent> listener3 = e -> {
             assertEquals("One", e.getPrevValue());
             assertEquals("Three", e.getValue());
 

@@ -253,7 +253,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected Field createComponentForEntity() {
         Preconditions.checkNotNullArgument(entityName, getMessage("entityNameParamNotDefined"));
         MetaClass metaClass = metadata.getClassNN(entityName);
-        Field componentForEntity;
+        Field<?> componentForEntity;
         if (BooleanUtils.isNotTrue(useLookupField)) {
             PickerField pickerField = componentsFactory.createComponent(PickerField.class);
             pickerField.setMetaClass(metaClass);
@@ -306,7 +306,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     }
 
     protected LookupField createLookupField() {
-        LookupField lookupField = componentsFactory.createComponent(LookupField.class);
+        LookupField<?> lookupField = componentsFactory.createComponent(LookupField.class);
         lookupField.addValueChangeListener(e -> {
             Object selectedValue = e.getValue();
             if (selectedValue != null) {

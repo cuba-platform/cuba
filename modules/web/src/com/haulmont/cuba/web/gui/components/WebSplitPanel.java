@@ -38,8 +38,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     protected List<Component> ownComponents = new ArrayList<>(3);
 
-    protected SplitPanel.PositionUpdateListener positionListener;
-
     protected int orientation;
     protected boolean settingsEnabled = true;
 
@@ -105,14 +103,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     protected void fireSplitPositionChangeListener(AbstractSplitPanel.SplitPositionChangeEvent event) {
-        if (positionListener != null) {
-            positionListener.updatePosition(currentPosition, event.getSplitPosition());
-        }
-
         SplitPositionChangeEvent cubaEvent = new SplitPositionChangeEvent(this, currentPosition, event.getSplitPosition());
-        getEventRouter().fireEvent(SplitPositionChangeListener.class,
-                SplitPositionChangeListener::onSplitPositionChanged,
-                cubaEvent);
+        publish(SplitPositionChangeEvent.class, cubaEvent);
     }
 
     @Override
@@ -310,26 +302,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public boolean isLocked() {
         return component.isLocked();
-    }
-
-    @Override
-    public void setPositionUpdateListener(PositionUpdateListener positionListener) {
-        this.positionListener = positionListener;
-    }
-
-    @Override
-    public PositionUpdateListener getPositionUpdateListener() {
-        return positionListener;
-    }
-
-    @Override
-    public void addSplitPositionChangeListener(SplitPositionChangeListener listener) {
-        getEventRouter().addListener(SplitPositionChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeSplitPositionChangeListener(SplitPositionChangeListener listener) {
-        getEventRouter().removeListener(SplitPositionChangeListener.class, listener);
     }
 
     protected Unit convertLegacyUnit(int unit) {

@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.FileUploadField.FileUploadSucceedListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FilenameUtils;
@@ -34,6 +33,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class FileEditor extends AbstractEditor<FileDescriptor> {
 
@@ -109,10 +109,10 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         }
     }
 
-    protected class FileUploadListener implements FileUploadSucceedListener {
+    protected class FileUploadListener implements Consumer<FileUploadField.FileUploadSucceedEvent> {
 
         @Override
-        public void fileUploadSucceed(FileUploadField.FileUploadSucceedEvent e) {
+        public void accept(FileUploadField.FileUploadSucceedEvent e) {
             FileDescriptor fd = getItem();
 
             fd.setName(uploadField.getFileName());

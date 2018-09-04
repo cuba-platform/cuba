@@ -86,10 +86,10 @@ public class EntityLogBrowser extends AbstractWindow {
     protected ComponentsFactory factory;
 
     @Inject
-    protected LookupField entityNameField;
+    protected LookupField<String> entityNameField;
 
     @Inject
-    protected LookupField filterEntityNameField;
+    protected LookupField<String> filterEntityNameField;
 
     @Inject
     protected LookupField changeTypeField;
@@ -138,7 +138,7 @@ public class EntityLogBrowser extends AbstractWindow {
 
     protected TextField showRowField;
 
-    protected TreeMap<String, Object> entityMetaClassesMap;
+    protected TreeMap<String, String> entityMetaClassesMap;
 
     protected List<String> systemAttrsList;
 
@@ -277,8 +277,8 @@ public class EntityLogBrowser extends AbstractWindow {
         }, Table.PlainTextCell.class);
     }
 
-    public TreeMap<String, Object> getEntityMetaClasses() {
-        TreeMap<String, Object> options = new TreeMap<>();
+    public TreeMap<String, String> getEntityMetaClasses() {
+        TreeMap<String, String> options = new TreeMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);

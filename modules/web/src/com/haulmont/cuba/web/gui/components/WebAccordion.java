@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -25,7 +26,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleAccordionSelectedTabChangeListener;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
@@ -55,8 +56,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs;
-
-    protected Set<Accordion.SelectedTabChangeListener> listeners = new HashSet<>();
 
     public WebAccordion() {
         component = createComponent();
@@ -457,16 +456,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         component.setTabCaptionsAsHtml(tabCaptionsAsHtml);
     }
 
-    @Override
-    public void addListener(Accordion.TabChangeListener listener) {
-        initComponentTabChangeListener();
-
-        CompatibleAccordionSelectedTabChangeListener adapter = new CompatibleAccordionSelectedTabChangeListener(listener);
-
-        listeners.add(adapter);
-    }
-
-    private void initComponentTabChangeListener() {
+    protected void initComponentTabChangeListener() {
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
@@ -495,27 +485,16 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         }
     }
 
-    @Override
-    public void removeListener(Accordion.TabChangeListener listener) {
-        listeners.remove(new CompatibleAccordionSelectedTabChangeListener(listener));
-    }
-
     protected void fireTabChanged() {
-        for (SelectedTabChangeListener listener : listeners) {
-            listener.selectedTabChanged(new SelectedTabChangeEvent(this, getTab()));
-        }
+        SelectedTabChangeEvent event = new SelectedTabChangeEvent(this, getTab());
+        publish(SelectedTabChangeEvent.class, event);
     }
 
     @Override
-    public void addSelectedTabChangeListener(SelectedTabChangeListener listener) {
+    public Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
         initComponentTabChangeListener();
 
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeSelectedTabChangeListener(SelectedTabChangeListener listener) {
-        listeners.remove(listener);
+        return Accordion.super.addSelectedTabChangeListener(listener);
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {
