@@ -72,8 +72,7 @@ class DataManagerCommitTest extends Specification {
 
         when:
 
-        entityStates.makePatch(customer)
-        order1.customer = customer
+        order1.customer = dataManager.getReference(Customer, customer.id)
         Order order2 = dataManager.commit(order1)
 
         then:
@@ -94,10 +93,7 @@ class DataManagerCommitTest extends Specification {
 
         when:
 
-        Customer customer1 = new Customer(id: customer.id)
-        entityStates.makePatch(customer1)
-
-        dataManager.remove(customer1)
+        dataManager.remove(dataManager.getReference(Customer, customer.id))
 
         Customer customer2 = dataManager.load(Customer).id(customer.id).softDeletion(false).one()
 
