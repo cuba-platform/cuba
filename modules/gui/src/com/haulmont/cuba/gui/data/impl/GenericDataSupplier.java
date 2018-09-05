@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
@@ -87,6 +88,16 @@ public class GenericDataSupplier implements DataSupplier {
     @Override
     public DataManager secure() {
         return getDataManager();
+    }
+
+    @Override
+    public <T> T create(Class<T> entityClass) {
+        return getDataManager().create(entityClass);
+    }
+
+    @Override
+    public <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id) {
+        return getDataManager().getReference(entityClass, id);
     }
 
     @Override
