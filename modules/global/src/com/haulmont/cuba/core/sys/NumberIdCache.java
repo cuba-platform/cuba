@@ -97,14 +97,18 @@ public class NumberIdCache {
      * @return next id
      */
     public Long createLongId(String entityName, NumberIdSequence sequence) {
-        MetaClass metaClass = metadata.getClassNN(entityName);
-        Map attributes = (Map) metaClass.getAnnotations().get(IdSequence.class.getName());
-
+        MetaClass metaClass = metadata.getClass(entityName);
         final boolean cached;
         final String sequenceName;
-        if (attributes != null) {
-            sequenceName = (String) attributes.get("name");
-            cached = Boolean.TRUE.equals(attributes.get("cached"));
+        if (metaClass != null) {
+            Map attributes = (Map) metaClass.getAnnotations().get(IdSequence.class.getName());
+            if (attributes != null) {
+                sequenceName = (String) attributes.get("name");
+                cached = Boolean.TRUE.equals(attributes.get("cached"));
+            } else {
+                cached = true;
+                sequenceName = null;
+            }
         } else {
             cached = true;
             sequenceName = null;
