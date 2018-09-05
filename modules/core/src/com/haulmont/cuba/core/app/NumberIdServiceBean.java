@@ -28,12 +28,12 @@ public class NumberIdServiceBean implements NumberIdService {
     protected NumberIdWorker worker;
 
     @Override
-    public Long createLongId(String entityName) {
-        return worker.createLongId(entityName);
+    public Long createLongId(String entityName, String sequenceName) {
+        return worker.createLongId(entityName, sequenceName);
     }
 
     @Override
-    public Long createLongId(String entityName, long startValue) {
-        return worker.createLongId(entityName, startValue);
+    public Long createCachedLongId(String entityName, String sequenceName) {
+        return worker.createCachedLongId(entityName, sequenceName);
     }
 }

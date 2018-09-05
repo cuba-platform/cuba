@@ -23,6 +23,8 @@ import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport
 import com.haulmont.cuba.testmodel.number_id.NumberIdJoinedChild
 import com.haulmont.cuba.testmodel.number_id.NumberIdJoinedRoot
+import com.haulmont.cuba.testmodel.number_id.NumberIdSeqNameFirst
+import com.haulmont.cuba.testmodel.number_id.NumberIdSeqNameSecond
 import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableChild
 import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableGrandChild
 import com.haulmont.cuba.testmodel.number_id.NumberIdSingleTableRoot
@@ -53,7 +55,7 @@ class NumberIdGenerationTest extends Specification {
 
         then:
 
-        sequenceExists(metadata.getClassNN(NumberIdJoinedRoot).getName())
+        sequenceExistsByEntityName(metadata.getClassNN(NumberIdJoinedRoot).getName())
         root2.id == root1.id + 1
 
         when: "creating child entities"
@@ -63,7 +65,7 @@ class NumberIdGenerationTest extends Specification {
 
         then: "the same sequence as for root is used"
 
-        !sequenceExists(metadata.getClassNN(NumberIdJoinedChild).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdJoinedChild).getName())
         child1.id == root2.id + 1
         child2.id == child1.id + 1
 
@@ -78,7 +80,7 @@ class NumberIdGenerationTest extends Specification {
 
         then:
 
-        sequenceExists(metadata.getClassNN(NumberIdSingleTableRoot).getName())
+        sequenceExistsByEntityName(metadata.getClassNN(NumberIdSingleTableRoot).getName())
         root2.id == root1.id + 1
 
         when: "creating child entities"
@@ -88,7 +90,7 @@ class NumberIdGenerationTest extends Specification {
 
         then: "the same sequence as for root is used"
 
-        !sequenceExists(metadata.getClassNN(NumberIdSingleTableChild).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSingleTableChild).getName())
         child1.id == root2.id + 1
         child2.id == child1.id + 1
 
@@ -99,14 +101,57 @@ class NumberIdGenerationTest extends Specification {
 
         then: "the same sequence as for root is used"
 
-        !sequenceExists(metadata.getClassNN(NumberIdSingleTableChild).getName())
-        !sequenceExists(metadata.getClassNN(NumberIdSingleTableGrandChild).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSingleTableChild).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSingleTableGrandChild).getName())
         grandChild1.id == child2.id + 1
         grandChild2.id == grandChild1.id + 1
     }
 
-    private boolean sequenceExists(String entityName) {
-        def sequenceExistsSql = sequenceSupport.sequenceExistsSql(getSequenceName(entityName))
+    def "sequence name annotation"() {
+
+        when:
+
+        def first = metadata.create(NumberIdSeqNameFirst)
+        def second = metadata.create(NumberIdSeqNameSecond)
+
+        then:
+
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameFirst).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameSecond).getName())
+        sequenceExistsByName('seq_number_id_name')
+        first.id + 1  == second.id
+        getCurrentSequenceValue('seq_number_id_name') == second.id
+
+        when:
+
+        first = metadata.create(NumberIdSeqNameFirst)
+
+        then:
+
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameFirst).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameSecond).getName())
+        sequenceExistsByName('seq_number_id_name')
+        getCurrentSequenceValue('seq_number_id_name') == first.id
+
+        when:
+
+        second = metadata.create(NumberIdSeqNameSecond)
+
+        then:
+
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameFirst).getName())
+        !sequenceExistsByEntityName(metadata.getClassNN(NumberIdSeqNameSecond).getName())
+        sequenceExistsByName('seq_number_id_name')
+        getCurrentSequenceValue('seq_number_id_name') == second.id
+        first.id + 1  == second.id
+    }
+
+    private boolean sequenceExistsByEntityName(String entityName) {
+        return sequenceExistsByName(getSequenceName(entityName))
+    }
+
+    private boolean sequenceExistsByName(String sequenceName) {
+        def sequenceExistsSql = sequenceSupport.sequenceExistsSql(sequenceName)
         def runner = new QueryRunner(cont.persistence().getDataSource())
         List<Object[]> seqRows = runner.query(sequenceExistsSql, new ListArrayHandler())
         return !seqRows.isEmpty()
@@ -114,5 +159,12 @@ class NumberIdGenerationTest extends Specification {
 
     protected String getSequenceName(String entityName) {
         return "seq_id_" + entityName.replace('$', '_');
+    }
+
+    private long getCurrentSequenceValue(String sequenceName) {
+        def sql = "select NEXT_VALUE from INFORMATION_SCHEMA.SYSTEM_SEQUENCES where SEQUENCE_NAME = '" + sequenceName.toUpperCase() + "'"
+        def runner = new QueryRunner(cont.persistence().getDataSource())
+        List<Object[]> seqRows = runner.query(sql, new ListArrayHandler())
+        return (seqRows[0][0] as long) - 1
     }
 }
