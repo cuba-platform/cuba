@@ -151,7 +151,7 @@ public class EditorWindowDelegate extends WindowDelegate {
             }
             item = EntityCopyUtils.copyCompositions(item);
             handlePreviouslyDeletedCompositionItems(item, parentDs);
-        } else if (!PersistenceHelper.isNew(item)) {
+        } else if (!PersistenceHelper.isNew(item) && !entityStates.isLoadedWithView(item, ds.getView())) {
             item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
         }
 
