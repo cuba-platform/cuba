@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
