@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestApiConfig;
 import com.haulmont.restapi.config.RestServicesConfiguration;
+import com.haulmont.restapi.sys.CachingHttpServletRequestWrapper;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and
- * if {@link RestApiConfig#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the
- * {@link SecurityContext} and the request will be authenticated. This filter must be invoked after the
- * {@link org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter}
+ * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and if
+ * {@link RestApiConfig#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the {@link
+ * SecurityContext} and the request will be authenticated. This filter must be invoked after the {@link
+ * org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter}
  */
 public class CubaAnonymousAuthenticationFilter implements Filter {
 
@@ -69,57 +70,64 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (restApiConfig.getRestAnonymousEnabled() || isAnonymousServiceMethodInvoked(request)) {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserSession anonymousSession;
-                try {
-                    anonymousSession = trustedClientService.getAnonymousSession(restApiConfig.getTrustedClientPassword());
-                } catch (LoginException e) {
-                    throw new RuntimeException("Unable to obtain anonymous session for REST", e);
-                }
-
-                CubaAnonymousAuthenticationToken anonymousAuthenticationToken =
-                        new CubaAnonymousAuthenticationToken("anonymous", AuthorityUtils.createAuthorityList("ROLE_CUBA_ANONYMOUS"));
-                SecurityContextHolder.getContext().setAuthentication(anonymousAuthenticationToken);
-                AppContext.setSecurityContext(new SecurityContext(anonymousSession));
+        ServletRequest nextRequest = request;
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (restApiConfig.getRestAnonymousEnabled()) {
+                populateSecurityContextWithAnonymousSession();
             } else {
-                log.debug("SecurityContextHolder not populated with cuba anonymous token, as it already contained: '{}'",
-                        SecurityContextHolder.getContext().getAuthentication());
+                //anonymous service method may be invoked
+                String pathInfo = ((HttpServletRequest) request).getPathInfo();
+                if (pathInfo != null && pathInfo.startsWith("/v2/services/")) {
+                    String[] parts = pathInfo.split("/");
+                    if (parts.length == 5) {
+                        String serviceName = parts[3];
+                        String methodName = parts[4];
+                        List<String> methodParamNames;
+                        if ("GET".equals(((HttpServletRequest) request).getMethod())) {
+                            methodParamNames = Collections.list(request.getParameterNames());
+                        } else if ("POST".equals(((HttpServletRequest) request).getMethod())) {
+                            //wrap the request using content caching request wrapper because we need to access the
+                            //request body
+                            nextRequest = new CachingHttpServletRequestWrapper((HttpServletRequest) request);
+                            try {
+                                String json = IOUtils.toString(nextRequest.getReader());
+                                Map<String, String> paramsMap = restParseUtils.parseParamsJson(json);
+                                methodParamNames = new ArrayList<>(paramsMap.keySet());
+                            } catch (IOException e) {
+                                log.error("Error on reading request body", e);
+                                throw e;
+                            }
+                        } else {
+                            chain.doFilter(nextRequest, response);
+                            return;
+                        }
+                        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration
+                                .getRestMethodInfo(serviceName, methodName, methodParamNames);
+                        if (restMethodInfo != null && restMethodInfo.isAnonymousAllowed()) {
+                            populateSecurityContextWithAnonymousSession();
+                        }
+                    }
+                }
             }
         } else {
-            log.trace("Anonymous access for CUBA REST API is disabled");
+            log.debug("SecurityContextHolder not populated with cuba anonymous token, as it already contained: '{}'",
+                    SecurityContextHolder.getContext().getAuthentication());
         }
-        chain.doFilter(request, response);
+        chain.doFilter(nextRequest, response);
     }
 
-    protected boolean isAnonymousServiceMethodInvoked(ServletRequest request) {
-        if (request instanceof HttpServletRequest) {
-            String pathInfo = ((HttpServletRequest) request).getPathInfo();
-            if (pathInfo != null && pathInfo.startsWith("/v2/services/")) {
-                String[] parts = pathInfo.split("/");
-                if (parts.length != 5) return false;
-                String serviceName = parts[3];
-                String methodName = parts[4];
-                List<String> methodParamNames;
-                if ("GET".equals(((HttpServletRequest) request).getMethod())) {
-                    methodParamNames = Collections.list(request.getParameterNames());
-                } else if ("POST".equals(((HttpServletRequest) request).getMethod())) {
-                    try {
-                        String json = IOUtils.toString(request.getReader());
-                        Map<String, String> paramsMap = restParseUtils.parseParamsJson(json);
-                        methodParamNames = new ArrayList<>(paramsMap.keySet());
-                    } catch (IOException e) {
-                        log.error("Error on reading request body", e);
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-                RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, methodParamNames);
-                return restMethodInfo != null && restMethodInfo.isAnonymousAllowed();
-            }
+    protected void populateSecurityContextWithAnonymousSession() {
+        UserSession anonymousSession;
+        try {
+            anonymousSession = trustedClientService.getAnonymousSession(restApiConfig.getTrustedClientPassword());
+        } catch (LoginException e) {
+            throw new RuntimeException("Unable to obtain anonymous session for REST", e);
         }
-        return false;
+
+        CubaAnonymousAuthenticationToken anonymousAuthenticationToken =
+                new CubaAnonymousAuthenticationToken("anonymous", AuthorityUtils.createAuthorityList("ROLE_CUBA_ANONYMOUS"));
+        SecurityContextHolder.getContext().setAuthentication(anonymousAuthenticationToken);
+        AppContext.setSecurityContext(new SecurityContext(anonymousSession));
     }
 
     @Override
