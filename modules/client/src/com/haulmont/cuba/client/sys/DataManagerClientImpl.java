@@ -19,6 +19,7 @@ package com.haulmont.cuba.client.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
@@ -40,6 +41,9 @@ public class DataManagerClientImpl implements DataManager {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected EntityStates entityStates;
 
     @Nullable
     @Override
@@ -145,5 +149,18 @@ public class DataManagerClientImpl implements DataManager {
     @Override
     public DataManager secure() {
         return this;
+    }
+
+    @Override
+    public <T> T create(Class<T> entityClass) {
+        return metadata.create(entityClass);
+    }
+
+    @Override
+    public <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id) {
+        T entity = metadata.create(entityClass);
+        entity.setId(id);
+        entityStates.makePatch(entity);
+        return entity;
     }
 }
