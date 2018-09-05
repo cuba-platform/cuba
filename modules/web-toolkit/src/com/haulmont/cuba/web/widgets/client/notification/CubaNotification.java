@@ -20,12 +20,15 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VNotification;
 
 import static com.haulmont.cuba.web.widgets.client.appui.CubaUIConnector.CUBA_NOTIFICATION_MODALITY_CURTAIN;
 
 public class CubaNotification extends VNotification {
     public static final String TRAY_STYLE = "tray";
+
+    public static final int MARGIN_SIZE = 10;
 
     @Override
     public boolean onEventPreview(Event event) {
@@ -48,5 +51,54 @@ public class CubaNotification extends VNotification {
         }
 
         return super.onEventPreview(event);
+    }
+
+    @Override
+    protected void beforeAddNotificationToCollection() {
+        for (int i = NOTIFICATIONS.size() - 1; i >= 0; i--) {
+            final Element el = NOTIFICATIONS.get(i).getElement();
+            if (el.hasClassName("v-position-bottom") && el.hasClassName(TRAY_STYLE)) {
+                int notificationPosition = 0;
+                try {
+                    notificationPosition = Integer.valueOf(el.getStyle()
+                            .getBottom().replace("px", ""))
+                            + WidgetUtil.getRequiredHeight(getElement());
+                } catch (NumberFormatException nex) {
+                    notificationPosition += WidgetUtil
+                            .getRequiredHeight(getElement());
+                }
+
+                notificationPosition += (i == NOTIFICATIONS.size() - 1) ? (2 * MARGIN_SIZE) : MARGIN_SIZE;
+                el.getStyle().setPropertyPx("bottom", notificationPosition);
+            }
+        }
+    }
+
+    @Override
+    protected void afterRemoveNotificationFromCollection(VNotification removedNotification, int removedIdx) {
+        if (removedIdx == 0) {
+            return;
+        }
+
+        Element removedElement = removedNotification.getElement();
+        int removedElementHeight = WidgetUtil.getRequiredHeight(removedElement);
+        for (int i = removedIdx - 1; i >= 0; i--) {
+            Element el = NOTIFICATIONS.get(i).getElement();
+            if (el.hasClassName("v-position-bottom") && el.hasClassName(TRAY_STYLE)) {
+                int notificationPosition = 0;
+                if (i == NOTIFICATIONS.size() - 1) {
+                    notificationPosition = MARGIN_SIZE;
+                } else {
+                    try {
+                        notificationPosition = Integer.valueOf(
+                                el.getStyle().getBottom().replace("px", "")) - removedElementHeight;
+                        notificationPosition -= MARGIN_SIZE;
+                    } catch (NumberFormatException nex) {
+                        //
+                    }
+                }
+                el.getStyle().setPropertyPx("bottom", notificationPosition);
+            }
+        }
     }
 }
