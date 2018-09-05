@@ -42,7 +42,6 @@ import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.vaadin.server.AbstractClientConnector;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.servlet.ServletContext;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -118,8 +116,6 @@ public abstract class App {
     protected LinkHandler linkHandler;
 
     protected BackgroundTaskManager backgroundTaskManager = new BackgroundTaskManager();
-
-    protected String webResourceTimestamp = "DEBUG";
 
     protected ThemeConstants themeConstants;
 
@@ -237,13 +233,6 @@ public abstract class App {
         cookies = new AppCookies();
 
         themeConstants = loadTheme();
-
-        VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
-        ServletContext sc = vaadinServlet.getServletContext();
-        String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
-        if (StringUtils.isNotEmpty(resourcesTimestamp)) {
-            this.webResourceTimestamp = resourcesTimestamp;
-        }
 
         log.debug("Initializing application");
 
@@ -457,10 +446,6 @@ public abstract class App {
 
     public void setUserAppTheme(String themeName) {
         addCookie(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName(), themeName);
-    }
-
-    public String getWebResourceTimestamp() {
-        return webResourceTimestamp;
     }
 
     public void addBackgroundTask(Future task) {

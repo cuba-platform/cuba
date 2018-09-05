@@ -17,8 +17,8 @@
 package com.haulmont.cuba.web.gui.icons;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ public class ThemeIconProvider implements IconProvider {
         Preconditions.checkNotEmptyString(iconPath, "Icon path should not be empty");
 
         String icon = iconPath.substring(THEME_PREFIX.length());
-        return new VersionedThemeResource(icon);
+        return new ThemeResource(icon);
     }
 
     @Override

@@ -23,11 +23,7 @@ import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Resource;
-import com.vaadin.server.StreamResource;
+import com.vaadin.server.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +72,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                 }
             } else if (src.startsWith("theme://")) {
                 String themeResource = src.substring("theme://".length());
-                resource = new VersionedThemeResource(themeResource);
+                resource = new ThemeResource(themeResource);
                 component.setSource(resource);
             } else {
                 File file = new File(src);

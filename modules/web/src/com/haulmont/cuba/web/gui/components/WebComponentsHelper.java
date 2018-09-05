@@ -26,13 +26,13 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.*;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -88,7 +88,7 @@ public class WebComponentsHelper {
                 }
             }
 
-            return new VersionedThemeResource(resourceId);
+            return new ThemeResource(resourceId);
         } else if (resURL.contains("icon:")) {
             try {
                 return getFontIconResource(resURL);
@@ -97,7 +97,7 @@ public class WebComponentsHelper {
             }
             return null;
         } else {
-            return new VersionedThemeResource(resURL);
+            return new ThemeResource(resURL);
         }
     }
 
@@ -398,7 +398,7 @@ public class WebComponentsHelper {
                 LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon {}", fontIcon);
             }
         }
-        return new VersionedThemeResource(iconName);
+        return new ThemeResource(iconName);
     }
 
     /**

@@ -61,8 +61,6 @@ public class CubaVaadinServletService extends VaadinServletService
     protected WebConfig webConfig;
     protected WebAuthConfig webAuthConfig;
 
-    protected final String webResourceTimestamp;
-
     protected boolean testMode;
     protected boolean performanceTestMode;
 
@@ -82,14 +80,6 @@ public class CubaVaadinServletService extends VaadinServletService
         performanceTestMode = configuration.getConfig(GlobalConfig.class).getPerformanceTestMode();
 
         this.messages = AppBeans.get(Messages.NAME);
-
-        ServletContext sc = servlet.getServletContext();
-        String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
-        if (StringUtils.isNotEmpty(resourcesTimestamp)) {
-            this.webResourceTimestamp = resourcesTimestamp;
-        } else {
-            this.webResourceTimestamp = "DEBUG";
-        }
 
         addSessionInitListener(event -> {
             WrappedSession wrappedSession = event.getSession().getSession();
@@ -160,13 +150,6 @@ public class CubaVaadinServletService extends VaadinServletService
     public String getConfiguredTheme(VaadinRequest request) {
         return webConfig.getAppWindowTheme();
     }
-
-/*  vaadin8 implement
-    @Override
-    public String getApplicationVersion() {
-        return webResourceTimestamp;
-    }
-*/
 
     @Override
     protected List<RequestHandler> createRequestHandlers() throws ServiceException {
