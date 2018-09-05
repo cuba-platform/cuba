@@ -44,6 +44,9 @@ public class DataManagerBean implements DataManager {
     protected MetadataTools metadataTools;
 
     @Inject
+    protected EntityStates entityStates;
+
+    @Inject
     protected ServerConfig serverConfig;
 
     @Inject
@@ -268,6 +271,19 @@ public class DataManagerBean implements DataManager {
     @Override
     public <T> FluentValueLoader<T> loadValue(String queryString, Class<T> valueClass) {
         return new FluentValueLoader<>(queryString, valueClass, this);
+    }
+
+    @Override
+    public <T> T create(Class<T> entityClass) {
+        return metadata.create(entityClass);
+    }
+
+    @Override
+    public <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id) {
+        T entity = metadata.create(entityClass);
+        entity.setId(id);
+        entityStates.makePatch(entity);
+        return entity;
     }
 
     protected boolean writeCrossDataStoreReferences(Entity entity, Collection<Entity> allEntities) {
