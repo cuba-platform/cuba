@@ -80,7 +80,7 @@
                         <upload id="importUpload"
                                 uploadButtonIcon="icons/upload.png"
                                 uploadButtonCaption=""
-                                uploadButtonDescription="mainMsg://actions.Import"/>
+                                uploadButtonDescription="msg://action.import.caption"/>
                     </buttonsPanel>
                     <actions>
                         <action id="create"/>
