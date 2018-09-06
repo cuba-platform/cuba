@@ -435,4 +435,28 @@ public interface WebConfig extends Config {
             "at com[\\.]vaadin[\\.]server[\\.]ServerRpcManager")
     @Factory(factory = StringListTypeFactory.class)
     List<String> getLoweredAttentionPatterns();
+
+    /**
+     * Enables to configure whether web resources should be cached or not.
+     * <p>
+     * Zero cache time disables caching at all.
+     *
+     * @return web resources cache time
+     */
+    @Property("cuba.web.resourcesCacheTime")
+    @Source(type = SourceType.APP)
+    @DefaultLong(60 * 60)
+    long getWebResourcesCacheTime();
+
+    /**
+     * Enables to configure whether WebJar resources should be cached or not.
+     * <p>
+     * Zero cache time disables caching at all.
+     *
+     * @return WebJar resources cache time
+     */
+    @Property("cuba.web.webJarResourcesCacheTime")
+    @Source(type = SourceType.APP)
+    @DefaultLong(60 * 60 * 24 * 365)
+    long getWebJarResourcesCacheTime();
 }

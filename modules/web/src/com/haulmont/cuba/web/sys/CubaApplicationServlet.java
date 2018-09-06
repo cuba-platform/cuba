@@ -150,6 +150,11 @@ public class CubaApplicationServlet extends VaadinServlet {
             }
         }
 
+        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_RESOURCE_CACHE_TIME))) {
+            long resourceCacheTime = webConfig.getWebResourcesCacheTime();
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_RESOURCE_CACHE_TIME, String.valueOf(resourceCacheTime));
+        }
+
         if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER))) {
             initParameters.setProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER, CubaUIProvider.class.getCanonicalName());
         }
