@@ -16,18 +16,37 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
-import com.haulmont.cuba.gui.components.DialogWindow;
-import com.haulmont.cuba.gui.components.SizeUnit;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.StandardCloseAction;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaWindow;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Component;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
-public class WebDialogWindow extends WebWindow implements DialogWindow {
+import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toSizeUnit;
+
+public class WebDialogWindow extends WebWindow implements DialogWindow, InitializingBean {
     protected CubaWindow dialogWindow;
 
     protected BeanLocator beanLocator;
@@ -37,6 +56,80 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
         this.dialogWindow.setStyleName("c-app-dialog-window");
 
         this.dialogWindow.setContent(component);
+
+        this.dialogWindow.center();
+        this.dialogWindow.setModal(true);
+
+        this.dialogWindow.addPreCloseListener(this::onCloseButtonClick);
+
+        // todo default size
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        setupDialogShortcuts();
+        setupContextMenu();
+    }
+
+    protected void setupContextMenu() {
+        dialogWindow.addContextActionHandler(new DialogWindowActionHandler());
+    }
+
+    protected void setupDialogShortcuts() {
+        ClientConfig clientConfig = getClientConfig();
+
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
+
+        ShortcutListenerDelegate exitAction = new ShortcutListenerDelegate(
+                "closeShortcutAction",
+                closeCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(closeCombination.getModifiers())
+        );
+
+        exitAction.withHandler(this::onCloseShortcutTriggered);
+
+        dialogWindow.addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return new ShortcutAction[]{exitAction};
+            }
+
+            @Override
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+                if (action == exitAction) {
+                    exitAction.handleAction(sender, target);
+                }
+            }
+        });
+    }
+
+    protected ClientConfig getClientConfig() {
+        Configuration configuration = beanLocator.get(Configuration.NAME);
+        return configuration.getConfig(ClientConfig.class);
+    }
+
+    protected void onCloseButtonClick(CubaWindow.PreCloseEvent preCloseEvent) {
+        preCloseEvent.setPreventClose(true);
+
+        BeforeCloseWithCloseButtonEvent event = new BeforeCloseWithCloseButtonEvent(this);
+        fireBeforeCloseWithCloseButton(event);
+
+        if (!event.isClosePrevented()) {
+            // user has clicked on X
+            getFrameOwner().close(new StandardCloseAction(Window.CLOSE_ACTION_ID));
+        }
+    }
+
+    protected void onCloseShortcutTriggered(Object sender, Object target) {
+        if (this.isCloseable()) {
+            BeforeCloseWithShortcutEvent event = new BeforeCloseWithShortcutEvent(this);
+            fireBeforeCloseWithShortcut(event);
+
+            if (!event.isClosePrevented()) {
+                getFrameOwner().close(new StandardCloseAction(Window.CLOSE_ACTION_ID));
+            }
+        }
     }
 
     @Inject
@@ -95,7 +188,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
 
     @Override
     public SizeUnit getDialogWidthUnit() {
-        return WebWrapperUtils.toSizeUnit(dialogWindow.getWidthUnits());
+        return toSizeUnit(dialogWindow.getWidthUnits());
     }
 
     @Override
@@ -110,7 +203,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
 
     @Override
     public SizeUnit getDialogHeightUnit() {
-        return WebWrapperUtils.toSizeUnit(dialogWindow.getHeightUnits());
+        return toSizeUnit(dialogWindow.getHeightUnits());
     }
 
     @Override
@@ -314,6 +407,69 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
         @Override
         public Boolean getMaximized() {
             return getWindowMode() == WindowMode.MAXIMIZED;
+        }
+    }
+
+    protected class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
+
+        protected com.vaadin.event.Action saveSettingsAction;
+        protected com.vaadin.event.Action restoreToDefaultsAction;
+
+        protected com.vaadin.event.Action analyzeAction;
+
+        protected boolean initialized = false;
+
+        public DialogWindowActionHandler() {
+        }
+
+        @Override
+        public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            if (!initialized) {
+                Messages messages = beanLocator.get(Messages.NAME);
+
+                saveSettingsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
+                restoreToDefaultsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
+                analyzeAction = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+
+                initialized = true;
+            }
+
+            List<Action> actions = new ArrayList<>(3);
+
+            ClientConfig clientConfig = getClientConfig();
+            if (clientConfig.getManualScreenSettingsSaving()) {
+                actions.add(saveSettingsAction);
+                actions.add(restoreToDefaultsAction);
+            }
+            if (clientConfig.getLayoutAnalyzerEnabled()) {
+                actions.add(analyzeAction);
+            }
+
+            return actions.toArray(new com.vaadin.event.Action[0]);
+        }
+
+        @Override
+        public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+            if (initialized) {
+                if (saveSettingsAction == action) {
+                    Screen screen = getFrameOwner();
+                    UiControllerUtils.saveSettings(screen);
+                } else if (restoreToDefaultsAction == action) {
+                    Screen screen = getFrameOwner();
+                    UiControllerUtils.deleteSettings(screen);
+                } else if (analyzeAction == action) {
+                    LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                    List<LayoutTip> tipsList = analyzer.analyze(WebDialogWindow.this);
+
+                    if (tipsList.isEmpty()) {
+                        getWindowManager().showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
+                    } else {
+                        WindowConfig windowConfig = beanLocator.get(WindowConfig.NAME);
+                        WindowInfo windowInfo = windowConfig.getWindowInfo("layoutAnalyzer");
+                        getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                    }
+                }
+            }
         }
     }
 }

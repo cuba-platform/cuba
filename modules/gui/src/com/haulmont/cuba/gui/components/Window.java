@@ -261,8 +261,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     boolean validateAll();
 
     /**
+     * @deprecated Use {@link com.haulmont.cuba.gui.Screens} and {@link com.haulmont.cuba.gui.Notifications} instead.
+     *
      * @return window manager instance
      */
+    @Deprecated
     WindowManager getWindowManager();
 
     /**
