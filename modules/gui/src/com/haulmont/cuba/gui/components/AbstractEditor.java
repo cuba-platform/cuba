@@ -401,6 +401,21 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     /**
+     * JavaDoc
+     *
+     * @return
+     */
+    public OperationResult closeWithCommit() {
+        if (validateAll()) {
+            boolean committed = commitInternal(true);
+            if (committed) {
+                return close(WINDOW_COMMIT_AND_CLOSE_ACTION);
+            }
+        }
+        return OperationResult.fail();
+    }
+
+    /**
      * Validate, commit and close the window if commit was successful.
      * Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
