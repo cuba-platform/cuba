@@ -18,14 +18,9 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
-import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
@@ -35,7 +30,6 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
@@ -43,8 +37,9 @@ import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -98,7 +93,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     protected DialogOptions dialogOptions; // lazily initialized
 
-    protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
     protected boolean closeable = true;
 
     // todo remove
@@ -159,21 +153,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     protected com.vaadin.ui.ComponentContainer getContainer() {
         return component;
-    }
-
-    @Nullable
-    protected com.vaadin.ui.Window asDialogWindow() {
-        if (component.isAttached()) {
-            com.vaadin.ui.Component parent = component;
-            while (parent != null) {
-                if (parent instanceof com.vaadin.ui.Window) {
-                    return (com.vaadin.ui.Window) parent;
-                }
-
-                parent = parent.getParent();
-            }
-        }
-        return null;
     }
 
     @Override
@@ -446,32 +425,43 @@ public abstract class WebWindow implements Window, Component.Wrapper,
         this.context = (WindowContext) ctx;
     }
 
-    protected com.vaadin.ui.Component.Focusable getComponentToFocus(com.vaadin.ui.ComponentContainer container) {
-        for (com.vaadin.ui.Component child : container) {
-            if (child instanceof Panel) {
-                child = ((Panel) child).getContent();
-            }
-            if (child instanceof TabSheet) {
+    protected Component.Focusable getComponentToFocus(Iterator<Component> componentsIterator) {
+        while (componentsIterator.hasNext()) {
+            Component child = componentsIterator.next();
+
+            if (child instanceof com.haulmont.cuba.gui.components.TabSheet
+                    || child instanceof Accordion) {
                 // #PL-3176
                 // we don't know about selected tab after request
                 // may be focused component lays on not selected tab
                 // it may break component tree
                 continue;
             }
-            if (child instanceof com.vaadin.ui.ComponentContainer) {
-                com.vaadin.ui.Component.Focusable result = getComponentToFocus((com.vaadin.ui.ComponentContainer) child);
+
+            if (child instanceof Component.Focusable
+                    && !(child instanceof Button)) {
+
+                if (!(child instanceof Editable) || ((Editable) child).isEditable()) {
+
+                    com.vaadin.ui.Component vComponent = child.unwrapComposition(com.vaadin.ui.Component.class);
+                    if (WebComponentsHelper.isComponentVisible(vComponent)
+                            && WebComponentsHelper.isComponentEnabled(vComponent)) {
+                        return (Component.Focusable) child;
+                    }
+                }
+            }
+
+            if (child instanceof ComponentContainer) {
+                Collection<Component> components = ((ComponentContainer) child).getComponents();
+                Component.Focusable result = getComponentToFocus(components.iterator());
                 if (result != null) {
                     return result;
                 }
-            } else {
-                if (child instanceof com.vaadin.ui.Component.Focusable
-//                        vaadin8 implement
-//                        && !child.isReadOnly()
-                        && WebComponentsHelper.isComponentVisible(child)
-                        && WebComponentsHelper.isComponentEnabled(child)
-                        && !(child instanceof Button)) {
-
-                    return (com.vaadin.ui.Component.Focusable) child;
+            } else if (child instanceof HasInnerComponents) {
+                Collection<Component> components = ((HasInnerComponents) child).getInnerComponents();
+                Component.Focusable result = getComponentToFocus(components.iterator());
+                if (result != null) {
+                    return result;
                 }
             }
         }
@@ -491,6 +481,20 @@ public abstract class WebWindow implements Window, Component.Wrapper,
             Component focusComponent = getComponent(componentId);
             if (focusComponent instanceof Focusable) {
                 ((Focusable) focusComponent).focus();
+            } else if (focusComponent != null) {
+                if (focusComponent instanceof ComponentContainer) {
+                    ComponentContainer componentContainer = (ComponentContainer) focusComponent;
+                    Component.Focusable focusableComponent = getComponentToFocus(componentContainer.getComponents().iterator());
+                    if (focusableComponent != null) {
+                        focusableComponent.focus();
+                    }
+                } else if (focusComponent instanceof HasInnerComponents) {
+                    HasInnerComponents componentContainer = (HasInnerComponents) focusComponent;
+                    Component.Focusable focusableComponent = getComponentToFocus(componentContainer.getInnerComponents().iterator());
+                    if (focusableComponent != null) {
+                        focusableComponent.focus();
+                    }
+                }
             } else {
                 log.error("Can't find focus component: {}", componentId);
             }
@@ -769,12 +773,12 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public boolean isVisibleRecursive() {
-        return isVisible(); // vaadin8 is this correct?
+        return isVisible();
     }
 
     @Override
     public boolean isEnabledRecursive() {
-        return isEnabled(); // vaadin8 is this correct?
+        return isEnabled();
     }
 
     @Override
@@ -881,7 +885,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     }
 
     public boolean findAndFocusChildComponent() {
-        com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
+        Component.Focusable focusComponent = getComponentToFocus(this.getComponents().iterator());
         if (focusComponent != null) {
             focusComponent.focus();
             return true;
@@ -1011,25 +1015,5 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setIconFromSet(Icons.Icon icon) {
         setIcon(icons.get(icon));
-    }
-
-    @Override
-    public ContentSwitchMode getContentSwitchMode() {
-        return contentSwitchMode;
-    }
-
-    @Override
-    public void setContentSwitchMode(ContentSwitchMode mode) {
-        Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
-                "Use ContentSwitchMode.DEFAULT option instead");
-
-        MainTabSheetMode tabSheetMode = AppBeans.get(Configuration.class)
-                .getConfig(WebConfig.class)
-                .getMainTabSheetMode();
-        if (tabSheetMode != MainTabSheetMode.MANAGED) {
-            log.debug("Content switch mode can be set only for the managed main TabSheet. Current invocation will be ignored.");
-        }
-
-        this.contentSwitchMode = mode;
     }
 }

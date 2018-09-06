@@ -707,14 +707,18 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         }
     }
 
-    @Override
     public ContentSwitchMode getContentSwitchMode() {
-        return ((Window) frame).getContentSwitchMode();
+        if (!(frame instanceof TabWindow)) {
+            return ContentSwitchMode.DEFAULT;
+        }
+
+        return ((TabWindow) frame).getContentSwitchMode();
     }
 
-    @Override
     public void setContentSwitchMode(ContentSwitchMode mode) {
-        ((Window) frame).setContentSwitchMode(mode);
+        if (frame instanceof TabWindow) {
+            ((TabWindow) frame).setContentSwitchMode(mode);
+        }
     }
 
     @Override

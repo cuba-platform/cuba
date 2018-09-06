@@ -40,7 +40,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow {
     }
 
     @Inject
-    protected void setBeanLocator(BeanLocator beanLocator) {
+    public void setBeanLocator(BeanLocator beanLocator) {
         this.beanLocator = beanLocator;
     }
 

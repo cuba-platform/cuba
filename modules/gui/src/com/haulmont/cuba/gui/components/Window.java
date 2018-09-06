@@ -272,27 +272,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     DialogOptions getDialogOptions();
 
     /**
-     * Returns how the managed main TabSheet switches a tab with this window: hides or unloads its content.
-     *
-     * todo Move to TabWindow interface
-     *
-     * @return one of the {@link ContentSwitchMode} enum values
-     */
-    ContentSwitchMode getContentSwitchMode();
-
-    /**
-     * Sets how the managed main TabSheet switches a tab with this window: hides or unloads its content.
-     * <p>
-     * Note that: a method invocation will take effect only if {@code cuba.web.mainTabSheetMode} property
-     * is set to 'MANAGED'.
-     *
-     * todo Move to TabWindow interface
-     *
-     * @param mode one of the {@link ContentSwitchMode} enum values
-     */
-    void setContentSwitchMode(ContentSwitchMode mode);
-
-    /**
      * Defines how the managed main TabSheet switches a tab with the given window: hides or unloads its content.
      */
     enum ContentSwitchMode {

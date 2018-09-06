@@ -469,7 +469,7 @@ public class WebScreens implements Screens, WindowManager {
             tabSheet.setTabIcon(tabId, iconResolver.getIconResource(currentWindow.getIcon()));
 
             ContentSwitchMode contentSwitchMode =
-                    ContentSwitchMode.valueOf(currentWindow.getContentSwitchMode().name());
+                    ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
         }
     }
@@ -1338,11 +1338,12 @@ public class WebScreens implements Screens, WindowManager {
                     tabSheet.setTabCubaId(tabId, id);
                 }
             }
-            String windowContentSwitchMode = window.getContentSwitchMode().name();
+            TabWindow tabWindow = (TabWindow) window;
+
+            String windowContentSwitchMode = tabWindow.getContentSwitchMode().name();
             ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(windowContentSwitchMode);
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
 
-            TabWindow tabWindow = (TabWindow) window;
             String formattedCaption = tabWindow.formatTabCaption();
             String formattedDescription = tabWindow.formatTabDescription();
 
@@ -1412,7 +1413,7 @@ public class WebScreens implements Screens, WindowManager {
 
             tabSheet.setTabIcon(tabId, iconResolver.getIconResource(newWindow.getIcon()));
 
-            ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(newWindow.getContentSwitchMode().name());
+            ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
         } else {
             windowContainer.markAsDirtyRecursive();
