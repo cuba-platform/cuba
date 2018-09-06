@@ -21,10 +21,13 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.web.AppUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -215,5 +218,35 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     @Override
     public void setFrameOwner(ScreenFragment controller) {
         this.frameOwner = controller;
+    }
+
+    @Override
+    public void initUiEventListeners() {
+        component.addAttachListener(event -> enableEventListeners());
+        component.addDetachListener(event -> disableEventListeners());
+    }
+
+    protected void disableEventListeners() {
+        List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
+        if (uiEventListeners != null) {
+            AppUI ui = AppUI.getCurrent();
+            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+
+            for (ApplicationListener listener : uiEventListeners) {
+                multicaster.removeApplicationListener(listener);
+            }
+        }
+    }
+
+    protected void enableEventListeners() {
+        List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
+        if (uiEventListeners != null) {
+            AppUI ui = AppUI.getCurrent();
+            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+
+            for (ApplicationListener listener : uiEventListeners) {
+                multicaster.addApplicationListener(listener);
+            }
+        }
     }
 }

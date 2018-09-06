@@ -460,13 +460,13 @@ public class UserEditor extends AbstractEditor<User> {
         events.publish(new UserPasswordChangedEvent(this, user, newPassword));
     }
 
-    protected class AddRoleAction extends AbstractAction {
+    protected class AddRoleAction extends BaseAction {
         public AddRoleAction() {
             super("add");
 
             icon = icons.get(CubaIcon.ADD_ACTION);
 
-            setCaption(getMessage("actions.Add"));
+            setCaption(messages.getMainMessage("actions.Add"));
 
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
@@ -582,7 +582,8 @@ public class UserEditor extends AbstractEditor<User> {
         public AddSubstitutedAction() {
             super("add");
 
-            icon = icons.get(CubaIcon.ADD_ACTION);
+            this.icon = icons.get(CubaIcon.ADD_ACTION);
+            this.caption = messages.getMainMessage("actions.Add");
 
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
@@ -604,7 +605,8 @@ public class UserEditor extends AbstractEditor<User> {
         public EditSubstitutedAction() {
             super("edit");
 
-            icon = icons.get(CubaIcon.EDIT_ACTION);
+            this.icon = icons.get(CubaIcon.EDIT_ACTION);
+            this.caption = messages.getMainMessage("actions.Edit");
         }
 
         @Override

@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -49,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -56,7 +58,7 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class WebWindow implements Window, Component.Wrapper,
+public abstract class WebWindow implements Window, Component.Wrapper,
         Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
         SecuredActionsHolder, Component.HasIcon,
         FrameImplementation, WindowImplementation, EventHubOwner {
@@ -106,8 +108,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
     public WebWindow() {
         component = createLayout();
-
-        setupEventListeners();
     }
 
     @Override
@@ -123,41 +123,28 @@ public class WebWindow implements Window, Component.Wrapper,
         this.icons = icons;
     }
 
-    protected void setupEventListeners() {
-        component.addAttachListener(event -> enableEventListeners());
-        component.addDetachListener(event -> disableEventListeners());
-    }
-
     protected void disableEventListeners() {
-        // todo
-        /*Frame wrapper = delegate.getWrapper();
-        if (wrapper != null) {
-            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
-            if (uiEventListeners != null) {
-                AppUI ui = AppUI.getCurrent();
-                UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+        List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
+        if (uiEventListeners != null) {
+            AppUI ui = AppUI.getCurrent();
+            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
 
-                for (ApplicationListener listener : uiEventListeners) {
-                    multicaster.removeApplicationListener(listener);
-                }
+            for (ApplicationListener listener : uiEventListeners) {
+                multicaster.removeApplicationListener(listener);
             }
-        }*/
+        }
     }
 
     protected void enableEventListeners() {
-        // todo
-        /*Frame wrapper = delegate.getWrapper();
-        if (wrapper != null) {
-            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
-            if (uiEventListeners != null) {
-                AppUI ui = AppUI.getCurrent();
-                UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+        List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
+        if (uiEventListeners != null) {
+            AppUI ui = AppUI.getCurrent();
+            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
 
-                for (ApplicationListener listener : uiEventListeners) {
-                    multicaster.addApplicationListener(listener);
-                }
+            for (ApplicationListener listener : uiEventListeners) {
+                multicaster.addApplicationListener(listener);
             }
-        }*/
+        }
     }
 
     protected AbstractOrderedLayout createLayout() {
@@ -441,6 +428,12 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setFrameOwner(Screen controller) {
         this.frameOwner = controller;
+    }
+
+    @Override
+    public void initUiEventListeners() {
+        component.addAttachListener(event -> enableEventListeners());
+        component.addDetachListener(event -> disableEventListeners());
     }
 
     @Override

@@ -8,4 +8,6 @@ import com.haulmont.cuba.gui.screen.Screen;
  */
 public interface WindowImplementation extends Window, FrameImplementation {
     void setFrameOwner(Screen screen);
+
+    void initUiEventListeners();
 }

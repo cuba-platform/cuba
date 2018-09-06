@@ -39,6 +39,8 @@ public class UserSubstitutionEditor extends AbstractEditor<UserSubstitution> {
         super.init(params);
 
         getDialogOptions().setWidthAuto();
+
+        this.showSaveNotification = false;
     }
 
     @Override

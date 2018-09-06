@@ -22,10 +22,13 @@ import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
+import org.springframework.context.ApplicationListener;
 
 import javax.inject.Inject;
 import java.util.EventObject;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -48,6 +51,9 @@ public abstract class ScreenFragment implements FrameOwner {
     private BeanLocator beanLocator;
 
     private FrameOwner parentController;
+
+    // Global event listeners
+    private List<ApplicationListener> uiEventListeners;
 
     @Inject
     protected void setBeanLocator(BeanLocator beanLocator) {
@@ -119,6 +125,18 @@ public abstract class ScreenFragment implements FrameOwner {
         this.screenData = data;
     }
 
+    protected List<ApplicationListener> getUiEventListeners() {
+        return uiEventListeners;
+    }
+
+    protected void setUiEventListeners(List<ApplicationListener> listeners) {
+        this.uiEventListeners = listeners;
+
+        if (listeners != null && !listeners.isEmpty()) {
+            ((FragmentImplementation) this.fragment).initUiEventListeners();
+        }
+    }
+
     /**
      * JavaDoc
      *
@@ -127,6 +145,16 @@ public abstract class ScreenFragment implements FrameOwner {
      */
     protected Subscription addInitListener(Consumer<InitEvent> listener) {
         return eventHub.subscribe(InitEvent.class, listener);
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
+    protected Subscription addAfterInitListener(Consumer<AfterInitEvent> listener) {
+        return eventHub.subscribe(AfterInitEvent.class, listener);
     }
 
     /**

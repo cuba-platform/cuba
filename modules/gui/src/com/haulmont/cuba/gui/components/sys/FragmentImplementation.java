@@ -24,4 +24,6 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
  */
 public interface FragmentImplementation extends Fragment, FrameImplementation {
     void setFrameOwner(ScreenFragment controller);
+
+    void initUiEventListeners();
 }

@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.ScreenData;
@@ -40,10 +41,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -70,6 +73,9 @@ public abstract class Screen implements FrameOwner {
     private EventHub eventHub = new EventHub();
 
     private BeanLocator beanLocator;
+
+    // Global event listeners
+    private List<ApplicationListener> uiEventListeners;
 
     protected BeanLocator getBeanLocator() {
         return beanLocator;
@@ -128,6 +134,18 @@ public abstract class Screen implements FrameOwner {
             throw new IllegalStateException("Screen already has Window");
         }
         this.window = window;
+    }
+
+    protected List<ApplicationListener> getUiEventListeners() {
+        return uiEventListeners;
+    }
+
+    protected void setUiEventListeners(List<ApplicationListener> listeners) {
+        this.uiEventListeners = listeners;
+
+        if (listeners != null && !listeners.isEmpty()) {
+            ((WindowImplementation) this.window).initUiEventListeners();
+        }
     }
 
     /**

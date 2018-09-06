@@ -57,8 +57,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.*;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -104,8 +102,6 @@ public class UiControllerDependencyInjector {
         initSubscribeListeners(frameOwner);
 
         initUiEventListeners(frameOwner);
-
-        // todo @PostConstruct ?
     }
 
     protected void injectValues(FrameOwner frameOwner) {
@@ -174,34 +170,8 @@ public class UiControllerDependencyInjector {
                     .map(m -> new UiEventListenerMethodAdapter(frameOwner, clazz, m, events))
                     .collect(Collectors.toList());
 
-            // todo implement UiEvent listeners
-            // todo provide programmatic API for UiEvent listeners
-            // ((Screen) screen).setUiEventListeners(listeners);
+            UiControllerUtils.setUiEventListeners(frameOwner, listeners);
         }
-    }
-
-    protected List<Field> getAllFields(List<Class<?>> classes) {
-        List<Field> list = new ArrayList<>();
-
-        for (Class c : classes) {
-            if (c != Object.class) {
-                Collections.addAll(list, c.getDeclaredFields());
-            }
-        }
-        return list;
-    }
-
-    protected Class injectionAnnotation(AnnotatedElement element) {
-        if (element.isAnnotationPresent(Named.class))
-            return Named.class;
-        else if (element.isAnnotationPresent(Resource.class))
-            return Resource.class;
-        else if (element.isAnnotationPresent(Inject.class))
-            return Inject.class;
-        else if (element.isAnnotationPresent(WindowParam.class))
-            return WindowParam.class;
-        else
-            return null;
     }
 
     protected void doInjection(AnnotatedElement element, Class annotationClass) {

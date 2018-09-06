@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
@@ -44,7 +43,6 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
 
     private Object _companion;
     private Component parent;
-    private List<ApplicationListener> uiEventListeners;
     private DsContext dsContext;
 
     @Inject
@@ -437,21 +435,6 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
      */
     public void setCompanion(Object companion) {
         this._companion = companion;
-    }
-
-    /**
-     * INTERNAL. Don't call from application code.
-     */
-    @Nullable
-    public List<ApplicationListener> getUiEventListeners() {
-        return uiEventListeners;
-    }
-
-    /**
-     * INTERNAL. Don't call from application code.
-     */
-    public void setUiEventListeners(List<ApplicationListener> uiEventListeners) {
-        this.uiEventListeners = uiEventListeners;
     }
 
     @Override

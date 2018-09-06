@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
-import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
@@ -50,7 +49,6 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     private Object _companion;
 
     private Component parent;
-    private List<ApplicationListener> uiEventListeners;
 
     private DsContext dsContext;
 
@@ -374,17 +372,6 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     /** INTERNAL. Don't call from application code. */
     public void setCompanion(Object companion) {
         this._companion = companion;
-    }
-
-    /** INTERNAL. Don't call from application code. */
-    @Nullable
-    public List<ApplicationListener> getUiEventListeners() {
-        return uiEventListeners;
-    }
-
-    /** INTERNAL. Don't call from application code. */
-    public void setUiEventListeners(List<ApplicationListener> uiEventListeners) {
-        this.uiEventListeners = uiEventListeners;
     }
 
     @Override

@@ -23,9 +23,13 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
+import org.springframework.context.ApplicationListener;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Internal methods used in WindowManager implementations.
+ * Internal methods used in Screens and Fragments implementations.
  */
 public final class UiControllerUtils {
 
@@ -115,5 +119,22 @@ public final class UiControllerUtils {
 
     public static OperationResult commitChanges(Screen screen) {
         return screen.commitChanges();
+    }
+
+    public static void setUiEventListeners(FrameOwner frameOwner, List<ApplicationListener> listeners) {
+        if (frameOwner instanceof Screen) {
+            ((Screen) frameOwner).setUiEventListeners(listeners);
+        } else if (frameOwner instanceof ScreenFragment) {
+            ((ScreenFragment) frameOwner).setUiEventListeners(listeners);
+        }
+    }
+
+    public static List<ApplicationListener> getUiEventListeners(FrameOwner frameOwner) {
+        if (frameOwner instanceof Screen) {
+            return ((Screen) frameOwner).getUiEventListeners();
+        } else if (frameOwner instanceof ScreenFragment) {
+            return ((ScreenFragment) frameOwner).getUiEventListeners();
+        }
+        return Collections.emptyList();
     }
 }

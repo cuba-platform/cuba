@@ -45,9 +45,9 @@
             <rows>
                 <row>
                     <label value="msg://user" align="MIDDLE_LEFT"/>
-                    <textField id="user" datasource="subst" property="user"
-                               required="true" editable="false" requiredMessage="msg://userMsg"
-                               width="${fieldWidth}"/>
+                    <lookupField id="user" datasource="subst" property="user"
+                                 required="true" editable="false" requiredMessage="msg://userMsg"
+                                 width="${fieldWidth}"/>
                 </row>
                 <row>
                     <label value="msg://substUser" align="MIDDLE_LEFT"/>
