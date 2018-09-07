@@ -373,8 +373,8 @@ public class UiControllerDependencyInjector {
             }
 
             // There are no Spring beans of required type - the last option is Companion
-            if (frameOwner instanceof AbstractFrame) {
-                instance = ((AbstractFrame) frameOwner).getCompanion();
+            if (frameOwner instanceof LegacyFrame) {
+                instance = ((LegacyFrame) frameOwner).getCompanion();
                 if (instance != null && type.isAssignableFrom(instance.getClass())) {
                     return instance;
                 }

@@ -77,18 +77,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
     @Override
     public void createComponent() {
-        Fragment fragment = factory.createComponent(Fragment.NAME);
-        fragment.setId(frameId);
-
-        String msgPack = element.attributeValue("messagesPack");
-        if (msgPack != null) {
-            setMessagesPack(msgPack);
-        }
-
-        Element layoutElement = element.element("layout");
-        createContent(layoutElement);
-
-        resultComponent = fragment;
+        throw new UnsupportedOperationException("Fragment cannot be created from XML element");
     }
 
     public void setResultComponent(Fragment fragment) {

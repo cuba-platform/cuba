@@ -85,8 +85,8 @@ public class UserEditor extends AbstractEditor<User> {
 
     protected PasswordField passwField;
     protected PasswordField confirmPasswField;
-    protected LookupField languageLookup;
-    protected LookupField timeZoneLookup;
+    protected LookupField<String> languageLookup;
+    protected LookupField<String> timeZoneLookup;
 
     @Inject
     protected UserSession userSession;
@@ -292,7 +292,7 @@ public class UserEditor extends AbstractEditor<User> {
         timeZoneLookup.setEditable(fieldGroupRight.isEditable()
                 && security.isEntityAttrUpdatePermitted(userMetaClass, timeZoneFc.getProperty()));
 
-        Map<String, Object> options = new TreeMap<>();
+        Map<String, String> options = new TreeMap<>();
         for (String id : TimeZone.getAvailableIDs()) {
             TimeZone timeZone = TimeZone.getTimeZone(id);
             options.put(timeZones.getDisplayNameLong(timeZone), id);
@@ -319,7 +319,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected void createGroupField() {
         FieldGroup.FieldConfig groupFc = fieldGroupRight.getFieldNN("group");
 
-        PickerField pickerField = factory.createComponent(PickerField.class);
+        PickerField<?> pickerField = factory.createComponent(PickerField.class);
 
         pickerField.setDatasource(groupFc.getTargetDatasource(), groupFc.getProperty());
         pickerField.setRequired(true);
@@ -383,7 +383,7 @@ public class UserEditor extends AbstractEditor<User> {
         languageLookup.setRequired(false);
 
         Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
-        Map<String, Object> options = new TreeMap<>();
+        Map<String, String> options = new TreeMap<>();
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
         }

@@ -364,6 +364,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
      * @return a companion implementation, specific for the current client type
      */
     @Nullable
+    @Override
     public <T> T getCompanion() {
         //noinspection unchecked
         return (T) _companion;

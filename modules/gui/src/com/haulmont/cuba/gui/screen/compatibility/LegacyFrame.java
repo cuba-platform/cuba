@@ -50,6 +50,9 @@ public interface LegacyFrame extends Component.HasXmlDescriptor,
      */
     WindowManager getWindowManager();
 
+    @Nullable
+    <T> T getCompanion();
+
     FrameContext getContext();
 
     String getMessagesPack();
