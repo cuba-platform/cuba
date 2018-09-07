@@ -441,7 +441,7 @@ public interface WebConfig extends Config {
      * <p>
      * Zero cache time disables caching at all.
      *
-     * @return web resources cache time
+     * @return web resources cache time in seconds
      */
     @Property("cuba.web.resourcesCacheTime")
     @Source(type = SourceType.APP)
@@ -453,7 +453,7 @@ public interface WebConfig extends Config {
      * <p>
      * Zero cache time disables caching at all.
      *
-     * @return WebJar resources cache time
+     * @return WebJar resources cache time in seconds
      */
     @Property("cuba.web.webJarResourcesCacheTime")
     @Source(type = SourceType.APP)
