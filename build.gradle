@@ -84,7 +84,6 @@ def idpModule = project(':cuba-idp')
 def uberJarModule = project(':cuba-uberjar')
 def frontModule = project(':cuba-front')
 
-def webModuleThemesModule = project(':cuba-web-themes')
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
@@ -747,38 +746,18 @@ configure(webModule) {
         classifier = 'web'
     }
 
+    task themesJar(dependsOn: buildScssThemes, type: Jar) {
+        from file('themes')
+        classifier = 'themes'
+    }
+
     artifacts {
-        archives webArchive
+        archives webArchive, themesJar
     }
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba'
         appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-widgets', 'cuba-rest-api', 'cuba-idp')
-    }
-}
-
-configure(webModuleThemesModule) {
-    apply(plugin: 'java')
-    apply(plugin: 'maven')
-    apply(plugin: 'cuba')
-
-    appModuleType = 'web-themes'
-
-    buildDir = file('../build/scss-themes')
-
-    sourceSets {
-        main {
-            java {
-                srcDir '.'
-            }
-            resources {
-                srcDir '.'
-            }
-        }
-    }
-
-    dependencies {
-        compile(bom['com.vaadin:vaadin-themes'])
     }
 }
 

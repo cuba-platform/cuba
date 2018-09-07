@@ -91,8 +91,7 @@
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-idp" classifier="web" ext="zip" configuration="webcontent"/>
-        <artifact name="cuba-web-themes" configuration="themes"/>
-        <artifact name="cuba-web-themes" configuration="compileOnly"/>
+        <artifact name="cuba-web" classifier="themes" ext="jar" configuration="themes"/>
         <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
                   skipIfExists="web-toolkit"/>
 
@@ -123,10 +122,6 @@
 
     <module name="web-toolkit" dependsOn="web">
         <artifact name="cuba-web-toolkit"/>
-    </module>
-
-    <module name="web-themes">
-        <artifact name="cuba-web-themes"/>
     </module>
 
     <module name="portal" dependsOn="rest-api" blocks="portal">
