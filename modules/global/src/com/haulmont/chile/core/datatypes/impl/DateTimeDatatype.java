@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 @JavaClass(Date.class)
-public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype, TimeZoneAwareDatatype<Date> {
+public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype, TimeZoneAwareDatatype {
 
     private String formatPattern;
 
@@ -102,7 +102,6 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype, 
     }
 
     @Nullable
-    @Override
     public Date parse(@Nullable String value, Locale locale, TimeZone timeZone) throws ParseException {
         if (StringUtils.isBlank(value)) {
             return null;

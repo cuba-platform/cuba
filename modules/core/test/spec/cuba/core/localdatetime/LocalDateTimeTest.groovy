@@ -122,14 +122,13 @@ class LocalDateTimeTest extends Specification {
         e.localDateTime == localDateTime
     }
 
-    @Ignore
     def "load/store OffsetDateTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity).id(entity.id).view(View.LOCAL).one()
 
         then:
         e.offsetDateTime != null
-        e.offsetDateTime == offsetDateTime
+        e.offsetDateTime.isEqual(offsetDateTime)
     }
 
     @Ignore
@@ -139,7 +138,7 @@ class LocalDateTimeTest extends Specification {
 
         then:
         e.offsetTime != null
-        e.offsetTime == offsetTime
+        e.offsetTime.isEqual(offsetTime)
     }
 
     def "find by LocalDate"() {
@@ -175,7 +174,6 @@ class LocalDateTimeTest extends Specification {
         e == entity
     }
 
-    @Ignore
     def "find by OffsetDateTime"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
@@ -186,7 +184,7 @@ class LocalDateTimeTest extends Specification {
         then:
         e == entity
         e.offsetDateTime != null
-        e.offsetDateTime == offsetDateTime
+        e.offsetDateTime.isEqual(offsetDateTime)
     }
 
     @Ignore
@@ -200,7 +198,7 @@ class LocalDateTimeTest extends Specification {
         then:
         e == entity
         e.offsetTime != null
-        e.offsetTime == offsetTime
+        e.offsetTime.isEqual(offsetTime)
     }
 
     def "find by LocalDate greater than"() {
@@ -239,7 +237,6 @@ class LocalDateTimeTest extends Specification {
         e == entity
     }
 
-    @Ignore
     def "find by OffsetDateTime greater than"() {
         when:
         def e = dataManager.load(LocalDateTimeEntity)
@@ -251,7 +248,7 @@ class LocalDateTimeTest extends Specification {
         then:
         e == entity
         e.offsetDateTime != null
-        e.offsetDateTime == offsetDateTime
+        e.offsetDateTime.isEqual(offsetDateTime)
     }
 
     @Ignore
@@ -266,6 +263,6 @@ class LocalDateTimeTest extends Specification {
         then:
         e == entity
         e.offsetTime != null
-        e.offsetTime == offsetTime
+        e.offsetTime.isEqual(offsetTime)
     }
 }

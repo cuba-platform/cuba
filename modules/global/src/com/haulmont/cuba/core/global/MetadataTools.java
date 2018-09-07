@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
@@ -91,9 +92,6 @@ public class MetadataTools {
     protected UserSessionSource userSessionSource;
 
     @Inject
-    protected DatatypeFormatter datatypeFormatter;
-
-    @Inject
     protected DatatypeRegistry datatypeRegistry;
 
     @Inject
@@ -139,10 +137,11 @@ public class MetadataTools {
 
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
-            if (value instanceof Date && datatype.getJavaClass().equals(Date.class)) {
+            if (datatype instanceof TimeZoneAwareDatatype) {
                 Boolean ignoreUserTimeZone = getMetaAnnotationValue(property, IgnoreUserTimeZone.class);
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
-                    return datatypeFormatter.formatDateTime((Date) value);
+                    return ((TimeZoneAwareDatatype) datatype).format(value,
+                            userSessionSource.getLocale(), userSessionSource.getUserSession().getTimeZone());
                 }
             }
             return datatype.format(value, userSessionSource.getLocale());
@@ -222,6 +221,7 @@ public class MetadataTools {
 
     /**
      * Parse a name pattern defined by {@link NamePattern} annotation.
+     *
      * @param metaClass entity meta-class
      * @return record containing the name pattern properties, or null if the @NamePattern is not defined for the meta-class
      */
@@ -452,6 +452,7 @@ public class MetadataTools {
 
     /**
      * Determine whether the given property is a LOB.
+     *
      * @see Lob
      */
     public boolean isLob(MetaProperty metaProperty) {
@@ -868,8 +869,8 @@ public class MetadataTools {
      * If the given property is a reference to an entity from different data store, returns the name of a persistent
      * property which stores the identifier of the related entity.
      *
-     * @param thisStore     name of a base data store
-     * @param metaProperty  property
+     * @param thisStore    name of a base data store
+     * @param metaProperty property
      * @return name of the ID property or null if the given property is not a cross-datastore reference or it does not
      * satisfy the convention of declaring related properties for such references
      */

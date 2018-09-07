@@ -16,29 +16,37 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.DateTimeUtils;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
+import com.haulmont.cuba.gui.components.data.DateComponents;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.InlineDateField;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 
-public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDateField, LocalDate, V>
+public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalDate, V>
         implements DatePicker<V>, InitializingBean {
 
+    @Inject
+    protected DateComponents dateComponents;
+
     protected Resolution resolution = Resolution.DAY;
+    protected Datatype<V> datatype;
+    protected V rangeStart;
+    protected V rangeEnd;
 
     public WebDatePicker() {
         this.component = new CubaDatePicker();
@@ -47,7 +55,7 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Messages messages = applicationContext.getBean(Messages.class);
         component.setDateOutOfRangeMessage(messages.getMainMessage("datePicker.dateOutOfRangeMessage"));
     }
@@ -108,10 +116,8 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-
-            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
+            dateComponents.setupDateRange(this, entityValueSource);
         }
     }
 
@@ -122,46 +128,46 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
             return null;
         }
 
-        Date datePickerDate = DateTimeUtils.asDate(componentRawValue);
+        LocalDateTime localDateTime = LocalDateTime.of(componentRawValue, LocalTime.MIDNIGHT);
 
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
-            MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
-            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            if (metaProperty != null) {
-                Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
-                if (javaClass.equals(java.sql.Date.class)) {
-                    return (V) new java.sql.Date(datePickerDate.getTime());
-                }
-            }
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+            return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
+                    metaProperty.getRange().asDatatype().getJavaClass());
         }
-
-        return (V) datePickerDate;
+        return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
+                datatype == null ? Date.class : datatype.getJavaClass());
     }
 
     @Override
-    protected LocalDate convertToPresentation(Date modelValue) throws ConversionException {
-        return modelValue != null ? DateTimeUtils.asLocalDate(modelValue) : null;
+    protected LocalDate convertToPresentation(V modelValue) throws ConversionException {
+        if (modelValue == null) {
+            return null;
+        }
+        return dateComponents.convertToLocalDateTime(modelValue).toLocalDate();
     }
 
     @Override
-    public Date getRangeStart() {
-        return component.getRangeStart() != null ? DateTimeUtils.asDate(component.getRangeStart()) : null;
+    public V getRangeStart() {
+        return rangeStart;
     }
 
     @Override
-    public void setRangeStart(Date rangeStart) {
-        component.setRangeStart(DateTimeUtils.asLocalDate(rangeStart));
+    public void setRangeStart(V value) {
+        this.rangeStart = value;
+        component.setRangeStart(value == null ? null : dateComponents.convertToLocalDateTime(rangeStart).toLocalDate());
     }
 
     @Override
-    public Date getRangeEnd() {
-        return component.getRangeEnd() != null ? DateTimeUtils.asDate(component.getRangeEnd()) : null;
+    public V getRangeEnd() {
+        return rangeEnd;
     }
 
     @Override
-    public void setRangeEnd(Date rangeEnd) {
-        component.setRangeEnd(DateTimeUtils.asLocalDate(rangeEnd));
+    public void setRangeEnd(V value) {
+        this.rangeEnd = value;
+        component.setRangeEnd(value == null ? null : dateComponents.convertToLocalDateTime(rangeEnd).toLocalDate());
     }
 
     @Override
@@ -177,5 +183,15 @@ public class WebDatePicker<V extends Date> extends WebV8AbstractField<InlineDate
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public Datatype<V> getDatatype() {
+        return datatype;
+    }
+
+    @Override
+    public void setDatatype(Datatype<V> datatype) {
+        this.datatype = datatype;
     }
 }

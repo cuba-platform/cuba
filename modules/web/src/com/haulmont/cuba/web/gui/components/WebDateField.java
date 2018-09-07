@@ -16,21 +16,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.DateTimeUtils;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
+import com.haulmont.cuba.gui.components.data.DateComponents;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -46,19 +43,29 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaCssActionsLayout, LocalDateTime, V>
+public class WebDateField<V extends Comparable<V>> extends WebAbstractViewComponent<CubaCssActionsLayout, LocalDateTime, V>
         implements DateField<V>, InitializingBean {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
+
+    @Inject
+    protected DateComponents dateComponents;
+
     protected List<Validator> validators; // lazily initialized list
 
     protected Resolution resolution;
+    protected ZoneId zoneId;
+    protected Datatype<V> datatype;
+    protected V rangeStart;
+    protected V rangeEnd;
 
     protected boolean updatingInstance;
 
@@ -66,11 +73,6 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
     protected CubaTimeField timeField;
 
     protected String dateTimeFormat;
-    // TODO: gg, why we have this?
-    protected String dateFormat;
-    protected String timeFormat;
-
-    protected TimeZone timeZone;
 
     protected boolean editable = true;
 
@@ -116,7 +118,7 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         UserSessionSource userSessionSource = applicationContext.getBean(UserSessionSource.class);
         Locale locale = userSessionSource.getLocale();
 
@@ -194,39 +196,51 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
     }
 
     @Override
-    public void setRangeStart(Date value) {
-        dateField.setRangeStart(DateTimeUtils.asLocalDate(value));
+    public Datatype<V> getDatatype() {
+        return datatype;
     }
 
     @Override
-    public Date getRangeStart() {
-        return dateField.getRangeStart() != null ? DateTimeUtils.asDate(dateField.getRangeStart()) : null;
+    public void setDatatype(Datatype<V> datatype) {
+        this.datatype = datatype;
     }
 
     @Override
-    public void setRangeEnd(Date value) {
-        dateField.setRangeEnd(DateTimeUtils.asLocalDate(value));
+    public void setRangeStart(V value) {
+        this.rangeStart = value;
+        dateField.setRangeStart(value == null ? null : dateComponents.convertToLocalDateTime(value, zoneId).toLocalDate());
     }
 
     @Override
-    public Date getRangeEnd() {
-        return dateField.getRangeEnd() != null ? DateTimeUtils.asDate(dateField.getRangeEnd()) : null;
+    public V getRangeStart() {
+        return rangeStart;
     }
 
-    protected boolean checkRange(Date value) {
+    @Override
+    public void setRangeEnd(V value) {
+        this.rangeEnd = value;
+        dateField.setRangeEnd(value == null ? null : dateComponents.convertToLocalDateTime(value, zoneId).toLocalDate());
+    }
+
+    @Override
+    public V getRangeEnd() {
+        return rangeEnd;
+    }
+
+    protected boolean checkRange(V value) {
         if (updatingInstance) {
             return true;
         }
 
         if (value != null) {
-            Date rangeStart = getRangeStart();
-            if (rangeStart != null && value.before(rangeStart)) {
+            V rangeStart = getRangeStart();
+            if (rangeStart != null && rangeStart.compareTo(value) > 0) {
                 handleDateOutOfRange(value);
                 return false;
             }
 
-            Date rangeEnd = getRangeEnd();
-            if (rangeEnd != null && value.after(rangeEnd)) {
+            V rangeEnd = getRangeEnd();
+            if (rangeEnd != null && rangeEnd.compareTo(value) < 0) {
                 handleDateOutOfRange(value);
                 return false;
             }
@@ -235,14 +249,14 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
         return true;
     }
 
-    protected void handleDateOutOfRange(Date value) {
+    protected void handleDateOutOfRange(V value) {
         if (getFrame() != null) {
-            Messages messages = AppBeans.get(Messages.NAME);
+            Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
             getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
                     Frame.NotificationType.TRAY);
         }
 
-        setValueToPresentation(DateTimeUtils.asLocalDateTime(internalValue));
+        setValueToPresentation(dateComponents.convertToLocalDateTime(value, zoneId));
     }
 
     @Override
@@ -262,28 +276,34 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
         if (timeStartPos >= 0) {
             time.delete(0, timeStartPos);
             date.delete(timeStartPos, dateFormat.length());
-
-            timeFormat = StringUtils.trimToEmpty(time.toString());
-            timeField.setTimeFormat(timeFormat);
+            timeField.setTimeFormat(StringUtils.trimToEmpty(time.toString()));
         }
-
-        this.dateFormat = StringUtils.trimToEmpty(date.toString());
-        dateField.setDateFormat(this.dateFormat);
+        dateField.setDateFormat(StringUtils.trimToEmpty(date.toString()));
     }
 
     @Override
     public TimeZone getTimeZone() {
-        return timeZone;
+        return getZoneId() != null ? TimeZone.getTimeZone(getZoneId()) : null;
     }
 
     @Override
     public void setTimeZone(TimeZone timeZone) {
-        TimeZone prevTimeZone = this.timeZone;
-        Date value = getValue();
-        this.timeZone = timeZone;
-        dateField.setZoneId(timeZone.toZoneId());
-        if (value != null && !Objects.equals(prevTimeZone, timeZone)) {
-            setValueToPresentation(DateTimeUtils.asLocalDateTime(value));
+        setZoneId(timeZone == null ? null : timeZone.toZoneId());
+    }
+
+    @Override
+    public ZoneId getZoneId() {
+        return zoneId;
+    }
+
+    @Override
+    public void setZoneId(ZoneId zoneId) {
+        ZoneId prevZoneId = this.zoneId;
+        V value = getValue();
+        this.zoneId = zoneId;
+        dateField.setZoneId(zoneId);
+        if (value != null && !Objects.equals(prevZoneId, zoneId)) {
+            setValueToPresentation(convertToPresentation(value));
         }
     }
 
@@ -330,36 +350,34 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
 
     @SuppressWarnings("unchecked")
     protected V constructModelValue() {
-        LocalDate dateFieldValue = dateField.getValue();
-        if (dateFieldValue == null) {
+        LocalDate dateValue = dateField.getValue();
+        if (dateValue == null) {
             return null;
         }
 
         LocalTime timeValue = timeField.getValue() != null
                 ? timeField.getValue()
                 : LocalTime.MIDNIGHT;
-        LocalDateTime resultDateTime = LocalDateTime.of(dateFieldValue, timeValue);
 
-        Date resultDate = DateTimeUtils.asDate(resultDateTime);
+        LocalDateTime localDateTime = LocalDateTime.of(dateValue, timeValue);
 
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
-            MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
-            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            if (metaProperty != null) {
-                Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
-                if (javaClass.equals(java.sql.Date.class)) {
-                    return (V) new java.sql.Date(resultDate.getTime());
-                }
-            }
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+            return (V) dateComponents.convertFromLocalDateTime(localDateTime, zoneId,
+                    metaProperty.getRange().asDatatype().getJavaClass());
         }
 
-        return (V) resultDate;
+        return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
+                datatype == null ? Date.class : datatype.getJavaClass());
     }
 
     @Override
     protected LocalDateTime convertToPresentation(V modelValue) throws ConversionException {
-        return modelValue != null ? DateTimeUtils.asLocalDateTime(modelValue) : null;
+        if (modelValue == null) {
+            return null;
+        }
+        return dateComponents.convertToLocalDateTime(modelValue, zoneId);
     }
 
     @Override
@@ -455,11 +473,10 @@ public class WebDateField<V extends Date> extends WebAbstractViewComponent<CubaC
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-
-            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
-            dataAwareComponentsTools.setupDateFormat(this, entityValueSource);
+            dateComponents.setupDateRange(this, entityValueSource);
+            dateComponents.setupDateFormat(this, entityValueSource);
+            dateComponents.setupZoneId(this, entityValueSource);
         }
     }
 

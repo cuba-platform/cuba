@@ -16,22 +16,21 @@
 
 package com.haulmont.cuba.gui.components;
 
-import java.util.Date;
-
-public interface HasRange {
+public interface HasRange<V> {
     /**
      * Set start of range. If the value is set before this
      * date, the component will not validate.
      *
      * @param rangeStart allowed start of range
      */
-    void setRangeStart(Date rangeStart);
+    void setRangeStart(V rangeStart);
+
     /**
      * Return start of range for a certain resolution.
      *
      * @return start of allowed range
      */
-    Date getRangeStart();
+    V getRangeStart();
 
     /**
      * Set end of range. If the value is set after this
@@ -39,11 +38,12 @@ public interface HasRange {
      *
      * @param rangeEnd end of allowed range
      */
-    void setRangeEnd(Date rangeEnd);
+    void setRangeEnd(V rangeEnd);
+
     /**
      * Return end of range for a certain resolution.
      *
      * @return end of allowed range
      */
-    Date getRangeEnd();
+    V getRangeEnd();
 }

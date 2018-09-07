@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQuery;
 import java.util.Locale;
 import java.util.Map;
@@ -54,7 +55,7 @@ public abstract class AbstractTemporalDatatype<T extends Temporal> implements Da
 
         DateTimeFormatter formatter = getDateTimeFormatter(formatStrings, locale);
         //noinspection unchecked
-        return formatter.format((T) value);
+        return formatter.format((TemporalAccessor) value);
     }
 
     @Nullable

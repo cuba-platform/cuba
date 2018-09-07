@@ -16,9 +16,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import java.util.Date;
+import com.haulmont.chile.core.datatypes.Datatype;
 
-public interface TimeField extends Field<Date>, Buffered, Component.Focusable {
+public interface TimeField<V> extends Field<V>, Buffered, Component.Focusable {
     String NAME = "timeField";
 
     enum Resolution {
@@ -33,6 +33,7 @@ public interface TimeField extends Field<Date>, Buffered, Component.Focusable {
      * @return Resolution
      */
     Resolution getResolution();
+
     /**
      * Set resolution of the TimeField.
      *
@@ -50,5 +51,10 @@ public interface TimeField extends Field<Date>, Buffered, Component.Focusable {
     void setShowSeconds(boolean showSeconds);
 
     String getFormat();
+
     void setFormat(String timeFormat);
+
+    Datatype<V> getDatatype();
+
+    void setDatatype(Datatype<V> datatype);
 }

@@ -24,12 +24,7 @@ import java.util.TimeZone;
 /**
  * A {@link Datatype} that supports correct presentation with timezone.
  */
-public interface TimeZoneAwareDatatype<T> {
+public interface TimeZoneAwareDatatype {
     /** Converts value to String taking into account local formats and timezone. Returns an empty string for null value. */
     String format(@Nullable Object value, Locale locale, TimeZone timeZone);
-
-    /** Parses value from String taking into account local formats and timezone */
-    @Nullable
-    T parse(@Nullable String value, Locale locale, TimeZone timeZone) throws ParseException;
-
 }

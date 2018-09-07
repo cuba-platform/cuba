@@ -290,7 +290,6 @@ public class DateTimeUtils {
     }
 
     private static ZoneId getDefaultTimeZone() {
-        // TODO: gg, return proper ZoneId
         return ZoneId.systemDefault();
     }
 }

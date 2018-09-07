@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -69,8 +70,8 @@ public class DatatypeFormatter {
     public String formatDateTime(@Nullable Date value) {
         TimeZone timeZone = uss.getUserSession().getTimeZone();
         Datatype<Date> datatype = datatypeRegistry.getNN(Date.class);
-        if (datatype instanceof TimeZoneAwareDatatype) {
-            return ((TimeZoneAwareDatatype) datatype).format(value, uss.getLocale(), timeZone);
+        if (datatype instanceof DateTimeDatatype) {
+            return ((DateTimeDatatype) datatype).format(value, uss.getLocale(), timeZone);
         }
         return datatype.format(value, uss.getLocale());
     }
@@ -142,8 +143,8 @@ public class DatatypeFormatter {
     public Date parseDateTime(String str) throws ParseException {
         TimeZone timeZone = uss.getUserSession().getTimeZone();
         Datatype<Date> datatype = datatypeRegistry.getNN(Date.class);
-        if (datatype instanceof TimeZoneAwareDatatype) {
-            return (Date)((TimeZoneAwareDatatype) datatype).parse(str, uss.getLocale(), timeZone);
+        if (datatype instanceof DateTimeDatatype) {
+            return ((DateTimeDatatype) datatype).parse(str, uss.getLocale(), timeZone);
         }
         return datatype.parse(str, uss.getLocale());
     }

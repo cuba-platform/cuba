@@ -16,34 +16,32 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.DateTimeUtils;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DateComponents;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.web.widgets.CubaTimeField;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.sql.Time;
+import javax.inject.Inject;
 import java.time.LocalTime;
 import java.util.Date;
 
-public class WebTimeField extends WebV8AbstractField<CubaTimeField, LocalTime, Date>
-        implements TimeField, InitializingBean {
+public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime, V>
+        implements TimeField<V>, InitializingBean {
+
+    @Inject
+    protected DateComponents dateComponents;
 
     protected Resolution resolution = Resolution.MIN;
+    protected Datatype<V> datatype;
 
     public WebTimeField() {
         component = new CubaTimeField();
@@ -52,7 +50,7 @@ public class WebTimeField extends WebV8AbstractField<CubaTimeField, LocalTime, D
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         UserSessionSource userSessionSource = applicationContext.getBean(UserSessionSource.class);
         String timeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getTimeFormat();
         setFormat(timeFormat);
@@ -64,36 +62,29 @@ public class WebTimeField extends WebV8AbstractField<CubaTimeField, LocalTime, D
     }
 
     @Override
-    protected Date convertToModel(LocalTime componentRawValue) throws ConversionException {
+    @SuppressWarnings("unchecked")
+    protected V convertToModel(LocalTime componentRawValue) throws ConversionException {
         if (componentRawValue == null) {
             return null;
         }
 
-        Date date = DateTimeUtils.asDate(componentRawValue);
-
-        ValueSource<Date> valueSource = getValueSource();
+        ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
-            MetaPropertyPath metaPropertyPath = ((DatasourceValueSource) valueSource).getMetaPropertyPath();
-            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            if (metaProperty != null) {
-                Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
-                if (javaClass.equals(java.sql.Time.class)) {
-                    return new Time(date.getTime());
-                }
-
-                if (javaClass.equals(java.sql.Date.class)) {
-                    LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
-                    return new java.sql.Date(date.getTime());
-                }
-            }
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+            return (V) dateComponents.convertFromLocalTime(componentRawValue,
+                    metaProperty.getRange().asDatatype().getJavaClass());
         }
 
-        return date;
+        return (V) dateComponents.convertFromLocalTime(componentRawValue,
+                datatype == null ? Date.class : datatype.getJavaClass());
     }
 
     @Override
-    protected LocalTime convertToPresentation(Date modelValue) throws ConversionException {
-        return modelValue != null ? DateTimeUtils.asLocalTime(modelValue) : null;
+    protected LocalTime convertToPresentation(V modelValue) throws ConversionException {
+        if (modelValue == null) {
+            return null;
+        }
+        return dateComponents.convertToLocalTime(modelValue);
     }
 
     @Override
@@ -118,6 +109,16 @@ public class WebTimeField extends WebV8AbstractField<CubaTimeField, LocalTime, D
         this.resolution = resolution;
         TimeResolution vResolution = WebWrapperUtils.convertTimeResolution(resolution);
         component.setResolution(vResolution);
+    }
+
+    @Override
+    public Datatype<V> getDatatype() {
+        return datatype;
+    }
+
+    @Override
+    public void setDatatype(Datatype<V> datatype) {
+        this.datatype = datatype;
     }
 
     @Override

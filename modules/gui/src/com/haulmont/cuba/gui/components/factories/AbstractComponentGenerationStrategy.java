@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.sql.Time;
+import java.time.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -96,9 +97,14 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
             } else if (type.equals(Boolean.class)) {
                 return createBooleanField(context);
             } else if (type.equals(java.sql.Date.class)
-                    || type.equals(Date.class)) {
+                    || type.equals(Date.class)
+                    || type.equals(LocalDate.class)
+                    || type.equals(LocalDateTime.class)
+                    || type.equals(OffsetDateTime.class)) {
                 return createDateField(context);
-            } else if (type.equals(Time.class)) {
+            } else if (type.equals(Time.class)
+                    || type.equals(LocalTime.class)
+                    || type.equals(OffsetTime.class)) {
                 return createTimeField(context);
             } else if (Number.class.isAssignableFrom(type)) {
                 if (hasMaskAttribute) {

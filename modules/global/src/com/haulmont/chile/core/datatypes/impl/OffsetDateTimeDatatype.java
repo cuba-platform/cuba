@@ -17,30 +17,48 @@
 package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.annotations.JavaClass;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalQuery;
 import java.util.Locale;
+import java.util.TimeZone;
 
 @JavaClass(OffsetDateTime.class)
-public class OffsetDateTimeDatatype extends AbstractTemporalDatatype<OffsetDateTime> {
+public class OffsetDateTimeDatatype extends AbstractTemporalDatatype<OffsetDateTime>
+        implements TimeZoneAwareDatatype {
 
     public OffsetDateTimeDatatype(Element element) {
         super(element);
     }
 
     @Override
+    public String format(@Nullable Object value, Locale locale, TimeZone timeZone) {
+        if (timeZone == null || value == null) {
+            return format(value, locale);
+        }
+        OffsetDateTime offsetDateTime = (OffsetDateTime) value;
+        LocalDateTime localDateTime = offsetDateTime.atZoneSameInstant(timeZone.toZoneId()).toLocalDateTime();
+        return format(localDateTime, locale);
+    }
+
+    @Override
     protected DateTimeFormatter getDateTimeFormatter() {
-        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
     }
 
     @Override
     protected DateTimeFormatter getDateTimeFormatter(FormatStrings formatStrings, Locale locale) {
-        return DateTimeFormatter.ofPattern(formatStrings.getDateTimeFormat(), locale);
+        return DateTimeFormatter.ofPattern(formatStrings.getDateTimeFormat(), locale).withZone(ZoneId.systemDefault());
     }
 
     @Override
