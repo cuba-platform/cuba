@@ -33,8 +33,19 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     protected PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
-        component = new CubaButton();
+        component = createComponent();
+        initComponent(component);
+    }
+
+    protected CubaButton createComponent() {
+        return new CubaButton();
+    }
+
+    protected void initComponent(CubaButton component) {
         component.setClickHandler(this::buttonClicked);
+        // The default description value is empty string,
+        // that prevents obtaining a description value from an action
+        component.setDescription(null);
     }
 
     // override in descendants if needed
