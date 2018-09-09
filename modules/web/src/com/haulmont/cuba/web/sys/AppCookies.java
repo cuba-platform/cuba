@@ -91,8 +91,13 @@ public class AppCookies implements Serializable {
     }
 
     protected Cookie getCookie(String name) {
-        if (RequestContext.get().getRequestTimestamp() != lastRequestTimestamp)
+        RequestContext requestContext = RequestContext.get();
+        if (requestContext == null) {
+            return null;
+        }
+        if (requestContext.getRequestTimestamp() != lastRequestTimestamp) {
             updateCookies();
+        }
         return requestedCookies.get(name);
     }
 

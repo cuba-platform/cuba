@@ -467,6 +467,9 @@ public class AppUI extends CubaUI
 
     public void processExternalLink(VaadinRequest request) {
         WrappedSession wrappedSession = request.getWrappedSession();
+        if (wrappedSession == null) {
+            return;
+        }
 
         String action = (String) wrappedSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
 

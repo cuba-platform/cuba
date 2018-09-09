@@ -24,7 +24,9 @@ import com.haulmont.cuba.gui.theme.ThemeConstants
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
 import com.haulmont.cuba.web.App
 import com.haulmont.cuba.web.AppUI
+import com.haulmont.cuba.web.Connection
 import com.haulmont.cuba.web.DefaultApp
+import com.haulmont.cuba.web.sys.AppCookies
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import com.vaadin.server.VaadinSession
@@ -47,6 +49,8 @@ class WebSpec extends Specification {
     DataContextFactory dataContextFactory
     ComponentsFactory componentsFactory
 
+    AppUI vaadinUi
+
     void setup() {
         metadata = cont.getBean(Metadata)
         metadataTools = cont.getBean(MetadataTools)
@@ -67,19 +71,31 @@ class WebSpec extends Specification {
         })
 
         App app = new TestApp()
+        app.cookies = new AppCookies()
+
+        def connection = Mock(Connection)
+        app.connection = connection
+        app.events = Mock(Events)
 
         VaadinSession vaadinSession = Mock() {
             hasLock() >> true
             getAttribute(App) >> app
+            getAttribute(App.NAME) >> app
+            getAttribute(Connection) >> connection
+            getAttribute(Connection.NAME) >> connection
+            getLocale() >> Locale.ENGLISH
         }
         VaadinSession.setCurrent(vaadinSession)
 
         ConnectorTracker vaadinConnectorTracker = Mock() {
             isWritingResponse() >> false
         }
-        AppUI vaadinUi = Mock() {
-            getConnectorTracker() >> vaadinConnectorTracker
-        }
+
+        vaadinUi = Spy(AppUI)
+        vaadinUi.app = app
+        vaadinUi.messages = cont.getBean(Messages)
+        vaadinUi.getConnectorTracker() >> vaadinConnectorTracker
+
         UI.setCurrent(vaadinUi)
     }
 
