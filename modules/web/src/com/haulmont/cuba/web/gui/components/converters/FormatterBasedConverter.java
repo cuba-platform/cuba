@@ -16,16 +16,16 @@
 
 package com.haulmont.cuba.web.gui.components.converters;
 
-import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 
 import java.util.Locale;
+import java.util.function.Function;
 
 public class FormatterBasedConverter implements Converter<String, Object> {
 
-    protected Formatter formatter;
+    protected Function<Object, String> formatter;
 
-    public FormatterBasedConverter(Formatter formatter) {
+    public FormatterBasedConverter(Function<Object, String> formatter) {
         this.formatter = formatter;
     }
 
@@ -38,7 +38,7 @@ public class FormatterBasedConverter implements Converter<String, Object> {
     public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
         //noinspection unchecked
-        return getFormatter().format(value);
+        return getFormatter().apply(value);
     }
 
     @Override
@@ -51,11 +51,11 @@ public class FormatterBasedConverter implements Converter<String, Object> {
         return String.class;
     }
 
-    public Formatter getFormatter() {
+    public Function<Object, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Function<Object, String> formatter) {
         this.formatter = formatter;
     }
 }

@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface FileUploadField extends UploadField, Field<FileDescriptor>, Component.Focusable, Buffered {
     String NAME = "upload";
@@ -251,13 +252,13 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      *
      * @param contentProvider content provider
      */
-    void setContentProvider(FileContentProvider contentProvider);
+    void setContentProvider(Supplier<InputStream> contentProvider);
     /**
      * @return FileContentProvider which can be used to read data from field
      */
-    FileContentProvider getContentProvider();
+    Supplier<InputStream> getContentProvider();
 
-    interface FileContentProvider {
-        InputStream provide();
+    @Deprecated
+    interface FileContentProvider extends Supplier<InputStream> {
     }
 }

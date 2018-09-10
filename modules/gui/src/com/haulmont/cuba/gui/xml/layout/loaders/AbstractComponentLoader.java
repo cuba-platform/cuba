@@ -734,7 +734,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return loadDeclarativeActionDefault(actionsHolder, element);
     }
 
-    protected Formatter loadFormatter(Element element) {
+    protected Function<?, String> loadFormatter(Element element) {
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
@@ -751,14 +751,16 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             try {
                 final Constructor<?> constructor = aClass.getConstructor(Element.class);
                 try {
-                    return (Formatter) constructor.newInstance(formatterElement);
+                    //noinspection unchecked
+                    return (Function<?, String>) constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
                     throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e.toString(),
                             context.getFullFrameId());
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    return (Formatter) aClass.getDeclaredConstructor().newInstance();
+                    //noinspection unchecked
+                    return (Function<?, String>) aClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e1) {
                     throw new GuiDevelopmentException("Unable to instantiate class " + className + ": " + e1.toString(),
                             context.getFullFrameId());

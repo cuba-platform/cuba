@@ -20,7 +20,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
@@ -35,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
@@ -43,7 +43,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         implements TextField<V>, InitializingBean {
 
     protected Datatype<V> datatype;
-    protected Formatter<? super V> formatter;
+    protected Function<? super V, String> formatter;
 
     protected boolean trimming = true;
 
@@ -90,7 +90,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         // Vaadin TextField does not permit `null` value
 
         if (formatter != null) {
-            return nullToEmpty(formatter.format(modelValue));
+            return nullToEmpty(formatter.apply(modelValue));
         }
 
         if (datatype != null) {
@@ -175,12 +175,12 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     @SuppressWarnings("unchecked")
     @Override
-    public Formatter<V> getFormatter() {
-        return (Formatter<V>) formatter;
+    public Function<V, String> getFormatter() {
+        return (Function<V, String>) formatter;
     }
 
     @Override
-    public void setFormatter(Formatter<? super V> formatter) {
+    public void setFormatter(Function<? super V, String> formatter) {
         this.formatter = formatter;
     }
 

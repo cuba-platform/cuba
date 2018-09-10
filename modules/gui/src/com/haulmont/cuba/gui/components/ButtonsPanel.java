@@ -17,13 +17,13 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public interface ButtonsPanel extends BoxLayout {
 
     String NAME = "buttonsPanel";
 
-    // todo replace with Java8 Supplier
-    interface Provider {
-        Collection<Component> getButtons();
+    @Deprecated
+    interface Provider extends Supplier<Collection<Component>> {
     }
 }

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.Collection;
+import java.util.function.Function;
 
 public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, ActionsHolder,
         RowsCount.RowsCountTarget {
@@ -43,14 +44,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
      *
      * @param <E> entity class
      */
-    interface IconProvider<E extends Entity> {
-        /**
-         * Called by {@link Table} to get an icon to be shown for a row.
-         *
-         * @param entity an entity instance represented by the current row
-         * @return icon name or null to show no icon
-         */
-        @Nullable
-        String getItemIcon(E entity);
+    @Deprecated
+    interface IconProvider<E extends Entity> extends Function<E, String> {
     }
 }

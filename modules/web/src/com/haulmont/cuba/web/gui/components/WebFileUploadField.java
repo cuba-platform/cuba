@@ -42,6 +42,7 @@ import java.io.*;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
@@ -54,7 +55,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected ExportDisplay exportDisplay;
     protected Messages messages;
 
-    protected FileContentProvider contentProvider;
+    protected Supplier<InputStream> contentProvider;
 
     protected UploadComponent uploadButton;
     protected String fileName;
@@ -364,7 +365,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public InputStream getFileContent() {
         if (contentProvider != null) {
-            return contentProvider.provide();
+            return contentProvider.get();
         }
 
         FileDescriptor fileDescriptor = getValue();
@@ -403,12 +404,12 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     @Override
-    public void setContentProvider(FileContentProvider contentProvider) {
+    public void setContentProvider(Supplier<InputStream> contentProvider) {
         this.contentProvider = contentProvider;
     }
 
     @Override
-    public FileContentProvider getContentProvider() {
+    public Supplier<InputStream> getContentProvider() {
         return contentProvider;
     }
 

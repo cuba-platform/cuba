@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -43,6 +42,7 @@ import javax.inject.Inject;
 import java.lang.reflect.AnnotatedElement;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 public class EntityRestore extends AbstractWindow {
 
@@ -111,7 +111,7 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setRowsCount(rowsCount);
 
                 final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
-                Formatter dateTimeFormatter = propertyValue -> {
+                Function<?, String> dateTimeFormatter = propertyValue -> {
                     if (propertyValue == null) {
                         return StringUtils.EMPTY;
                     }

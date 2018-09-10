@@ -16,11 +16,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.function.Function;
+
 /**
  * Interface defining method for formatting a value into string.
  * <br> Used by various UI components.
  */
-public interface Formatter<T> {
-
-    String format(T value);
+@Deprecated
+public interface Formatter<T> extends Function<T, String> {
 }

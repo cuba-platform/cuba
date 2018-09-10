@@ -21,7 +21,8 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.gui.components.Formatter;
+
+import java.util.function.Function;
 
 @MetaClass(name = "stat$PerformanceParameter")
 @SystemLevel
@@ -51,7 +52,7 @@ public class PerformanceParameter extends BaseUuidEntity {
 
     private double sum;
 
-    private Formatter<Double> formatter;
+    private Function<Double, String> formatter;
 
     @MetaProperty
     public String getCurrentStringValue() {
@@ -61,7 +62,7 @@ public class PerformanceParameter extends BaseUuidEntity {
         if (formatter == null)
             return current.toString();
 
-        return formatter.format(current);
+        return formatter.apply(current);
     }
 
     @MetaProperty
@@ -72,7 +73,7 @@ public class PerformanceParameter extends BaseUuidEntity {
         if (formatter == null)
             return recent.toString();
 
-        return formatter.format(recent);
+        return formatter.apply(recent);
     }
 
     @MetaProperty
@@ -83,7 +84,7 @@ public class PerformanceParameter extends BaseUuidEntity {
         if (formatter == null)
             return average.toString();
 
-        return formatter.format(average);
+        return formatter.apply(average);
     }
 
     public Long getRefreshCount() {
@@ -167,11 +168,11 @@ public class PerformanceParameter extends BaseUuidEntity {
         this.recent = average1m;
     }
 
-    public Formatter<Double> getFormatter() {
+    public Function<Double, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter<Double> formatter) {
+    public void setFormatter(Function<Double, String> formatter) {
         this.formatter = formatter;
     }
 }

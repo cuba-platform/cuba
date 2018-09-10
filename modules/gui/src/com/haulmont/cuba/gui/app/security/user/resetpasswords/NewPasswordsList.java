@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.entity.User;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class NewPasswordsList extends AbstractWindow {
 
@@ -53,19 +54,16 @@ public class NewPasswordsList extends AbstractWindow {
                 .setResizable(true)
                 .setHeight(themeConstants.get("cuba.gui.NewPasswordsList.height"));
 
-        passwordsTable.getColumn("id").setFormatter(new Formatter<UUID>() {
-            @Override
-            public String format(UUID id) {
-                if (id == null) {
-                    return "";
-                }
+        passwordsTable.getColumn("id").setFormatter((Function<UUID, String>) id -> {
+            if (id == null) {
+                return "";
+            }
 
-                User user = usersDs.getItem(id);
-                if (user != null) {
-                    return passwords.get(user);
-                } else {
-                    return "";
-                }
+            User user = usersDs.getItem(id);
+            if (user != null) {
+                return passwords.get(user);
+            } else {
+                return "";
             }
         });
 

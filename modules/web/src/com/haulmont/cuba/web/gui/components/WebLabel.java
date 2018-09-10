@@ -18,19 +18,19 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.vaadin.shared.ui.ContentMode;
 
 import javax.inject.Inject;
+import java.util.function.Function;
 
 public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, String, V> implements Label<V> {
 
     protected MetadataTools metadataTools;
 
-    protected Formatter<? super V> formatter;
+    protected Function<? super V, String> formatter;
 
     public WebLabel() {
         component = new CubaLabel();
@@ -53,7 +53,7 @@ public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, S
 
     protected String convertToPresentation(V modelValue) {
         if (formatter != null) {
-            return formatter.format(modelValue);
+            return formatter.apply(modelValue);
         }
 
         if (valueBinding != null
@@ -68,12 +68,12 @@ public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, S
 
     @SuppressWarnings("unchecked")
     @Override
-    public Formatter<V> getFormatter() {
-        return (Formatter<V>) formatter;
+    public Function<V, String> getFormatter() {
+        return (Function<V, String>) formatter;
     }
 
     @Override
-    public void setFormatter(Formatter<? super V> formatter) {
+    public void setFormatter(Function<? super V, String> formatter) {
         this.formatter = formatter;
     }
 

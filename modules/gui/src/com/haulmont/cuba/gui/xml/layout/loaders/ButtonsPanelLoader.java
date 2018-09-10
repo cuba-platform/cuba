@@ -23,13 +23,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
 
-    protected void applyButtonsProvider(ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)
+    protected void applyButtonsProvider(ButtonsPanel panel, Supplier<Collection<Component>> buttonsProvider)
             throws IllegalAccessException, InstantiationException {
 
-        Collection<Component> buttons = buttonsProvider.getButtons();
+        Collection<Component> buttons = buttonsProvider.get();
         for (Component button : buttons) {
             panel.add(button);
         }
@@ -67,11 +68,11 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
         } else {
             String className = element.attributeValue("providerClass");
             if (StringUtils.isNotEmpty(className)) {
-                Class<ButtonsPanel.Provider> clazz = ReflectionHelper.getClass(className);
+                Class<Supplier<Collection<Component>>> clazz = ReflectionHelper.getClass(className);
 
                 try {
-                    Constructor<ButtonsPanel.Provider> constructor = clazz.getConstructor();
-                    ButtonsPanel.Provider instance = constructor.newInstance();
+                    Constructor<Supplier<Collection<Component>>> constructor = clazz.getConstructor();
+                    Supplier<Collection<Component>> instance = constructor.newInstance();
                     applyButtonsProvider(resultComponent, instance);
                 } catch (Throwable e) {
                     throw new RuntimeException("Unable to apply buttons provider", e);

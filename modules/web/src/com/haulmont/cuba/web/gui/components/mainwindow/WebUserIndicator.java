@@ -20,7 +20,6 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -41,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.vaadin.server.Sizeable.Unit;
 
@@ -51,7 +51,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     protected Label userNameLabel;
     protected CubaComboBox userComboBox;
 
-    protected Formatter<User> userNameFormatter;
+    protected Function<? super User, String> userNameFormatter;
 
     protected MetadataTools metadataTools;
     protected BeanLocator beanLocator;
@@ -135,7 +135,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
     protected String getSubstitutedUserCaption(User user) {
         if (userNameFormatter != null) {
-            return userNameFormatter.format(user);
+            return userNameFormatter.apply(user);
         } else {
             return metadataTools.getInstanceName(user);
         }
@@ -212,14 +212,15 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     @Override
-    public void setUserNameFormatter(Formatter<User> userNameFormatter) {
+    public void setUserNameFormatter(Function<? super User, String> userNameFormatter) {
         this.userNameFormatter = userNameFormatter;
         refreshUserSubstitutions();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Formatter<User> getUserNameFormatter() {
-        return userNameFormatter;
+    public Function<User, String> getUserNameFormatter() {
+        return (Function<User, String>) userNameFormatter;
     }
 
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {

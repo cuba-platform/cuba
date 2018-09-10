@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Controller of the {@code appproperties-edit.xml} screen
@@ -123,7 +124,7 @@ public class AppPropertiesEdit extends AbstractWindow {
             }
         });
 
-        final Formatter<String> defaultValueFormatter = (value) -> {
+        final Function<String, String> defaultValueFormatter = (value) -> {
             if (datatype instanceof BooleanDatatype) {
                 return value;
             }

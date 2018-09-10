@@ -20,15 +20,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.Formatter;
 
-public class LockNameFormatter implements Formatter<String> {
+import java.util.function.Function;
+
+public class LockNameFormatter implements Function<String, String> {
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
     protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
 
     @Override
-    public String format(String value) {
+    public String apply(String value) {
         MetaClass mc = metadata.getSession().getClass(value);
         if (mc != null) {
             return messageTools.getEntityCaption(mc);

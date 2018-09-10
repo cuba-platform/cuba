@@ -19,14 +19,16 @@ package com.haulmont.cuba.web.gui.components.table;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
 
+import java.util.function.Function;
+
 import static com.haulmont.cuba.web.gui.components.table.CalculatableColumnGenerator.setLabelText;
 
 public class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
     private static final long serialVersionUID = 8041384664735759397L;
     private Label component;
-    private com.haulmont.cuba.gui.components.Formatter formatter;
+    private Function<Object, String> formatter;
 
-    protected CalculatablePropertyValueChangeListener(Label component, com.haulmont.cuba.gui.components.Formatter formatter) {
+    protected CalculatablePropertyValueChangeListener(Label component, Function<Object, String> formatter) {
         this.component = component;
         this.formatter = formatter;
     }

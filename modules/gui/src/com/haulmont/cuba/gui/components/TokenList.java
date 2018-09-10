@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
 
 public interface TokenList<V> extends Field<V>, Component.BelongToFrame, Component.HasCaption, Component.Editable,
                                    Component.Focusable {
@@ -121,8 +122,8 @@ public interface TokenList<V> extends Field<V>, Component.BelongToFrame, Compone
     AfterLookupSelectionHandler getAfterLookupSelectionHandler();
     void setAfterLookupSelectionHandler(AfterLookupSelectionHandler handler);
 
-    void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator);
-    TokenStyleGenerator getTokenStyleGenerator();
+    void setTokenStyleGenerator(Function<Object, String> tokenStyleGenerator);
+    Function<Object, String> getTokenStyleGenerator();
 
     /**
      * @return input prompt of LookupField
@@ -136,8 +137,8 @@ public interface TokenList<V> extends Field<V>, Component.BelongToFrame, Compone
      */
     void setLookupInputPrompt(String inputPrompt);
 
-    interface TokenStyleGenerator {
-        String getStyle(Object itemId);
+    @Deprecated
+    interface TokenStyleGenerator extends Function<Object, String> {
     }
 
     interface ItemChangeHandler {

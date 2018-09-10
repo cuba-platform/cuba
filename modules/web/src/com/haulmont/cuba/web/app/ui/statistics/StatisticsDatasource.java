@@ -20,7 +20,6 @@ package com.haulmont.cuba.web.app.ui.statistics;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
@@ -34,6 +33,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import java.util.*;
+import java.util.function.Function;
 
 public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParameter, UUID> {
 
@@ -159,7 +159,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
     }
 
     protected PerformanceParameter createParameter(String paramGroup, String paramName, boolean showRecent,
-                                                   Formatter<Double> formatter) {
+                                                   Function<Double, String> formatter) {
         PerformanceParameter param = new PerformanceParameter();
         param.setParameterName(paramName);
         param.setParameterGroup(paramGroup);
@@ -193,7 +193,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
                 CompositeData heapData = (CompositeData) heapUsage.getValue();
                 PerformanceParameter parameter = getParameter("Heap Memory Usage");
                 parameter.setCurrentLong((Long) heapData.get("used"));
-                String max = kilobyteFormatter.format(((Long) heapData.get("max")).doubleValue());
+                String max = kilobyteFormatter.apply(((Long) heapData.get("max")).doubleValue());
                 parameter.setDisplayName(parameter.getParameterName() + " (Max = " + max + ")");
             }
 
@@ -204,7 +204,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
                 CompositeData nonHeapData = (CompositeData) nonHeapUsage.getValue();
                 PerformanceParameter parameter = getParameter("Non-Heap Memory Usage");
                 parameter.setCurrentLong((Long) nonHeapData.get("used"));
-                String max = kilobyteFormatter.format(((Long) nonHeapData.get("max")).doubleValue());
+                String max = kilobyteFormatter.apply(((Long) nonHeapData.get("max")).doubleValue());
                 parameter.setDisplayName(parameter.getParameterName() + " (Max = " + max + ")");
             }
 
@@ -217,7 +217,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
                 attr = findAttribute("java.lang:type=OperatingSystem", "TotalPhysicalMemorySize");
                 if (attr != null) {
-                    String max = kilobyteFormatter.format(((Long) attr.getValue()).doubleValue());
+                    String max = kilobyteFormatter.apply(((Long) attr.getValue()).doubleValue());
                     param.setDisplayName(param.getParameterName() + " (Total = " + max + ")");
                 }
             }
@@ -229,7 +229,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
                 attr = findAttribute("java.lang:type=OperatingSystem", "TotalSwapSpaceSize");
                 if (attr != null) {
-                    String max = kilobyteFormatter.format(((Long) attr.getValue()).doubleValue());
+                    String max = kilobyteFormatter.apply(((Long) attr.getValue()).doubleValue());
                     param.setDisplayName(param.getParameterName() + " (Total = " + max + ")");
                 }
             }
@@ -251,7 +251,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
                 attr = findAttribute(coreAppName + ".cuba:type=StatisticsCounter", "DbConnectionPoolMaxTotal");
                 if (attr != null) {
-                    String max = integerFormatter.format(((Integer) attr.getValue()).doubleValue());
+                    String max = integerFormatter.apply(((Integer) attr.getValue()).doubleValue());
                     param.setDisplayName(param.getParameterName() + " (Max = " + max + ")");
                 }
             }
@@ -279,7 +279,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
                 attr = findAttribute("java.lang:type=Threading", "PeakThreadCount");
                 if (attr != null) {
-                    String max = integerFormatter.format(((Integer) attr.getValue()).doubleValue());
+                    String max = integerFormatter.apply(((Integer) attr.getValue()).doubleValue());
                     param.setDisplayName(param.getParameterName() + " (Peak = " + max + ")");
                 }
             }
@@ -413,26 +413,26 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
         throw new DevelopmentException("Parameter does not exist: " + paramName);
     }
 
-    protected class DateFormatter implements Formatter<Double> {
+    protected class DateFormatter implements Function<Double, String> {
 
         public DateFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             return datatypeFormatter.formatDateTime(new Date(value.longValue()));
         }
     }
 
-    public static class DurationFormatter implements Formatter<Double> {
+    public static class DurationFormatter implements Function<Double, String> {
 
         public DurationFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             int duration = (int) (value / 1000);
@@ -451,52 +451,52 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
         }
     }
 
-    protected class KilobyteFormatter implements Formatter<Double> {
+    protected class KilobyteFormatter implements Function<Double, String> {
 
         public KilobyteFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             return datatypeFormatter.formatLong(value.longValue() / 1024) + " KB";
         }
     }
 
-    protected class DoubleFormatter implements Formatter<Double> {
+    protected class DoubleFormatter implements Function<Double, String> {
 
         public DoubleFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             return datatypeFormatter.formatDouble(value);
         }
     }
 
-    protected class IntegerFormatter implements Formatter<Double> {
+    protected class IntegerFormatter implements Function<Double, String> {
 
         public IntegerFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             return datatypeFormatter.formatLong(Math.round(value));
         }
     }
 
-    protected class PercentFormatter implements Formatter<Double> {
+    protected class PercentFormatter implements Function<Double, String> {
 
         public PercentFormatter() {
         }
 
         @Override
-        public String format(Double value) {
+        public String apply(Double value) {
             if (value == null)
                 return "";
             return datatypeFormatter.formatInteger(((int) (value * 100))) + "%";

@@ -17,13 +17,13 @@
 package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Formatter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CollectionFormatter implements Formatter<Collection> {
+public class CollectionFormatter implements Function<Collection, String> {
 
     protected MetadataTools metadataTools;
 
@@ -32,7 +32,7 @@ public class CollectionFormatter implements Formatter<Collection> {
     }
 
     @Override
-    public String format(Collection value) {
+    public String apply(Collection value) {
         if (value == null) {
             return StringUtils.EMPTY;
         }

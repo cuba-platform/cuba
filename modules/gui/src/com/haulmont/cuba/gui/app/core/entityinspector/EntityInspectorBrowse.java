@@ -30,7 +30,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -56,6 +55,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static com.haulmont.cuba.gui.export.ExportFormat.JSON;
@@ -201,7 +201,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
 
         final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
-        Formatter dateTimeFormatter = value -> {
+        Function<?, String> dateTimeFormatter = value -> {
             if (value == null) {
                 return StringUtils.EMPTY;
             }

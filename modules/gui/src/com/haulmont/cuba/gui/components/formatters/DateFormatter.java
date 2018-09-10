@@ -21,7 +21,6 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -29,6 +28,7 @@ import org.dom4j.Element;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.Function;
 
 /**
  * {@link Date} formatter to be used in screen descriptors.
@@ -43,7 +43,7 @@ import java.util.Date;
  * &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; format=&quot;msg://dateFormat&quot;
  * </pre>
  */
-public class DateFormatter implements Formatter<Date> {
+public class DateFormatter implements Function<Date, String> {
 
     private Element element;
 
@@ -55,7 +55,7 @@ public class DateFormatter implements Formatter<Date> {
     }
 
     @Override
-    public String format(Date value) {
+    public String apply(Date value) {
         if (value == null) {
             return null;
         }

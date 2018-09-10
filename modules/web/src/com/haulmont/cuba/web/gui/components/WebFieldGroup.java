@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -43,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -828,7 +828,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         protected String targetContextHelpText;
         protected Boolean targetContextHelpTextHtmlEnabled;
         protected String targetInputPrompt;
-        protected Formatter targetFormatter;
+        protected Function targetFormatter;
         protected boolean isTargetCustom;
 
         protected List<Field.Validator> targetValidators = new ArrayList<>(0);
@@ -1310,7 +1310,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
-        public Formatter getFormatter() {
+        public Function getFormatter() {
             if (component instanceof HasFormatter) {
                 return ((HasFormatter) component).getFormatter();
             }
@@ -1318,7 +1318,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
-        public void setFormatter(Formatter formatter) {
+        public void setFormatter(Function formatter) {
             if (component instanceof HasFormatter) {
                 ((HasFormatter) component).setFormatter(formatter);
             } else {
@@ -1517,11 +1517,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             this.targetInputPrompt = targetInputPrompt;
         }
 
-        public Formatter getTargetFormatter() {
+        public Function getTargetFormatter() {
             return targetFormatter;
         }
 
-        public void setTargetFormatter(Formatter targetFormatter) {
+        public void setTargetFormatter(Function targetFormatter) {
             this.targetFormatter = targetFormatter;
         }
 

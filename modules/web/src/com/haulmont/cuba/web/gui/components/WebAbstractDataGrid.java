@@ -28,7 +28,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
@@ -141,10 +140,10 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
 
-    protected List<StyleProvider<? super E>> rowStyleProviders;
+    protected List<Function<? super E, String>> rowStyleProviders;
     protected List<CellStyleProvider<? super E>> cellStyleProviders;
 
-    protected DescriptionProvider<? super E> rowDescriptionProvider;
+    protected Function<? super E, String> rowDescriptionProvider;
     protected CellDescriptionProvider<? super E> cellDescriptionProvider;
 
     protected DetailsGenerator<E> detailsGenerator = null;
@@ -2118,7 +2117,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     }
 
     @Override
-    public void addRowStyleProvider(StyleProvider<? super E> styleProvider) {
+    public void addRowStyleProvider(Function<? super E, String> styleProvider) {
         if (this.rowStyleProviders == null) {
             this.rowStyleProviders = new LinkedList<>();
         }
@@ -2131,7 +2130,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     }
 
     @Override
-    public void removeRowStyleProvider(StyleProvider<? super E> styleProvider) {
+    public void removeRowStyleProvider(Function<? super E, String> styleProvider) {
         if (this.rowStyleProviders != null) {
             if (this.rowStyleProviders.remove(styleProvider)) {
                 repaint();
@@ -2175,17 +2174,17 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @SuppressWarnings("unchecked")
     @Override
-    public DescriptionProvider<E> getRowDescriptionProvider() {
-        return (DescriptionProvider<E>) rowDescriptionProvider;
+    public Function<E, String>getRowDescriptionProvider() {
+        return (Function<E, String>) rowDescriptionProvider;
     }
 
     @Override
-    public void setRowDescriptionProvider(DescriptionProvider<? super E> provider) {
+    public void setRowDescriptionProvider(Function<? super E, String> provider) {
         setRowDescriptionProvider(provider, ContentMode.PREFORMATTED);
     }
 
     @Override
-    public void setRowDescriptionProvider(DescriptionProvider<? super E> provider, ContentMode contentMode) {
+    public void setRowDescriptionProvider(Function<? super E, String> provider, ContentMode contentMode) {
         this.rowDescriptionProvider = provider;
 
         if (provider != null) {
@@ -2198,7 +2197,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     protected DescriptionGenerator<E> createRowDescriptionGenerator() {
         return item ->
-                rowDescriptionProvider.getDescription(item);
+                rowDescriptionProvider.apply(item);
     }
 
     @Override
@@ -2585,8 +2584,8 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         }
 
         StringBuilder joinedStyle = null;
-        for (StyleProvider<? super E> styleProvider : rowStyleProviders) {
-            String styleName = styleProvider.getStyleName(item);
+        for (Function<? super E, String> styleProvider : rowStyleProviders) {
+            String styleName = styleProvider.apply(item);
             if (styleName != null) {
                 if (joinedStyle == null) {
                     joinedStyle = new StringBuilder(styleName);
@@ -2619,7 +2618,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         StringBuilder joinedStyle = null;
 
         if (column.getStyleProvider() != null) {
-            String styleName = column.getStyleProvider().getStyleName(item);
+            String styleName = column.getStyleProvider().apply(item);
             if (styleName != null) {
                 joinedStyle = new StringBuilder(styleName);
             }
@@ -2657,7 +2656,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     protected String getGeneratedCellDescription(E item, Column<E> column) {
         if (column.getDescriptionProvider() != null) {
-            return column.getDescriptionProvider().getDescription(item);
+            return column.getDescriptionProvider().apply(item);
         }
 
         if (cellDescriptionProvider != null) {
@@ -2748,14 +2747,14 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         protected boolean resizable;
         protected boolean editable;
         protected boolean generated;
-        protected Formatter formatter;
+        protected Function<?, String> formatter;
 
         protected AbstractRenderer<E, ?> renderer;
         protected Function presentationProvider;
         protected Converter converter;
 
-        protected StyleProvider<? super E> styleProvider;
-        protected DescriptionProvider<? super E> descriptionProvider;
+        protected Function<? super E, String> styleProvider;
+        protected Function<? super E, String> descriptionProvider;
         protected ContentMode descriptionContentMode = ContentMode.PREFORMATTED;
 
         protected final Class type;
@@ -3038,12 +3037,12 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
         }
 
         @Override
-        public Formatter getFormatter() {
+        public Function getFormatter() {
             return formatter;
         }
 
         @Override
-        public void setFormatter(Formatter formatter) {
+        public void setFormatter(Function formatter) {
             this.formatter = formatter;
             updateRendererInternal();
         }
@@ -3215,29 +3214,29 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
         @SuppressWarnings("unchecked")
         @Override
-        public StyleProvider<E> getStyleProvider() {
-            return (StyleProvider<E>) styleProvider;
+        public Function<E, String> getStyleProvider() {
+            return (Function<E, String>) styleProvider;
         }
 
         @Override
-        public void setStyleProvider(StyleProvider<? super E> styleProvider) {
+        public void setStyleProvider(Function<? super E, String> styleProvider) {
             this.styleProvider = styleProvider;
             owner.repaint();
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public DescriptionProvider<E> getDescriptionProvider() {
-            return (DescriptionProvider<E>) descriptionProvider;
+        public Function<E, String> getDescriptionProvider() {
+            return (Function<E, String>) descriptionProvider;
         }
 
         @Override
-        public void setDescriptionProvider(DescriptionProvider<? super E> descriptionProvider) {
+        public void setDescriptionProvider(Function<? super E, String> descriptionProvider) {
             setDescriptionProvider(descriptionProvider, ContentMode.PREFORMATTED);
         }
 
         @Override
-        public void setDescriptionProvider(DescriptionProvider<? super E> descriptionProvider,
+        public void setDescriptionProvider(Function<? super E, String> descriptionProvider,
                                            ContentMode contentMode) {
             this.descriptionProvider = descriptionProvider;
             this.descriptionContentMode = contentMode;

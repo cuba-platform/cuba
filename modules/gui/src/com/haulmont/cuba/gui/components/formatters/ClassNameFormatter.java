@@ -18,14 +18,15 @@ package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Formatter;
 
-public class ClassNameFormatter implements Formatter {
+import java.util.function.Function;
+
+public class ClassNameFormatter implements Function<Object, String> {
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     @Override
-    public String format(Object value) {
+    public String apply(Object value) {
         if (value == null) {
             return null;
         }

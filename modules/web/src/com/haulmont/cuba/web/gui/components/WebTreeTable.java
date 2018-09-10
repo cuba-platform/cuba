@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.gui.components.table.TreeTableDataContainer;
 import com.haulmont.cuba.web.widgets.CubaTreeTable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTable, E> implements TreeTable<E> {
@@ -82,7 +83,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     }
 
     @Override
-    public void setIconProvider(IconProvider<? super E>  iconProvider) {
+    public void setIconProvider(Function<? super E, String> iconProvider) {
         this.iconProvider = iconProvider;
         // do not change row header mode
         component.refreshRowCache();

@@ -18,18 +18,18 @@
 package com.haulmont.cuba.web.gui.components.converters;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.VaadinSession;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.function.Function;
 
 public class StringToDatatypeConverter implements Converter<String, Object> {
 
     protected Datatype datatype;
-    protected Formatter formatter;
+    protected Function<Object, String> formatter;
     protected boolean trimming = false;
 
     public StringToDatatypeConverter(Datatype datatype) {
@@ -61,7 +61,7 @@ public class StringToDatatypeConverter implements Converter<String, Object> {
     public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
         if (getFormatter() != null) {
-            return getFormatter().format(value);
+            return getFormatter().apply(value);
         }
 
         if (locale == null) {
@@ -85,11 +85,11 @@ public class StringToDatatypeConverter implements Converter<String, Object> {
         return String.class;
     }
 
-    public Formatter getFormatter() {
+    public Function<Object, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Function<Object, String> formatter) {
         this.formatter = formatter;
     }
 

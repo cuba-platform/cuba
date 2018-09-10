@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, Component.Editable, HasButtonsPanel,
                                                 Component.HasCaption, Component.HasIcon, LookupComponent,
@@ -61,30 +62,38 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     void setItemClickAction(Action action);
     Action getItemClickAction();
 
-    void setStyleProvider(@Nullable StyleProvider<? super E> styleProvider);
+    /**
+     * Sets a single style provider for tree items.
+     *
+     * @param styleProvider a style provider to set
+     */
+    void setStyleProvider(@Nullable Function<? super E, String> styleProvider);
 
-    void addStyleProvider(StyleProvider<? super E> styleProvider);
-    void removeStyleProvider(StyleProvider<? super E> styleProvider);
+    /**
+     * Add a style provider for tree items.
+     *
+     * @param styleProvider a style provider to add
+     */
+    void addStyleProvider(Function<? super E, String> styleProvider);
+
+    /**
+     * Removes a previously added style provider.
+     *
+     * @param styleProvider a style provider to remove
+     */
+    void removeStyleProvider(Function<? super E, String> styleProvider);
 
     /**
      * Allows to define different styles for tree items.
      */
-    interface StyleProvider<E extends Entity> {
-        /**
-         * Called by {@link Tree} to get a style for item. <br>
-         * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
-         * and not shown to users.
-         *
-         * @param entity an entity instance represented by the current item
-         * @return style name or null to apply the default
-         */
-        String getStyleName(E entity);
+    @Deprecated
+    interface StyleProvider<E extends Entity> extends Function<E, String> {
     }
 
     /**
      * Set the icon provider for the tree.
      */
-    void setIconProvider(IconProvider<? super E> iconProvider);
+    void setIconProvider(Function<? super E, String> iconProvider);
 
     /**
      * Repaint UI representation of the tree including style providers and icon providers without refreshing the tree data.

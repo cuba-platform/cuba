@@ -16,10 +16,12 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.util.function.Function;
+
 /**
  * Object having a formatter.
  */
 public interface HasFormatter<V> {
-    Formatter<V> getFormatter();
-    void setFormatter(Formatter<? super V> formatter);
+    Function<V, String> getFormatter();
+    void setFormatter(Function<? super V, String> formatter);
 }

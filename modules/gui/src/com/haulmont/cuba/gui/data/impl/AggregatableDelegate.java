@@ -46,7 +46,7 @@ public abstract class AggregatableDelegate<K> {
             String formattedValue;
             if (aggregationInfo.getFormatter() != null) {
                 //noinspection unchecked
-                formattedValue = aggregationInfo.getFormatter().format(value);
+                formattedValue = aggregationInfo.getFormatter().apply(value);
             } else {
                 // propertyPath could be null in case of custom aggregation
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         extends WebAbstractList<T, E> implements Tree<E> {
@@ -48,7 +49,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     // Style names used by tree itself
     protected List<String> internalStyles = new ArrayList<>(2);
 
-    protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
+    protected List<Function<? super E, String>> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
 
     protected CollectionDsListenersWrapper collectionDsListenersWrapper;
@@ -57,7 +58,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected HorizontalLayout topPanel;
     protected com.vaadin.ui.CssLayout componentComposition;
     protected Action enterPressAction;
-    protected IconProvider<? super E> iconProvider;
+    protected Function<? super E, String> iconProvider;
 
     protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
@@ -305,10 +306,10 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
             return null;
         }
 
-        Entity item = datasource.getItem(itemId);
+        E item = (E) datasource.getItem(itemId);
         StringBuilder joinedStyle = null;
-        for (Tree.StyleProvider styleProvider : styleProviders) {
-            String styleName = styleProvider.getStyleName(item);
+        for (Function<? super E, String> styleProvider : styleProviders) {
+            String styleName = styleProvider.apply(item);
             if (styleName != null) {
                 if (joinedStyle == null) {
                     joinedStyle = new StringBuilder(styleName);
@@ -345,7 +346,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void setStyleProvider(@Nullable Tree.StyleProvider<? super E> styleProvider) {
+    public void setStyleProvider(@Nullable Function<? super E, String> styleProvider) {
         if (styleProvider != null) {
             if (this.styleProviders == null) {
                 this.styleProviders = new LinkedList<>();
@@ -368,7 +369,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void addStyleProvider(Tree.StyleProvider<? super E> styleProvider) {
+    public void addStyleProvider(Function<? super E, String> styleProvider) {
         if (this.styleProviders == null) {
             this.styleProviders = new LinkedList<>();
         }
@@ -386,7 +387,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void removeStyleProvider(Tree.StyleProvider<? super E> styleProvider) {
+    public void removeStyleProvider(Function<? super E, String> styleProvider) {
         if (this.styleProviders != null) {
             if (this.styleProviders.remove(styleProvider)) {
                 component.markAsDirty();
@@ -430,7 +431,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void setIconProvider(IconProvider<? super E> iconProvider) {
+    public void setIconProvider(Function<? super E, String> iconProvider) {
         if (this.iconProvider != iconProvider) {
             this.iconProvider = iconProvider;
 
@@ -444,7 +445,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                         return null;
                     }
 
-                    String resourceUrl = WebAbstractTree.this.iconProvider.getItemIcon(item);
+                    String resourceUrl = WebAbstractTree.this.iconProvider.apply(item);
                     return iconResolver.getIconResource(resourceUrl);
                 });
             }

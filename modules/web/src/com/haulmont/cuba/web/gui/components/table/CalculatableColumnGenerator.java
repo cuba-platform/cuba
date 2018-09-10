@@ -17,11 +17,12 @@
 package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.v7.ui.AbstractSelect;
+
+import java.util.function.Function;
 
 public class CalculatableColumnGenerator implements SystemTableColumnGenerator {
     protected Table table;
@@ -41,7 +42,7 @@ public class CalculatableColumnGenerator implements SystemTableColumnGenerator {
 
         PropertyWrapper propertyWrapper = (PropertyWrapper) source.getContainerProperty(itemId, propertyPath);
 
-        com.haulmont.cuba.gui.components.Formatter formatter = null;
+        Function formatter = null;
         Table.Column column = table.getColumn(columnId.toString());
         if (column != null) {
             formatter = column.getFormatter();
@@ -58,11 +59,11 @@ public class CalculatableColumnGenerator implements SystemTableColumnGenerator {
     }
 
     @Deprecated
-    public static void setLabelText(com.vaadin.ui.Label label, Object value, Formatter formatter) {
+    public static void setLabelText(com.vaadin.ui.Label label, Object value, Function<Object, String> formatter) {
         label.setValue(value == null
                 ? "" : String.class.isInstance(value)
                 ? (String) value : formatter != null
-                ? formatter.format(value) : value.toString()
+                ? formatter.apply(value) : value.toString()
         );
     }
 }

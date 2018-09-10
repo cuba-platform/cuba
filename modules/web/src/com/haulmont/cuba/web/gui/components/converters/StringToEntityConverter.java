@@ -19,14 +19,14 @@ package com.haulmont.cuba.web.gui.components.converters;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 
 import java.util.Locale;
+import java.util.function.Function;
 
 public class StringToEntityConverter implements Converter<String, Entity> {
 
-    protected Formatter formatter;
+    protected Function<Object, String> formatter;
 
     @Override
     public Entity convertToModel(String value, Class<? extends Entity> targetType, Locale locale)
@@ -38,7 +38,7 @@ public class StringToEntityConverter implements Converter<String, Entity> {
     public String convertToPresentation(Entity value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
         if (getFormatter() != null) {
-            return getFormatter().format(value);
+            return getFormatter().apply(value);
         }
 
         if (value != null) {
@@ -53,11 +53,11 @@ public class StringToEntityConverter implements Converter<String, Entity> {
         return Entity.class;
     }
 
-    public Formatter getFormatter() {
+    public Function<Object, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Function<Object, String> formatter) {
         this.formatter = formatter;
     }
 

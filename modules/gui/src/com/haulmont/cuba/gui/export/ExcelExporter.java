@@ -599,7 +599,7 @@ public class ExcelExporter {
                         cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
                     }
                     if (column.getFormatter() != null)
-                        cellValue = column.getFormatter().format(cellValue);
+                        cellValue = column.getFormatter().apply(cellValue);
                 }
             } else {
                 Table.Printable printable = table.getPrintable(column);
@@ -634,7 +634,7 @@ public class ExcelExporter {
                 cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
 
                 if (column.getFormatter() != null) {
-                    cellValue = column.getFormatter().format(cellValue);
+                    cellValue = column.getFormatter().apply(cellValue);
                 }
             } else {
                 DataGrid.ColumnGenerator generator = dataGrid.getColumnGenerator(column.getId());

@@ -20,15 +20,15 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 import com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
-import com.haulmont.cuba.gui.components.ListComponent.IconProvider;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
-public class DiffIconProvider implements IconProvider<EntityPropertyDiff> {
+public class DiffIconProvider implements Function<EntityPropertyDiff, String> {
 
     @Nullable
     @Override
-    public String getItemIcon(EntityPropertyDiff entity) {
+    public String apply(EntityPropertyDiff entity) {
         if (entity instanceof EntityClassPropertyDiff) {
             switch (entity.getItemState()) {
                 case Added:

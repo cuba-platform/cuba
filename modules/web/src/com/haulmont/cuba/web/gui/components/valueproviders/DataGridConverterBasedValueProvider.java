@@ -1,7 +1,6 @@
 package com.haulmont.cuba.web.gui.components.valueproviders;
 
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.data.ValueProvider;
 
 public class DataGridConverterBasedValueProvider implements ValueProvider {

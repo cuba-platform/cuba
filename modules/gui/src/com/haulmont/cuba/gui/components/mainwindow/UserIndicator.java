@@ -18,8 +18,9 @@
 package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.security.entity.User;
+
+import java.util.function.Function;
 
 public interface UserIndicator extends Component.BelongToFrame {
 
@@ -32,10 +33,10 @@ public interface UserIndicator extends Component.BelongToFrame {
      *
      * @param userNameFormatter formatter to be executed.
      */
-    void setUserNameFormatter(Formatter<User> userNameFormatter);
+    void setUserNameFormatter(Function<? super User, String> userNameFormatter);
 
     /**
      * @return formatter that is used or null.
      */
-    Formatter<User> getUserNameFormatter();
+    Function<User, String> getUserNameFormatter();
 }

@@ -47,6 +47,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -437,7 +438,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         field.setXmlDescriptor(element);
 
-        com.haulmont.cuba.gui.components.Formatter formatter = loadFormatter(element);
+        Function formatter = loadFormatter(element);
         if (formatter != null) {
             field.setFormatter(formatter);
         }

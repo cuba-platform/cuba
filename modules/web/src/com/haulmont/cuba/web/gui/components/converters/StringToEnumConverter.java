@@ -19,19 +19,19 @@ package com.haulmont.cuba.web.gui.components.converters;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.server.VaadinSession;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class StringToEnumConverter implements Converter<String, Enum> {
 
     protected Class<Enum> enumClass;
     protected Messages messages;
-    protected Formatter formatter;
+    protected Function<Enum, String> formatter;
     protected boolean trimming = false;
 
     public StringToEnumConverter(Class<Enum> enumClass) {
@@ -71,7 +71,7 @@ public class StringToEnumConverter implements Converter<String, Enum> {
             throws ConversionException {
 
         if (getFormatter() != null) {
-            return getFormatter().format(value);
+            return getFormatter().apply(value);
         }
 
         if (value == null) {
@@ -95,11 +95,11 @@ public class StringToEnumConverter implements Converter<String, Enum> {
         return String.class;
     }
 
-    public Formatter getFormatter() {
+    public Function<Enum, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Function<Enum, String> formatter) {
         this.formatter = formatter;
     }
 

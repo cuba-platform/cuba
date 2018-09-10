@@ -471,11 +471,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         MetaPropertyPath propertyPath = groupId.getProperty();
-        Table.Column column = columns.get(propertyPath);
+        Table.Column<E> column = columns.get(propertyPath);
         if (column != null && column.getXmlDescriptor() != null) {
             String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty"); // vaadin8 move to Column
             if (column.getFormatter() != null) {
-                return column.getFormatter().format(value);
+                return column.getFormatter().apply(value);
             } else if (StringUtils.isNotEmpty(captionProperty)) {
                 Collection<?> children = component.getGroupItemIds(groupId);
                 if (children.isEmpty()) {

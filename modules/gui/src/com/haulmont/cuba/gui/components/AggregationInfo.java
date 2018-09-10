@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 
+import java.util.function.Function;
+
 public class AggregationInfo {
 
     public enum Type {
@@ -36,7 +38,7 @@ public class AggregationInfo {
 
     private MetaPropertyPath propertyPath;
     private Type type;
-    private Formatter formatter;
+    private Function<Object, String> formatter;
     private AggregationStrategy strategy;
 
     public MetaPropertyPath getPropertyPath() {
@@ -55,11 +57,11 @@ public class AggregationInfo {
         this.type = type;
     }
 
-    public Formatter getFormatter() {
+    public Function<Object, String> getFormatter() {
         return formatter;
     }
 
-    public void setFormatter(Formatter formatter) {
+    public void setFormatter(Function<Object, String> formatter) {
         this.formatter = formatter;
     }
 

@@ -62,6 +62,7 @@ import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.lang.String.format;
 
@@ -601,7 +602,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
                     lookupField.setOptionsMap(optionsMap);
                     lookupField.setNewOptionAllowed(true);
-                    lookupField.setNewOptionHandler(caption -> {
+                    //noinspection RedundantCast
+                    lookupField.setNewOptionHandler((Consumer<String>) caption -> {
                         if (caption != null && !optionsMap.containsKey(caption)) {
                             optionsMap.put(caption, caption);
                             lookupField.setValue(caption);

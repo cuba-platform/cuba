@@ -19,12 +19,12 @@ package com.haulmont.cuba.web.app.ui.statistics;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Timer;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ThreadsMonitoringWindow extends AbstractWindow {
 
@@ -57,9 +57,9 @@ public class ThreadsMonitoringWindow extends AbstractWindow {
         updateStacktrace(threadsDs.getItem());
     }
 
-    protected static class PercentFormatter implements Formatter {
+    protected static class PercentFormatter implements Function<Object, String> {
         @Override
-        public String format(Object value) {
+        public String apply(Object value) {
             String res = null;
             if (value instanceof Double) {
                 double doubleValue = (double) value;

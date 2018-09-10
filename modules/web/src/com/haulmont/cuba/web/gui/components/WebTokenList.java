@@ -50,6 +50,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList, V> implements TokenList<V> {
 
@@ -81,7 +82,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
     protected Map<String, Object> lookupScreenParams;
 
-    protected TokenStyleGenerator tokenStyleGenerator;
+    protected Function<Object, String> tokenStyleGenerator;
 
     protected boolean lookup = false;
 
@@ -579,12 +580,12 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     @Override
-    public void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator) {
+    public void setTokenStyleGenerator(Function<Object, String> tokenStyleGenerator) {
         this.tokenStyleGenerator = tokenStyleGenerator;
     }
 
     @Override
-    public TokenStyleGenerator getTokenStyleGenerator() {
+    public Function<Object, String> getTokenStyleGenerator() {
         return tokenStyleGenerator;
     }
 
@@ -1021,7 +1022,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
         protected void setTokenStyle(CubaTokenListLabel label, Object itemId) {
             if (tokenStyleGenerator != null) {
-                String styleName = tokenStyleGenerator.getStyle(itemId);
+                String styleName = tokenStyleGenerator.apply(itemId);
                 if (styleName != null && !styleName.equals("")) {
                     label.setStyleName(styleName);
                 }

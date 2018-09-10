@@ -22,17 +22,17 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Formatter;
 import org.dom4j.Element;
 
 import java.text.DecimalFormat;
+import java.util.function.Function;
 
 /**
  * Number formatter to be used in screen descriptors and controllers.
  * <br> If defined in XML together with {@code format} attribute, uses this format, otherwise formats by means of
  * {@link Datatype#format(Object, java.util.Locale)}.
  */
-public class NumberFormatter implements Formatter<Number> {
+public class NumberFormatter implements Function<Number, String> {
 
     private Element element;
 
@@ -47,7 +47,7 @@ public class NumberFormatter implements Formatter<Number> {
     }
 
     @Override
-    public String format(Number value) {
+    public String apply(Number value) {
         if (value == null) {
             return null;
         }

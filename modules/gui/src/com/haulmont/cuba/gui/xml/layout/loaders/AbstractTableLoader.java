@@ -45,6 +45,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
@@ -441,7 +442,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 column.setValueDescription(loadResourceString(valueDescription));
             }
 
-            Formatter formatter = loadFormatter(aggregationElement);
+            Function formatter = loadFormatter(aggregationElement);
+            //noinspection unchecked
             aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);
             column.setAggregation(aggregation);
 
