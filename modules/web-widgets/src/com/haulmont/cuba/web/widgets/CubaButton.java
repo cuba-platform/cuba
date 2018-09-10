@@ -55,7 +55,11 @@ public class CubaButton extends com.vaadin.ui.Button {
         // check if it cannot be clicked at all due to modal dialogs
         CubaUI ui = (CubaUI) getUI();
         if (ui.isAccessibleForUser(this)) {
-            super.fireClick();
+            if (clickHandler != null) {
+                clickHandler.accept(null);
+            } else {
+                super.fireClick();
+            }
         } else {
             LoggerFactory.getLogger(CubaButton.class)
                     .debug("Ignore click because button is inaccessible for user");
