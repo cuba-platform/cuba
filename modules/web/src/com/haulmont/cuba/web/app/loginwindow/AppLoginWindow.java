@@ -114,7 +114,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected boolean loginByRememberMe = false;
 
-    protected Consumer<HasValue.ValueChangeEvent> loginChangeListener;
+    protected Consumer<HasValue.ValueChangeEvent<String>> loginChangeListener;
 
     @Override
     public void init(Map<String, Object> params) {

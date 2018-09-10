@@ -44,8 +44,9 @@ public interface HasValue<V> {
         return Objects.equals(getValue(), getEmptyValue());
     }
 
-    default Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ValueChangeEvent.class, listener);
+    @SuppressWarnings("unchecked")
+    default Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        return ((EventHubOwner) this).getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     /**
@@ -53,46 +54,44 @@ public interface HasValue<V> {
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ValueChangeEvent.class, listener);
+    default void removeValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        ((EventHubOwner) this).getEventHub().unsubscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     /**
      * Describes value change event.
-     * <p>
-     * todo V parameter
      */
-    class ValueChangeEvent extends EventObject {
-        private final HasValue component;
-        private final Object prevValue;
-        private final Object value;
+    class ValueChangeEvent<V> extends EventObject {
+        private final V prevValue;
+        private final V value;
 
         // vaadin8 add isUserOriginated !!!!!
 
-        public ValueChangeEvent(HasValue component, Object prevValue, Object value) {
+        public ValueChangeEvent(HasValue component, V prevValue, V value) {
             super(component);
-            this.component = component;
             this.prevValue = prevValue;
             this.value = value;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public HasValue getSource() {
+        public HasValue<V> getSource() {
             return (HasValue) super.getSource();
         }
 
         /**
          * @return component
          */
-        public HasValue getComponent() {
-            return component;
+        @SuppressWarnings("unchecked")
+        public HasValue<V> getComponent() {
+            return (HasValue) super.getSource();
         }
 
         /**
          * @return previous value
          */
         @Nullable
-        public Object getPrevValue() {
+        public V getPrevValue() {
             return prevValue;
         }
 
@@ -100,7 +99,7 @@ public interface HasValue<V> {
          * @return current value
          */
         @Nullable
-        public Object getValue() {
+        public V getValue() {
             return value;
         }
     }

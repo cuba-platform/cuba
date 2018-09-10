@@ -57,7 +57,6 @@ import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Consumer;
 
 @org.springframework.stereotype.Component(Param.NAME)
 @Scope("prototype")
@@ -683,21 +682,21 @@ public class Param {
         TextField<String> field = componentsFactory.createComponent(TextField.class);
 
         field.addValueChangeListener(e -> {
-            if (e.getValue() == null || e.getValue() instanceof Number) {
+            if (e.getValue() == null) {
                 _setValue(e.getValue(), valueProperty);
-            } else if (e.getValue() instanceof String && !StringUtils.isBlank((String) e.getValue())) {
+            } else if (!StringUtils.isBlank(e.getValue())) {
                 UserSessionSource userSessionSource1 = AppBeans.get(UserSessionSource.NAME);
 
                 Object v;
                 try {
-                    v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
+                    v = datatype.parse(e.getValue(), userSessionSource1.getLocale());
                 } catch (ParseException ex) {
                     WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
                     wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.TRAY);
                     return;
                 }
                 _setValue(v, valueProperty);
-            } else if (e.getValue() instanceof String && StringUtils.isBlank((String) e.getValue())) {
+            } else if (StringUtils.isBlank(e.getValue())) {
                 _setValue(null, valueProperty);
             } else {
                 throw new IllegalStateException("Invalid value: " + e.getValue());

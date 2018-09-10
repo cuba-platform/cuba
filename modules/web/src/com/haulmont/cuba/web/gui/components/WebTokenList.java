@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -94,7 +95,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     protected boolean multiselect;
     protected PickerField.LookupAction lookupAction;
 
-    protected final Consumer<ValueChangeEvent> lookupSelectListener = e -> {
+    protected final Consumer<ValueChangeEvent<Entity>> lookupSelectListener = e -> {
         if (isEditable()) {
             addValueFromLookupPickerField();
         }
@@ -269,15 +270,14 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     @Override
-    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
+    public Subscription addValueChangeListener(Consumer listener) {
         LoggerFactory.getLogger(WebTokenList.class).warn("addValueChangeListener not implemented for TokenList");
 
-        // todo
-        return () -> {};
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
-    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
+    public void removeValueChangeListener(Consumer listener) {
         LoggerFactory.getLogger(WebTokenList.class).warn("removeValueChangeListener not implemented for TokenList");
     }
 

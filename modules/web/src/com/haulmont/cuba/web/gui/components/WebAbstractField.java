@@ -193,7 +193,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
                 setValidationError(null);
             }
 
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value);
             publish(ValueChangeEvent.class, event);
         }
     }

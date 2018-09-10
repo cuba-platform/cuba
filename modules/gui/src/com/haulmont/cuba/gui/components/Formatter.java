@@ -24,4 +24,10 @@ import java.util.function.Function;
  */
 @Deprecated
 public interface Formatter<T> extends Function<T, String> {
+    @Override
+    default String apply(T t) {
+        return format(t);
+    }
+
+    String format(T t);
 }

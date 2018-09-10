@@ -89,7 +89,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
         localesSelect.setValue(userSessionSource.getLocale());
     }
 
-    protected Consumer<HasValue.ValueChangeEvent> createLocaleSelectValueChangeListener() {
+    protected Consumer<HasValue.ValueChangeEvent<Locale>> createLocaleSelectValueChangeListener() {
         return e -> {
             captionValueChangeListener.suspend();
             messageValueChangeListener.suspend();

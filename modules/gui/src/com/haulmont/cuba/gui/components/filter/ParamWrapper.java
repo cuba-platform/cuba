@@ -118,16 +118,15 @@ public class ParamWrapper implements Component, HasValue<Object> {
         param.setValue(value);
     }
 
-   @Override
-    public Subscription addValueChangeListener(Consumer<ValueChangeEvent> listener) {
-        param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
+    @Override
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<Object>> listener) {
+        param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, (Consumer) listener));
 
-        // todo
-        return () -> {};
+        return () -> removeValueChangeListener(listener);
     }
 
     @Override
-    public void removeValueChangeListener(Consumer<ValueChangeEvent> listener) {
+    public void removeValueChangeListener(Consumer listener) {
         param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
     }
 
