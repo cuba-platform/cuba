@@ -316,7 +316,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Only for compatibility with old screens.
      */
     @Deprecated
-    interface Editor<T extends Entity> extends EditorScreen<T>, Window.Committable, LegacyFrame {
+    interface Editor<T extends Entity> extends Window, EditorScreen<T>, Window.Committable, LegacyFrame {
         /**
          * Name that is used to register a client type specific screen implementation in
          * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
@@ -388,7 +388,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * Represents a lookup screen.
      */
     @Deprecated
-    interface Lookup<T extends Entity> extends LookupScreen<T>, LegacyFrame {
+    interface Lookup<T extends Entity> extends Window, LookupScreen<T>, LegacyFrame {
 
         String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
         String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
