@@ -85,7 +85,7 @@ $c-table-header-hover-background-color: #f2f5f7 !default;
     height: round($v-unit-size/2);
     background: no-repeat left center;
     margin-left: $v-table-cell-padding-horizontal;
-    background-image: url(images//checkbox-checked.png); /** sprite-ref: components; */
+    background-image: url(images/checkbox-checked.png);
   }
 
   .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
@@ -94,7 +94,7 @@ $c-table-header-hover-background-color: #f2f5f7 !default;
     height: round($v-unit-size/2);
     background: no-repeat left center;
     margin-left: $v-table-cell-padding-horizontal;
-    background-image: url(images/checkbox-unchecked.png); /** sprite-ref: components; */
+    background-image: url(images/checkbox-unchecked.png);
   }
 
   .#{$primary-stylename}-cell-content.boolean-cell-false,
@@ -110,7 +110,7 @@ $c-table-header-hover-background-color: #f2f5f7 !default;
     height: 18px;
     background: transparent;
     background-repeat: no-repeat;
-    background-image: url(images/column-selector.png); /** sprite-ref: components; */
+    background-image: url(images/column-selector.png);
     border: none;
     border-radius: 0;
   }

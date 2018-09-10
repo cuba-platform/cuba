@@ -33,12 +33,12 @@ $c-tabsheet-tab-close-text-color: #64798f !default;
 /**
  * Background color of application work area
  */
-$v-app-workarea-background: #8398af !default;
+$c-app-workarea-background: #8398af !default;
 
 @mixin havana-main-window {
 
   .v-tabsheet.c-main-tabsheet.framed.padded-tabbar > .v-tabsheet-tabcontainer {
-    background-color: $v-app-workarea-background;
+    background-color: $c-app-workarea-background;
     box-shadow: inset 0px -6px 5px -5px rgba(0, 0, 0, 0.3);
 
     .v-tabsheet-tabitem .v-caption {
@@ -75,6 +75,6 @@ $v-app-workarea-background: #8398af !default;
   }
 
   .c-app-workarea-initial {
-    background: $v-app-workarea-background;
+    background: $c-app-workarea-background;
   }
 }

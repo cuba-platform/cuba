@@ -15,6 +15,9 @@
  *
  */
 
+/**
+ * Notification border radius
+ */
 $c-notification-border-radius: 3px !default;
 
 @mixin havana-notification($primary-stylename: v-Notification) {

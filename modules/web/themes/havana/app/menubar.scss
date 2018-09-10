@@ -30,8 +30,13 @@ $c-main-menu-popup-text-color: white !default;
 
   .#{$primary-stylename} {
     .#{$primary-stylename}-menuitem {
-      text-shadow: black 1px 1px;
       outline: none;
+    }
+  }
+
+  .#{$primary-stylename}.c-main-menu {
+    .#{$primary-stylename}-menuitem {
+      text-shadow: black 1px 1px;
     }
   }
 

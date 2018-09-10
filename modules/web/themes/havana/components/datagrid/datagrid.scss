@@ -41,7 +41,7 @@ $c-datagrid-selected-row-cell-border-color: #9bb3d3 !default;
     width: round($v-unit-size/2);
     background: no-repeat left center;
     margin-left: $v-table-cell-padding-horizontal;
-    background-image: url(images//checkbox-checked.png); /** sprite-ref: components; */
+    background-image: url(images/checkbox-checked.png);
 
     &:before {
       content: none;
@@ -54,7 +54,7 @@ $c-datagrid-selected-row-cell-border-color: #9bb3d3 !default;
 
     background: no-repeat left center;
     margin-left: $v-table-cell-padding-horizontal;
-    background-image: url(images//checkbox-unchecked.png); /** sprite-ref: components; */
+    background-image: url(images/checkbox-unchecked.png);
 
     &:before {
       content: none;
