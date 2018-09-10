@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.haulmont.cuba.gui.sys;
 
 import com.google.common.cache.CacheBuilder;
@@ -24,7 +39,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
-// todo Unit tests
+import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
+
 @Component("cuba_UiControllerReflectionInspector")
 public class UiControllerReflectionInspector {
 
@@ -91,7 +107,9 @@ public class UiControllerReflectionInspector {
                 if (toInject.isEmpty()) {
                     toInject = new HashMap<>();
                 }
-                field.setAccessible(true);
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
 
                 toInject.put(field, aClass);
             }
@@ -102,7 +120,9 @@ public class UiControllerReflectionInspector {
                 if (toInject.isEmpty()) {
                     toInject = new HashMap<>();
                 }
-                method.setAccessible(true);
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
 
                 toInject.put(method, aClass);
             }
@@ -148,7 +168,7 @@ public class UiControllerReflectionInspector {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
 
         return Arrays.stream(methods)
-                .filter(m -> m.getAnnotation(EventListener.class) != null)
+                .filter(m -> findMergedAnnotation(m, EventListener.class) != null)
                 .peek(m -> {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);
@@ -161,9 +181,9 @@ public class UiControllerReflectionInspector {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
 
         return Arrays.stream(methods)
-                .filter(m -> m.getAnnotation(Subscribe.class) != null)
                 .filter(m -> m.getParameterCount() == 1)
                 .filter(m -> EventObject.class.isAssignableFrom(m.getParameterTypes()[0]))
+                .filter(m -> findMergedAnnotation(m, Subscribe.class) != null)
                 .peek(m -> {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);

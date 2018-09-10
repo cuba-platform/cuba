@@ -32,12 +32,8 @@ class NotificationsTest extends Specification {
     @SuppressWarnings("GroovyPointlessBoolean")
     def "Notification can be show"() {
         def ui = new AppUI()
-        def testBackgroundWorker = Mock(BackgroundWorker)
-        def notifications = new WebNotifications(ui) {
-            {
-                backgroundWorker = testBackgroundWorker
-            }
-        }
+        def notifications = new WebNotifications(ui)
+        notifications.backgroundWorker = Mock(BackgroundWorker)
 
         when:
 
@@ -83,12 +79,8 @@ class NotificationsTest extends Specification {
     }
 
     def "Notification does not support ContentMode.PREFORMATTED"() {
-        def testBackgroundWorker = Mock(BackgroundWorker)
-        def notifications = new WebNotifications(new AppUI()) {
-            {
-                backgroundWorker = testBackgroundWorker
-            }
-        }
+        def notifications = new WebNotifications(new AppUI())
+        notifications.backgroundWorker = Mock(BackgroundWorker)
 
         when:
 

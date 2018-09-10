@@ -26,7 +26,10 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -46,7 +49,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
@@ -56,7 +58,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.*;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -65,8 +66,6 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * todo Unit tests
- *
  * Wires {@link Inject}, {@link Named}, {@link WindowParam} fields/setters and {@link EventListener} methods.
  */
 @org.springframework.stereotype.Component(UiControllerDependencyInjector.NAME)
@@ -188,8 +187,6 @@ public class UiControllerDependencyInjector {
         boolean required = true;
         if (element.isAnnotationPresent(WindowParam.class)) {
             required = element.getAnnotation(WindowParam.class).required();
-        } else if (element.isAnnotationPresent(Autowired.class)) {
-            required = element.getAnnotation(Autowired.class).required();
         }
 
         if (element instanceof Field) {
