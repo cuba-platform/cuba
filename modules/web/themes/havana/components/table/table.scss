@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,185 +15,35 @@
  *
  */
 
+/**
+ * Cell border color of selected row
+ */
+$c-table-selected-row-cell-border-color: #9bb3d3 !default;
+
+/**
+ * Background of header cell in table
+ */
+$c-table-header-background-color: #e6eaef !default;
+
+/**
+ * Hover background of header cell in table
+ */
+$c-table-header-hover-background-color: #f2f5f7 !default;
+
 @mixin havana-table($primary-stylename: v-table) {
+
   .#{$primary-stylename} {
-    text-align: left;
-
-    .#{$primary-stylename}-arow {
-      @include box-defaults;
-
-      background: #ccc;
-      border-top: 1px solid $cuba-field-border-color;
-      border-left: 1px solid $cuba-field-border-color;
-      border-right: 1px solid $cuba-field-border-color;
-    }
-
-    .#{$primary-stylename}-arow-row {
-      @include box-defaults;
-
-      height: 24px;
-      border-right: 1px solid $cuba-field-border-color;
-    }
-
-    .#{$primary-stylename}-arow-row > .#{$primary-stylename}-cell-content {
-      border-bottom: 0;
-    }
-
-    .#{$primary-stylename}-footer {
-      background: #ccc;
-    }
-
-    .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
-      color: transparent;
-      font-size: 0;
-      height: 13px;
-      background: no-repeat left center;
-      background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
-    }
-
-    .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
-      color: transparent;
-      font-size: 0;
-      height: 13px;
-      background: no-repeat left center;
-      background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
-    }
 
     .#{$primary-stylename}-header-wrap {
-      height: 23px;
-      background: $cuba-table-header-background-color;
-      border: 1px solid $cuba-field-border-color;
-      border-bottom: none;
-      overflow: hidden;
-      position: relative;
+      background: $c-table-header-background-color;
 
       .#{$primary-stylename}-header {
-        height: 23px;
-
-        .#{$primary-stylename}-caption-container {
-          color: $cuba-table-text-color;
-          height: 23px;
-          float: left;
-          overflow: hidden;
-          white-space: nowrap;
-          padding-top: 3px;
-          margin-left: 5px;
-          font-size: 11px;
-        }
 
         .#{$primary-stylename}-header-cell:hover,
         .#{$primary-stylename}-header-cell-asc:hover,
         .#{$primary-stylename}-header-cell-desc:hover {
-          background: $cuba-table-header-hover-background-color;
+          background: $c-table-header-hover-background-color
         }
-
-        table {
-          td {
-            height: 23px;
-            cursor: pointer;
-          }
-        }
-      }
-
-      .#{$primary-stylename}-resizer {
-        @include box-defaults;
-
-        display: block;
-        height: 23px;
-        float: right;
-        background: transparent;
-        border-right: 1px solid $cuba-field-border-color;
-        width: 3px;
-        cursor: col-resize;
-      }
-
-      .#{$primary-stylename}-header > div {
-        height: 23px;
-      }
-    }
-
-    .#{$primary-stylename}-body-wrapper {
-      border: 1px solid $cuba-field-border-color;
-    }
-
-    .#{$primary-stylename}.v-has-width {
-      & > .#{$primary-stylename}-body-wrapper,
-      & > .#{$primary-stylename}-header-wrap,
-      & > .#{$primary-stylename}-footer-wrap {
-        width: 100% !important;
-        @include box-defaults;
-      }
-    }
-
-    .#{$primary-stylename}-body {
-      background: #fff;
-    }
-
-    .#{$primary-stylename}-cell-content {
-      border-right-color: $cuba-table-cell-separator-color;
-      font-size: 11px;
-      line-height: 15px;
-      color: $cuba-table-text-color;
-      border-bottom: 1px solid $cuba-table-cell-separator-color;
-
-      .v-button-caption,
-      .v-button-link .v-button-caption {
-        font-size: 11px;
-        color: $cuba-button-caption-color;
-      }
-
-      .v-label {
-        font-size: 11px;
-      }
-
-      .#{$primary-stylename}-cell-wrapper {
-        font-size: 11px;
-      }
-    }
-
-    .#{$primary-stylename}-cell-wrapper {
-      min-height: 12px;
-    }
-
-    .#{$primary-stylename}-cell-wrapper.widget-container {
-      padding-top: 2px;
-      padding-bottom: 2px;
-
-      .v-label {
-        white-space: nowrap;
-        word-wrap: normal;
-      }
-    }
-
-    .#{$primary-stylename}-row,
-    .#{$primary-stylename}-row-odd {
-      background-color: $cuba-table-row-background-color;
-      height: 24px;
-      cursor: default;
-    }
-
-    .#{$primary-stylename}-row-odd {
-      background-color: $cuba-table-row-odd-background-color;
-    }
-
-    .#{$primary-stylename}-row:hover,
-    .#{$primary-stylename}-row-odd:hover {
-      background-color: $cuba-table-row-hover-background-color;
-      .on-hover-visible-layout {
-        visibility: visible;
-      }
-    }
-
-    // In IE, if We change background then outline disappear, so disable hover color
-    .#{$primary-stylename}-row:hover {
-      .v-ie & {
-        background-color: $cuba-table-row-background-color;
-      }
-    }
-
-    .#{$primary-stylename}-row-odd:hover {
-      .v-ie & {
-        background-color: $cuba-table-row-odd-background-color;
       }
     }
 
@@ -201,226 +51,81 @@
     .#{$primary-stylename}-row-odd.v-selected:hover,
     .#{$primary-stylename}-caption-row.v-selected:hover {
       .v-ie & {
-        background-color: $cuba-table-row-selection-background-color;
+        background-color: $c-row-selection-background-color;
       }
-    }
-
-    .#{$primary-stylename}-caption-row {
-      background-color: #c6cbcd;
-      cursor: default;
-    }
-
-    .#{$primary-stylename}-caption-row-content {
-      white-space: nowrap;
-      overflow: hidden;
-      line-height: 15px;
     }
 
     .#{$primary-stylename}-row.v-selected,
     .#{$primary-stylename}-row-odd.v-selected,
     .#{$primary-stylename}-caption-row.v-selected {
-      background-color: $cuba-table-row-selection-background-color;
+      background-color: $c-row-selection-background-color;
       outline-color: transparent;
 
+      @include linear-gradient(to bottom, $c-row-selection-background-color 0%,$c-row-selection-background-color 100%);
+
       .#{$primary-stylename}-cell-content {
-        color: $cuba-table-text-color;
+        color: $c-row-selection-text-color;
       }
     }
 
-    .#{$primary-stylename}-focus {
-      $outline-width: 1px;
-      outline: $outline-width solid lighten($cuba-field-focused-border-color, 20%);
-      outline-offset: -$outline-width;
-    }
-
-    .#{$primary-stylename}-focus .#{$primary-stylename}-cell-content {
-      border-top: 0;
-      border-bottom: 1px solid $cuba-table-cell-separator-color;
-    }
-
-    .#{$primary-stylename}-focus .#{$primary-stylename}-cell-wrapper {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator,
-    .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
-      width: 10px;
-      height: 10px;
-      background: transparent;
-      background-repeat: no-repeat;
-      margin-right: 5px;
-      margin-top: 4px;
-    }
-
-    .#{$primary-stylename}-header-cell {
-      position: relative;
-    }
-
-    .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
-      display: none;
-    }
-
-    .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable .#{$primary-stylename}-sort-indicator {
-      display: block;
-      width: 10px;
-      height: 12px;
-      background: transparent;
-      background-repeat: no-repeat;
-      margin-right: 3px;
-      margin-top: 4px;
-      position: absolute;
-      right: 5px;
-    }
-
-    .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
-      background-image: url(sprites/sort-menu-indicator.png); /** sprite-ref: components; */
-      opacity: 0;
-    }
-
-    .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator {
-      background-image: url(sprites/sort-asc.png); /** sprite-ref: components; */
-    }
-
-    .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
-      background-image: url(sprites/sort-desc.png); /** sprite-ref: components; */
-    }
-
-    .#{$primary-stylename}-column-selector {
-      width: 16px;
-      height: 16px;
-      margin-top: -20px;
-      margin-right: 2px;
-      background: transparent;
-      background-repeat: no-repeat;
-      background-image: url(sprites/column-selector.png); /** sprite-ref: components; */
-    }
-
-    .#{$primary-stylename}-scrollposition {
-      width: 160px;
-      height: 39px;
-      border: 0;
-      border-top: 5px solid transparent;
-      background: transparent;
-      background-origin: content-box;
-      background-clip: content-box;
-      background-repeat: no-repeat;
-      background-image: url(sprites/scroll-position-bg.png); /** sprite-ref: components-large; */
-    }
-
-    .#{$primary-stylename}-scrollposition span {
-      display: block;
-      margin-top: 8px;
-      text-align: center;
-      font-weight: bold;
-      border: 0;
+    .v-ch & .#{$primary-stylename}-header td:first-child .v-table-caption-container,
+    .v-ch & .#{$primary-stylename}-footer td:first-child {
+      padding-left: 8px;
     }
   }
 
-  .#{$primary-stylename}-column-selector-popup.v-contextmenu {
-    .gwt-MenuItem {
-      font-family: $cuba-havana-fonts;
-
-      div {
-        padding: 2px 8px 2px 18px;
-      }
-
-      .v-on div {
-        background: transparent url(images/check.png) no-repeat 5px 50%
-      }
-    }
-
-    .gwt-MenuItem-selected {
-      div {
-        background: $cuba-field-selection-color;
-      }
-
-      .v-on div {
-        background: $cuba-field-selection-color url(images/check-hover.png) no-repeat 5px 50%;
-        color: #fff;
-      }
-    }
+  .#{$primary-stylename}-body-focus .#{$primary-stylename}-body-wrapper,
+   .#{$primary-stylename}-body-wrapper:focus {
+    border-color: $v-selection-item-selection-color;
   }
 
-  .#{$primary-stylename}-header-drag {
-    position: absolute;
-    background: #e7edf3;
-    border: 1px solid #b6bbbc;
-    opacity: 0.5;
-    filter: alpha(opacity=50);
-    margin-top: 20px;
-    z-index: 30000;
-    height: 23px;
-    line-height: normal;
-  }
-
-  .#{$primary-stylename} > div:focus {
-    outline: none;
-  }
-
-  .#{$primary-stylename} > div:focus,
-  .#{$primary-stylename}.#{$primary-stylename}-body-focus .#{$primary-stylename}-body.#{$primary-stylename}-body-wrapper {
-    border-color: $cuba-field-focused-border-color;
-  }
-
-  .c-table-cell-link .c-table-clickable-cell {
-    color: $cuba-field-selection-color;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
-  .c-table-cell-textcut .c-table-clickable-cell {
-    cursor: pointer;
-    color: $cuba-field-selection-color;
-    border-bottom: 1px dashed $cuba-field-selection-color;
-  }
-
-  .c-table-view-textcut {
-    background: $cuba-contextmenu-background-color;
-    overflow: auto;
-    padding: 3px;
-    border: 1px solid $cuba-field-focused-border-color;
-  }
-
-  .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
-    opacity: 1;
-  }
-
-  .c-table-contextmenu {
-    background-color: white;
-    padding: 3px 3px;
-    border: 1px solid #4d7ab2;
-  }
-
-  .c-table-contextmenu .c-table-contextmenu-item {
-    padding: 3px 7px;
-    font-size: 12px;
-    font-family: $cuba-havana-fonts;
-  }
-
-  .c-table-contextmenu .c-table-contextmenu-item:hover {
-    background: $cuba-field-selection-color;
-    color: #ecf2f8;
-  }
-
-  .c-table-composition {
+  .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
+    color: transparent;
     font-size: 0;
-    & > * {
-      font-size: 12px;
+    height: round($v-unit-size/2);
+    background: no-repeat left center;
+    margin-left: $v-table-cell-padding-horizontal;
+    background-image: url(images//checkbox-checked.png); /** sprite-ref: components; */
+  }
+
+  .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
+    color: transparent;
+    font-size: 0;
+    height: round($v-unit-size/2);
+    background: no-repeat left center;
+    margin-left: $v-table-cell-padding-horizontal;
+    background-image: url(images/checkbox-unchecked.png); /** sprite-ref: components; */
+  }
+
+  .#{$primary-stylename}-cell-content.boolean-cell-false,
+  .#{$primary-stylename}-cell-content.boolean-cell-true {
+    .#{$primary-stylename}-cell-wrapper:before {
+      content: none;
     }
   }
 
-  .c-table-composition.has-top-panel {
-    padding-top: 31px;
-
-    .c-table-top {
-      height: 25px;
-      margin-top: -31px;
-    }
+  .#{$primary-stylename}-column-selector {
+    top: 5px;
+    width: 16px;
+    height: 18px;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-image: url(images/column-selector.png); /** sprite-ref: components; */
+    border: none;
+    border-radius: 0;
   }
 
-  .#{$primary-stylename}-column-selector-popup .gwt-MenuBar {
-    overflow-y: auto;
-    overflow-x: hidden;
+  .#{$primary-stylename}-column-selector:before {
+    content: none;
+  }
+
+  .#{$primary-stylename} [class*="-row"].v-selected {
+    + .v-selected {
+      background: $c-row-selection-background-color;
+    }
+
+    .#{$primary-stylename}-cell-content {
+      border-color: $c-table-selected-row-cell-border-color;
+    }
   }
 }

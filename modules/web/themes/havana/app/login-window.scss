@@ -15,121 +15,12 @@
  *
  */
 
-@mixin cuba-login-window {
-  .c-login-panel {
-    background: $cuba-loginform-background-color;
-    border: thin solid $cuba-loginform-border-color;
-    box-shadow: 0 0 5px rgba(0,0,0,0.25);
-    -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
-    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.25);
-    padding: 10px 40px 10px 40px !important;
-  }
+ @mixin havana-login-window {
+   .c-login-form {
+     width: 270px;
+   }
 
-  .c-login-main-layout {
-    background-color: #fff;
-  }
-
-  img.c-login-icon {
-    height: 32px;
-  }
-
-  .login-form-label {
-    font-size: 10pt;
-    color: #2B4666;
-  }
-
-  .c-login-form {
-    width: 270px;
-
-    & .v-spacing {
-      height: 15px;
-    }
-  }
-
-  .c-login-credentials {
-    width: 100%;
-  }
-
-  .c-login-remember-locales {
-    height: $v-unit-size;
-    width: 100%;
-  }
-
-  .c-login-remember-locales > .v-slot {
-    width: 50%;
-
-    &:before {
-      content: "";
-      display: inline-block;
-      height: 100%;
-      vertical-align: middle;
-      width: 0;
-    }
-
-    & > * {
-      vertical-align: middle;
-    }
-  }
-
-  .c-login-remember-locales > .v-slot-c-login-remember-me {
-    text-align: left;
-  }
-
-  .c-login-remember-locales > .v-slot-c-login-locale {
-    text-align: right;
-
-    &:first-child:last-child {
-      float: right;
-    }
-  }
-
-  .c-login-username {
-    border-bottom-width: 0;
-    display: block;
-    width: 100%;
-  }
-
-  .c-login-username.v-textfield:focus + .c-login-password,
-  .c-login-username.v-textfield-focus + .c-login-password {
-    border-top-color: $cuba-field-focused-border-color;
-  }
-
-  .c-login-password {
-    display: block;
-    width: 100%;
-  }
-
-  .c-login-locale > input {
-    width: 80px;
-  }
-
-  .c-powered-by {
-    font-size: 12px;
-    padding-bottom: 30px;
-
-    a {
-      margin-left: 5px;
-      display: inline-block;
-      text-decoration: none;
-      font-weight: bold;
-      color: #006BAC;
-
-      background: url(images/cuba-icon-login.png);
-      background-repeat: no-repeat;
-      background-position: left center;
-      background-size: contain;
-      background-clip: border-box;
-      padding-left: 30px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-    }
-
-    .c-cuba-word {
-      color: #5b5857;
-    }
-  }
-
-  .c-login-capslockindicator {
-    height: 20px;
-  }
-}
+   .c-login-locale {
+     width: 120px
+   }
+ }

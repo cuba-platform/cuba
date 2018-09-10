@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2008-2017 Haulmont.
+/*
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,27 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-@mixin cuba-menubar {
-  .c-main-menu-popup.v-menubar-popup {
-    box-shadow: 0 2px 6px 0 rgba(0,0,0,0.5);
-  }
+@mixin havana-app-menu {
 
-  .c-main-menu.v-menubar-submenu {
-    background: $cuba-app-header-background-color;
-    border: solid 2px $cuba-app-menu-highlight-color;
-    padding: 5px;
-  }
-
-  .c-main-menu.v-menubar-submenu-has-icons .v-menubar-menuitem {
-    .v-icon {
-      margin-left: -19px;
-      width: 16px;
-    }
-
-    .v-menubar-menuitem-caption {
-      padding-left: 20px;
-    }
+  .c-inverse-header.c-app-menubar {
+    border-bottom: 1px solid #fff;
   }
 }

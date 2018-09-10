@@ -15,15 +15,11 @@
  *
  */
 
-@mixin cuba-entity-inspector-browse {
+@mixin havana-vaadin-contextmenu-addon($primary-stylename: c-cm-item) {
 
- .table-boolean-text .v-table .boolean-cell {
-
-   .v-table-cell-wrapper {
-     color: inherit;
-     font-size: inherit;
-     background-image: none;
-     margin-left: 0;
-   }
- }
+  .v-menubar-submenu {
+    .v-menubar-menuitem.#{$primary-stylename} {
+      outline: none;
+    }
+  }
 }

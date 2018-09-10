@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,91 +15,18 @@
  *
  */
 
-@mixin cuba-generic-filter($primary-stylename: c-generic-filter) {
-  .#{$primary-stylename} {
-    outline: 0;
-  }
+@mixin havana-generic-filter($primary-stylename: c-generic-filter) {
 
-  .#{$primary-stylename} .filter-control-with-top-border {
-    border-top: solid 1px #BABFC0;
-    padding-top: 5px;
-  }
-
-  .#{$primary-stylename} > .border-hidden {
-    .c-groupbox-captionwrap {
-      .c-groupbox-caption-start-deco,
-      .c-groupbox-caption-end-deco {
-        div {
-          border: none;
-        }
-      }
-    }
-
-    .c-groupbox-content {
-      border: none;
-      padding: 0;
-    }
-  }
-
-  .#{$primary-stylename} .filter-control-with-bottom-border {
-    border-bottom: solid 1px #BABFC0;
-    padding-bottom: 5px;
-  }
-
-  .#{$primary-stylename} .filter-control-no-border {
-    border-top: none;
-    padding-top: 0;
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .#{$primary-stylename} .filter-settings-button {
-    .v-popup-indicator {
-      display: none;
-    }
-    .v-icon {
-      margin-right: 0;
-    }
-  }
-
-  .#{$primary-stylename} .filter-conditions .v-popupbutton .v-popup-indicator {
-    display: none;
-  }
-
-  .#{$primary-stylename} .filter-conditions .v-popupbutton {
-    background: transparent;
-  }
-
-  .#{$primary-stylename} .filter-search-button-layout {
-    .v-button.filter-search-button {
-      border-right-color: transparent;
-    }
-
-    .v-button:focus.filter-search-button {
-      border-right-color: #4d7ab2;
-    }
-
-    .v-button.v-popupbutton .v-popup-indicator {
-      margin-left: 0;
-    }
-  }
-
-  $marginWidth: 5px;
-
-  .#{$primary-stylename} .filter-control-no-border {
-    height: 25px !important; // fix for high dpi
-  }
-
-  .#{$primary-stylename}-margin-top {
-    padding-top: $marginWidth;
-  }
-  .#{$primary-stylename}-margin-bottom {
-    padding-bottom: $marginWidth;
-  }
-  .#{$primary-stylename}-margin-left {
-    padding-left: $marginWidth;
-  }
-  .#{$primary-stylename}-margin-right {
-    padding-right: $marginWidth;
-  }
+   .#{$primary-stylename}-margin-top {
+     padding-top: $v-layout-margin-top;
+   }
+   .#{$primary-stylename}-margin-bottom {
+     padding-bottom: $v-layout-margin-left;
+   }
+   .#{$primary-stylename}-margin-left {
+     padding-left: $v-layout-margin-right;
+   }
+   .#{$primary-stylename}-margin-right {
+     padding-right: $v-layout-margin-bottom;
+   }
 }

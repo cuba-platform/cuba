@@ -15,15 +15,10 @@
  *
  */
 
-@mixin cuba-entity-inspector-browse {
+@mixin havana-tree($primary-stylename: v-tree) {
 
- .table-boolean-text .v-table .boolean-cell {
-
-   .v-table-cell-wrapper {
-     color: inherit;
-     font-size: inherit;
-     background-image: none;
-     margin-left: 0;
-   }
+ .#{$primary-stylename}:focus,
+ .#{$primary-stylename}-focus {
+   border-color: $v-selection-item-selection-color;
  }
 }

@@ -14,37 +14,50 @@
  * limitations under the License.
  */
 
-@mixin havana-datagrid($primary-stylename: v-grid) {
-  .c-data-grid-composition.has-top-panel {
-    padding-top: 31px;
+/**
+ * Cell border color of selected row
+ */
+$c-datagrid-selected-row-cell-border-color: #9bb3d3 !default;
 
-    .c-data-grid-top {
-      height: 25px;
-      margin-top: -31px;
-    }
+@mixin havana-datagrid($primary-stylename: v-grid) {
+
+  .#{$primary-stylename}-row-selected > .#{$primary-stylename}-cell {
+    background-color: $c-row-selection-background-color;
+    border-color: $c-datagrid-selected-row-cell-border-color;
+    color: $c-row-selection-text-color;
+
+    @include linear-gradient(to bottom, $c-row-selection-background-color 0%, $c-row-selection-background-color 100%);
   }
 
-  .#{$primary-stylename}-cell .boolean-value {
-    height: 13px;
-    width: 13px;
+  .#{$primary-stylename}-body .#{$primary-stylename}-row-selected:hover > td {
+    background-color: $c-row-selection-background-color;
+    color: $c-row-selection-text-color;
+
+    @include linear-gradient(to bottom, $c-row-selection-background-color 0%, $c-row-selection-background-color 100%);
   }
 
   .#{$primary-stylename}-cell .boolean-value-true {
-    background: url(sprites/checkbox-checked.png) no-repeat left center;
-  }
+    height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+    background: no-repeat left center;
+    margin-left: $v-table-cell-padding-horizontal;
+    background-image: url(images//checkbox-checked.png); /** sprite-ref: components; */
 
-  .#{$primary-stylename}-cell .boolean-value-false {
-    background: url(sprites/checkbox-unchecked.png) no-repeat left center;
-  }
-
-  .#{$primary-stylename}-cell.sort-asc,
-  .#{$primary-stylename}-cell.sort-desc {
-    &:after {
-      cursor: pointer;
+    &:before {
+      content: none;
     }
   }
 
-  .#{$primary-stylename}-body .#{$primary-stylename}-row {
-    cursor: pointer;
+  .#{$primary-stylename}-cell .boolean-value-false {
+    height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+
+    background: no-repeat left center;
+    margin-left: $v-table-cell-padding-horizontal;
+    background-image: url(images//checkbox-unchecked.png); /** sprite-ref: components; */
+
+    &:before {
+      content: none;
+    }
   }
 }

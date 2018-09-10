@@ -1,0 +1,87 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+/**
+ * Outline color of submenu
+ */
+$c-menubar-submenu-outline-color: #506d8d !default;
+
+/**
+ * Text color of main popup menu
+ */
+$c-main-menu-popup-text-color: white !default;
+
+
+@mixin havana-menubar($primary-stylename : v-menubar) {
+
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-menuitem {
+      text-shadow: black 1px 1px;
+      outline: none;
+    }
+  }
+
+  .#{$primary-stylename}-submenu .#{$primary-stylename}-separator span {
+    background: $cuba-menubar-text-color;
+    border-top: 3px solid $cuba-menubar-background-color;
+    border-bottom: $cuba-menubar-background-color;
+  }
+
+  .#{$primary-stylename}-popup.c-main-menu-popup {
+    .#{$primary-stylename}-menuitem-selected {
+      text-shadow: black 1px 1px;
+    }
+
+    .#{$primary-stylename}-menuitem:hover {
+      text-shadow: black 1px 1px;
+    }
+
+    .#{$primary-stylename}-menuitem {
+      text-shadow: black 1px 1px;
+      outline: none;
+    }
+  }
+
+  .c-main-menu.#{$primary-stylename}-submenu {
+    background-color: $cuba-menubar-background-color;
+    color: $c-main-menu-popup-text-color;
+    margin: -2px -2px;
+    outline: solid 2px $c-menubar-submenu-outline-color;
+    padding: 4px 4px;
+
+    .#{$primary-stylename}-menuitem {
+      outline: none;
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .v-ie11 & {
+
+    .c-main-menu.#{$primary-stylename}-submenu .#{$primary-stylename}-menuitem-selected {
+      background: $v-selection-item-selection-color;
+    }
+
+    .c-main-menu.v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-submenu-indicator,
+    .c-main-menu.v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-menuitem-shortcut {
+      border-left: solid 1px transparent;
+    }
+
+    .c-main-menu.v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-menuitem-caption {
+      border-right: solid 1px transparent;
+    }
+  }
+}

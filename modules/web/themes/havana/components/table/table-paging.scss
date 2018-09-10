@@ -15,15 +15,10 @@
  *
  */
 
-@mixin cuba-entity-inspector-browse {
+@mixin havana-table-paging {
 
- .table-boolean-text .v-table .boolean-cell {
-
-   .v-table-cell-wrapper {
-     color: inherit;
-     font-size: inherit;
-     background-image: none;
-     margin-left: 0;
-   }
- }
+  .v-button.c-paging-change-page {
+    height: auto;
+    width: 20px;
+  }
 }

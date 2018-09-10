@@ -691,8 +691,7 @@ configure(webModule) {
     task enhanceTestModel(type: CubaTestEnhancing)
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['halo', 'hover'
-                  /* vaadin8 , 'havana'*/]
+        themes = ['halo', 'hover', 'havana']
 //        compress = true
 //        sprites = true
 //        cleanup = true

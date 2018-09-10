@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2008-2016 Haulmont.
+/*!
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,190 +12,43 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-/* Havana - Generic Platform SCSS theme */
-/** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
-/** sprite: components-large; sprite-image: url('compiled/components-large.png'); sprite-layout: vertical */
-/** sprite: application; sprite-image: url('compiled/application.png'); sprite-layout: vertical */
+@import "../halo/halo";
 
-// Inherit base theme
-@import "../base/base";
-
-// Common
-@import "components/common/common";
-
-// Components
-@import "components/tree/tree";
-@import "components/label/label";
-@import "components/link/link";
-@import "components/table/table";
-@import "components/panel/panel";
-@import "components/window/window";
-@import "components/button/button";
-@import "components/select/select";
-@import "components/tooltip/tooltip";
-@import "components/caption/caption";
-@import "components/menubar/menubar";
-@import "components/datagrid/datagrid";
-@import "components/checkbox/checkbox";
-@import "components/tabsheet/tabsheet";
-@import "components/accordion/accordion";
-@import "components/textarea/textarea";
-@import "components/groupbox/groupbox";
-@import "components/textfield/textfield";
-@import "components/datefield/datefield";
-@import "components/timefield/timefield";
-@import "components/treetable/treetable";
-@import "components/popupview/popupview";
-@import "components/fieldgroup/fieldgroup";
-@import "components/flowlayout/flowlayout";
-@import "components/csslayout/csslayout";
-@import "components/gridlayout/gridlayout";
-@import "components/splitpanel/splitpanel";
-@import "components/grouptable/grouptable";
-@import "components/fileupload/fileupload";
-@import "components/pivottable/pivottable";
-@import "components/widgetstree/widgetstree";
-@import "components/pickerfield/pickerfield";
-@import "components/maskedfield/maskedfield";
-@import "components/multiupload/multiupload";
-@import "components/optionlist/optionlist";
-@import "components/optiongroup/optiongroup";
-@import "components/contextmenu/contextmenu";
-@import "components/popupbutton/popupbutton";
-@import "components/searchselect/searchselect";
-@import "components/notification/notification";
-@import "components/orderedlayout/orderedlayout";
-@import "components/errorindicator/errorindicator";
-@import "components/fieldgrouplayout/fieldgrouplayout";
-@import "components/loadingindicator/loadingindicator";
-@import "components/progressindicator/progressindicator";
-@import "components/sourcecodeeditor/sourcecodeeditor";
-@import "components/resizabletextarea/resizabletextarea";
-@import "components/tokenlist/tokenlist";
-@import "components/twincolumn/twincolumn";
-@import "components/richtextarea/richtextarea";
-@import "components/draganddrop/draganddrop";
-@import "components/fileuploadwrapper/fileuploadwrapper";
-@import "components/scrollbox/scrollbox";
-@import "components/calendar/calendar";
-@import "components/colorpicker/colorpicker";
-@import "components/image/image";
-@import "components/capslockindicator/capslockindicator";
-
-// Application specific
-@import "app/app-window";
 @import "app/app-menu";
-@import "app/login-window";
-@import "app/logger-level";
-@import "app/breadcrumbs";
-@import "app/bulk-editor";
+@import "app/main-window";
+@import "app/menubar";
 @import "app/generic-filter";
-@import "app/table-paging";
-@import "app/table-showlink";
-@import "app/table-presentations";
-@import "app/folders-pane";
-@import "app/log-control";
-@import "app/jmx-console";
-@import "app/role-editor";
-@import "app/report-wizard";
-@import "app/report-templates";
-@import "app/diff-viewer";
-@import "app/localized-frame";
+@import "app/tree";
+@import "app/window";
+@import "app/login-window";
+@import "app/notifications";
+@import "app/contextmenu";
 @import "app/entity-inspector-browse";
-
-// Add-ons
-@import "addons/googlemap/googlemap";
+@import "components/table/table";
+@import "components/table/table-paging";
+@import "components/table/table-presentations";
+@import "components/datagrid/datagrid";
 
 @mixin havana {
-  @include base;
+  @include halo;
 
-  @include havana-common;
-
-  // Add-ons
-  @include addon-googlemap;
-
-  @include havana-tree;
-  @include havana-label;
-  @include havana-link;
   @include havana-table;
-  @include havana-panel;
-  @include havana-window;
-  @include havana-button;
-  @include havana-menubar;
-  @include havana-caption;
-  @include havana-tooltip;
-  @include havana-checkbox;
-  @include havana-tabsheet;
-  @include havana-accordion;
+  @include havana-table-paging;
+  @include havana-table-presentations;
   @include havana-datagrid;
-  @include havana-textarea;
-  @include havana-treetable;
-  @include havana-textfield;
-  @include havana-datefield;
-  @include havana-popupview;
-  @include havana-splitpanel;
-  @include havana-gridlayout;
-  @include havana-pivottable;
-  @include havana-popupbutton;
-  @include havana-contextmenu;
-  @include havana-cuba-contextmenu;
-  @include havana-optiongroup;
-  @include havana-optionlist;
-  @include havana-twincolumn;
+  @include havana-tree;
+  @include havana-app-menu;
+  @include havana-menubar;
   @include havana-notification;
-  @include havana-filterselect;
-  @include havana-richtextarea;
-  @include havana-orderedlayout;
-  @include havana-errorindicator;
-  @include havana-loadingindicator;
-  @include havana-sourcecodeeditor;
-  @include havana-progressindicator;
   @include havana-vaadin-contextmenu-addon;
-  @include havana-draganddrop;
-  @include havana-scrollbox;
-  @include havana-calendar;
-  @include havana-colorpicker;
-  @include havana-csslayout;
 
-  @include havana-cuba-groupbox;
-  @include havana-cuba-tokenlist;
-  @include havana-cuba-flowlayout;
-  @include havana-cuba-fieldgroup;
-  @include havana-cuba-grouptable;
-  @include havana-cuba-fileupload;
-  @include havana-cuba-pickerfield;
-  @include havana-cuba-multiupload;
-  @include havana-cuba-widgetstree;
-  @include havana-cuba-maskedfield;
-  @include havana-cuba-contextmenu;
-  @include havana-cuba-searchselect;
-  @include havana-cuba-fieldgrouplayout;
-  @include havana-cuba-resizabletextarea;
-  @include havana-cuba-fileupload-wrapper;
-  @include havana-cuba-image;
-  @include havana-cuba-capslockindicator;
-  @include havana-cuba-timefield;
+  @include havana-main-window;
+  @include havana-window;
+  @include havana-login-window;
 
-  @include cuba-login-window;
-  @include cuba-menubar;
-  @include cuba-application-window;
-  @include cuba-logger-level;
-  @include cuba-generic-filter;
-  @include cuba-table-paging;
-  @include cuba-table-showlink;
-  @include cuba-table-presentations;
-  @include cuba-folders-pane;
-  @include cuba-breadcrumbs;
-  @include cuba-bulk-editor;
-  @include cuba-log-control;
-  @include cuba-jmx-console;
-  @include cuba-role-editor;
-  @include cuba-report-wizard;
-  @include cuba-report-templates;
-  @include cuba-diff-viewer;
-  @include cuba-localized-frame;
+  @include havana-generic-filter;
+
   @include cuba-entity-inspector-browse;
 }

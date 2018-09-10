@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,20 @@
  *
  */
 
-@mixin cuba-entity-inspector-browse {
+@mixin havana-table-presentations {
 
- .table-boolean-text .v-table .boolean-cell {
+ .c-table-prefs-icon {
+   background: transparent;
+   background-image: url(images/table-presentations-icon.png); /** sprite-ref: application; */
+   background-repeat: no-repeat;
+   border: none;
+   border-radius: 0;
+   top: 5px;
+   width: 16px;
+   height: 16px;
 
-   .v-table-cell-wrapper {
-     color: inherit;
-     font-size: inherit;
-     background-image: none;
-     margin-left: 0;
+   &:before {
+     content: none;
    }
  }
 }

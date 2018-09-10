@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,78 +15,87 @@
  *
  */
 
-// Global theme constants
-$cuba-havana-fonts: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-$cuba-havana-font-color: #1e3146;
+$v-layout-margin-top: 5px;
+$v-layout-margin-left: 5px;
+$v-layout-margin-right: 5px;
+$v-layout-margin-bottom: 5px;
 
-$cuba-app-header-background-color: #315379;
-$cuba-app-menu-highlight-color: #506d8d;
-$cuba-app-submenu-background-color: #315379;
-$cuba-app-work-area-color: #8398AF;
+$v-font-size--h1: 20px;
+$v-font-size--h2: 16px;
+$v-font-size--h3: 14px;
 
-$cuba-loginform-background-color: #f4f6f8;
-$cuba-loginform-border-color: #cde0ec;
+$v-table-row-height: 25px;
+$v-table-header-font-size: 12px;
 
-$cuba-window-header-color: #2b4666;
-$cuba-window-border-color: #8aa9d1;
+$cuba-table-highlight-hover-row: true;
+$cuba-datagrid-highlight-hover-row: true;
 
-$cuba-folderspane-caption-color: #2B4766;
+$cuba-window-modal-header-font-weight: 700;
 
-$cuba-button-border-color: #9bb3d3;
-$cuba-button-focuced-border-color: #4d7ab2;
-$cuba-button-caption-color: #1e3146;
+$v-selection-color: rgb(77, 122, 178);
+$v-selection-item-selection-color: #4D7AB2;
 
-$cuba-field-border-color: #a5c4e0;
-$cuba-field-focused-border-color: #4d7ab2;
-$cuba-field-readonly-border-color: #c3c3c3;
-$cuba-field-popup-border-color: #8aa9d1;
-$cuba-field-selection-color: #4d7ab2;
+$cuba-tabsheet-tab-border-selected-color: #9bb3d3;
+$cuba-tabsheet-tab-caption: #000000;
 
-$cuba-datefield-today-color: #4d7ab2;
-$cuba-datefield-selection-color: #4d7ab2;
-$cuba-datefield-day-focus-color: #8dafd2;
-$cuba-datefield-selection-border-color: #214db2;
+$v-textfield-border: 1px solid #A5C4E0;
+$v-textfield-background-color--readonly: rgba(229, 229, 229, 0.75);
 
-$cuba-fieldgroup-bordered-background-color: #fbfdfd;
+$v-font-size: 12px;
+$v-font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,"Trebuchet MS";
+$v-unit-size: 25px;
 
-$cuba-breadcrumbs-color: #2b4666;
-$cuba-link-color: #0066ff;
+$v-caption-font-size: $v-font-size;
+$v-tabsheet-caption-font-size: $v-font-size;
 
-$cuba-tabsheet-hidetabs-color: #b5babb;
+$v-border-radius: 0px;
+$v-border: 1px solid #9bb3d3 !default;
 
-$cuba-groupbox-border-color: #babfc0;
-$cuba-groupbox-nocaption-border-color: #a5c4e0;
-$cuba-groupbox-nocaption-background-color: #fbfdfd;
+$v-app-background-color: #ffffff;
+$v-panel-background-color: #ffffff;
+$v-background-color: #ffffff;
+$v-focus-color: #1075da;
 
-$cuba-tabsheet-border-color: #647e9b;
-$cuba-tabsheet-caption-active-color: #1e3146;
-$cuba-tabsheet-caption-inactive-color: #fff;
+$v-focus-style: inset 0px 0px 3px 1px rgba($v-focus-color, 0.5);
+$v-default-field-width: $v-unit-size * 7;
 
-$cuba-tabsheet-second-border-color: #b4d0e4;
-$cuba-tabsheet-second-caption-color: #1e3146;
-$cuba-tabsheet-second-background-color: #f5f7f9;
+$cuba-app-menubar-padding-top: 8px;
+$cuba-app-menubar-padding-bottom: 8px;
 
-$cuba-tabsheet-third-border-color: #a4c5df;
-$cuba-tabsheet-third-caption-color: #2b4666;
-$cuba-tabsheet-third-background-color: #ebf0f4;
+$cuba-menubar-text-color: #ffffff;
+$cuba-menubar-submenu-padding: 1px;
+$cuba-menubar-background-color: #315379;
+$cuba-menubar-border-color: #315379;
 
-$cuba-splitpanel-splitter-color: #eef3f9;
+$cuba-window-modal-header-height: ceil($v-unit-size * 1.4);
+$cuba-window-modal-header-buttons-line-height: $cuba-window-modal-header-height;
 
-$cuba-table-text-color: #1e3146;
-$cuba-table-header-background-color: #e6eaef;
-$cuba-table-header-hover-background-color: #f2f5f7;
-$cuba-table-row-background-color: #fff;
-$cuba-table-row-odd-background-color: #f6f8fa;
-$cuba-table-row-selection-background-color: #c3e1ff;
-$cuba-table-row-hover-background-color: #f5f4b9;
-$cuba-table-cell-separator-color: #edf3f9;
-$cuba-table-aggregation-row-color: #8398af;
+$cuba-maintabsheet-tabcontainer-background-color: $v-app-background-color;
 
-$cuba-tree-selection-color: #5daee8;
-$cuba-tree-caption-color: #1e3146;
-$cuba-tree-caption-selected-color: #000;
+$cuba-hover-color: #f5f4b9 !default;
 
-$cuba-contextmenu-font-color: #222;
-$cuba-contextmenu-background-color: #fff;
+$v-layout-spacing-vertical: 6px;
+$v-layout-spacing-horizontal: 6px;
 
-$cuba-searchselect-edit-color: #ffbac2;
+$v-table-cell-padding-horizontal: 6px;
+
+$cuba-login-btn-height: $v-unit-size + $v-unit-size / 5;
+$cuba-login-caption-font-size: round($v-font-size * 1.45);
+$cuba-login-logo-height: $v-unit-size;
+$cuba-login-panel-padding:$v-unit-size;
+$cuba-login-password-border-radius: 0 0 $v-border-radius $v-border-radius;
+$cuba-login-password-height: $v-unit-size;
+$cuba-login-username-border-radius: $v-border-radius $v-border-radius 0 0;
+$cuba-login-username-height: $v-unit-size;
+
+$v-animations-enabled: false;
+
+/**
+ * Table and DataGrid selection row color
+ */
+$c-row-selection-background-color: #c3e1ff !default;
+
+/**
+ * Table and DataGrid selection row text color
+ */
+$c-row-selection-text-color: #1e1e0d !default;
