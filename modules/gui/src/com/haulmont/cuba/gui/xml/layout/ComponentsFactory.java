@@ -16,15 +16,17 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ComponentGenerationContext;
-import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
-import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.components.*;
 
 /**
  * Factory to create UI components in client independent manner.
- * <br> An instance of the factory can be injected into screen controllers or obtained through {@link com.haulmont.cuba.core.global.AppBeans}.
+ * <br> An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
+ *
+ * @deprecated Use {@link UiComponents instead}.
  */
+@Deprecated
 public interface ComponentsFactory {
 
     String NAME = "cuba_ComponentsFactory";
@@ -45,7 +47,7 @@ public interface ComponentsFactory {
      * @param type component type
      * @return component instance for the current client type (web or desktop)
      */
-    <T extends Component> T createComponent(Class type);
+    <T extends Component> T createComponent(Class<T> type);
 
     /**
      * Creates a component according to the given {@link ComponentGenerationContext}.
@@ -59,15 +61,15 @@ public interface ComponentsFactory {
      * @param context the {@link ComponentGenerationContext} instance
      * @return a component instance for the current client type (web or desktop)
      * @throws IllegalArgumentException if no component can be created for a given context
+     * @deprecated Use {@link UiComponentsGenerator} instead.
      */
+    @Deprecated
     Component createComponent(ComponentGenerationContext context);
 
     /**
-     * //vaadin8 todo remove from here
-     *
+     * @return client-specific implementation of the timer
      * @deprecated todo
      * Create a timer instance.
-     * @return client-specific implementation of the timer
      */
     @Deprecated
     Timer createTimer();

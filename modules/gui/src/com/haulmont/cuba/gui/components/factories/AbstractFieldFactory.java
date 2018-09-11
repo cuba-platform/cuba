@@ -17,22 +17,18 @@
 package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ComponentGenerationContext;
-import com.haulmont.cuba.gui.components.FieldFactory;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 
 public abstract class AbstractFieldFactory implements FieldFactory {
 
-    protected ComponentsFactory componentsFactory = AppConfig.getFactory();
+    protected UiComponentsGenerator componentsGenerator = AppBeans.get(UiComponentsGenerator.NAME);
 
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
@@ -44,7 +40,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 .setXmlDescriptor(xmlDescriptor)
                 .setComponentClass(Table.class);
 
-        return componentsFactory.createComponent(context);
+        return componentsGenerator.generate(context);
     }
 
     protected MetaClass resolveMetaClass(Datasource datasource) {

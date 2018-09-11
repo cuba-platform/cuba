@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.FragmentLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.WebUiComponents;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
@@ -77,7 +77,7 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     @Inject
     protected Resources resources;
     @Inject
-    protected WebComponentsFactory webComponentsFactory;
+    protected WebUiComponents webUiComponents;
     @Inject
     protected LayoutLoaderConfig layoutLoaderConfig;
 
@@ -171,7 +171,7 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
                 if (Component.class.isAssignableFrom(componentClass)) {
                     log.trace("Register component {} class {}", name, componentClass.getCanonicalName());
 
-                    webComponentsFactory.register(name, (Class<? extends Component>) componentClass);
+                    webUiComponents.register(name, (Class<? extends Component>) componentClass);
                 } else {
                     log.warn("Component {} is not a subclass of com.haulmont.cuba.gui.components.Component", componentClassName);
                 }

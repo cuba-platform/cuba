@@ -20,7 +20,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 
@@ -28,7 +27,7 @@ import javax.inject.Inject;
 public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactory {
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponentsGenerator uiComponentsGenerator;
 
     @Override
     public Field createField(Datasource datasource, String property) {
@@ -42,7 +41,7 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
                 .setDatasource(datasource)
                 .setComponentClass(DataGrid.class);
 
-        Component component = componentsFactory.createComponent(context);
+        Component component = uiComponentsGenerator.generate(context);
         if (component instanceof Field) {
             return (Field) component;
         }
