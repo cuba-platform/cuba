@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components.ds.api.consistency;
 
 import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.User;
 import org.junit.Ignore;
@@ -33,7 +32,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -43,7 +42,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
         // unbind
         checkBox.setDatasource(null, null);
 
-        Consumer<HasValue.ValueChangeEvent> valueChangeListener = e -> {
+        Consumer valueChangeListener = e -> {
             throw new RuntimeException("Value was changed externally");
         };
         checkBox.addValueChangeListener(valueChangeListener);
@@ -54,7 +53,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -75,7 +74,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -90,7 +89,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
         assertEquals(true, checkBox.getValue());
 
         boolean[] valueWasChanged = {false};
-        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
+        Consumer listener = e -> valueWasChanged[0] = true;
         checkBox.addValueChangeListener(listener);
 
         user.setActive(false);
@@ -136,7 +135,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -144,7 +143,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
         // listener before datasource
         Boolean[] valueWasChanged = {false};
-        Consumer<HasValue.ValueChangeEvent> listener = e -> valueWasChanged[0] = true;
+        Consumer listener = e -> valueWasChanged[0] = true;
         checkBox.addValueChangeListener(listener);
 
         checkBox.setDatasource(userDs, "active");
@@ -165,7 +164,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
 
         checkBox.setDatasource(null, null);
         checkBox.setDatasource(null, null);
