@@ -88,6 +88,20 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      */
     @Deprecated
     interface StyleProvider<E extends Entity> extends Function<E, String> {
+        @Override
+        default String apply(E entity) {
+            return getStyleName(entity);
+        }
+
+        /**
+         * Called by {@link Tree} to get a style for item. <br>
+         * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
+         * and not shown to users.
+         *
+         * @param entity an entity instance represented by the current item
+         * @return style name or null to apply the default
+         */
+        String getStyleName(E entity);
     }
 
     /**

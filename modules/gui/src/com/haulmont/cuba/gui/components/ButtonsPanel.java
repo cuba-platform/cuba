@@ -25,5 +25,11 @@ public interface ButtonsPanel extends BoxLayout {
 
     @Deprecated
     interface Provider extends Supplier<Collection<Component>> {
+        @Override
+        default Collection<Component> get() {
+            return getButtons();
+        }
+
+        Collection<Component> getButtons();
     }
 }

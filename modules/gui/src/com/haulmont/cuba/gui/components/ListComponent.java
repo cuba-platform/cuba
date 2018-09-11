@@ -46,5 +46,18 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
      */
     @Deprecated
     interface IconProvider<E extends Entity> extends Function<E, String> {
+        @Override
+        default String apply(E entity) {
+            return getItemIcon(entity);
+        }
+
+        /**
+         * Called by {@link Table} to get an icon to be shown for a row.
+         *
+         * @param entity an entity instance represented by the current row
+         * @return icon name or null to show no icon
+         */
+        @Nullable
+        String getItemIcon(E entity);
     }
 }

@@ -145,6 +145,16 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
      */
     @Deprecated
     interface NewOptionHandler extends Consumer<String> {
+        @Override
+        default void accept(String caption) {
+            addNewOption(caption);
+        }
+
+        /**
+         * Called when user enters a value which is not in the options list, and presses Enter.
+         * @param caption value entered by user
+         */
+        void addNewOption(String caption);
     }
 
     /**
@@ -152,5 +162,17 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
      */
     @Deprecated
     interface OptionIconProvider<T> extends Function<T, String> {
+        @Override
+        default String apply(T item) {
+            return getItemIcon(item);
+        }
+
+        /**
+         * Called when component paints its content.
+         *
+         * @param item item from options list, options map or enum options
+         * @return icon name or null to show no icon
+         */
+        String getItemIcon(T item);
     }
 }

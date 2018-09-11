@@ -139,6 +139,12 @@ public interface TokenList<V> extends Field<V>, Component.BelongToFrame, Compone
 
     @Deprecated
     interface TokenStyleGenerator extends Function<Object, String> {
+        @Override
+        default String apply(Object itemId) {
+            return getStyle(itemId);
+        }
+
+        String getStyle(Object itemId);
     }
 
     interface ItemChangeHandler {

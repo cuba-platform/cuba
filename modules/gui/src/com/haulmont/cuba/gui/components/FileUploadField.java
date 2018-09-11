@@ -260,5 +260,11 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
 
     @Deprecated
     interface FileContentProvider extends Supplier<InputStream> {
+        @Override
+        default InputStream get() {
+            return provide();
+        }
+
+        InputStream provide();
     }
 }
