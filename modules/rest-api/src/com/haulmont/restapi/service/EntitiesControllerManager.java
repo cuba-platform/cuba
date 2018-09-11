@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
+import com.haulmont.restapi.config.RestApiConfig;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.data.EntitiesSearchResult;
 import com.haulmont.restapi.exception.RestAPIException;
@@ -83,6 +84,9 @@ public class EntitiesControllerManager {
 
     @Inject
     protected RestFilterParser restFilterParser;
+
+    @Inject
+    protected RestApiConfig restApiConfig;
 
     public String loadEntity(String entityName,
                              String entityId,
