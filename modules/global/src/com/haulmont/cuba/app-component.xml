@@ -64,12 +64,6 @@
         <artifact name="cuba-client-tests" configuration="testCompile"/>
     </module>
 
-    <module name="idp" dependsOn="client" blocks="web,portal">
-        <artifact name="cuba-idp" appJar="true"/>
-
-        <property name="cuba.idpSpringContextConfig" value="cuba-idp-dispatcher-spring.xml"/>
-    </module>
-
     <module name="rest-api" dependsOn="client" blocks="web,portal">
         <artifact name="cuba-rest-api" appJar="true"/>
         <property name="cuba.restSpringContextConfig" value="cuba-rest-dispatcher-spring.xml"/>
@@ -86,11 +80,10 @@
         <artifact name="cuba-web-widgets" appJar="true"/>
     </module>
 
-    <module name="web" dependsOn="gui,rest-api,web-widgets,idp" blocks="web">
+    <module name="web" dependsOn="gui,rest-api,web-widgets" blocks="web">
         <artifact name="cuba-web" appJar="true"/>
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
-        <artifact name="cuba-idp" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-web" classifier="themes" ext="jar" configuration="themes"/>
         <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
                   skipIfExists="web-toolkit"/>

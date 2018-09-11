@@ -57,12 +57,6 @@
         <load-on-startup>2</load-on-startup>
     </servlet>
 
-    <servlet>
-        <servlet-name>idp</servlet-name>
-        <servlet-class>com.haulmont.idp.sys.CubaIdpServlet</servlet-class>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>cuba_servlet</servlet-name>
         <url-pattern>/*</url-pattern>
@@ -76,11 +70,6 @@
     <servlet-mapping>
         <servlet-name>rest_api</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>idp</servlet-name>
-        <url-pattern>/idp/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -110,23 +99,5 @@
     <filter-mapping>
         <filter-name>restSpringSecurityFilterChain</filter-name>
         <url-pattern>/rest/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>idpSpringSecurityFilterChain</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>contextAttribute</param-name>
-            <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.idp</param-value>
-        </init-param>
-        <init-param>
-            <param-name>targetBeanName</param-name>
-            <param-value>springSecurityFilterChain</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>idpSpringSecurityFilterChain</filter-name>
-        <url-pattern>/idp/*</url-pattern>
     </filter-mapping>
 </web-app>
