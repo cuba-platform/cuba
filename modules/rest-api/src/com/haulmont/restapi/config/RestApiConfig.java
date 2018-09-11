@@ -66,4 +66,10 @@ public interface RestApiConfig extends Config {
     @DefaultBoolean(true)
     boolean getTokenMaskingEnabled();
 
+    /**
+     * @return whether the passed entities versions should be validated before entities are persisted
+     */
+    @Property("cuba.rest.optimisticLockingEnabled")
+    @DefaultBoolean(false)
+    boolean getOptimisticLockingEnabled();
 }

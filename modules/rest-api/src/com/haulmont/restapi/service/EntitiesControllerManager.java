@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
+import com.haulmont.restapi.config.RestApiConfig;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.data.EntitiesSearchResult;
 import com.haulmont.restapi.exception.RestAPIException;
@@ -83,6 +84,9 @@ public class EntitiesControllerManager {
 
     @Inject
     protected RestFilterParser restFilterParser;
+
+    @Inject
+    protected RestApiConfig restApiConfig;
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -330,7 +334,8 @@ public class EntitiesControllerManager {
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
-            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, true);
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity),
+                    entityImportView, true, restApiConfig.getOptimisticLockingEnabled());
             importedEntities.forEach(it-> restControllerUtils.applyAttributesSecurity(it));
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);

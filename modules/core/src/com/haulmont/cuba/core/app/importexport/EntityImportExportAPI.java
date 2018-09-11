@@ -69,4 +69,9 @@ public interface EntityImportExportAPI {
      * See documentation for {@link EntityImportExportService#importEntities(Collection, EntityImportView, boolean)}
      */
     Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate);
+
+    /**
+     * See documentation for {@link EntityImportExportService#importEntities(Collection, EntityImportView, boolean, boolean)}
+     */
+    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate, boolean optimisticLocking);
 }

@@ -120,4 +120,21 @@ public interface EntityImportExportService {
      * @return a collection of entities that have been imported
      */
     Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate);
+
+    /**
+     * Persists entities according to the rules, described by the {@code entityImportView} parameter. If the entity is
+     * not present in the database, it will be saved. Otherwise the fields of the existing entity that are in the {@code
+     * entityImportView} will be updated.
+     * <p>
+     * If the view contains a property for composition attribute then all composition collection members that are absent
+     * in the passed entity will be removed.
+     *
+     * @param importView {@code EntityImportView} with the rules that describes how entities should be persisted.
+     * @param validate   whether the passed entities should be validated by the {@link com.haulmont.cuba.core.global.BeanValidation}
+     *                   mechanism before entities are persisted
+     * @param optimisticLocking    whether the passed entities versions should be validated before entities are persisted
+     * @return a collection of entities that have been imported
+     */
+    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate,
+                                      boolean optimisticLocking);
 }

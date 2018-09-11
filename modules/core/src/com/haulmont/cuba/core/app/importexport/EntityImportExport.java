@@ -196,11 +196,16 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Override
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView) {
-        return importEntities(entities, importView, false);
+        return importEntities(entities, importView, false, false);
     }
 
     @Override
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate) {
+        return importEntities(entities, importView, validate, false);
+    }
+
+    @Override
+    public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate, boolean optimisticLocking) {
         List<ReferenceInfo> referenceInfoList = new ArrayList<>();
         CommitContext commitContext = new CommitContext();
         commitContext.setSoftDeletion(false);
@@ -221,7 +226,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .setAuthorizationRequired(true);
             Entity dstEntity = dataManager.load(ctx);
 
-            importEntity(srcEntity, dstEntity, importView, regularView, commitContext, referenceInfoList);
+            importEntity(srcEntity, dstEntity, importView, regularView, commitContext, referenceInfoList, optimisticLocking);
         }
 
         //2. references to existing entities are processed
@@ -273,6 +278,7 @@ public class EntityImportExport implements EntityImportExportAPI {
      * @param regularView       view that was used for loading dstEntity
      * @param commitContext     entities that must be commited or deleted will be set to the commitContext
      * @param referenceInfoList list of referenceInfos for further processing
+     * @param optimisticLocking whether the passed entity version should be validated before entity is persisted
      * @return dstEntity that has fields values from the srcEntity
      */
     protected Entity importEntity(Entity srcEntity,
@@ -280,7 +286,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                                   EntityImportView importView,
                                   View regularView,
                                   CommitContext commitContext,
-                                  Collection<ReferenceInfo> referenceInfoList) {
+                                  Collection<ReferenceInfo> referenceInfoList,
+                                  boolean optimisticLocking) {
         MetaClass metaClass = srcEntity.getMetaClass();
         boolean createOp = false;
         if (dstEntity == null) {
@@ -317,27 +324,34 @@ public class EntityImportExport implements EntityImportExportAPI {
             if (BaseEntityInternalAccess.isRequired(dstSecurityState, propertyName) && srcEntity.getValue(propertyName) == null) {
                 throw new CustomValidationException(format("Attribute [%s] is required for entity %s", propertyName, srcEntity));
             }
-            if ((metaProperty.getRange().isDatatype() && !"version".equals(metaProperty.getName())) || metaProperty.getRange().isEnum()) {
+            if (metaProperty.getRange().isDatatype()) {
+                if (!"version".equals(metaProperty.getName())) {
+                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
+                } else if (optimisticLocking){
+                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
+                }
+            } else if (metaProperty.getRange().isEnum()) {
                 dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
             } else if (metaProperty.getRange().isClass()) {
                 View regularPropertyView = regularView.getProperty(propertyName) != null ? regularView.getProperty(propertyName).getView() : null;
                 if (metadata.getTools().isEmbedded(metaProperty)) {
                     if (importViewProperty.getView() != null) {
-                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView,
+                                commitContext, referenceInfoList, optimisticLocking);
                         dstEntity.setValue(propertyName, embeddedEntity);
                     }
                 } else {
                     switch (metaProperty.getRange().getCardinality()) {
                         case MANY_TO_MANY:
                             importManyToManyCollectionAttribute(srcEntity, dstEntity, srcSecurityState,
-                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
                             break;
                         case ONE_TO_MANY:
                             importOneToManyCollectionAttribute(srcEntity, dstEntity, srcSecurityState,
-                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
                             break;
                         default:
-                            importReference(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList);
+                            importReference(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
                     }
                 }
             }
@@ -367,14 +381,15 @@ public class EntityImportExport implements EntityImportExportAPI {
                                    EntityImportViewProperty importViewProperty,
                                    View regularView,
                                    CommitContext commitContext,
-                                   Collection<ReferenceInfo> referenceInfoList) {
+                                   Collection<ReferenceInfo> referenceInfoList,
+                                   boolean optimisticLocking) {
         Entity srcPropertyValue = srcEntity.getValue(importViewProperty.getName());
         Entity dstPropertyValue = dstEntity.getValue(importViewProperty.getName());
         if (importViewProperty.getView() == null) {
             ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, null, importViewProperty, srcPropertyValue, dstPropertyValue);
             referenceInfoList.add(referenceInfo);
         } else {
-            dstPropertyValue = importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList);
+            dstPropertyValue = importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList, optimisticLocking);
             dstEntity.setValue(importViewProperty.getName(), dstPropertyValue);
         }
     }
@@ -385,7 +400,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                                                       EntityImportViewProperty viewProperty,
                                                       View regularView,
                                                       CommitContext commitContext,
-                                                      Collection<ReferenceInfo> referenceInfoList) {
+                                                      Collection<ReferenceInfo> referenceInfoList,
+                                                      boolean optimisticLocking) {
         Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
         Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
         MetaProperty metaProperty = srcEntity.getMetaClass().getPropertyNN(viewProperty.getName());
@@ -397,7 +413,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                 .onCreate(e -> {
                     if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(e))) {
                         Entity result = importEntity(e, null, viewProperty.getView(), regularView,
-                                commitContext, referenceInfoList);
+                                commitContext, referenceInfoList, optimisticLocking);
                         if (inverseMetaProperty != null) {
                             result.setValue(inverseMetaProperty.getName(), dstEntity);
                         }
@@ -407,7 +423,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                 .onUpdate((src, dst) -> {
                     if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(src))) {
                         Entity result = importEntity(src, dst, viewProperty.getView(), regularView,
-                                commitContext, referenceInfoList);
+                                commitContext, referenceInfoList, optimisticLocking);
                         if (inverseMetaProperty != null) {
                             result.setValue(inverseMetaProperty.getName(), dstEntity);
                         }
@@ -435,7 +451,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                                                        EntityImportViewProperty viewProperty,
                                                        View regularView,
                                                        CommitContext commitContext,
-                                                       Collection<ReferenceInfo> referenceInfoList) {
+                                                       Collection<ReferenceInfo> referenceInfoList,
+                                                       boolean optimisticLocking) {
         Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
         Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
         MetaProperty metaProperty = srcEntity.getMetaClass().getPropertyNN(viewProperty.getName());
@@ -448,14 +465,14 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .onCreate(e -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(e))) {
                             Entity result = importEntity(e, null, viewProperty.getView(), regularView,
-                                    commitContext, referenceInfoList);
+                                    commitContext, referenceInfoList, optimisticLocking);
                             newCollectionValue.add(result);
                         }
                     })
                     .onUpdate((src, dst) -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(src))) {
                             Entity result = importEntity(src, dst, viewProperty.getView(), regularView,
-                                    commitContext, referenceInfoList);
+                                    commitContext, referenceInfoList, optimisticLocking);
                             newCollectionValue.add(result);
                         }
                     })
@@ -483,7 +500,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                                              EntityImportViewProperty importViewProperty,
                                              View regularView,
                                              CommitContext commitContext,
-                                             Collection<ReferenceInfo> referenceInfoList) {
+                                             Collection<ReferenceInfo> referenceInfoList,
+                                             boolean optimisticLock) {
         String propertyName = importViewProperty.getName();
         MetaProperty metaProperty = srcEntity.getMetaClass().getPropertyNN(propertyName);
         Entity srcEmbeddedEntity = srcEntity.getValue(propertyName);
@@ -527,12 +545,12 @@ public class EntityImportExport implements EntityImportExportAPI {
                 View propertyRegularView = regularView.getProperty(propertyName) != null ? regularView.getProperty(propertyName).getView() : null;
                 if (metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY) {
                     importOneToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, srcSecurityState,
-                            vp, propertyRegularView, commitContext, referenceInfoList);
+                            vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
                 } else if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY) {
                     importManyToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, srcSecurityState,
-                            vp, propertyRegularView, commitContext, referenceInfoList);
+                            vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
                 } else {
-                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList);
+                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
                 }
             }
         }

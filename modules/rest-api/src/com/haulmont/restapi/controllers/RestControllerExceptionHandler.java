@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.global.RowLevelSecurityException;
 import com.haulmont.cuba.core.global.validation.CustomValidationException;
 import com.haulmont.cuba.core.global.validation.MethodParametersValidationException;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.core.global.validation.MethodResultValidationException;
 import com.haulmont.restapi.exception.ConstraintViolationInfo;
 import com.haulmont.restapi.exception.ErrorInfo;
 import com.haulmont.restapi.exception.RestAPIException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -119,6 +121,19 @@ public class RestControllerExceptionHandler {
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleException(Exception e) {
         log.error("Exception in REST controller", e);
+        @SuppressWarnings("unchecked")
+        List<Throwable> list = ExceptionUtils.getThrowableList(e);
+        for (Throwable throwable : list) {
+            if (throwable instanceof RemoteException) {
+                RemoteException remoteException = (RemoteException) throwable;
+                for (RemoteException.Cause cause : remoteException.getCauses()) {
+                    if (Objects.equals("javax.persistence.OptimisticLockException", cause.getClassName())) {
+                        ErrorInfo errorInfo = new ErrorInfo("Optimistic lock", cause.getMessage());
+                        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+        }
         ErrorInfo errorInfo = new ErrorInfo("Server error", "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }
