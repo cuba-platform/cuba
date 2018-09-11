@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.factories.FieldGroupFieldFactoryImpl;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -26,8 +27,8 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
-import mockit.Mocked;
 import mockit.Expectations;
+import mockit.Mocked;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,6 +36,8 @@ import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -50,15 +53,11 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @SuppressWarnings("ReassignmentInjectVariable")
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
-        fieldFactory = new TestFieldGroupFieldFactoryImpl() {
-            {
-                this.componentsFactory = FieldGroupTest.this.componentsFactory;
-            }
-        };
+        fieldFactory = new TestFieldGroupFieldFactoryImpl();
 
         new Expectations() {
             {
@@ -76,8 +75,18 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         messages.init();
 
+        DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages, null);
+        strategy.setComponentsFactory(FieldGroupTest.this.componentsFactory);
+
+        UiComponentsGenerator uiComponentsGenerator = new UiComponentsGenerator(){
+            @Override
+            protected List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
+                return Collections.singletonList(strategy);
+            }
+        };
+
         componentsFactory = createComponentsFactory();
-        fieldFactory.setComponentsFactory(componentsFactory);
+        fieldFactory.setUiComponentsGenerator(uiComponentsGenerator);
     }
 
     protected void initExpectations() {
@@ -461,8 +470,8 @@ public class FieldGroupTest extends CubaClientTestCase {
     }
 
     protected static class TestFieldGroupFieldFactoryImpl extends FieldGroupFieldFactoryImpl {
-        public void setComponentsFactory(ComponentsFactory componentsFactory) {
-            this.componentsFactory = componentsFactory;
+        public void setUiComponentsGenerator(UiComponentsGenerator generator) {
+            this.uiComponentsGenerator = generator;
         }
     }
 }

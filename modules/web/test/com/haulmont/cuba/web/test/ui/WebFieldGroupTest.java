@@ -18,21 +18,18 @@ package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
-import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
+import com.haulmont.cuba.web.gui.WebUiComponents;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.GridLayout;
-import mockit.Mocked;
+import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import mockit.Expectations;
+import mockit.Mocked;
 import org.junit.Ignore;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 @Ignore
@@ -60,12 +57,8 @@ public class WebFieldGroupTest extends FieldGroupTest {
     @Override
     protected ComponentsFactory createComponentsFactory() {
         return new WebComponentsFactory() {
-            @Override
-            public List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
-                // vaadin8 fix
-                DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages, null);
-                strategy.setComponentsFactory(this);
-                return Collections.singletonList(strategy);
+            {
+                this.uiComponents = new WebUiComponents();
             }
         };
     }
