@@ -16,17 +16,20 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.components.data.table.HierarchicalDatasourceTableAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface TreeTable<E extends Entity> extends Table<E> {
 
     String NAME = "treeTable";
+
+    static <T extends Entity> TypeToken<TreeTable<T>> of(Class<T> itemClass) {
+        return new TypeToken<TreeTable<T>>() {};
+    }
 
     void expandAll();
     void expand(Object itemId);

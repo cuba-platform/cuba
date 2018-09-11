@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.CheckBox;
 public class CheckBoxLoader extends AbstractFieldLoader<CheckBox> {
     @Override
     public void createComponent() {
-        resultComponent = (CheckBox) factory.createComponent(CheckBox.NAME);
+        resultComponent = factory.create(CheckBox.NAME);
         loadId(resultComponent, element);
     }
 

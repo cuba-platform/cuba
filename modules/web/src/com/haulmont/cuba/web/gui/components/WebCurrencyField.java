@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
@@ -30,6 +30,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
@@ -41,13 +43,19 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
         implements CurrencyField<V>, InitializingBean {
 
     protected Locale locale;
-    private Datatype<V> datatype = Datatypes.get("decimal");
+    protected Datatype<V> datatype;
 
     public WebCurrencyField() {
         component = new CubaCurrencyField();
         component.setCurrencyLabelPosition(toWidgetLabelPosition(CurrencyLabelPosition.RIGHT));
 
         attachValueChangeListener(component);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Inject
+    public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+        this.datatype = (Datatype) datatypeRegistry.get(BigDecimal.class);
     }
 
     @Override
@@ -149,6 +157,7 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
+        // vaadin8 support in value source
         if (datasource != null && !DynamicAttributesUtils.isDynamicAttribute(property)) {
             MetaProperty metaProperty = datasource.getMetaClass()
                     .getPropertyNN(property);

@@ -29,7 +29,7 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(CurrencyField.class);
+        resultComponent = factory.create(CurrencyField.class);
         loadId(resultComponent, element);
     }
 

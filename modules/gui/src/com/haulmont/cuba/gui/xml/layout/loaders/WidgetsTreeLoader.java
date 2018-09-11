@@ -33,7 +33,7 @@ public class WidgetsTreeLoader extends ActionsHolderLoader<WidgetsTree> {
 
     @Override
     public void createComponent() {
-        resultComponent = (WidgetsTree) factory.createComponent(WidgetsTree.NAME);
+        resultComponent = factory.create(WidgetsTree.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }

@@ -25,7 +25,7 @@ public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
 
     @Override
     public void createComponent() {
-        resultComponent = (TimeField) factory.createComponent(TimeField.NAME);
+        resultComponent = factory.create(TimeField.NAME);
         loadId(resultComponent, element);
     }
 

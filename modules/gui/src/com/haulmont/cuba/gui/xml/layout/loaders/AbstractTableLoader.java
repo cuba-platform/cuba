@@ -280,7 +280,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected void loadRowsCount(Table table, Element element) {
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
-            RowsCount rowsCount = factory.createComponent(RowsCount.class);
+            RowsCount rowsCount = factory.create(RowsCount.class);
             rowsCount.setOwner(table);
             table.setRowsCount(rowsCount);
         }

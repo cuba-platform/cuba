@@ -273,7 +273,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     protected void loadRowsCount(DataGrid component, Element element) {
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
-            RowsCount rowsCount = factory.createComponent(RowsCount.class);
+            RowsCount rowsCount = factory.create(RowsCount.class);
             rowsCount.setOwner(component);
             component.setRowsCount(rowsCount);
         }

@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 public class UserIndicatorLoader extends AbstractComponentLoader<UserIndicator> {
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(UserIndicator.NAME);
+        resultComponent = factory.create(UserIndicator.NAME);
         loadId(resultComponent, element);
     }
 

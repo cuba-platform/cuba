@@ -22,7 +22,7 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
     
     @Override
     public void createComponent() {
-        resultComponent = (BrowserFrame) factory.createComponent(BrowserFrame.NAME);
+        resultComponent = factory.create(BrowserFrame.NAME);
         loadId(resultComponent, element);
     }
 }

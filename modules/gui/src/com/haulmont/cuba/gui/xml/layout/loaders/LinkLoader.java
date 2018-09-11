@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LinkLoader extends AbstractComponentLoader<Link> {
     @Override
     public void createComponent() {
-        resultComponent = (Link) factory.createComponent(Link.NAME);
+        resultComponent = factory.create(Link.NAME);
         loadId(resultComponent, element);
     }
 

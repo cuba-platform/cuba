@@ -29,7 +29,7 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
 
     @Override
     public void createComponent() {
-        resultComponent = (DatePicker) factory.createComponent(DatePicker.NAME);
+        resultComponent = factory.create(DatePicker.NAME);
         loadId(resultComponent, element);
     }
 

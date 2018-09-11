@@ -25,7 +25,7 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
 
     @Override
     public void createComponent() {
-        resultComponent = (TextArea) factory.createComponent(TextArea.NAME);
+        resultComponent = factory.create(TextArea.NAME);
         loadId(resultComponent, element);
     }
 

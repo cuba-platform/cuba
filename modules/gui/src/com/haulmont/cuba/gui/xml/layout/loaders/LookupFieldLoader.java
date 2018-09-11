@@ -40,7 +40,7 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(LookupField.NAME);
+        resultComponent = factory.create(LookupField.NAME);
         loadId(resultComponent, element);
     }
 

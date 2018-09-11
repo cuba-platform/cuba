@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 
 public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFrame {
 
+    String NAME = "timer";
+
     boolean isRepeating();
     void setRepeating(boolean repeating);
 

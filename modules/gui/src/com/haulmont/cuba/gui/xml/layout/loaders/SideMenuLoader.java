@@ -26,7 +26,7 @@ import org.dom4j.Element;
 public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
     @Override
     public void createComponent() {
-        resultComponent = (SideMenu) factory.createComponent(SideMenu.NAME);
+        resultComponent = factory.create(SideMenu.NAME);
         loadId(resultComponent, element);
     }
 

@@ -41,7 +41,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Calendar) factory.createComponent(Calendar.NAME);
+        resultComponent = factory.create(Calendar.NAME);
         loadId(resultComponent, element);
     }
 

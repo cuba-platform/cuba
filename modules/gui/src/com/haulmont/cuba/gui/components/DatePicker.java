@@ -16,11 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-
-import java.util.Date;
-
-public interface DatePicker<V> extends Field<V>, Component.Focusable, HasRange<V> {
+public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V> {
     String NAME = "datePicker";
 
     enum Resolution {
@@ -45,8 +41,4 @@ public interface DatePicker<V> extends Field<V>, Component.Focusable, HasRange<V
     @SuppressWarnings("unchecked")
     @Override
     V getValue();
-
-    Datatype<V> getDatatype();
-
-    void setDatatype(Datatype<V> datatype);
 }

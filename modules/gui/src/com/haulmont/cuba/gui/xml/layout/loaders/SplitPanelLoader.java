@@ -28,7 +28,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
     @Override
     public void createComponent() {
-        resultComponent = (SplitPanel) factory.createComponent(SplitPanel.NAME);
+        resultComponent = factory.create(SplitPanel.NAME);
         loadId(resultComponent, element);
 
         String orientation = element.attributeValue("orientation");
@@ -42,7 +42,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         createSubComponents(resultComponent, element);
         if (resultComponent.getOwnComponents().size() == 1) {
-            resultComponent.add(factory.createComponent(VBoxLayout.NAME));
+            resultComponent.add(factory.create(VBoxLayout.NAME));
         }
     }
 

@@ -26,7 +26,7 @@ public class ImageLoader extends AbstractResourceViewLoader<Image> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Image) factory.createComponent(Image.NAME);
+        resultComponent = factory.create(Image.NAME);
         loadId(resultComponent, element);
     }
 

@@ -29,7 +29,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
 
     @Override
     public void createComponent() {
-        resultComponent = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        resultComponent = factory.create(LookupPickerField.NAME);
         loadId(resultComponent, element);
     }
 

@@ -24,7 +24,7 @@ import org.dom4j.Element;
 public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
     @Override
     public void createComponent() {
-        resultComponent = (OptionsList) factory.createComponent(OptionsList.NAME);
+        resultComponent = factory.create(OptionsList.NAME);
         loadId(resultComponent, element);
     }
 

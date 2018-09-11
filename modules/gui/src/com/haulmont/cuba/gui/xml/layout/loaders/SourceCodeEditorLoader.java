@@ -24,7 +24,7 @@ import org.dom4j.Element;
 public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor> {
     @Override
     public void createComponent() {
-        resultComponent = (SourceCodeEditor) factory.createComponent(SourceCodeEditor.NAME);
+        resultComponent = factory.create(SourceCodeEditor.NAME);
         loadId(resultComponent, element);
     }
 

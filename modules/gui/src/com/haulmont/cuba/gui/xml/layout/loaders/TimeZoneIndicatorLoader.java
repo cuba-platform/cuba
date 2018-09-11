@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
 public class TimeZoneIndicatorLoader extends AbstractComponentLoader<TimeZoneIndicator> {
     @Override
     public void createComponent() {
-        resultComponent = (TimeZoneIndicator) factory.createComponent(TimeZoneIndicator.NAME);
+        resultComponent = factory.create(TimeZoneIndicator.NAME);
         loadId(resultComponent, element);
     }
 

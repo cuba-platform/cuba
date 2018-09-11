@@ -17,14 +17,13 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.LinkButton;
 
 public class LinkButtonLoader extends ButtonLoader {
 
     @Override
     public void createComponent() {
-        resultComponent = (Button) factory.createComponent(LinkButton.NAME);
+        resultComponent = factory.create(LinkButton.NAME);
         loadId(resultComponent, element);
     }
 }

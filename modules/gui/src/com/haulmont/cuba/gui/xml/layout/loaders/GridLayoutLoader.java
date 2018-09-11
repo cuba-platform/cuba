@@ -33,7 +33,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
 
     @Override
     public void createComponent() {
-        resultComponent = (GridLayout) factory.createComponent(GridLayout.NAME);
+        resultComponent = factory.create(GridLayout.NAME);
         loadId(resultComponent, element);
 
         Element columnsElement = element.element("columns");

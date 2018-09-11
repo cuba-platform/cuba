@@ -16,12 +16,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
-import com.haulmont.cuba.gui.components.data.table.GroupDatasourceTableAdapter;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
@@ -37,6 +36,10 @@ import java.util.Map;
 public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
+
+    static <T extends Entity> TypeToken<GroupTable<T>> of(Class<T> itemClass) {
+        return new TypeToken<GroupTable<T>>() {};
+    }
 
     @Deprecated
     @Override

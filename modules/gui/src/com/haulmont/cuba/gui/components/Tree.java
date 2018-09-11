@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
@@ -27,6 +28,10 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
                                                 Component.Focusable {
 
     String NAME = "tree";
+
+    static <T extends Entity> TypeToken<Tree<T>> of(Class<T> itemClass) {
+        return new TypeToken<Tree<T>>() {};
+    }
 
     void expandTree();
     void expand(Object itemId);

@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
@@ -40,7 +41,6 @@ import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
@@ -92,7 +92,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected UserSession userSession;
 
     @Inject
-    protected ComponentsFactory factory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected Configuration configuration;
@@ -280,10 +280,10 @@ public class UserEditor extends AbstractEditor<User> {
     protected void createTimeZoneField() {
         FieldGroup.FieldConfig timeZoneFc = fieldGroupRight.getFieldNN("timeZone");
 
-        HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
+        HBoxLayout hbox = uiComponents.create(HBoxLayout.class);
         hbox.setSpacing(true);
 
-        timeZoneLookup = factory.createComponent(LookupField.class);
+        timeZoneLookup = uiComponents.create(LookupField.TYPE_STRING);
 
         timeZoneLookup.setDatasource(timeZoneFc.getTargetDatasource(), timeZoneFc.getProperty());
         timeZoneLookup.setRequired(false);
@@ -301,7 +301,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         hbox.add(timeZoneLookup);
 
-        CheckBox autoDetectField = factory.createComponent(CheckBox.class);
+        CheckBox autoDetectField = uiComponents.create(CheckBox.class);
         autoDetectField.setDatasource(timeZoneFc.getTargetDatasource(), "timeZoneAuto");
         autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
         autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
@@ -319,7 +319,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected void createGroupField() {
         FieldGroup.FieldConfig groupFc = fieldGroupRight.getFieldNN("group");
 
-        PickerField<?> pickerField = factory.createComponent(PickerField.class);
+        PickerField<?> pickerField = uiComponents.create(PickerField.class);
 
         pickerField.setDatasource(groupFc.getTargetDatasource(), groupFc.getProperty());
         pickerField.setRequired(true);
@@ -339,7 +339,7 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected void createPasswordFields(boolean isNew) {
-        passwField = factory.createComponent(PasswordField.class);
+        passwField = uiComponents.create(PasswordField.class);
         if (isNew) {
             passwField.setRequiredMessage(getMessage("passwMsg"));
 
@@ -357,7 +357,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
         fieldGroupLeft.getFieldNN("passw").setComponent(passwField);
 
-        confirmPasswField = factory.createComponent(PasswordField.class);
+        confirmPasswField = uiComponents.create(PasswordField.class);
         if (isNew) {
             confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
 
@@ -377,7 +377,7 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected void createLanguageLookup() {
-        languageLookup = factory.createComponent(LookupField.class);
+        languageLookup = uiComponents.create(LookupField.TYPE_STRING);
         FieldGroup.FieldConfig languageLookupFc = fieldGroupRight.getFieldNN("language");
         languageLookup.setDatasource(languageLookupFc.getTargetDatasource(), languageLookupFc.getProperty());
         languageLookup.setRequired(false);

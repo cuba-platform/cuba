@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -24,6 +26,12 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
         Component.Focusable, HasOptionsStyleProvider {
 
     String NAME = "lookupField";
+
+    TypeToken<LookupField<String>> TYPE_STRING = new TypeToken<LookupField<String>>(){};
+
+    static <T> TypeToken<LookupField<T>> of(Class<T> valueClass) {
+        return new TypeToken<LookupField<T>>() {};
+    }
 
     V getNullOption();
     void setNullOption(V nullOption);

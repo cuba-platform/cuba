@@ -6,6 +6,6 @@ public class TreeDataGridLoader extends AbstractDataGridLoader<TreeDataGrid> {
 
     @Override
     protected TreeDataGrid createComponentInternal() {
-        return (TreeDataGrid) factory.createComponent(TreeDataGrid.NAME);
+        return factory.create(TreeDataGrid.NAME);
     }
 }

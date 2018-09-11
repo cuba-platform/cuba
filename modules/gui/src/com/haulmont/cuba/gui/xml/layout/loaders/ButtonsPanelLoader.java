@@ -30,7 +30,7 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
 
     @Override
     public void createComponent() {
-        resultComponent = (ButtonsPanel) factory.createComponent(ButtonsPanel.NAME);
+        resultComponent = factory.create(ButtonsPanel.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
     }

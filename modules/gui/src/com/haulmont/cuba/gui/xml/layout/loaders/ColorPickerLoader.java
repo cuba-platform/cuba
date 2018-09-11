@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.ColorPicker;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -25,7 +24,7 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(ColorPicker.NAME);
+        resultComponent = factory.create(ColorPicker.NAME);
         loadId(resultComponent, element);
     }
 

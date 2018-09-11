@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.FileMultiUploadField;
 public class FileMultiUploadFieldLoader extends AbstractUploadFieldLoader<FileMultiUploadField> {
     @Override
     public void createComponent() {
-        resultComponent = (FileMultiUploadField) factory.createComponent(FileMultiUploadField.NAME);
+        resultComponent = factory.create(FileMultiUploadField.NAME);
         loadId(resultComponent, element);
     }
 }

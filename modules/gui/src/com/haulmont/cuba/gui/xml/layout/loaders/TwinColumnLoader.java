@@ -27,7 +27,7 @@ import org.dom4j.Element;
 public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
     @Override
     public void createComponent() {
-        resultComponent = (TwinColumn) factory.createComponent(TwinColumn.NAME);
+        resultComponent = factory.create(TwinColumn.NAME);
         loadId(resultComponent, element);
     }
 

@@ -16,9 +16,15 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
+import com.google.common.reflect.TypeToken;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetTime;
 
 public interface TextArea<V> extends TextInputField<V>,
+                                  HasDatatype<V>,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,
                                   TextInputField.TrimSupported,
@@ -29,6 +35,21 @@ public interface TextArea<V> extends TextInputField<V>,
 
     String NAME = "textArea";
 
+    TypeToken<TextArea<String>> TYPE_DEFAULT = new TypeToken<TextArea<String>>(){};
+    TypeToken<TextArea<String>> TYPE_STRING = new TypeToken<TextArea<String>>(){};
+
+    TypeToken<TextArea<Integer>> TYPE_INTEGER = new TypeToken<TextArea<Integer>>(){};
+    TypeToken<TextArea<Long>> TYPE_LONG = new TypeToken<TextArea<Long>>(){};
+    TypeToken<TextArea<Double>> TYPE_DOUBLE = new TypeToken<TextArea<Double>>(){};
+    TypeToken<TextArea<BigDecimal>> TYPE_BIGDECIMAL = new TypeToken<TextArea<BigDecimal>>(){};
+
+    TypeToken<TextArea<java.sql.Date>> TYPE_DATE = new TypeToken<TextArea<java.sql.Date>>(){};
+    TypeToken<TextArea<java.util.Date>> TYPE_DATETIME = new TypeToken<TextArea<java.util.Date>>(){};
+    TypeToken<TextArea<LocalDate>> TYPE_LOCALDATE = new TypeToken<TextArea<LocalDate>>(){};
+    TypeToken<TextArea<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<TextArea<LocalDateTime>>(){};
+    TypeToken<TextArea<java.sql.Time>> TYPE_TIME = new TypeToken<TextArea<java.sql.Time>>(){};
+    TypeToken<TextArea<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<TextArea<OffsetTime>>(){};
+    
     int getRows();
     void setRows(int rows);
 
@@ -46,9 +67,6 @@ public interface TextArea<V> extends TextInputField<V>,
      * @param wordWrap wordWrap
      */
     void setWordWrap(boolean wordWrap);
-
-    Datatype<V> getDatatype();
-    void setDatatype(Datatype<V> datatype);
 
     /**
      * Returns a string representation of the value.

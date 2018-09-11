@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(PasswordField.NAME);
+        resultComponent = factory.create(PasswordField.NAME);
         loadId(resultComponent, element);
     }
 

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
@@ -241,7 +242,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
     }
 
-    protected void loadTimers(ComponentsFactory factory, Window component, Element element) {
+    protected void loadTimers(UiComponents factory, Window component, Element element) {
         Element timersElement = element.element("timers");
         if (timersElement != null) {
             final List timers = timersElement.elements("timer");
@@ -251,8 +252,8 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
     }
 
-    protected void loadTimer(ComponentsFactory factory, final Window component, Element element) {
-        Timer timer = factory.createTimer();
+    protected void loadTimer(UiComponents factory, final Window component, Element element) {
+        Timer timer = factory.create(Timer.class);
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
         String delay = element.attributeValue("delay");
@@ -334,11 +335,11 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
                             "Method name", timerMethodName));
         }
 
-        timer.addActionListener(t -> {
+        timer.addTimerActionListener(e -> {
             try {
-                timerMethod.invoke(controller, t);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Unable to invoke onTimer", e);
+                timerMethod.invoke(controller, e.getSource());
+            } catch (IllegalAccessException | InvocationTargetException ex) {
+                throw new RuntimeException("Unable to invoke onTimer", ex);
             }
         });
     }

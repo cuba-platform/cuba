@@ -31,7 +31,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(DateField.NAME);
+        resultComponent = factory.create(DateField.NAME);
         loadId(resultComponent, element);
     }
 

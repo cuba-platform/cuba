@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 public class FtsFieldLoader extends AbstractComponentLoader<FtsField> {
     @Override
     public void createComponent() {
-        resultComponent = (FtsField) factory.createComponent(FtsField.NAME);
+        resultComponent = factory.create(FtsField.NAME);
         loadId(resultComponent, element);
     }
 

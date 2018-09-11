@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -43,6 +44,10 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         LookupComponent, Component.Focusable {
 
     String NAME = "dataGrid";
+
+    static <T extends Entity> TypeToken<DataGrid<T>> of(Class<T> itemClass) {
+        return new TypeToken<DataGrid<T>>() {};
+    }
 
     /**
      * Returns a copy of currently configured columns in their current visual
@@ -2796,5 +2801,4 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         void setOwner(DataGrid<E> owner);
     }
-
 }

@@ -28,7 +28,7 @@ public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
 
     @Override
     public void createComponent() {
-        resultComponent = (AppWorkArea) factory.createComponent(AppWorkArea.NAME);
+        resultComponent = factory.create(AppWorkArea.NAME);
         loadId(resultComponent, element);
 
         Element initialLayoutElement = element.element("initialLayout");

@@ -20,7 +20,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -30,7 +29,7 @@ import java.util.List;
 public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(GroupTable.NAME);
+        resultComponent = factory.create(GroupTable.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }

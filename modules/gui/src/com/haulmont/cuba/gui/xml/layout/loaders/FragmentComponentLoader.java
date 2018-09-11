@@ -90,7 +90,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         StopWatch createStopWatch = createStopWatch(LifeCycle.CREATE, windowInfo.getId());
 
-        Fragment fragment = factory.createComponent(Fragment.NAME);
+        Fragment fragment = factory.create(Fragment.NAME);
         ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
 
         // setup screen and controller

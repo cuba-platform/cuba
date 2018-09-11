@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.VBoxLayout;
 public class VBoxLayoutLoader extends AbstractBoxLoader<VBoxLayout> {
     @Override
     public void createComponent() {
-        resultComponent = (VBoxLayout) factory.createComponent(VBoxLayout.NAME);
+        resultComponent = factory.create(VBoxLayout.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
     }

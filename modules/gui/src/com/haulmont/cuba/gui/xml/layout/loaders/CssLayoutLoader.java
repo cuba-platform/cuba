@@ -25,7 +25,7 @@ import org.dom4j.Element;
 public class CssLayoutLoader extends ContainerLoader<CssLayout> {
     @Override
     public void createComponent() {
-        resultComponent = (CssLayout) factory.createComponent(CssLayout.NAME);
+        resultComponent = factory.create(CssLayout.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
     }

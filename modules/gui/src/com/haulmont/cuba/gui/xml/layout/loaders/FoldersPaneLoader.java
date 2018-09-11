@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 public class FoldersPaneLoader extends AbstractComponentLoader<FoldersPane> {
     @Override
     public void createComponent() {
-        resultComponent = (FoldersPane) factory.createComponent(FoldersPane.NAME);
+        resultComponent = factory.create(FoldersPane.NAME);
         loadId(resultComponent, element);
     }
 

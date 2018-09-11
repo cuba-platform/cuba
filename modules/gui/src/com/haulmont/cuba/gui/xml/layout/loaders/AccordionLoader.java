@@ -32,7 +32,7 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(Accordion.NAME);
+        resultComponent = factory.create(Accordion.NAME);
         loadId(resultComponent, element);
 
         //noinspection unchecked

@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
@@ -75,7 +76,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected String messagesPack;
     protected Context context;
 
-    protected ComponentsFactory factory;
+    protected UiComponents factory;
     protected LayoutLoaderConfig layoutLoaderConfig;
     protected Element element;
 
@@ -123,12 +124,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     @Override
-    public ComponentsFactory getFactory() {
+    public UiComponents getFactory() {
         return factory;
     }
 
     @Override
-    public void setFactory(ComponentsFactory factory) {
+    public void setFactory(UiComponents factory) {
         this.factory = factory;
     }
 

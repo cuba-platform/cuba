@@ -65,7 +65,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(BulkEditor.NAME);
+        resultComponent = factory.create(BulkEditor.NAME);
         loadId(resultComponent, element);
     }
 

@@ -29,7 +29,7 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(PopupView.NAME);
+        resultComponent = factory.create(PopupView.NAME);
         loadId(resultComponent, element);
         createContent();
     }

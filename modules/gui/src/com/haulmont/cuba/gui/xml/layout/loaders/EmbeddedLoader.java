@@ -34,7 +34,7 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Embedded) factory.createComponent(Embedded.NAME);
+        resultComponent = factory.create(Embedded.NAME);
         loadId(resultComponent, element);
     }
 

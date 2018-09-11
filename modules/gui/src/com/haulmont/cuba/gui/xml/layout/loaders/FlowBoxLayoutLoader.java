@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.FlowBoxLayout;
 public class FlowBoxLayoutLoader extends ContainerLoader<FlowBoxLayout> {
     @Override
     public void createComponent() {
-        resultComponent = (FlowBoxLayout) factory.createComponent(FlowBoxLayout.NAME);
+        resultComponent = factory.create(FlowBoxLayout.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
     }

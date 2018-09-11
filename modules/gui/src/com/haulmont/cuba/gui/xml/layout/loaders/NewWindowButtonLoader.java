@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
 public class NewWindowButtonLoader extends AbstractComponentLoader<NewWindowButton> {
     @Override
     public void createComponent() {
-        resultComponent = (NewWindowButton) factory.createComponent(NewWindowButton.NAME);
+        resultComponent = factory.create(NewWindowButton.NAME);
         loadId(resultComponent, element);
     }
 

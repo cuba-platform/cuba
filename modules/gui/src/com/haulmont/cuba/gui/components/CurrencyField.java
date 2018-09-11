@@ -16,14 +16,23 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
+import com.google.common.reflect.TypeToken;
+
+import java.math.BigDecimal;
 
 /**
  * The CurrencyField component is intended for displaying currency values.
  */
-public interface CurrencyField<V> extends Field<V>, Buffered {
+public interface CurrencyField<V> extends Field<V>, HasDatatype<V>, Buffered {
 
     String NAME = "currencyField";
+
+    TypeToken<CurrencyField<BigDecimal>> TYPE_DEFAULT = new TypeToken<CurrencyField<BigDecimal>>(){};
+    TypeToken<CurrencyField<BigDecimal>> TYPE_BIGDECIMAL = new TypeToken<CurrencyField<BigDecimal>>(){};
+
+    TypeToken<CurrencyField<Integer>> TYPE_INTEGER = new TypeToken<CurrencyField<Integer>>(){};
+    TypeToken<CurrencyField<Long>> TYPE_LONG = new TypeToken<CurrencyField<Long>>(){};
+    TypeToken<CurrencyField<Double>> TYPE_DOUBLE = new TypeToken<CurrencyField<Double>>(){};
 
     /**
      * Sets the given <code>currency</code> to the field. Currency label will be displayed next to the text input
@@ -61,19 +70,6 @@ public interface CurrencyField<V> extends Field<V>, Buffered {
      * @return where the currency label is located
      */
     CurrencyLabelPosition getCurrencyLabelPosition();
-
-    /**
-     * Sets the given <code>datatype</code> to the component. Its value will be formatted according to this
-     * datatype.
-     *
-     * @param datatype {@link Datatype} instance
-     */
-    void setDatatype(Datatype<V> datatype);
-
-    /**
-     * @return a datatype that is used by this component
-     */
-    Datatype<V> getDatatype();
 
     /**
      * Defines where the currency label is located.

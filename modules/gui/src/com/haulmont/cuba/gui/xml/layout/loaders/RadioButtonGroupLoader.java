@@ -6,7 +6,7 @@ public class RadioButtonGroupLoader extends AbstractOptionsBaseLoader<RadioButto
 
     @Override
     public void createComponent() {
-        resultComponent = (RadioButtonGroup) factory.createComponent(RadioButtonGroup.NAME);
+        resultComponent = factory.create(RadioButtonGroup.NAME);
         loadId(resultComponent, element);
     }
 

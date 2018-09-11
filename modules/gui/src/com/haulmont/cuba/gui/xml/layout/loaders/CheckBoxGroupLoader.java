@@ -6,7 +6,7 @@ public class CheckBoxGroupLoader extends AbstractOptionsBaseLoader<CheckBoxGroup
 
     @Override
     public void createComponent() {
-        resultComponent = (CheckBoxGroup) factory.createComponent(CheckBoxGroup.NAME);
+        resultComponent = factory.create(CheckBoxGroup.NAME);
         loadId(resultComponent, element);
     }
 

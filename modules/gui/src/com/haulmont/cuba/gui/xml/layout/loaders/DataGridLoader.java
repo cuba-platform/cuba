@@ -22,6 +22,6 @@ public class DataGridLoader extends AbstractDataGridLoader<DataGrid> {
 
     @Override
     protected DataGrid createComponentInternal() {
-        return (DataGrid) factory.createComponent(DataGrid.NAME);
+        return factory.create(DataGrid.NAME);
     }
 }

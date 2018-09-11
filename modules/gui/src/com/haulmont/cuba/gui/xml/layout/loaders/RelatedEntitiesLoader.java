@@ -30,7 +30,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(RelatedEntities.NAME);
+        resultComponent = factory.create(RelatedEntities.NAME);
         loadId(resultComponent, element);
     }
 

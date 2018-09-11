@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.loaders.FragmentLoader;
@@ -41,7 +42,7 @@ public class LayoutLoader {
     public static final String NAME = "cuba_LayoutLoader";
 
     protected ComponentLoader.Context context;
-    protected ComponentsFactory factory;
+    protected UiComponents factory;
     protected LayoutLoaderConfig config;
 
     protected Locale locale;
@@ -59,7 +60,7 @@ public class LayoutLoader {
     }
 
     @Inject
-    public void setFactory(ComponentsFactory factory) {
+    public void setFactory(UiComponents factory) {
         this.factory = factory;
     }
 

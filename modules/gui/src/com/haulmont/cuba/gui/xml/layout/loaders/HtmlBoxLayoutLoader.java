@@ -26,7 +26,7 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
     @Override
     public void createComponent() {
-        resultComponent = (HtmlBoxLayout) factory.createComponent(HtmlBoxLayout.NAME);
+        resultComponent = factory.create(HtmlBoxLayout.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
     }

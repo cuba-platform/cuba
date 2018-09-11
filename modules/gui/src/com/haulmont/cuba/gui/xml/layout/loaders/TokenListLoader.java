@@ -28,7 +28,7 @@ import org.dom4j.Element;
 public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     @Override
     public void createComponent() {
-        resultComponent = (TokenList) factory.createComponent(TokenList.NAME);
+        resultComponent = factory.create(TokenList.NAME);
         loadId(resultComponent, element);
     }
 

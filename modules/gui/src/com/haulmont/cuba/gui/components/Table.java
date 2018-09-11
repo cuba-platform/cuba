@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -23,7 +24,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrapper;
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableSource;
@@ -58,6 +58,10 @@ public interface Table<E extends Entity>
     }
 
     String NAME = "table";
+
+    static <T extends Entity> TypeToken<Table<T>> of(Class<T> itemClass) {
+        return new TypeToken<Table<T>>() {};
+    }
 
     List<Column<E>> getColumns();
 

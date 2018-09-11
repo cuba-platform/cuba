@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 public class MaskedFieldLoader extends AbstractTextFieldLoader<MaskedField> {
     @Override
     public void createComponent() {
-        resultComponent = (MaskedField) factory.createComponent(MaskedField.NAME);
+        resultComponent = factory.create(MaskedField.NAME);
         loadId(resultComponent, element);
     }
 

@@ -33,7 +33,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
 
     @Override
     public void createComponent() {
-        resultComponent = (Tree) factory.createComponent(Tree.NAME);
+        resultComponent = factory.create(Tree.NAME);
         loadId(resultComponent, element);
         createButtonsPanel(resultComponent, element);
     }

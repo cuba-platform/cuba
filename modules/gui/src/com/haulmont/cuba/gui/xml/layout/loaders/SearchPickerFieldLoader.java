@@ -27,7 +27,7 @@ import org.dom4j.Element;
 public class SearchPickerFieldLoader extends SearchFieldLoader {
     @Override
     public void createComponent() {
-        resultComponent = (SearchPickerField) factory.createComponent(SearchPickerField.NAME);
+        resultComponent = factory.create(SearchPickerField.NAME);
         loadId(resultComponent, element);
     }
 

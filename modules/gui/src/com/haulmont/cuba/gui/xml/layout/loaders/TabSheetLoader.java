@@ -32,7 +32,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
 
     @Override
     public void createComponent() {
-        resultComponent = (TabSheet) factory.createComponent(TabSheet.NAME);
+        resultComponent = factory.create(TabSheet.NAME);
         loadId(resultComponent, element);
 
         //noinspection unchecked

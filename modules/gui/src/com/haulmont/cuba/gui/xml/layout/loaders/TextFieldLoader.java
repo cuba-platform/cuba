@@ -44,7 +44,7 @@ public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
 
     @Override
     public void createComponent() {
-        resultComponent = (TextField) factory.createComponent(TextField.NAME);
+        resultComponent = factory.create(TextField.NAME);
         loadId(resultComponent, element);
     }
 }

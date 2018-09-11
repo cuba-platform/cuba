@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.RichTextArea;
 public class RichTextAreaLoader extends AbstractTextFieldLoader<RichTextArea> {
     @Override
     public void createComponent() {
-        resultComponent = (RichTextArea) factory.createComponent(RichTextArea.NAME);
+        resultComponent = factory.create(RichTextArea.NAME);
         loadId(resultComponent, element);
     }
 }

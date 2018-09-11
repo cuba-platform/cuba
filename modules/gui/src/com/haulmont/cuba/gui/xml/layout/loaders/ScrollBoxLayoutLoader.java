@@ -48,7 +48,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
 
     @Override
     public void createComponent() {
-        resultComponent = (ScrollBoxLayout) factory.createComponent(ScrollBoxLayout.NAME);
+        resultComponent = factory.create(ScrollBoxLayout.NAME);
         loadId(resultComponent, element);
         loadOrientation(resultComponent, element);
         createSubComponents(resultComponent, element);

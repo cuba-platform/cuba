@@ -49,7 +49,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(Filter.NAME);
+        resultComponent = factory.create(Filter.NAME);
         loadId(resultComponent, element);
     }
 

@@ -24,7 +24,7 @@ import org.dom4j.Element;
 public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
     @Override
     public void createComponent() {
-        resultComponent = (ProgressBar) factory.createComponent(ProgressBar.NAME);
+        resultComponent = factory.create(ProgressBar.NAME);
         loadId(resultComponent, element);
     }
 

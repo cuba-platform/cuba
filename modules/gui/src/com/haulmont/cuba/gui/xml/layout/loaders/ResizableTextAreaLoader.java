@@ -32,16 +32,16 @@ public class ResizableTextAreaLoader extends TextAreaLoader {
     @Override
     public void createComponent() {
         if (element.getName().equals(ResizableTextArea.NAME)) {
-            resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+            resultComponent = factory.create(ResizableTextArea.NAME);
         }
 
         if (element.getName().equals(TextArea.NAME)) {
             if (isResizable() || hasResizableDirection()) {
-                resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+                resultComponent = factory.create(ResizableTextArea.NAME);
                 log.warn("The 'resizableTextArea' element must be used in order to create a resizable text area " +
                         "instead of 'textArea'");
             } else {
-                resultComponent = (TextArea) factory.createComponent(TextArea.NAME);
+                resultComponent = factory.create(TextArea.NAME);
             }
         }
 

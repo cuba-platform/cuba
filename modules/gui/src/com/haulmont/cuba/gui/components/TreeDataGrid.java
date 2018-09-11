@@ -1,5 +1,6 @@
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
@@ -24,6 +25,10 @@ import java.util.stream.Stream;
 public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
 
     String NAME = "treeDataGrid";
+
+    static <T extends Entity> TypeToken<TreeDataGrid<T>> of(Class<T> itemClass) {
+        return new TypeToken<TreeDataGrid<T>>() {};
+    }
 
     @Override
     default HierarchicalDatasource getDatasource() {

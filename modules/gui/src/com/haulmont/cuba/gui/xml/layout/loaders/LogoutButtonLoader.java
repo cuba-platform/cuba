@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
 public class LogoutButtonLoader extends AbstractComponentLoader<LogoutButton> {
     @Override
     public void createComponent() {
-        resultComponent = (LogoutButton) factory.createComponent(LogoutButton.NAME);
+        resultComponent = factory.create(LogoutButton.NAME);
         loadId(resultComponent, element);
     }
 

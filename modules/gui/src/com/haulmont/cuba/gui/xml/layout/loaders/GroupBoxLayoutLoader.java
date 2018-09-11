@@ -25,7 +25,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
 
     @Override
     public void createComponent() {
-        resultComponent = (GroupBoxLayout) factory.createComponent(GroupBoxLayout.NAME);
+        resultComponent = factory.create(GroupBoxLayout.NAME);
         loadId(resultComponent, element);
         loadOrientation(resultComponent, element);
         createSubComponents(resultComponent, element);

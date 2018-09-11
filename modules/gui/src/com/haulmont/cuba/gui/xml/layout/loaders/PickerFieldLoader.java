@@ -28,7 +28,7 @@ import org.dom4j.Element;
 public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(PickerField.NAME);
+        resultComponent = factory.create(PickerField.NAME);
         loadId(resultComponent, element);
     }
 

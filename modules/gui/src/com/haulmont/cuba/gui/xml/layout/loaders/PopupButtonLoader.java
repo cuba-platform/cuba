@@ -34,7 +34,7 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
 
     @Override
     public void createComponent() {
-        resultComponent = (PopupButton) factory.createComponent(PopupButton.NAME);
+        resultComponent = factory.create(PopupButton.NAME);
         loadId(resultComponent, element);
 
         createContent();

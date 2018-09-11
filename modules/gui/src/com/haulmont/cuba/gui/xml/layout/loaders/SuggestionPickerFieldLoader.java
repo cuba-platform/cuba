@@ -28,7 +28,7 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(SuggestionPickerField.NAME);
+        resultComponent = factory.create(SuggestionPickerField.NAME);
         loadId(resultComponent, element);
     }
 

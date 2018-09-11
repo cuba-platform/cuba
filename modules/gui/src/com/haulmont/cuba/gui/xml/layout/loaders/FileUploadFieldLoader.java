@@ -130,7 +130,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
     @Override
     public void createComponent() {
-        resultComponent = (FileUploadField) factory.createComponent(FileUploadField.NAME);
+        resultComponent = factory.create(FileUploadField.NAME);
         loadId(resultComponent, element);
     }
 

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -67,6 +68,10 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         LookupComponent, Component.Focusable {
 
     String NAME = "pickerField";
+
+    static <T extends Entity> TypeToken<PickerField<T>> of(Class<T> valueClass) {
+        return new TypeToken<PickerField<T>>() {};
+    }
 
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);

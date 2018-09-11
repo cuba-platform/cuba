@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -109,8 +110,8 @@ public interface ComponentLoader<T extends Component> {
     String getMessagesPack();
     void setMessagesPack(String name);
 
-    ComponentsFactory getFactory();
-    void setFactory(ComponentsFactory factory);
+    UiComponents getFactory();
+    void setFactory(UiComponents factory);
 
     LayoutLoaderConfig getLayoutLoaderConfig();
     void setLayoutLoaderConfig(LayoutLoaderConfig config);

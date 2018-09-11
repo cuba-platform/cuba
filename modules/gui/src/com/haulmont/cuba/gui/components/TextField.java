@@ -16,11 +16,18 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
+import com.google.common.reflect.TypeToken;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetTime;
 
 public interface TextField<V>
         extends
             TextInputField<V>,
+            HasDatatype<V>,
+            HasFormatter<V>,
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
             TextInputField.TextSelectionSupported,
@@ -28,13 +35,24 @@ public interface TextField<V>
             TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
-            HasFormatter<V>,
             HasInputPrompt {
 
     String NAME = "textField";
 
-    Datatype<V> getDatatype();
-    void setDatatype(Datatype<V> datatype);
+    TypeToken<TextField<String>> TYPE_DEFAULT = new TypeToken<TextField<String>>(){};
+    TypeToken<TextField<String>> TYPE_STRING = new TypeToken<TextField<String>>(){};
+
+    TypeToken<TextField<Integer>> TYPE_INTEGER = new TypeToken<TextField<Integer>>(){};
+    TypeToken<TextField<Long>> TYPE_LONG = new TypeToken<TextField<Long>>(){};
+    TypeToken<TextField<Double>> TYPE_DOUBLE = new TypeToken<TextField<Double>>(){};
+    TypeToken<TextField<BigDecimal>> TYPE_BIGDECIMAL = new TypeToken<TextField<BigDecimal>>(){};
+
+    TypeToken<TextField<java.sql.Date>> TYPE_DATE = new TypeToken<TextField<java.sql.Date>>(){};
+    TypeToken<TextField<java.util.Date>> TYPE_DATETIME = new TypeToken<TextField<java.util.Date>>(){};
+    TypeToken<TextField<LocalDate>> TYPE_LOCALDATE = new TypeToken<TextField<LocalDate>>(){};
+    TypeToken<TextField<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<TextField<LocalDateTime>>(){};
+    TypeToken<TextField<java.sql.Time>> TYPE_TIME = new TypeToken<TextField<java.sql.Time>>(){};
+    TypeToken<TextField<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<TextField<OffsetTime>>(){};
 
     /**
      * Returns a string representation of the value.

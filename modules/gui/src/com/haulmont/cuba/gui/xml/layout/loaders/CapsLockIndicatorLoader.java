@@ -24,7 +24,7 @@ public class CapsLockIndicatorLoader extends AbstractComponentLoader<CapsLockInd
 
     @Override
     public void createComponent() {
-        resultComponent = factory.createComponent(CapsLockIndicator.class);
+        resultComponent = factory.create(CapsLockIndicator.class);
 
         loadId(resultComponent, element);
     }

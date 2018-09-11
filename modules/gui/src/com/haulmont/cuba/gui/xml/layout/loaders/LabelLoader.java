@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
     @Override
     public void createComponent() {
-        resultComponent = (Label) factory.createComponent(Label.NAME);
+        resultComponent = factory.create(Label.NAME);
         loadId(resultComponent, element);
     }
 
