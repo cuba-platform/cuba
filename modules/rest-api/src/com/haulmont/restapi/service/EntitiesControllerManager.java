@@ -330,7 +330,8 @@ public class EntitiesControllerManager {
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
-            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, true);
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity),
+                    entityImportView, true, restApiConfig.getOptimisticLockingEnabled());
             importedEntities.forEach(it-> restControllerUtils.applyAttributesSecurity(it));
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
