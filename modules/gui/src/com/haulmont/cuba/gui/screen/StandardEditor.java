@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.components.ValidationErrors;
+import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
 import com.haulmont.cuba.gui.util.OperationResult;
@@ -48,12 +49,10 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected void setupEntityToEdit(@SuppressWarnings("unused") BeforeShowEvent event) {
-        EntityStates entityStates = getBeanLocator().get(EntityStates.NAME);
-
-        if (entityStates.isNew(entityToEdit)) {
-            InstanceContainer<Entity> userCont = getEditedEntityContainer();
-            userCont.setItem(entityToEdit);
-            getScreenData().getDataContext().merge(entityToEdit);
+        if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
+            T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
+            InstanceContainer<Entity> container = getEditedEntityContainer();
+            container.setItem(mergedEntity);
         } else {
             InstanceLoader loader = getEditedEntityLoader();
             loader.setEntityId(entityToEdit.getId());
@@ -61,6 +60,18 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
         // todo pessimistic locking
         // todo security
+    }
+
+    protected boolean doNotReloadEditedEntity() {
+        DataContext parentDc = getScreenData().getDataContext().getParent();
+        if (parentDc != null
+                && (parentDc.isModified(entityToEdit) || parentDc.isRemoved(entityToEdit))) {
+            InstanceContainer<Entity> container = getEditedEntityContainer();
+            if (getEntityStates().isLoadedWithView(entityToEdit, container.getView())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected InstanceLoader getEditedEntityLoader() {
@@ -148,5 +159,9 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                     })
                     .forEach(violation -> errors.add(violation.getMessage()));
         }
+    }
+
+    private EntityStates getEntityStates() {
+        return getBeanLocator().get(EntityStates.NAME);
     }
 }

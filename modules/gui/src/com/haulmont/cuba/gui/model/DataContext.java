@@ -42,6 +42,10 @@ public interface DataContext {
 
     boolean hasChanges();
 
+    boolean isModified(Entity entity);
+
+    boolean isRemoved(Entity entity);
+
     void commit();
 
     DataContext getParent();

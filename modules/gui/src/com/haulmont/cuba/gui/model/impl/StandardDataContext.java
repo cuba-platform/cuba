@@ -372,6 +372,16 @@ public class StandardDataContext implements DataContext {
     }
 
     @Override
+    public boolean isModified(Entity entity) {
+        return modifiedInstances.contains(entity);
+    }
+
+    @Override
+    public boolean isRemoved(Entity entity) {
+        return removedInstances.contains(entity);
+    }
+
+    @Override
     public void commit() {
         PreCommitEvent preCommitEvent = new PreCommitEvent(this, modifiedInstances, removedInstances);
         eventRouter.fireEvent(PreCommitListener.class, PreCommitListener::preCommit, preCommitEvent);
