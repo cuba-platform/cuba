@@ -50,7 +50,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected boolean samePage;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
-    protected List<BeforeRefreshListener> beforRefreshListeners;
+    protected List<BeforeRefreshListener> beforeRefreshListeners;
 
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
@@ -97,16 +97,16 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
     @Override
     public void addBeforeRefreshListener(BeforeRefreshListener listener) {
-        if (beforRefreshListeners == null)
-            beforRefreshListeners = new ArrayList<>(1);
-        if (!beforRefreshListeners.contains(listener))
-            beforRefreshListeners.add(listener);
+        if (beforeRefreshListeners == null)
+            beforeRefreshListeners = new ArrayList<>(1);
+        if (!beforeRefreshListeners.contains(listener))
+            beforeRefreshListeners.add(listener);
     }
 
     @Override
     public void removeBeforeRefreshListener(BeforeRefreshListener listener) {
-        if (beforRefreshListeners != null)
-            beforRefreshListeners.remove(listener);
+        if (beforeRefreshListeners != null)
+            beforeRefreshListeners.remove(listener);
     }
 
     protected void onCollectionChanged() {
@@ -320,9 +320,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
 
     private boolean refreshDatasource(CollectionDatasource.SupportsPaging ds) {
-        if (beforRefreshListeners != null) {
+        if (beforeRefreshListeners != null) {
             boolean refreshPrevented = false;
-            for (BeforeRefreshListener listener : beforRefreshListeners) {
+            for (BeforeRefreshListener listener : beforeRefreshListeners) {
                 BeforeRefreshEvent event = new BeforeRefreshEvent(this, ds);
                 listener.beforeDatasourceRefresh(event);
                 refreshPrevented = refreshPrevented || event.isRefreshPrevented();
