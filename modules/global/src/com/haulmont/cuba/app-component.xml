@@ -85,8 +85,7 @@
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-web" classifier="themes" ext="jar" configuration="themes"/>
-        <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
-                  skipIfExists="web-toolkit"/>
+        <artifact name="cuba-web-toolkit" appJar="true" classifier="client" ext="jar" skipIfExists="web-toolkit"/>
 
         <property name="cuba.metadataConfig" value="+cuba-web-metadata.xml"/>
         <property name="cuba.springContextConfig" value="+cuba-web-spring.xml"/>
