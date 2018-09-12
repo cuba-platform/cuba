@@ -295,7 +295,7 @@ public class QueryParserAstBasedTest {
         assertNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
-                "select g from sec$GroupHierarchy h join fetch h.group g"
+                "select g from sec$GroupHierarchy h join h.group g"
         );
         assertNull(parser.getOriginalEntityName());
         assertNull(parser.getOriginalEntityPath());
