@@ -297,8 +297,8 @@ public class QueryParserAstBasedTest {
         parser = new QueryParserAstBased(model,
                 "select g from sec$GroupHierarchy h join h.group g"
         );
-        assertNull(parser.getOriginalEntityName());
-        assertNull(parser.getOriginalEntityPath());
+        assertNotNull(parser.getOriginalEntityName());
+        assertNotNull(parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
@@ -319,7 +319,7 @@ public class QueryParserAstBasedTest {
         assertEquals("g", parser.getOriginalEntityPath());
 
         parser = new QueryParserAstBased(model,
-                "select p from sec$GroupHierarchy h join h.parent p g where h.userGroup = :par"
+                "select p from sec$GroupHierarchy h join h.parent p where h.userGroup = :par"
         );
         assertEquals("sec$GroupHierarchy", parser.getOriginalEntityName());
         assertEquals("p", parser.getOriginalEntityPath());
