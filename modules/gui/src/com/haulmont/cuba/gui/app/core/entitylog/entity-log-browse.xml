@@ -33,7 +33,7 @@
         </groupDatasource>
 
         <collectionDatasource id="loggedAttrDs" class="com.haulmont.cuba.security.entity.LoggedAttribute" view="_local">
-            <query>select a from sec$LoggedAttribute a where a.entity = :ds$loggedEntityDs</query>
+            <query>select a from sec$LoggedAttribute a where a.entity.id = :ds$loggedEntityDs.id</query>
         </collectionDatasource>
 
         <collectionDatasource id="usersDs"
@@ -51,7 +51,7 @@
                     <and>
                         <c>e.type = :component$changeTypeField</c>
                         <c>e.entity = :component$filterEntityNameField</c>
-                        <c>e.user = :component$userField</c>
+                        <c>e.user.id = :component$userField.id</c>
                         <c>e.eventTs &gt;= :component$fromDateField</c>
                         <c>e.eventTs &lt;= :component$tillDateField</c>
                         <c>e.entityRef.entityId = :custom$entityId</c>

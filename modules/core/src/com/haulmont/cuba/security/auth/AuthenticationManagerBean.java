@@ -296,11 +296,11 @@ public class AuthenticationManagerBean implements AuthenticationManager {
         TypedQuery<User> query = em.createQuery(
                 "select su from sec$User su where " +
                         "su in (select s.substitutedUser from sec$User u join u.substitutions s " +
-                        "where u = ?1 and s.substitutedUser = ?2)",
+                        "where u.id = ?1 and s.substitutedUser.id = ?2)",
                 User.class
         );
-        query.setParameter(1, currentSession.getUser());
-        query.setParameter(2, substitutedUser);
+        query.setParameter(1, currentSession.getUser().getId());
+        query.setParameter(2, substitutedUser.getId());
         List<User> list = query.getResultList();
         if (list.isEmpty()) {
             throw new NoResultException("User not found");

@@ -115,14 +115,14 @@ public class UserSettingServiceBean implements UserSettingService {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
-            Query deleteSettingsQuery = em.createQuery("delete from sec$UserSetting s where s.user = ?1");
-            deleteSettingsQuery.setParameter(1, toUser);
+            Query deleteSettingsQuery = em.createQuery("delete from sec$UserSetting s where s.user.id = ?1");
+            deleteSettingsQuery.setParameter(1, toUser.getId());
             deleteSettingsQuery.executeUpdate();
             tx.commitRetaining();
             em = persistence.getEntityManager();
 
-            TypedQuery<UserSetting> q = em.createQuery("select s from sec$UserSetting s where s.user = ?1", UserSetting.class);
-            q.setParameter(1, fromUser);
+            TypedQuery<UserSetting> q = em.createQuery("select s from sec$UserSetting s where s.user.id = ?1", UserSetting.class);
+            q.setParameter(1, fromUser.getId());
             List<UserSetting> fromUserSettings = q.getResultList();
 
             for (UserSetting currSetting : fromUserSettings) {
@@ -209,9 +209,9 @@ public class UserSettingServiceBean implements UserSettingService {
             Query delete = em.createQuery("delete from sec$Presentation p where p.user.id=?1");
             delete.setParameter(1, toUser);
             delete.executeUpdate();
-            TypedQuery<Presentation> selectQuery = em.createQuery("select p from sec$Presentation p where p.user = ?1",
+            TypedQuery<Presentation> selectQuery = em.createQuery("select p from sec$Presentation p where p.user.id = ?1",
                     Presentation.class);
-            selectQuery.setParameter(1, fromUser);
+            selectQuery.setParameter(1, fromUser.getId());
             List<Presentation> presentations = selectQuery.getResultList();
             for (Presentation presentation : presentations) {
                 Presentation newPresentation = metadata.create(Presentation.class);
@@ -235,18 +235,18 @@ public class UserSettingServiceBean implements UserSettingService {
             try {
                 em.setSoftDeletion(false);
                 Query deleteSettingsQuery = em.createQuery(
-                        String.format("delete from %s s where s.user = ?1", effectiveMetaClass.getName())
+                        String.format("delete from %s s where s.user.id = ?1", effectiveMetaClass.getName())
                 );
 
-                deleteSettingsQuery.setParameter(1, toUser);
+                deleteSettingsQuery.setParameter(1, toUser.getId());
                 deleteSettingsQuery.executeUpdate();
             } finally {
                 em.setSoftDeletion(true);
             }
             TypedQuery<SearchFolder> q = em.createQuery(
-                    String.format("select s from %s s where s.user = ?1", effectiveMetaClass.getName()),
+                    String.format("select s from %s s where s.user.id = ?1", effectiveMetaClass.getName()),
                     SearchFolder.class);
-            q.setParameter(1, fromUser);
+            q.setParameter(1, fromUser.getId());
 
             List<SearchFolder> fromUserFolders = q.getResultList();
             Map<SearchFolder, SearchFolder> copiedFolders = new HashMap<>();
@@ -321,18 +321,18 @@ public class UserSettingServiceBean implements UserSettingService {
             try {
                 em.setSoftDeletion(false);
                 Query deleteFiltersQuery = em.createQuery(
-                        String.format("delete from %s f where f.user = ?1", effectiveMetaClass.getName())
+                        String.format("delete from %s f where f.user.id = ?1", effectiveMetaClass.getName())
                 );
-                deleteFiltersQuery.setParameter(1, toUser);
+                deleteFiltersQuery.setParameter(1, toUser.getId());
                 deleteFiltersQuery.executeUpdate();
             } finally {
                 em.setSoftDeletion(true);
             }
 
             TypedQuery<FilterEntity> q = em.createQuery(
-                    String.format("select f from %s f where f.user = ?1", effectiveMetaClass.getName()),
+                    String.format("select f from %s f where f.user.id = ?1", effectiveMetaClass.getName()),
                     FilterEntity.class);
-            q.setParameter(1, fromUser);
+            q.setParameter(1, fromUser.getId());
             List<FilterEntity> fromUserFilters = q.getResultList();
 
             for (FilterEntity filter : fromUserFilters) {

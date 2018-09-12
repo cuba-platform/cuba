@@ -667,8 +667,8 @@ public class UserManagementServiceBean implements UserManagementService {
             }
         }
 
-        TypedQuery<Group> query = em.createQuery("select g from sec$Group g where g.parent = :group", Group.class);
-        query.setParameter("group", group);
+        TypedQuery<Group> query = em.createQuery("select g from sec$Group g where g.parent.id = :groupId", Group.class);
+        query.setParameter("groupId", group.getId());
 
         List<Group> subGroups = query.getResultList();
         if (subGroups != null && subGroups.size() > 0) {
