@@ -318,4 +318,10 @@
 
     <view class="com.haulmont.cuba.core.entity.Config" extends="_local" systemProperties="true" name="appProperties"/>
 
+    <view class="com.haulmont.cuba.security.entity.SearchFolder" name="searchFolders" extends="_local"
+          systemProperties="true">
+        <property name="user" view="_minimal"/>
+        <property name="presentation" view="_minimal"/>
+        <property name="parent" view="_minimal"/>
+    </view>
 </views>
