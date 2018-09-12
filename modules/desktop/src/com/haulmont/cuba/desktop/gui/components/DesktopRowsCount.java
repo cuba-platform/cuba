@@ -34,6 +34,8 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent>
         implements RowsCount {
@@ -48,6 +50,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected boolean samePage;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    protected List<BeforeRefreshListener> beforeRefreshListeners;
 
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
@@ -90,6 +93,20 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     @Override
     public void setOwner(ListComponent owner) {
         this.owner = owner;
+    }
+
+    @Override
+    public void addBeforeRefreshListener(BeforeRefreshListener listener) {
+        if (beforeRefreshListeners == null)
+            beforeRefreshListeners = new ArrayList<>(1);
+        if (!beforeRefreshListeners.contains(listener))
+            beforeRefreshListeners.add(listener);
+    }
+
+    @Override
+    public void removeBeforeRefreshListener(BeforeRefreshListener listener) {
+        if (beforeRefreshListeners != null)
+            beforeRefreshListeners.remove(listener);
     }
 
     protected void onCollectionChanged() {
@@ -225,18 +242,20 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int firstResult = ds.getFirstResult();
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
-        refreshDatasource(ds);
-
-        if (state == State.LAST && size == 0) {
+        if (refreshDatasource(ds)) {
+            if (state == State.LAST && size == 0) {
+                ds.setFirstResult(firstResult);
+                int maxResults = ds.getMaxResults();
+                ds.setMaxResults(maxResults + 1);
+                refreshDatasource(ds);
+                ds.setMaxResults(maxResults);
+            }
+            if (owner instanceof DesktopAbstractTable) {
+                JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+                table.scrollRowToVisible(0);
+            }
+        } else {
             ds.setFirstResult(firstResult);
-            int maxResults = ds.getMaxResults();
-            ds.setMaxResults(maxResults + 1);
-            refreshDatasource(ds);
-            ds.setMaxResults(maxResults);
-        }
-        if (owner instanceof DesktopAbstractTable) {
-            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
-            table.scrollRowToVisible(0);
         }
     }
 
@@ -246,12 +265,16 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int firstResult = ds.getFirstResult();
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
-        refreshDatasource(ds);
-        if (owner instanceof DesktopAbstractTable) {
-            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
-            table.scrollRowToVisible(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof DesktopAbstractTable) {
+                JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+                table.scrollRowToVisible(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
@@ -261,11 +284,15 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int firstResult = ds.getFirstResult();
         ds.setFirstResult(0);
-        refreshDatasource(ds);
-        if (owner instanceof DesktopAbstractTable) {
-            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
-            table.scrollRowToVisible(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof DesktopAbstractTable) {
+                JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+                table.scrollRowToVisible(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
@@ -279,23 +306,37 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         int itemsToDisplay = count % ds.getMaxResults();
         if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
 
+        int firstResult = ds.getFirstResult();
         ds.setFirstResult(count - itemsToDisplay);
-        refreshDatasource(ds);
-
-        if (owner instanceof DesktopAbstractTable) {
-            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
-            table.scrollRowToVisible(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof DesktopAbstractTable) {
+                JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+                table.scrollRowToVisible(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
 
-    private void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+    private boolean refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+        if (beforeRefreshListeners != null) {
+            boolean refreshPrevented = false;
+            for (BeforeRefreshListener listener : beforeRefreshListeners) {
+                BeforeRefreshEvent event = new BeforeRefreshEvent(this, ds);
+                listener.beforeDatasourceRefresh(event);
+                refreshPrevented = refreshPrevented || event.isRefreshPrevented();
+            }
+            if (refreshPrevented)
+                return false;
+        }
         refreshing = true;
         try {
             ds.refresh();
         } finally {
             refreshing = false;
         }
+        return true;
     }
 
     public static class RowsCountComponent extends JPanel {
