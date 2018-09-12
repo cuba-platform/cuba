@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import java.util.EventObject;
+
 /**
  * Component that makes a {@link CollectionDatasource} to load data by pages. Usually used inside {@link Table}.
  *
@@ -34,11 +36,63 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
     String NAME = "rowsCount";
 
     CollectionDatasource getDatasource();
+
     void setDatasource(CollectionDatasource datasource);
 
     /**
      * @return a component that displays data from the same datasource, usually a {@link Table}. Can be null.
      */
     ListComponent getOwner();
+
     void setOwner(ListComponent owner);
+
+    class BeforeRefreshEvent extends EventObject {
+        private boolean refreshPrevented;
+        private CollectionDatasource datasource;
+
+        public BeforeRefreshEvent(RowsCount source, CollectionDatasource datasource) {
+            super(source);
+            this.datasource = datasource;
+        }
+
+        /**
+         * If invoked, the component will not refresh the datasource.
+         */
+        public void preventRefresh() {
+            refreshPrevented = true;
+        }
+
+        public boolean isRefreshPrevented() {
+            return refreshPrevented;
+        }
+
+        public CollectionDatasource getDatasource() {
+            return datasource;
+        }
+    }
+
+    /**
+     * A listener to be notified before refreshing the datasource when the user clicks next, previous, etc.
+     * <p>
+     * You can prevent the datasource refresh by invoking {@link BeforeRefreshEvent#preventRefresh()},
+     * for example:
+     * <pre>
+     * table.getRowsCount().addBeforeDatasourceRefreshListener(event -> {
+     *     if (event.getDatasource().isModified()) {
+     *         showNotification("Save changes before going to another page");
+     *         event.preventRefresh();
+     *     }
+     * });
+     * </pre>
+     */
+    @FunctionalInterface
+    interface BeforeRefreshListener {
+        void beforeDatasourceRefresh(BeforeRefreshEvent event);
+    }
+
+    /**
+     * Adds a {@link BeforeRefreshListener}.
+     */
+    void addBeforeRefreshListener(BeforeRefreshListener listener);
+    void removeBeforeRefreshListener(BeforeRefreshListener listener);
 }

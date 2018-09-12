@@ -48,6 +48,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected WeakCollectionChangeListener weakCollectionChangeListener;
+    protected List<BeforeRefreshListener> beforRefreshListeners;
 
     protected List<VisibilityChangeListener> visibilityChangeListeners;
 
@@ -111,18 +112,36 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.owner = owner;
     }
 
+    @Override
+    public void addBeforeRefreshListener(BeforeRefreshListener listener) {
+        if (beforRefreshListeners == null)
+            beforRefreshListeners = new ArrayList<>(1);
+        if (!beforRefreshListeners.contains(listener))
+            beforRefreshListeners.add(listener);
+    }
+
+    @Override
+    public void removeBeforeRefreshListener(BeforeRefreshListener listener) {
+        if (beforRefreshListeners != null)
+            beforRefreshListeners.remove(listener);
+    }
+
     protected void onPrevClick() {
         if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
         }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int firstResult = ds.getFirstResult();
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
-        refreshDatasource(ds);
-        if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
-            vTable.setCurrentPageFirstItemIndex(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof WebAbstractTable) {
+                com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+                vTable.setCurrentPageFirstItemIndex(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
@@ -134,18 +153,20 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int firstResult = ds.getFirstResult();
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
-        refreshDatasource(ds);
-
-        if (state == State.LAST && size == 0) {
+        if (refreshDatasource(ds)) {
+            if (state == State.LAST && size == 0) {
+                ds.setFirstResult(firstResult);
+                int maxResults = ds.getMaxResults();
+                ds.setMaxResults(maxResults + 1);
+                refreshDatasource(ds);
+                ds.setMaxResults(maxResults);
+            }
+            if (owner instanceof WebAbstractTable) {
+                com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+                vTable.setCurrentPageFirstItemIndex(0);
+            }
+        } else {
             ds.setFirstResult(firstResult);
-            int maxResults = ds.getMaxResults();
-            ds.setMaxResults(maxResults + 1);
-            refreshDatasource(ds);
-            ds.setMaxResults(maxResults);
-        }
-        if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
-            vTable.setCurrentPageFirstItemIndex(0);
         }
     }
 
@@ -155,11 +176,15 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int firstResult = ds.getFirstResult();
         ds.setFirstResult(0);
-        refreshDatasource(ds);
-        if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
-            vTable.setCurrentPageFirstItemIndex(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof WebAbstractTable) {
+                com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+                vTable.setCurrentPageFirstItemIndex(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
@@ -173,22 +198,36 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         int itemsToDisplay = count % ds.getMaxResults();
         if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
 
+        int firstResult = ds.getFirstResult();
         ds.setFirstResult(count - itemsToDisplay);
-        refreshDatasource(ds);
-
-        if (owner instanceof WebAbstractTable) {
-            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
-            vTable.setCurrentPageFirstItemIndex(0);
+        if (refreshDatasource(ds)) {
+            if (owner instanceof WebAbstractTable) {
+                com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+                vTable.setCurrentPageFirstItemIndex(0);
+            }
+        } else {
+            ds.setFirstResult(firstResult);
         }
     }
 
-    protected void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+    protected boolean refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+        if (beforRefreshListeners != null) {
+            boolean refreshPrevented = false;
+            for (BeforeRefreshListener listener : beforRefreshListeners) {
+                BeforeRefreshEvent event = new BeforeRefreshEvent(this, ds);
+                listener.beforeDatasourceRefresh(event);
+                refreshPrevented = refreshPrevented || event.isRefreshPrevented();
+            }
+            if (refreshPrevented)
+                return false;
+        }
         refreshing = true;
         try {
             ds.refresh();
         } finally {
             refreshing = false;
         }
+        return true;
     }
 
     protected void onLinkClick() {
