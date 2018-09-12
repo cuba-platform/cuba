@@ -32,8 +32,11 @@ import javax.inject.Inject;
 @UiDescriptor("dc-screen-6.xml")
 public class DcScreen6 extends StandardEditor<User> {
 
+//    @Inject
+//    protected Screens screens;
     @Inject
-    protected Screens screens;
+    protected Editors editors;
+
     @Inject
     protected CollectionContainer<UserRole> userRolesCont;
 
@@ -49,21 +52,23 @@ public class DcScreen6 extends StandardEditor<User> {
 
     @Subscribe("editBtn")
     private void onEditClick(Button.ClickEvent event) {
-        UserRole selectedUserRole = userRolesCont.getItemOrNull();
-        if (selectedUserRole != null) {
-            TmpUserRoleEdit userRoleEdit = screens.create(TmpUserRoleEdit.class, OpenMode.THIS_TAB);
-            userRoleEdit.setEntityToEdit(selectedUserRole);
+        editors.editEntity(userRolesCont, TmpUserRoleEdit.class, getScreenData().getDataContext());
 
-            UiControllerUtils.getScreenData(userRoleEdit).getDataContext().setParent(getScreenData().getDataContext());
-
-            userRoleEdit.addAfterCloseListener(afterCloseEvent -> {
-                CloseAction closeAction = afterCloseEvent.getCloseAction();
-                if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                    userRolesCont.replaceItem(userRoleEdit.getEditedEntity());
-                }
-            });
-            screens.show(userRoleEdit);
-        }
+//        UserRole selectedUserRole = userRolesCont.getItemOrNull();
+//        if (selectedUserRole != null) {
+//            TmpUserRoleEdit userRoleEdit = screens.create(TmpUserRoleEdit.class, OpenMode.THIS_TAB);
+//            userRoleEdit.setEntityToEdit(selectedUserRole);
+//
+//            UiControllerUtils.getScreenData(userRoleEdit).getDataContext().setParent(getScreenData().getDataContext());
+//
+//            userRoleEdit.addAfterCloseListener(afterCloseEvent -> {
+//                CloseAction closeAction = afterCloseEvent.getCloseAction();
+//                if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
+//                    userRolesCont.replaceItem(userRoleEdit.getEditedEntity());
+//                }
+//            });
+//            screens.show(userRoleEdit);
+//        }
     }
 
     @Subscribe("okBtn")

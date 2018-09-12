@@ -46,6 +46,9 @@ public class DcScreen5 extends Screen {
     protected Screens screens;
 
     @Inject
+    protected Editors editors;
+
+    @Inject
     protected Dialogs dialogs;
 
     @Inject
@@ -61,17 +64,19 @@ public class DcScreen5 extends Screen {
 
     @Subscribe("createBtn")
     private void onCreateClick(Button.ClickEvent event) {
-        User user = metadata.create(User.class);
-        initNewUser(user);
-        DcScreen6 dcScreen6 = screens.create(DcScreen6.class, OpenMode.THIS_TAB);
-        dcScreen6.setEntityToEdit(user);
-        dcScreen6.addAfterCloseListener(afterCloseEvent -> {
-            CloseAction closeAction = afterCloseEvent.getCloseAction();
-            if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                usersCont.getMutableItems().add(0, dcScreen6.getEditedEntity());
-            }
-        });
-        screens.show(dcScreen6);
+        editors.createEntity(usersCont, DcScreen6.class, this::initNewUser, null);
+
+//        User user = metadata.create(User.class);
+//        initNewUser(user);
+//        DcScreen6 dcScreen6 = screens.create(DcScreen6.class, OpenMode.THIS_TAB);
+//        dcScreen6.setEntityToEdit(user);
+//        dcScreen6.addAfterCloseListener(afterCloseEvent -> {
+//            CloseAction closeAction = afterCloseEvent.getCloseAction();
+//            if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
+//                usersCont.getMutableItems().add(0, dcScreen6.getEditedEntity());
+//            }
+//        });
+//        screens.show(dcScreen6);
     }
 
     protected void initNewUser(User user) {
@@ -81,15 +86,17 @@ public class DcScreen5 extends Screen {
 
     @Subscribe("editBtn")
     private void onEditClick(Button.ClickEvent event) {
-        User selectedUser = usersCont.getItemOrNull();
-        if (selectedUser != null) {
-            DcScreen6 dcScreen6 = screens.create(DcScreen6.class, OpenMode.THIS_TAB);
-            dcScreen6.setEntityToEdit(selectedUser);
-            dcScreen6.addAfterCloseListener(afterCloseEvent -> {
-                usersLoader.load();
-            });
-            screens.show(dcScreen6);
-        }
+        editors.editEntity(usersCont, DcScreen6.class, null);
+
+//        User selectedUser = usersCont.getItemOrNull();
+//        if (selectedUser != null) {
+//            DcScreen6 dcScreen6 = screens.create(DcScreen6.class, OpenMode.THIS_TAB);
+//            dcScreen6.setEntityToEdit(selectedUser);
+//            dcScreen6.addAfterCloseListener(afterCloseEvent -> {
+//                usersLoader.load();
+//            });
+//            screens.show(dcScreen6);
+//        }
     }
 
     @Subscribe("removeBtn")
