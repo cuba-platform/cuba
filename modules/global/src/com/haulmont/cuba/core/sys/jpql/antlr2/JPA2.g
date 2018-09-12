@@ -88,7 +88,7 @@ ql_statement
     : select_statement | update_statement | delete_statement;
 
 select_statement
-     : sl='SELECT' select_clause from_clause (where_clause)? (groupby_clause)? (having_clause)? (orderby_clause)?
+     : sl='SELECT' select_clause from_clause (where_clause)? (groupby_clause)? (having_clause)? (orderby_clause)? EOF
      -> ^(T_QUERY<QueryNode>[$sl] (select_clause)? from_clause (where_clause)? (groupby_clause)? (having_clause)? (orderby_clause)?);
 
 update_statement

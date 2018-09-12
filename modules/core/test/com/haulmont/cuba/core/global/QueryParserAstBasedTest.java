@@ -120,6 +120,26 @@ public class QueryParserAstBasedTest {
         assertTrue(paramNames.contains("par"));
     }
 
+    @Test
+    public void testErrorsInJoin() {
+        try {
+            QueryParserAstBased parser = new QueryParserAstBased(prepareDomainModel(),
+                    "select h, sum(u.int1) from sec$User u join u.group g join g.hierarchy hwhere u.constraint.id = :storeSelect group by h");
+            parser.getEntityName();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //Do nothing
+        }
+
+        try {
+            QueryParserAstBased parser = new QueryParserAstBased(prepareDomainModel(),
+                    "select u from sec$User u join fetch u.group g");
+            parser.getEntityName();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //Do nothing
+        }
+    }
 
     @Test
     public void testUsedEntityNames() throws Exception {

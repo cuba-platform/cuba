@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 JPA2.g 2018-03-26 13:42:00
+// $ANTLR 3.5.2 JPA2.g 2018-09-12 09:43:17
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -6,6 +6,9 @@ package com.haulmont.cuba.core.sys.jpql.antlr2;
 
 import com.haulmont.cuba.core.sys.jpql.JPA2RecognitionException;
 import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 @SuppressWarnings("all")
 public class JPA2Lexer extends Lexer {
