@@ -258,19 +258,28 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             PickerField pickerField = componentsFactory.createComponent(PickerField.class);
             pickerField.setMetaClass(metaClass);
 
+            PickerField.LookupAction lookupAction;
             if (!Strings.isNullOrEmpty(entityJoinClause) || !Strings.isNullOrEmpty(entityWhereClause)) {
-                PickerField.LookupAction lookupAction = dynamicAttributesGuiTools.createLookupAction(pickerField, entityJoinClause, entityWhereClause);
+                lookupAction = dynamicAttributesGuiTools.createLookupAction(pickerField, entityJoinClause, entityWhereClause);
                 pickerField.addAction(lookupAction);
             } else {
-                pickerField.addLookupAction();
+                lookupAction = pickerField.addLookupAction();
                 if (!Strings.isNullOrEmpty(lookupScreen)) {
-                    PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
-                    if (lookupAction != null) {
-                        lookupAction.setLookupScreen(lookupScreen);
-                    }
+                    lookupAction.setLookupScreen(lookupScreen);
                 }
             }
             componentForEntity = pickerField;
+
+            lookupAction.setAfterLookupSelectionHandler(items -> {
+                if (items != null && items.size() > 0) {
+                    for (Object item : items) {
+                        if (item != null && !valueExists(item)) {
+                            this.addValueToLayout(item, ListEditorHelper.getValueCaption(item, itemType, timeZone));
+                        }
+                    }
+                }
+                componentForEntity.setValue(null);
+            });
         } else {
             LookupField lookupField = componentsFactory.createComponent(LookupField.class);
             CollectionDatasource optionsDs;
@@ -285,14 +294,15 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             }
             lookupField.setOptionsDatasource(optionsDs);
             componentForEntity = lookupField;
+
+            componentForEntity.addValueChangeListener(e -> {
+                Entity selectedEntity = (Entity) e.getValue();
+                if (selectedEntity != null && !valueExists(selectedEntity)) {
+                    this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType, timeZone));
+                }
+                componentForEntity.setValue(null);
+            });
         }
-        componentForEntity.addValueChangeListener(e -> {
-            Entity selectedEntity = (Entity) e.getValue();
-            if (selectedEntity != null && !valueExists(selectedEntity)) {
-                this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType, timeZone));
-            }
-            componentForEntity.setValue(null);
-        });
         return componentForEntity;
     }
 
