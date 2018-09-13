@@ -58,7 +58,7 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
         String nullName = element.attributeValue("nullName");
         if (StringUtils.isNotEmpty(nullName)) {
-            resultComponent.setNullOption(loadResourceString(nullName));
+            resultComponent.setNullSelectionCaption(loadResourceString(nullName));
         }
 
         String pageLength = element.attributeValue("pageLength");

@@ -92,6 +92,10 @@ public class CubaSearchSelectPickerField<T> extends CubaPickerField<T> {
         getFieldInternal().setItems(captionFilter, items);
     }
 
+    public String getEmptySelectionCaption() {
+        return getFieldInternal().getEmptySelectionCaption();
+    }
+
     public void setEmptySelectionCaption(String caption) {
         getFieldInternal().setEmptySelectionCaption(caption);
     }

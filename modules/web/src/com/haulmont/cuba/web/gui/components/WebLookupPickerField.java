@@ -106,7 +106,7 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     protected void initComponent(CubaPickerField<V> component) {
         ((CubaComboBoxPickerField<V>) component)
-                .setItemCaptionGenerator(this::generateDefaultItemCaption);
+                .setItemCaptionGenerator(this::generateItemCaption);
 
         component.addShortcutListener(new ShortcutListenerDelegate("clearShortcut",
                 ShortcutAction.KeyCode.DELETE, new int[]{ShortcutAction.ModifierKey.SHIFT})
@@ -148,8 +148,17 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public void setNullOption(V nullOption) {
         this.nullOption = nullOption;
+        setNullSelectionCaption(generateItemCaption(nullOption));
+    }
 
-        getComponent().setEmptySelectionCaption(generateItemCaption(nullOption));
+    @Override
+    public String getNullSelectionCaption() {
+        return getComponent().getEmptySelectionCaption();
+    }
+
+    @Override
+    public void setNullSelectionCaption(String nullOption) {
+        getComponent().setEmptySelectionCaption(nullOption);
 
         setInputPrompt(null);
     }

@@ -112,7 +112,7 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
         setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
 
-        getComponent().setItemCaptionGenerator(this::generateDefaultItemCaption);
+        getComponent().setItemCaptionGenerator(this::generateItemCaption);
         getComponent().setFilterHandler(this::executeSearch);
     }
 
@@ -258,8 +258,17 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public void setNullOption(V nullOption) {
         this.nullOption = nullOption;
+        setNullSelectionCaption(generateItemCaption(nullOption));
+    }
 
-        getComponent().setEmptySelectionCaption(generateItemCaption(nullOption));
+    @Override
+    public String getNullSelectionCaption() {
+        return getComponent().getEmptySelectionCaption();
+    }
+
+    @Override
+    public void setNullSelectionCaption(String nullOption) {
+        getComponent().setEmptySelectionCaption(nullOption);
 
         setInputPrompt(null);
     }

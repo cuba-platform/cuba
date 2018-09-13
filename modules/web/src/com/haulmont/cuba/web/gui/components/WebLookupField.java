@@ -85,7 +85,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
         attachValueChangeListener(component);
         setNewOptionAllowed(false);
 
-        component.setItemCaptionGenerator(this::generateDefaultItemCaption);
+        component.setItemCaptionGenerator(this::generateItemCaption);
 
         /* vaadin8 move to new item handler
         component.setNewItemHandler(newItemCaption -> {
@@ -238,8 +238,17 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
     @Override
     public void setNullOption(V nullOption) {
         this.nullOption = nullOption;
+        setNullSelectionCaption(generateItemCaption(nullOption));
+    }
 
-        component.setEmptySelectionCaption(generateItemCaption(nullOption));
+    @Override
+    public String getNullSelectionCaption() {
+        return component.getEmptySelectionCaption();
+    }
+
+    @Override
+    public void setNullSelectionCaption(String nullOption) {
+        component.setEmptySelectionCaption(nullOption);
 
         setInputPrompt(null);
     }
