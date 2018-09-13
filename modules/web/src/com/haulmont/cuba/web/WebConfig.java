@@ -83,6 +83,17 @@ public interface WebConfig extends Config {
     List<String> getCubaHttpFilterBypassUrls();
 
     /**
+     * Enables to pass additional Cuba HTTP Filter bypass URLs from application components.
+     * <p>
+     * Related to {@link WebConfig#getCubaHttpFilterBypassUrls()}.
+     *
+     * @return Comma-separated list of URLs for CubaHttpFilter to bypass.
+     */
+    @Property("cuba.web.externalHttpFilterByPassUrls")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getExternalHttpFilterBypassUrls();
+
+    /**
      * @return Default main window mode.
      * Takes place until the user did not change its own preference through user settings.
      */

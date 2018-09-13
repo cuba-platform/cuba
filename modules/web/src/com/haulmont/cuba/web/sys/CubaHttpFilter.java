@@ -48,6 +48,7 @@ public class CubaHttpFilter extends CompositeFilter implements Filter {
             // Fill bypassUrls
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
             bypassUrls.addAll(webConfig.getCubaHttpFilterBypassUrls());
+            bypassUrls.addAll(webConfig.getExternalHttpFilterBypassUrls());
 
             List<Filter> filters = new ArrayList<>();
 
