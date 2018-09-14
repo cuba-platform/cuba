@@ -288,7 +288,6 @@ public class Scheduling implements SchedulingAPI {
     }
 
     protected long calculateNextCronDate(ScheduledTask task, long date, long currentDate, long frame) {
-        StopWatch sw = new Slf4JStopWatch("Cron next date calculations");
         CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(task.getCron(), getCurrentTimeZone());
         //if last start = 0 (task never has run) or to far in the past, we use (NOW - FRAME) timestamp for pivot time
         //this approach should work fine cause cron works with absolute time
@@ -306,7 +305,6 @@ public class Scheduling implements SchedulingAPI {
         }
         log.trace("{}\n now={} frame={} currentStart={} lastStart={} cron={}",
                 task, currentDate, frame, currentStart, task.getCron());
-        sw.stop();
         return currentStart.getTime();
     }
 

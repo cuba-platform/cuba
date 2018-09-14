@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
@@ -44,7 +43,6 @@ import static java.lang.String.format;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryParser.NAME)
-@PerformanceLog
 public class QueryParserAstBased implements QueryParser {
     protected DomainModel model;
     protected String query;
