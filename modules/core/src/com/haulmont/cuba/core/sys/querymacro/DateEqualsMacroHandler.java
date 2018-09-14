@@ -16,12 +16,14 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -30,6 +32,9 @@ import java.util.regex.Pattern;
 public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^)]+)\\)");
+
+    @Inject
+    protected DateTimeTransformations transformations;
 
     protected Map<String, Object> namedParameters;
     protected List<MacroArgs> paramNames = new ArrayList<>();
@@ -67,21 +72,21 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
         Map<String, Object> params = new HashMap<>();
         for (MacroArgs macroArgs : paramNames) {
             TimeZone timeZone = macroArgs.timeZone == null ? TimeZone.getDefault() : macroArgs.timeZone;
-            Date date1 = (Date) namedParameters.get(macroArgs.firstParamName);
+            Object date1 = namedParameters.get(macroArgs.firstParamName);
             if (date1 == null) {
                 throw new RuntimeException(String.format("Parameter %s not found for macro",
                         macroArgs.firstParamName));
             }
-            Calendar calendar1 = Calendar.getInstance(timeZone);
-            calendar1.setTime(date1);
-            calendar1 = DateUtils.truncate(calendar1, Calendar.DAY_OF_MONTH);
 
-            Calendar calendar2 = Calendar.getInstance(timeZone);
-            calendar2.setTime(calendar1.getTime());
-            calendar2.add(Calendar.DAY_OF_MONTH, 1);
-
-            params.put(macroArgs.firstParamName, calendar1.getTime());
-            params.put(macroArgs.secondParamName, calendar2.getTime());
+            Class javaType = date1.getClass();
+            ZonedDateTime zonedDateTime = transformations.transformToZDT(date1);
+            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+                zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
+            }
+            ZonedDateTime firstZonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime secondZonedDateTime = firstZonedDateTime.plusDays(1);
+            params.put(macroArgs.firstParamName, transformations.transformFromZDT(firstZonedDateTime, javaType));
+            params.put(macroArgs.secondParamName, transformations.transformFromZDT(secondZonedDateTime, javaType));
         }
         return params;
     }

@@ -16,16 +16,15 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.TimeSource;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import javax.inject.Inject;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Component("cuba_TimeTodayQueryMacroHandler")
@@ -34,8 +33,13 @@ public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
 
     private static final Pattern MACRO_PATTERN = Pattern.compile("@today\\s*\\(([^\\)]+)\\)");
 
+    @Inject
+    protected DateTimeTransformations transformations;
+    @Inject
+    protected TimeSource timeSource;
+
     private int count;
-    private Map<String, Object> params = new HashMap<>();
+    private List<ArgDef> argDefs = new ArrayList<>();
 
     public TimeTodayQueryMacroHandler() {
         super(MACRO_PATTERN);
@@ -47,6 +51,21 @@ public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
 
     @Override
     public Map<String, Object> getParams() {
+        Map<String, Object> params = new HashMap<>();
+        for (ArgDef argDef : argDefs) {
+            Class javaType = expandedParamTypes.get(argDef.firstParamName);
+            if (javaType == null)
+                throw new RuntimeException(String.format("Type of parameter %s not resolved", argDef.firstParamName));
+            ZonedDateTime zonedDateTime = timeSource.now();
+            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+                zonedDateTime = zonedDateTime.withZoneSameInstant(argDef.timeZone.toZoneId());
+            }
+            ZonedDateTime firstZonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime secondZonedDateTime = firstZonedDateTime.plusDays(1);
+
+            params.put(argDef.firstParamName, transformations.transformFromZDT(firstZonedDateTime, javaType));
+            params.put(argDef.secondParamName, transformations.transformFromZDT(secondZonedDateTime, javaType));
+        }
         return params;
     }
 
@@ -69,14 +88,21 @@ public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
         if (timeZone == null) {
             timeZone = TimeZone.getDefault();
         }
-        Calendar cal = Calendar.getInstance(timeZone);
-        cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
 
-        params.put(param1, DateUtils.truncate(cal, Calendar.DAY_OF_MONTH).getTime());
-
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        params.put(param2, DateUtils.truncate(cal, Calendar.DAY_OF_MONTH).getTime());
+        argDefs.add(new ArgDef(param1, param2, timeZone));
 
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
+    }
+
+    protected static class ArgDef {
+        protected String firstParamName;
+        protected String secondParamName;
+        protected TimeZone timeZone;
+
+        public ArgDef(String firstParamName, String secondParamName, TimeZone timeZone) {
+            this.firstParamName = firstParamName;
+            this.secondParamName = secondParamName;
+            this.timeZone = timeZone;
+        }
     }
 }

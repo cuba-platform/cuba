@@ -20,10 +20,10 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DateComponents;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaTimeField;
@@ -38,7 +38,7 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
         implements TimeField<V>, InitializingBean {
 
     @Inject
-    protected DateComponents dateComponents;
+    protected DateTimeTransformations dateTimeTransformations;
 
     protected Resolution resolution = Resolution.MIN;
     protected Datatype<V> datatype;
@@ -71,11 +71,11 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
             MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
-            return (V) dateComponents.convertFromLocalTime(componentRawValue,
+            return (V) dateTimeTransformations.transformFromLocalTime(componentRawValue,
                     metaProperty.getRange().asDatatype().getJavaClass());
         }
 
-        return (V) dateComponents.convertFromLocalTime(componentRawValue,
+        return (V) dateTimeTransformations.transformFromLocalTime(componentRawValue,
                 datatype == null ? Date.class : datatype.getJavaClass());
     }
 
@@ -84,7 +84,7 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
         if (modelValue == null) {
             return null;
         }
-        return dateComponents.convertToLocalTime(modelValue);
+        return dateTimeTransformations.transformToLocalTime(modelValue);
     }
 
     @Override

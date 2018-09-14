@@ -41,6 +41,13 @@ public interface QueryMacroHandler {
     void setQueryParams(Map<String, Object> namedParameters);
 
     /**
+     * Sets expanded parameter types of the expanded query to the macro handler.
+     *
+     * @param parameterTypes  all expanded parameter types
+     */
+    void setExpandedParamTypes(Map<String, Class> parameterTypes);
+
+    /**
      * @return  all named parameters of the expanded query augmented with the macro parameters
      */
     Map<String, Object> getParams();

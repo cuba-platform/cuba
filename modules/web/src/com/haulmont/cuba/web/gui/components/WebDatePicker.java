@@ -19,10 +19,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DateComponents;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
@@ -31,17 +32,14 @@ import com.vaadin.ui.InlineDateField;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 
 public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalDate, V>
         implements DatePicker<V>, InitializingBean {
 
     @Inject
-    protected DateComponents dateComponents;
+    protected DateTimeTransformations dateTimeTransformations;
 
     protected Resolution resolution = Resolution.DAY;
     protected Datatype<V> datatype;
@@ -117,7 +115,8 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
 
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-            dateComponents.setupDateRange(this, entityValueSource);
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
         }
     }
 
@@ -133,11 +132,9 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
             MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
-            return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
-                    metaProperty.getRange().asDatatype().getJavaClass());
+            return (V) convertFromLocalDateTime(localDateTime, metaProperty.getRange().asDatatype().getJavaClass());
         }
-        return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
-                datatype == null ? Date.class : datatype.getJavaClass());
+        return (V) convertFromLocalDateTime(localDateTime, datatype == null ? Date.class : datatype.getJavaClass());
     }
 
     @Override
@@ -145,7 +142,19 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
         if (modelValue == null) {
             return null;
         }
-        return dateComponents.convertToLocalDateTime(modelValue).toLocalDate();
+        return convertToLocalDateTime(modelValue).toLocalDate();
+    }
+
+    protected LocalDateTime convertToLocalDateTime(Object date) {
+        Preconditions.checkNotNullArgument(date);
+        ZonedDateTime zonedDateTime = dateTimeTransformations.transformToZDT(date);
+        return zonedDateTime.toLocalDateTime();
+
+    }
+
+    protected Object convertFromLocalDateTime(LocalDateTime localDateTime, Class javaType) {
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        return dateTimeTransformations.transformFromZDT(zonedDateTime, javaType);
     }
 
     @Override
@@ -156,7 +165,7 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     @Override
     public void setRangeStart(V value) {
         this.rangeStart = value;
-        component.setRangeStart(value == null ? null : dateComponents.convertToLocalDateTime(rangeStart).toLocalDate());
+        component.setRangeStart(value == null ? null : convertToLocalDateTime(rangeStart).toLocalDate());
     }
 
     @Override
@@ -167,7 +176,7 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     @Override
     public void setRangeEnd(V value) {
         this.rangeEnd = value;
-        component.setRangeEnd(value == null ? null : dateComponents.convertToLocalDateTime(rangeEnd).toLocalDate());
+        component.setRangeEnd(value == null ? null : convertToLocalDateTime(rangeEnd).toLocalDate());
     }
 
     @Override

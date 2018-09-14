@@ -18,8 +18,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.TimeSource;
-
 import org.springframework.stereotype.Component;
+
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -37,5 +38,10 @@ public class TimeSourceImpl implements TimeSource {
     @Override
     public long currentTimeMillis() {
         return System.currentTimeMillis();
+    }
+
+    @Override
+    public ZonedDateTime now() {
+        return ZonedDateTime.now();
     }
 }

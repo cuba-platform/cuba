@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -122,6 +123,11 @@ public class SchedulingTest {
                     @Override
                     public long currentTimeMillis() {
                         return System.currentTimeMillis();
+                    }
+
+                    @Override
+                    public ZonedDateTime now() {
+                        return ZonedDateTime.now();
                     }
                 };
             }

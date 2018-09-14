@@ -20,11 +20,12 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.DateComponents;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -45,10 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -58,7 +56,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
 
     @Inject
-    protected DateComponents dateComponents;
+    protected DateTimeTransformations dateTimeTransformations;
 
     protected List<Validator> validators; // lazily initialized list
 
@@ -209,7 +207,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     @Override
     public void setRangeStart(V value) {
         this.rangeStart = value;
-        dateField.setRangeStart(value == null ? null : dateComponents.convertToLocalDateTime(value, zoneId).toLocalDate());
+        dateField.setRangeStart(value == null ? null : convertToLocalDateTime(value, zoneId).toLocalDate());
     }
 
     @Override
@@ -220,7 +218,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     @Override
     public void setRangeEnd(V value) {
         this.rangeEnd = value;
-        dateField.setRangeEnd(value == null ? null : dateComponents.convertToLocalDateTime(value, zoneId).toLocalDate());
+        dateField.setRangeEnd(value == null ? null : convertToLocalDateTime(value, zoneId).toLocalDate());
     }
 
     @Override
@@ -257,7 +255,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
                     Frame.NotificationType.TRAY);
         }
 
-        setValueToPresentation(dateComponents.convertToLocalDateTime(value, zoneId));
+        setValueToPresentation(convertToLocalDateTime(value, zoneId));
     }
 
     @Override
@@ -365,11 +363,11 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
             MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
-            return (V) dateComponents.convertFromLocalDateTime(localDateTime, zoneId,
+            return (V) convertFromLocalDateTime(localDateTime, zoneId,
                     metaProperty.getRange().asDatatype().getJavaClass());
         }
 
-        return (V) dateComponents.convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
+        return (V) convertFromLocalDateTime(localDateTime, ZoneId.systemDefault(),
                 datatype == null ? Date.class : datatype.getJavaClass());
     }
 
@@ -378,7 +376,25 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
         if (modelValue == null) {
             return null;
         }
-        return dateComponents.convertToLocalDateTime(modelValue, zoneId);
+        return convertToLocalDateTime(modelValue, zoneId);
+    }
+
+    protected LocalDateTime convertToLocalDateTime(Object date, ZoneId zoneId) {
+        Preconditions.checkNotNullArgument(date);
+        ZonedDateTime zonedDateTime = dateTimeTransformations.transformToZDT(date);
+        if (dateTimeTransformations.isDateTypeSupportsTimeZones(date.getClass())) {
+            zonedDateTime = zonedDateTime.withZoneSameInstant(zoneId != null ? zoneId : ZoneId.systemDefault());
+        }
+        return zonedDateTime.toLocalDateTime();
+
+    }
+
+    protected Object convertFromLocalDateTime(LocalDateTime localDateTime, ZoneId fromZoneId, Class javaType) {
+        if (fromZoneId == null || !dateTimeTransformations.isDateTypeSupportsTimeZones(javaType)) {
+            fromZoneId = ZoneId.systemDefault();
+        }
+        ZonedDateTime zonedDateTime = localDateTime.atZone(fromZoneId);
+        return dateTimeTransformations.transformFromZDT(zonedDateTime, javaType);
     }
 
     @Override
@@ -475,9 +491,10 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
 
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-            dateComponents.setupDateRange(this, entityValueSource);
-            dateComponents.setupDateFormat(this, entityValueSource);
-            dateComponents.setupZoneId(this, entityValueSource);
+            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
+            dataAwareComponentsTools.setupDateFormat(this, entityValueSource);
+            dataAwareComponentsTools.setupZoneId(this, entityValueSource);
         }
     }
 

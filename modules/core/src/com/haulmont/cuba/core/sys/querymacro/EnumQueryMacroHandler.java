@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -74,7 +75,7 @@ public class EnumQueryMacroHandler extends AbstractQueryMacroHandler {
 
     @Override
     public Map<String, Object> getParams() {
-        return namedParameters;
+        return Collections.emptyMap();
     }
 
     @Override

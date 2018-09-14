@@ -17,15 +17,18 @@
 package com.haulmont.cuba.core.sys.querymacro;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import groovy.lang.Binding;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,18 +40,25 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
-    protected static final Map<String, Object> units = new HashMap<>();
+    protected static final Map<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>> units = new HashMap<>();
 
     static {
-        units.put("year", Calendar.YEAR);
-        units.put("month", Calendar.MONTH);
-        units.put("day", Calendar.DAY_OF_MONTH);
-        units.put("hour", Calendar.HOUR_OF_DAY);
-        units.put("minute", Calendar.MINUTE);
-        units.put("second", Calendar.SECOND);
+        units.put("year", (zdt, num) -> zdt.plusYears(num).withDayOfYear(1));
+        units.put("month", (zdt, num) -> zdt.plusMonths(num).withDayOfMonth(1));
+        units.put("day", (zdt, num) -> zdt.plusDays(num).truncatedTo(ChronoUnit.DAYS));
+        units.put("hour", (zdt, num) -> zdt.plusHours(num).truncatedTo(ChronoUnit.HOURS));
+        units.put("minute", (zdt, num) -> zdt.plusMinutes(num).truncatedTo(ChronoUnit.MINUTES));
+        units.put("second", (zdt, num) -> zdt.plusSeconds(num).truncatedTo(ChronoUnit.SECONDS));
     }
 
-    protected Map<String, Object> params = new HashMap<>();
+    @Inject
+    protected DateTimeTransformations transformations;
+    @Inject
+    protected Scripting scripting;
+    @Inject
+    protected TimeSource timeSource;
+
+    protected List<ArgDef> argDefs = new ArrayList<>();
 
     public TimeBetweenQueryMacroHandler() {
         super(MACRO_PATTERN);
@@ -56,11 +66,6 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
 
     @Override
     public void setQueryParams(Map<String, Object> namedParameters) {
-    }
-
-    @Override
-    public Map<String, Object> getParams() {
-        return params;
     }
 
     @Override
@@ -108,6 +113,27 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
 
+    @Override
+    public Map<String, Object> getParams() {
+        Map<String, Object> params = new HashMap<>();
+        for (ArgDef argDef : argDefs) {
+            ZonedDateTime zonedDateTime = timeSource.now();
+            Class javaType = expandedParamTypes.get(argDef.paramName);
+            if (javaType == null)
+                throw new RuntimeException(String.format("Type of parameter %s not resolved", argDef.paramName));
+            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+                zonedDateTime = zonedDateTime.withZoneSameInstant(argDef.timeZone.toZoneId());
+            }
+            BiFunction<ZonedDateTime, Integer, ZonedDateTime> calc = units.get(argDef.unit);
+            if (calc == null)
+                throw new RuntimeException(String.format("Invalid macro argument: %s", argDef.unit));
+            zonedDateTime = calc.apply(zonedDateTime, argDef.num);
+
+            params.put(argDef.paramName, transformations.transformFromZDT(zonedDateTime, javaType));
+        }
+        return params;
+    }
+
     protected String getParam(String[] args, int idx, TimeZone timeZone) {
         String arg = args[idx].trim();
         String unit = args[3].trim();
@@ -120,35 +146,29 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         try {
             String expr = matcher.group(2);
             if (!Strings.isNullOrEmpty(expr)) {
-                Scripting scripting = AppBeans.get(Scripting.class);
                 num = scripting.evaluateGroovy(expr, new Binding());
             }
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid macro argument: " + arg, e);
         }
 
-        Date date = computeDate(num, unit, timeZone);
-
         String paramName = args[0].trim().replace(".", "_") + "_" + count + "_" + idx;
-        params.put(paramName, date);
+        argDefs.add(new ArgDef(paramName, num, unit, timeZone));
 
         return paramName;
     }
 
-    protected Date computeDate(int num, String unit, TimeZone timeZone) {
-        Calendar cal = Calendar.getInstance(timeZone);
-        cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
-        int calField = getCalendarField(unit);
-        if (num != 0) {
-            cal.add(calField, num);
-        }
-        return DateUtils.truncate(cal, calField).getTime();
-    }
+    protected static class ArgDef {
+        protected String paramName;
+        protected int num;
+        protected String unit;
+        protected TimeZone timeZone;
 
-    protected int getCalendarField(String unit) {
-        Integer calField = (Integer) units.get(unit.toLowerCase());
-        if (calField == null)
-            throw new RuntimeException("Invalid macro argument: " + unit);
-        return calField;
+        public ArgDef(String paramName, int num, String unit, TimeZone timeZone) {
+            this.paramName = paramName;
+            this.num = num;
+            this.unit = unit;
+            this.timeZone = timeZone;
+        }
     }
 }

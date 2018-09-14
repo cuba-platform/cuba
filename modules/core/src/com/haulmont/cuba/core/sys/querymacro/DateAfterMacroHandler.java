@@ -17,10 +17,13 @@
 package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.bali.datastruct.Pair;
-import org.apache.commons.lang3.time.DateUtils;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -29,6 +32,9 @@ import java.util.regex.Pattern;
 public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateAfter\\s*\\(([^)]+)\\)");
+
+    @Inject
+    protected DateTimeTransformations transformations;
 
     protected Map<String, Object> namedParameters;
     protected List<Pair<String, TimeZone>> paramNames = new ArrayList<>();
@@ -63,14 +69,18 @@ public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
         for (Pair<String, TimeZone> pair : paramNames) {
             String paramName = pair.getFirst();
             TimeZone timeZone = pair.getSecond() == null ? TimeZone.getDefault() : pair.getSecond();
-            Date date = (Date) namedParameters.get(paramName);
+            Object date = namedParameters.get(paramName);
             if (date == null)
-                throw new RuntimeException("Parameter " + paramName + " not found for macro");
+                throw new RuntimeException(String.format("Parameter %s not found for macro", paramName));
+            Class javaType = date.getClass();
+            ZonedDateTime zonedDateTime = transformations.transformToZDT(date);
+            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+                zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
+            }
+            zonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
 
-            Calendar calendar = Calendar.getInstance(timeZone);
-            calendar.setTime(date);
-            calendar = DateUtils.truncate(calendar, Calendar.DAY_OF_MONTH);
-            params.put(paramName, calendar.getTime());
+            Object paramValue = transformations.transformFromZDT(zonedDateTime, javaType);
+            params.put(paramName, paramValue);
         }
         return params;
     }

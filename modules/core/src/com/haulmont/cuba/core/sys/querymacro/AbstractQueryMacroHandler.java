@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +29,8 @@ import java.util.regex.Pattern;
 public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
 
     protected int count;
-    private final Pattern macroPattern;
+    protected final Pattern macroPattern;
+    protected Map<String, Class> expandedParamTypes;
 
     protected AbstractQueryMacroHandler(Pattern macroPattern) {
         this.macroPattern = macroPattern;
@@ -47,6 +49,11 @@ public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
     }
 
     protected abstract String doExpand(String macro);
+
+    @Override
+    public void setExpandedParamTypes(Map<String, Class> expandedParamTypes) {
+        this.expandedParamTypes = expandedParamTypes;
+    }
 
     protected TimeZone getTimeZoneFromArgs(String[] args, int pos) {
         if (pos < args.length) {

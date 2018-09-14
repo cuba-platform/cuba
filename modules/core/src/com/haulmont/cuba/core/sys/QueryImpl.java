@@ -330,7 +330,15 @@ public class QueryImpl<T> implements TypedQuery<T> {
                     if (param.name instanceof String)
                         namedParams.put((String) param.name, param.value);
                 }
+
+                Map<String, Class> paramsTypes = new HashMap<>();
+                for (Parameter<?> parameter : jpaQuery.getParameters()) {
+                    if (parameter.getName() != null) {
+                        paramsTypes.put(parameter.getName(), parameter.getParameterType());
+                    }
+                }
                 handler.setQueryParams(namedParams);
+                handler.setExpandedParamTypes(paramsTypes);
 
                 for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
                     jpaQuery.setParameter(entry.getKey(), entry.getValue());

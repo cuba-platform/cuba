@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -39,4 +40,10 @@ public interface TimeSource {
      * @return  number of milliseconds since 1970-01-01 00:00
      */
     long currentTimeMillis();
+
+    /**
+     * Return {@code ZonedDateTime} for current timestamp.
+     * @return  ZonedDateTime
+     */
+    ZonedDateTime now();
 }

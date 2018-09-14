@@ -19,10 +19,8 @@ package com.haulmont.cuba.gui.components.data;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.HasRange;
 import com.haulmont.cuba.gui.components.TextInputField;
@@ -35,9 +33,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.*;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * todo JavaDoc
@@ -48,13 +46,19 @@ public class DataAwareComponentsTools {
     public static final String NAME = "cuba_DataAwareComponentsTools";
 
     @Inject
-    protected UserSessionSource sessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
     protected MessageTools messageTools;
 
     @Inject
     protected TimeSource timeSource;
+
+    @Inject
+    protected DateTimeTransformations dateTimeTransformations;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     /**
      * todo JavaDoc
@@ -101,5 +105,56 @@ public class DataAwareComponentsTools {
         if (lengthMax != null) {
             component.setMaxLength(lengthMax);
         }
+    }
+
+    public void setupDateRange(HasRange component, EntityValueSource valueSource) {
+        MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
+        Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
+
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
+            //noinspection unchecked
+            component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
+        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).plusDays(1);
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
+            //noinspection unchecked
+            component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
+        }
+    }
+
+    public void setupZoneId(DateField component, EntityValueSource valueSource) {
+        if (component.getZoneId() == null) {
+            MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
+            Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
+            if (dateTimeTransformations.isDateTypeSupportsTimeZones(javaType)) {
+                Boolean ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(metaProperty, IgnoreUserTimeZone.class);
+                if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
+                    TimeZone timeZone = userSessionSource.getUserSession().getTimeZone();
+                    component.setTimeZone(timeZone);
+                }
+            }
+        }
+    }
+
+    public void setupDateFormat(DateField component, EntityValueSource valueSource) {
+        MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
+        Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
+
+        TemporalType temporalType = null;
+
+        if (java.sql.Date.class.equals(javaType) || LocalDate.class.equals(javaType)) {
+            temporalType = TemporalType.DATE;
+        } else if (metaProperty.getAnnotations() != null) {
+            temporalType = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+        }
+
+        component.setResolution(temporalType == TemporalType.DATE
+                ? DateField.Resolution.DAY
+                : DateField.Resolution.MIN);
+
+        String formatStr = messageTools.getDefaultDateFormat(temporalType);
+        component.setDateFormat(formatStr);
     }
 }
