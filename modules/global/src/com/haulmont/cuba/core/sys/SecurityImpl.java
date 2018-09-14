@@ -47,7 +47,6 @@ import static com.haulmont.cuba.security.entity.ConstraintOperationType.CUSTOM;
 import static java.lang.String.format;
 
 @Component(Security.NAME)
-@PerformanceLog
 public class SecurityImpl implements Security {
     private final Logger log = LoggerFactory.getLogger(SecurityImpl.class);
 
