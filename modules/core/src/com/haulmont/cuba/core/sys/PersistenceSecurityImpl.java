@@ -67,9 +67,6 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     @Inject
     protected EntityStates entityStates;
 
-    @Inject
-    protected GlobalConfig globalConfig;
-
     @Override
     public boolean applyConstraints(Query query) {
         QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
