@@ -18,10 +18,8 @@
 package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
@@ -41,7 +39,6 @@ import static java.lang.String.format;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryTransformer.NAME)
-@PerformanceLog
 public class QueryTransformerAstBased implements QueryTransformer {
     protected DomainModel model;
     protected String query;

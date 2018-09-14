@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
@@ -29,13 +28,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static java.lang.String.format;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryParser.NAME)
-@PerformanceLog
 public class QueryParserAstBased implements QueryParser {
     protected DomainModel model;
     protected String query;
