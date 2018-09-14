@@ -16,9 +16,13 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.google.common.collect.ImmutableMap;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.Date;
 
 public class TimeTodayQueryMacroHandlerTest {
 
@@ -27,8 +31,9 @@ public class TimeTodayQueryMacroHandlerTest {
 
     @Test
     public void testExpandMacro() throws Exception {
-        TimeTodayQueryMacroHandler handler = new TimeTodayQueryMacroHandler();
+        TimeTodayQueryMacroHandler handler = AppBeans.get(TimeTodayQueryMacroHandler.class);
         String res = handler.expandMacro("select u from sec$User where @today(u.createTs) and u.deleteTs is null");
+        handler.setExpandedParamTypes(ImmutableMap.of("u_createTs_1_1", Date.class, "u_createTs_1_2", Date.class));
         System.out.println(res);
         System.out.println(handler.getParams());
     }

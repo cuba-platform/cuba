@@ -16,19 +16,27 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import junit.framework.TestCase;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-public class DateEqualsMacroHandlerTest extends TestCase {
+public class DateEqualsMacroHandlerTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void testExpandMacro() throws Exception {
         Date date = new Date();
-        DateEqualsMacroHandler handler = new DateEqualsMacroHandler();
+        DateEqualsMacroHandler handler = AppBeans.get(DateEqualsMacroHandler.class);
         String res = handler.expandMacro("select distinct t from tm$Task t where t.id <> :param_exclItem  " +
                 "and @dateEquals(t.createTs, :component_genericFilter_nLxPpRlkOq29857)     order by t.num desc");
         handler.setQueryParams(Collections.<String, Object>singletonMap("component_genericFilter_nLxPpRlkOq29857", date));
@@ -37,8 +45,8 @@ public class DateEqualsMacroHandlerTest extends TestCase {
         System.out.println(res);
         System.out.println(params);
 
-        assertEquals("select distinct t from tm$Task t where t.id <> :param_exclItem  and (t.createTs >= :component_genericFilter_nLxPpRlkOq29857 and t.createTs < :t_createTs_1)     order by t.num desc", res);
-        assertEquals(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), params.get("component_genericFilter_nLxPpRlkOq29857"));
-        assertEquals(DateUtils.addDays(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1), params.get("t_createTs_1"));
+        Assert.assertEquals("select distinct t from tm$Task t where t.id <> :param_exclItem  and (t.createTs >= :component_genericFilter_nLxPpRlkOq29857 and t.createTs < :t_createTs_1)     order by t.num desc", res);
+        Assert.assertEquals(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), params.get("component_genericFilter_nLxPpRlkOq29857"));
+        Assert.assertEquals(DateUtils.addDays(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1), params.get("t_createTs_1"));
     }
 }
