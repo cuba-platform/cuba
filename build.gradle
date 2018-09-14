@@ -18,10 +18,10 @@
 buildscript {
     ext.cubaVersion = '7.0-SNAPSHOT'
     ext.cubaVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : cubaVersion
-    
+
     println("CUBA Platform Version ${ext.cubaVersion}")
     println("")
-    
+
     repositories {
         mavenLocal()
         maven {
@@ -39,7 +39,6 @@ buildscript {
 
 apply(plugin: 'base')
 apply(plugin: 'maven')
-apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
 bom.load file('modules/global/src/com/haulmont/cuba/bom.properties')
@@ -90,7 +89,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
            webModule, desktopModule, portalModule, restApiModule, uberJarModule, frontModule]) {
     apply(plugin: 'java')
     apply(plugin: 'groovy')
-    apply(plugin: 'idea')
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
@@ -251,7 +249,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 // configure web toolkit module
 configure([webWidgetsModule, webToolkitModule]) {
     apply(plugin: 'java')
-    apply(plugin: 'idea')
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
@@ -684,8 +681,6 @@ configure(webModule) {
             enabled = true
         }
     }
-
-    task enhanceTestModel(type: CubaTestEnhancing)
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         themes = ['halo', 'hover', 'havana']
