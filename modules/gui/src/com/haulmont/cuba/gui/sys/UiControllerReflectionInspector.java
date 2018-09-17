@@ -19,14 +19,19 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,9 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
@@ -189,7 +192,113 @@ public class UiControllerReflectionInspector {
                         m.setAccessible(true);
                     }
                 })
+                .sorted(this::compareSubscribeMethods)
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    protected int compareSubscribeMethods(Method m1, Method m2) {
+        if (m1 == m2) {
+            // fulfill comparator contract
+            return 0;
+        }
+
+        Class<?> pt1 = m1.getParameterTypes()[0];
+        Class<?> pt2 = m2.getParameterTypes()[0];
+
+        if (pt1 != pt2) {
+            // if type of event different - compare by class name
+            return pt1.getCanonicalName().compareTo(pt2.getCanonicalName());
+        }
+
+        Order o1 = findMergedAnnotation(m1, Order.class);
+        Order o2 = findMergedAnnotation(m2, Order.class);
+
+        if (o1 != null && o2 != null) {
+            return Integer.compare(o1.value(), o2.value());
+        }
+
+        if (o1 != null) {
+            return -1;
+        }
+
+        if (o2 != null) {
+            return 1;
+        }
+
+        Class<?> dc1 = getDeclaringClass(m1);
+        Class<?> dc2 = getDeclaringClass(m2);
+
+        if (dc1 == dc2) {
+            // if declaring class is the same - compare by method name
+            return m1.getName().compareTo(m2.getName());
+        }
+
+        // if there is no @Order - parent first
+
+        if (dc1.isAssignableFrom(dc2)) {
+            return -1;
+        }
+
+        if (dc2.isAssignableFrom(dc1)) {
+            return 1;
+        }
+
+        // return 0 as fallback
+        return 0;
+    }
+
+    protected Class<?> getDeclaringClass(Method method) {
+        Class<?> declaringClass = method.getDeclaringClass();
+        if (declaringClass.getSuperclass() == Screen.class
+            || declaringClass.getSuperclass() == ScreenFragment.class) {
+            // speed up search of declaring class for simple cases
+            return declaringClass;
+        }
+
+        Set<Method> overrideHierarchy = getOverrideHierarchy(method);
+        return Iterables.getLast(overrideHierarchy).getDeclaringClass();
+    }
+
+    protected Set<Method> getOverrideHierarchy(Method method) {
+        Set<Method> result = new LinkedHashSet<>();
+        result.add(method);
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        Class<?> declaringClass = method.getDeclaringClass();
+
+        Iterator<Class<?>> hierarchy = ClassUtils.hierarchy(declaringClass, ClassUtils.Interfaces.INCLUDE).iterator();
+        //skip the declaring class :P
+        hierarchy.next();
+        hierarchyTraversal: while (hierarchy.hasNext()) {
+            final Class<?> c = hierarchy.next();
+            Method m;
+            try {
+                m = c.getDeclaredMethod(method.getName(), parameterTypes);
+            } catch (NoSuchMethodException e) {
+                m = null;
+            }
+
+            if (m == null) {
+                continue;
+            }
+            if (Arrays.equals(m.getParameterTypes(), parameterTypes)) {
+                // matches without generics
+                result.add(m);
+                continue;
+            }
+            // necessary to get arguments every time in the case that we are including interfaces
+            Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(declaringClass, m.getDeclaringClass());
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Type childType = TypeUtils.unrollVariables(typeArguments, method.getGenericParameterTypes()[i]);
+                Type parentType = TypeUtils.unrollVariables(typeArguments, m.getGenericParameterTypes()[i]);
+                if (!TypeUtils.equals(childType, parentType)) {
+                    continue hierarchyTraversal;
+                }
+            }
+            result.add(m);
+        }
+        return result;
     }
 
     public static class InjectElement {

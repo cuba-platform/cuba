@@ -17,11 +17,7 @@
 package spec.cuba.web.screens
 
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
-import spec.cuba.web.screens.samples.ScreenWithEventListeners
-import spec.cuba.web.screens.samples.ScreenWithInjection
-import spec.cuba.web.screens.samples.ScreenWithParentEventListeners
-import spec.cuba.web.screens.samples.ScreenWithParentSubscribe
-import spec.cuba.web.screens.samples.ScreenWithSubscribe
+import spec.cuba.web.screens.samples.*
 import spock.lang.Specification
 
 import java.lang.reflect.Field
@@ -65,8 +61,8 @@ class UiControllerReflectionInspectorTest extends Specification {
         then:
 
         methods.size() == 2
-        methods.find({ it.name == 'handleSomeEvent'}) != null
-        methods.find({ it.name == 'handlePrivateEvent'}) != null
+        methods.find({ it.name == 'handleSomeEvent' }) != null
+        methods.find({ it.name == 'handlePrivateEvent' }) != null
 
         when:
 
@@ -75,9 +71,9 @@ class UiControllerReflectionInspectorTest extends Specification {
         then: "Subclass can override event handlers without explicit @EventListener annotation"
 
         childMethods.size() == 3
-        childMethods.find({ it.name == 'handleSomeEvent'}) != null
-        childMethods.find({ it.name == 'handlePrivateEvent'}) != null
-        childMethods.find({ it.name == 'handleAdditionalEvent'}) != null
+        childMethods.find({ it.name == 'handleSomeEvent' }) != null
+        childMethods.find({ it.name == 'handlePrivateEvent' }) != null
+        childMethods.find({ it.name == 'handleAdditionalEvent' }) != null
 
         then: "all methods are accessible"
 
@@ -94,10 +90,10 @@ class UiControllerReflectionInspectorTest extends Specification {
         then:
 
         methods.size() == 4
-        methods.find({ it.name == 'onClick'}) != null
-        methods.find({ it.name == 'onShow'}) != null
-        methods.find({ it.name == 'onAfterShow'}) != null
-        methods.find({ it.name == 'init'}) != null
+        methods.find({ it.name == 'onClick' }) != null
+        methods.find({ it.name == 'onShow' }) != null
+        methods.find({ it.name == 'onAfterShow' }) != null
+        methods.find({ it.name == 'init' }) != null
 
         when:
 
@@ -106,15 +102,73 @@ class UiControllerReflectionInspectorTest extends Specification {
         then: "Subclass can override event handlers without explicit @Subscribe annotation"
 
         childMethods.size() == 5
-        childMethods.find({ it.name == 'onClick'}) != null
-        childMethods.find({ it.name == 'onShow'}) != null
-        childMethods.find({ it.name == 'onAfterShow'}) != null
-        childMethods.find({ it.name == 'init'}) != null
+        childMethods.find({ it.name == 'onClick' }) != null
+        childMethods.find({ it.name == 'onShow' }) != null
+        childMethods.find({ it.name == 'onAfterShow' }) != null
+        childMethods.find({ it.name == 'init' }) != null
 
-        childMethods.find({ it.name == 'onClick2'}) != null
+        childMethods.find({ it.name == 'onClick2' }) != null
 
         then: "all methods are accessible"
 
         childMethods.findAll({ it.isAccessible() }).size() == 5
+    }
+
+    def "Inspector sorts @Subscribe methods by @Order"() {
+
+        def inspector = new UiControllerReflectionInspector()
+
+        when:
+
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithOrderedSubscribe)
+
+        then:
+
+        methods.size() == 6
+        methods[0].name == 'onClick1'
+        methods[1].name == 'onClick2'
+        methods[2].name == 'onClick3'
+        methods[3].name == 'onClick4'
+        methods[4].name == 'onAfterInit'
+        methods[5].name == 'onInit'
+    }
+
+    def "Inspector sorts @Subscribe methods by @Order with parent"() {
+
+        def inspector = new UiControllerReflectionInspector()
+
+        when:
+
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithParentOrdered)
+
+        then:
+
+        methods.size() == 9
+        methods[0].name == 'onClick6'
+        methods[1].name == 'onClick1'
+        methods[2].name == 'onClick2'
+        methods[3].name == 'onClick7'
+        methods[4].name == 'onClick3'
+        methods[5].name == 'onClick4'
+        methods[6].name == 'onAfterInit' // parent declared method first
+        methods[7].name == 'childAfterInit' // child declared method after
+        methods[8].name == 'onInit'
+    }
+
+    def "Inspector finds @Subscribe default methods in mixin interfaces"() {
+        def inspector = new UiControllerReflectionInspector()
+
+        when:
+
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithMixin)
+
+        then:
+
+        methods.size() == 5
+        methods.find({ it.name == 'onClick' }) != null
+        methods.find({ it.name == 'onShow' }) != null
+        methods.find({ it.name == 'onAfterShow' }) != null
+        methods.find({ it.name == 'init' }) != null
+        methods.find({ it.name == 'onInitMixin' }) != null
     }
 }

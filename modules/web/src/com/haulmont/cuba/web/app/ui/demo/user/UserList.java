@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WebBrowserTools;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.Label;
@@ -28,14 +28,13 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 
 @UiController("user-list")
-public class UserList extends Screen {
+public class UserList extends Screen implements UserListMixin {
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected Screens screens;
     @Inject
@@ -43,17 +42,14 @@ public class UserList extends Screen {
     @Inject
     protected Notifications notifications;
 
-    @Inject
-    protected WebBrowserTools webBrowserTools;
-
     @Subscribe
     protected void init(InitEvent event) {
-        Label<String> label = componentsFactory.createComponent(Label.NAME);
+        Label<String> label = uiComponents.create(Label.NAME);
         label.setValue("Demo " + this);
 
         getWindow().setCaption("Users");
 
-        Button button = componentsFactory.createComponent(Button.NAME);
+        Button button = uiComponents.create(Button.NAME);
         button.setAction(new BaseAction("onClick")
                 .withCaption("Demo")
                 .withHandler(e -> {
@@ -77,7 +73,7 @@ public class UserList extends Screen {
                 })
         );
 
-        Label<String> spacer = componentsFactory.createComponent(Label.NAME);
+        Label<String> spacer = uiComponents.create(Label.NAME);
 
         getWindow().add(
                 label,
@@ -86,9 +82,4 @@ public class UserList extends Screen {
         );
         getWindow().expand(spacer);
     }
-
-    /*@Subscribe
-    protected void onResize(Page.BrowserWindowResizeEvent event) {
-
-    }*/
 }
