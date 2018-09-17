@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  * Provide the workflow with presentations (visual settings of a component).
- * <br><br> A component must implement {@link com.haulmont.cuba.gui.components.Component.HasPresentations} interface
+ * <br><br> A component must implement {@link com.haulmont.cuba.gui.components.HasPresentations} interface
  *
  * @see com.haulmont.cuba.security.entity.Presentation
  *

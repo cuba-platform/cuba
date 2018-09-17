@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * @deprecated Use {@link com.haulmont.cuba.gui.components.ResizableTextArea.ResizeListener}
+ * @deprecated Use {@link com.haulmont.cuba.gui.components.ResizableTextArea.ResizeEvent}
  */
 @Deprecated
 public interface ResizeListener<T> {

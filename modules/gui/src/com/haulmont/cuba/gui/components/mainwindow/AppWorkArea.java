@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.gui.components.mainwindow;
 
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
+import com.haulmont.cuba.gui.screen.OpenMode;
 
 public interface AppWorkArea extends Component.BelongToFrame {
 
@@ -28,12 +28,12 @@ public interface AppWorkArea extends Component.BelongToFrame {
     enum Mode {
         /**
          * If the main window is in TABBED mode, it creates the Tabsheet inside
-         * and opens screens with {@link WindowManager.OpenMode#NEW_TAB} as tabs.
+         * and opens screens with {@link OpenMode#NEW_TAB} as tabs.
          */
         TABBED,
 
         /**
-         * In SINGLE mode each new screen opened with {@link WindowManager.OpenMode#NEW_TAB}
+         * In SINGLE mode each new screen opened with {@link OpenMode#NEW_TAB}
          * opening type will replace the current screen.
          */
         SINGLE

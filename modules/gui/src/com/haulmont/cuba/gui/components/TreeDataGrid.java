@@ -57,7 +57,6 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
         }
     }
 
-
     /**
      * Get the currently set hierarchy column. The hierarchy column is a column
      * that displays the hierarchy of this DataGrid's data.
@@ -114,7 +113,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * children, does nothing.
      *
      * @param items the items to expand
-     * @see #expand(Collection)
+     * @see TreeDataGrid#expand(Collection)
      */
     default void expand(E... items) {
         expand(Arrays.asList(items));
@@ -127,7 +126,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * children, does nothing.
      *
      * @param items the items to expand
-     * @see #expand(E[])
+     * @see TreeDataGrid#expand(Entity[])
      */
     void expand(Collection<E> items);
 
@@ -171,7 +170,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * For items that are already collapsed, does nothing.
      *
      * @param items the items to collapse
-     * @see #collapse(Collection)
+     * @see TreeDataGrid#collapse(Collection)
      */
     default void collapse(E... items) {
         collapse(Arrays.asList(items));
@@ -183,7 +182,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * For items that are already collapsed, does nothing.
      *
      * @param items the items to collapse
-     * @see #collapse(E[])
+     * @see TreeDataGrid#collapse(Entity[])
      */
     void collapse(Collection<E> items);
 

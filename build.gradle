@@ -856,6 +856,7 @@ configure(desktopModule) {
     test.enabled = false
     compileTestGroovy.enabled = false
     compileTestJava.enabled = false
+    javadoc.enabled = false
 }
 
 configure(restApiModule) {
@@ -1036,6 +1037,8 @@ task aggregateJavadoc(type: Javadoc,
     options.addStringOption("sourcepath", "")
     options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PUBLIC
 
+    include 'com/haulmont/cuba/**'
+
     exclude 'com/haulmont/cuba/core/app/cache/**'
     exclude 'com/haulmont/cuba/core/sys/jpql/antlr2/**'
     exclude 'com/haulmont/cuba/core/sys/utils/**'
@@ -1049,18 +1052,19 @@ task aggregateJavadoc(type: Javadoc,
     exclude 'com/haulmont/cuba/desktop/gui/data/**'
     exclude 'com/haulmont/cuba/desktop/gui/executors/**'
 
-    exclude 'com/haulmont/cuba/web/toolkit/**'
+    exclude 'com/haulmont/cuba/web/widgets/addons/**'
+    exclude 'com/haulmont/cuba/web/widgets/client/**'
     exclude 'com/haulmont/cuba/web/controllers/**'
     exclude 'com/haulmont/cuba/web/gui/components/**'
     exclude 'com/haulmont/cuba/web/gui/data/**'
     exclude 'com/haulmont/cuba/web/gui/executors/**'
 
-    exclude 'org/eclipse/**'
-
     subprojects.each { proj ->
         def javadocTask = proj.tasks.getByPath('javadoc')
 
-        source += javadocTask.source
-        classpath += javadocTask.classpath
+        if (javadocTask.enabled) {
+            source += javadocTask.source
+            classpath += javadocTask.classpath
+        }
     }
 }
