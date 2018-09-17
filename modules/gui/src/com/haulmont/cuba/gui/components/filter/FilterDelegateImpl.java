@@ -2945,7 +2945,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         /**
          * Recursively replaces parameter names in condition's text, e.g.
-         * "u.name like :component$usersFilter.name26607" -> "u.name like :usersFilter_name26607"
+         * "u.name like :component$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
          */
         protected void replaceParamNames(Condition condition) {
             if (condition instanceof Clause) {
