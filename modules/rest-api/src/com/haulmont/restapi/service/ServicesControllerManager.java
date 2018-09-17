@@ -138,7 +138,10 @@ public class ServicesControllerManager {
                 throw (ValidationException) ex.getCause();
             } else {
                 log.error("Error on service method invoke", ex.getCause());
-                throw new RestAPIException("Error on service method invoke", "", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new RestAPIException("Error on service method invoke",
+                        "",
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ex.getCause() instanceof Exception ? (Exception) ex.getCause() : ex);
             }
         }
 
