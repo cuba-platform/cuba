@@ -34,10 +34,12 @@ import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Component;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
@@ -112,6 +114,14 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
     protected void onCloseButtonClick(CubaWindow.PreCloseEvent preCloseEvent) {
         preCloseEvent.setPreventClose(true);
 
+        com.vaadin.ui.Component component = getComponent();
+        CubaUI ui = (CubaUI) component.getUI();
+        if (!ui.isAccessibleForUser(component)) {
+            LoggerFactory.getLogger(WebWindow.class)
+                    .debug("Ignore close button click because Window is inaccessible for user");
+            return;
+        }
+
         BeforeCloseWithCloseButtonEvent event = new BeforeCloseWithCloseButtonEvent(this);
         fireBeforeCloseWithCloseButton(event);
 
@@ -123,6 +133,14 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
     protected void onCloseShortcutTriggered(Object sender, Object target) {
         if (this.isCloseable()) {
+            com.vaadin.ui.Component component = getComponent();
+            CubaUI ui = (CubaUI) component.getUI();
+            if (!ui.isAccessibleForUser(component)) {
+                LoggerFactory.getLogger(WebWindow.class)
+                        .debug("Ignore shortcut action because Window is inaccessible for user");
+                return;
+            }
+
             BeforeCloseWithShortcutEvent event = new BeforeCloseWithShortcutEvent(this);
             fireBeforeCloseWithShortcut(event);
 

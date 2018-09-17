@@ -78,6 +78,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -1121,6 +1122,13 @@ public class WebScreens implements Screens, WindowManager {
     protected void closeWindowByShortcut(RootWindow topLevelWindow) {
         WebAppWorkArea workArea = getConfiguredWorkArea();
         if (workArea.getState() != AppWorkArea.State.WINDOW_CONTAINER) {
+            return;
+        }
+
+        CubaUI ui = (CubaUI) workArea.getComponent().getUI();
+        if (!ui.isAccessibleForUser(workArea.getComponent())) {
+            LoggerFactory.getLogger(CubaTabSheet.class)
+                    .debug("Ignore close shortcut attempt because workArea is inaccessible for user");
             return;
         }
 
