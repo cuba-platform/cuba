@@ -76,14 +76,14 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
      * <p>
      * You can prevent the datasource refresh by invoking {@link BeforeRefreshEvent#preventRefresh()},
      * for example:
-     * <pre>
+     * <pre>{@code
      * table.getRowsCount().addBeforeDatasourceRefreshListener(event -> {
      *     if (event.getDatasource().isModified()) {
      *         showNotification("Save changes before going to another page");
      *         event.preventRefresh();
      *     }
      * });
-     * </pre>
+     * }</pre>
      */
     @FunctionalInterface
     interface BeforeRefreshListener {
