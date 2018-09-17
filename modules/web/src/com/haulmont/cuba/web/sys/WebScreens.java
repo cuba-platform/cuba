@@ -57,7 +57,6 @@ import com.haulmont.cuba.gui.sys.*;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
@@ -106,7 +105,7 @@ public class WebScreens implements Screens, WindowManager {
     @Inject
     protected UuidSource uuidSource;
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
     @Inject
@@ -703,7 +702,7 @@ public class WebScreens implements Screens, WindowManager {
             container.add(screenFragment.getFragment());
         }
 
-        fragments.initialize(screenFragment);
+        fragments.init(screenFragment);
 
         return screenFragment instanceof Frame ? (Frame) screenFragment : new ScreenFragmentWrapper(screenFragment);
     }
@@ -931,16 +930,16 @@ public class WebScreens implements Screens, WindowManager {
                     // should be changed
                     ui.beforeTopLevelWindowInit();
 
-                    window = componentsFactory.createComponent(RootWindow.NAME);
+                    window = uiComponents.create(RootWindow.NAME);
                     break;
 
                 case THIS_TAB:
                 case NEW_TAB:
-                    window = componentsFactory.createComponent(TabWindow.NAME);
+                    window = uiComponents.create(TabWindow.NAME);
                     break;
 
                 case DIALOG:
-                    window = componentsFactory.createComponent(DialogWindow.NAME);
+                    window = uiComponents.create(DialogWindow.NAME);
                     break;
 
                 default:

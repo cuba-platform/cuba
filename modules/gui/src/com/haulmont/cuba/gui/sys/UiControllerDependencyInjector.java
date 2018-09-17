@@ -64,6 +64,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
+import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 /**
  * Wires {@link Inject}, {@link Named}, {@link WindowParam} fields/setters and {@link EventListener} methods.
@@ -119,7 +120,7 @@ public class UiControllerDependencyInjector {
         EventHub screenEvents = UiControllerUtils.getEventHub(frameOwner);
 
         for (Method method : eventListenerMethods) {
-            Subscribe annotation = method.getAnnotation(Subscribe.class);
+            Subscribe annotation = findMergedAnnotation(method, Subscribe.class);
             checkState(annotation != null);
 
             Consumer listener = new DeclarativeSubscribeExecutor(frameOwner, method);

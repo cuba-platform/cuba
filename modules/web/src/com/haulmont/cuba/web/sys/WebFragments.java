@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Fragments;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
@@ -37,7 +38,6 @@ import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
@@ -66,7 +66,7 @@ public class WebFragments implements Fragments {
     @Inject
     protected BeanLocator beanLocator;
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected UserSessionSource userSessionSource;
 
@@ -109,7 +109,7 @@ public class WebFragments implements Fragments {
 
     protected <T extends ScreenFragment> T createFragment(FrameOwner parent, WindowInfo windowInfo,
                                                           ScreenOptions options) {
-        Fragment fragment = componentsFactory.createComponent(Fragment.NAME);
+        Fragment fragment = uiComponents.create(Fragment.NAME);
         ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
 
         // setup screen and controller
@@ -157,8 +157,6 @@ public class WebFragments implements Fragments {
             layoutLoader.setLocale(getLocale());
             layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
 
-            ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
-
             Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     innerContext.getParams());
 
@@ -181,7 +179,7 @@ public class WebFragments implements Fragments {
     }
 
     @Override
-    public void initialize(ScreenFragment controller) {
+    public void init(ScreenFragment controller) {
         checkNotNullArgument(controller);
 
         FragmentContextImpl fragmentContext = (FragmentContextImpl) controller.getFragment().getContext();

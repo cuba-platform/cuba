@@ -41,5 +41,5 @@ public interface Fragments {
 
     ScreenFragment create(FrameOwner parent, WindowInfo windowInfo, ScreenOptions options);
 
-    void initialize(ScreenFragment fragment);
+    void init(ScreenFragment fragment);
 }

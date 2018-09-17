@@ -26,7 +26,6 @@ import java.util.Collection;
  * <br><br> A component must implement {@link com.haulmont.cuba.gui.components.HasPresentations} interface
  *
  * @see com.haulmont.cuba.security.entity.Presentation
- *
  */
 public interface Presentations {
 

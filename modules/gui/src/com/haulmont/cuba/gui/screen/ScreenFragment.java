@@ -21,6 +21,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
@@ -135,6 +136,15 @@ public abstract class ScreenFragment implements FrameOwner {
         if (listeners != null && !listeners.isEmpty()) {
             ((FragmentImplementation) this.fragment).initUiEventListeners();
         }
+    }
+
+    /**
+     * Convenient method to perform programmatic initialization of the fragment.
+     *
+     * @see Fragments#init(ScreenFragment)
+     */
+    public void init() {
+        getScreenContext().getFragments().init(this);
     }
 
     /**

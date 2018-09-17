@@ -87,14 +87,16 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
             getFrame().add(lookupWindowActions.getFragment());
 
-            fragments.initialize(lookupWindowActions);
+            lookupWindowActions.init();
         }
 
         Element element = ((Component.HasXmlDescriptor) getFrame()).getXmlDescriptor();
-        String lookupComponent = element.attributeValue("lookupComponent");
-        if (!StringUtils.isEmpty(lookupComponent)) {
-            Component component = getFrame().getComponent(lookupComponent);
-            setLookupComponent(component);
+        if (element != null) {
+            String lookupComponent = element.attributeValue("lookupComponent");
+            if (StringUtils.isNotEmpty(lookupComponent)) {
+                Component component = getFrame().getComponent(lookupComponent);
+                setLookupComponent(component);
+            }
         }
     }
 

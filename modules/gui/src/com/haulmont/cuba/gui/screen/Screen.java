@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs.MessageType;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
@@ -271,6 +272,15 @@ public abstract class Screen implements FrameOwner {
                 .show();
 
         return result;
+    }
+
+    /**
+     * Convenient method to show the screen.
+     *
+     * @see Screens#show(Screen)
+     */
+    public void show() {
+        getScreenContext().getScreens().show(this);
     }
 
     /**
