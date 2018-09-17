@@ -114,6 +114,12 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
 //        field.setNullRepresentation("");
 
         this.field = field;
+
+        field.addValueChangeListener(this::onFieldValueChange);
+    }
+
+    protected void onFieldValueChange(ValueChangeEvent<?> event) {
+        markAsDirty();
     }
 
     public AbstractComponent getField() {

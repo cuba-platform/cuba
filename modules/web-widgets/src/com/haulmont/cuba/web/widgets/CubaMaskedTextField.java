@@ -21,9 +21,6 @@ import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedTextFieldState;
 public class CubaMaskedTextField extends CubaTextField {
 
     public CubaMaskedTextField() {
-        // directly init value locale to avoid unnecessary converted value setting
-//        vaadin8
-//        setInternalValue(null);
     }
 
     public boolean isMaskedMode() {

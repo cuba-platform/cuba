@@ -45,6 +45,8 @@ public class CubaSearchSelectPickerField<T> extends CubaPickerField<T> {
         field.addStyleName(SEARCHSELECT_FIELD_STYLENAME);
 
         this.field = field;
+
+        (getFieldInternal()).addValueChangeListener(this::onFieldValueChange);
     }
 
     protected CubaSearchSelect<T> getFieldInternal() {

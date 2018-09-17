@@ -73,14 +73,7 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     protected CubaPickerField<V> createComponent() {
-        return new CubaComboBoxPickerField<V>() {
-            // VAADIN8: gg, implement and move to the component
-            /*@Override
-            public void setRequired(boolean required) {
-                super.setRequired(required);
-                this.setEmptySelectionAllowed(!required);
-            }*/
-        };
+        return new CubaComboBoxPickerField<>();
     }
 
     @Override

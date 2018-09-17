@@ -25,6 +25,10 @@ import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.emptyToNull;
@@ -32,7 +36,13 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, String, String> implements MaskedField {
 
+    protected static final char PLACE_HOLDER = '_';
+
+    protected final static List<Character> maskSymbols
+            = Arrays.asList('#', 'U', 'L', '?', 'A', '*', 'H', 'h', '~');
+
     protected ShortcutListener enterShortcutListener;
+    protected String nullRepresentation;
 
     public WebMaskedField() {
         this.component = createTextFieldImpl();
@@ -43,6 +53,34 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
     @Override
     public void setMask(String mask) {
         component.setMask(mask);
+        updateNullRepresentation();
+    }
+
+    protected void updateNullRepresentation() {
+        StringBuilder valueBuilder = new StringBuilder();
+        String mask = getMask();
+
+        for (int i = 0; i < mask.length(); i++) {
+            char c = mask.charAt(i);
+            if (c == '\'') {
+                valueBuilder.append(mask.charAt(++i));
+            } else if (maskSymbols.contains(c)) {
+                valueBuilder.append(PLACE_HOLDER);
+            } else {
+                valueBuilder.append(c);
+            }
+        }
+        nullRepresentation = valueBuilder.toString();
+    }
+
+    protected String getNullRepresentation() {
+        return nullRepresentation;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return MaskedField.super.isEmpty()
+                || Objects.equals(getValue(), getNullRepresentation());
     }
 
     @Override

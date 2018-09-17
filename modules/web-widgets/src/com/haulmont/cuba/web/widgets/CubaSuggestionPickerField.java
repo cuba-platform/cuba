@@ -41,6 +41,8 @@ public class CubaSuggestionPickerField<T> extends CubaPickerField<T> {
         field.addStyleName(SUGGESTION_FIELD_STYLENAME);
 
         this.field = field;
+
+        (getFieldInternal()).addValueChangeListener(this::onFieldValueChange);
     }
 
     protected CubaSuggestionField<T> getFieldInternal() {

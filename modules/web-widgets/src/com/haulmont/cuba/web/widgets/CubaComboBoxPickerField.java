@@ -43,6 +43,8 @@ public class CubaComboBoxPickerField<T> extends CubaPickerField<T> {
         field.addStyleName(COMBOBOX_FIELD_STYLENAME);
 
         this.field = field;
+
+        (getFieldInternal()).addValueChangeListener(this::onFieldValueChange);
     }
 
     protected CComboBox<T> getFieldInternal() {
