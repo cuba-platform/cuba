@@ -19,12 +19,12 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.util;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +65,7 @@ public class AttributeEditor {
         } else if (AttributeHelper.isArrayOrCollection(type)) {
             initArrayLayout(value, isFixedSize, AttributeHelper.isObjectArrayOrCollection(type));
         } else if (AttributeHelper.isDate(type)) {
-            dateField = AppConfig.getFactory().createComponent(DateField.class);
+            dateField = componentsFactory.createComponent(DateField.class);
             dateField.setWidth("500px");
             dateField.setFrame(frame);
             if (value != null) {
@@ -73,7 +73,7 @@ public class AttributeEditor {
 //                dateField.setValue(value.toString());
             }
         } else {
-            textField = componentsFactory.createComponent(WebTextField.class);
+            textField = componentsFactory.createComponent(TextField.class);
 
             ThemeConstants theme = App.getInstance().getThemeConstants();
             textField.setWidth(theme.get("cuba.web.jmx.AttributeEditor.textField.width"));
@@ -90,7 +90,7 @@ public class AttributeEditor {
 
     protected void initArrayLayout(Object value, boolean isFixedSize, boolean isReadOnly) {
 
-        layout = componentsFactory.createComponent(WebVBoxLayout.class);
+        layout = componentsFactory.createComponent(VBoxLayout.class);
         layout.setSpacing(true);
         ThemeConstants theme = App.getInstance().getThemeConstants();
         layout.setWidth(theme.get("cuba.web.jmx.AttributeEditor.arrayLayout.width"));
@@ -98,33 +98,26 @@ public class AttributeEditor {
             layout.setHeight(theme.get("cuba.web.jmx.AttributeEditor.arrayLayout.height"));
         }
 
-        Button btnAdd = componentsFactory.createComponent(WebButton.class);
-        btnAdd.setIcon("icons/plus-btn.png");
+        Button btnAdd = componentsFactory.createComponent(Button.class);
+        btnAdd.setIconFromSet(CubaIcon.PLUS_CIRCLE);
         btnAdd.setDescription(messages.getMessage(getClass(), "editAttribute.array.btnAdd"));
         layout.add(btnAdd);
 
-        ScrollBoxLayout scrollBoxLayout = componentsFactory.createComponent(WebScrollBoxLayout.class);
-        scrollBoxLayout.setWidth("100%");
+        ScrollBoxLayout scrollBoxLayout = componentsFactory.createComponent(ScrollBoxLayout.class);
+        scrollBoxLayout.setWidthFull();
         scrollBoxLayout.setSpacing(true);
+
         layout.add(scrollBoxLayout);
         layout.expand(scrollBoxLayout);
 
-        btnAdd.setAction(new AbstractAction("addRow") {
-            @Override
-            public void actionPerform(Component component) {
-                addRow(null, scrollBoxLayout, false);
-            }
+        AbstractAction addRowAction = new BaseAction("addRow")
+                .withCaption("")
+                .withHandler(actionPerformedEvent ->
+                        addRow(null, scrollBoxLayout, false)
+                );
 
-            @Override
-            public String getCaption() {
-                return "";
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return !isReadOnly;
-            }
-        });
+        addRowAction.setEnabled(!isReadOnly);
+        btnAdd.setAction(addRowAction);
 
         if (value != null) {
             List values = objectToStringArray(value);
@@ -135,35 +128,29 @@ public class AttributeEditor {
     }
 
     protected void addRow(Object value, ComponentContainer parent, boolean isReadOnly) {
-        BoxLayout row = componentsFactory.createComponent(WebHBoxLayout.class);
+        BoxLayout row = componentsFactory.createComponent(HBoxLayout.class);
         row.setSpacing(true);
-        row.setWidth("100%");
+        row.setWidthFull();
 
-        TextField valueField = componentsFactory.createComponent(WebTextField.class);
+        TextField valueField = componentsFactory.createComponent(TextField.class);
         valueField.setValue(value);
         valueField.setEditable(!isReadOnly);
         row.add(valueField);
         row.expand(valueField);
 
-        Button btnRemove = componentsFactory.createComponent(WebButton.class);
-        btnRemove.setIcon("icons/remove.png");
+        Button btnRemove = componentsFactory.createComponent(Button.class);
+        btnRemove.setIconFromSet(CubaIcon.TIMES);
         btnRemove.setDescription(messages.getMessage(getClass(), "editAttribute.array.btnRemove"));
-        btnRemove.setAction(new AbstractAction("removeRow") {
-            @Override
-            public void actionPerform(Component component) {
-                parent.remove(row);
-            }
 
-            @Override
-            public String getCaption() {
-                return "";
-            }
+        Action removeRowAction = new BaseAction("removeRow")
+                .withCaption("")
+                .withHandler(actionPerformedEvent ->
+                        parent.remove(row)
+                );
 
-            @Override
-            public boolean isEnabled() {
-                return !isReadOnly;
-            }
-        });
+        removeRowAction.setEnabled(!isReadOnly);
+
+        btnRemove.setAction(removeRowAction);
         row.add(btnRemove);
 
         parent.add(row);
