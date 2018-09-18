@@ -31,7 +31,8 @@ import java.util.Map;
  *
  * @deprecated use {@link Image} and {@link BrowserFrame} instead
  */
-public interface Embedded extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
+public interface Embedded extends Component, Component.BelongToFrame, Component.HasCaption,
+        Component.HasIcon, HasContextHelp {
 
     String NAME = "embedded";
 

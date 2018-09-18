@@ -256,34 +256,4 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     protected boolean isEmpty(Object value) {
         return value == null;
     }
-
-    @Override
-    public String getContextHelpText() {
-        return ((AbstractComponent) component).getContextHelpText();
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        ((AbstractComponent) component).setContextHelpText(contextHelpText);
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        return ((AbstractComponent) component).isContextHelpTextHtmlEnabled();
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        ((AbstractComponent) component).setContextHelpTextHtmlEnabled(enabled);
-    }
-
-    @Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        return null; // todo vaadin8
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        // todo vaadin8
-    }
 }

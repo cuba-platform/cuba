@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.checkbox.CubaCheckBoxWidget;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.CubaResizableTextAreaWrapperWidget;
 import com.vaadin.client.*;
+import com.vaadin.client.ui.VLabel;
 
 import static com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget.CONTEXT_HELP_CLASSNAME;
 
@@ -169,7 +170,8 @@ public class CubaTooltip extends VTooltip {
                 element = element.getParentElement().cast();
 
                 Widget widget = WidgetUtil.findWidget(element);
-                if (!(widget instanceof CubaCheckBoxWidget)) {
+                if (!(widget instanceof CubaCheckBoxWidget)
+                        && !(widget instanceof VLabel)) {
                     int index = DOM.getChildIndex(element.getParentElement().cast(), element);
                     int indexOfComponent = index == 0 ? index + 1 : index - 1;
                     element = DOM.getChild(element.getParentElement().cast(), indexOfComponent);

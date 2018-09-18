@@ -27,6 +27,8 @@ import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.VPanel;
 import com.vaadin.shared.ui.MarginInfo;
 
+import java.util.function.Consumer;
+
 public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     public static final String CLASSNAME = "c-groupbox";
@@ -42,6 +44,9 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     public Element captionWrap;
     public Element expander = DOM.createSpan();
+
+    protected Element contextHelpIcon;
+    protected Consumer<Event> contextHelpClickHandler;
 
     public Element captionStartDeco = DOM.createDiv();
     public Element captionEndDeco = DOM.createDiv();
@@ -149,9 +154,17 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     @Override
     public void onBrowserEvent(Event event) {
-        if (collapsable && DOM.eventGetType(event) == Event.ONCLICK && isEnabled()
-                && (DOM.eventGetTarget(event) == expander || DOM.eventGetTarget(event) == captionNode.getChild(1))) {
-            toggleExpanded(event);
+        if (DOM.eventGetType(event) == Event.ONCLICK && isEnabled()) {
+            if (collapsable
+                    && (DOM.eventGetTarget(event) == expander
+                    || DOM.eventGetTarget(event) == captionNode.getChild(1))) {
+                toggleExpanded(event);
+            } else if (DOM.eventGetTarget(event) == contextHelpIcon
+                    && contextHelpClickHandler != null) {
+                contextHelpClickHandler.accept(event);
+            } else {
+                super.onBrowserEvent(event);
+            }
         } else {
             super.onBrowserEvent(event);
         }

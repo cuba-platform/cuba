@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * Multi-column form component.
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-                                    HasBorder, Component.Editable, Validatable,
+                                    HasBorder, HasContextHelp, Component.Editable, Validatable,
                                     EditableChangeNotifier, ChildEditableController,
                                     ComponentContainer {
     String NAME = "fieldGroup";

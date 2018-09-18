@@ -48,7 +48,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, HasSettings,
-            HasButtonsPanel, HasPresentations, Component.HasCaption,
+            HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent, Component.Focusable {
 
     enum ColumnAlignment {

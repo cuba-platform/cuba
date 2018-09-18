@@ -32,8 +32,7 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.HasContextHelpConnector;
 import com.vaadin.client.ui.ManagedLayout;
 import com.vaadin.client.ui.VCheckBox;
-import com.vaadin.shared.AbstractFieldState;
-import com.vaadin.shared.communication.SharedState;
+import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.ui.AlignmentInfo;
 
 /**
@@ -427,8 +426,9 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot
         }
     }
 
-    protected boolean hasContextHelpIconListeners(SharedState state) {
+    protected boolean hasContextHelpIconListeners(AbstractComponentState state) {
         return state.registeredEventListeners != null
-                && state.registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
+                && state.registeredEventListeners.contains(
+                        AbstractComponentState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 }

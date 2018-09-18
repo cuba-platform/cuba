@@ -75,6 +75,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
 

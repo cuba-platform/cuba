@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Generic filter implementation for the web-client.
@@ -393,5 +394,38 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     @Override
     public PropertiesFilterPredicate getPropertiesFilterPredicate() {
         return propertiesFilterPredicate;
+    }
+
+    @Override
+    public String getContextHelpText() {
+        // do nothing
+        return null;
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        // do nothing
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        // do nothing
+        return null;
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        // do nothing
     }
 }

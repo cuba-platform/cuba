@@ -43,10 +43,14 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
         loadHideOnMouseOut(resultComponent, element);
         loadPopupVisible(resultComponent, element);
         loadCaptionAsHtml(resultComponent, element);
+
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
+
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);

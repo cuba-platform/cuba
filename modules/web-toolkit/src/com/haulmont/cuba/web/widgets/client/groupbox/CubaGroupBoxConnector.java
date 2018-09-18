@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.web.widgets.client.groupbox;
 
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.CubaGroupBox;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.vaadin.client.*;
@@ -30,6 +33,10 @@ import com.vaadin.shared.ui.MarginInfo;
 
 @Connect(CubaGroupBox.class)
 public class CubaGroupBoxConnector extends PanelConnector {
+
+    public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+    public static final String CONTEXT_HELP_CLICKABLE_CLASSNAME = "c-context-help-button-clickable";
+
     protected boolean widgetInitialized = false;
 
     @Override
@@ -174,9 +181,40 @@ public class CubaGroupBoxConnector extends PanelConnector {
         }
 
         if (stateChangeEvent.hasPropertyChanged("caption")) {
-            widget.captionNode.getStyle().clearWidth();
-            getLayoutManager().setNeedsMeasure(this);
+            updateCaptionNodeWidth(widget);
         }
+
+        if (isContextHelpIconEnabled(getState())) {
+            if (getWidget().contextHelpIcon == null) {
+                getWidget().contextHelpIcon = DOM.createSpan();
+                getWidget().contextHelpIcon.setInnerHTML("?");
+                getWidget().contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                if (hasContextHelpIconListeners(getState())) {
+                    getWidget().contextHelpIcon.addClassName(CONTEXT_HELP_CLICKABLE_CLASSNAME);
+                }
+
+                Roles.getTextboxRole().setAriaHiddenState(getWidget().contextHelpIcon, true);
+
+                getWidget().captionNode.appendChild(getWidget().contextHelpIcon);
+                DOM.sinkEvents(getWidget().contextHelpIcon, VTooltip.TOOLTIP_EVENTS | Event.ONCLICK);
+
+                getWidget().contextHelpClickHandler = this::contextHelpIconClick;
+            } else {
+                getWidget().contextHelpIcon.getStyle().clearDisplay();
+
+                updateCaptionNodeWidth(widget);
+            }
+        } else if (getWidget().contextHelpIcon != null) {
+            getWidget().contextHelpIcon.getStyle().setDisplay(Style.Display.NONE);
+
+            updateCaptionNodeWidth(widget);
+        }
+    }
+
+    protected void updateCaptionNodeWidth(CubaGroupBoxWidget widget) {
+        widget.captionNode.getStyle().clearWidth();
+        getLayoutManager().setNeedsMeasure(this);
     }
 
     protected boolean isBordersVisible() {

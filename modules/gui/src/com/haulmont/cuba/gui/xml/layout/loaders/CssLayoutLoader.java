@@ -42,6 +42,7 @@ public class CssLayoutLoader extends ContainerLoader<CssLayout> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadStyleName(resultComponent, element);
 

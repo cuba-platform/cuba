@@ -42,6 +42,11 @@
     cursor: pointer;
   }
 
+  .v-disabled .c-context-help-button-clickable {
+    @include opacity($v-disabled-opacity);
+    cursor: default;
+  }
+
   .v-required-field-indicator {
     padding: 0 0 0 .2em;
   }

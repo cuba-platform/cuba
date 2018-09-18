@@ -40,7 +40,7 @@ import java.util.function.Function;
 import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
 
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
-        Component.HasIcon, HasRowsCount, HasSettings,
+        Component.HasIcon, HasContextHelp, HasRowsCount, HasSettings,
         LookupComponent, Component.Focusable {
 
     String NAME = "dataGrid";

@@ -1183,6 +1183,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attributeGroup ref="hasContextHelp"/>
 
         <xs:attribute name="stylename" type="labelStylename"/>
         <xs:attribute name="value" type="resourceString"/>
@@ -1209,7 +1210,6 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
-                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1249,6 +1249,7 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasResponsiveProp"/>
+        <xs:attributeGroup ref="hasContextHelp"/>
     </xs:complexType>
 
     <!-- BaseField -->
@@ -1258,7 +1259,6 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasDatasource"/>
-                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2332,7 +2332,6 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasDatasourceProp"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
-                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
                 <xs:attribute name="position" type="tokenListPosition"/>
@@ -2359,6 +2358,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasTabIndex"/>
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasContextHelp"/>
     </xs:complexType>
 
     <!-- TwinColumn -->

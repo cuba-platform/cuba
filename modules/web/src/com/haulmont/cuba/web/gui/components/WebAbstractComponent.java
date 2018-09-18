@@ -20,10 +20,7 @@ import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.HasDebugId;
-import com.haulmont.cuba.gui.components.SizeUnit;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -32,6 +29,7 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +40,7 @@ import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption, HasDebugId, EventHubOwner {
+                   Component.HasCaption, HasDebugId, EventHubOwner, HasContextHelp {
 
     public static final String ICON_STYLE = "icon";
 
@@ -55,6 +53,9 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
+
+    protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
+    protected Registration contextHelpIconClickListener;
 
     // todo remove
     private EventRouter eventRouter = null;
@@ -375,6 +376,58 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setXmlDescriptor(Element element) {
         this.element = element;
+    }
+
+    @Override
+    public String getContextHelpText() {
+        return ((AbstractComponent) getComposition()).getContextHelpText();
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        ((AbstractComponent) getComposition()).setContextHelpText(contextHelpText);
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        return ((AbstractComponent) getComposition()).isContextHelpTextHtmlEnabled();
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        ((AbstractComponent) getComposition()).setContextHelpTextHtmlEnabled(enabled);
+    }
+
+    @Override
+    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
+        return contextHelpIconClickHandler;
+    }
+
+    @Override
+    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
+        if (!Objects.equals(this.contextHelpIconClickHandler, handler)) {
+            this.contextHelpIconClickHandler = handler;
+
+            if (handler == null) {
+                contextHelpIconClickListener.remove();
+                contextHelpIconClickListener = null;
+            } else if (contextHelpIconClickListener == null) {
+                contextHelpIconClickListener = ((AbstractComponent) getComposition())
+                        .addContextHelpIconClickListener(this::onIconClick);
+            }
+        }
+    }
+
+    protected void onIconClick(com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickEvent e) {
+        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(WebAbstractComponent.this);
+        fireContextHelpIconClick(event);
+    }
+
+
+    protected void fireContextHelpIconClick(ContextHelpIconClickEvent event) {
+        if (contextHelpIconClickHandler != null) {
+            contextHelpIconClickHandler.accept(event);
+        }
     }
 
     @Override

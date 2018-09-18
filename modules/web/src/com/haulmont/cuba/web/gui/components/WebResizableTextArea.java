@@ -102,26 +102,6 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public String getContextHelpText() {
-        return wrapper.getContextHelpText();
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        wrapper.setContextHelpText(contextHelpText);
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        return wrapper.isContextHelpTextHtmlEnabled();
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        wrapper.setContextHelpTextHtmlEnabled(enabled);
-    }
-
-    @Override
     public boolean isRequired() {
         return wrapper.isRequired();
     }

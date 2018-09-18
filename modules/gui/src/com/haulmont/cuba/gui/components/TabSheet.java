@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * TabSheet component interface.
  */
 public interface TabSheet extends ComponentContainer, Component.BelongToFrame, Component.HasIcon, Component.HasCaption,
-                                  Component.Focusable {
+                                  Component.Focusable, HasContextHelp {
 
     String NAME = "tabSheet";
 

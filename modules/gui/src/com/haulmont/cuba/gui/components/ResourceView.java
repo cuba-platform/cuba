@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  * A class that implements this interface is intended for viewing different resources, e.g.
  * {@link UrlResource}, {@link FileResource}, etc.
  */
-public interface ResourceView extends Component, Component.HasCaption {
+public interface ResourceView extends Component, Component.HasCaption, HasContextHelp {
 
     /**
      * @return {@link Resource} instance

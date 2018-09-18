@@ -43,9 +43,6 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     // VAADIN8: gg, replace with Subscription
     protected Consumer<EditableChangeNotifier.EditableChangeEvent> parentEditableChangeListener;
 
-    protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
-    protected ContextHelpIconClickListener contextHelpIconClickListener;
-
     @Override
     public ValueSource<V> getValueSource() {
         return valueBinding != null ? valueBinding.getSource() : null;
@@ -304,7 +301,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         return value == null;
     }
 
-    @Override
+    /*@Override
     public String getContextHelpText() {
         return component.getContextHelpText();
     }
@@ -322,9 +319,9 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     @Override
     public void setContextHelpTextHtmlEnabled(boolean enabled) {
         component.setContextHelpTextHtmlEnabled(enabled);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
         return contextHelpIconClickHandler;
     }
@@ -336,7 +333,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
             if (handler == null) {
 //                todo vaadin8
-//                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
+                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
                 contextHelpIconClickListener = null;
             } else {
                 if (contextHelpIconClickListener == null) {
@@ -354,5 +351,5 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         if (contextHelpIconClickHandler != null) {
             contextHelpIconClickHandler.accept(event);
         }
-    }
+    }*/
 }

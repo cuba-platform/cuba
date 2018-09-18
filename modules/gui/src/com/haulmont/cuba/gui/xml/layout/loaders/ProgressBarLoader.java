@@ -40,6 +40,7 @@ public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadStyleName(resultComponent, element);
 

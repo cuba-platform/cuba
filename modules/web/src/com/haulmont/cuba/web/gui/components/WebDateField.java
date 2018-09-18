@@ -657,37 +657,4 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
             }
         }
     }
-
-    @Override
-    public String getContextHelpText() {
-        // VAADIN8: gg, implement
-        return null;
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        // VAADIN8: gg, implement
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        // VAADIN8: gg, implement
-        return false;
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        // VAADIN8: gg, implement
-    }
-
-    @Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        // VAADIN8: gg, implement
-        return null;
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        // VAADIN8: gg, implement
-    }
 }

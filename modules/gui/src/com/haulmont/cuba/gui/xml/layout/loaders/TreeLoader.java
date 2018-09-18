@@ -69,6 +69,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
     }
 
     protected void loadTreeChildren() {

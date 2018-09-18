@@ -28,7 +28,7 @@ import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.HasContextHelpConnector;
 import com.vaadin.client.ui.HasRequiredIndicator;
-import com.vaadin.shared.AbstractFieldState;
+import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.hascontexthelp.HasContextHelpServerRpc;
@@ -96,7 +96,7 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector
 
     protected boolean isContextHelpTooltipEnabled() {
         boolean hasListeners = getState().registeredEventListeners != null
-                && getState().registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
+                && getState().registeredEventListeners.contains(AbstractComponentState.CONTEXT_HELP_ICON_CLICK_EVENT);
 
         return !hasListeners && getState().contextHelpText != null
                 && !getState().contextHelpText.isEmpty();

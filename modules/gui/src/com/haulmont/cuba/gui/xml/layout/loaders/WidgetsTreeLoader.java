@@ -57,6 +57,10 @@ public class WidgetsTreeLoader extends ActionsHolderLoader<WidgetsTree> {
             HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
             resultComponent.setDatasource(ds);
         }
+
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
     }
 
     protected void createButtonsPanel(Tree resultComponent, Element element) {

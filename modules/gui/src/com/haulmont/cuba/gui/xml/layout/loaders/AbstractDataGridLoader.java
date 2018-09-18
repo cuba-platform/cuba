@@ -91,6 +91,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadEditorEnabled(resultComponent, element);
         loadEditorBuffered(resultComponent, element);

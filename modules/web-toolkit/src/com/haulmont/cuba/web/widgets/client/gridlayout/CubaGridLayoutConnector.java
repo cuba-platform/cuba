@@ -26,8 +26,6 @@ import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.shared.AbstractComponentState;
-import com.vaadin.shared.AbstractFieldState;
-import com.vaadin.shared.communication.SharedState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGridLayout.class)
@@ -66,18 +64,6 @@ public class CubaGridLayoutConnector extends GridLayoutConnector implements Pain
             layout.setCaption(childConnector.getWidget(), null);
             getLayoutManager().setNeedsLayout(this);
         }
-    }
-
-    protected boolean isContextHelpIconEnabled(SharedState state) {
-        return hasContextHelpIconListeners(state)
-                || (state instanceof AbstractFieldState)
-                && ((AbstractFieldState) state).contextHelpText != null
-                && !((AbstractFieldState) state).contextHelpText.isEmpty();
-    }
-
-    protected boolean hasContextHelpIconListeners(SharedState state) {
-        return state.registeredEventListeners != null
-                && state.registeredEventListeners.contains(AbstractFieldState.CONTEXT_HELP_ICON_CLICK_EVENT);
     }
 
     @Override

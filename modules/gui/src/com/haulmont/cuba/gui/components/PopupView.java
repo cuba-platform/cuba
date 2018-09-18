@@ -22,7 +22,8 @@ import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface PopupView extends Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
+public interface PopupView extends Component.HasCaption, Component.BelongToFrame,
+        Component.HasIcon, HasContextHelp {
     String NAME = "popupView";
 
     /**

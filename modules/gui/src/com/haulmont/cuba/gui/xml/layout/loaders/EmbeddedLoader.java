@@ -91,6 +91,7 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
         loadIcon(resultComponent, element);
     }
 }

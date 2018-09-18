@@ -79,6 +79,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
 

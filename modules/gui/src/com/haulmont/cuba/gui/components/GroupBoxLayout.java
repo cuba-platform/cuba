@@ -20,7 +20,7 @@ public interface GroupBoxLayout
         extends ExpandingLayout,
                 OrderedContainer,
                 Component.HasIcon, Component.HasCaption, HasBorder, HasSpacing, HasOuterMargin, HasOrientation,
-                Collapsable, Component.BelongToFrame, HasSettings, ShortcutNotifier {
+                Collapsable, Component.BelongToFrame, HasSettings, ShortcutNotifier, HasContextHelp {
 
     String NAME = "groupBox";
 

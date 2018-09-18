@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.components.data.HasValueBinding;
  */
 public interface ProgressBar extends Component, Component.BelongToFrame,
         HasValue<Double>, HasValueBinding<Double>, DatasourceComponent<Double>,
-        Component.HasIcon, Component.HasCaption {
+        Component.HasIcon, Component.HasCaption, HasContextHelp {
 
     String NAME = "progressBar";
 

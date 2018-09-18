@@ -38,6 +38,7 @@ public abstract class AbstractResourceViewLoader<T extends ResourceView> extends
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);

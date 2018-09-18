@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 public interface CssLayout extends OrderedContainer, Component.BelongToFrame, Component.HasCaption,
-        Component.HasIcon, LayoutClickNotifier, ShortcutNotifier
+        Component.HasIcon, HasContextHelp, LayoutClickNotifier, ShortcutNotifier
 {
 
     String NAME = "cssLayout";

@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
 public interface Label<V> extends HasValueBinding<V>, DatasourceComponent<V>, HasFormatter<V>,
-        Component.HasDescription, Component.HasIcon {
+        Component.HasDescription, Component.HasIcon, HasContextHelp {
 
     String NAME = "label";
 
