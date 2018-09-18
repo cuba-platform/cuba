@@ -857,6 +857,7 @@ configure(desktopModule) {
     compileTestGroovy.enabled = false
     compileTestJava.enabled = false
     javadoc.enabled = false
+    findbugsMain.enabled = false
 }
 
 configure(restApiModule) {
