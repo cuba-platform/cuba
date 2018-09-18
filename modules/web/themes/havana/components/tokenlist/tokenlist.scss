@@ -43,6 +43,7 @@
     white-space: nowrap;
     outline: none;
     padding-right: 25px;
+    overflow: hidden;
   }
 
   .#{$primary-stylename} .c-tokenlist-label-content .content {
