@@ -17,7 +17,7 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource
+import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.web.testmodel.datacontext.Foo

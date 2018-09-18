@@ -20,6 +20,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.GroupContainerTableSource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -70,5 +73,11 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
         columns.addAll(super.loadColumns(component, columnsElement, metaClasss));
 
         return columns;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected CollectionContainerTableSource createContainerTableSource(CollectionContainer container) {
+        return new GroupContainerTableSource(container);
     }
 }

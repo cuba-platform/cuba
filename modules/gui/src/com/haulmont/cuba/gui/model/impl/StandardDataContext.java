@@ -180,7 +180,7 @@ public class StandardDataContext implements DataContext {
         }
     }
 
-    /**
+    /*
      * (1) src.new -> dst.new : copy all non-null                                   - should not happen (happens in setParent?)
      * (2) src.new -> dst.det : do nothing                                          - should not happen
      * (3) src.det -> dst.new : copy all loaded, make detached                      - normal situation after commit

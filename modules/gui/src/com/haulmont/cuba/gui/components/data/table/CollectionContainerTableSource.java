@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data.value;
+package com.haulmont.cuba.gui.components.data.table;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
@@ -215,6 +215,21 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
             orders.add(order);
         }
         container.getSorter().sort(Sort.by(orders));
+    }
+
+    protected Sort createSort(Object[] propertyId, boolean[] ascending) {
+        List<Sort.Order> orders = new ArrayList<>();
+        for (int i = 0; i < propertyId.length; i++) {
+            String property;
+            if (propertyId[i] instanceof MetaPropertyPath) {
+                property = ((MetaPropertyPath) propertyId[i]).toPathString();
+            } else {
+                property = (String) propertyId[i];
+            }
+            Sort.Order order = ascending[i] ? Sort.Order.asc(property) : Sort.Order.desc(property);
+            orders.add(order);
+        }
+        return Sort.by(orders);
     }
 
     @Override

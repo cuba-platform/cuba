@@ -18,11 +18,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.components.data.GroupTableSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.GroupDatasourceTableAdapter;
@@ -137,13 +139,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
+            MetaClass metaClass = ((EntityTableSource) getTableSource()).getEntityMetaClass();
             List elements = groupPropertiesElement.elements("property");
             List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (Object o : elements) {
                 String id = ((Element) o).attributeValue("id");
                 MetaPropertyPath property = DynamicAttributesUtils.isDynamicAttribute(id)
-                        ? dynamicAttributesTools.getMetaPropertyPath(getDatasource().getMetaClass(), id)
-                        : getDatasource().getMetaClass().getPropertyPath(id);
+                        ? dynamicAttributesTools.getMetaPropertyPath(metaClass, id)
+                        : metaClass.getPropertyPath(id);
 
                 if (property != null) {
                     properties.add(property);

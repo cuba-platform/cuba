@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
@@ -178,7 +178,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (collectionContainer != null) {
             addDynamicAttributes(resultComponent, metaClass, null, collectionLoader, availableColumns);
             //noinspection unchecked
-            resultComponent.setTableSource(new CollectionContainerTableSource(collectionContainer));
+            resultComponent.setTableSource(createContainerTableSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);
@@ -199,6 +199,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (StringUtils.isNotEmpty(multiselect)) {
             resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected CollectionContainerTableSource createContainerTableSource(CollectionContainer container) {
+        return new CollectionContainerTableSource(container);
     }
 
     protected MetadataTools getMetadataTools() {

@@ -32,18 +32,21 @@
     <layout spacing="true" expand="usersTable">
         <filter id="usersFilter"
                 dataLoader="usersLoader"/>
-        <table id="usersTable"
+        <groupTable id="usersTable"
                width="100%">
             <buttonsPanel>
                 <button id="createBtn" caption="Create"/>
                 <button id="editBtn" caption="Edit"/>
                 <button id="removeBtn" caption="Remove"/>
             </buttonsPanel>
+            <rowsCount/>
             <columns>
                 <column id="login"/>
                 <column id="name"/>
+                <column id="group"/>
+                <column id="active"/>
             </columns>
             <rows container="usersCont"/>
-        </table>
+        </groupTable>
     </layout>
 </window>

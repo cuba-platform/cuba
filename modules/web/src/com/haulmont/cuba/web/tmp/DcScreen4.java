@@ -20,16 +20,13 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.value.CollectionContainerTableSource;
-import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
-import com.haulmont.cuba.gui.model.DataContextFactory;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
 
 import javax.inject.Inject;
 import java.util.Map;
