@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
@@ -133,7 +133,7 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
     Component getPopupContent();
 
     default Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(PopupVisibilityEvent.class, listener);
+        return ((EventTarget) this).addListener(PopupVisibilityEvent.class, listener);
     }
 
     /**
@@ -142,7 +142,7 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
      */
     @Deprecated
     default void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(PopupVisibilityEvent.class, listener);
+        ((EventTarget) this).removeListener(PopupVisibilityEvent.class, listener);
     }
 
     /**

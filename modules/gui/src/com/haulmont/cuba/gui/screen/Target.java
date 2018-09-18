@@ -26,7 +26,5 @@ public enum Target {
     COMPONENT,
 
     CONTROLLER,
-    WINDOW,
-    FRAGMENT,
-    SCREEN
+    WINDOW
 }

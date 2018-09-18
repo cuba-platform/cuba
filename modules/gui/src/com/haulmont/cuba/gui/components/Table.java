@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrap
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
@@ -302,7 +302,7 @@ public interface Table<E extends Entity>
      * @return a {@link Subscription} object
      */
     default Subscription addColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ColumnCollapseEvent.class, listener);
+        return ((EventTarget) this).addListener(ColumnCollapseEvent.class, listener);
     }
 
     /**
@@ -311,7 +311,7 @@ public interface Table<E extends Entity>
      */
     @Deprecated
     default void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnCollapseEvent.class, listener);
+        ((EventTarget) this).removeListener(ColumnCollapseEvent.class, listener);
     }
 
     /**

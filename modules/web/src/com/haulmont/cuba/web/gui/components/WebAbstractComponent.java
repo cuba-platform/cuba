@@ -21,7 +21,7 @@ import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption, HasDebugId, EventHubOwner, HasContextHelp {
+                   Component.HasCaption, HasDebugId, EventTarget, HasContextHelp {
 
     public static final String ICON_STYLE = "icon";
 
@@ -74,16 +74,24 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         return eventRouter;
     }
 
-    @Override
-    public EventHub getEventHub() {
+    protected EventHub getEventHub() {
         if (eventHub == null) {
             eventHub = new EventHub();
         }
         return eventHub;
     }
 
-    protected <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
+    @Override
+    public <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
         return getEventHub().subscribe(eventType, listener);
+    }
+
+    @Override
+    public <E> boolean removeListener(Class<E> eventType, Consumer<E> listener) {
+        if (eventHub != null) {
+            return eventHub.unsubscribe(eventType, listener);
+        }
+        return false;
     }
 
     protected <E> void publish(Class<E> eventType, E event) {

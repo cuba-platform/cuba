@@ -56,7 +56,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
 
         String refreshOptionsOnLookupClose = element.attributeValue("refreshOptionsOnLookupClose");
         if (refreshOptionsOnLookupClose != null) {
-            lookupPickerField.setRefreshOptionsOnLookupClose(Boolean.valueOf(refreshOptionsOnLookupClose));
+            lookupPickerField.setRefreshOptionsOnLookupClose(Boolean.parseBoolean(refreshOptionsOnLookupClose));
         }
     }
 

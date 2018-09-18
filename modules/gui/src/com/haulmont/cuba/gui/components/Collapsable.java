@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.function.Consumer;
 
@@ -32,7 +32,7 @@ public interface Collapsable extends Component {
     void setCollapsable(boolean collapsable);
 
     default Subscription addExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ExpandedStateChangeEvent.class, listener);
+        return ((EventTarget) this).addListener(ExpandedStateChangeEvent.class, listener);
     }
 
     /**
@@ -41,7 +41,7 @@ public interface Collapsable extends Component {
      */
     @Deprecated
     default void removeExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ExpandedStateChangeEvent.class, listener);
+        ((EventTarget) this).removeListener(ExpandedStateChangeEvent.class, listener);
     }
 
     class ExpandedStateChangeEvent {

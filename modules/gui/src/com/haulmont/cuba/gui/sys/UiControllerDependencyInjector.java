@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.BeanLocator;
@@ -26,11 +25,9 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Fragment;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -45,6 +42,7 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.InjectElement;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -58,6 +56,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -117,7 +116,6 @@ public class UiControllerDependencyInjector {
         Class<? extends FrameOwner> clazz = frameOwner.getClass();
 
         List<Method> eventListenerMethods = reflectionInspector.getAnnotatedSubscribeMethods(clazz);
-        EventHub screenEvents = UiControllerUtils.getEventHub(frameOwner);
 
         for (Method method : eventListenerMethods) {
             Subscribe annotation = findMergedAnnotation(method, Subscribe.class);
@@ -134,28 +132,59 @@ public class UiControllerDependencyInjector {
                 if (annotation.target() == Target.COMPONENT // if kept default value
                         || annotation.target() == Target.CONTROLLER) {
                     // controller event
-                    screenEvents.subscribe(parameterType, listener);
+                    UiControllerUtils.addListener(frameOwner, parameterType, listener);
                 } else if (annotation.target() == Target.WINDOW) {
                     // window or fragment event
                     Frame frame = UiControllerUtils.getFrame(frameOwner);
-
-                    EventHub windowEvents = ((EventHubOwner) frame).getEventHub();
-                    windowEvents.subscribe(parameterType, listener);
+                    ((EventTarget) frame).addListener(parameterType, listener);
                 }
             } else {
                 // component event
-                Component component = UiControllerUtils.getFrame(frameOwner).getComponent(target);
-                if (component == null) {
-                    throw new DevelopmentException("Unable to find @Subscribe target " + target);
-                }
-                if (!(component instanceof EventHubOwner)) {
-                    throw new DevelopmentException("Component does not support @Subscribe events " + target);
-                }
+                EventTarget component = findEventTarget(frameOwner, target);
 
-                EventHub componentEvents = ((EventHubOwner) component).getEventHub();
-                componentEvents.subscribe(parameterType, listener);
+                component.addListener(parameterType, listener);
             }
         }
+    }
+
+    protected EventTarget findEventTarget(FrameOwner frameOwner, String target) {
+        Frame frame = UiControllerUtils.getFrame(frameOwner);
+
+        String[] elements = ValuePathHelper.parse(target);
+        if (elements.length > 1) {
+            String id = elements[elements.length - 1];
+
+            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
+            Component component = frame.getComponent(ValuePathHelper.format(subPath));
+
+            if (component != null) {
+                if (component instanceof ActionsHolder) {
+                    Action action = ((ActionsHolder) component).getAction(id);
+                    if (action instanceof EventTarget) {
+                        return (EventTarget) action;
+                    }
+                }
+
+                if (component instanceof ComponentContainer) {
+                    Component childComponent = ((ComponentContainer) component).getComponent(id);
+                    if (childComponent instanceof EventTarget) {
+                        return (EventTarget) childComponent;
+                    }
+                }
+            }
+        } else if (elements.length == 1) {
+            Action action = frame.getAction(target);
+            if (action instanceof EventTarget) {
+                return (EventTarget) action;
+            }
+
+            Component component = frame.getComponent(target);
+            if (component instanceof EventTarget) {
+                return (EventTarget) component;
+            }
+        }
+
+        throw new DevelopmentException(String.format("Unable to find @Subscribe target %s in %s", target, frame.getId()));
     }
 
     protected void initUiEventListeners(FrameOwner frameOwner) {

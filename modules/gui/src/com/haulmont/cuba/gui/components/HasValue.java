@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
@@ -46,7 +46,7 @@ public interface HasValue<V> {
 
     @SuppressWarnings("unchecked")
     default Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
+        return ((EventTarget) this).addListener(ValueChangeEvent.class, (Consumer) listener);
     }
 
     /**
@@ -55,7 +55,7 @@ public interface HasValue<V> {
      */
     @Deprecated
     default void removeValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ValueChangeEvent.class, (Consumer) listener);
+        ((EventTarget) this).removeListener(ValueChangeEvent.class, (Consumer) listener);
     }
 
     /**

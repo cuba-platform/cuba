@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.function.Consumer;
 
@@ -95,7 +95,7 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
     }
 
     default Subscription addResizeListener(Consumer<ResizeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ResizeEvent.class, listener);
+        return ((EventTarget) this).addListener(ResizeEvent.class, listener);
     }
 
     /**
@@ -104,6 +104,6 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
      */
     @Deprecated
     default void removeResizeListener(Consumer<ResizeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ResizeEvent.class, listener);
+        ((EventTarget) this).removeListener(ResizeEvent.class, listener);
     }
 }

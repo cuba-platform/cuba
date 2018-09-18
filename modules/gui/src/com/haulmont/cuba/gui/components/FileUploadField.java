@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -65,7 +65,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     }
 
     default Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadSucceedEvent.class, listener);
+        return ((EventTarget) this).addListener(FileUploadSucceedEvent.class, listener);
     }
 
     /**
@@ -74,7 +74,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     @Deprecated
     default void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadSucceedEvent.class, listener);
+        ((EventTarget) this).removeListener(FileUploadSucceedEvent.class, listener);
     }
 
     /**
@@ -186,7 +186,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      * @see #setShowClearButton(boolean)
      */
     default Subscription addBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(BeforeValueClearEvent.class, listener);
+        return ((EventTarget) this).addListener(BeforeValueClearEvent.class, listener);
     }
 
     /**
@@ -195,7 +195,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     @Deprecated
     default void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(BeforeValueClearEvent.class, listener);
+        ((EventTarget) this).removeListener(BeforeValueClearEvent.class, listener);
     }
 
     class AfterValueClearEvent {
@@ -224,7 +224,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      * @see #setShowClearButton(boolean)
      */
     default Subscription addAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(AfterValueClearEvent.class, listener);
+        return ((EventTarget) this).addListener(AfterValueClearEvent.class, listener);
     }
 
     /**
@@ -233,7 +233,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     @Deprecated
     default void removeAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
-        ((EventHubOwner) this).getEventHub().subscribe(AfterValueClearEvent.class, listener);
+        ((EventTarget) this).addListener(AfterValueClearEvent.class, listener);
     }
 
     /**

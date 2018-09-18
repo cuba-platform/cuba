@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.compatibility.TimerActionListenerWrapper;
 import com.haulmont.cuba.gui.components.compatibility.TimerStopListenerWrapper;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -98,19 +98,19 @@ public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFra
     }
 
     default Subscription addTimerActionListener(Consumer<TimerActionEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(TimerActionEvent.class, listener);
+        return ((EventTarget) this).addListener(TimerActionEvent.class, listener);
     }
 
     default void removeTimerActionListener(Consumer<TimerActionEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(TimerActionEvent.class, listener);
+        ((EventTarget) this).removeListener(TimerActionEvent.class, listener);
     }
 
     default Subscription addTimerStopListener(Consumer<TimerStopEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(TimerStopEvent.class, listener);
+        return ((EventTarget) this).addListener(TimerStopEvent.class, listener);
     }
 
     default void removeTimerStopListener(Consumer<TimerStopEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(TimerStopEvent.class, listener);
+        ((EventTarget) this).removeListener(TimerStopEvent.class, listener);
     }
 
     class TimerActionEvent extends EventObject {

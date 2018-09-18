@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -33,7 +33,7 @@ public interface LayoutClickNotifier {
      * @param listener a listener to add
      */
     default Subscription addLayoutClickListener(Consumer<LayoutClickEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(LayoutClickEvent.class, listener);
+        return ((EventTarget) this).addListener(LayoutClickEvent.class, listener);
     }
 
     /**
@@ -42,7 +42,7 @@ public interface LayoutClickNotifier {
      */
     @Deprecated
     default void removeLayoutClickListener(Consumer<LayoutClickEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(LayoutClickEvent.class, listener);
+        ((EventTarget) this).removeListener(LayoutClickEvent.class, listener);
     }
 
     class LayoutClickEvent extends EventObject {

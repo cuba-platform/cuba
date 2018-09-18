@@ -31,7 +31,9 @@ public class ValuePathHelper {
         int i = 1;
         for (String element : elements) {
             builder.append(element.contains(".") ? "[" + element + "]" : element);
-            if (i != elements.length) builder.append(".");
+            if (i != elements.length) {
+                builder.append(".");
+            }
             i++;
         }
 
@@ -80,6 +82,6 @@ public class ValuePathHelper {
         }
         elements.add(buffer.toString());
 
-        return elements.toArray(new String[elements.size()]);
+        return elements.toArray(new String[0]);
     }
 }

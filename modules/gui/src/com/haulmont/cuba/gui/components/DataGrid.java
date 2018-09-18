@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -616,7 +616,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(EditorPreCommitEvent.class, listener);
+        return ((EventTarget) this).addListener(EditorPreCommitEvent.class, listener);
     }
 
     /**
@@ -627,7 +627,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(EditorPreCommitEvent.class, listener);
+        ((EventTarget) this).removeListener(EditorPreCommitEvent.class, listener);
     }
 
     /**
@@ -651,7 +651,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(EditorPostCommitEvent.class, listener);
+        return ((EventTarget) this).addListener(EditorPostCommitEvent.class, listener);
     }
 
     /**
@@ -662,7 +662,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(EditorPostCommitEvent.class, listener);
+        ((EventTarget) this).removeListener(EditorPostCommitEvent.class, listener);
     }
 
     /**
@@ -686,7 +686,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(EditorCloseEvent.class, listener);
+        return ((EventTarget) this).addListener(EditorCloseEvent.class, listener);
     }
 
     /**
@@ -697,7 +697,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(EditorCloseEvent.class, listener);
+        ((EventTarget) this).removeListener(EditorCloseEvent.class, listener);
     }
 
     /**
@@ -745,7 +745,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addEditorOpenListener(Consumer<EditorOpenEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(EditorOpenEvent.class, listener);
+        return ((EventTarget) this).addListener(EditorOpenEvent.class, listener);
     }
 
     /**
@@ -756,7 +756,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeEditorOpenListener(Consumer<EditorOpenEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(EditorOpenEvent.class, listener);
+        ((EventTarget) this).removeListener(EditorOpenEvent.class, listener);
     }
 
     /**
@@ -1573,7 +1573,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ColumnCollapsingChangeEvent.class, listener);
+        return ((EventTarget) this).addListener(ColumnCollapsingChangeEvent.class, listener);
     }
 
     /**
@@ -1584,7 +1584,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnCollapsingChangeEvent.class, listener);
+        ((EventTarget) this).removeListener(ColumnCollapsingChangeEvent.class, listener);
     }
 
     /**
@@ -1608,7 +1608,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ColumnReorderEvent.class, listener);
+        return ((EventTarget) this).addListener(ColumnReorderEvent.class, listener);
     }
 
     /**
@@ -1619,7 +1619,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnReorderEvent.class, listener);
+        ((EventTarget) this).removeListener(ColumnReorderEvent.class, listener);
     }
 
     /**
@@ -1654,7 +1654,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ColumnResizeEvent.class, listener);
+        return ((EventTarget) this).addListener(ColumnResizeEvent.class, listener);
     }
 
     /**
@@ -1665,7 +1665,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ColumnResizeEvent.class, listener);
+        ((EventTarget) this).removeListener(ColumnResizeEvent.class, listener);
     }
 
     /**
@@ -1735,7 +1735,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @SuppressWarnings("unchecked")
     default Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
+        return ((EventTarget) this).addListener(SelectionEvent.class, (Consumer) listener);
     }
 
     /**
@@ -1747,7 +1747,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     @SuppressWarnings("unchecked")
     @Deprecated
     default void removeSelectionListener(Consumer<SelectionEvent<E>> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(SelectionEvent.class, (Consumer) listener);
+        ((EventTarget) this).removeListener(SelectionEvent.class, (Consumer) listener);
     }
 
     /**
@@ -1833,7 +1833,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addSortListener(Consumer<SortEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(SortEvent.class, listener);
+        return ((EventTarget) this).addListener(SortEvent.class, listener);
     }
 
     /**
@@ -1844,7 +1844,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Deprecated
     default void removeSortListener(Consumer<SortEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(SortEvent.class, listener);
+        ((EventTarget) this).removeListener(SortEvent.class, listener);
     }
 
     /**
@@ -1870,7 +1870,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to register
      */
     default Subscription addContextClickListener(Consumer<ContextClickEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ContextClickEvent.class, listener);
+        return ((EventTarget) this).addListener(ContextClickEvent.class, listener);
     }
 
     /**
@@ -1879,7 +1879,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to remove
      */
     default void removeContextClickListener(Consumer<ContextClickEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ContextClickEvent.class, listener);
+        ((EventTarget) this).removeListener(ContextClickEvent.class, listener);
     }
 
     /**
@@ -1937,7 +1937,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @SuppressWarnings("unchecked")
     default Subscription addItemClickListener(Consumer<ItemClickEvent<E>> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ItemClickEvent.class, (Consumer) listener);
+        return ((EventTarget) this).addListener(ItemClickEvent.class, (Consumer) listener);
     }
 
     /**
@@ -1947,7 +1947,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @SuppressWarnings("unchecked")
     default void removeItemClickListener(Consumer<ItemClickEvent<E>> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ItemClickEvent.class, (Consumer) listener);
+        ((EventTarget) this).removeListener(ItemClickEvent.class, (Consumer) listener);
     }
 
     /**

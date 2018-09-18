@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.EventObject;
@@ -84,7 +84,7 @@ public interface Image extends ResourceView {
     }
 
     default Subscription addClickListener(Consumer<ClickEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ClickEvent.class, listener);
+        return ((EventTarget) this).addListener(ClickEvent.class, listener);
     }
 
     /**
@@ -92,7 +92,7 @@ public interface Image extends ResourceView {
      * @deprecated Use {@link Subscription} instead
      */
     default void removeClickListener(Consumer<ClickEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(ClickEvent.class, listener);
+        ((EventTarget) this).removeListener(ClickEvent.class, listener);
     }
 
     /**

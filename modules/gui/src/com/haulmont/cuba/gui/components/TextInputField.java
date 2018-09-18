@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -74,7 +74,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
     interface TextChangeNotifier {
 
         default Subscription addTextChangeListener(Consumer<TextChangeEvent> listener) {
-            return ((EventHubOwner) this).getEventHub().subscribe(TextChangeEvent.class, listener);
+            return ((EventTarget) this).addListener(TextChangeEvent.class, listener);
         }
 
         /**
@@ -84,7 +84,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
 
         @Deprecated
         default void removeTextChangeListener(Consumer<TextChangeEvent> listener) {
-            ((EventHubOwner) this).getEventHub().unsubscribe(TextChangeEvent.class, listener);
+            ((EventTarget) this).removeListener(TextChangeEvent.class, listener);
         }
 
         /**
@@ -184,7 +184,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
 
     interface EnterPressNotifier {
         default Subscription addEnterPressListener(Consumer<EnterPressEvent> listener) {
-            return ((EventHubOwner) this).getEventHub().subscribe(EnterPressEvent.class, listener);
+            return ((EventTarget) this).addListener(EnterPressEvent.class, listener);
         }
 
         /**
@@ -193,7 +193,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
          */
         @Deprecated
         default void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
-            ((EventHubOwner) this).getEventHub().unsubscribe(EnterPressEvent.class, listener);
+            ((EventTarget) this).removeListener(EnterPressEvent.class, listener);
         }
     }
 

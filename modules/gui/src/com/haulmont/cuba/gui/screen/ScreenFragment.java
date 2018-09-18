@@ -69,6 +69,10 @@ public abstract class ScreenFragment implements FrameOwner {
         return eventHub;
     }
 
+    protected <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
+        return eventHub.subscribe(eventType, listener);
+    }
+
     protected <E> void fireEvent(Class<E> eventType, E event) {
         eventHub.publish(eventType, event);
     }

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.List;
 import java.util.Map;
@@ -100,7 +100,7 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
      * @param listener listener instance
      */
     default Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(EditorCloseEvent.class, listener);
+        return ((EventTarget) this).addListener(EditorCloseEvent.class, listener);
     }
 
     /**
@@ -108,7 +108,7 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
      */
     @Deprecated
     default void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(EditorCloseEvent.class, listener);
+        ((EventTarget) this).removeListener(EditorCloseEvent.class, listener);
     }
 
     /**

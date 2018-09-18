@@ -36,14 +36,14 @@ public class EventHub {
     protected LinkedHashMap<Tag<?>, Object> events = null;
 
     /**
-     * Add an event listener for events with type T.
+     * Add an event listener for events with type E.
      *
      * @param eventType event class
      * @param listener  listener
-     * @param <T>       type of event
+     * @param <E>       type of event
      * @return subscription object
      */
-    public <T> Subscription subscribe(Class<T> eventType, Consumer<T> listener) {
+    public <E> Subscription subscribe(Class<E> eventType, Consumer<E> listener) {
         if (eventType == null) {
             throw new IllegalArgumentException("eventType cannot be null");
         }
@@ -55,21 +55,21 @@ public class EventHub {
             events = new LinkedHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }
 
-        Tag<T> tag = new Tag<>(eventType, listener);
+        Tag<E> tag = new Tag<>(eventType, listener);
         events.put(tag, PRESENT);
 
         return new SubscriptionImpl<>(this, eventType, listener);
     }
 
     /**
-     * Remove an event listener for events with type T.
+     * Remove an event listener for events with type E.
      *
      * @param eventType event class
      * @param listener  listener
-     * @param <T>       type of event
+     * @param <E>       type of event
      * @return true if listener has been removed
      */
-    public <T> boolean unsubscribe(Class<T> eventType, Consumer<T> listener) {
+    public <E> boolean unsubscribe(Class<E> eventType, Consumer<E> listener) {
         if (eventType == null) {
             throw new IllegalArgumentException("eventType cannot be null");
         }
@@ -102,13 +102,13 @@ public class EventHub {
     }
 
     /**
-     * Check if there are listeners for event type T.
+     * Check if there are listeners for event type E.
      *
      * @param eventType event class
-     * @param <T>       type of event
-     * @return true if there are one or more listeners for type T
+     * @param <E>       type of event
+     * @return true if there are one or more listeners for type E
      */
-    public <T> boolean hasSubscriptions(Class<T> eventType) {
+    public <E> boolean hasSubscriptions(Class<E> eventType) {
         if (eventType == null) {
             throw new IllegalArgumentException("eventType cannot be null");
         }
@@ -126,13 +126,13 @@ public class EventHub {
     }
 
     /**
-     * Fire listeners for event type T.
+     * Fire listeners for event type E.
      *
      * @param eventType event class
      * @param event     event object
-     * @param <T>       type of event
+     * @param <E>       type of event
      */
-    public <T> void publish(Class<T> eventType, T event) {
+    public <E> void publish(Class<E> eventType, E event) {
         if (eventType == null) {
             throw new IllegalArgumentException("eventType cannot be null");
         }
@@ -146,7 +146,7 @@ public class EventHub {
             for (Tag<?> tag : tags) {
                 if (tag.isType(eventType)) {
                     @SuppressWarnings("unchecked")
-                    Consumer<T> listener = (Consumer<T>) tag.getListener();
+                    Consumer<E> listener = (Consumer<E>) tag.getListener();
                     listener.accept(event);
                 }
             }
@@ -158,12 +158,12 @@ public class EventHub {
         }
     }
 
-    protected static class SubscriptionImpl<T> implements Subscription {
+    protected static class SubscriptionImpl<E> implements Subscription {
         private final EventHub publisher;
-        private final Class<T> eventClass;
-        private final Consumer<T> listener;
+        private final Class<E> eventClass;
+        private final Consumer<E> listener;
 
-        public SubscriptionImpl(EventHub publisher, Class<T> eventClass, Consumer<T> listener) {
+        public SubscriptionImpl(EventHub publisher, Class<E> eventClass, Consumer<E> listener) {
             this.publisher = publisher;
             this.eventClass = eventClass;
             this.listener = listener;
@@ -175,11 +175,11 @@ public class EventHub {
         }
     }
 
-    protected static class Tag<T> {
-        protected final Class<T> eventClass;
-        protected final Consumer<T> listener;
+    protected static class Tag<E> {
+        protected final Class<E> eventClass;
+        protected final Consumer<E> listener;
 
-        public Tag(Class<T> eventClass, Consumer<T> listener) {
+        public Tag(Class<E> eventClass, Consumer<E> listener) {
             this.eventClass = eventClass;
             this.listener = listener;
         }
@@ -215,7 +215,7 @@ public class EventHub {
                     Objects.equals(listener, this.listener);
         }
 
-        public Consumer<T> getListener() {
+        public Consumer<E> getListener() {
             return listener;
         }
 

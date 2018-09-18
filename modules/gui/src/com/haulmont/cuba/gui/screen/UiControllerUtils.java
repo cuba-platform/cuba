@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationListener;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Internal methods used in Screens and Fragments implementations.
@@ -54,6 +55,14 @@ public final class UiControllerUtils {
             ((Screen) screen).fireEvent(eventType, event);
         } else if (screen instanceof ScreenFragment) {
             ((ScreenFragment) screen).fireEvent(eventType, event);
+        }
+    }
+
+    public static <E> void addListener(FrameOwner screen, Class<E> eventType, Consumer<E> listener) {
+        if (screen instanceof Screen) {
+            ((Screen) screen).addListener(eventType, listener);
+        } else if (screen instanceof ScreenFragment) {
+            ((ScreenFragment) screen).addListener(eventType, listener);
         }
     }
 

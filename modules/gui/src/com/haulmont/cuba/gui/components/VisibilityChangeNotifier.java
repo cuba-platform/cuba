@@ -17,14 +17,14 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.function.Consumer;
 
 public interface VisibilityChangeNotifier {
 
     default Subscription addVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(VisibilityChangeEvent.class, listener);
+        return ((EventTarget) this).addListener(VisibilityChangeEvent.class, listener);
     }
 
     /**
@@ -33,7 +33,7 @@ public interface VisibilityChangeNotifier {
      */
     @Deprecated
     default void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(VisibilityChangeEvent.class, listener);
+        ((EventTarget) this).removeListener(VisibilityChangeEvent.class, listener);
     }
 
     class VisibilityChangeEvent {

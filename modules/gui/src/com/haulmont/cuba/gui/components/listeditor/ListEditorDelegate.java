@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.listeditor;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
 
 import java.util.List;
 import java.util.Map;

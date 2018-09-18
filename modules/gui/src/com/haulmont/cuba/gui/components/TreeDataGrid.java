@@ -5,7 +5,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.HierarchicalDatasourceDataGridAdapter;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
@@ -236,7 +236,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      */
     @SuppressWarnings("unchecked")
     default Subscription addExpandListener(Consumer<ExpandEvent<E>> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(ExpandEvent.class, (Consumer) listener);
+        return ((EventTarget) this).addListener(ExpandEvent.class, (Consumer) listener);
     }
 
     /**
@@ -247,7 +247,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      */
     @SuppressWarnings("unchecked")
     default Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(CollapseEvent.class, (Consumer) listener);
+        return ((EventTarget) this).addListener(CollapseEvent.class, (Consumer) listener);
     }
 
     /**

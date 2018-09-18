@@ -120,6 +120,10 @@ public abstract class Screen implements FrameOwner {
         this.screenData = data;
     }
 
+    protected <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
+        return eventHub.subscribe(eventType, listener);
+    }
+
     protected <E> void fireEvent(Class<E> eventType, E event) {
         eventHub.publish(eventType, event);
     }

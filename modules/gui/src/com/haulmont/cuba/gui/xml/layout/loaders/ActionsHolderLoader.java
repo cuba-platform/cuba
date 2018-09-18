@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -36,21 +37,24 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
                     "ActionsHolder ID", actionsHolder.getId());
         }
 
-        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
-            // Try to create a standard list action
-            for (ListActionType type : ListActionType.values()) {
-                if (type.getId().equals(id)) {
-                    Action instance = type.createAction((ListComponent) actionsHolder);
+        if (StringUtils.isEmpty(element.attributeValue("invoke"))) {
+            // only in legacy frames
+            if (getContext().getFrame().getFrameOwner() instanceof LegacyFrame) {
+                // Try to create a standard list action
+                for (ListActionType type : ListActionType.values()) {
+                    if (type.getId().equals(id)) {
+                        Action instance = type.createAction((ListComponent) actionsHolder);
 
-                    loadStandardActionProperties(instance, element);
+                        loadStandardActionProperties(instance, element);
 
-                    loadActionOpenType(instance, element);
+                        loadActionOpenType(instance, element);
 
-                    loadActionConstraint(instance, element);
+                        loadActionConstraint(instance, element);
 
-                    loadShortcut(instance, element);
+                        loadShortcut(instance, element);
 
-                    return instance;
+                        return instance;
+                    }
                 }
             }
         }

@@ -31,6 +31,8 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -38,7 +40,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
@@ -563,12 +565,20 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
         String trackSelection = element.attributeValue("trackSelection");
 
-        String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
-        shortcut = loadShortcut(shortcut);
+        boolean shouldTrackSelection = Boolean.parseBoolean(trackSelection);
+        String invokeMethod = element.attributeValue("invoke");
 
+        if (StringUtils.isEmpty(invokeMethod)) {
+            return loadStubAction(element, id, shouldTrackSelection);
+        }
+
+        return loadInvokeAction(actionsHolder, element, id, shouldTrackSelection, invokeMethod);
+    }
+
+    protected Action loadInvokeAction(ActionsHolder actionsHolder, Element element, String id, boolean shouldTrackSelection, String invokeMethod) {
         DeclarativeAction action;
-
-        if (Boolean.parseBoolean(trackSelection)) {
+        String shortcut = loadShortcut(trimToNull(element.attributeValue("shortcut")));
+        if (shouldTrackSelection) {
             action = new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
@@ -576,7 +586,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     getIconPath(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
-                    element.attributeValue("invoke"),
+                    invokeMethod,
                     shortcut,
                     actionsHolder
             );
@@ -592,15 +602,59 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     getIconPath(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
-                    element.attributeValue("invoke"),
+                    invokeMethod,
                     shortcut,
                     actionsHolder
             );
         }
-
         action.setPrimary(Boolean.parseBoolean(element.attributeValue("primary")));
-
         return action;
+    }
+
+    protected Action loadStubAction(Element element, String id, boolean shouldTrackSelection) {
+        Action targetAction;
+
+        if (shouldTrackSelection) {
+            targetAction = new ItemTrackingAction(id);
+        } else {
+            targetAction = new BaseAction(id);
+        }
+
+        initAction(element, targetAction);
+
+        return targetAction;
+    }
+
+    protected void initAction(Element element, Action targetAction) {
+        String caption = element.attributeValue("caption");
+        if (StringUtils.isNotEmpty(caption)) {
+            targetAction.setCaption(loadResourceString(caption));
+        }
+
+        String description = element.attributeValue("description");
+        if (StringUtils.isNotEmpty(description)) {
+            targetAction.setDescription(loadResourceString(description));
+        }
+
+        String icon = element.attributeValue("icon");
+        if (StringUtils.isNotEmpty(icon)) {
+            targetAction.setIcon(getIconPath(icon));
+        }
+
+        String enable = element.attributeValue("enable");
+        if (StringUtils.isNotEmpty(enable)) {
+            targetAction.setEnabled(Boolean.parseBoolean(enable));
+        }
+
+        String visible = element.attributeValue("visible");
+        if (StringUtils.isNotEmpty(visible)) {
+            targetAction.setVisible(Boolean.parseBoolean(visible));
+        }
+
+        String shortcut = trimToNull(element.attributeValue("shortcut"));
+        if (shortcut != null) {
+            targetAction.setShortcut(loadShortcut(shortcut));
+        }
     }
 
     protected void loadActionConstraint(Action action, Element element) {
@@ -722,6 +776,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            // todo
+
             // Try to create a standard picker action
             for (PickerField.ActionType type : PickerField.ActionType.values()) {
                 if (type.getId().equals(id)) {

@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventHubOwner;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -72,7 +72,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     }
 
     default Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadStartEvent.class, listener);
+        return ((EventTarget) this).addListener(FileUploadStartEvent.class, listener);
     }
 
     /**
@@ -81,11 +81,11 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      */
     @Deprecated
     default void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadStartEvent.class, listener);
+        ((EventTarget) this).removeListener(FileUploadStartEvent.class, listener);
     }
 
     default Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadFinishEvent.class, listener);
+        return ((EventTarget) this).addListener(FileUploadFinishEvent.class, listener);
     }
 
     /**
@@ -94,11 +94,11 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      */
     @Deprecated
     default void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadFinishEvent.class, listener);
+        ((EventTarget) this).removeListener(FileUploadFinishEvent.class, listener);
     }
 
     default Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
-        return ((EventHubOwner) this).getEventHub().subscribe(FileUploadErrorEvent.class, listener);
+        return ((EventTarget) this).addListener(FileUploadErrorEvent.class, listener);
     }
 
     /**
@@ -107,7 +107,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      */
     @Deprecated
     default void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
-        ((EventHubOwner) this).getEventHub().unsubscribe(FileUploadErrorEvent.class, listener);
+        ((EventTarget) this).removeListener(FileUploadErrorEvent.class, listener);
     }
 
     /**

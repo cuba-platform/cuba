@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.sys.EventTarget;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -54,7 +57,7 @@ import java.util.function.Consumer;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction {
+public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction, EventTarget {
 
     private boolean enabledByUiPermissions = true;
     private boolean visibleByUiPermissions = true;
@@ -64,6 +67,7 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     private List<EnabledRule> enabledRules; // lazy initialized list
 
+    @Deprecated
     protected ListComponent target;
 
     protected Consumer<ActionPerformedEvent> actionPerformHandler;
@@ -150,11 +154,13 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
                 && isPermitted() && isApplicable() && isEnabledByRule());
     }
 
+    @Deprecated
     @Override
     public ListComponent getTarget() {
         return target;
     }
 
+    @Deprecated
     @Override
     public void setTarget(ListComponent target) {
         if (this.target != target) {
@@ -219,6 +225,42 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
+        if (eventType != ActionPerformedEvent.class) {
+            throw new IllegalStateException(String.format("Event type %s is not supported", eventType));
+        }
+
+        Preconditions.checkNotNullArgument(listener);
+
+        if (actionPerformHandler != null) {
+            LoggerFactory.getLogger(BaseAction.class)
+                    .warn("Replacing already assigned ActionPerformedEvent handler on action " + getId());
+        }
+
+        this.actionPerformHandler = (Consumer<ActionPerformedEvent>) listener;
+
+        return () -> {
+            if (listener == actionPerformHandler) {
+                actionPerformHandler = null;
+            }
+        };
+    }
+
+    @Override
+    public <E> boolean removeListener(Class<E> eventType, Consumer<E> listener) {
+        if (eventType != ActionPerformedEvent.class) {
+            throw new IllegalStateException("Event type is not supported");
+        }
+
+        boolean remove = listener == actionPerformHandler;
+        if (remove) {
+            actionPerformHandler = null;
+        }
+        return remove;
+    }
+
     /**
      * Callback interface which is invoked by the action to determine its enabled state.
      *
@@ -233,6 +275,21 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         if (actionPerformHandler != null) {
             actionPerformHandler.accept(new ActionPerformedEvent(this, component));
         }
+    }
+
+    /**
+     * @return action performed event handler or null
+     */
+    public Consumer<ActionPerformedEvent> getActionPerformHandler() {
+        return actionPerformHandler;
+    }
+    /**
+     * Set action performed event handler. Can be used instead of subclassing BaseAction class.
+     *
+     * @param handler action performed handler
+     */
+    public void setActionPerformHandler(Consumer<ActionPerformedEvent> handler) {
+        this.actionPerformHandler = handler;
     }
 
     /**
@@ -282,7 +339,7 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     }
 
     /**
-     * Set actionPerformed handler using fluent API method. Can be used instead of subclassing BaseAction class.
+     * Set action performed event handler using fluent API method. Can be used instead of subclassing BaseAction class.
      *
      * @param handler action performed handler
      * @return current instance of action
