@@ -1210,6 +1210,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1234,6 +1235,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1249,7 +1251,6 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasResponsiveProp"/>
-        <xs:attributeGroup ref="hasContextHelp"/>
     </xs:complexType>
 
     <!-- BaseField -->
@@ -1259,6 +1260,7 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1272,6 +1274,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1284,6 +1287,8 @@
                     <xs:element name="dayNames" minOccurs="0" maxOccurs="1"  type="days"/>
                     <xs:element name="monthNames" minOccurs="0" maxOccurs="1"  type="months"/>
                 </xs:all>
+
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="datasource" type="xs:string"/>
 
@@ -1448,6 +1453,7 @@
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1497,6 +1503,7 @@
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1505,6 +1512,8 @@
     <xs:complexType name="progressBarComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasContextHelp"/>
+
                 <xs:attribute name="stylename" type="progressBarStylename"/>
                 <xs:attribute name="indeterminate" type="xs:boolean"/>
             </xs:extension>
@@ -1753,6 +1762,7 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="isUploadComponent"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="showClearButton" type="xs:boolean"/>
                 <xs:attribute name="clearButtonCaption" type="resourceString"/>
@@ -1776,6 +1786,7 @@
                 <xs:attributeGroup ref="isUploadComponent"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1784,6 +1795,8 @@
     <xs:complexType name="embeddedComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasContextHelp"/>
+
                 <xs:attribute name="src" type="xs:string"/>
                 <xs:attribute name="relativeSrc" type="xs:string"/>
                 <xs:attribute name="type" type="embeddedType"/>
@@ -1859,6 +1872,8 @@
                     <xs:element name="relativePath" type="relativePathResource"/>
                 </xs:choice>
                 <xs:attribute name="alternateText" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1894,6 +1909,7 @@
                 <xs:attribute name="multiselect" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1969,6 +1985,7 @@
                 <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1984,6 +2001,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasExpand"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="providerClass" type="xs:string"/>
                 <xs:attribute name="alwaysVisible" type="xs:boolean"/>
@@ -2051,6 +2069,7 @@
 
                 <xs:attribute name="stylename" type="tableStylename"/>
                 <xs:attributeGroup ref="isTableComponent"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2134,6 +2153,7 @@
 
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2284,6 +2304,7 @@
                 </xs:choice>
 
                 <xs:attributeGroup ref="hasEditState"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
                 <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
@@ -2332,6 +2353,7 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasDatasourceProp"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
                 <xs:attribute name="position" type="tokenListPosition"/>
@@ -2375,6 +2397,7 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="leftColumnCaption" type="resourceString"/>
                 <xs:attribute name="rightColumnCaption" type="resourceString"/>
@@ -2402,6 +2425,8 @@
                     <xs:group ref="layoutOrComponent"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasContextHelp"/>
+
                 <xs:attribute name="stylename" type="layoutStylename"/>
                 <xs:attribute name="template" type="xs:string"/>
             </xs:extension>
@@ -2416,6 +2441,7 @@
                 <xs:attributeGroup ref="isLayoutComponent"/>
 
                 <xs:attributeGroup ref="hasSpacingMargin"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="stylename" type="boxLayoutStylename"/>
                 <xs:attribute name="expand" type="xs:string"/>
@@ -2431,6 +2457,7 @@
 
                 <xs:attribute name="stylename" type="layoutStylename"/>
                 <xs:attributeGroup ref="hasSpacingMargin"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2443,6 +2470,7 @@
 
                 <xs:attribute name="stylename" type="csslayoutStylename"/>
                 <xs:attributeGroup ref="hasResponsive"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2469,6 +2497,8 @@
                 <xs:sequence minOccurs="2" maxOccurs="2">
                     <xs:group ref="layoutOrComponent"/>
                 </xs:sequence>
+
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="stylename" type="splitStylename"/>
                 <xs:attribute name="orientation" type="orientation"/>
@@ -2515,6 +2545,7 @@
                 <xs:attribute name="tabsVisible" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2547,6 +2578,7 @@
                 <xs:attribute name="tabsVisible" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2588,6 +2620,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasSpacingMargin"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2602,6 +2635,7 @@
                 <xs:attributeGroup ref="hasOuterMargin"/>
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasExpand"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="stylename" type="groupBoxStylename"/>
                 <xs:attribute name="collapsable" type="xs:boolean"/>
