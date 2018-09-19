@@ -8,7 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * JavaDoc
+ * Annotation for declarative event handler methods in UI controllers.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

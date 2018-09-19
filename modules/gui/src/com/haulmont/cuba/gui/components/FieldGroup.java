@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
                                     HasBorder, HasContextHelp, Component.Editable, Validatable,
                                     EditableChangeNotifier, ChildEditableController,
-                                    ComponentContainer {
+                                    ComponentContainer, HasSubParts {
     String NAME = "fieldGroup";
 
     /**
@@ -560,6 +560,12 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     @Override
     default boolean isValidateOnCommit() {
         return false;
+    }
+
+    @Nullable
+    @Override
+    default Object getSubPart(String name) {
+        return getField(name);
     }
 
     /*

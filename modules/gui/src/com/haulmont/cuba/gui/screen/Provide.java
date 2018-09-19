@@ -16,28 +16,26 @@
 
 package com.haulmont.cuba.gui.screen;
 
-/**
- * {@link Subscribe} and {@link Provide} target type.
- */
-public enum Target {
-    /**
-     * UI component if id of component specified in the corresponding annotation.
-     *
-     * Default option.
-     */
-    COMPONENT,
+import org.springframework.core.annotation.AliasFor;
 
-    /**
-     * UI controller
-     */
-    CONTROLLER,
-    /**
-     * Parent UI controller
-     */
-    PARENT_CONTROLLER,
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-    /**
-     * Window or Fragment of UI controller
-     */
-    FRAME
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@java.lang.annotation.Target(ElementType.METHOD)
+public @interface Provide {
+    Target target() default Target.COMPONENT;
+
+    @AliasFor("to")
+    String value() default "";
+
+    @AliasFor("value")
+    String to() default "";
+
+    Class type() default Object.class;
+
+    String subject() default "";
 }

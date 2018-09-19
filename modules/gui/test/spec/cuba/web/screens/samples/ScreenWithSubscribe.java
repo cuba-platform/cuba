@@ -31,7 +31,7 @@ public class ScreenWithSubscribe extends Screen {
     private void onShow(BeforeShowEvent event) {
     }
 
-    @Subscribe(target = Target.WINDOW)
+    @Subscribe(target = Target.FRAME)
     protected void onAfterShow(AfterShowEvent event) {
 
     }

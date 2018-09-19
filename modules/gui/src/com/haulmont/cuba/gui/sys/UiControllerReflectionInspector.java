@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.screen.Provide;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,6 +48,15 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 
 @Component("cuba_UiControllerReflectionInspector")
 public class UiControllerReflectionInspector {
+
+    protected static final Method NO_METHOD_VALUE;
+    static {
+        try {
+            NO_METHOD_VALUE = Object.class.getMethod("toString");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("It should never happen", e);
+        }
+    }
 
     protected final LoadingCache<Class<?>, List<InjectElement>> injectValueElementsCache =
             CacheBuilder.newBuilder()
@@ -67,17 +78,56 @@ public class UiControllerReflectionInspector {
                         }
                     });
 
-    protected final LoadingCache<Class<?>, List<Method>> subscribeMethodsCache =
+    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Subscribe>>> subscribeMethodsCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<Method>>() {
+                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Subscribe>>>() {
                         @Override
-                        public List<Method> load(@Nonnull Class<?> concreteClass) {
+                        public List<AnnotatedMethod<Subscribe>> load(@Nonnull Class<?> concreteClass) {
                             return getAnnotatedSubscribeMethodsNotCached(concreteClass);
                         }
                     });
 
-    public List<Method> getAnnotatedSubscribeMethods(Class<?> clazz) {
+    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Provide>>> provideMethodsCache =
+            CacheBuilder.newBuilder()
+                    .weakKeys()
+                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Provide>>>() {
+                        @Override
+                        public List<AnnotatedMethod<Provide>> load(@Nonnull Class<?> concreteClass) {
+                            return getAnnotatedProvideMethodsNotCached(concreteClass);
+                        }
+                    });
+
+    protected final LoadingCache<MethodTag, Method> provideTargetMethodsCache =
+            CacheBuilder.newBuilder()
+                    .weakKeys()
+                    .build(new CacheLoader<MethodTag, Method>() {
+                        @Override
+                        public Method load(@Nonnull MethodTag methodTag) {
+                            return getProvideTargetMethodNotCached(methodTag);
+                        }
+                    });
+
+    /**
+     * @param clazz class
+     * @param methodName method name
+     * @return method
+     */
+    @Nullable
+    public Method getProvideTargetMethod(Class<?> clazz, String methodName) {
+        Method method = provideTargetMethodsCache.getUnchecked(new MethodTag(clazz, methodName));
+        if (method == NO_METHOD_VALUE) {
+            return null;
+        }
+
+        return method;
+    }
+
+    public List<AnnotatedMethod<Provide>> getAnnotatedProvideMethods(Class<?> clazz) {
+        return provideMethodsCache.getUnchecked(clazz);
+    }
+
+    public List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethods(Class<?> clazz) {
         return subscribeMethodsCache.getUnchecked(clazz);
     }
 
@@ -180,23 +230,50 @@ public class UiControllerReflectionInspector {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    protected List<Method> getAnnotatedSubscribeMethodsNotCached(Class<?> clazz) {
+    protected List<AnnotatedMethod<Provide>> getAnnotatedProvideMethodsNotCached(Class<?> clazz) {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
 
-        return Arrays.stream(methods)
-                .filter(m -> m.getParameterCount() == 1)
-                .filter(m -> EventObject.class.isAssignableFrom(m.getParameterTypes()[0]))
-                .filter(m -> findMergedAnnotation(m, Subscribe.class) != null)
-                .peek(m -> {
+        List<AnnotatedMethod<Provide>> annotatedMethods = new ArrayList<>();
+
+        for (Method m : methods) {
+            Provide provideAnnotation = findMergedAnnotation(m, Provide.class);
+            if (provideAnnotation != null) {
+                if (!m.isAccessible()) {
+                    m.setAccessible(true);
+                }
+                annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m));
+            }
+        }
+
+        return ImmutableList.copyOf(annotatedMethods);
+    }
+
+    protected List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethodsNotCached(Class<?> clazz) {
+        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+
+        List<AnnotatedMethod<Subscribe>> annotatedMethods = new ArrayList<>();
+
+        for (Method m : methods) {
+            if (m.getParameterCount() == 1 && EventObject.class.isAssignableFrom(m.getParameterTypes()[0])) {
+                Subscribe annotation = findMergedAnnotation(m, Subscribe.class);
+                if (annotation != null) {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);
                     }
-                })
-                .sorted(this::compareSubscribeMethods)
-                .collect(ImmutableList.toImmutableList());
+                    annotatedMethods.add(new AnnotatedMethod<>(annotation, m));
+                }
+            }
+        }
+
+        annotatedMethods.sort(this::compareSubscribeMethods);
+
+        return ImmutableList.copyOf(annotatedMethods);
     }
 
-    protected int compareSubscribeMethods(Method m1, Method m2) {
+    protected int compareSubscribeMethods(AnnotatedMethod<Subscribe> am1, AnnotatedMethod<Subscribe> am2) {
+        Method m1 = am1.getMethod();
+        Method m2 = am2.getMethod();
+
         if (m1 == m2) {
             // fulfill comparator contract
             return 0;
@@ -301,6 +378,16 @@ public class UiControllerReflectionInspector {
         return result;
     }
 
+    protected Method getProvideTargetMethodNotCached(MethodTag methodTag) {
+        for (Method method : ReflectionUtils.getUniqueDeclaredMethods(methodTag.getClazz())) {
+            if (Modifier.isPublic(method.getModifiers()) && method.getName().equals(methodTag.getMethodName())) {
+                return method;
+            }
+        }
+
+        return NO_METHOD_VALUE;
+    }
+
     public static class InjectElement {
         protected final AnnotatedElement element;
         protected final Class annotationClass;
@@ -323,6 +410,69 @@ public class UiControllerReflectionInspector {
             return "InjectElement{" +
                     "element=" + element +
                     ", annotationClass=" + annotationClass +
+                    '}';
+        }
+    }
+
+    public static class AnnotatedMethod<T> {
+
+        private final T annotation;
+        private final Method method;
+
+        public AnnotatedMethod(T annotation, Method method) {
+            this.annotation = annotation;
+            this.method = method;
+        }
+
+        public T getAnnotation() {
+            return annotation;
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+    }
+
+    public static class MethodTag {
+        private final Class<?> clazz;
+        private final String methodName;
+
+        public MethodTag(Class<?> clazz, String methodName) {
+            this.clazz = clazz;
+            this.methodName = methodName;
+        }
+
+        public Class<?> getClazz() {
+            return clazz;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            MethodTag methodTag = (MethodTag) o;
+            return Objects.equals(clazz, methodTag.clazz) &&
+                    Objects.equals(methodName, methodTag.methodName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clazz, methodName);
+        }
+
+        @Override
+        public String toString() {
+            return "MethodTag{" +
+                    "clazz=" + clazz +
+                    ", methodName='" + methodName + '\'' +
                     '}';
         }
     }

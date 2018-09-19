@@ -50,7 +50,7 @@ public interface Table<E extends Entity>
             ListComponent<E>, Component.Editable, HasSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent, Component.Focusable,
-            RowsCount.RowsCountTarget {
+            RowsCount.RowsCountTarget, HasSubParts {
 
     enum ColumnAlignment {
         LEFT,
@@ -268,7 +268,18 @@ public interface Table<E extends Entity>
      */
     void repaint();
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Nullable
+    @Override
+    default Object getSubPart(String name) {
+        Column<E> column = getColumn(name);
+        if (column != null) {
+            return column;
+        }
+
+        return getAction(name);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @deprecated Use {@link #addColumnCollapseListener(Consumer)} instead

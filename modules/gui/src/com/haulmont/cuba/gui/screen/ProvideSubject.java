@@ -16,28 +16,17 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import java.lang.annotation.*;
+import java.lang.annotation.Target;
+
 /**
- * {@link Subscribe} and {@link Provide} target type.
+ * Sets primary subject for {@link Provide} target classes.
  */
-public enum Target {
-    /**
-     * UI component if id of component specified in the corresponding annotation.
-     *
-     * Default option.
-     */
-    COMPONENT,
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+@Documented
+public @interface ProvideSubject {
 
-    /**
-     * UI controller
-     */
-    CONTROLLER,
-    /**
-     * Parent UI controller
-     */
-    PARENT_CONTROLLER,
-
-    /**
-     * Window or Fragment of UI controller
-     */
-    FRAME
+    String value();
 }

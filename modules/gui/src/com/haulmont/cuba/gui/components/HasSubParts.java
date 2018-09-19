@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.screen;
+package com.haulmont.cuba.gui.components;
+
+import javax.annotation.Nullable;
 
 /**
- * {@link Subscribe} and {@link Provide} target type.
+ * Interface for UI components that provide additional objects for framework as part of component API.
+ *
+ * @see DataGrid
+ * @see FieldGroup
+ * @see ActionsHolder
  */
-public enum Target {
-    /**
-     * UI component if id of component specified in the corresponding annotation.
-     *
-     * Default option.
-     */
-    COMPONENT,
-
-    /**
-     * UI controller
-     */
-    CONTROLLER,
-    /**
-     * Parent UI controller
-     */
-    PARENT_CONTROLLER,
-
-    /**
-     * Window or Fragment of UI controller
-     */
-    FRAME
+public interface HasSubParts {
+    @Nullable
+    Object getSubPart(String name);
 }

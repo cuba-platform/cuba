@@ -63,4 +63,15 @@ public final class ScreenDescriptorUtils {
 
         return target;
     }
+
+    public static String getInferredProvideId(Provide provide) {
+        checkNotNullArgument(provide);
+
+        String target = provide.value();
+        if (Strings.isNullOrEmpty(target)) {
+            target = provide.to();
+        }
+
+        return target;
+    }
 }

@@ -23,7 +23,7 @@ import java.util.Collection;
 /**
  * A component containing {@link Action}s.
  */
-public interface ActionsHolder extends Component {
+public interface ActionsHolder extends Component, HasSubParts {
     /**
      * Add an action to the component
      */
@@ -71,5 +71,11 @@ public interface ActionsHolder extends Component {
             throw new IllegalStateException("Unable to find action with id " + id);
         }
         return action;
+    }
+
+    @Nullable
+    @Override
+    default Object getSubPart(String name) {
+        return getAction(name);
     }
 }

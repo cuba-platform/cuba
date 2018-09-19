@@ -21,15 +21,16 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UiComponents;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.Provide;
+import com.haulmont.cuba.security.entity.User;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 @UiController("user-list")
 public class UserList extends Screen implements UserListMixin {
@@ -41,6 +42,22 @@ public class UserList extends Screen implements UserListMixin {
     protected Dialogs dialogs;
     @Inject
     protected Notifications notifications;
+
+    @Provide(type = Table.StyleProvider.class, to = "usersTable")
+    protected String getStyleName(User user, String property) {
+        return null;
+    }
+
+    @Provide(type = Table.ColumnGenerator.class,
+            to = "usersTable.name")
+    protected Component createNameColumnComponent(User user, String property) {
+        return null;
+    }
+
+    @Provide(subject = "formatter", to = "label1")
+    protected String format(Date date) {
+        return "";
+    }
 
     @Subscribe
     protected void init(InitEvent event) {
