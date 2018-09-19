@@ -51,6 +51,10 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
     }
 
+    public CollectionContainer<E> getContainer() {
+        return container;
+    }
+
     protected void containerItemChanged(CollectionContainer.ItemChangeEvent<E> event) {
         events.publish(SelectedItemChangeEvent.class, new SelectedItemChangeEvent<>(this, event.getItem()));
     }

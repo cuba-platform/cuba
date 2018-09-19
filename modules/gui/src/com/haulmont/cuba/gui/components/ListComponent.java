@@ -24,8 +24,7 @@ import java.util.Set;
 import java.util.Collection;
 import java.util.function.Function;
 
-public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, ActionsHolder,
-        RowsCount.RowsCountTarget {
+public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, ActionsHolder {
 
     boolean isMultiSelect();
 

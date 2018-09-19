@@ -22,9 +22,7 @@ import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.components.ValidationErrors;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.InstanceLoader;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
 
 import javax.validation.ConstraintViolation;
@@ -75,11 +73,19 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected InstanceLoader getEditedEntityLoader() {
-        InstanceLoader loader = getScreenData().findLoaderOf(getEditedEntityContainer());
-        if (loader == null) {
-            throw new IllegalStateException("Edited entity loader is not defined");
+        InstanceContainer<Entity> container = getEditedEntityContainer();
+        if (container == null)
+            throw new IllegalStateException("Edited entity container not defined");
+        DataLoader loader = null;
+        if (container instanceof HasLoader) {
+            loader = ((HasLoader) container).getLoader();
         }
-        return loader;
+        if (loader == null)
+            throw new IllegalStateException("Loader of edited entity container not found");
+        if (!(loader instanceof InstanceLoader))
+            throw new IllegalStateException(String.format(
+                "Loader %s of edited entity container %s must implement InstanceLoader", loader, container));
+        return (InstanceLoader) loader;
     }
 
     protected abstract InstanceContainer<Entity> getEditedEntityContainer();

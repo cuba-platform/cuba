@@ -17,8 +17,12 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.ForwardingIterator;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 
 /**
  *
@@ -26,16 +30,17 @@ import java.util.Iterator;
 class ObservableIterator<T> extends ForwardingIterator<T> {
 
     private Iterator<T> delegate;
-    private Runnable onCollectionChanged;
+    private BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
-    protected ObservableIterator(Iterator<T> delegate, Runnable onCollectionChanged) {
+    protected ObservableIterator(Iterator<T> delegate,
+                                 BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
         this.onCollectionChanged = onCollectionChanged;
     }
 
-    protected void fireCollectionChanged() {
+    protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
         if (onCollectionChanged != null)
-            onCollectionChanged.run();
+            onCollectionChanged.accept(type, changes);
     }
 
     @Override
@@ -46,6 +51,6 @@ class ObservableIterator<T> extends ForwardingIterator<T> {
     @Override
     public void remove() {
         super.remove();
-        fireCollectionChanged();
+        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
     }
 }

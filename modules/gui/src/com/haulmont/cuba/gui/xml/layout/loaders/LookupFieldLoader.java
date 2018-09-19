@@ -148,8 +148,7 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
             if (!(container instanceof CollectionContainer)) {
                 throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
             }
-            component.setOptionsSource(
-                    new CollectionContainerOptions((CollectionContainer) container, screenData.findLoaderOf(container)));
+            component.setOptionsSource(new CollectionContainerOptions((CollectionContainer) container));
         }
     }
 

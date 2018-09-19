@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.HasLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstanceLoader;
 import org.springframework.context.ApplicationContext;
@@ -136,6 +137,9 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     @Override
     public void setContainer(InstanceContainer<E> container) {
         this.container = container;
+        if (container instanceof HasLoader) {
+            ((HasLoader) container).setLoader(this);
+        }
     }
 
     @Override

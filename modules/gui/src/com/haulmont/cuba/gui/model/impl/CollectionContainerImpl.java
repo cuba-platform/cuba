@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.Sorter;
 import org.slf4j.Logger;
@@ -67,10 +68,10 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public List<E> getMutableItems() {
-        return new ObservableList<>(collection, () -> {
+        return new ObservableList<>(collection, (changeType, changes) -> {
             buildIdMap();
             clearItemIfNotExists();
-            fireCollectionChanged();
+            fireCollectionChanged(changeType, changes);
         });
     }
 
@@ -84,7 +85,7 @@ public class CollectionContainerImpl<E extends Entity>
         }
         buildIdMap();
         clearItemIfNotExists();
-        fireCollectionChanged();
+        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
     }
 
     @Nullable
@@ -118,7 +119,7 @@ public class CollectionContainerImpl<E extends Entity>
         }
         attachListener(entity);
         buildIdMap();
-        fireCollectionChanged();
+        fireCollectionChanged(CollectionChangeType.SET_ITEM, Collections.singletonList(entity));
     }
 
     @Override
@@ -145,8 +146,8 @@ public class CollectionContainerImpl<E extends Entity>
         this.sorter = sorter;
     }
 
-    protected void fireCollectionChanged() {
-        CollectionChangeEvent<E> collectionChangeEvent = new CollectionChangeEvent<>(this);
+    protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends E> changes) {
+        CollectionChangeEvent<E> collectionChangeEvent = new CollectionChangeEvent<>(this, type, changes);
         log.trace("collectionChanged: {}", collectionChangeEvent);
         events.publish(CollectionChangeEvent.class, collectionChangeEvent);
     }

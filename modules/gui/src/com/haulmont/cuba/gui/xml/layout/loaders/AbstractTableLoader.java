@@ -33,10 +33,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
@@ -127,7 +124,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         MetaClass metaClass;
         CollectionContainer collectionContainer = null;
-        CollectionLoader collectionLoader = null;
+        DataLoader dataLoader = null;
         Datasource datasource = null;
 
         String containerId = rowsElement.attributeValue("container");
@@ -141,7 +138,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
             }
             metaClass = collectionContainer.getEntityMetaClass();
-            collectionLoader = screenData.findLoaderOf(collectionContainer);
+            if (collectionContainer instanceof HasLoader) {
+                dataLoader = ((HasLoader) collectionContainer).getLoader();
+            }
 
         } else {
             String datasourceId = rowsElement.attributeValue("datasource");
@@ -177,7 +176,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
 
         if (collectionContainer != null) {
-            addDynamicAttributes(resultComponent, metaClass, null, collectionLoader, availableColumns);
+            if (dataLoader instanceof CollectionLoader) {
+                addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
+            }
             //noinspection unchecked
             resultComponent.setTableSource(createContainerTableSource(collectionContainer));
         } else {

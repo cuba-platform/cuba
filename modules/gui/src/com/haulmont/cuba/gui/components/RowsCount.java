@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.EventObject;
@@ -59,11 +60,9 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
 
     class BeforeRefreshEvent extends EventObject {
         private boolean refreshPrevented;
-        private CollectionDatasource datasource;
 
-        public BeforeRefreshEvent(RowsCount source, CollectionDatasource datasource) {
+        public BeforeRefreshEvent(RowsCount source) {
             super(source);
-            this.datasource = datasource;
         }
 
         /**
@@ -75,10 +74,6 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
 
         public boolean isRefreshPrevented() {
             return refreshPrevented;
-        }
-
-        public CollectionDatasource getDatasource() {
-            return datasource;
         }
     }
 

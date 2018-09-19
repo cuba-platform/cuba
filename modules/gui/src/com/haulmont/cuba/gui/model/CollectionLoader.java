@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.core.global.View;
 
@@ -28,6 +29,8 @@ public interface CollectionLoader<E extends Entity> extends DataLoader {
     CollectionContainer<E> getContainer();
 
     void setContainer(CollectionContainer<E> container);
+
+    LoadContext<E> createLoadContext();
 
     /**
      * The position of the first instance to load, numbered from 0.

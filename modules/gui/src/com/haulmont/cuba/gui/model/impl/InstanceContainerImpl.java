@@ -24,7 +24,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.HasLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.InstanceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +37,18 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class InstanceContainerImpl<T extends Entity> implements InstanceContainer<T> {
+public class InstanceContainerImpl<E extends Entity> implements InstanceContainer<E>, HasLoader {
 
     private static final Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
 
-    protected T item;
+    protected E item;
     protected MetaClass entityMetaClass;
     protected View view;
 
     protected EventHub events = new EventHub();
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
+    private DataLoader loader;
 
     public InstanceContainerImpl(MetaClass entityMetaClass) {
         this.entityMetaClass = entityMetaClass;
@@ -52,21 +56,21 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
     @Nullable
     @Override
-    public T getItemOrNull() {
+    public E getItemOrNull() {
         return item;
     }
 
     @Override
-    public T getItem() {
-        T item = getItemOrNull();
+    public E getItem() {
+        E item = getItemOrNull();
         if (item == null)
             throw new IllegalStateException("Current item is null");
         return item;
     }
 
     @Override
-    public void setItem(@Nullable T item) {
-        T prevItem = this.item;
+    public void setItem(@Nullable E item) {
+        E prevItem = this.item;
 
         if (this.item != null) {
             detachListener(this.item);
@@ -104,18 +108,18 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<T>> listener) {
+    public Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<E>> listener) {
         return events.subscribe(ItemPropertyChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addItemChangeListener(Consumer<ItemChangeEvent<T>> listener) {
+    public Subscription addItemChangeListener(Consumer<ItemChangeEvent<E>> listener) {
         return events.subscribe(ItemChangeEvent.class, (Consumer) listener);
     }
 
-    protected void fireItemChanged(T prevItem) {
-        ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItemOrNull());
+    protected void fireItemChanged(E prevItem) {
+        ItemChangeEvent<E> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItemOrNull());
         log.trace("itemChanged: {}", itemChangeEvent);
         events.publish(ItemChangeEvent.class, itemChangeEvent);
     }
@@ -140,6 +144,17 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
                 '}';
     }
 
+    @Nullable
+    @Override
+    public DataLoader getLoader() {
+        return loader;
+    }
+
+    @Override
+    public void setLoader(DataLoader loader) {
+        this.loader = loader;
+    }
+
     protected class ItemListener implements Instance.PropertyChangeListener {
         @SuppressWarnings("unchecked")
         @Override
@@ -148,8 +163,8 @@ public class InstanceContainerImpl<T extends Entity> implements InstanceContaine
                 return;
             }
 
-            ItemPropertyChangeEvent<T> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(InstanceContainerImpl.this,
-                    (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+            ItemPropertyChangeEvent<E> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(InstanceContainerImpl.this,
+                    (E) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
 
             log.trace("propertyChanged: {}", itemPropertyChangeEvent);
 

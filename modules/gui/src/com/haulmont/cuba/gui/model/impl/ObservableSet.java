@@ -17,11 +17,15 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.ForwardingSet;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 
 import java.io.ObjectStreamException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  *
@@ -30,9 +34,9 @@ import java.util.Set;
 public class ObservableSet<T> extends ForwardingSet<T> {
 
     private final Set<T> delegate;
-    private final Runnable onCollectionChanged;
+    private final BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
-    public ObservableSet(Set<T> delegate, Runnable onCollectionChanged) {
+    public ObservableSet(Set<T> delegate, BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
         this.onCollectionChanged = onCollectionChanged;
     }
@@ -41,9 +45,13 @@ public class ObservableSet<T> extends ForwardingSet<T> {
         return delegate;
     }
 
-    protected void fireCollectionChanged() {
+    protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
         if (onCollectionChanged != null)
-            onCollectionChanged.run();
+            onCollectionChanged.accept(type, changes);
+    }
+
+    protected void fireCollectionRefreshed() {
+        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
     }
 
     @Override
@@ -55,7 +63,7 @@ public class ObservableSet<T> extends ForwardingSet<T> {
     public boolean add(T element) {
         boolean changed = super.add(element);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.ADD_ITEMS, Collections.singletonList(element));
         return changed;
     }
 
@@ -63,15 +71,16 @@ public class ObservableSet<T> extends ForwardingSet<T> {
     public boolean removeAll(Collection<?> collection) {
         boolean changed = super.removeAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
         return changed;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object object) {
         boolean changed = super.remove(object);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList((T) object));
         return changed;
     }
 
@@ -79,7 +88,7 @@ public class ObservableSet<T> extends ForwardingSet<T> {
     public boolean addAll(Collection<? extends T> collection) {
         boolean changed = super.addAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
         return changed;
     }
 
@@ -87,7 +96,7 @@ public class ObservableSet<T> extends ForwardingSet<T> {
     public boolean retainAll(Collection<?> collection) {
         boolean changed = super.retainAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
         return changed;
     }
 
@@ -96,7 +105,7 @@ public class ObservableSet<T> extends ForwardingSet<T> {
         boolean wasEmpty = isEmpty();
         super.clear();
         if (!wasEmpty)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
     }
 
     @Override

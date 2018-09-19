@@ -556,7 +556,7 @@ public class StandardDataContext implements DataContext {
                 }
             }
             if (!(list instanceof ObservableList)) {
-                ObservableList observableList = new ObservableList<>(list, () -> modified(owningEntity));
+                ObservableList observableList = new ObservableList<>(list, (changeType, changes) -> modified(owningEntity));
                 ((AbstractInstance) owningEntity).setValue(propertyName, observableList, false);
             }
         }
@@ -571,7 +571,7 @@ public class StandardDataContext implements DataContext {
                 }
             }
             if (!(set instanceof ObservableList)) {
-                ObservableSet observableSet = new ObservableSet<>(set, () -> modified(owningEntity));
+                ObservableSet observableSet = new ObservableSet<>(set, (changeType, changes) -> modified(owningEntity));
                 ((AbstractInstance) owningEntity).setValue(propertyName, observableSet, false);
             }
         }

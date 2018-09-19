@@ -34,7 +34,7 @@ class ObservableListTest extends Specification {
         User user1 = new User()
         user1.login = "u1"
         user1.name = "User 1"
-        user1.userRoles = new ObservableList<>(new ArrayList<>(), {})
+        user1.userRoles = new ObservableList<>(new ArrayList<>(), null)
 
         Role role1 = new Role()
         role1.name = "Role 1"

@@ -24,9 +24,9 @@ import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.HasLoader;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -35,7 +35,7 @@ public class CollectionContainerOptions<E extends Entity<K>, K> implements Optio
 
     protected CollectionContainer<E> container;
 
-    private CollectionLoader loader;
+    private DataLoader loader;
 
     protected EventHub events = new EventHub();
 
@@ -43,9 +43,11 @@ public class CollectionContainerOptions<E extends Entity<K>, K> implements Optio
 
     protected E deferredSelectedItem;
 
-    public CollectionContainerOptions(CollectionContainer<E> container, @Nullable CollectionLoader loader) {
+    public CollectionContainerOptions(CollectionContainer<E> container) {
         this.container = container;
-        this.loader = loader;
+        if (container instanceof HasLoader) {
+            this.loader = ((HasLoader) container).getLoader();
+        }
 
         this.container.addCollectionChangeListener(this::containerCollectionChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);

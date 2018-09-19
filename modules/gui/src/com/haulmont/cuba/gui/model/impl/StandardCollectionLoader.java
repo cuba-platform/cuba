@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.HasLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -93,6 +94,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         container.setItems(list);
     }
 
+    @Override
     public LoadContext<E> createLoadContext() {
 
         @SuppressWarnings("unchecked")
@@ -137,6 +139,9 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     @Override
     public void setContainer(CollectionContainer<E> container) {
         this.container = container;
+        if (container instanceof HasLoader) {
+            ((HasLoader) container).setLoader(this);
+        }
         container.setSorter(new CollectionContainerSorter(this));
     }
 

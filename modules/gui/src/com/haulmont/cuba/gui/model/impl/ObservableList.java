@@ -17,13 +17,13 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.ForwardingList;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  *
@@ -32,9 +32,9 @@ import java.util.ListIterator;
 public class ObservableList<T> extends ForwardingList<T> implements Serializable {
 
     private List<T> delegate;
-    private Runnable onCollectionChanged;
+    private BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
-    public ObservableList(List<T> delegate, Runnable onCollectionChanged) {
+    public ObservableList(List<T> delegate, BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
         this.onCollectionChanged = onCollectionChanged;
     }
@@ -43,9 +43,13 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
         return delegate;
     }
 
-    protected void fireCollectionChanged() {
+    protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
         if (onCollectionChanged != null)
-            onCollectionChanged.run();
+            onCollectionChanged.accept(type, changes);
+    }
+
+    protected void fireCollectionRefreshed() {
+        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
     }
 
     @Override
@@ -56,14 +60,14 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     @Override
     public void add(int index, T element) {
         super.add(index, element);
-        fireCollectionChanged();
+        fireCollectionChanged(CollectionChangeType.ADD_ITEMS, Collections.singletonList(element));
     }
 
     @Override
     public boolean add(T element) {
         boolean changed = super.add(element);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.ADD_ITEMS, Collections.singletonList(element));
         return changed;
     }
 
@@ -71,7 +75,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public boolean addAll(int index, Collection<? extends T> elements) {
         boolean changed = super.addAll(index, elements);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.ADD_ITEMS, elements);
         return changed;
     }
 
@@ -79,7 +83,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public boolean addAll(Collection<? extends T> collection) {
         boolean changed = super.addAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.ADD_ITEMS, collection);
         return changed;
     }
 
@@ -87,7 +91,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public T set(int index, T element) {
         T prev = super.set(index, element);
         if (prev != element) {
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.SET_ITEM, Collections.singletonList(element));
         }
         return prev;
     }
@@ -95,23 +99,25 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     @Override
     public T remove(int index) {
         T entity = super.remove(index);
-        fireCollectionChanged();
+        fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList(entity));
         return entity;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object object) {
         boolean changed = super.remove(object);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList((T) object));
         return changed;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean removeAll(Collection<?> collection) {
         boolean changed = super.removeAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
         return changed;
     }
 
@@ -119,7 +125,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public boolean retainAll(Collection<?> collection) {
         boolean changed = super.retainAll(collection);
         if (changed)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
         return changed;
     }
 
@@ -128,7 +134,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
         boolean wasEmpty = isEmpty();
         super.clear();
         if (!wasEmpty)
-            fireCollectionChanged();
+            fireCollectionRefreshed();
     }
 
     @Override

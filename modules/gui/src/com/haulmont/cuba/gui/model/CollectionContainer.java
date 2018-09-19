@@ -50,8 +50,15 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
      */
     class CollectionChangeEvent<T extends Entity> extends EventObject {
 
-        public CollectionChangeEvent(CollectionContainer<T> container) {
+        private final CollectionChangeType changeType;
+        private final Collection<? extends T> changes;
+
+        public CollectionChangeEvent(CollectionContainer<T> container,
+                                     CollectionChangeType changeType,
+                                     Collection<? extends T> changes) {
             super(container);
+            this.changeType = changeType;
+            this.changes = changes;
         }
 
         @SuppressWarnings("unchecked")
@@ -60,10 +67,20 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
             return (CollectionContainer) super.getSource();
         }
 
+        public CollectionChangeType getChangeType() {
+            return changeType;
+        }
+
+        public Collection<? extends T> getChanges() {
+            return changes;
+        }
+
         @Override
         public String toString() {
             return "CollectionChangeEvent{" +
                     "source=" + source +
+                    ", changeType=" + changeType +
+                    ", changes=" + changes +
                     '}';
         }
     }

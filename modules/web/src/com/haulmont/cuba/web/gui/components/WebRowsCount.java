@@ -17,14 +17,19 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.RowsCount;
-import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
+import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRowsCount;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
@@ -41,6 +47,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected ListComponent owner;
 
+    protected Adapter adapter;
+
+    @Inject
+    protected DataManager dataManager;
+
     protected boolean refreshing;
     protected State state;
     protected State lastState;
@@ -48,8 +59,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected int size;
     protected boolean samePage;
 
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
-    protected WeakCollectionChangeListener weakCollectionChangeListener;
+    protected CollectionDatasource.CollectionChangeListener datasourceCollectionChangeListener;
+    protected WeakCollectionChangeListener weakDatasourceCollectionChangeListener;
+
+    protected Consumer<CollectionContainer.CollectionChangeEvent> containerCollectionChangeListener;
+    protected com.haulmont.cuba.gui.model.impl.WeakCollectionChangeListener weakContainerCollectionChangeListener;
+
     protected List<BeforeRefreshListener> beforeRefreshListeners;
 
     private RowsCountTarget target;
@@ -80,40 +95,27 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public CollectionDatasource getDatasource() {
-        return owner != null ? owner.getDatasource() : null;
+        return adapter instanceof DatasourceAdapter ? ((DatasourceAdapter) adapter).getDatasource() : null;
     }
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
-        if (getDatasource() != null) {
-            //noinspection unchecked
-            getDatasource().removeCollectionChangeListener(weakCollectionChangeListener);
-            weakCollectionChangeListener = null;
-        } else {
-            //noinspection unchecked
-            collectionChangeListener = e -> {
-                samePage = Operation.REFRESH != e.getOperation()
-                        && Operation.CLEAR != e.getOperation();
-                onCollectionChanged();
-            };
-
+        if (adapter != null) {
+            adapter.cleanup();
         }
+        adapter = createDatasourceAdapter(datasource);
 
-        weakCollectionChangeListener = new WeakCollectionChangeListener(datasource, collectionChangeListener);
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(weakCollectionChangeListener);
+        initButtonListeners();
+    }
 
+    protected void initButtonListeners() {
         component.getCountButton().addClickListener(event -> onLinkClick());
         component.getPrevButton().addClickListener(event -> onPrevClick());
         component.getNextButton().addClickListener(event -> onNextClick());
         component.getFirstButton().addClickListener(event -> onFirstClick());
         component.getLastButton().addClickListener(event -> onLastClick());
-
-        if (datasource.getState() == Datasource.State.VALID) {
-            onCollectionChanged();
-        }
     }
 
     @Override
@@ -131,9 +133,58 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         return target;
     }
 
+    protected Adapter createAdapter(RowsCountTarget target) {
+        if (target instanceof Table) {
+            TableSource tableSource = ((Table) target).getTableSource();
+            if (tableSource instanceof CollectionDatasourceTableAdapter) {
+                return createDatasourceAdapter(((CollectionDatasourceTableAdapter) tableSource).getDatasource());
+            } else if (tableSource instanceof CollectionContainerTableSource) {
+                return createLoaderAdapter(((CollectionContainerTableSource) tableSource).getContainer());
+            } else {
+                throw new IllegalStateException("Unsupported TableSource: " + tableSource);
+            }
+        } else if (target instanceof DataGrid) {
+            DataGridSource dataGridSource = ((DataGrid) target).getDataGridSource();
+            if (dataGridSource instanceof CollectionDatasourceDataGridAdapter) {
+                return createDatasourceAdapter(((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource());
+            } else {
+                throw new IllegalStateException("Unsupported DataGridSource: " + dataGridSource);
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
+        }
+    }
+
+    private Adapter createLoaderAdapter(CollectionContainer container) {
+        DataLoader loader = null;
+        if (container instanceof HasLoader) {
+            loader = ((HasLoader) container).getLoader();
+        }
+        if (!(loader instanceof CollectionLoader)) {
+            throw new IllegalStateException(String.format("Invalid loader for container %s: %s", container, loader));
+        }
+        return new LoaderAdapter((CollectionLoader) loader);
+    }
+
+    protected Adapter createDatasourceAdapter(CollectionDatasource datasource) {
+        if (datasource instanceof CollectionDatasource.SupportsPaging) {
+            return new DatasourceAdapter((CollectionDatasource.SupportsPaging) datasource);
+        } else {
+            throw new UnsupportedOperationException("Datasource must support paging");
+        }
+    }
+
     @Override
     public void setRowsCountTarget(RowsCountTarget target) {
+        Preconditions.checkNotNullArgument(target, "target is null");
         this.target = target;
+
+        if (adapter != null) {
+            adapter.cleanup();
+        }
+        adapter = createAdapter(target);
+
+        initButtonListeners();
     }
 
     @Override
@@ -151,94 +202,74 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onPrevClick() {
-        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
-            return;
-        }
-
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
-        int firstResult = ds.getFirstResult();
-        int newStart = ds.getFirstResult() - ds.getMaxResults();
-        ds.setFirstResult(newStart < 0 ? 0 : newStart);
-        if (refreshDatasource(ds)) {
+        int firstResult = adapter.getFirstResult();
+        int newStart = adapter.getFirstResult() - adapter.getMaxResults();
+        adapter.setFirstResult(newStart < 0 ? 0 : newStart);
+        if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
                 com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
                 vTable.setCurrentPageFirstItemIndex(0);
             }
         } else {
-            ds.setFirstResult(firstResult);
+            adapter.setFirstResult(firstResult);
         }
     }
 
     protected void onNextClick() {
-        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
-            return;
-        }
-
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
-        int firstResult = ds.getFirstResult();
-        ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
-        if (refreshDatasource(ds)) {
+        int firstResult = adapter.getFirstResult();
+        adapter.setFirstResult(adapter.getFirstResult() + adapter.getMaxResults());
+        if (refreshData()) {
             if (state == State.LAST && size == 0) {
-                ds.setFirstResult(firstResult);
-                int maxResults = ds.getMaxResults();
-                ds.setMaxResults(maxResults + 1);
-                refreshDatasource(ds);
-                ds.setMaxResults(maxResults);
+                adapter.setFirstResult(firstResult);
+                int maxResults = adapter.getMaxResults();
+                adapter.setMaxResults(maxResults + 1);
+                refreshData();
+                adapter.setMaxResults(maxResults);
             }
             if (owner instanceof WebAbstractTable) {
                 com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
                 vTable.setCurrentPageFirstItemIndex(0);
             }
         } else {
-            ds.setFirstResult(firstResult);
+            adapter.setFirstResult(firstResult);
         }
     }
 
     protected void onFirstClick() {
-        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
-            return;
-        }
-
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
-        int firstResult = ds.getFirstResult();
-        ds.setFirstResult(0);
-        if (refreshDatasource(ds)) {
+        int firstResult = adapter.getFirstResult();
+        adapter.setFirstResult(0);
+        if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
                 com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
                 vTable.setCurrentPageFirstItemIndex(0);
             }
         } else {
-            ds.setFirstResult(firstResult);
+            adapter.setFirstResult(firstResult);
         }
     }
 
     protected void onLastClick() {
-        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
-            return;
-        }
+        int count = adapter.getCount();
+        int itemsToDisplay = count % adapter.getMaxResults();
+        if (itemsToDisplay == 0) itemsToDisplay = adapter.getMaxResults();
 
-        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
-        int count = ((CollectionDatasource.SupportsPaging) getDatasource()).getCount();
-        int itemsToDisplay = count % ds.getMaxResults();
-        if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
-
-        int firstResult = ds.getFirstResult();
-        ds.setFirstResult(count - itemsToDisplay);
-        if (refreshDatasource(ds)) {
+        int firstResult = adapter.getFirstResult();
+        adapter.setFirstResult(count - itemsToDisplay);
+        if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
                 com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
                 vTable.setCurrentPageFirstItemIndex(0);
             }
         } else {
-            ds.setFirstResult(firstResult);
+            adapter.setFirstResult(firstResult);
         }
     }
 
-    protected boolean refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+    protected boolean refreshData() {
         if (beforeRefreshListeners != null) {
             boolean refreshPrevented = false;
             for (BeforeRefreshListener listener : beforeRefreshListeners) {
-                BeforeRefreshEvent event = new BeforeRefreshEvent(this, ds);
+                BeforeRefreshEvent event = new BeforeRefreshEvent(this);
                 listener.beforeDatasourceRefresh(event);
                 refreshPrevented = refreshPrevented || event.isRefreshPrevented();
             }
@@ -247,7 +278,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
         refreshing = true;
         try {
-            ds.refresh();
+            adapter.refresh();
         } finally {
             refreshing = false;
         }
@@ -255,51 +286,41 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onLinkClick() {
-        if (!(getDatasource() instanceof CollectionDatasource.SupportsPaging)) {
-            return;
-        }
-
-        int count = ((CollectionDatasource.SupportsPaging) getDatasource()).getCount();
+        int count = adapter.getCount();
         component.getCountButton().setCaption(String.valueOf(count));
         component.getCountButton().addStyleName("c-paging-count-number");
         component.getCountButton().setEnabled(false);
     }
 
     protected void onCollectionChanged() {
-        if (getDatasource() == null) {
+        if (adapter == null) {
             return;
         }
 
         String msgKey;
-        size = getDatasource().size();
+        size = adapter.size();
         start = 0;
 
         boolean refreshSizeButton = false;
-        if (getDatasource() instanceof CollectionDatasource.SupportsPaging) {
-            CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) getDatasource();
-            if (samePage) {
-                state = lastState == null ? State.FIRST_COMPLETE : lastState;
-                start = ds.getFirstResult();
-                samePage = false;
-                refreshSizeButton = State.LAST.equals(state);
-            } else if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
-                state = State.FIRST_COMPLETE;
-                lastState = state;
-            } else if (size == ds.getMaxResults() && ds.getFirstResult() == 0) {
-                state = State.FIRST_INCOMPLETE;
-                lastState = state;
-            } else if (size == ds.getMaxResults() && ds.getFirstResult() > 0) {
-                state = State.MIDDLE;
-                start = ds.getFirstResult();
-                lastState = state;
-            } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
-                state = State.LAST;
-                start = ds.getFirstResult();
-                lastState = state;
-            } else {
-                state = State.FIRST_COMPLETE;
-                lastState = state;
-            }
+        if (samePage) {
+            state = lastState == null ? State.FIRST_COMPLETE : lastState;
+            start = adapter.getFirstResult();
+            samePage = false;
+            refreshSizeButton = State.LAST.equals(state);
+        } else if ((size == 0 || size < adapter.getMaxResults()) && adapter.getFirstResult() == 0) {
+            state = State.FIRST_COMPLETE;
+            lastState = state;
+        } else if (size == adapter.getMaxResults() && adapter.getFirstResult() == 0) {
+            state = State.FIRST_INCOMPLETE;
+            lastState = state;
+        } else if (size == adapter.getMaxResults() && adapter.getFirstResult() > 0) {
+            state = State.MIDDLE;
+            start = adapter.getFirstResult();
+            lastState = state;
+        } else if (size < adapter.getMaxResults() && adapter.getFirstResult() > 0) {
+            state = State.LAST;
+            start = adapter.getFirstResult();
+            lastState = state;
         } else {
             state = State.FIRST_COMPLETE;
             lastState = state;
@@ -385,5 +406,147 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         publish(VisibilityChangeEvent.class,
                 new VisibilityChangeEvent(this, visible));
+    }
+
+    interface Adapter {
+        void cleanup();
+        int getFirstResult();
+        int getMaxResults();
+        void setFirstResult(int startPosition);
+        void setMaxResults(int maxResults);
+        int getCount();
+        int size();
+        void refresh();
+    }
+
+    protected class LoaderAdapter implements Adapter {
+
+        private CollectionContainer container;
+        private CollectionLoader loader;
+
+        @SuppressWarnings("unchecked")
+        public LoaderAdapter(CollectionLoader loader) {
+            this.loader = loader;
+            container = loader.getContainer();
+
+            containerCollectionChangeListener = e -> {
+                samePage = CollectionChangeType.REFRESH != e.getChangeType();
+                onCollectionChanged();
+            };
+
+            weakContainerCollectionChangeListener = new com.haulmont.cuba.gui.model.impl.WeakCollectionChangeListener (
+                    container, containerCollectionChangeListener);
+
+            onCollectionChanged();
+        }
+
+        @Override
+        public void cleanup() {
+            weakContainerCollectionChangeListener.removeItself();
+        }
+
+        @Override
+        public int getFirstResult() {
+            return loader.getFirstResult();
+        }
+
+        @Override
+        public int getMaxResults() {
+            return loader.getMaxResults();
+        }
+
+        @Override
+        public void setFirstResult(int startPosition) {
+            loader.setFirstResult(startPosition);
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            loader.setMaxResults(maxResults);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int getCount() {
+            return (int) dataManager.getCount(loader.createLoadContext());
+        }
+
+        @Override
+        public int size() {
+            return container.getItems().size();
+        }
+
+        @Override
+        public void refresh() {
+            loader.load();
+        }
+    }
+    protected class DatasourceAdapter implements Adapter {
+
+        private CollectionDatasource.SupportsPaging datasource;
+
+        public DatasourceAdapter(CollectionDatasource.SupportsPaging datasource) {
+            this.datasource = datasource;
+
+            datasourceCollectionChangeListener = e -> {
+                samePage = Operation.REFRESH != e.getOperation()
+                        && Operation.CLEAR != e.getOperation();
+                onCollectionChanged();
+            };
+
+            weakDatasourceCollectionChangeListener = new WeakCollectionChangeListener(datasource, datasourceCollectionChangeListener);
+            //noinspection unchecked
+            datasource.addCollectionChangeListener(weakDatasourceCollectionChangeListener);
+
+            if (datasource.getState() == Datasource.State.VALID) {
+                onCollectionChanged();
+            }
+        }
+
+        @Override
+        public void cleanup() {
+            //noinspection unchecked
+            datasource.removeCollectionChangeListener(weakDatasourceCollectionChangeListener);
+            weakDatasourceCollectionChangeListener = null;
+        }
+
+        @Override
+        public int getFirstResult() {
+            return datasource.getFirstResult();
+        }
+
+        @Override
+        public int getMaxResults() {
+            return datasource.getMaxResults();
+        }
+
+        @Override
+        public void setFirstResult(int startPosition) {
+            datasource.setFirstResult(startPosition);
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            datasource.setMaxResults(maxResults);
+        }
+
+        @Override
+        public int getCount() {
+            return datasource.getCount();
+        }
+
+        @Override
+        public int size() {
+            return datasource.size();
+        }
+
+        @Override
+        public void refresh() {
+            datasource.refresh();
+        }
+
+        public CollectionDatasource getDatasource() {
+            return datasource;
+        }
     }
 }
