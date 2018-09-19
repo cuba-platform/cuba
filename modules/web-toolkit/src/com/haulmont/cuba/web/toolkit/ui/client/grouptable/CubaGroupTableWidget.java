@@ -350,11 +350,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
 
         @Override
-        protected HeaderCell createHeaderCell(String cid, String caption) {
-            return new CubaGroupTableHeaderCell(cid, caption);
-        }
-
-        @Override
         protected boolean shouldRecalcColWidths(HeaderCell cell) {
             HeaderCell lastCell = getHeaderCell(tHead.getVisibleCellCount() - 1);
             return cell == lastCell && getIconsOffsetWidth() > 0;
@@ -375,28 +370,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         @Override
         protected void fillAdditionalUpdatedCells(HashSet<String> updated) {
             updated.add(GROUP_DIVIDER_COLUMN_KEY);
-        }
-    }
-
-    protected class CubaGroupTableHeaderCell extends CubaScrollTableHeaderCell {
-
-        public CubaGroupTableHeaderCell(String colId, String headerText) {
-            super(colId, headerText);
-        }
-
-        @Override
-        protected boolean leaveRoomForSortIndicator() {
-            HeaderCell lastCell = tHead.getHeaderCell(tHead.getVisibleCellCount() - 1);
-            return this.equals(lastCell) || super.leaveRoomForSortIndicator();
-        }
-
-        @Override
-        public void setWidth(int w, boolean ensureDefinedWidth) {
-            super.setWidth(w, ensureDefinedWidth);
-
-            Style style = this.getElement().getStyle();
-            style.setProperty("minWidth", this.getWidth() + "px");
-            style.setProperty("maxWidth", this.getWidth() + "px");
         }
     }
 
