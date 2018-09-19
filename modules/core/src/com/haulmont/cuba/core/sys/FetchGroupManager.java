@@ -273,6 +273,15 @@ public class FetchGroupManager {
                         }
                     }
                 }
+
+                //remove BATCH fields for cached classes
+                if (refField.fetchMode == FetchMode.UNDEFINED && refField.cacheable) {
+                    for (FetchGroupField batchField : new ArrayList<>(batchFields)) {
+                        if (batchField != refField && batchField.metaPropertyPath.startsWith(refField.metaPropertyPath)) {
+                            batchFields.remove(batchField);
+                        }
+                    }
+                }
             }
 
             for (FetchGroupField joinField : joinFields) {
@@ -423,7 +432,7 @@ public class FetchGroupManager {
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
         MetaClass fetchMetaClass = metaProperty.getRange().isClass() ? metaProperty.getRange().asClass() : metaClass;
 
-        return new FetchGroupField(metaClass, parentField, property, getFetchMode(fetchMetaClass, fetchMode));
+        return new FetchGroupField(metaClass, parentField, property, getFetchMode(fetchMetaClass, fetchMode), metadataTools.isCacheable(metaClass));
     }
 
     private FetchMode getFetchMode(MetaClass metaClass, FetchMode fetchMode) {
@@ -435,14 +444,16 @@ public class FetchGroupManager {
         private FetchMode fetchMode;
         private final MetaProperty metaProperty;
         private final MetaPropertyPath metaPropertyPath;
+        private final boolean cacheable;
 
-        public FetchGroupField(MetaClass metaClass, FetchGroupField parentField, String property, FetchMode fetchMode) {
+        public FetchGroupField(MetaClass metaClass, FetchGroupField parentField, String property, FetchMode fetchMode, boolean cacheable) {
             this.metaClass = metaClass;
             this.fetchMode = fetchMode;
             this.metaProperty = metaClass.getPropertyNN(property);
             this.metaPropertyPath = parentField == null ?
                     new MetaPropertyPath(metaClass, metaProperty) :
                     new MetaPropertyPath(parentField.metaPropertyPath, metaProperty);
+            this.cacheable = cacheable;
         }
 
         public String path() {
