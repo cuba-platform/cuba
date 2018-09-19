@@ -1043,3 +1043,67 @@ create table TEST_ADDRESS_EMBEDDED_CONTAINER (
     primary key (ID)
 )^
 -- end TEST_ADDRESS_EMBEDDED_CONTAINER
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_COMPOSITE_ONE (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_COMPOSITE_TWO (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_COMPOSITE_PROPERTY_ONE (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    COMPOSITE_ONE_ID varchar(36),
+    COMPOSITE_TWO_ID varchar(36),
+    primary key (ID)
+)^
+
+create table TEST_COMPOSITE_PROPERTY_TWO (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    COMPOSITE_TWO_ID varchar(36),
+    primary key (ID)
+)^
+
+alter table TEST_COMPOSITE_PROPERTY_ONE add constraint FK_TEST_COMPOSITE_PROPERTY_ONE_ONE
+    foreign key (COMPOSITE_ONE_ID) references TEST_COMPOSITE_ONE(ID)^
+alter table TEST_COMPOSITE_PROPERTY_ONE add constraint FK_TEST_COMPOSITE_PROPERTY_ONE_TWO
+    foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^
+alter table TEST_COMPOSITE_PROPERTY_TWO add constraint FK_TEST_COMPOSITE_PROPERTY_TWO_TWO
+    foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^

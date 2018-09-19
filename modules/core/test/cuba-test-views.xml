@@ -47,4 +47,32 @@
     <view entity="sales1$OrderLine" name="with-product" extends="_local">
         <property name="product" view="_local"/>
     </view>
+
+    <view entity="test$CompositeOne"
+          extends="_local"
+          name="compositeOne-view">
+        <property name="compositePropertyOne"
+                  view="compositePropertyOne-view">
+        </property>
+    </view>
+
+    <view entity="test$CompositePropertyOne"
+          extends="_local"
+          name="compositePropertyOne-view">
+        <property name="compositeOne" view="_minimal"/>
+        <property name="compositeTwo" view="compositeTwo-view"/>
+    </view>
+
+    <view entity="test$CompositeTwo"
+          extends="_local"
+          name="compositeTwo-view">
+        <property name="compositePropertyTwo"
+                  view="compositePropertyTwo-view"/>
+    </view>
+
+    <view entity="test$CompositePropertyTwo"
+          extends="_local"
+          name="compositePropertyTwo-view">
+        <property name="compositeTwo" view="_minimal"/>
+    </view>
 </views>
