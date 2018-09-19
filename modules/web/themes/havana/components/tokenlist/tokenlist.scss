@@ -102,6 +102,10 @@
     }
   }
 
+  .v-csslayout.c-tokenlist-scrollbox {
+    display: inline-block;
+  }
+
   .v-slot-c-tokenlist-scrollbox {
     max-width: 400px;
     max-height: 250px;
