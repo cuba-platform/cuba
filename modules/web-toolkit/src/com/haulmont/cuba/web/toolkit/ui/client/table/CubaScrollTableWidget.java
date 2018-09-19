@@ -500,6 +500,30 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 rowRequestHandler.run(); // run immediately
             }
         }
+
+        @Override
+        protected boolean leaveRoomForSortIndicator() {
+            HeaderCell lastCell = tHead.getHeaderCell(tHead.getVisibleCellCount() - 1);
+            return this.equals(lastCell) || super.leaveRoomForSortIndicator();
+        }
+
+        @Override
+        public void setWidth(int w, boolean ensureDefinedWidth) {
+            super.setWidth(w, ensureDefinedWidth);
+
+            Style style = this.getElement().getStyle();
+            style.setProperty("minWidth", style.getWidth() + "px");
+            style.setProperty("maxWidth", style.getWidth() + "px");
+        }
+
+        @Override
+        public void setWidth(String width) {
+            super.setWidth(width);
+
+            Style style = this.getElement().getStyle();
+            style.setProperty("minWidth", width);
+            style.setProperty("maxWidth", width);
+        }
     }
 
     protected class CubaScrollTableBody extends VScrollTableBody {
