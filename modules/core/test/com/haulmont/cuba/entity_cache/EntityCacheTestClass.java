@@ -26,6 +26,11 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeOne;
+import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyOne;
+import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyTwo;
+import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeTwo;
+import com.haulmont.cuba.testmodel.fetchjoin.Product;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestNamePrinter;
@@ -39,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
@@ -68,6 +74,10 @@ public class EntityCacheTestClass {
     private User user1;
     private UserSetting userSetting;
     private UserSubstitution userSubstitution;
+    private CompositeOne compositeOne;
+    private CompositeTwo compositeTwo;
+    private CompositePropertyOne compositePropertyOne;
+    private CompositePropertyTwo compositePropertyTwo;
     private Predicate<String> selectsOnly = s -> s.contains("> SELECT");
 
     public EntityCacheTestClass() {
@@ -133,6 +143,25 @@ public class EntityCacheTestClass {
             userSubstitution.setSubstitutedUser(user2);
             cont.entityManager().persist(userSubstitution);
 
+            compositeOne = cont.metadata().create(CompositeOne.class);
+            compositeOne.setName("compositeOne");
+            cont.entityManager().persist(compositeOne);
+
+            compositeTwo = cont.metadata().create(CompositeTwo.class);
+            compositeTwo.setName("compositeTwo");
+            cont.entityManager().persist(compositeTwo);
+
+            compositePropertyOne = cont.metadata().create(CompositePropertyOne.class);
+            compositePropertyOne.setName("compositePropertyOne");
+            compositePropertyOne.setCompositeOne(compositeOne);
+            compositePropertyOne.setCompositeTwo(compositeTwo);
+            cont.entityManager().persist(compositePropertyOne);
+
+            compositePropertyTwo = cont.metadata().create(CompositePropertyTwo.class);
+            compositePropertyTwo.setName("compositePropertyTwo");
+            compositePropertyTwo.setCompositeTwo(compositeTwo);
+            cont.entityManager().persist(compositePropertyTwo);
+
             tx.commit();
         }
         cache.clear();
@@ -141,6 +170,7 @@ public class EntityCacheTestClass {
     @After
     public void tearDown() throws Exception {
         cont.deleteRecord(userSetting, userRole, role, userSubstitution, user, user2);
+        cont.deleteRecord(compositePropertyTwo, compositePropertyOne, compositeTwo, compositeOne);
         if (role1 != null)
             cont.deleteRecord(role1);
         if (user1 != null)
@@ -869,6 +899,39 @@ public class EntityCacheTestClass {
 
         assertEquals(1, appender.filterMessages(selectsOnly).count()); // UserSubstitution only, User is cached
         assertTrue(appender.filterMessages(selectsOnly).noneMatch(s -> s.contains("JOIN SEC_USER"))); // User must not be joined because it is cached
+    }
+
+    @Test
+    public void testNonCachedOneToManyFromCache() {
+        appender.clearMessages();
+
+        DataManager dataManager = AppBeans.get(DataManager.class);
+
+        LoadContext<CompositeOne> loadContextList = new LoadContext<>(CompositeOne.class)
+                .setView("compositeOne-view");
+        loadContextList.setQueryString("select e from test$CompositeOne e where e.name = 'compositeOne'").setMaxResults(1);
+
+        List<CompositeOne> results = dataManager.loadList(loadContextList);
+        Assert.assertEquals(1, results.size());
+        CompositeOne compositeOne = results.get(0);
+        Assert.assertEquals(1, compositeOne.getCompositePropertyOne().size());
+        CompositePropertyOne compositePropertyOne = compositeOne.getCompositePropertyOne().get(0);
+        CompositeTwo compositeTwo = compositePropertyOne.getCompositeTwo();
+        Assert.assertNotNull(compositeTwo);
+        Assert.assertEquals(1, compositeTwo.getCompositePropertyTwo().size());
+        CompositePropertyTwo compositePropertyTwo = compositeTwo.getCompositePropertyTwo().get(0);
+        Assert.assertEquals("compositePropertyTwo", compositePropertyTwo.getName());
+
+        assertEquals(4, appender.filterMessages(selectsOnly).count()); // UserSubstitution, User, User
+
+        appender.clearMessages();
+
+        LoadContext<CompositeOne> loadContextOne = new LoadContext<>(CompositeOne.class)
+                .setId(compositeOne.getId())
+                .setView("compositeOne-view");
+        CompositeOne result = dataManager.load(loadContextOne);
+
+        assertEquals(3, appender.filterMessages(selectsOnly).count()); // UserSubstitution only, User is cached
     }
 
     private void loadUserAlone() {

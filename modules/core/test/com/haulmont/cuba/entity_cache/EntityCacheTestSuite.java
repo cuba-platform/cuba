@@ -29,7 +29,8 @@ import java.util.Arrays;
 public class EntityCacheTestSuite {
 
     public static TestContainer cont = new TestContainer()
-            .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "com/haulmont/cuba/entity_cache/test-entitycache-app.properties"));
+            .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties",
+                    "com/haulmont/cuba/entity_cache/test-entitycache-app.properties"));
 
     @BeforeClass
     public static void setUp() throws Exception {
