@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data.table;
+package com.haulmont.cuba.gui.components.data.datagrid;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
-import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.EntityDataGridSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
@@ -34,15 +34,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class CollectionContainerTableSource<E extends Entity> implements EntityTableSource<E>, TableSource.Sortable<E> {
+public class CollectionContainerDataGridSource<E extends Entity>
+        implements EntityDataGridSource<E>, DataGridSource.Sortable<E> {
 
     protected CollectionContainer<E> container;
 
     protected EventHub events = new EventHub();
 
-    public CollectionContainerTableSource(CollectionContainer<E> container) {
+    public CollectionContainerDataGridSource(CollectionContainer<E> container) {
         this.container = container;
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addCollectionChangeListener(this::containerCollectionChanged);
@@ -54,49 +55,33 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     }
 
     protected void containerItemChanged(CollectionContainer.ItemChangeEvent<E> event) {
-        events.publish(SelectedItemChangeEvent.class, new SelectedItemChangeEvent<>(this, event.getItem()));
+        events.publish(DataGridSource.SelectedItemChangeEvent.class, new DataGridSource.SelectedItemChangeEvent<>(this, event.getItem()));
     }
 
     protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<E> e) {
-        events.publish(ItemSetChangeEvent.class, new ItemSetChangeEvent<>(this));
+        events.publish(DataGridSource.ItemSetChangeEvent.class, new DataGridSource.ItemSetChangeEvent<>(this));
     }
 
     @SuppressWarnings("unchecked")
     protected void containerItemPropertyChanged(CollectionContainer.ItemPropertyChangeEvent<E> e) {
-        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this,
+        events.publish(DataGridSource.ValueChangeEvent.class, new DataGridSource.ValueChangeEvent(this,
                 e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue()));
     }
 
     @Override
-    public Collection<?> getItemIds() {
-        return container.getItems().stream().map(Entity::getId).collect(Collectors.toList());
-    }
-
-    @Nullable
-    @Override
-    public E getItem(Object itemId) {
-        return container.getItemOrNull(itemId);
+    public MetaClass getEntityMetaClass() {
+        return container.getEntityMetaClass();
     }
 
     @Override
-    public E getItemNN(Object itemId) {
-        return container.getItem(itemId);
-    }
+    public Collection<MetaPropertyPath> getAutowiredProperties() {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
-    @Override
-    public Object getItemValue(Object itemId, Object propertyId) {
-        MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-        return container.getItem(itemId).getValueEx(propertyPath.toPathString());
-    }
-
-    @Override
-    public int size() {
-        return container.getItems().size();
-    }
-
-    @Override
-    public boolean containsId(Object itemId) {
-        return container.getItems().stream().anyMatch(e -> e.getId().equals(itemId));
+        return container.getView() != null
+                // if a view is specified - use view properties
+                ? metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass())
+                // otherwise use all properties from meta-class
+                : metadataTools.getPropertyPaths(container.getEntityMetaClass());
     }
 
     @Override
@@ -105,14 +90,44 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     }
 
     @Override
-    public Class<?> getType(Object propertyId) {
-        MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-        return propertyPath.getRangeJavaClass();
+    public Object getItemId(E item) {
+        return item.getId();
     }
 
     @Override
-    public boolean supportsProperty(Object propertyId) {
-        return propertyId instanceof MetaPropertyPath;
+    public E getItem(@Nullable Object itemId) {
+        return itemId == null ? null : container.getItemOrNull(itemId);
+    }
+
+    @Override
+    public int indexOfItem(E item) {
+        return container.getItemIndex(item.getId());
+    }
+
+    @Nullable
+    @Override
+    public E getItemByIndex(int index) {
+        return container.getItems().get(index);
+    }
+
+    @Override
+    public Stream<E> getItems() {
+        return container.getItems().stream();
+    }
+
+    @Override
+    public List<E> getItems(int startIndex, int numberOfItems) {
+        return container.getItems().subList(startIndex, startIndex + numberOfItems);
+    }
+
+    @Override
+    public boolean containsItem(E item) {
+        return container.getItemOrNull(item.getId()) != null;
+    }
+
+    @Override
+    public int size() {
+        return container.getItems().size();
     }
 
     @Nullable
@@ -129,78 +144,25 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer)listener);
+        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<E>> listener) {
-        return events.subscribe(ValueChangeEvent.class, (Consumer)listener);
+        return events.subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<E>> listener) {
-        return events.subscribe(ItemSetChangeEvent.class, (Consumer)listener);
+        return events.subscribe(ItemSetChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
-        return events.subscribe(SelectedItemChangeEvent.class, (Consumer)listener);
-    }
-
-    @Override
-    public MetaClass getEntityMetaClass() {
-        return container.getEntityMetaClass();
-    }
-
-    @Override
-    public Collection<MetaPropertyPath> getAutowiredProperties() {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-
-        return container.getView() != null ?
-                // if a view is specified - use view properties
-                metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass()) :
-                // otherwise use all properties from meta-class
-                metadataTools.getPropertyPaths(container.getEntityMetaClass());
-    }
-
-    @Override
-    public Object nextItemId(Object itemId) {
-        List<E> items = container.getItems();
-        int index = container.getItemIndex(itemId);
-        return index == items.size() - 1 ? null : items.get(index + 1).getId();
-    }
-
-    @Override
-    public Object prevItemId(Object itemId) {
-        int index = container.getItemIndex(itemId);
-        return index <= 0 ? null : container.getItems().get(index - 1).getId();
-    }
-
-    @Override
-    public Object firstItemId() {
-        List<E> items = container.getItems();
-        return items.isEmpty() ? null : items.get(0).getId();
-    }
-
-    @Override
-    public Object lastItemId() {
-        List<E> items = container.getItems();
-        return items.isEmpty() ? null : items.get(0).getId();
-    }
-
-    @Override
-    public boolean isFirstId(Object itemId) {
-        int index = container.getItemIndex(itemId);
-        return index == 0;
-    }
-
-    @Override
-    public boolean isLastId(Object itemId) {
-        int index = container.getItemIndex(itemId);
-        return index == container.getItems().size() - 1;
+        return events.subscribe(SelectedItemChangeEvent.class, (Consumer) listener);
     }
 
     @Override

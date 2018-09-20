@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.datagrid.CollectionContainerDataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
@@ -147,6 +148,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             DataGridSource dataGridSource = ((DataGrid) target).getDataGridSource();
             if (dataGridSource instanceof CollectionDatasourceDataGridAdapter) {
                 return createDatasourceAdapter(((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource());
+            } else if (dataGridSource instanceof CollectionContainerDataGridSource) {
+                return createLoaderAdapter(((CollectionContainerDataGridSource) dataGridSource).getContainer());
             } else {
                 throw new IllegalStateException("Unsupported DataGridSource: " + dataGridSource);
             }

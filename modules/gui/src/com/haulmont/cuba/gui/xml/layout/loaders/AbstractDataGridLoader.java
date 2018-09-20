@@ -32,9 +32,14 @@ import com.haulmont.cuba.gui.components.DataGrid.Column;
 import com.haulmont.cuba.gui.components.HasButtonsPanel;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.datagrid.CollectionContainerDataGridSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
@@ -119,37 +124,68 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
         loadRowsCount(resultComponent, element); // must be before datasource setting
 
-        String datasource = element.attributeValue("datasource");
-        if (StringUtils.isBlank(datasource)) {
-            throw new GuiDevelopmentException("DataGrid element doesn't have 'datasource' attribute",
-                    context.getCurrentFrameId(), "DataGrid ID", element.attributeValue("id"));
+        MetaClass metaClass;
+        CollectionContainer collectionContainer = null;
+        DataLoader dataLoader = null;
+        Datasource datasource = null;
+
+        String containerId = element.attributeValue("container");
+        if (containerId != null) {
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+            if (container instanceof CollectionContainer) {
+                collectionContainer = (CollectionContainer) container;
+            } else {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+            }
+            metaClass = collectionContainer.getEntityMetaClass();
+            if (collectionContainer instanceof HasLoader) {
+                dataLoader = ((HasLoader) collectionContainer).getLoader();
+            }
+
+        } else {
+            String datasourceId = element.attributeValue("datasource");
+            if (StringUtils.isBlank(datasourceId)) {
+                throw new GuiDevelopmentException("DataGrid element doesn't have 'datasource' attribute",
+                        context.getCurrentFrameId(), "DataGrid ID", element.attributeValue("id"));
+            }
+            datasource = context.getDsContext().get(datasourceId);
+            if (datasource == null) {
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
+            }
+            if (!(datasource instanceof CollectionDatasource)) {
+                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());
+            }
+            metaClass = datasource.getMetaClass();
         }
 
-        Datasource ds = context.getDsContext().get(datasource);
-        if (ds == null) {
-            throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
-        }
-
-        if (!(ds instanceof CollectionDatasource)) {
-            throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());
-        }
-
-        CollectionDatasource cds = (CollectionDatasource) ds;
         List<Column> availableColumns;
-
         if (columnsElement != null) {
-            availableColumns = loadColumns(resultComponent, columnsElement, cds);
+            availableColumns = loadColumns(resultComponent, columnsElement, metaClass);
         } else {
             availableColumns = new ArrayList<>();
         }
 
-        addDynamicAttributes(resultComponent, ds, availableColumns);
-
-        resultComponent.setDatasource(cds);
+        if (collectionContainer != null) {
+            if (dataLoader instanceof CollectionLoader) {
+                addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
+            }
+            //noinspection unchecked
+            resultComponent.setDataGridSource(createContainerDataGridSource(collectionContainer));
+        } else {
+            addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
+            resultComponent.setDatasource((CollectionDatasource) datasource);
+        }
 
         loadSelectionMode(resultComponent, element);
         loadFrozenColumnCount(resultComponent, element);
         loadTabIndex(resultComponent, element);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected DataGridSource createContainerDataGridSource(CollectionContainer container) {
+        return new CollectionContainerDataGridSource(container);
     }
 
     protected void loadEditorEnabled(DataGrid component, Element element) {
@@ -280,16 +316,16 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         }
     }
 
-    protected List<Column> loadColumns(DataGrid component, Element columnsElement, CollectionDatasource ds) {
+    protected List<Column> loadColumns(DataGrid component, Element columnsElement, MetaClass metaClass) {
         List<Column> columns = new ArrayList<>();
         //noinspection unchecked
         for (Element columnElement : columnsElement.elements("column")) {
-            columns.add(loadColumn(component, columnElement, ds));
+            columns.add(loadColumn(component, columnElement, metaClass));
         }
         return columns;
     }
 
-    protected Column loadColumn(DataGrid component, Element element, Datasource ds) {
+    protected Column loadColumn(DataGrid component, Element element, MetaClass metaClass) {
         String id = element.attributeValue("id");
         String property = element.attributeValue("property");
 
@@ -305,7 +341,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         Column column;
         if (property != null) {
             MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                    .resolveMetaPropertyPath(ds.getMetaClass(), property);
+                    .resolveMetaPropertyPath(metaClass, property);
             column = component.addColumn(id, metaPropertyPath);
         } else {
             column = component.addColumn(id, null);
@@ -371,7 +407,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                     columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);
                 }
             } else {
-                Class<?> declaringClass = ds.getMetaClass().getJavaClass();
+                Class<?> declaringClass = metaClass.getJavaClass();
                 String className = declaringClass.getName();
                 int i = className.lastIndexOf('.');
                 if (i > -1) {
@@ -441,16 +477,22 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         return beanLocator.get(DynamicAttributesGuiTools.NAME);
     }
 
-    protected void addDynamicAttributes(DataGrid component, Datasource ds, List<Column> availableColumns) {
-        if (getMetadataTools().isPersistent(ds.getMetaClass())) {
+    protected void addDynamicAttributes(DataGrid component, MetaClass metaClass,
+                                        Datasource ds, CollectionLoader collectionLoader,
+                                        List<Column> availableColumns) {
+        if (getMetadataTools().isPersistent(metaClass)) {
             Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(),
+                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass,
                             context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
-                ds.setLoadDynamicAttributes(true);
+                if (collectionLoader != null) {
+                    collectionLoader.setLoadDynamicAttributes(true);
+                } else if (ds != null) {
+                    ds.setLoadDynamicAttributes(true);
+                }
                 for (CategoryAttribute attribute : attributesToShow) {
                     final MetaPropertyPath metaPropertyPath =
-                            DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+                            DynamicAttributesUtils.getMetaPropertyPath(metaClass, attribute);
 
                     Object columnWithSameId = IterableUtils.find(availableColumns, column -> {
                         MetaPropertyPath propertyPath = column.getPropertyPath();
@@ -470,7 +512,9 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 }
             }
 
-            getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
+            if (ds != null) {
+                getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
+            }
         }
     }
 

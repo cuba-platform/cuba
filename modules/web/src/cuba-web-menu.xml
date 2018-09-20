@@ -27,7 +27,9 @@
         <item id="dcScreen3"/>
         <item id="dcScreen4"/>
         <item id="dcScreen5"/>
-        <item id="tmpTmpGroupBrowse"/>
+        <item id="tmpGroupBrowse"/>
+        <item id="tmpUserDataGrid"/>
+        <item id="tmpGroupTreeDataGrid"/>
         <separator/>
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
