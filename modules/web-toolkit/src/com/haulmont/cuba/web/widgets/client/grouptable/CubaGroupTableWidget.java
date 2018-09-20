@@ -348,27 +348,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         protected void fillAdditionalUpdatedCells(HashSet<String> updated) {
             updated.add(GROUP_DIVIDER_COLUMN_KEY);
         }
-
-        @Override
-        protected HeaderCell createHeaderCell(String cid, String caption) {
-            return new CubaGroupTableHeaderCell(cid, caption);
-        }
-    }
-
-    protected class CubaGroupTableHeaderCell extends CubaScrollTableHeaderCell {
-
-        public CubaGroupTableHeaderCell(String colId, String headerText) {
-            super(colId, headerText);
-        }
-
-        @Override
-        public void setWidth(int w, boolean ensureDefinedWidth) {
-            super.setWidth(w, ensureDefinedWidth);
-
-            Style style = this.getElement().getStyle();
-            style.setProperty("minWidth", this.getWidth() + "px");
-            style.setProperty("maxWidth", this.getWidth() + "px");
-        }
     }
 
     protected class GroupTableFooter extends TableFooter {
