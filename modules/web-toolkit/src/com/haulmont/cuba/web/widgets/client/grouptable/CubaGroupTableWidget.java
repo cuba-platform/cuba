@@ -51,7 +51,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         if (GROUP_DIVIDER_COLUMN_KEY.equals(getVisibleColOrder()[colIndex])) {
-            w = 0;
+            w = 15;
             isDefinedWidth = true;
         }
 
