@@ -16,6 +16,13 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.ValueLoadContext;
+
+import java.util.Collection;
+import java.util.function.Function;
+
 /**
  *
  */
@@ -50,4 +57,14 @@ public interface KeyValueCollectionLoader extends DataLoader {
      * Sets the maximum number of instances to load.
      */
     void setMaxResults(int maxResults);
+
+    /**
+     * Returns a function which will be used to load data instead of standard implementation.
+     */
+    Function<ValueLoadContext, Collection<KeyValueEntity>> getDelegate();
+
+    /**
+     * Sets a function which will be used to load data instead of standard implementation.
+     */
+    void setLoadDelegate(Function<ValueLoadContext, Collection<KeyValueEntity>> delegate);
 }

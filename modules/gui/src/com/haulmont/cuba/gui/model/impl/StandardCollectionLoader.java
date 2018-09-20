@@ -26,10 +26,8 @@ import com.haulmont.cuba.gui.model.HasLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  *
@@ -51,6 +49,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     private View view;
     private String viewName;
     private Sort sort;
+    private Function<LoadContext<E>, Collection<E>> delegate;
 
     public StandardCollectionLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -84,14 +83,19 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
 
         LoadContext<E> loadContext = createLoadContext();
 
-        List<E> list = getDataManager().loadList(loadContext);
+        Collection<E> collection;
+        if (delegate == null) {
+            collection = getDataManager().loadList(loadContext);
+        } else {
+            collection = delegate.apply(loadContext);
+        }
 
         if (dataContext != null) {
-            for (E entity : list) {
+            for (E entity : collection) {
                 dataContext.merge(entity);
             }
         }
-        container.setItems(list);
+        container.setItems(collection);
     }
 
     @Override
@@ -271,5 +275,15 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         } else {
             this.sort = sort;
         }
+    }
+
+    @Override
+    public Function<LoadContext<E>, Collection<E>> getDelegate() {
+        return delegate;
+    }
+
+    @Override
+    public void setLoadDelegate(Function<LoadContext<E>, Collection<E>> delegate) {
+        this.delegate = delegate;
     }
 }

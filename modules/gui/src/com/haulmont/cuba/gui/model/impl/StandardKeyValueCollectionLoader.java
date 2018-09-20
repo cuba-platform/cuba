@@ -28,10 +28,8 @@ import com.haulmont.cuba.gui.model.KeyValueCollectionLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  *
@@ -50,6 +48,7 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     private boolean softDeletion = true;
 
     private String storeName = Stores.MAIN;
+    private Function<ValueLoadContext, Collection<KeyValueEntity>> delegate;
 
     public StandardKeyValueCollectionLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -77,6 +76,25 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
         if (query == null)
             throw new IllegalStateException("query is null");
 
+        ValueLoadContext loadContext = createLoadContext();
+
+        Collection<KeyValueEntity> list;
+        if (delegate == null) {
+            list = getDataManager().loadValues(loadContext);
+        } else {
+            list = delegate.apply(loadContext);
+        }
+
+        // TODO merge KeyValueEntity ???
+        if (dataContext != null) {
+            for (KeyValueEntity entity : list) {
+                dataContext.merge(entity);
+            }
+        }
+        container.setItems(list);
+    }
+
+    protected ValueLoadContext createLoadContext() {
         ValueLoadContext loadContext = ValueLoadContext.create();
         loadContext.setStoreName(storeName);
         loadContext.setIdName(container.getIdName());
@@ -93,16 +111,7 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
             query.setMaxResults(maxResults);
 
         loadContext.setSoftDeletion(softDeletion);
-
-        List<KeyValueEntity> list = getDataManager().loadValues(loadContext);
-
-        // TODO merge KeyValueEntity ???
-        if (dataContext != null) {
-            for (KeyValueEntity entity : list) {
-                dataContext.merge(entity);
-            }
-        }
-        container.setItems(list);
+        return loadContext;
     }
 
     @Override
@@ -170,6 +179,16 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     @Override
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
+    }
+
+    @Override
+    public Function<ValueLoadContext, Collection<KeyValueEntity>> getDelegate() {
+        return delegate;
+    }
+
+    @Override
+    public void setLoadDelegate(Function<ValueLoadContext, Collection<KeyValueEntity>> delegate) {
+        this.delegate = delegate;
     }
 
     @Override

@@ -21,6 +21,9 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.core.global.View;
 
+import java.util.Collection;
+import java.util.function.Function;
+
 /**
  *
  */
@@ -71,4 +74,14 @@ public interface CollectionLoader<E extends Entity> extends DataLoader {
     Sort getSort();
 
     void setSort(Sort sort);
+
+    /**
+     * Returns a function which will be used to load data instead of standard implementation.
+     */
+    Function<LoadContext<E>, Collection<E>> getDelegate();
+
+    /**
+     * Sets a function which will be used to load data instead of standard implementation.
+     */
+    void setLoadDelegate(Function<LoadContext<E>, Collection<E>> delegate);
 }

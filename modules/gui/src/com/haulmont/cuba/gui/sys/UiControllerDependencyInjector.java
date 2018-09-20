@@ -205,11 +205,15 @@ public class UiControllerDependencyInjector {
                     throw new UnsupportedOperationException("Unsupported @Provide target " + annotation.target());
             }
         } else {
-            targetInstance = findProvideTarget(target, frame);
+            if (annotation.target() == Target.DATA_LOADER) {
+                targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
+            } else {
+                targetInstance = findProvideTarget(target, frame);
 
-            if (targetInstance == null) {
-                throw new DevelopmentException(
-                        String.format("Unable to find @Provide target %s in %s", target, frame.getId()));
+                if (targetInstance == null) {
+                    throw new DevelopmentException(
+                            String.format("Unable to find @Provide target %s in %s", target, frame.getId()));
+                }
             }
         }
         return targetInstance;

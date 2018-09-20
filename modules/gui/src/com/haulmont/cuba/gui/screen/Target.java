@@ -39,5 +39,10 @@ public enum Target {
     /**
      * Window or Fragment of UI controller
      */
-    FRAME
+    FRAME,
+
+    /**
+     * {@code DataLoader} defined in {@code ScreenData}.
+     */
+    DATA_LOADER
 }

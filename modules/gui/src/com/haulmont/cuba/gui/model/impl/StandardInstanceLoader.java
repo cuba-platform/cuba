@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  *
@@ -48,6 +49,7 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     private boolean loadDynamicAttributes;
     private View view;
     private String viewName;
+    private Function<LoadContext<E>, E> delegate;
 
     public StandardInstanceLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -77,15 +79,21 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
         if (container == null)
             throw new IllegalStateException("container is null");
 
-        if (!needLoad())
-            return;
+        E entity;
 
-        LoadContext<E> loadContext = createLoadContext();
+        if (delegate == null) {
+            if (!needLoad())
+                return;
 
-        E entity = getDataManager().load(loadContext);
+            LoadContext<E> loadContext = createLoadContext();
 
-        if (entity == null) {
-            throw new EntityAccessException(container.getEntityMetaClass(), entityId);
+            entity = getDataManager().load(loadContext);
+
+            if (entity == null) {
+                throw new EntityAccessException(container.getEntityMetaClass(), entityId);
+            }
+        } else {
+            entity = delegate.apply(createLoadContext());
         }
 
         if (dataContext != null) {
@@ -217,6 +225,16 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     @Override
     public void setLoadDynamicAttributes(boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
+    }
+
+    @Override
+    public Function<LoadContext<E>, E> getDelegate() {
+        return delegate;
+    }
+
+    @Override
+    public void setLoadDelegate(Function<LoadContext<E>, E> delegate) {
+        this.delegate = delegate;
     }
 
     @Override

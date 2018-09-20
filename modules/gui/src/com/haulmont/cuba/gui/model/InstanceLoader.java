@@ -17,7 +17,11 @@
 package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
+
+import java.util.Collection;
+import java.util.function.Function;
 
 public interface InstanceLoader<E extends Entity> extends DataLoader {
 
@@ -38,4 +42,14 @@ public interface InstanceLoader<E extends Entity> extends DataLoader {
     boolean isLoadDynamicAttributes();
 
     void setLoadDynamicAttributes(boolean loadDynamicAttributes);
+
+    /**
+     * Returns a function which will be used to load data instead of standard implementation.
+     */
+    Function<LoadContext<E>, E> getDelegate();
+
+    /**
+     * Sets a function which will be used to load data instead of standard implementation.
+     */
+    void setLoadDelegate(Function<LoadContext<E>, E> delegate);
 }
