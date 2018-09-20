@@ -118,9 +118,20 @@
   .#{$primary-stylename}-text {
     text-align: right;
 
-    &.v-readonly,
-    &.v-disabled {
+    &.v-readonly {
       @include valo-textfield-readonly-style;
     }
+  }
+
+  .#{$primary-stylename}-error .v-textfield {
+    @include valo-textfield-error-style;
+  }
+
+  .#{$primary-stylename}.v-readonly .v-textfield {
+    @include valo-textfield-readonly-style;
+  }
+
+  .#{$primary-stylename}-error.v-readonly .v-textfield {
+    border: valo-border() !important;
   }
 }

@@ -185,12 +185,9 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     }
 
     @Override
-    public boolean isRequired() {
-        return textField.isRequired();
-    }
-
-    @Override
     public void setRequired(boolean required) {
+        super.setRequired(required);
+
         textField.setRequired(required);
     }
 }

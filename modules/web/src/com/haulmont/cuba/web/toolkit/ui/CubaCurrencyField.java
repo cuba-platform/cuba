@@ -63,6 +63,8 @@ public class CubaCurrencyField extends CustomField {
     protected void init() {
         setPrimaryStyleName(CURRENCYFIELD_STYLENAME);
         setSizeUndefined();
+        setValidationVisible(false);
+        setShowErrorForDisabledState(false);
     }
 
     protected void initTextField() {
@@ -196,27 +198,8 @@ public class CubaCurrencyField extends CustomField {
     }
 
     @Override
-    public void setRequired(boolean required) {
-        textField.setRequired(required);
-
-        markAsDirty();
-    }
-
-    @Override
-    public boolean isRequired() {
-        return textField.isRequired();
-    }
-
-    @Override
-    public void setRequiredError(String requiredMessage) {
-        textField.setRequiredError(requiredMessage);
-
-        markAsDirty();
-    }
-
-    @Override
-    public String getRequiredError() {
-        return textField.getRequiredError();
+    public boolean isEmpty() {
+        return textField.isEmpty();
     }
 
     @Override
