@@ -236,12 +236,14 @@ public class UiControllerReflectionInspector {
         List<AnnotatedMethod<Provide>> annotatedMethods = new ArrayList<>();
 
         for (Method m : methods) {
-            Provide provideAnnotation = findMergedAnnotation(m, Provide.class);
-            if (provideAnnotation != null) {
-                if (!m.isAccessible()) {
-                    m.setAccessible(true);
+            if (m.getParameterCount() > 0 || m.getReturnType() != Void.TYPE) {
+                Provide provideAnnotation = findMergedAnnotation(m, Provide.class);
+                if (provideAnnotation != null) {
+                    if (!m.isAccessible()) {
+                        m.setAccessible(true);
+                    }
+                    annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m));
                 }
-                annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m));
             }
         }
 

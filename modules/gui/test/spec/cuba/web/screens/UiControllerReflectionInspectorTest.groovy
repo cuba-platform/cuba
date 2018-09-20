@@ -85,7 +85,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithSubscribe)
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithSubscribe).collect({ it.method })
 
         then:
 
@@ -97,7 +97,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def childMethods = inspector.getAnnotatedSubscribeMethods(ScreenWithParentSubscribe)
+        def childMethods = inspector.getAnnotatedSubscribeMethods(ScreenWithParentSubscribe).collect({ it.method })
 
         then: "Subclass can override event handlers without explicit @Subscribe annotation"
 
@@ -120,7 +120,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithOrderedSubscribe)
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithOrderedSubscribe).collect({ it.method })
 
         then:
 
@@ -139,7 +139,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithParentOrdered)
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithParentOrdered).collect({ it.method })
 
         then:
 
@@ -160,7 +160,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithMixin)
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithMixin).collect({ it.method })
 
         then:
 
@@ -170,5 +170,22 @@ class UiControllerReflectionInspectorTest extends Specification {
         methods.find({ it.name == 'onAfterShow' }) != null
         methods.find({ it.name == 'init' }) != null
         methods.find({ it.name == 'onInitMixin' }) != null
+    }
+
+    def "Get annotated @Provide methods"() {
+        def inspector = new UiControllerReflectionInspector()
+
+        when:
+
+        def methods = inspector.getAnnotatedProvideMethods(ScreenWithProvide).collect({ it.method })
+
+        then:
+
+        methods.size() == 4
+        methods.find({ it.name == 'format' }) != null
+        methods.find({ it.name == 'getCellStyleName' }) != null
+        methods.find({ it.name == 'getData' }) != null
+        methods.find({ it.name == 'consumeEvent' }) != null
+        methods.find({ it.name == 'ignoredMethod' }) == null
     }
 }
