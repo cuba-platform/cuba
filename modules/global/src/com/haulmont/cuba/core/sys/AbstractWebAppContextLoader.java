@@ -41,10 +41,12 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Base class for {@link AppContext} loaders of web applications.
@@ -185,6 +187,14 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
         for (Object key : properties.keySet()) {
             AppContext.setProperty((String) key, properties.getProperty((String) key).trim());
+        }
+
+        if (log.isTraceEnabled()) {
+            String props = Arrays.asList(AppContext.getPropertyNames()).stream()
+                    .map(key -> key + "=" + AppContext.getProperty(key))
+                    .sorted()
+                    .collect(Collectors.joining("\n"));
+            log.trace("AppProperties of the '{}' block:\n{}", getBlock(), props);
         }
     }
 
