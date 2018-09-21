@@ -40,6 +40,8 @@ public class AppProperties {
 
     private Map<String, String> properties = new ConcurrentHashMap<>();
 
+    private Map<String, String> systemProperties = new ConcurrentHashMap<>();
+
     // Temporary support for deprecated properties: the second element has priority
     private final List<Pair<String, String>> DEPRECATED_PROPERTIES = Arrays.asList(
             new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"),
@@ -65,6 +67,14 @@ public class AppProperties {
 
     public AppProperties(AppComponents appComponents) {
         this.appComponents = appComponents;
+        initSystemProperties();
+    }
+
+    public synchronized void initSystemProperties() {
+        systemProperties.clear();
+        for (String name : System.getProperties().stringPropertyNames()) {
+            systemProperties.put(name, System.getProperty(name));
+        }
     }
 
     /**
@@ -122,7 +132,7 @@ public class AppProperties {
 
     @Nullable
     private String getSystemOrAppProperty(String key) {
-        String systemValue = System.getProperty(key);
+        String systemValue = systemProperties.get(key);
 
         String value = systemValue;
         if (StringUtils.isEmpty(systemValue)) {
@@ -172,7 +182,7 @@ public class AppProperties {
             @Override
             public String lookup(String key) {
                 String property = getSystemOrAppProperty(key);
-                return property != null ? property : System.getProperty(key);
+                return property != null ? property : systemProperties.get(key);
             }
         });
         return substitutor.replace(value);
