@@ -34,4 +34,6 @@ public interface CachingFacadeMBean {
     void clearMenuConfig();
 
     void clearDynamicAttributesCache();
+
+    void clearSystemPropertiesCache();
 }

@@ -109,6 +109,7 @@ public class AppPropertiesTest {
     @Test
     public void testSystemPropertyOverride() {
         System.setProperty("prop1", "system_value");
+        appProperties.initSystemProperties();
         try {
             assertEquals("system_value", appProperties.getProperty("prop1"));
         } finally {

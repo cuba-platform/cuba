@@ -308,6 +308,13 @@ public class AppContext {
         public static void stopContext() {
             AppContext.stopContext();
         }
+
+        /**
+         * Direct access to the {@link AppProperties} object.
+         */
+        public static AppProperties getAppProperties() {
+            return AppContext.appProperties;
+        }
     }
 
     public interface SecuredOperation<T> {

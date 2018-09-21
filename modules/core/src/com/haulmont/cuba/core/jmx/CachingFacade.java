@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 
 import org.springframework.stereotype.Component;
@@ -76,6 +77,11 @@ public class CachingFacade implements CachingFacadeMBean {
     @Override
     public void clearDynamicAttributesCache() {
         dynamicAttributesManagerAPI.loadCache();
+    }
+
+    @Override
+    public void clearSystemPropertiesCache() {
+        AppContext.Internals.getAppProperties().initSystemProperties();
     }
 
     @Override

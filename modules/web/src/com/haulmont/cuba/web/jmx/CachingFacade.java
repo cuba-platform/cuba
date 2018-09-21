@@ -119,4 +119,9 @@ public class CachingFacade implements CachingFacadeMBean {
             log.error("Login exception", e);
         }
     }
+
+    @Override
+    public void clearSystemPropertiesCache() {
+        AppContext.Internals.getAppProperties().initSystemProperties();
+    }
 }
