@@ -410,11 +410,18 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
         @Override
         public void setText(String headerText) {
-            if ("".equals(headerText) || headerText == null) {
-                headerText = "&nbsp;";
+            if (headerText == null || "".equals(headerText)) {
+                super.setText("&nbsp;");
+                return;
             }
 
-            super.setText(headerText);
+            TableWidgetDelegate delegate = CubaTreeTableWidget.this._delegate;
+            boolean captionAsHtml = delegate.htmlCaptionColumns.contains(cid);
+            if (captionAsHtml) {
+                DOM.setInnerHTML(captionContainer, headerText);
+            } else {
+                DOM.setInnerText(captionContainer, headerText);
+            }
         }
 
         @Override

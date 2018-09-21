@@ -62,4 +62,7 @@ public class CubaTableState extends TableState {
 
     @NoLayout
     public String tableSortDescendingLabel;
+
+    @NoLayout
+    public String[] htmlCaptionColumns;
 }

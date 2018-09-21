@@ -62,4 +62,7 @@ public class CubaTreeTableState extends TreeTableState {
 
     @NoLayout
     public String tableSortDescendingLabel;
+
+    @NoLayout
+    public String[] htmlCaptionColumns;
 }

@@ -2037,6 +2037,7 @@
         <xs:attribute name="sortable" type="xs:boolean"/>
         <xs:attribute name="maxTextLength" type="xs:integer"/>
         <xs:attribute name="align" type="columnAlignment"/>
+        <xs:attribute name="captionAsHtml" type="xs:boolean"/>
 
         <!-- Show entity reference as clickable link -->
         <xs:attribute name="link" type="xs:boolean"/>

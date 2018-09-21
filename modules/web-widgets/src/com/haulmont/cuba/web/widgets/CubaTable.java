@@ -66,6 +66,8 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     protected Map<Object, String> aggregationTooltips; // lazily initialized map
 
+    protected Set<Object> htmlCaptionColumns; // lazily initialized set
+
     protected AggregationStyle aggregationStyle = AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
@@ -243,6 +245,40 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     @Override
     public void setCustomCellValueFormatter(CellValueFormatter customCellValueFormatter) {
         this.customCellValueFormatter = customCellValueFormatter;
+    }
+
+    protected void updateHtmlCaptionColumns() {
+        if (htmlCaptionColumns != null) {
+            String[] htmlCaptionColumnKeys = new String[htmlCaptionColumns.size()];
+            int i = 0;
+            for (Object columnId : htmlCaptionColumns) {
+                htmlCaptionColumnKeys[i] = _columnIdMap().key(columnId);
+                i++;
+            }
+
+            getState().htmlCaptionColumns = htmlCaptionColumnKeys;
+        }
+    }
+
+    @Override
+    public void setColumnCaptionAsHtml(Object columnId, boolean captionAsHtml) {
+        if (htmlCaptionColumns == null) {
+            htmlCaptionColumns = new HashSet<>();
+        }
+        if (captionAsHtml) {
+            if (htmlCaptionColumns.add(columnId)) {
+                markAsDirty();
+            }
+        } else {
+            if (htmlCaptionColumns.remove(columnId)) {
+                markAsDirty();
+            }
+        }
+    }
+
+    @Override
+    public boolean getColumnCaptionAsHtml(Object columnId) {
+        return htmlCaptionColumns == null || htmlCaptionColumns.contains(columnId);
     }
 
     @Override
@@ -691,6 +727,7 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         updateClickableColumnKeys();
         updateColumnDescriptions();
         updateAggregatableTooltips();
+        updateHtmlCaptionColumns();
 
         if (isAggregatable()) {
             if (AggregationStyle.BOTTOM.equals(getAggregationStyle())) {

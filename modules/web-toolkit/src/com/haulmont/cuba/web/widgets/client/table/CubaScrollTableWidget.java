@@ -428,11 +428,18 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
         @Override
         public void setText(String headerText) {
-            if ("".equals(headerText) || headerText == null) {
-                headerText = "&nbsp;";
+            if (headerText == null || "".equals(headerText)) {
+                super.setText("&nbsp;");
+                return;
             }
 
-            super.setText(headerText);
+            TableWidgetDelegate delegate = CubaScrollTableWidget.this._delegate;
+            boolean captionAsHtml = delegate.htmlCaptionColumns.contains(cid);
+            if (captionAsHtml) {
+                DOM.setInnerHTML(captionContainer, headerText);
+            } else {
+                DOM.setInnerText(captionContainer, headerText);
+            }
         }
 
         @Override

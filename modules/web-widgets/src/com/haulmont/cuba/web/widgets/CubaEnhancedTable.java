@@ -126,6 +126,21 @@ public interface CubaEnhancedTable extends AggregationContainer {
     void setCustomCellValueFormatter(CellValueFormatter cellValueFormatter);
     CellValueFormatter getCustomCellValueFormatter();
 
+    /**
+     * Sets whether caption of column with the given {@code columnId} should be interpreted as HTML or not.
+     *
+     * @param columnId      column id
+     * @param captionAsHtml interpret caption as HTML or not
+     */
+    void setColumnCaptionAsHtml(Object columnId, boolean captionAsHtml);
+
+    /**
+     * @param columnId column id
+     *
+     * @return whether caption of column with the given {@code columnId} should be interpreted as HTML or not
+     */
+    boolean getColumnCaptionAsHtml(Object columnId);
+
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);
     }

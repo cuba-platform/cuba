@@ -476,8 +476,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadAggregation(column, element);
         loadCalculatable(column, element);
         loadMaxTextLength(column, element);
+        loadCaptionAsHtml(column, element);
 
         return column;
+    }
+
+    protected void loadCaptionAsHtml(Table.Column component, Element element) {
+        String captionAsHtml = element.attributeValue("captionAsHtml");
+        if (captionAsHtml != null && !captionAsHtml.isEmpty()) {
+            component.setCaptionAsHtml(Boolean.parseBoolean(captionAsHtml));
+        }
     }
 
     protected void loadAggregation(Table.Column column, Element columnElement) {

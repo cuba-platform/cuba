@@ -65,6 +65,7 @@ public class TableWidgetDelegate {
     public TableAggregationRow aggregationRow;
 
     public Set<String> clickableColumns;
+    public Set<String> htmlCaptionColumns;
     public TableCellClickListener cellClickListener;
 
     public VOverlay customPopupOverlay;
