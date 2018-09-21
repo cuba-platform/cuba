@@ -212,6 +212,7 @@ public class ConfigProviderTest {
         assertEquals("def_value", value);
 
         System.setProperty("cuba.test.stringPropDef", "new_value");
+        AppContext.Internals.getAppProperties().initSystemProperties();
         value = config.getStringPropDef();
         assertEquals("new_value", value);
     }
