@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
 public class HintProvider {
     private DomainModel model;
     private static final char CARET_POSITION_SYMBOL = '~';
-    public static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
-    public static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
+    public static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
+    public static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
     public static final String[] ARITHMETIC_OPERATIONS = {"+", "-", "*", "/"};
 
     public HintProvider(DomainModel model) {
