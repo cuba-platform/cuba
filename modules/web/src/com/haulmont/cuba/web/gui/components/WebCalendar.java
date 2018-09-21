@@ -407,8 +407,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     }
 
     protected void onBackward(CalendarComponentEvents.BackwardEvent event) {
-        CalendarBackwardClickEvent calendarBackwardClickEvent =
-                new CalendarBackwardClickEvent(WebCalendar.this);
+        CalendarBackwardClickEvent calendarBackwardClickEvent = new CalendarBackwardClickEvent(this);
         publish(CalendarBackwardClickEvent.class, calendarBackwardClickEvent);
     }
 
@@ -430,7 +429,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     protected void onRangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
         CalendarRangeSelectEvent calendarRangeSelectEvent = new CalendarRangeSelectEvent(
-                WebCalendar.this,
+                this,
                 event.getStart(),
                 event.getEnd());
         publish(CalendarRangeSelectEvent.class, calendarRangeSelectEvent);
@@ -438,7 +437,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
-        Calendar.super.removeRangeSelectListener(listener);
+        unsubscribe(CalendarRangeSelectEvent.class, listener);
 
         if (!hasSubscriptions(CalendarRangeSelectEvent.class)) {
             component.setHandler((CalendarComponentEvents.RangeSelectHandler) null);
