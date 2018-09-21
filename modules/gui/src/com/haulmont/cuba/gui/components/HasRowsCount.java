@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * Component having a {@link RowsCount} component.
- *
- * todo extract
  */
 public interface HasRowsCount {
     RowsCount getRowsCount();

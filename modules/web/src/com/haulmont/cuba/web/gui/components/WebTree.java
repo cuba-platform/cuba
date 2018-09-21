@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
         implements LookupComponent.LookupSelectionChangeNotifier {
@@ -270,6 +272,16 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
     @Override
     public void focus() {
         component.focus();
+    }
+
+    @Override
+    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        return getEventHub().subscribe(LookupSelectionChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        unsubscribe(LookupSelectionChangeEvent.class, listener);
     }
 
     public class TreeCollectionDsListenersWrapper extends CollectionDsListenersWrapper {

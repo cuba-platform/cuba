@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.compatibility.FileMultiUploadFieldQueueUploadCompleteListener;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.Map;
@@ -63,18 +62,14 @@ public interface FileMultiUploadField extends UploadField {
         removeQueueUploadCompleteListener(new FileMultiUploadFieldQueueUploadCompleteListener(listener));
     }
 
-    default Subscription addQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
-        return ((EventTarget) this).addListener(QueueUploadCompleteEvent.class, listener);
-    }
+    Subscription addQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
-        ((EventTarget) this).removeListener(QueueUploadCompleteEvent.class, listener);
-    }
+    void removeQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener);
 
     class QueueUploadCompleteEvent extends EventObject {
 

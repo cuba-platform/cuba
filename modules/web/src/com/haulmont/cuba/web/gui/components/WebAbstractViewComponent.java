@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component, P, V>
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
@@ -69,6 +71,18 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
 
     protected void valueBindingActivated(ValueSource<V> valueSource) {
         // hook
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        return getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        unsubscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     @Override

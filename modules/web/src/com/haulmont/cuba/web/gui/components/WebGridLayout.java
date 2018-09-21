@@ -256,7 +256,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
             component.addLayoutClickListener(layoutClickListener);
         }
 
-        return GridLayout.super.addLayoutClickListener(listener);
+        getEventHub().subscribe(LayoutClickEvent.class, listener);
+        return () -> removeLayoutClickListener(listener);
     }
 
     protected Component findChildComponent(com.vaadin.ui.Component vComponent) {
@@ -270,7 +271,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     @Override
     public void removeLayoutClickListener(Consumer<LayoutClickEvent> listener) {
-        GridLayout.super.removeLayoutClickListener(listener);
+        unsubscribe(LayoutClickEvent.class, listener);
 
         if (!hasSubscriptions(LayoutClickEvent.class)) {
             component.removeLayoutClickListener(layoutClickListener);

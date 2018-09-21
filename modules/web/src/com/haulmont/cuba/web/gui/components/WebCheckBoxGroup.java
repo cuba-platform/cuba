@@ -39,7 +39,7 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -125,7 +125,7 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
         }
 
         if (optionsSource != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }

@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -73,9 +72,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
     // vaadin8 - unsupported in Vaadin 8 text fields
     interface TextChangeNotifier {
 
-        default Subscription addTextChangeListener(Consumer<TextChangeEvent> listener) {
-            return ((EventTarget) this).addListener(TextChangeEvent.class, listener);
-        }
+        Subscription addTextChangeListener(Consumer<TextChangeEvent> listener);
 
         /**
          * @param listener a listener to remove
@@ -83,9 +80,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
          */
 
         @Deprecated
-        default void removeTextChangeListener(Consumer<TextChangeEvent> listener) {
-            ((EventTarget) this).removeListener(TextChangeEvent.class, listener);
-        }
+        void removeTextChangeListener(Consumer<TextChangeEvent> listener);
 
         /**
          * Gets the timeout used to fire {@link TextChangeEvent}s when the
@@ -183,18 +178,14 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
     }
 
     interface EnterPressNotifier {
-        default Subscription addEnterPressListener(Consumer<EnterPressEvent> listener) {
-            return ((EventTarget) this).addListener(EnterPressEvent.class, listener);
-        }
+        Subscription addEnterPressListener(Consumer<EnterPressEvent> listener);
 
         /**
          * @param listener a listener to remove
          * @deprecated Use {@link Subscription} instead
          */
         @Deprecated
-        default void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
-            ((EventTarget) this).removeListener(EnterPressEvent.class, listener);
-        }
+        void removeEnterPressListener(Consumer<EnterPressEvent> listener);
     }
 
     /**

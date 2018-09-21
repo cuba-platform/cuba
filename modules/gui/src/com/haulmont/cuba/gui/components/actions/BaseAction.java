@@ -20,13 +20,14 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static com.haulmont.bali.util.BitUtils.readBit;
+import static com.haulmont.bali.util.BitUtils.writeBit;
 
 /**
  * Action that can change its enabled and visible properties depending on the user permissions and current context.
@@ -57,20 +58,19 @@ import java.util.function.Consumer;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction, EventTarget {
+public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction {
 
-    private boolean enabledByUiPermissions = true;
-    private boolean visibleByUiPermissions = true;
+    private static final int ENABLED_EXPLICITLY_BIT = 0;
+    private static final int VISIBLE_EXPLICITLY_BIT = 1;
+    private static final int ENABLED_UIPERMISSION_BIT = 2;
+    private static final int VISIBLE_UIPERMISSION_BIT = 3;
 
-    private boolean enabledExplicitly = true;
-    private boolean visibleExplicitly = true;
+    private byte uiSecurityState = 0x0f;    // all flags true
 
     private List<EnabledRule> enabledRules; // lazy initialized list
 
     @Deprecated
     protected ListComponent target;
-
-    protected Consumer<ActionPerformedEvent> actionPerformHandler;
 
     public BaseAction(String id) {
         this(id, null);
@@ -120,8 +120,9 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     @Override
     public void setVisible(boolean visible) {
-        if (this.visibleExplicitly != visible) {
-            this.visibleExplicitly = visible;
+        boolean visibleExplicitly = readBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT);
+        if (visibleExplicitly != visible) {
+            this.uiSecurityState = writeBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT, visible);
 
             refreshState();
         }
@@ -129,8 +130,10 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (this.enabledExplicitly != enabled) {
-            this.enabledExplicitly = enabled;
+        boolean enabledExplicitly = readBit(uiSecurityState, ENABLED_EXPLICITLY_BIT);
+
+        if (enabledExplicitly != enabled) {
+            this.uiSecurityState = writeBit(uiSecurityState, ENABLED_EXPLICITLY_BIT, enabled);
 
             refreshState();
         }
@@ -147,6 +150,12 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     @Override
     public void refreshState() {
         super.refreshState();
+
+        boolean visibleExplicitly = readBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT);
+        boolean enabledExplicitly = readBit(uiSecurityState, ENABLED_EXPLICITLY_BIT);
+
+        boolean enabledByUiPermissions = readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
+        boolean visibleByUiPermissions = readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
 
         setVisibleInternal(visibleExplicitly && visibleByUiPermissions);
 
@@ -172,13 +181,14 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     @Override
     public boolean isEnabledByUiPermissions() {
-        return enabledByUiPermissions;
+        return readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
     }
 
     @Override
-    public void setEnabledByUiPermissions(boolean enabledByUiPermissions) {
-        if (this.enabledByUiPermissions != enabledByUiPermissions) {
-            this.enabledByUiPermissions = enabledByUiPermissions;
+    public void setEnabledByUiPermissions(boolean enable) {
+        boolean enabledByUiPermissions = readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
+        if (enabledByUiPermissions != enable) {
+            this.uiSecurityState = writeBit(uiSecurityState, ENABLED_UIPERMISSION_BIT, enable);
 
             refreshState();
         }
@@ -186,13 +196,14 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     @Override
     public boolean isVisibleByUiPermissions() {
-        return visibleByUiPermissions;
+        return readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
     }
 
     @Override
-    public void setVisibleByUiPermissions(boolean visibleByUiPermissions) {
-        if (this.visibleByUiPermissions != visibleByUiPermissions) {
-            this.visibleByUiPermissions = visibleByUiPermissions;
+    public void setVisibleByUiPermissions(boolean visible) {
+        boolean visibleByUiPermissions = readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
+        if (visibleByUiPermissions != visible) {
+            this.uiSecurityState = writeBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT, visible);
 
             refreshState();
         }
@@ -207,7 +218,7 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         Preconditions.checkNotNullArgument(enabledRule);
 
         if (enabledRules == null) {
-            enabledRules = new ArrayList<>();
+            enabledRules = new ArrayList<>(2);
         }
         if (!enabledRules.contains(enabledRule)) {
             enabledRules.add(enabledRule);
@@ -225,42 +236,6 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
-        if (eventType != ActionPerformedEvent.class) {
-            throw new IllegalStateException(String.format("Event type %s is not supported", eventType));
-        }
-
-        Preconditions.checkNotNullArgument(listener);
-
-        if (actionPerformHandler != null) {
-            LoggerFactory.getLogger(BaseAction.class)
-                    .warn("Replacing already assigned ActionPerformedEvent handler on action " + getId());
-        }
-
-        this.actionPerformHandler = (Consumer<ActionPerformedEvent>) listener;
-
-        return () -> {
-            if (listener == actionPerformHandler) {
-                actionPerformHandler = null;
-            }
-        };
-    }
-
-    @Override
-    public <E> boolean removeListener(Class<E> eventType, Consumer<E> listener) {
-        if (eventType != ActionPerformedEvent.class) {
-            throw new IllegalStateException("Event type is not supported");
-        }
-
-        boolean remove = listener == actionPerformHandler;
-        if (remove) {
-            actionPerformHandler = null;
-        }
-        return remove;
-    }
-
     /**
      * Callback interface which is invoked by the action to determine its enabled state.
      *
@@ -272,24 +247,10 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
 
     @Override
     public void actionPerform(Component component) {
-        if (actionPerformHandler != null) {
-            actionPerformHandler.accept(new ActionPerformedEvent(this, component));
+        if (eventHub != null) {
+            ActionPerformedEvent event = new ActionPerformedEvent(this, component);
+            eventHub.publish(ActionPerformedEvent.class, event);
         }
-    }
-
-    /**
-     * @return action performed event handler or null
-     */
-    public Consumer<ActionPerformedEvent> getActionPerformHandler() {
-        return actionPerformHandler;
-    }
-    /**
-     * Set action performed event handler. Can be used instead of subclassing BaseAction class.
-     *
-     * @param handler action performed handler
-     */
-    public void setActionPerformHandler(Consumer<ActionPerformedEvent> handler) {
-        this.actionPerformHandler = handler;
     }
 
     /**
@@ -345,8 +306,13 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
      * @return current instance of action
      */
     public BaseAction withHandler(Consumer<ActionPerformedEvent> handler) {
-        this.actionPerformHandler = handler;
+        getEventHub().subscribe(ActionPerformedEvent.class, handler);
+
         return this;
+    }
+
+    public Subscription addActionPerformedListener(Consumer<ActionPerformedEvent> listener) {
+        return getEventHub().subscribe(ActionPerformedEvent.class, listener);
     }
 
     /**

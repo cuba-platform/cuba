@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
@@ -211,15 +210,11 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
      *
      * @param listener a listener to add
      */
-    default Subscription addSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
-        return ((EventTarget) this).addListener(SplitPositionChangeEvent.class, listener);
-    }
+    Subscription addSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener);
 
     /**
-     * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
-    default void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
-        ((EventTarget) this).removeListener(SplitPositionChangeEvent.class, listener);
-    }
+    @Deprecated
+    void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener);
 }

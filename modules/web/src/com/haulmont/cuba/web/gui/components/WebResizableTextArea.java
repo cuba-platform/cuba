@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
@@ -26,6 +27,8 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+
+import java.util.function.Consumer;
 
 public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V> implements ResizableTextArea<V> {
 
@@ -50,8 +53,6 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
         super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
     }
 
-    //    vaadin8
-//    @Override
     protected CubaTextArea createTextFieldImpl() {
         return new CubaTextArea() {
             @Override
@@ -178,6 +179,16 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     @Override
     public ResizeDirection getResizableDirection() {
         return WebWrapperUtils.toResizeDirection(wrapper.getResizableDirection());
+    }
+
+    @Override
+    public Subscription addResizeListener(Consumer<ResizeEvent> listener) {
+        return getEventHub().subscribe(ResizeEvent.class, listener);
+    }
+
+    @Override
+    public void removeResizeListener(Consumer<ResizeEvent> listener) {
+        unsubscribe(ResizeEvent.class, listener);
     }
 
     @Override

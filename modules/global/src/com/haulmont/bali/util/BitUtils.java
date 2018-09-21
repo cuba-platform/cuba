@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components;
+package com.haulmont.bali.util;
 
-import com.haulmont.cuba.gui.components.BrowserFrame;
+public final class BitUtils {
+    private BitUtils() {
+    }
 
-public class WebBrowserFrame extends WebAbstractResourceView<com.vaadin.ui.BrowserFrame> implements BrowserFrame {
-    protected static final String BROWSER_FRAME_STYLENAME = "c-browserframe";
+    public static boolean readBit(byte encoded, int index) {
+        return (encoded & (1 << index)) != 0;
+    }
 
-    public WebBrowserFrame() {
-        component = new com.vaadin.ui.BrowserFrame();
-        component.setPrimaryStyleName(BROWSER_FRAME_STYLENAME);
+    public static byte writeBit(byte encoded, int index, boolean bit) {
+        int bits = 1 << (8 - index);
+        if (bit) {
+            return (byte) (encoded | bits);
+        } else {
+            return (byte) (encoded & (~bits));
+        }
     }
 }

@@ -23,6 +23,9 @@ public interface ButtonsPanel extends BoxLayout {
 
     String NAME = "buttonsPanel";
 
+    /**
+     * @deprecated will be removed in release 7.1
+     */
     @Deprecated
     interface Provider extends Supplier<Collection<Component>> {
         @Override

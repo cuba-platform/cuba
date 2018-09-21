@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
@@ -135,9 +134,7 @@ public interface Accordion extends ComponentContainer, Component.BelongToFrame, 
     /**
      * Add a listener that will be notified when a selected tab is changed.
      */
-    default Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
-        return ((EventTarget) this).addListener(SelectedTabChangeEvent.class, listener);
-    }
+    Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener);
 
     /**
      * Remove previously added SelectedTabChangeListener.
@@ -146,9 +143,7 @@ public interface Accordion extends ComponentContainer, Component.BelongToFrame, 
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
-        ((EventTarget) this).removeListener(SelectedTabChangeEvent.class, listener);
-    }
+    void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener);
 
     /**
      * SelectedTabChangeEvents are fired when a selected tab is changed.

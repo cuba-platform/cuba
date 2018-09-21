@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
@@ -44,14 +45,16 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     protected boolean settingsEnabled = true;
 
     protected PropertiesFilterPredicate propertiesFilterPredicate;
+    protected FilterDelegate.FDExpandedStateChangeListener fdExpandedStateChangeListener;
 
     public WebFilter() {
-        delegate = AppBeans.get(FilterDelegate.class);
+        delegate = AppBeans.get(FilterDelegate.class); // todo use injection
         delegate.setFilter(this);
         component = new CubaCssActionsLayout();
         ComponentContainer layout = delegate.getLayout();
-        com.vaadin.ui.Component unwrap = layout.unwrapComposition(com.vaadin.ui.Component.class);
-        component.addComponent(unwrap);
+
+        com.vaadin.ui.Component vLayout = layout.unwrapComposition(com.vaadin.ui.Component.class);
+        component.addComponent(vLayout);
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         component.setPrimaryStyleName(FILTER_STYLENAME);
 
@@ -264,6 +267,25 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     @Override
     public void setCollapsable(boolean collapsable) {
         delegate.setCollapsable(collapsable);
+    }
+
+    @Override
+    public Subscription addExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        if (fdExpandedStateChangeListener == null) {
+            fdExpandedStateChangeListener = e -> {
+                ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, e.isExpanded());
+                getEventHub().publish(ExpandedStateChangeEvent.class, event);
+            };
+            delegate.addExpandedStateChangeListener(fdExpandedStateChangeListener);
+        }
+        getEventHub().subscribe(ExpandedStateChangeEvent.class, listener);
+
+        return () -> removeExpandedStateChangeListener(listener);
+    }
+
+    @Override
+    public void removeExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        unsubscribe(ExpandedStateChangeEvent.class, listener);
     }
 
     protected void fireExpandStateChange(boolean expanded) {

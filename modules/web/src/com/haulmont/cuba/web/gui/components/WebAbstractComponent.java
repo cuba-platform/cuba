@@ -18,10 +18,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
-import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
@@ -40,7 +38,7 @@ import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption, HasDebugId, EventTarget, HasContextHelp {
+                   Component.HasCaption, HasDebugId, HasContextHelp {
 
     public static final String ICON_STYLE = "icon";
 
@@ -81,19 +79,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         return eventHub;
     }
 
-    @Override
-    public <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
-        return getEventHub().subscribe(eventType, listener);
-    }
-
-    @Override
-    public <E> boolean removeListener(Class<E> eventType, Consumer<E> listener) {
-        if (eventHub != null) {
-            return eventHub.unsubscribe(eventType, listener);
-        }
-        return false;
-    }
-
     protected <E> void publish(Class<E> eventType, E event) {
         if (eventHub != null) {
             eventHub.publish(eventType, event);
@@ -102,6 +87,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected boolean hasSubscriptions(Class<?> eventClass) {
         return eventHub != null && eventHub.hasSubscriptions(eventClass);
+    }
+
+    protected <E> boolean unsubscribe(Class<E> eventType, Consumer<E> listener) {
+        if (eventHub != null) {
+            return eventHub.unsubscribe(eventType, listener);
+        }
+        return false;
     }
 
     @Override
@@ -269,6 +261,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
+            // todo use bean locator !
+
             Resource iconResource = AppBeans.get(IconResolver.class)
                     .getIconResource(this.icon);
             getComposition().setIcon(iconResource);
@@ -281,27 +275,10 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setIconFromSet(Icons.Icon icon) {
+        // todo use bean locator !
         String iconName = AppBeans.get(Icons.class)
                 .get(icon);
         setIcon(iconName);
-    }
-
-    /**
-     * vaadin8 remove
-     *
-     * @return component enabled property
-     */
-    public boolean getComponentEnabledFlag() {
-        return getComposition().isEnabled();
-    }
-
-    /**
-     * vaadin8 remove
-     *
-     * @return component visible property
-     */
-    public boolean getComponentVisibleFlag() {
-        return getComposition().isVisible();
     }
 
     @Override
@@ -421,18 +398,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
                 contextHelpIconClickListener = null;
             } else if (contextHelpIconClickListener == null) {
                 contextHelpIconClickListener = ((AbstractComponent) getComposition())
-                        .addContextHelpIconClickListener(this::onIconClick);
+                        .addContextHelpIconClickListener(this::onContextHelpIconClick);
             }
         }
     }
 
-    protected void onIconClick(com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickEvent e) {
-        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(WebAbstractComponent.this);
-        fireContextHelpIconClick(event);
-    }
-
-
-    protected void fireContextHelpIconClick(ContextHelpIconClickEvent event) {
+    protected void onContextHelpIconClick(@SuppressWarnings("unused") com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickEvent e) {
+        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(this);
         if (contextHelpIconClickHandler != null) {
             contextHelpIconClickHandler.accept(event);
         }

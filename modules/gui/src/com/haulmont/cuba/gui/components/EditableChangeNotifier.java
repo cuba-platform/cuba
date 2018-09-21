@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -27,14 +26,9 @@ import java.util.function.Consumer;
  */
 public interface EditableChangeNotifier {
 
-    default Subscription addEditableChangeListener(Consumer<EditableChangeEvent> listener) {
-        return ((EventTarget) this).addListener(EditableChangeEvent.class, listener);
-    }
-
+    Subscription addEditableChangeListener(Consumer<EditableChangeEvent> listener);
     @Deprecated
-    default void removeEditableChangeListener(Consumer<EditableChangeEvent> listener) {
-        ((EventTarget) this).removeListener(EditableChangeEvent.class, listener);
-    }
+    void removeEditableChangeListener(Consumer<EditableChangeEvent> listener);
 
     class EditableChangeEvent extends EventObject {
         public EditableChangeEvent(Component.Editable source) {

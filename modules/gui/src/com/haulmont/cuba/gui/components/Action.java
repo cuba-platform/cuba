@@ -19,9 +19,10 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
@@ -113,18 +114,21 @@ public interface Action {
 
     /**
      * Add an owner component.
-     * @param actionOwner   owner component
+     *
+     * @param actionOwner owner component
      */
     void addOwner(ActionOwner actionOwner);
 
     /**
      * Remove an owner component.
-     * @param actionOwner   owner component
+     *
+     * @param actionOwner owner component
      */
     void removeOwner(ActionOwner actionOwner);
 
     /**
      * Invoked by owning component when an action occurs.
+     *
      * @param component invoking component
      */
     void actionPerform(Component component);
@@ -132,17 +136,17 @@ public interface Action {
     /**
      * Adds a listener to be notified about Enabled, Caption or Icon property changes.
      *
-     * @param listener a <code>PropertyChangeListener</code> object
+     * @param listener a listener object
      */
-    void addPropertyChangeListener(PropertyChangeListener listener);
+    void addPropertyChangeListener(Consumer<PropertyChangeEvent> listener);
 
     /**
      * Removes a listener.
      *
-     * @param listener  a <code>PropertyChangeListener</code> object
+     * @param listener a listener object
      * @see #addPropertyChangeListener
      */
-    void removePropertyChangeListener(PropertyChangeListener listener);
+    void removePropertyChangeListener(Consumer<PropertyChangeEvent> listener);
 
     /**
      * Indicates that the action can be assigned a {@link OpenType} to open a related screen.

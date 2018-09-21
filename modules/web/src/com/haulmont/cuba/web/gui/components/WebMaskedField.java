@@ -25,7 +25,6 @@ import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -156,12 +155,14 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
             component.addShortcutListener(enterShortcutListener);
         }
 
-        return MaskedField.super.addEnterPressListener(listener);
+        getEventHub().subscribe(EnterPressEvent.class, listener);
+
+        return () -> removeEnterPressListener(listener);
     }
 
     @Override
     public void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
-        MaskedField.super.removeEnterPressListener(listener);
+        unsubscribe(EnterPressEvent.class, listener);
 
         if (enterShortcutListener != null
                 && !hasSubscriptions(EnterPressEvent.class)) {

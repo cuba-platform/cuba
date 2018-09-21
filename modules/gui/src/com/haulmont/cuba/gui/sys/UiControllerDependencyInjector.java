@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -56,6 +55,7 @@ import org.springframework.context.event.EventListener;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.*;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -124,20 +124,23 @@ public class UiControllerDependencyInjector {
             Class<?> instanceClass = targetInstance.getClass();
             Method provideMethod = annotatedMethod.getMethod();
 
-            Method targetSetterMethod = getProvideTargetSetterMethod(annotation, frame, instanceClass, provideMethod);
-            Class<?> targetParameterType = targetSetterMethod.getParameterTypes()[0];
+            MethodHandle targetSetterMethod = getProvideTargetSetterMethod(annotation, frame, instanceClass, provideMethod);
+            Class<?> targetParameterType = targetSetterMethod.type().parameterList().get(1);
 
             Object handler = createProvideHandler(frameOwner, provideMethod, targetParameterType);
 
             try {
                 targetSetterMethod.invoke(targetInstance, handler);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (Error e) {
+                throw e;
+            } catch (Throwable e) {
                 throw new RuntimeException("Unable to set declarative @Provide handler for " + provideMethod, e);
             }
         }
     }
 
-    protected Method getProvideTargetSetterMethod(Provide annotation, Frame frame, Class<?> instanceClass, Method provideMethod) {
+    protected MethodHandle getProvideTargetSetterMethod(Provide annotation, Frame frame, Class<?> instanceClass,
+                                                        Method provideMethod) {
         String subjectProperty;
         if (Strings.isNullOrEmpty(annotation.subject()) && annotation.type() == Object.class) {
             ProvideSubject provideSubjectAnnotation = findMergedAnnotation(instanceClass, ProvideSubject.class);
@@ -155,21 +158,12 @@ public class UiControllerDependencyInjector {
         }
 
         String subjectSetterName = "set" + StringUtils.capitalize(subjectProperty);
-        Method targetSetterMethod = reflectionInspector.getProvideTargetMethod(instanceClass, subjectSetterName);
+        MethodHandle targetSetterMethod = reflectionInspector.getProvideTargetMethod(instanceClass, subjectSetterName);
 
         if (targetSetterMethod == null) {
             throw new DevelopmentException(
                     String.format("Unable to find @Provide target method %s in %s", subjectProperty, instanceClass)
             );
-        }
-
-        if (targetSetterMethod.getParameterCount() != 1) {
-            throw new DevelopmentException("Target method of @Provide must have 1 parameter: " + targetSetterMethod);
-        }
-
-        Class<?> targetParameterType = targetSetterMethod.getParameterTypes()[0];
-        if (!targetParameterType.isInterface()) {
-            throw new DevelopmentException("@Provide target method parameter must be an interface");
         }
 
         return targetSetterMethod;
@@ -292,25 +286,25 @@ public class UiControllerDependencyInjector {
             Method method = annotatedMethod.getMethod();
             Subscribe annotation = annotatedMethod.getAnnotation();
 
-            Consumer listener = new DeclarativeSubscribeExecutor(frameOwner, method);
-
             String target = ScreenDescriptorUtils.getInferredSubscribeId(annotation);
 
             Parameter parameter = method.getParameters()[0];
-            Class<?> parameterType = parameter.getType();
+            Class<?> eventType = parameter.getType();
 
             Frame frame = UiControllerUtils.getFrame(frameOwner);
+
+            Object eventTarget;
 
             if (Strings.isNullOrEmpty(target)) {
                 switch (annotation.target()) {
                     // if kept default value
                     case COMPONENT:
                     case CONTROLLER:
-                        UiControllerUtils.addListener(frameOwner, parameterType, listener);
+                        eventTarget = frameOwner;
                         break;
 
                     case FRAME:
-                        ((EventTarget) frame).addListener(parameterType, listener);
+                        eventTarget = frame;
                         break;
 
                     case PARENT_CONTROLLER:
@@ -320,8 +314,7 @@ public class UiControllerDependencyInjector {
                                             frame.getId())
                             );
                         }
-                        FrameOwner parentController = ((ScreenFragment) frameOwner).getParentController();
-                        UiControllerUtils.addListener(parentController, parameterType, listener);
+                        eventTarget = ((ScreenFragment) frameOwner).getParentController();
                         break;
 
                     default:
@@ -329,13 +322,41 @@ public class UiControllerDependencyInjector {
                 }
             } else {
                 // component event
-                EventTarget component = findEventTarget(frame, target);
-                component.addListener(parameterType, listener);
+                eventTarget = findEventTarget(frame, target);
+            }
+
+            Consumer listener;
+            if (reflectionInspector.isLambdaHandlersAvailable()) {
+                // CAUTION here we use JDK internal API that could be unavailable
+                MethodHandle consumerMethodFactory = reflectionInspector.getConsumerMethodFactory(clazz,
+                        annotatedMethod, eventType);
+                try {
+                    listener = (Consumer) consumerMethodFactory.invoke(frameOwner);
+                } catch (Error e) {
+                    throw e;
+                } catch (Throwable e) {
+                    throw new RuntimeException("Unable to bind consumer handler", e);
+                }
+            } else {
+                listener = new DeclarativeSubscribeExecutor(frameOwner, annotatedMethod.getMethod());
+            }
+
+            MethodHandle addListenerMethod = reflectionInspector.getAddListenerMethod(eventTarget.getClass(), eventType);
+            if (addListenerMethod == null) {
+                throw new DevelopmentException("Target does not support event type " + eventType);
+            }
+
+            try {
+                addListenerMethod.invoke(eventTarget, listener);
+            } catch (Error e) {
+                throw e;
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to add listener" + method, e);
             }
         }
     }
 
-    protected EventTarget findEventTarget(Frame frame, String target) {
+    protected Object findEventTarget(Frame frame, String target) {
         String[] elements = ValuePathHelper.parse(target);
         if (elements.length > 1) {
             String id = elements[elements.length - 1];
@@ -346,27 +367,27 @@ public class UiControllerDependencyInjector {
             if (component != null) {
                 if (component instanceof HasSubParts) {
                     Object part = ((HasSubParts) component).getSubPart(id);
-                    if (part instanceof EventTarget) {
-                        return (EventTarget) part;
+                    if (part != null) {
+                        return part;
                     }
                 }
 
                 if (component instanceof ComponentContainer) {
                     Component childComponent = ((ComponentContainer) component).getComponent(id);
-                    if (childComponent instanceof EventTarget) {
-                        return (EventTarget) childComponent;
+                    if (childComponent != null) {
+                        return childComponent;
                     }
                 }
             }
         } else if (elements.length == 1) {
             Object part = frame.getSubPart(target);
-            if (part instanceof EventTarget) {
-                return (EventTarget) part;
+            if (part != null) {
+                return part;
             }
 
             Component component = frame.getComponent(target);
-            if (component instanceof EventTarget) {
-                return (EventTarget) component;
+            if (component != null) {
+                return component;
             }
         }
 

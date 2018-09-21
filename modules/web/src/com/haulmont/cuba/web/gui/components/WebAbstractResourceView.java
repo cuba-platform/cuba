@@ -17,11 +17,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.*;
 import com.vaadin.shared.util.SharedUtil;
 import com.vaadin.ui.AbstractEmbedded;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extends WebAbstractComponent<T>
         implements ResourceView {
@@ -85,8 +87,7 @@ public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extend
             ((WebAbstractResource) value).setResourceUpdatedHandler(resourceUpdateHandler);
         }
 
-        publish(SourceChangeEvent.class,
-                new SourceChangeEvent(this, oldValue, this.resource));
+        publish(SourceChangeEvent.class, new SourceChangeEvent(this, oldValue, this.resource));
     }
 
     @Override
@@ -121,5 +122,15 @@ public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extend
     @Override
     public String getAlternateText() {
         return component.getAlternateText();
+    }
+
+    @Override
+    public Subscription addSourceChangeListener(Consumer<SourceChangeEvent> listener) {
+        return getEventHub().subscribe(SourceChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeSourceChangeListener(Consumer<SourceChangeEvent> listener) {
+        unsubscribe(SourceChangeEvent.class, listener);
     }
 }

@@ -21,10 +21,8 @@ import com.haulmont.cuba.gui.components.ColorPicker;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.widgets.CubaColorPickerWrapper;
 import com.vaadin.shared.ui.colorpicker.Color;
-import org.springframework.beans.factory.InitializingBean;
 
-public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, Color, String>
-        implements ColorPicker, InitializingBean {
+public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, Color, String> implements ColorPicker {
 
     public WebColorPicker() {
         component = new CubaColorPickerWrapper();
@@ -35,14 +33,7 @@ public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, C
         setHistoryVisible(false);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        setCaptions();
-    }
-
-    protected void setCaptions() {
-        Messages messages = applicationContext.getBean(Messages.class);
-
+    protected void setCaptions(Messages messages) {
         component.setPopupCaption(messages.getMainMessage("colorPicker.popupCaption"));
         component.setSwatchesTabCaption(messages.getMainMessage("colorPicker.swatchesTabCaption"));
         component.setConfirmButtonCaption(messages.getMainMessage("colorPicker.confirmButtonCaption"));

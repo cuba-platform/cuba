@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -33,6 +34,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
@@ -244,6 +246,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public void setCollapsable(boolean collapsable) {
         component.setCollapsable(collapsable);
+    }
+
+    @Override
+    public Subscription addExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        return getEventHub().subscribe(ExpandedStateChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
+        unsubscribe(ExpandedStateChangeEvent.class, listener);
     }
 
     protected void fireExpandStateChange(boolean expanded) {

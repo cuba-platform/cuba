@@ -113,12 +113,11 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
 
     @Override
     public void afterPropertiesSet() {
-        Configuration configuration = applicationContext.getBean(Configuration.NAME, Configuration.class);
+        Configuration configuration = beanLocator.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setPageLength(clientConfig.getLookupFieldPageLength());
 
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+        UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.class);
 
         this.locale = userSessionSource.getLocale();
     }
@@ -272,7 +271,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
         }
 
         if (optionsSource != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }

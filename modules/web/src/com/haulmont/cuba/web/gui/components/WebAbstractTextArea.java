@@ -17,25 +17,26 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
 public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
-        extends WebV8AbstractField<T, String, V>
-        implements TextArea<V>, InitializingBean {
+        extends WebV8AbstractField<T, String, V> implements TextArea<V> {
 
     protected Datatype<V> datatype;
     protected Locale locale;
@@ -97,11 +98,8 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         return super.convertToModel(value);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
     }
 
@@ -118,6 +116,16 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         // call it before value change due to compatibility with the previous versions
         TextChangeEvent event = new TextChangeEvent(this, newComponentValue, component.getCursorPosition());
         publish(TextChangeEvent.class, event);
+    }
+
+    @Override
+    public Subscription addTextChangeListener(Consumer<TextChangeEvent> listener) {
+        return getEventHub().subscribe(TextChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeTextChangeListener(Consumer<TextChangeEvent> listener) {
+        unsubscribe(TextChangeEvent.class, listener);
     }
 
     @Override
@@ -283,7 +291,7 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
             dataAwareComponentsTools.setupCaseConversion(this, entityValueSource);

@@ -40,6 +40,7 @@ import com.vaadin.ui.ItemCaptionGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -93,23 +94,23 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         return new CubaSearchSelectPickerField<>();
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-
-        Configuration configuration = applicationContext.getBean(Configuration.NAME, Configuration.class);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        setPageLength(clientConfig.getLookupFieldPageLength());
-
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
     }
 
     @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
+        Configuration configuration = beanLocator.get(Configuration.NAME, Configuration.class);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        setPageLength(clientConfig.getLookupFieldPageLength());
+    }
+
+    @Override
     protected void initComponent(CubaPickerField<V> component) {
-        Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
+        Messages messages = beanLocator.get(Messages.NAME);
         setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
 
         getComponent().setItemCaptionGenerator(this::generateItemCaption);
@@ -453,7 +454,7 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         }
 
         if (optionsSource != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
 

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -35,13 +36,14 @@ import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFileUpload>
-        implements FileMultiUploadField {
+public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFileUpload> implements FileMultiUploadField {
 
     protected final Map<UUID, String> files = new LinkedHashMap<>();
 
@@ -50,9 +52,12 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     protected String accept;
 
     public WebFileMultiUploadField() {
-        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-
         initComponent();
+    }
+
+    @Inject
+    public void setFileUploading(FileUploadingAPI fileUploading) {
+        this.fileUploading = fileUploading;
     }
 
     protected void initComponent() {
@@ -146,6 +151,16 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     }
 
     @Override
+    public Subscription addQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
+        return getEventHub().subscribe(QueueUploadCompleteEvent.class, listener);
+    }
+
+    @Override
+    public void removeQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener) {
+        unsubscribe(QueueUploadCompleteEvent.class, listener);
+    }
+
+    @Override
     public void setIcon(String icon) {
         this.icon = icon;
 
@@ -230,7 +245,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         this.fileSizeLimit = fileSizeLimit;
 
         this.component.setFileSizeLimit(fileSizeLimit);
-
     }
 
     @Override

@@ -85,7 +85,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1973,7 +1973,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
             return;
         }
 
-        final Element columnsElem = element.element("columns");
+        Element columnsElem = element.element("columns");
         if (columnsElem != null) {
             List<Column<E>> modelColumns = getVisibleColumns();
             List<String> modelIds = modelColumns.stream()
@@ -1991,7 +1991,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     }
 
     protected void applyColumnSettings(Element element, Collection<Column<E>> oldColumns) {
-        final Element columnsElem = element.element("columns");
+        Element columnsElem = element.element("columns");
 
         List<Column<E>> newColumns = new ArrayList<>();
 
@@ -2297,8 +2297,9 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
             columnCollapsingChangeListenerRegistration =
                     component.addColumnVisibilityChangeListener(this::onColumnVisibilityChanged);
         }
+        getEventHub().subscribe(ColumnCollapsingChangeEvent.class, listener);
 
-        return DataGrid.super.addColumnCollapsingChangeListener(listener);
+        return () -> removeColumnCollapsingChangeListener(listener);
     }
 
     protected void onColumnVisibilityChanged(Grid.ColumnVisibilityChangeEvent e) {
@@ -2312,7 +2313,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void removeColumnCollapsingChangeListener(Consumer<ColumnCollapsingChangeEvent> listener) {
-        DataGrid.super.removeColumnCollapsingChangeListener(listener);
+        unsubscribe(ColumnCollapsingChangeEvent.class, listener);
 
         if (!hasSubscriptions(ColumnCollapsingChangeEvent.class)
                 && columnCollapsingChangeListenerRegistration != null) {
@@ -2328,7 +2329,9 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                     component.addColumnResizeListener(this::onColumnResize);
         }
 
-        return DataGrid.super.addColumnResizeListener(listener);
+        getEventHub().subscribe(ColumnResizeEvent.class, listener);
+
+        return () -> removeColumnResizeListener(listener);
     }
 
     protected void onColumnResize(Grid.ColumnResizeEvent e) {
@@ -2340,7 +2343,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void removeColumnResizeListener(Consumer<ColumnResizeEvent> listener) {
-        DataGrid.super.removeColumnResizeListener(listener);
+        unsubscribe(ColumnResizeEvent.class, listener);
 
         if (!hasSubscriptions(ColumnResizeEvent.class)
                 && columnResizeListenerRegistration != null) {
@@ -2352,11 +2355,85 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     @Override
     public Subscription addSortListener(Consumer<SortEvent> listener) {
         if (sortListenerRegistration == null) {
-            sortListenerRegistration =
-                    component.addSortListener(this::onSort);
+            sortListenerRegistration = component.addSortListener(this::onSort);
         }
+        getEventHub().subscribe(SortEvent.class, listener);
 
-        return DataGrid.super.addSortListener(listener);
+        return () -> removeSortListener(listener);
+    }
+
+    @Override
+    public Subscription addEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
+        return getEventHub().subscribe(EditorPreCommitEvent.class, listener);
+    }
+
+    @Override
+    public void removeEditorPreCommitListener(Consumer<EditorPreCommitEvent> listener) {
+        unsubscribe(EditorPreCommitEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
+        return getEventHub().subscribe(EditorPostCommitEvent.class, listener);
+    }
+
+    @Override
+    public void removeEditorPostCommitListener(Consumer<EditorPostCommitEvent> listener) {
+        unsubscribe(EditorPostCommitEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        return getEventHub().subscribe(EditorCloseEvent.class, listener);
+    }
+
+    @Override
+    public void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
+        unsubscribe(EditorCloseEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addEditorOpenListener(Consumer<EditorOpenEvent> listener) {
+        return getEventHub().subscribe(EditorOpenEvent.class, listener);
+    }
+
+    @Override
+    public void removeEditorOpenListener(Consumer<EditorOpenEvent> listener) {
+        unsubscribe(EditorOpenEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
+        return getEventHub().subscribe(ColumnReorderEvent.class, listener);
+    }
+
+    @Override
+    public void removeColumnReorderListener(Consumer<ColumnReorderEvent> listener) {
+        unsubscribe(ColumnReorderEvent.class, listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        return getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        unsubscribe(SelectionEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addItemClickListener(Consumer<ItemClickEvent<E>> listener) {
+        return getEventHub().subscribe(ItemClickEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeItemClickListener(Consumer<ItemClickEvent<E>> listener) {
+        unsubscribe(ItemClickEvent.class, (Consumer) listener);
     }
 
     protected void onSort(com.vaadin.event.SortEvent<GridSortOrder<E>> e) {
@@ -2370,7 +2447,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void removeSortListener(Consumer<SortEvent> listener) {
-        DataGrid.super.removeSortListener(listener);
+        unsubscribe(SortEvent.class, listener);
 
         if (!hasSubscriptions(SortEvent.class)
                 && sortListenerRegistration != null) {
@@ -2386,7 +2463,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
                     component.addContextClickListener(this::onContextClick);
         }
 
-        return DataGrid.super.addContextClickListener(listener);
+        return getEventHub().subscribe(ContextClickEvent.class, listener);
     }
 
     protected void onContextClick(com.vaadin.event.ContextClickEvent e) {
@@ -2398,13 +2475,23 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void removeContextClickListener(Consumer<ContextClickEvent> listener) {
-        DataGrid.super.removeContextClickListener(listener);
+        unsubscribe(ContextClickEvent.class, listener);
 
         if (!hasSubscriptions(ContextClickEvent.class)
                 && contextClickListenerRegistration != null) {
             contextClickListenerRegistration.remove();
             contextClickListenerRegistration = null;
         }
+    }
+
+    @Override
+    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        return getEventHub().subscribe(LookupSelectionChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        unsubscribe(LookupSelectionChangeEvent.class, listener);
     }
 
     @Override
@@ -3534,7 +3621,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
         protected boolean showIconsForPopupMenuActions;
 
-        protected PropertyChangeListener actionPropertyChangeListener;
+        protected Consumer<PropertyChangeEvent> actionPropertyChangeListener;
 
         public ActionMenuItemWrapper(MenuItem menuItem, boolean showIconsForPopupMenuActions) {
             this.menuItem = menuItem;
@@ -3582,13 +3669,13 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
                     actionPropertyChangeListener = evt -> {
                         if (Action.PROP_ICON.equals(evt.getPropertyName())) {
-                            setIcon(ActionMenuItemWrapper.this.action.getIcon());
+                            setIcon(this.action.getIcon());
                         } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
-                            setCaption(ActionMenuItemWrapper.this.action.getCaption());
+                            setCaption(this.action.getCaption());
                         } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
-                            setEnabled(ActionMenuItemWrapper.this.action.isEnabled());
+                            setEnabled(this.action.isEnabled());
                         } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
-                            setVisible(ActionMenuItemWrapper.this.action.isVisible());
+                            setVisible(this.action.isVisible());
                         }
                     };
                     action.addPropertyChangeListener(actionPropertyChangeListener);

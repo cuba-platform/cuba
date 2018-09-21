@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.EventObject;
@@ -83,17 +82,13 @@ public interface Image extends ResourceView {
         NONE
     }
 
-    default Subscription addClickListener(Consumer<ClickEvent> listener) {
-        return ((EventTarget) this).addListener(ClickEvent.class, listener);
-    }
+    Subscription addClickListener(Consumer<ClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
-    default void removeClickListener(Consumer<ClickEvent> listener) {
-        ((EventTarget) this).removeListener(ClickEvent.class, listener);
-    }
+    void removeClickListener(Consumer<ClickEvent> listener);
 
     /**
      * A {@link ClickEvent} is fired when the user clicks on an <code>Image</code>.

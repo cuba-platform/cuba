@@ -16,9 +16,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.function.Consumer;
 
 public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, VisibilityChangeNotifier {
     public static final String BUTTONS_PANEL_STYLENAME = "c-buttons-panel";
@@ -48,5 +51,15 @@ public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, Visi
 
         publish(VisibilityChangeEvent.class,
                 new VisibilityChangeEvent(this, visible));
+    }
+
+    @Override
+    public Subscription addVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
+        return getEventHub().subscribe(VisibilityChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
+        unsubscribe(VisibilityChangeEvent.class, listener);
     }
 }

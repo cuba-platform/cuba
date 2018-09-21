@@ -236,7 +236,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addDateClickListener(Consumer<CalendarDateClickEvent> listener) {
         component.setHandler(this::onDateClick);
 
-        return Calendar.super.addDateClickListener(listener);
+        return getEventHub().subscribe(CalendarDateClickEvent.class, listener);
     }
 
     protected void onDateClick(CalendarComponentEvents.DateClickEvent event) {
@@ -247,7 +247,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeDateClickListener(Consumer<CalendarDateClickEvent> listener) {
-        Calendar.super.removeDateClickListener(listener);
+        unsubscribe(CalendarDateClickEvent.class, listener);
 
         if (!hasSubscriptions(CalendarDateClickEvent.class)) {
             component.setHandler((CalendarComponentEvents.DateClickHandler) null);
@@ -258,7 +258,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addEventClickListener(Consumer<CalendarEventClickEvent> listener) {
         component.setHandler(this::onEventClick);
 
-        return Calendar.super.addEventClickListener(listener);
+        return getEventHub().subscribe(CalendarEventClickEvent.class, listener);
     }
 
     protected void onEventClick(CalendarComponentEvents.EventClick event) {
@@ -282,7 +282,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeEventClickListener(Consumer<CalendarEventClickEvent> listener) {
-        Calendar.super.removeEventClickListener(listener);
+        unsubscribe(CalendarEventClickEvent.class, listener);
 
         if (!hasSubscriptions(CalendarEventClickEvent.class)) {
             component.setHandler((CalendarComponentEvents.EventClickHandler) null);
@@ -293,7 +293,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
         component.setHandler(this::onEventResize);
 
-        return Calendar.super.addEventResizeListener(listener);
+        return getEventHub().subscribe(CalendarEventResizeEvent.class, listener);
     }
 
     protected void onEventResize(CalendarComponentEvents.EventResize event) {
@@ -319,7 +319,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
-        Calendar.super.removeEventResizeListener(listener);
+        unsubscribe(CalendarEventResizeEvent.class, listener);
 
         if (!hasSubscriptions(CalendarEventResizeEvent.class)) {
             component.setHandler((CalendarComponentEvents.EventResizeHandler) null);
@@ -330,7 +330,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
         component.setHandler(this::onEventMove);
 
-        return Calendar.super.addEventMoveListener(listener);
+        return getEventHub().subscribe(CalendarEventMoveEvent.class, listener);
     }
 
     protected void onEventMove(CalendarComponentEvents.MoveEvent event) {
@@ -346,7 +346,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
-        Calendar.super.removeEventMoveListener(listener);
+        unsubscribe(CalendarEventMoveEvent.class, listener);
 
         if (!hasSubscriptions(CalendarEventMoveEvent.class)) {
             component.setHandler((CalendarComponentEvents.EventMoveHandler) null);
@@ -357,7 +357,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
         component.setHandler(this::onWeekClick);
 
-        return Calendar.super.addWeekClickListener(listener);
+        return getEventHub().subscribe(CalendarWeekClickEvent.class, listener);
     }
 
     protected void onWeekClick(CalendarComponentEvents.WeekClick event) {
@@ -370,7 +370,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
-        Calendar.super.removeWeekClickListener(listener);
+        unsubscribe(CalendarWeekClickEvent.class, listener);
 
         if (!hasSubscriptions(CalendarWeekClickEvent.class)) {
             component.setHandler((CalendarComponentEvents.WeekClickHandler) null);
@@ -381,7 +381,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
         component.setHandler(this::onForward);
 
-        return Calendar.super.addForwardClickListener(listener);
+        return getEventHub().subscribe(CalendarForwardClickEvent.class, listener);
     }
 
     protected void onForward(CalendarComponentEvents.ForwardEvent event) {
@@ -392,7 +392,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
-        Calendar.super.removeForwardClickListener(listener);
+        unsubscribe(CalendarForwardClickEvent.class, listener);
 
         if (!hasSubscriptions(CalendarForwardClickEvent.class)) {
             component.setHandler((CalendarComponentEvents.ForwardHandler) null);
@@ -403,7 +403,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
         component.setHandler(this::onBackward);
 
-        return Calendar.super.addBackwardClickListener(listener);
+        return getEventHub().subscribe(CalendarBackwardClickEvent.class, listener);
     }
 
     protected void onBackward(CalendarComponentEvents.BackwardEvent event) {
@@ -414,7 +414,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
-        Calendar.super.removeBackwardClickListener(listener);
+        unsubscribe(CalendarBackwardClickEvent.class, listener);
 
         if (!hasSubscriptions(CalendarBackwardClickEvent.class)) {
             component.setHandler((CalendarComponentEvents.BackwardHandler) null);
@@ -425,7 +425,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     public Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
         component.setHandler(this::onRangeSelect);
 
-        return Calendar.super.addRangeSelectListener(listener);
+        return getEventHub().subscribe(CalendarRangeSelectEvent.class, listener);
     }
 
     protected void onRangeSelect(CalendarComponentEvents.RangeSelectEvent event) {

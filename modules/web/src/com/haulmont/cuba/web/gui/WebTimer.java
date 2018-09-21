@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.RemoteException;
-import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaTimer;
@@ -94,28 +93,24 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
     public Subscription addTimerActionListener(Consumer<TimerActionEvent> listener) {
         timerImpl.addActionListener(new CubaTimerActionListenerWrapper(listener));
 
-        return Timer.super.addTimerActionListener(listener);
+        return () -> removeTimerActionListener(listener);
     }
 
     @Override
     public void removeTimerActionListener(Consumer<TimerActionEvent> listener) {
         timerImpl.removeActionListener(new CubaTimerActionListenerWrapper(listener));
-
-        Timer.super.removeTimerActionListener(listener);
     }
 
     @Override
     public Subscription addTimerStopListener(Consumer<TimerStopEvent> listener) {
         timerImpl.addStopListener(new CubaTimerStopListenerWrapper(listener));
 
-        return Timer.super.addTimerStopListener(listener);
+        return () -> removeTimerStopListener(listener);
     }
 
     @Override
     public void removeTimerStopListener(Consumer<TimerStopEvent> listener) {
         timerImpl.removeStopListeners(new CubaTimerStopListenerWrapper(listener));
-
-        Timer.super.removeTimerStopListener(listener);
     }
 
     @Override

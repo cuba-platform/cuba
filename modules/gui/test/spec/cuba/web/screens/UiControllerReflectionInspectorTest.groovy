@@ -16,12 +16,16 @@
 
 package spec.cuba.web.screens
 
+import com.haulmont.cuba.gui.components.Button
+import com.haulmont.cuba.gui.components.TextInputField
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
+import spec.cuba.web.screens.components.TestTextField
 import spec.cuba.web.screens.samples.*
 import spock.lang.Specification
 
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.util.function.Consumer
 
 class UiControllerReflectionInspectorTest extends Specification {
     def "Get annotated @Inject elements"() {
@@ -187,5 +191,76 @@ class UiControllerReflectionInspectorTest extends Specification {
         methods.find({ it.name == 'getData' }) != null
         methods.find({ it.name == 'consumeEvent' }) != null
         methods.find({ it.name == 'ignoredMethod' }) == null
+    }
+
+    def "Get addListener methods"() {
+        def inspector = new UiControllerReflectionInspector()
+        def textField = new TestTextField()
+        def listener = Mock(Consumer)
+
+        when:
+
+        def methodHandle = inspector.getAddListenerMethod(TestTextField, TextInputField.TextChangeEvent)
+
+        then:
+
+        methodHandle != null
+
+        when:
+
+        methodHandle.invokeWithArguments(textField, listener)
+        methodHandle.invokeWithArguments(textField, listener)
+
+        then:
+
+        textField.listener == listener
+    }
+
+    def "Get lambda factory for @Subscribe method"() {
+        def screen = new ScreenWithSubscribe()
+        def screen2 = new ScreenWithSubscribe()
+
+        def inspector = new UiControllerReflectionInspector()
+        def button = Mock(Button)
+
+        when:
+
+        def methods = inspector.getAnnotatedSubscribeMethods(ScreenWithSubscribe)
+
+        then:
+
+        methods.size() == 4
+
+        when:
+
+        def lambdaFactory = inspector.getConsumerMethodFactory(ScreenWithSubscribe, methods[0], Button.ClickEvent)
+
+        then:
+
+        lambdaFactory != null
+
+        when:
+
+        def consumer = lambdaFactory.invokeWithArguments(screen)
+
+        then:
+
+        consumer instanceof Consumer
+
+        when: "Lambda invoked"
+
+        ((Consumer)consumer).accept(new Button.ClickEvent(button))
+
+        then: "Listener calls method from screen"
+
+        screen.buttonClicks == 1
+
+        when: "Try to create second lambda for the same screen class"
+
+        def consumer2 = lambdaFactory.invokeWithArguments(screen2)
+
+        then: "Classes of lambdas are the same"
+
+        consumer.class.is(consumer2.class)
     }
 }

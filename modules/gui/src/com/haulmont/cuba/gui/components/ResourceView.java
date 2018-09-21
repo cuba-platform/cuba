@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -79,9 +78,7 @@ public interface ResourceView extends Component, Component.HasCaption, HasContex
     /**
      * Adds a listener that will be notified when a source is changed.
      */
-    default Subscription addSourceChangeListener(Consumer<SourceChangeEvent> listener) {
-        return ((EventTarget) this).addListener(SourceChangeEvent.class, listener);
-    }
+    Subscription addSourceChangeListener(Consumer<SourceChangeEvent> listener);
 
     /**
      * Removes a listener that will be notified when a source is changed.
@@ -90,9 +87,7 @@ public interface ResourceView extends Component, Component.HasCaption, HasContex
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeSourceChangeListener(Consumer<SourceChangeEvent> listener) {
-        ((EventTarget) this).removeListener(SourceChangeEvent.class, listener);
-    }
+    void removeSourceChangeListener(Consumer<SourceChangeEvent> listener);
 
     /**
      * SourceChangeEvent is fired when a source is changed.

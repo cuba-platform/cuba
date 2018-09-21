@@ -16,15 +16,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import com.haulmont.cuba.gui.components.data.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickListener;
+import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField, V>
@@ -79,6 +82,18 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     }
 
     protected void initFieldConverter() {
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        return getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        unsubscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     @Override

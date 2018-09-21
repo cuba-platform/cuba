@@ -23,8 +23,11 @@ import com.haulmont.cuba.gui.screen.Target;
 
 public class ScreenWithSubscribe extends Screen {
 
+    public int buttonClicks = 0;
+
     @Subscribe("btn1")
     public void onClick(Button.ClickEvent event) {
+        buttonClicks++;
     }
 
     @Subscribe

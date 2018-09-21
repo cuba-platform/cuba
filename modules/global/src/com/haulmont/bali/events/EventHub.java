@@ -19,7 +19,7 @@ package com.haulmont.bali.events;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -51,7 +51,7 @@ public class EventHub {
         }
 
         if (events == null) {
-            events = new HashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
+            events = new IdentityHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }
 
         Consumer[] array = events.get(eventType);

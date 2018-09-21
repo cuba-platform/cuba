@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -64,18 +63,14 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
         }
     }
 
-    default Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-        return ((EventTarget) this).addListener(FileUploadSucceedEvent.class, listener);
-    }
+    Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-        ((EventTarget) this).removeListener(FileUploadSucceedEvent.class, listener);
-    }
+    void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener);
 
     /**
      * @return content of uploaded file.
@@ -185,18 +180,14 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      * @param listener a listener to add
      * @see #setShowClearButton(boolean)
      */
-    default Subscription addBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
-        return ((EventTarget) this).addListener(BeforeValueClearEvent.class, listener);
-    }
+    Subscription addBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
-        ((EventTarget) this).removeListener(BeforeValueClearEvent.class, listener);
-    }
+    void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener);
 
     class AfterValueClearEvent {
         private FileUploadField target;
@@ -223,18 +214,14 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      * @param listener a listener to add
      * @see #setShowClearButton(boolean)
      */
-    default Subscription addAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
-        return ((EventTarget) this).addListener(AfterValueClearEvent.class, listener);
-    }
+    Subscription addAfterValueClearListener(Consumer<AfterValueClearEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
-        ((EventTarget) this).addListener(AfterValueClearEvent.class, listener);
-    }
+    void removeAfterValueClearListener(Consumer<AfterValueClearEvent> listener);
 
     /**
      * Set mode which determines when {@link FileDescriptor} will be committed.

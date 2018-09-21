@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
@@ -409,6 +410,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         publish(VisibilityChangeEvent.class,
                 new VisibilityChangeEvent(this, visible));
+    }
+
+    @Override
+    public Subscription addVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
+        return getEventHub().subscribe(VisibilityChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
+        unsubscribe(VisibilityChangeEvent.class, listener);
     }
 
     interface Adapter {

@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrap
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
@@ -313,18 +312,14 @@ public interface Table<E extends Entity>
      * @param listener a listener to add
      * @return a {@link Subscription} object
      */
-    default Subscription addColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
-        return ((EventTarget) this).addListener(ColumnCollapseEvent.class, listener);
-    }
+    Subscription addColumnCollapseListener(Consumer<ColumnCollapseEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
-        ((EventTarget) this).removeListener(ColumnCollapseEvent.class, listener);
-    }
+    void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener);
 
     /**
      * An event that is fired every time column collapse state has been changed.

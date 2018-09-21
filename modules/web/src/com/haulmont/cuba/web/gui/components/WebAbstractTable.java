@@ -68,7 +68,6 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
@@ -2417,12 +2416,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             component.addColumnCollapseListener(columnCollapseListener);
         }
 
-        return Table.super.addColumnCollapseListener(listener);
+        getEventHub().subscribe(ColumnCollapseEvent.class, listener);
+
+        return () -> removeColumnCollapseListener(listener);
     }
 
     @Override
     public void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener) {
-        Table.super.removeColumnCollapseListener(listener);
+        unsubscribe(ColumnCollapseEvent.class, listener);
 
         if (!hasSubscriptions(ColumnCollapseEvent.class)
                 && columnCollapseListener != null) {
@@ -2699,5 +2700,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
         }
         return currentValue;
+    }
+
+    @Override
+    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        return getEventHub().subscribe(LookupSelectionChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        unsubscribe(LookupSelectionChangeEvent.class, listener);
     }
 }

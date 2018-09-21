@@ -38,6 +38,7 @@ import com.vaadin.ui.ItemCaptionGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -82,18 +83,18 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
         return (CubaComboBoxPickerField<V>) super.getComponent();
     }
 
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
+        this.locale = userSessionSource.getLocale();
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
 
-        Configuration configuration = applicationContext.getBean(Configuration.NAME, Configuration.class);
+        Configuration configuration = beanLocator.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setPageLength(clientConfig.getLookupFieldPageLength());
-
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
-        this.locale = userSessionSource.getLocale();
     }
 
     @Override
@@ -330,7 +331,7 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
         }
 
         if (optionsSource != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
 

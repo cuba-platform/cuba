@@ -120,10 +120,6 @@ public abstract class Screen implements FrameOwner {
         this.screenData = data;
     }
 
-    protected <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
-        return eventHub.subscribe(eventType, listener);
-    }
-
     protected <E> void fireEvent(Class<E> eventType, E event) {
         eventHub.publish(eventType, event);
     }
@@ -201,6 +197,16 @@ public abstract class Screen implements FrameOwner {
      */
     protected Subscription addAfterShowListener(Consumer<AfterShowEvent> listener) {
         return eventHub.subscribe(AfterShowEvent.class, listener);
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
+    protected Subscription addCloseTriggeredEvent(Consumer<CloseTriggeredEvent> listener) {
+        return eventHub.subscribe(CloseTriggeredEvent.class, listener);
     }
 
     /**

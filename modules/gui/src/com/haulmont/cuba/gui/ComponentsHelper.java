@@ -143,7 +143,7 @@ public abstract class ComponentsHelper {
 
     @Nullable
     public static Component getComponent(ComponentContainer container, String id) {
-        final String[] elements = ValuePathHelper.parse(id);
+        String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
 

@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components;
 /**
  * A component that is marked with this interface allows to manage additional style names for options displayed
  * by this component.
- *
- * todo extract
  */
 public interface HasOptionsStyleProvider {
     /**

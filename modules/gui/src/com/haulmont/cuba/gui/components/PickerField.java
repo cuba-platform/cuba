@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -149,10 +148,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
      * @return a {@link Subscription} object
      * @see #setFieldEditable(boolean)
      */
-    default Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener) {
-        //noinspection unchecked
-        return ((EventTarget) this).addListener(FieldValueChangeEvent.class, (Consumer) listener);
-    }
+    Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener);
 
     class FieldValueChangeEvent<V extends Entity> extends EventObject {
 

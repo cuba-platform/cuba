@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -71,44 +70,29 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
-    default Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
-        return ((EventTarget) this).addListener(FileUploadStartEvent.class, listener);
-    }
+    Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener);
 
     /**
-     * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
-        ((EventTarget) this).removeListener(FileUploadStartEvent.class, listener);
-    }
+    void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener);
 
-    default Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
-        return ((EventTarget) this).addListener(FileUploadFinishEvent.class, listener);
-    }
+    Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener);
 
     /**
-     * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
-        ((EventTarget) this).removeListener(FileUploadFinishEvent.class, listener);
-    }
+    void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener);
 
-    default Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
-        return ((EventTarget) this).addListener(FileUploadErrorEvent.class, listener);
-    }
+    Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener);
 
     /**
-     * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
-        ((EventTarget) this).removeListener(FileUploadErrorEvent.class, listener);
-    }
+    void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener);
 
     /**
      * Returns maximum allowed file size in bytes.

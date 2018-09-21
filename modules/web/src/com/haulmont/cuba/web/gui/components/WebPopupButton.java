@@ -16,24 +16,30 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
@@ -49,8 +55,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     protected boolean showActionIcons;
 
-    protected List<Action> actionOrder = new ArrayList<>(3);
+    protected List<Action> actionOrder = new ArrayList<>(4);
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+
+    protected Registration popupVisibilityListenerRegistration;
 
     public WebPopupButton() {
         component = new CubaPopupButton() {
@@ -64,10 +72,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
                 super.setPopupVisible(popupVisible);
             }
         };
-
-        component.addPopupVisibilityListener(event ->
-                publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
-        );
 
         this.vActionsContainer = createActionsContainer();
         this.vPopupComponent = vActionsContainer;
@@ -93,6 +97,27 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         }
         return false;
+    }
+
+    @Override
+    public Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        getEventHub().subscribe(PopupVisibilityEvent.class, listener);
+
+        if (popupVisibilityListenerRegistration == null) {
+            popupVisibilityListenerRegistration = component.addPopupVisibilityListener(e ->
+                    publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
+            );
+        }
+        return () -> removePopupVisibilityListener(listener);
+    }
+
+    @Override
+    public void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        unsubscribe(PopupVisibilityEvent.class, listener);
+
+        if (!hasSubscriptions(PopupVisibilityEvent.class)) {
+            popupVisibilityListenerRegistration.remove();
+        }
     }
 
     @Override
@@ -258,16 +283,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     protected Button createActionButton(Action action) {
-        WebButton button = new PopupButtonActionButton() {
-            @Override
-            protected void beforeActionPerformed() {
-                WebPopupButton.this.focus();
-            }
-        };
+        WebButton button = new PopupButtonActionButton();
         button.setAction(new PopupActionWrapper(action));
 
         button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
-
 
         Button vButton = (Button) button.getComposition();
         vButton.setSizeFull();
@@ -306,10 +325,11 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     public void removeAction(@Nullable Action action) {
         if (actionOrder.remove(action)) {
             //noinspection ConstantConditions
-            for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
+            for (ActionOwner owner : action.getOwners()) {
                 if (owner instanceof PopupButtonActionButton) {
                     owner.setAction(null);
-                    Button vButton = (Button) WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
+                    PopupButtonActionButton button = (PopupButtonActionButton) owner;
+                    com.vaadin.ui.Component vButton = button.unwrap(com.vaadin.ui.Component.class);
                     vActionsContainer.removeComponent(vButton);
                 }
             }
@@ -366,6 +386,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
         @Override
         public void actionPerform(Component component) {
+            WebPopupButton.this.focus();
+
             if (isAutoClose()) {
                 WebPopupButton.this.component.setPopupVisible(false);
             }
@@ -379,7 +401,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
 
         @Override
-        public void addPropertyChangeListener(PropertyChangeListener listener) {
+        public void addPropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
             action.addPropertyChangeListener(listener);
         }
 
@@ -424,7 +446,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
 
         @Override
-        public void removePropertyChangeListener(PropertyChangeListener listener) {
+        public void removePropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
             action.removePropertyChangeListener(listener);
         }
 

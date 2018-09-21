@@ -51,14 +51,9 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
 
     @Override
     public void afterPropertiesSet() {
-        UserSessionSource userSessionSource = applicationContext.getBean(UserSessionSource.class);
+        UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.NAME);
         String timeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getTimeFormat();
         setFormat(timeFormat);
-    }
-
-    public boolean isAmPmUsed() {
-        // FIXME: gg, actually, not working
-        return component.getTimeFormat().contains("a");
     }
 
     @Override

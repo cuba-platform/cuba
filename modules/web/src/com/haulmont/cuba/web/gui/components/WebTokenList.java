@@ -271,14 +271,16 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
     @Override
     public Subscription addValueChangeListener(Consumer listener) {
-        LoggerFactory.getLogger(WebTokenList.class).warn("addValueChangeListener not implemented for TokenList");
+        LoggerFactory.getLogger(WebTokenList.class)
+                .warn("addValueChangeListener not implemented for TokenList");
 
         return VoidSubscription.INSTANCE;
     }
 
     @Override
     public void removeValueChangeListener(Consumer listener) {
-        LoggerFactory.getLogger(WebTokenList.class).warn("removeValueChangeListener not implemented for TokenList");
+        LoggerFactory.getLogger(WebTokenList.class)
+                .warn("removeValueChangeListener not implemented for TokenList");
     }
 
     @Override
@@ -298,8 +300,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
     @Override
     public void setOptionsMap(Map<String, ?> map) {
-        // vaadin8
-//        lookupPickerField.setOptionsMap(map);
+        lookupPickerField.setOptionsMap((Map<String, Entity>) map);
     }
 
     @Override

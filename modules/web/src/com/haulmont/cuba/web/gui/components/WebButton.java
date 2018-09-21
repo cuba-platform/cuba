@@ -25,14 +25,14 @@ import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.shared.MouseEventDetails;
 import org.apache.commons.lang3.StringUtils;
 
-import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
     protected Action action;
-    protected PropertyChangeListener actionPropertyChangeListener;
+    protected Consumer<PropertyChangeEvent> actionPropertyChangeListener;
 
     public WebButton() {
         component = createComponent();
@@ -217,6 +217,6 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
     @Override
     public Subscription addClickListener(Consumer<ClickEvent> listener) {
-        return addListener(ClickEvent.class, listener);
+        return getEventHub().subscribe(ClickEvent.class, listener);
     }
 }

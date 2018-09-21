@@ -20,9 +20,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -30,8 +30,8 @@ import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -40,8 +40,7 @@ import java.util.function.Function;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V>
-        implements TextField<V>, InitializingBean {
+public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V> implements TextField<V> {
 
     protected Datatype<V> datatype;
     protected Function<? super V, String> formatter;
@@ -58,11 +57,8 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         attachValueChangeListener(this.component);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
     }
 
@@ -78,7 +74,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
             dataAwareComponentsTools.setupCaseConversion(this, entityValueSource);
@@ -253,6 +249,16 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     }
 
     @Override
+    public Subscription addTextChangeListener(Consumer<TextChangeEvent> listener) {
+        return getEventHub().subscribe(TextChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeTextChangeListener(Consumer<TextChangeEvent> listener) {
+        unsubscribe(TextChangeEvent.class, listener);
+    }
+
+    @Override
     public int getTextChangeTimeout() {
         return component.getValueChangeTimeout();
     }
@@ -278,12 +284,14 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             component.addShortcutListener(enterShortcutListener);
         }
 
-        return TextField.super.addEnterPressListener(listener);
+        getEventHub().subscribe(EnterPressEvent.class, listener);
+
+        return () -> removeEnterPressListener(listener);
     }
 
     @Override
     public void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
-        TextField.super.removeEnterPressListener(listener);
+        unsubscribe(EnterPressEvent.class, listener);
 
         if (enterShortcutListener != null
                 && !hasSubscriptions(EnterPressEvent.class)) {

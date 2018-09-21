@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -25,6 +24,7 @@ import javax.annotation.Nullable;
  */
 public interface OrderedContainer extends ComponentContainer {
     void add(Component childComponent, int index);
+
     int indexOf(Component component);
 
     /**

@@ -21,8 +21,8 @@ import com.haulmont.cuba.gui.components.RichTextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.widgets.CubaRichTextArea;
 import com.haulmont.cuba.web.widgets.client.richtextarea.CubaRichTextAreaState;
-import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,20 +31,19 @@ import java.util.Map;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String>
-        implements RichTextArea, InitializingBean {
+public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String> implements RichTextArea {
 
     public WebRichTextArea() {
         component = new CubaRichTextArea();
         attachValueChangeListener(this.component);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        component.setLocaleMap(loadLabels());
+    @Inject
+    public void setMessages(Messages messages) {
+        component.setLocaleMap(loadLabels(messages));
     }
 
-    protected Map<String, String> loadLabels() {
+    protected Map<String, String> loadLabels(Messages messages) {
         Map<String, String> labels = new HashMap<>();
 
         Collection<String> locales = Arrays.asList(
@@ -79,7 +78,6 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
                 CubaRichTextAreaState.RICH_TEXT_AREA_REMOVEFORMAT_LABEL
         );
 
-        Messages messages = applicationContext.getBean(Messages.class);
         for (String locale : locales) {
             labels.put(locale, messages.getMainMessage(locale));
         }

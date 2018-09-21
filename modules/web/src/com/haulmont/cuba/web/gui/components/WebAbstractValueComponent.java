@@ -16,26 +16,31 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueBinding;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
 
-    protected ApplicationContext applicationContext;
+    protected BeanLocator beanLocator;
 
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
 
     @Inject
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 
     @Override
@@ -47,7 +52,7 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
         }
 
         if (valueSource != null) {
-            ValueBinder binder = applicationContext.getBean(ValueBinder.NAME, ValueBinder.class);
+            ValueBinder binder = beanLocator.get(ValueBinder.NAME);
 
             this.valueBinding = binder.bind(this, valueSource);
 
@@ -89,6 +94,18 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
             publish(ValueChangeEvent.class, event);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        return getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
+        unsubscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     protected void setValueToPresentation(P value) {

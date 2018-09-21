@@ -43,7 +43,7 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
             dataAwareComponentsTools.setupMaxLength(this, entityValueSource);

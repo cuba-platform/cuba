@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
@@ -34,6 +35,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel {
 
@@ -348,5 +350,15 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         }
         SplitPanelDockMode mode = ((CubaHorizontalSplitPanel) component).getDockMode();
         return DockMode.valueOf(mode.name());
+    }
+
+    @Override
+    public Subscription addSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
+        return getEventHub().subscribe(SplitPositionChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
+        unsubscribe(SplitPositionChangeEvent.class, listener);
     }
 }

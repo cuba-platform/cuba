@@ -5,7 +5,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.HierarchicalDatasourceDataGridAdapter;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
@@ -235,9 +234,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * @return a registration object for removing an event listener added to a source
      */
     @SuppressWarnings("unchecked")
-    default Subscription addExpandListener(Consumer<ExpandEvent<E>> listener) {
-        return ((EventTarget) this).addListener(ExpandEvent.class, (Consumer) listener);
-    }
+    Subscription addExpandListener(Consumer<ExpandEvent<E>> listener);
 
     /**
      * Registers a new collapse listener.
@@ -246,9 +243,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * @return a registration object for removing an event listener added to a source
      */
     @SuppressWarnings("unchecked")
-    default Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener) {
-        return ((EventTarget) this).addListener(CollapseEvent.class, (Consumer) listener);
-    }
+    Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener);
 
     /**
      * An event that is fired when an item is expanded.

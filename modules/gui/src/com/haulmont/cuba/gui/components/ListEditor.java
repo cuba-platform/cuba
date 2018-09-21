@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.List;
 import java.util.Map;
@@ -99,17 +98,13 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
      *
      * @param listener listener instance
      */
-    default Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        return ((EventTarget) this).addListener(EditorCloseEvent.class, listener);
-    }
+    Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener);
 
     /**
      * @param listener listener to be removed
      */
     @Deprecated
-    default void removeEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        ((EventTarget) this).removeListener(EditorCloseEvent.class, listener);
-    }
+    void removeEditorCloseListener(Consumer<EditorCloseEvent> listener);
 
     /**
      * @param paramsSupplier additional params map for editor screen.

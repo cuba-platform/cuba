@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
@@ -32,7 +33,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang3.BooleanUtils;
@@ -80,7 +80,7 @@ public class UserBrowser extends AbstractLookup {
     protected UserManagementService userManagementService;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -140,7 +140,7 @@ public class UserBrowser extends AbstractLookup {
 
     protected void initTimeZoneColumn() {
         usersTable.addGeneratedColumn("timeZone", entity -> {
-            Label<String> label = componentsFactory.createComponent(Label.class);
+            Label<String> label = uiComponents.create(Label.TYPE_DEFAULT);
             if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
                 label.setValue(messages.getMainMessage("timeZone.auto"));
             } else if (entity.getTimeZone() != null) {

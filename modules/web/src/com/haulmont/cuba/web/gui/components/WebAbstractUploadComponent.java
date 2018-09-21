@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.UploadField;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.AbstractComponent>
         extends WebAbstractComponent<T>
@@ -111,5 +113,35 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Abstrac
     @Override
     public void setDropZonePrompt(String dropZonePrompt) {
         this.dropZonePrompt = dropZonePrompt;
+    }
+
+    @Override
+    public Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        return getEventHub().subscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        unsubscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        return getEventHub().subscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        unsubscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        return getEventHub().subscribe(FileUploadErrorEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        unsubscribe(FileUploadErrorEvent.class, listener);
     }
 }

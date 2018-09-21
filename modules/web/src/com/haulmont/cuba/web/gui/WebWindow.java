@@ -18,12 +18,10 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
-import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
@@ -51,14 +49,13 @@ import org.springframework.context.ApplicationListener;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public abstract class WebWindow implements Window, Component.Wrapper,
         Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
         SecuredActionsHolder, Component.HasIcon,
-        FrameImplementation, WindowImplementation, EventTarget {
+        FrameImplementation, WindowImplementation {
 
     protected static final String C_WINDOW_LAYOUT = "c-window-layout";
 
@@ -116,19 +113,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Inject
     protected void setIcons(Icons icons) {
         this.icons = icons;
-    }
-
-    @Override
-    public <E> Subscription addListener(Class<E> eventType, Consumer<E> listener) {
-        return getEventHub().subscribe(eventType, listener);
-    }
-
-    @Override
-    public <E> boolean removeListener(Class<E> eventType, Consumer<E> listener) {
-        if (eventHub != null) {
-            return eventHub.unsubscribe(eventType, listener);
-        }
-        return false;
     }
 
     protected void disableEventListeners() {

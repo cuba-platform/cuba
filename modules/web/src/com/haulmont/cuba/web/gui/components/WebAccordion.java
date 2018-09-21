@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
@@ -46,6 +45,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
 public class WebAccordion extends WebAbstractComponent<CubaAccordion>
@@ -55,9 +55,9 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     protected boolean componentTabChangeListenerInitialized;
 
     protected ComponentLoader.Context context;
-    protected Map<String, Tab> tabs = new HashMap<>();
+    protected Map<String, Tab> tabs = new HashMap<>(4);
 
-    protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
+    protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>(4);
 
     protected Set<com.vaadin.ui.Component> lazyTabs;
 
@@ -93,7 +93,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
     @Override
     public Component getOwnComponent(String id) {
-        Preconditions.checkNotNullArgument(id);
+        checkNotNullArgument(id);
 
         return tabMapping.values().stream()
                 .filter(cd -> Objects.equals(id, cd.component.getId()))
@@ -136,7 +136,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
     @Override
     public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
-        Preconditions.checkNotNullArgument(permissionDescriptor);
+        checkNotNullArgument(permissionDescriptor);
 
         final String subComponentId = permissionDescriptor.getSubComponentId();
         final Accordion.Tab tab = getTab(subComponentId);
@@ -274,7 +274,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
     @Override
     public void removeTab(String name) {
-        final Tab tab = tabs.get(name);
+        Tab tab = tabs.get(name);
         if (tab == null) {
             throw new IllegalStateException(String.format("Can't find tab '%s'", name));
         }
@@ -310,11 +310,11 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
             throw new IllegalStateException("Component already has parent");
         }
 
-        final Tab tab = new Tab(name, childComponent);
+        Tab tab = new Tab(name, childComponent);
 
         this.tabs.put(name, tab);
 
-        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component tabComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
         tabComponent.setSizeFull();
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
@@ -418,12 +418,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
     @Override
     public Tab getSelectedTab() {
-        final com.vaadin.ui.Component component = this.component.getSelectedTab();
+        com.vaadin.ui.Component component = this.component.getSelectedTab();
         if (component == null) {
             return null;
         }
 
-        final String name = tabMapping.get(component).getName();
+        String name = tabMapping.get(component).getName();
         return tabs.get(name);
     }
 
@@ -498,7 +498,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     }
 
     protected void fireTabChanged() {
-        SelectedTabChangeEvent event = new SelectedTabChangeEvent(this, getTab());
+        SelectedTabChangeEvent event = new SelectedTabChangeEvent(this, getSelectedTab());
         publish(SelectedTabChangeEvent.class, event);
     }
 
@@ -506,7 +506,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     public Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
         initComponentTabChangeListener();
 
-        return Accordion.super.addSelectedTabChangeListener(listener);
+        return getEventHub().subscribe(SelectedTabChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
+        getEventHub().unsubscribe(SelectedTabChangeEvent.class, listener);
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {

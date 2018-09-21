@@ -547,7 +547,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
     public Subscription addSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
         initComponentTabChangeListener();
 
-        return TabSheet.super.addSelectedTabChangeListener(listener);
+        return getEventHub().subscribe(SelectedTabChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
+        unsubscribe(SelectedTabChangeEvent.class, listener);
     }
 
     protected void fireTabChanged(SelectedTabChangeEvent event) {

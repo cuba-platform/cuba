@@ -125,7 +125,7 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
             expandListener = component.addExpandListener(this::onItemExpand);
         }
 
-        return TreeDataGrid.super.addExpandListener(listener);
+        return getEventHub().subscribe(ExpandEvent.class, (Consumer) listener);
     }
 
     protected void onItemExpand(com.vaadin.event.ExpandEvent<E> e) {
@@ -141,7 +141,7 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
             collapseListener = component.addCollapseListener(this::onItemCollapse);
         }
 
-        return TreeDataGrid.super.addCollapseListener(listener);
+        return getEventHub().subscribe(CollapseEvent.class, (Consumer) listener);
     }
 
     protected void onItemCollapse(com.vaadin.event.CollapseEvent<E> e) {

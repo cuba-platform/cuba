@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.Collection;
 import java.util.EventObject;
@@ -44,18 +43,13 @@ public interface LookupComponent extends Component {
      */
     interface LookupSelectionChangeNotifier extends LookupComponent {
 
-        default Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
-            return ((EventTarget) this).addListener(LookupSelectionChangeEvent.class, listener);
-        }
+        Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener);
 
         /**
-         * @param listener a listener to remove
          * @deprecated Use {@link Subscription} instead
          */
         @Deprecated
-        default void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
-            ((EventTarget) this).removeListener(LookupSelectionChangeEvent.class, listener);
-        }
+        void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener);
     }
 
     class LookupSelectionChangeEvent extends EventObject {

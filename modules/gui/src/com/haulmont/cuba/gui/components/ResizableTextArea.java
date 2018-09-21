@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.function.Consumer;
 
@@ -94,16 +93,12 @@ public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
         HORIZONTAL, VERTICAL, BOTH, NONE
     }
 
-    default Subscription addResizeListener(Consumer<ResizeEvent> listener) {
-        return ((EventTarget) this).addListener(ResizeEvent.class, listener);
-    }
+    Subscription addResizeListener(Consumer<ResizeEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeResizeListener(Consumer<ResizeEvent> listener) {
-        ((EventTarget) this).removeListener(ResizeEvent.class, listener);
-    }
+    void removeResizeListener(Consumer<ResizeEvent> listener);
 }

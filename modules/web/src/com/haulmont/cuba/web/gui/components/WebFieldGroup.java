@@ -16,17 +16,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -800,6 +801,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 permissions.addDisabledActionPermission(actionId);
             }
         }
+    }
+
+    @Override
+    public Subscription addEditableChangeListener(Consumer<EditableChangeEvent> listener) {
+        return getEventHub().subscribe(EditableChangeEvent.class, listener);
+    }
+
+    @Override
+    public void removeEditableChangeListener(Consumer<EditableChangeEvent> listener) {
+        unsubscribe(EditableChangeEvent.class, listener);
     }
 
     public class FieldConfigImpl implements FieldConfig {

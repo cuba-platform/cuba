@@ -18,30 +18,25 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.sys.TestIdManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.SecuredActionsHolder;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.valueproviders.EntityNameValueProvider;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.Registration;
@@ -50,14 +45,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.beans.PropertyChangeEvent;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -76,14 +65,13 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
     protected MetaClass metaClass;
 
-    protected List<Action> actions = new ArrayList<>();
-    protected Map<String, CubaButton> actionButtons = new HashMap<>();
-    protected Map<String, PropertyChangeListener> actionPropertyChangeListeners = new HashMap<>();
-    protected Registration fieldListener;
+    protected List<Action> actions = new ArrayList<>(4);
+    protected Map<String, CubaButton> actionButtons = new HashMap<>(4);
+    protected Map<String, Consumer<PropertyChangeEvent>> actionPropertyChangeListeners = new HashMap<>(4);
+    protected Registration fieldListenerRegistration;
 
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
     protected WebPickerFieldActionHandler actionHandler;
-
-    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPickerField() {
         component = createComponent();
@@ -95,10 +83,30 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         return new CubaPickerField<>();
     }
 
+    @Inject
+    protected void setConfiguration(Configuration configuration) {
+        actionHandler = new WebPickerFieldActionHandler(configuration);
+        component.addActionHandler(actionHandler);
+    }
+
+    @Inject
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @Inject
+    public void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    public void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         initComponent(component);
-        initActionHandler(component);
     }
 
     protected void initComponent(CubaPickerField<V> component) {
@@ -123,26 +131,6 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
                 return super.apply(entity);
             }
         };
-    }
-
-    protected void initActionHandler(CubaPickerField<V> component) {
-        actionHandler = new WebPickerFieldActionHandler(this);
-        component.addActionHandler(actionHandler);
-    }
-
-    @Inject
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
-    }
-
-    @Inject
-    public void setMetadataTools(MetadataTools metadataTools) {
-        this.metadataTools = metadataTools;
-    }
-
-    @Inject
-    public void setIconResolver(IconResolver iconResolver) {
-        this.iconResolver = iconResolver;
     }
 
     @Override
@@ -183,26 +171,6 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         OpenAction action = OpenAction.create(this);
         addAction(action);
         return action;
-    }
-
-    // todo remove
-    protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
-        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                .resolveMetaPropertyPath(metaClass, property);
-        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        return metaPropertyPath;
-    }
-
-    // todo remove
-    public void checkDatasourceProperty(Datasource datasource, String property) {
-        Preconditions.checkNotNullArgument(datasource);
-        Preconditions.checkNotNullArgument(property);
-
-        MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
-        if (!metaPropertyPath.getRange().isClass()) {
-            throw new DevelopmentException(String.format("property '%s.%s' should have Entity type", datasource.getMetaClass().getName(), property));
-        }
     }
 
     @Override
@@ -286,7 +254,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             setPickerButtonIcon(button, action.getIcon());
         }
 
-        PropertyChangeListener actionPropertyChangeListener = createActionPropertyChangeListener(button, action);
+        Consumer<PropertyChangeEvent> actionPropertyChangeListener = createActionPropertyChangeListener(button, action);
         action.addPropertyChangeListener(actionPropertyChangeListener);
         actionPropertyChangeListeners.put(action.getId(), actionPropertyChangeListener);
 
@@ -304,7 +272,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         }
     }
 
-    protected PropertyChangeListener createActionPropertyChangeListener(CubaButton button, Action action) {
+    protected Consumer<PropertyChangeEvent> createActionPropertyChangeListener(CubaButton button, Action action) {
         return evt -> {
             if (Action.PROP_ICON.equals(evt.getPropertyName())) {
                 setPickerButtonIcon(button, action.getIcon());
@@ -356,7 +324,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
                 CubaButton button = actionButtons.remove(action.getId());
                 component.removeButton(button);
 
-                PropertyChangeListener listener = actionPropertyChangeListeners.remove(action.getId());
+                Consumer<PropertyChangeEvent> listener = actionPropertyChangeListeners.remove(action.getId());
                 action.removePropertyChangeListener(listener);
             }
         }
@@ -377,18 +345,18 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener) {
-        if (fieldListener == null) {
-            fieldListener = component.addFieldListener(this::onFieldValueChange);
+        if (fieldListenerRegistration == null) {
+            fieldListenerRegistration = component.addFieldListener(this::onFieldValueChange);
         }
 
-        return PickerField.super.addFieldValueChangeListener(listener);
+        return getEventHub().subscribe(FieldValueChangeEvent.class, (Consumer) listener);
     }
 
     protected void onFieldValueChange(CubaPickerField.FieldValueChangeEvent <V> e) {
-        FieldValueChangeEvent<V> event = new FieldValueChangeEvent<>(WebPickerField.this,
-                e.getText(), e.getPrevValue());
+        FieldValueChangeEvent<V> event = new FieldValueChangeEvent<>(this, e.getText(), e.getPrevValue());
         publish(FieldValueChangeEvent.class, event);
     }
 
@@ -425,7 +393,12 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
     @Override
     public Collection getLookupSelectedItems() {
-        return Collections.singleton(getValue());
+        V value = getValue();
+        if (value == null) {
+            return Collections.emptyList();
+        }
+
+        return Collections.singleton(value);
     }
 
     @Override
@@ -477,5 +450,87 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     @Override
     public boolean isModified() {
         return super.isModified();
+    }
+
+    public class WebPickerFieldActionHandler implements com.vaadin.event.Action.Handler {
+
+        private int[] modifiers;
+
+        private Map<ShortcutAction, Action> actionsMap = new HashMap<>(4);
+        private List<com.vaadin.event.Action> shortcuts = new ArrayList<>(4);
+        private List<ShortcutAction> orderedShortcuts = new ArrayList<>(4);
+
+        protected List<Action> actionList = new ArrayList<>(4);
+
+        public WebPickerFieldActionHandler(Configuration configuration) {
+            ClientConfig config = configuration.getConfig(ClientConfig.class);
+            String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
+            modifiers = new int[strModifiers.length];
+            for (int i = 0; i < modifiers.length; i++) {
+                modifiers[i] = KeyCombination.Modifier.valueOf(strModifiers[i]).getCode();
+            }
+        }
+
+        @Override
+        public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            return shortcuts.toArray(new com.vaadin.event.Action[0]);
+        }
+
+        public void addAction(Action action, int index) {
+            actionList.add(index, action);
+
+            updateOrderedShortcuts();
+
+            KeyCombination combination = action.getShortcutCombination();
+            if (combination != null) {
+                int key = combination.getKey().getCode();
+                int[] modifiers = KeyCombination.Modifier.codes(combination.getModifiers());
+                ShortcutAction providedShortcut = new ShortcutAction(action.getCaption(), key, modifiers);
+                shortcuts.add(providedShortcut);
+                actionsMap.put(providedShortcut, action);
+            }
+        }
+
+        public void removeAction(Action action) {
+            List<ShortcutAction> existActions = new ArrayList<>(4);
+            for (Map.Entry<ShortcutAction, Action> entry : actionsMap.entrySet()) {
+                if (entry.getValue().equals(action)) {
+                    existActions.add(entry.getKey());
+                }
+            }
+            shortcuts.removeAll(existActions);
+            for (ShortcutAction shortcut : existActions) {
+                actionsMap.remove(shortcut);
+            }
+            actionList.remove(action);
+
+            updateOrderedShortcuts();
+        }
+
+        protected void updateOrderedShortcuts() {
+            shortcuts.removeAll(orderedShortcuts);
+            for (ShortcutAction orderedShortcut : orderedShortcuts) {
+                actionsMap.remove(orderedShortcut);
+            }
+
+            for (int i = 0; i < actionList.size(); i++) {
+                int keyCode = ShortcutAction.KeyCode.NUM1 + i;
+
+                Action orderedAction = actionList.get(i);
+
+                ShortcutAction orderedShortcut = new ShortcutAction(orderedAction.getCaption(), keyCode, modifiers);
+                shortcuts.add(orderedShortcut);
+                orderedShortcuts.add(orderedShortcut);
+                actionsMap.put(orderedShortcut, orderedAction);
+            }
+        }
+
+        @Override
+        public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+            Action pickerAction = actionsMap.get(action);
+            if (pickerAction != null) {
+                pickerAction.actionPerform(WebPickerField.this);
+            }
+        }
     }
 }

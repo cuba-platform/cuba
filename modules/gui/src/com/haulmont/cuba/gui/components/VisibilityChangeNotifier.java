@@ -17,24 +17,19 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 
 import java.util.function.Consumer;
 
 public interface VisibilityChangeNotifier {
 
-    default Subscription addVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
-        return ((EventTarget) this).addListener(VisibilityChangeEvent.class, listener);
-    }
+    Subscription addVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
-        ((EventTarget) this).removeListener(VisibilityChangeEvent.class, listener);
-    }
+    void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener);
 
     class VisibilityChangeEvent {
         private Component component;

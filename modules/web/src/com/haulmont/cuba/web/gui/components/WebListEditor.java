@@ -231,7 +231,9 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
 
     @Override
     public Subscription addEditorCloseListener(Consumer<EditorCloseEvent> listener) {
-        return delegate.addEditorCloseListener(listener);
+        delegate.addEditorCloseListener(listener);
+
+        return () -> removeEditorCloseListener(listener);
     }
 
     @Override

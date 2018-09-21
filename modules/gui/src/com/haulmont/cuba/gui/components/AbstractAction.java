@@ -16,14 +16,19 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.icons.Icons;
 
 import javax.annotation.Nullable;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Abstract class for GUI actions.
@@ -33,24 +38,22 @@ public abstract class AbstractAction implements Action {
     protected String id;
 
     protected String caption;
-
     protected String description;
-
     protected String icon;
 
     protected boolean enabled = true;
-
     protected boolean visible = true;
 
-    protected List<ActionOwner> owners = new ArrayList<>();
-
-    protected PropertyChangeSupport changeSupport;
+    protected List<ActionOwner> owners = ImmutableList.of();
 
     protected KeyCombination shortcut;
 
     protected boolean primary = false;
 
+    protected EventHub eventHub;
+
     // legacy field
+    @Deprecated
     private Messages messages;
 
     protected AbstractAction() {
@@ -73,6 +76,14 @@ public abstract class AbstractAction implements Action {
         this(id);
 
         this.primary = status == Status.PRIMARY;
+    }
+
+    // lazy initializer
+    protected EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
+        }
+        return eventHub;
     }
 
     @Override
@@ -172,7 +183,7 @@ public abstract class AbstractAction implements Action {
         if (oldValue != enabled) {
             this.enabled = enabled;
             for (ActionOwner owner : owners) {
-                if (owner != null && owner instanceof Component) {
+                if (owner instanceof Component) {
                     ((Component) owner).setEnabled(enabled);
                 }
             }
@@ -191,7 +202,7 @@ public abstract class AbstractAction implements Action {
         if (oldValue != visible) {
             this.visible = visible;
             for (ActionOwner owner : owners) {
-                if (owner != null && owner instanceof Component) {
+                if (owner instanceof Component) {
                     ((Component) owner).setVisible(visible);
                 }
             }
@@ -201,7 +212,7 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public Collection<ActionOwner> getOwners() {
-        return Collections.unmodifiableCollection(owners);
+        return owners;
     }
 
     @Override
@@ -212,36 +223,50 @@ public abstract class AbstractAction implements Action {
     @Override
     public void addOwner(ActionOwner actionOwner) {
         if (!owners.contains(actionOwner)) {
-            owners.add(actionOwner);
+            if (owners.isEmpty()) {
+                owners = ImmutableList.of(actionOwner);
+            } else {
+                owners = ImmutableList.<ActionOwner>builder()
+                        .addAll(owners)
+                        .add(actionOwner)
+                        .build();
+            }
         }
     }
 
     @Override
     public void removeOwner(ActionOwner actionOwner) {
-        owners.remove(actionOwner);
+        if (!owners.isEmpty()) {
+            if (owners.size() == 1 && owners.get(0) == actionOwner) {
+                owners = ImmutableList.of();
+            } else {
+                owners = ImmutableList.<ActionOwner>builder()
+                            .addAll(Collections2.filter(owners, o -> o != actionOwner))
+                            .build();
+            }
+        }
     }
 
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if (changeSupport == null) {
-            changeSupport = new PropertyChangeSupport(this);
-        }
-        changeSupport.addPropertyChangeListener(listener);
+    public void addPropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
+        getEventHub().subscribe(PropertyChangeEvent.class, listener);
     }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        if (changeSupport == null) {
-            return;
+    public void removePropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
+        if (eventHub != null) {
+            eventHub.unsubscribe(PropertyChangeEvent.class, listener);
         }
-        changeSupport.removePropertyChangeListener(listener);
     }
 
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (changeSupport == null || Objects.equals(oldValue, newValue)) {
+        if (Objects.equals(oldValue, newValue)) {
             return;
         }
-        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+        if (eventHub != null && eventHub.hasSubscriptions(PropertyChangeEvent.class)) {
+            PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+            eventHub.publish(PropertyChangeEvent.class, event);
+        }
     }
 
     @Override

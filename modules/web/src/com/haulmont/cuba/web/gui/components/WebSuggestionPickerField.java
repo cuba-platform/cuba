@@ -90,13 +90,8 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         getComponent().setCancelSearchHandler(this::cancelSearch);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
     }
 

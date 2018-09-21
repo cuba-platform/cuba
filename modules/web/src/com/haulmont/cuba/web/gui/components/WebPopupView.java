@@ -16,23 +16,46 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.function.Consumer;
 
 public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> implements PopupView {
     protected Component popupContent;
     protected String minimizedValue;
 
+    protected Registration popupVisibilityListenerRegistration;
+
     public WebPopupView() {
         component = new com.vaadin.ui.PopupView(new EmptyContent());
+    }
 
-        component.addPopupVisibilityListener(e ->
-                publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
-        );
+    @Override
+    public Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        getEventHub().subscribe(PopupVisibilityEvent.class, listener);
+
+        if (popupVisibilityListenerRegistration == null) {
+            popupVisibilityListenerRegistration = component.addPopupVisibilityListener(e ->
+                    publish(PopupVisibilityEvent.class, new PopupVisibilityEvent(this))
+            );
+        }
+        return () -> removePopupVisibilityListener(listener);
+    }
+
+    @Override
+    public void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener) {
+        unsubscribe(PopupVisibilityEvent.class, listener);
+
+        if (!hasSubscriptions(PopupVisibilityEvent.class)) {
+            popupVisibilityListenerRegistration.remove();
+        }
     }
 
     @Override

@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -39,8 +38,7 @@ import java.util.Map;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, String, V>
-        implements CurrencyField<V>, InitializingBean {
+public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, String, V> implements CurrencyField<V> {
 
     protected Locale locale;
     protected Datatype<V> datatype;
@@ -66,11 +64,8 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
                 );
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        UserSessionSource userSessionSource =
-                applicationContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
-
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
     }
 

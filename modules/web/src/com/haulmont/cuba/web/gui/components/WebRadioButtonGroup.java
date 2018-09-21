@@ -124,7 +124,7 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
         }
 
         if (optionsSource != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }

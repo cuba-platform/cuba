@@ -29,14 +29,12 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaDatePicker;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.InlineDateField;
-import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.time.*;
 import java.util.Date;
 
-public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalDate, V>
-        implements DatePicker<V>, InitializingBean {
+public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalDate, V> implements DatePicker<V> {
 
     @Inject
     protected DateTimeTransformations dateTimeTransformations;
@@ -52,9 +50,8 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
         attachValueChangeListener(component);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        Messages messages = applicationContext.getBean(Messages.class);
+    @Inject
+    public void setMessages(Messages messages) {
         component.setDateOutOfRangeMessage(messages.getMainMessage("datePicker.dateOutOfRangeMessage"));
     }
 
@@ -115,7 +112,7 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
 
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
             dataAwareComponentsTools.setupDateRange(this, entityValueSource);
         }
     }

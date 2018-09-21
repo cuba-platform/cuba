@@ -20,7 +20,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
-import com.haulmont.cuba.gui.components.sys.EventTarget;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
@@ -31,8 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
-public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
-        Component.HasIcon, HasContextHelp {
+public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon, HasContextHelp {
     String NAME = "calendar";
 
     /**
@@ -164,109 +162,77 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
      */
     void setMonthNames(Map<Month, String> monthNames);
 
-    default Subscription addDateClickListener(Consumer<CalendarDateClickEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarDateClickEvent.class, listener);
-    }
+    Subscription addDateClickListener(Consumer<CalendarDateClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeDateClickListener(Consumer<CalendarDateClickEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarDateClickEvent.class, listener);
-    }
+    void removeDateClickListener(Consumer<CalendarDateClickEvent> listener);
 
-    default Subscription addEventClickListener(Consumer<CalendarEventClickEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarEventClickEvent.class, listener);
-    }
+    Subscription addEventClickListener(Consumer<CalendarEventClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeEventClickListener(Consumer<CalendarEventClickEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarEventClickEvent.class, listener);
-    }
+    void removeEventClickListener(Consumer<CalendarEventClickEvent> listener);
 
-    default Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarEventResizeEvent.class, listener);
-    }
+    Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeEventResizeListener(Consumer<CalendarEventResizeEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarEventResizeEvent.class, listener);
-    }
+    void removeEventResizeListener(Consumer<CalendarEventResizeEvent> listener);
 
-    default Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarEventMoveEvent.class, listener);
-    }
+    Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeEventMoveListener(Consumer<CalendarEventMoveEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarEventMoveEvent.class, listener);
-    }
+    void removeEventMoveListener(Consumer<CalendarEventMoveEvent> listener);
 
-    default Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarWeekClickEvent.class, listener);
-    }
+    Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeWeekClickListener(Consumer<CalendarWeekClickEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarWeekClickEvent.class, listener);
-    }
+    void removeWeekClickListener(Consumer<CalendarWeekClickEvent> listener);
 
-    default Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarForwardClickEvent.class, listener);
-    }
+    Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeForwardClickListener(Consumer<CalendarForwardClickEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarForwardClickEvent.class, listener);
-    }
+    void removeForwardClickListener(Consumer<CalendarForwardClickEvent> listener);
 
-    default Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarBackwardClickEvent.class, listener);
-    }
+    Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarBackwardClickEvent.class, listener);
-    }
+    void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener);
 
-    default Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
-        return ((EventTarget) this).addListener(CalendarRangeSelectEvent.class, listener);
-    }
+    Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    default void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener) {
-        ((EventTarget) this).removeListener(CalendarRangeSelectEvent.class, listener);
-    }
+    void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener);
 
     enum TimeFormat {
         FORMAT_12H, FORMAT_24H

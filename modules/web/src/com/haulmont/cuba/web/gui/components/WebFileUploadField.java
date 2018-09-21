@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -38,17 +39,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.io.*;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
-public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
@@ -75,14 +79,29 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected boolean internalValueChangedOnUpload = false;
 
     public WebFileUploadField() {
-        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        exportDisplay = AppBeans.get(ExportDisplay.NAME);
-        messages = AppBeans.get(Messages.NAME);
+    }
 
+    @Override
+    public void afterPropertiesSet() {
         initUploadButton();
 
         initComponent();
         attachListener(component);
+    }
+
+    @Inject
+    public void setFileUploading(FileUploadingAPI fileUploading) {
+        this.fileUploading = fileUploading;
+    }
+
+    @Inject
+    public void setExportDisplay(ExportDisplay exportDisplay) {
+        this.exportDisplay = exportDisplay;
+    }
+
+    @Inject
+    public void setMessages(Messages messages) {
+        this.messages = messages;
     }
 
     protected void initComponent() {
@@ -272,6 +291,16 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         return bytes;
     }
 
+    @Override
+    public Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
+        return null;
+    }
+
+    @Override
+    public void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
+
+    }
+
     /**
      * @return File id for uploaded file in {@link FileUploadingAPI}
      */
@@ -415,6 +444,36 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     @Override
+    public Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        return getEventHub().subscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        unsubscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        return getEventHub().subscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        unsubscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        return getEventHub().subscribe(FileUploadErrorEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        unsubscribe(FileUploadErrorEvent.class, listener);
+    }
+
+    @Override
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
         if (uploadButton instanceof CubaFileUpload) {
@@ -495,6 +554,26 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public String getClearButtonDescription() {
         return component.getClearButtonDescription();
+    }
+
+    @Override
+    public Subscription addBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
+        return getEventHub().subscribe(BeforeValueClearEvent.class, listener);
+    }
+
+    @Override
+    public void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener) {
+        unsubscribe(BeforeValueClearEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
+        return getEventHub().subscribe(AfterValueClearEvent.class, listener);
+    }
+
+    @Override
+    public void removeAfterValueClearListener(Consumer<AfterValueClearEvent> listener) {
+        unsubscribe(AfterValueClearEvent.class, listener);
     }
 
     @Override

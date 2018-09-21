@@ -179,12 +179,14 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
             component.addClickListener(vClickListener);
         }
 
-        return Image.super.addClickListener(listener);
+        getEventHub().subscribe(ClickEvent.class, listener);
+
+        return () -> removeClickListener(listener);
     }
 
     @Override
     public void removeClickListener(Consumer<ClickEvent> listener) {
-        Image.super.removeClickListener(listener);
+        unsubscribe(ClickEvent.class, listener);
 
         if (!hasSubscriptions(ClickEvent.class)) {
             component.removeClickListener(vClickListener);

@@ -19,7 +19,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.AbstractFrame;
@@ -31,6 +33,7 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -41,22 +44,18 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.lang.invoke.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 @Component("cuba_UiControllerReflectionInspector")
 public class UiControllerReflectionInspector {
-
-    protected static final Method NO_METHOD_VALUE;
-    static {
-        try {
-            NO_METHOD_VALUE = Object.class.getMethod("toString");
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("It should never happen", e);
-        }
-    }
 
     protected final LoadingCache<Class<?>, List<InjectElement>> injectValueElementsCache =
             CacheBuilder.newBuilder()
@@ -88,6 +87,16 @@ public class UiControllerReflectionInspector {
                         }
                     });
 
+    protected final LoadingCache<Class<?>, Map<Class, MethodHandle>> addListenerMethodsCache =
+            CacheBuilder.newBuilder()
+                    .weakKeys()
+                    .build(new CacheLoader<Class<?>, Map<Class, MethodHandle>>() {
+                        @Override
+                        public Map<Class, MethodHandle> load(@Nonnull Class<?> concreteClass) {
+                            return getAddListenerMethodsNotCached(concreteClass);
+                        }
+                    });
+
     protected final LoadingCache<Class<?>, List<AnnotatedMethod<Provide>>> provideMethodsCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
@@ -98,29 +107,33 @@ public class UiControllerReflectionInspector {
                         }
                     });
 
-    protected final LoadingCache<MethodTag, Method> provideTargetMethodsCache =
+    protected final LoadingCache<Class<?>, Map<String, MethodHandle>> provideTargetMethodsCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
-                    .build(new CacheLoader<MethodTag, Method>() {
+                    .build(new CacheLoader<Class<?>, Map<String, MethodHandle>>() {
                         @Override
-                        public Method load(@Nonnull MethodTag methodTag) {
-                            return getProvideTargetMethodNotCached(methodTag);
+                        public Map<String, MethodHandle> load(@Nonnull Class<?> concreteClass) {
+                            return getProvideTargetMethodsNotCached(concreteClass);
                         }
                     });
 
-    /**
-     * @param clazz class
-     * @param methodName method name
-     * @return method
-     */
-    @Nullable
-    public Method getProvideTargetMethod(Class<?> clazz, String methodName) {
-        Method method = provideTargetMethodsCache.getUnchecked(new MethodTag(clazz, methodName));
-        if (method == NO_METHOD_VALUE) {
-            return null;
+    protected final Map<AnnotatedMethod, MethodHandle> lambdaMethodsCache = new ConcurrentHashMap<>();
+
+    protected final MethodHandles.Lookup trustedLambdaLookup;
+
+    public UiControllerReflectionInspector() {
+        MethodHandles.Lookup trusted = null;
+        try {
+            MethodHandles.Lookup original = MethodHandles.lookup();
+            Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            internal.setAccessible(true);
+            trusted = (MethodHandles.Lookup) internal.get(original);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LoggerFactory.getLogger(UiControllerReflectionInspector.class)
+                    .debug("MethodHandles.Lookup IMPL_LOOKUP is not available");
         }
 
-        return method;
+        this.trustedLambdaLookup = trusted;
     }
 
     public List<AnnotatedMethod<Provide>> getAnnotatedProvideMethods(Class<?> clazz) {
@@ -144,6 +157,53 @@ public class UiControllerReflectionInspector {
 
     public List<InjectElement> getAnnotatedInjectElements(Class<?> clazz) {
         return injectValueElementsCache.getUnchecked(clazz);
+    }
+
+    @Nullable
+    public MethodHandle getAddListenerMethod(Class<?> clazz, Class<?> eventType) {
+        Map<Class, MethodHandle> subscribeMethodsMap = addListenerMethodsCache.getUnchecked(clazz);
+        return subscribeMethodsMap.get(eventType);
+    }
+
+    @Nullable
+    public MethodHandle getProvideTargetMethod(Class<?> clazz, String methodName) {
+        Map<String, MethodHandle> targetMethodsCache = provideTargetMethodsCache.getUnchecked(clazz);
+        return targetMethodsCache.get(methodName);
+    }
+
+    public boolean isLambdaHandlersAvailable() {
+        return trustedLambdaLookup != null;
+    }
+
+    public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, AnnotatedMethod method, Class<?> eventClass) {
+        if (trustedLambdaLookup == null) {
+            throw new UnsupportedOperationException("MethodHandles.Lookup IMPL_LOOKUP is not available");
+        }
+
+        MethodHandle lambdaMethodFactory = lambdaMethodsCache.get(method);
+        if (lambdaMethodFactory != null) {
+            return lambdaMethodFactory;
+        }
+
+        MethodType type = MethodType.methodType(void.class, eventClass);
+        MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
+
+        MethodHandles.Lookup caller = trustedLambdaLookup.in(ownerClass);
+        MethodHandle methodHandle = method.getMethodHandle();
+
+        CallSite site;
+        try {
+            site = LambdaMetafactory.metafactory(
+                    caller, "accept", consumerType, type.changeParameterType(0, Object.class), methodHandle, type);
+        } catch (LambdaConversionException e) {
+            throw new RuntimeException("Unable to build lambda consumer " + methodHandle ,e);
+        }
+
+        MethodHandle target = site.getTarget();
+
+        lambdaMethodsCache.put(method, target);
+
+        return target;
     }
 
     protected List<InjectElement> getAnnotatedInjectElementsNotCached(Class<?> clazz) {
@@ -232,6 +292,7 @@ public class UiControllerReflectionInspector {
 
     protected List<AnnotatedMethod<Provide>> getAnnotatedProvideMethodsNotCached(Class<?> clazz) {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         List<AnnotatedMethod<Provide>> annotatedMethods = new ArrayList<>();
 
@@ -242,7 +303,13 @@ public class UiControllerReflectionInspector {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);
                     }
-                    annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m));
+                    MethodHandle methodHandle;
+                    try {
+                        methodHandle = lookup.unreflect(m);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("unable to get method handle " + m);
+                    }
+                    annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m, methodHandle));
                 }
             }
         }
@@ -252,6 +319,7 @@ public class UiControllerReflectionInspector {
 
     protected List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethodsNotCached(Class<?> clazz) {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         List<AnnotatedMethod<Subscribe>> annotatedMethods = new ArrayList<>();
 
@@ -262,7 +330,13 @@ public class UiControllerReflectionInspector {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);
                     }
-                    annotatedMethods.add(new AnnotatedMethod<>(annotation, m));
+                    MethodHandle methodHandle;
+                    try {
+                        methodHandle = lookup.unreflect(m);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("unable to get method handle " + m);
+                    }
+                    annotatedMethods.add(new AnnotatedMethod<>(annotation, m, methodHandle));
                 }
             }
         }
@@ -270,6 +344,56 @@ public class UiControllerReflectionInspector {
         annotatedMethods.sort(this::compareSubscribeMethods);
 
         return ImmutableList.copyOf(annotatedMethods);
+    }
+
+    protected Map<Class, MethodHandle> getAddListenerMethodsNotCached(Class<?> clazz) {
+        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+        Map<Class, MethodHandle> subscriptionMethods = new HashMap<>();
+
+        for (Method m : methods) {
+            if (m.getParameterCount() == 1
+                    && Consumer.class.isAssignableFrom(m.getParameterTypes()[0])) {
+                // setXxxListener or addXxxListener
+                if (m.getReturnType() == Void.TYPE && m.getName().startsWith("set")
+                        || m.getReturnType() == Subscription.class && m.getName().startsWith("add")) {
+
+                    if (!(m.getGenericParameterTypes()[0] instanceof ParameterizedType)) {
+                        continue;
+                    }
+
+                    ParameterizedType genericParameterType = (ParameterizedType) m.getGenericParameterTypes()[0];
+                    Type eventArgumentType = genericParameterType.getActualTypeArguments()[0];
+
+                    Class actualTypeArgument = null;
+                    if (eventArgumentType instanceof Class) {
+                        // case of plain ClickEvent
+                        actualTypeArgument = (Class) eventArgumentType;
+                    } else if (eventArgumentType instanceof ParameterizedType) {
+                        // case of ValueChangeEvent<V>
+                        actualTypeArgument = (Class) ((ParameterizedType) eventArgumentType).getRawType();
+                    }
+
+                    if (actualTypeArgument != null) {
+                        if (!m.isAccessible()) {
+                            m.setAccessible(true);
+                        }
+
+                        MethodHandle mh;
+                        try {
+                            mh = lookup.unreflect(m);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException("Unable to use subscription method " + m, e);
+                        }
+                        subscriptionMethods.put(actualTypeArgument, mh);
+                    }
+                }
+            }
+        }
+
+        return ImmutableMap.copyOf(subscriptionMethods);
     }
 
     protected int compareSubscribeMethods(AnnotatedMethod<Subscribe> am1, AnnotatedMethod<Subscribe> am2) {
@@ -380,14 +504,38 @@ public class UiControllerReflectionInspector {
         return result;
     }
 
-    protected Method getProvideTargetMethodNotCached(MethodTag methodTag) {
-        for (Method method : ReflectionUtils.getUniqueDeclaredMethods(methodTag.getClazz())) {
-            if (Modifier.isPublic(method.getModifiers()) && method.getName().equals(methodTag.getMethodName())) {
-                return method;
+    protected Map<String, MethodHandle> getProvideTargetMethodsNotCached(Class<?> clazz) {
+        Map<String, MethodHandle> handlesMap = new HashMap<>();
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+        for (Method m : ReflectionUtils.getUniqueDeclaredMethods(clazz)) {
+            if (Modifier.isPublic(m.getModifiers())
+                && m.getName().startsWith("set")
+                && m.getParameterCount() == 1) {
+
+                Class<?> parameterType = m.getParameterTypes()[0];
+
+                if (Consumer.class.isAssignableFrom(parameterType)
+                    || Supplier.class.isAssignableFrom(parameterType)
+                    || Function.class.isAssignableFrom(parameterType)
+                    || parameterType.isInterface()) {
+
+                    if (!m.isAccessible()) {
+                        m.setAccessible(true);
+                    }
+                    MethodHandle methodHandle;
+                    try {
+                        methodHandle = lookup.unreflect(m);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("unable to get method handle " + m);
+                    }
+
+                    handlesMap.put(m.getName(), methodHandle);
+                }
             }
         }
 
-        return NO_METHOD_VALUE;
+        return ImmutableMap.copyOf(handlesMap);
     }
 
     public static class InjectElement {
@@ -420,10 +568,12 @@ public class UiControllerReflectionInspector {
 
         private final T annotation;
         private final Method method;
+        private final MethodHandle methodHandle;
 
-        public AnnotatedMethod(T annotation, Method method) {
+        public AnnotatedMethod(T annotation, Method method, MethodHandle methodHandle) {
             this.annotation = annotation;
             this.method = method;
+            this.methodHandle = methodHandle;
         }
 
         public T getAnnotation() {
@@ -433,48 +583,16 @@ public class UiControllerReflectionInspector {
         public Method getMethod() {
             return method;
         }
-    }
 
-    public static class MethodTag {
-        private final Class<?> clazz;
-        private final String methodName;
-
-        public MethodTag(Class<?> clazz, String methodName) {
-            this.clazz = clazz;
-            this.methodName = methodName;
-        }
-
-        public Class<?> getClazz() {
-            return clazz;
-        }
-
-        public String getMethodName() {
-            return methodName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            MethodTag methodTag = (MethodTag) o;
-            return Objects.equals(clazz, methodTag.clazz) &&
-                    Objects.equals(methodName, methodTag.methodName);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(clazz, methodName);
+        public MethodHandle getMethodHandle() {
+            return methodHandle;
         }
 
         @Override
         public String toString() {
-            return "MethodTag{" +
-                    "clazz=" + clazz +
-                    ", methodName='" + methodName + '\'' +
+            return "AnnotatedMethod{" +
+                    "annotation=" + annotation +
+                    ", method=" + method +
                     '}';
         }
     }
