@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
+import com.haulmont.cuba.gui.screen.Target;
 
-public class ScreenWithParentSubscribe extends ScreenWithSubscribe {
+public class ScreenWithSubscribe extends Screen {
 
-    @Override
+    public int buttonClicks = 0;
+
+    @Subscribe("btn1")
     public void onClick(Button.ClickEvent event) {
-        // override for test
-        super.onClick(event);
+        buttonClicks++;
     }
 
     @Subscribe
-    private void onClick2(Button.ClickEvent event) {
+    private void onShow(BeforeShowEvent event) {
+    }
+
+    @Subscribe(target = Target.FRAME)
+    protected void onAfterShow(AfterShowEvent event) {
+
+    }
+
+    @Subscribe
+    private void init(InitEvent event) {
     }
 }

@@ -329,7 +329,7 @@ public class UiControllerDependencyInjector {
             if (reflectionInspector.isLambdaHandlersAvailable()) {
                 // CAUTION here we use JDK internal API that could be unavailable
                 MethodHandle consumerMethodFactory = reflectionInspector.getConsumerMethodFactory(clazz,
-                        annotatedMethod, eventType);
+                        annotatedMethod.getMethodHandle(), eventType);
                 try {
                     listener = (Consumer) consumerMethodFactory.invoke(frameOwner);
                 } catch (Error e) {
@@ -545,47 +545,24 @@ public class UiControllerDependencyInjector {
             // injecting logger
             return LoggerFactory.getLogger(((Field) element).getDeclaringClass());
 
-        } else if (Screens.class == type) {
+        } else if (Screens.class.isAssignableFrom(type)) {
             // injecting screens
             return UiControllerUtils.getScreenContext(frameOwner).getScreens();
 
-        } else if (Dialogs.class == type) {
+        } else if (Dialogs.class.isAssignableFrom(type)) {
             // injecting screens
             return UiControllerUtils.getScreenContext(frameOwner).getDialogs();
 
-        } else if (Notifications.class == type) {
+        } else if (Notifications.class.isAssignableFrom(type)) {
             // injecting screens
             return UiControllerUtils.getScreenContext(frameOwner).getNotifications();
 
-        } else if (Fragments.class == type) {
+        } else if (Fragments.class.isAssignableFrom(type)) {
             // injecting fragments
             return UiControllerUtils.getScreenContext(frameOwner).getFragments();
 
         } else if (MessageBundle.class == type) {
-            MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
-
-            String packageName;
-            if (element instanceof Field) {
-                packageName = ((Field) element).getDeclaringClass().getPackage().getName();
-            } else if (element instanceof Method) {
-                packageName = ((Method) element).getDeclaringClass().getPackage().getName();
-            } else {
-                throw new UnsupportedOperationException("Unsupported annotated element for MessageBundle");
-            }
-
-            messageBundle.setMessagesPack(packageName);
-
-            if (frame instanceof Component.HasXmlDescriptor) {
-                Element xmlDescriptor = ((Component.HasXmlDescriptor) frame).getXmlDescriptor();
-                if (xmlDescriptor != null) {
-                    String messagePack = xmlDescriptor.attributeValue("messagesPack");
-                    if (messagePack != null) {
-                        messageBundle.setMessagesPack(messagePack);
-                    }
-                }
-            }
-
-            return messageBundle;
+            return createMessageBundle(element, frame);
 
         } else if (ThemeConstants.class == type) {
             // Injecting a Theme
@@ -615,6 +592,33 @@ public class UiControllerDependencyInjector {
             }
         }
         return null;
+    }
+
+    protected MessageBundle createMessageBundle(AnnotatedElement element, Frame frame) {
+        MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
+
+        String packageName;
+        if (element instanceof Field) {
+            packageName = ((Field) element).getDeclaringClass().getPackage().getName();
+        } else if (element instanceof Method) {
+            packageName = ((Method) element).getDeclaringClass().getPackage().getName();
+        } else {
+            throw new UnsupportedOperationException("Unsupported annotated element for MessageBundle");
+        }
+
+        messageBundle.setMessagesPack(packageName);
+
+        if (frame instanceof Component.HasXmlDescriptor) {
+            Element xmlDescriptor = ((Component.HasXmlDescriptor) frame).getXmlDescriptor();
+            if (xmlDescriptor != null) {
+                String messagePack = xmlDescriptor.attributeValue("messagesPack");
+                if (messagePack != null) {
+                    messageBundle.setMessagesPack(messagePack);
+                }
+            }
+        }
+
+        return messageBundle;
     }
 
     protected void assignValue(AnnotatedElement element, Object value) {

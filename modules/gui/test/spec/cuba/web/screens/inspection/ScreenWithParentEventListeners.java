@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
 import com.haulmont.cuba.gui.events.UiEvent;
 import org.springframework.context.ApplicationEvent;

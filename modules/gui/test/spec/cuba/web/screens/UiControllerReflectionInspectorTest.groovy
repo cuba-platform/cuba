@@ -19,8 +19,7 @@ package spec.cuba.web.screens
 import com.haulmont.cuba.gui.components.Button
 import com.haulmont.cuba.gui.components.TextInputField
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
-import spec.cuba.web.screens.components.TestTextField
-import spec.cuba.web.screens.samples.*
+import spec.cuba.web.screens.inspection.*
 import spock.lang.Specification
 
 import java.lang.reflect.Field
@@ -233,7 +232,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def lambdaFactory = inspector.getConsumerMethodFactory(ScreenWithSubscribe, methods[0], Button.ClickEvent)
+        def lambdaFactory = inspector.getConsumerMethodFactory(ScreenWithSubscribe, methods[0].methodHandle, Button.ClickEvent)
 
         then:
 

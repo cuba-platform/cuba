@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
-import com.haulmont.cuba.gui.events.UiEvent;
-import com.haulmont.cuba.gui.screen.Screen;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.event.EventListener;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.screen.Subscribe;
 
-public class ScreenWithEventListeners extends Screen {
+public class ScreenWithParentSubscribe extends ScreenWithSubscribe {
 
-    @EventListener(SomeEvent.class)
-    protected void handleSomeEvent() {
-
+    @Override
+    public void onClick(Button.ClickEvent event) {
+        // override for test
+        super.onClick(event);
     }
 
-    @EventListener
-    private void handlePrivateEvent(SomeEvent event) {
-
-    }
-
-    public static class SomeEvent extends ApplicationEvent implements UiEvent {
-        public SomeEvent(Object source) {
-            super(source);
-        }
+    @Subscribe
+    private void onClick2(Button.ClickEvent event) {
     }
 }

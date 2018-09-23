@@ -15,6 +15,7 @@
  */
 package com.haulmont.cuba.gui.sys;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -47,7 +48,7 @@ import javax.inject.Named;
 import java.lang.invoke.*;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -117,7 +118,11 @@ public class UiControllerReflectionInspector {
                         }
                     });
 
-    protected final Map<AnnotatedMethod, MethodHandle> lambdaMethodsCache = new ConcurrentHashMap<>();
+    // key - method of FrameOwner, value - lambda factory that produces Consumer instances
+    protected final Cache<MethodHandle, MethodHandle> lambdaMethodsCache =
+            CacheBuilder.newBuilder()
+                    .weakKeys()
+                    .build();
 
     protected final MethodHandles.Lookup trustedLambdaLookup;
 
@@ -175,35 +180,49 @@ public class UiControllerReflectionInspector {
         return trustedLambdaLookup != null;
     }
 
-    public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, AnnotatedMethod method, Class<?> eventClass) {
+    public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, MethodHandle methodHandle, Class<?> eventClass) {
         if (trustedLambdaLookup == null) {
             throw new UnsupportedOperationException("MethodHandles.Lookup IMPL_LOOKUP is not available");
         }
 
-        MethodHandle lambdaMethodFactory = lambdaMethodsCache.get(method);
-        if (lambdaMethodFactory != null) {
-            return lambdaMethodFactory;
-        }
-
-        MethodType type = MethodType.methodType(void.class, eventClass);
-        MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
-
-        MethodHandles.Lookup caller = trustedLambdaLookup.in(ownerClass);
-        MethodHandle methodHandle = method.getMethodHandle();
-
-        CallSite site;
+        MethodHandle lambdaMethodFactory;
         try {
-            site = LambdaMetafactory.metafactory(
-                    caller, "accept", consumerType, type.changeParameterType(0, Object.class), methodHandle, type);
-        } catch (LambdaConversionException e) {
-            throw new RuntimeException("Unable to build lambda consumer " + methodHandle ,e);
+            lambdaMethodFactory = lambdaMethodsCache.get(methodHandle, () -> {
+                MethodType type = MethodType.methodType(void.class, eventClass);
+                MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
+
+                MethodHandles.Lookup caller = trustedLambdaLookup.in(ownerClass);
+                CallSite site;
+                try {
+                    site = LambdaMetafactory.metafactory(
+                            caller, "accept", consumerType, type.changeParameterType(0, Object.class), methodHandle, type);
+                } catch (LambdaConversionException e) {
+                    throw new RuntimeException("Unable to build lambda consumer " + methodHandle ,e);
+                }
+
+                return site.getTarget();
+            });
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Unable to get lambda factory", e);
         }
 
-        MethodHandle target = site.getTarget();
+        return lambdaMethodFactory;
+    }
 
-        lambdaMethodsCache.put(method, target);
+    /**
+     * Clear underlying reflection caches.
+     */
+    public void clearCache() {
+        injectValueElementsCache.invalidateAll();
+        eventListenerMethodsCache.invalidateAll();
 
-        return target;
+        subscribeMethodsCache.invalidateAll();
+        addListenerMethodsCache.invalidateAll();
+
+        provideMethodsCache.invalidateAll();
+        provideTargetMethodsCache.invalidateAll();
+
+        lambdaMethodsCache.invalidateAll();
     }
 
     protected List<InjectElement> getAnnotatedInjectElementsNotCached(Class<?> clazz) {
@@ -360,11 +379,21 @@ public class UiControllerReflectionInspector {
                 if (m.getReturnType() == Void.TYPE && m.getName().startsWith("set")
                         || m.getReturnType() == Subscription.class && m.getName().startsWith("add")) {
 
+                    Method targetTypedMethod = m;
                     if (!(m.getGenericParameterTypes()[0] instanceof ParameterizedType)) {
-                        continue;
+                        // try to find original method in hierarchy with defined Consumer<T> parameter
+
+                        Set<Method> overrideHierarchy = getOverrideHierarchy(m);
+                        Method originalMethod = Iterables.getLast(overrideHierarchy);
+
+                        if (originalMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
+                            targetTypedMethod = originalMethod;
+                        } else {
+                            continue;
+                        }
                     }
 
-                    ParameterizedType genericParameterType = (ParameterizedType) m.getGenericParameterTypes()[0];
+                    ParameterizedType genericParameterType = (ParameterizedType) targetTypedMethod.getGenericParameterTypes()[0];
                     Type eventArgumentType = genericParameterType.getActualTypeArguments()[0];
 
                     Class actualTypeArgument = null;

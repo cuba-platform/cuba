@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package spec.cuba.web.screens.components;
+package spec.cuba.web.screens.inspection;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;

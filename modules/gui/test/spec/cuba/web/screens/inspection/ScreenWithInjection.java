@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Resources;

@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
-import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.events.UiEvent;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.Target;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.EventListener;
 
-public class ScreenWithSubscribe extends Screen {
+public class ScreenWithEventListeners extends Screen {
 
-    public int buttonClicks = 0;
-
-    @Subscribe("btn1")
-    public void onClick(Button.ClickEvent event) {
-        buttonClicks++;
-    }
-
-    @Subscribe
-    private void onShow(BeforeShowEvent event) {
-    }
-
-    @Subscribe(target = Target.FRAME)
-    protected void onAfterShow(AfterShowEvent event) {
+    @EventListener(SomeEvent.class)
+    protected void handleSomeEvent() {
 
     }
 
-    @Subscribe
-    private void init(InitEvent event) {
+    @EventListener
+    private void handlePrivateEvent(SomeEvent event) {
+
+    }
+
+    public static class SomeEvent extends ApplicationEvent implements UiEvent {
+        public SomeEvent(Object source) {
+            super(source);
+        }
     }
 }

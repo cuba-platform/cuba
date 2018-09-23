@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package spec.cuba.web.screens.samples;
+package spec.cuba.web.screens.inspection;
 
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Table;

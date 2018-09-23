@@ -42,6 +42,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
      * Allows to set icons for particular rows in the table.
      *
      * @param <E> entity class
+     * @deprecated Use {@link Function} instead
      */
     @Deprecated
     interface IconProvider<E extends Entity> extends Function<E, String> {
