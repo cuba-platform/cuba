@@ -25,6 +25,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.MessageBundle;
+import com.haulmont.cuba.gui.screen.ScreenContext;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import mockit.Expectations;
@@ -44,10 +46,15 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
     @Mocked
     BeanLocator beanLocator;
+
     private Messages messages = new MessagesClientImpl();
-    @SuppressWarnings("unused")
+
     @Mocked
-    private MessageBundle messageBundle;
+    MessageBundle messageBundle;
+    @Mocked
+    ScreenContext screenContext;
+    @Mocked
+    TestWindowManager screens;
 
     @Before
     public void setUp() {
@@ -61,6 +68,14 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
                 beanLocator.getPrototype(MessageBundle.NAME);
                 result = messageBundle;
                 minTimes = 0;
+
+                beanLocator.getAll(BeanLocator.class);
+                result = ImmutableMap.of("beanLocator", beanLocator);
+                minTimes = 0;
+
+                screenContext.getScreens();
+                result = screens;
+                minTimes = 0;
             }
         };
     }
@@ -68,6 +83,9 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
     @Test
     public void testInjectMessagesIntoAbstractFrame() throws Exception {
         TestController controller = new TestController();
+
+        UiControllerUtils.setScreenContext(controller, screenContext);
+
         UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, NO_OPTIONS);
         injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
@@ -87,6 +105,8 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
         testMap.put("someObj", new Object());
         WindowParamTestController controller = new WindowParamTestController();
 
+        UiControllerUtils.setScreenContext(controller, screenContext);
+
         UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, new MapScreenOptions(testMap));
         injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
@@ -105,5 +125,9 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
         @WindowParam(name = "someObj", required = true)
         public Object someObj;
+    }
+
+    private interface TestWindowManager extends Screens, WindowManager {
+
     }
 }
