@@ -16,11 +16,13 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  *
@@ -50,6 +52,27 @@ public interface DataContext {
 
     DataContext getParent();
     void setParent(DataContext parentContext);
+
+    class ChangeEvent extends EventObject {
+
+        private final Entity entity;
+
+        public ChangeEvent(DataContext dataContext, Entity entity) {
+            super(dataContext);
+            this.entity = entity;
+        }
+
+        @Override
+        public DataContext getSource() {
+            return (DataContext) super.getSource();
+        }
+
+        public Entity getEntity() {
+            return entity;
+        }
+    }
+
+    Subscription addChangeListener(Consumer<ChangeEvent> listener);
 
     class PreCommitEvent extends EventObject {
 
@@ -85,13 +108,7 @@ public interface DataContext {
         }
     }
 
-    @FunctionalInterface
-    interface PreCommitListener {
-        void preCommit(PreCommitEvent e);
-    }
-
-    void addPreCommitListener(PreCommitListener listener);
-    void removePreCommitListener(PreCommitListener listener);
+    Subscription addPreCommitListener(Consumer<PreCommitEvent> listener);
 
     class PostCommitEvent extends EventObject {
 
@@ -112,11 +129,5 @@ public interface DataContext {
         }
     }
 
-    @FunctionalInterface
-    interface PostCommitListener {
-        void postCommit(PostCommitEvent e);
-    }
-
-    void addPostCommitListener(PostCommitListener listener);
-    void removePostCommitListener(PostCommitListener listener);
+    Subscription addPostCommitListener(Consumer<PostCommitEvent> listener);
 }

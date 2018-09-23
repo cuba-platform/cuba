@@ -17,7 +17,8 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.Sets;
-import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Numbers;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
@@ -33,6 +34,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  *
@@ -41,7 +43,7 @@ public class StandardDataContext implements DataContext {
 
     private ApplicationContext applicationContext;
 
-    protected EventRouter eventRouter = new EventRouter();
+    protected EventHub events = new EventHub();
 
     protected Map<Class<?>, Map<Object, Entity>> content = new HashMap<>();
 
@@ -49,7 +51,7 @@ public class StandardDataContext implements DataContext {
 
     protected Set<Entity> removedInstances = new HashSet<>();
 
-    protected ChangeListener changeListener = new ChangeListener();
+    protected PropertyChangeListener propertyChangeListener = new PropertyChangeListener();
 
     protected boolean disableListeners;
 
@@ -91,6 +93,15 @@ public class StandardDataContext implements DataContext {
             Entity copy = copyGraph(entity, new HashMap<>());
             merge(copy);
         }
+    }
+
+    @Override
+    public Subscription addChangeListener(Consumer<ChangeEvent> listener) {
+        return events.subscribe(ChangeEvent.class, listener);
+    }
+
+    protected void fireChangeListener(Entity entity) {
+        events.publish(ChangeEvent.class, new ChangeEvent(this, entity));
     }
 
     @SuppressWarnings("unchecked")
@@ -147,10 +158,11 @@ public class StandardDataContext implements DataContext {
         }
         entityMap.put(entity.getId(), entity);
 
-        entity.addPropertyChangeListener(changeListener);
+        entity.addPropertyChangeListener(propertyChangeListener);
 
         if (getEntityStates().isNew(entity)) {
             modifiedInstances.add(entity);
+            fireChangeListener(entity);
         }
         return entity;
     }
@@ -348,7 +360,8 @@ public class StandardDataContext implements DataContext {
                 modifiedInstances.remove(entity);
                 removedInstances.add(entity);
                 entityMap.remove(entity.getId());
-                entity.removePropertyChangeListener(changeListener);
+                entity.removePropertyChangeListener(propertyChangeListener);
+                fireChangeListener(entity);
             }
         }
     }
@@ -361,7 +374,7 @@ public class StandardDataContext implements DataContext {
             Entity mergedEntity = entityMap.get(entity.getId());
             if (mergedEntity != null) {
                 entityMap.remove(entity.getId());
-                entity.removePropertyChangeListener(changeListener);
+                entity.removePropertyChangeListener(propertyChangeListener);
             }
         }
     }
@@ -384,14 +397,13 @@ public class StandardDataContext implements DataContext {
     @Override
     public void commit() {
         PreCommitEvent preCommitEvent = new PreCommitEvent(this, modifiedInstances, removedInstances);
-        eventRouter.fireEvent(PreCommitListener.class, PreCommitListener::preCommit, preCommitEvent);
+        events.publish(PreCommitEvent.class, preCommitEvent);
         if (preCommitEvent.isCommitPrevented())
             return;
 
         Set<Entity> committed = performCommit();
 
-        PostCommitEvent postCommitEvent = new PostCommitEvent(this, committed);
-        eventRouter.fireEvent(PostCommitListener.class, PostCommitListener::postCommit, postCommitEvent);
+        events.publish(PostCommitEvent.class, new PostCommitEvent(this, committed));
 
         mergeCommitted(committed);
 
@@ -400,23 +412,13 @@ public class StandardDataContext implements DataContext {
     }
 
     @Override
-    public void addPreCommitListener(PreCommitListener listener) {
-        eventRouter.addListener(PreCommitListener.class, listener);
+    public Subscription addPreCommitListener(Consumer<PreCommitEvent> listener) {
+        return events.subscribe(PreCommitEvent.class, listener);
     }
 
     @Override
-    public void removePreCommitListener(PreCommitListener listener) {
-        eventRouter.removeListener(PreCommitListener.class, listener);
-    }
-
-    @Override
-    public void addPostCommitListener(PostCommitListener listener) {
-        eventRouter.addListener(PostCommitListener.class, listener);
-    }
-
-    @Override
-    public void removePostCommitListener(PostCommitListener listener) {
-        eventRouter.removeListener(PostCommitListener.class, listener);
+    public Subscription addPostCommitListener(Consumer<PostCommitEvent> listener) {
+        return events.subscribe(PostCommitEvent.class, listener);
     }
 
     protected Set<Entity> performCommit() {
@@ -510,11 +512,12 @@ public class StandardDataContext implements DataContext {
         return "{" + object.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(object)) + "}";
     }
 
-    protected class ChangeListener implements Instance.PropertyChangeListener {
+    protected class PropertyChangeListener implements Instance.PropertyChangeListener {
         @Override
         public void propertyChanged(Instance.PropertyChangeEvent e) {
             if (!disableListeners) {
                 modifiedInstances.add((Entity) e.getItem());
+                fireChangeListener((Entity) e.getItem());
             }
         }
     }
@@ -586,6 +589,7 @@ public class StandardDataContext implements DataContext {
         protected void modified(Entity entity) {
             if (!disableListeners) {
                 modifiedInstances.add(entity);
+                fireChangeListener(entity);
             }
         }
     }
