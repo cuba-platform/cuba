@@ -33,6 +33,7 @@ import com.haulmont.cuba.core.sys.EntityFetcher;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
+import com.haulmont.cuba.security.app.EntityAttributeChanges;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
@@ -562,11 +563,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             } else if (changeListener.hasChanges()) {
                 EntityAttributeChanges changes = new EntityAttributeChanges();
                 // add changes before listener
-                changes.addChanges(changeListener.getObjectChangeSet());
+                changes.addChanges(entity);
 
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE, storeName);
                 // add changes after listener
-                changes.addChanges(changeListener.getObjectChangeSet());
+                changes.addChanges(entity);
 
                 if (BaseEntityInternalAccess.isNew(entity)) {
                     // it can happen if flush was performed, so the entity is still New but was saved
@@ -642,7 +643,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     entityLog.registerCreate(entity, true);
                 } else {
                     EntityAttributeChanges changes = new EntityAttributeChanges();
-                    changes.addChanges(changeListener.getObjectChangeSet());
+                    changes.addChanges(entity);
                     entityLog.registerModify(entity, true, changes);
                 }
                 return true;

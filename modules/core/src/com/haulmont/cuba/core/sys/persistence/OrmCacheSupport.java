@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.security.app.EntityAttributeChanges;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.springframework.stereotype.Component;
 

@@ -18,11 +18,14 @@ package spec.cuba.core.entity_log
 
 import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.TypedQuery
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.security.app.EntityAttributeChanges
+import com.haulmont.cuba.security.app.EntityLog
 import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.EntityLogItem
 import com.haulmont.cuba.security.entity.Group
@@ -31,6 +34,7 @@ import com.haulmont.cuba.security.entity.LoggedEntity
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
+import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
 import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
 import org.junit.ClassRule
@@ -47,7 +51,8 @@ class EntityLogTest extends Specification {
     private UUID user1Id, user2Id
     private UUID roleId
 
-    private def entityLog
+    private EntityLogAPI entityLog
+    private PersistenceTools persistenceTools
 
     void setup() {
         _cleanup()
@@ -101,9 +106,27 @@ class EntityLogTest extends Specification {
             la.setEntity(le)
             la.setName('name')
             em.persist(la)
+
+            le = new LoggedEntity()
+            le.setName('test$StringKeyEntity')
+            le.setAuto(false)
+            le.setManual(true)
+            em.persist(le)
+
+            la = new LoggedAttribute()
+            la.setEntity(le)
+            la.setName('name')
+            em.persist(la)
+
+            la = new LoggedAttribute()
+            la.setEntity(le)
+            la.setName('description')
+            em.persist(la)
+
         }
         entityLog = AppBeans.get(EntityLogAPI.class)
         entityLog.invalidateCache()
+        persistenceTools = AppBeans.get(PersistenceTools.class)
     }
 
     void cleanup() {
@@ -133,6 +156,7 @@ class EntityLogTest extends Specification {
             String entityIdField
             if (entityId instanceof Integer) entityIdField = 'intEntityId'
             else if (entityId instanceof Long) entityIdField = 'longEntityId'
+            else if (entityId instanceof String) entityIdField = 'stringEntityId'
             else entityIdField = 'entityId'
 
             TypedQuery<EntityLogItem> query = em.createQuery(
@@ -216,6 +240,8 @@ class EntityLogTest extends Specification {
             def user1 = em.find(User, user1Id)
             user1.setEmail('email11')
             user1.setName('name11')
+
+            persistenceTools.getDirtyFields(user1)
 
             em.reload(group, View.BASE)
 
@@ -308,6 +334,48 @@ class EntityLogTest extends Specification {
 
         if (entity != null && entity.getId().get() != null) {
             new QueryRunner(cont.persistence().dataSource).update("delete from TEST_INT_IDENTITY where id = ${entity.getId().get()}")
+        }
+    }
+
+    def "works with MetaProperty"() {
+
+        when:
+
+        StringKeyEntity entity = cont.persistence().callInTransaction { em ->
+            def e = new StringKeyEntity(code: 'code1', name: 'test1')
+            em.persist(e)
+            e
+        }
+
+        then:
+
+        noExceptionThrown()
+
+        when:
+
+        cont.persistence().runInTransaction { em ->
+            def e = em.find(StringKeyEntity, entity.id)
+            e.name = 'test2'
+            e.description = 'description2'
+
+            EntityAttributeChanges changes = new EntityAttributeChanges()
+            changes.addChanges(e)
+            changes.addChange('description', 'description1')
+            entityLog.registerModify(e, false, changes)
+        }
+
+        then:
+
+        def item2 = getEntityLogItems('test$StringKeyEntity', entity.id)[0]
+        item2.attributes.find({ it.name == 'name' }).value == 'test2'
+        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
+        item2.attributes.find({ it.name == 'description' }).value == 'description2'
+        item2.attributes.find({ it.name == 'description' }).oldValue == 'description1'
+
+        cleanup:
+
+        if (entity != null && entity.getId() != null) {
+            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_STRING_KEY where code = '${entity.getId()}'")
         }
     }
 }
