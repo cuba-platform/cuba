@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 /**
- * {@link Subscribe} and {@link Provide} target type.
+ * {@link Subscribe} and {@link Install} target type.
  */
 public enum Target {
     /**

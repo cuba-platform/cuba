@@ -6,9 +6,9 @@ import com.haulmont.cuba.gui.screen.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public final class ScreenDescriptorUtils {
+public final class UiDescriptorUtils {
 
-    private ScreenDescriptorUtils() {
+    private UiDescriptorUtils() {
     }
 
     public static String getInferredScreenId(UiController uiController,
@@ -64,14 +64,9 @@ public final class ScreenDescriptorUtils {
         return target;
     }
 
-    public static String getInferredProvideId(Provide provide) {
-        checkNotNullArgument(provide);
+    public static String getInferredProvideId(Install install) {
+        checkNotNullArgument(install);
 
-        String target = provide.value();
-        if (Strings.isNullOrEmpty(target)) {
-            target = provide.to();
-        }
-
-        return target;
+        return install.to();
     }
 }

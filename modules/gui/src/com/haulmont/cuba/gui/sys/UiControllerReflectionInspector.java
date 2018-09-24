@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.screen.Provide;
+import com.haulmont.cuba.gui.screen.Install;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
@@ -98,23 +98,23 @@ public class UiControllerReflectionInspector {
                         }
                     });
 
-    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Provide>>> provideMethodsCache =
+    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Install>>> installMethodsCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Provide>>>() {
+                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Install>>>() {
                         @Override
-                        public List<AnnotatedMethod<Provide>> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedProvideMethodsNotCached(concreteClass);
+                        public List<AnnotatedMethod<Install>> load(@Nonnull Class<?> concreteClass) {
+                            return getAnnotatedInstallMethodsNotCached(concreteClass);
                         }
                     });
 
-    protected final LoadingCache<Class<?>, Map<String, MethodHandle>> provideTargetMethodsCache =
+    protected final LoadingCache<Class<?>, Map<String, MethodHandle>> installTargetMethodsCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
                     .build(new CacheLoader<Class<?>, Map<String, MethodHandle>>() {
                         @Override
                         public Map<String, MethodHandle> load(@Nonnull Class<?> concreteClass) {
-                            return getProvideTargetMethodsNotCached(concreteClass);
+                            return getInstallTargetMethodsNotCached(concreteClass);
                         }
                     });
 
@@ -141,8 +141,8 @@ public class UiControllerReflectionInspector {
         this.trustedLambdaLookup = trusted;
     }
 
-    public List<AnnotatedMethod<Provide>> getAnnotatedProvideMethods(Class<?> clazz) {
-        return provideMethodsCache.getUnchecked(clazz);
+    public List<AnnotatedMethod<Install>> getAnnotatedInstallMethods(Class<?> clazz) {
+        return installMethodsCache.getUnchecked(clazz);
     }
 
     public List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethods(Class<?> clazz) {
@@ -171,8 +171,8 @@ public class UiControllerReflectionInspector {
     }
 
     @Nullable
-    public MethodHandle getProvideTargetMethod(Class<?> clazz, String methodName) {
-        Map<String, MethodHandle> targetMethodsCache = provideTargetMethodsCache.getUnchecked(clazz);
+    public MethodHandle getInstallTargetMethod(Class<?> clazz, String methodName) {
+        Map<String, MethodHandle> targetMethodsCache = installTargetMethodsCache.getUnchecked(clazz);
         return targetMethodsCache.get(methodName);
     }
 
@@ -219,8 +219,8 @@ public class UiControllerReflectionInspector {
         subscribeMethodsCache.invalidateAll();
         addListenerMethodsCache.invalidateAll();
 
-        provideMethodsCache.invalidateAll();
-        provideTargetMethodsCache.invalidateAll();
+        installMethodsCache.invalidateAll();
+        installTargetMethodsCache.invalidateAll();
 
         lambdaMethodsCache.invalidateAll();
     }
@@ -309,16 +309,16 @@ public class UiControllerReflectionInspector {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    protected List<AnnotatedMethod<Provide>> getAnnotatedProvideMethodsNotCached(Class<?> clazz) {
+    protected List<AnnotatedMethod<Install>> getAnnotatedInstallMethodsNotCached(Class<?> clazz) {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-        List<AnnotatedMethod<Provide>> annotatedMethods = new ArrayList<>();
+        List<AnnotatedMethod<Install>> annotatedMethods = new ArrayList<>();
 
         for (Method m : methods) {
             if (m.getParameterCount() > 0 || m.getReturnType() != Void.TYPE) {
-                Provide provideAnnotation = findMergedAnnotation(m, Provide.class);
-                if (provideAnnotation != null) {
+                Install installAnnotation = findMergedAnnotation(m, Install.class);
+                if (installAnnotation != null) {
                     if (!m.isAccessible()) {
                         m.setAccessible(true);
                     }
@@ -328,7 +328,7 @@ public class UiControllerReflectionInspector {
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException("unable to get method handle " + m);
                     }
-                    annotatedMethods.add(new AnnotatedMethod<>(provideAnnotation, m, methodHandle));
+                    annotatedMethods.add(new AnnotatedMethod<>(installAnnotation, m, methodHandle));
                 }
             }
         }
@@ -533,7 +533,7 @@ public class UiControllerReflectionInspector {
         return result;
     }
 
-    protected Map<String, MethodHandle> getProvideTargetMethodsNotCached(Class<?> clazz) {
+    protected Map<String, MethodHandle> getInstallTargetMethodsNotCached(Class<?> clazz) {
         Map<String, MethodHandle> handlesMap = new HashMap<>();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 

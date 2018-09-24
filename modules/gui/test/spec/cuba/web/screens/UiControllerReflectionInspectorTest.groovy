@@ -175,12 +175,12 @@ class UiControllerReflectionInspectorTest extends Specification {
         methods.find({ it.name == 'onInitMixin' }) != null
     }
 
-    def "Get annotated @Provide methods"() {
+    def "Get annotated @Install methods"() {
         def inspector = new UiControllerReflectionInspector()
 
         when:
 
-        def methods = inspector.getAnnotatedProvideMethods(ScreenWithProvide).collect({ it.method })
+        def methods = inspector.getAnnotatedInstallMethods(ScreenWithProvide).collect({ it.method })
 
         then:
 

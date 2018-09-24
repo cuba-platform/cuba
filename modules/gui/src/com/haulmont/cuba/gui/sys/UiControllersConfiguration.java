@@ -105,7 +105,7 @@ public class UiControllersConfiguration {
         }
 
         String className = metadataReader.getClassMetadata().getClassName();
-        String controllerId = ScreenDescriptorUtils.getInferredScreenId(idAttr, valueAttr, className);
+        String controllerId = UiDescriptorUtils.getInferredScreenId(idAttr, valueAttr, className);
 
         return new UiControllerDefinition(controllerId, className);
     }

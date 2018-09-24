@@ -189,7 +189,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         screen.eventHub.hasSubscriptions(Screen.InitEvent)
     }
 
-    def "Injector supports @Provide methods"() {
+    def "Injector supports @Install methods"() {
         def screen = new ScreenBindProvide()
 
         def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)

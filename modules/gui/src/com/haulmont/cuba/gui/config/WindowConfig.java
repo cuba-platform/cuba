@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.sys.ScreenDescriptorUtils;
+import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.sys.UiControllerDefinition;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
@@ -181,7 +181,7 @@ public class WindowConfig {
             if (annotation == null) {
                 return null;
             }
-            String template = ScreenDescriptorUtils.getInferredTemplate(annotation, screenClass);
+            String template = UiDescriptorUtils.getInferredTemplate(annotation, screenClass);
             if (!template.startsWith("/")) {
                 String packageName = screenClass.getPackage().getName();
                 if (StringUtils.isNotEmpty(packageName)) {

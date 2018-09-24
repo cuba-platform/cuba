@@ -972,7 +972,7 @@ public class WebScreens implements Screens, WindowManager {
             throw new IllegalArgumentException("No @UiController annotation for class " + screenClass);
         }
 
-        String screenId = ScreenDescriptorUtils.getInferredScreenId(uiController, screenClass);
+        String screenId = UiDescriptorUtils.getInferredScreenId(uiController, screenClass);
 
         return windowConfig.getWindowInfo(screenId);
     }

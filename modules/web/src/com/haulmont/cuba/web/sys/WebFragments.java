@@ -36,7 +36,7 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
-import com.haulmont.cuba.gui.sys.ScreenDescriptorUtils;
+import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
@@ -93,7 +93,7 @@ public class WebFragments implements Fragments {
             throw new IllegalArgumentException("No @UiController annotation for class " + fragmentClass);
         }
 
-        String screenId = ScreenDescriptorUtils.getInferredScreenId(uiController, fragmentClass);
+        String screenId = UiDescriptorUtils.getInferredScreenId(uiController, fragmentClass);
 
         return windowConfig.getWindowInfo(screenId);
     }

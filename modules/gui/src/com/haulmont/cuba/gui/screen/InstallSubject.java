@@ -16,26 +16,17 @@
 
 package com.haulmont.cuba.gui.screen;
 
-import org.springframework.core.annotation.AliasFor;
+import java.lang.annotation.*;
+import java.lang.annotation.Target;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
+/**
+ * Sets primary subject for {@link Install} target classes.
+ */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
 @Documented
-@java.lang.annotation.Target(ElementType.METHOD)
-public @interface Provide {
-    Target target() default Target.COMPONENT;
+public @interface InstallSubject {
 
-    @AliasFor("to")
-    String value() default "";
-
-    @AliasFor("value")
-    String to() default "";
-
-    Class type() default Object.class;
-
-    String subject() default "";
+    String value();
 }

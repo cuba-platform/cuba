@@ -104,51 +104,51 @@ public class UiControllerDependencyInjector {
 
         initSubscribeListeners(frameOwner);
 
-        initProvideObjects(frameOwner);
+        initInstallMethods(frameOwner);
 
         initUiEventListeners(frameOwner);
     }
 
-    protected void initProvideObjects(FrameOwner frameOwner) {
+    protected void initInstallMethods(FrameOwner frameOwner) {
         Class<? extends FrameOwner> clazz = frameOwner.getClass();
 
-        List<AnnotatedMethod<Provide>> provideMethods = reflectionInspector.getAnnotatedProvideMethods(clazz);
+        List<AnnotatedMethod<Install>> installMethods = reflectionInspector.getAnnotatedInstallMethods(clazz);
 
-        for (AnnotatedMethod<Provide> annotatedMethod : provideMethods) {
-            Provide annotation = annotatedMethod.getAnnotation();
+        for (AnnotatedMethod<Install> annotatedMethod : installMethods) {
+            Install annotation = annotatedMethod.getAnnotation();
 
             Frame frame = UiControllerUtils.getFrame(frameOwner);
 
-            Object targetInstance = getProvideTargetInstance(frameOwner, annotation, frame);
+            Object targetInstance = getInstallTargetInstance(frameOwner, annotation, frame);
 
             Class<?> instanceClass = targetInstance.getClass();
-            Method provideMethod = annotatedMethod.getMethod();
+            Method installMethod = annotatedMethod.getMethod();
 
-            MethodHandle targetSetterMethod = getProvideTargetSetterMethod(annotation, frame, instanceClass, provideMethod);
+            MethodHandle targetSetterMethod = getInstallTargetSetterMethod(annotation, frame, instanceClass, installMethod);
             Class<?> targetParameterType = targetSetterMethod.type().parameterList().get(1);
 
-            Object handler = createProvideHandler(frameOwner, provideMethod, targetParameterType);
+            Object handler = createInstallHandler(frameOwner, installMethod, targetParameterType);
 
             try {
                 targetSetterMethod.invoke(targetInstance, handler);
             } catch (Error e) {
                 throw e;
             } catch (Throwable e) {
-                throw new RuntimeException("Unable to set declarative @Provide handler for " + provideMethod, e);
+                throw new RuntimeException("Unable to set declarative @Install handler for " + installMethod, e);
             }
         }
     }
 
-    protected MethodHandle getProvideTargetSetterMethod(Provide annotation, Frame frame, Class<?> instanceClass,
+    protected MethodHandle getInstallTargetSetterMethod(Install annotation, Frame frame, Class<?> instanceClass,
                                                         Method provideMethod) {
         String subjectProperty;
         if (Strings.isNullOrEmpty(annotation.subject()) && annotation.type() == Object.class) {
-            ProvideSubject provideSubjectAnnotation = findMergedAnnotation(instanceClass, ProvideSubject.class);
-            if (provideSubjectAnnotation != null) {
-                subjectProperty = provideSubjectAnnotation.value();
+            InstallSubject installSubjectAnnotation = findMergedAnnotation(instanceClass, InstallSubject.class);
+            if (installSubjectAnnotation != null) {
+                subjectProperty = installSubjectAnnotation.value();
             } else {
                 throw new DevelopmentException(
-                        String.format("Unable to determine @Provide subject of %s in %s", provideMethod, frame.getId())
+                        String.format("Unable to determine @Install subject of %s in %s", provideMethod, frame.getId())
                 );
             }
         } else if (annotation.type() != Object.class) {
@@ -158,20 +158,20 @@ public class UiControllerDependencyInjector {
         }
 
         String subjectSetterName = "set" + StringUtils.capitalize(subjectProperty);
-        MethodHandle targetSetterMethod = reflectionInspector.getProvideTargetMethod(instanceClass, subjectSetterName);
+        MethodHandle targetSetterMethod = reflectionInspector.getInstallTargetMethod(instanceClass, subjectSetterName);
 
         if (targetSetterMethod == null) {
             throw new DevelopmentException(
-                    String.format("Unable to find @Provide target method %s in %s", subjectProperty, instanceClass)
+                    String.format("Unable to find @Install target method %s in %s", subjectProperty, instanceClass)
             );
         }
 
         return targetSetterMethod;
     }
 
-    protected Object getProvideTargetInstance(FrameOwner frameOwner, Provide annotation, Frame frame) {
+    protected Object getInstallTargetInstance(FrameOwner frameOwner, Install annotation, Frame frame) {
         Object targetInstance;
-        String target = ScreenDescriptorUtils.getInferredProvideId(annotation);
+        String target = UiDescriptorUtils.getInferredProvideId(annotation);
         if (Strings.isNullOrEmpty(target)) {
 
             switch (annotation.target()) {
@@ -188,7 +188,7 @@ public class UiControllerDependencyInjector {
                 case PARENT_CONTROLLER:
                     if (frameOwner instanceof Screen) {
                         throw new DevelopmentException(
-                                String.format("Screen %s cannot use @Provide with target = PARENT_CONTROLLER",
+                                String.format("Screen %s cannot use @Install with target = PARENT_CONTROLLER",
                                         frame.getId())
                         );
                     }
@@ -196,24 +196,24 @@ public class UiControllerDependencyInjector {
                     break;
 
                 default:
-                    throw new UnsupportedOperationException("Unsupported @Provide target " + annotation.target());
+                    throw new UnsupportedOperationException("Unsupported @Install target " + annotation.target());
             }
         } else {
             if (annotation.target() == Target.DATA_LOADER) {
                 targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
             } else {
-                targetInstance = findProvideTarget(target, frame);
+                targetInstance = findInstallTarget(target, frame);
 
                 if (targetInstance == null) {
                     throw new DevelopmentException(
-                            String.format("Unable to find @Provide target %s in %s", target, frame.getId()));
+                            String.format("Unable to find @Install target %s in %s", target, frame.getId()));
                 }
             }
         }
         return targetInstance;
     }
 
-    protected Object findProvideTarget(String target, Frame frame) {
+    protected Object findInstallTarget(String target, Frame frame) {
         String[] elements = ValuePathHelper.parse(target);
         if (elements.length == 1) {
             Object part = frame.getSubPart(target);
@@ -248,22 +248,22 @@ public class UiControllerDependencyInjector {
             }
         }
 
-        throw new DevelopmentException(String.format("Unable to find @Provide target %s in %s", target, frame.getId()));
+        throw new DevelopmentException(String.format("Unable to find @Install target %s in %s", target, frame.getId()));
     }
 
-    protected Object createProvideHandler(FrameOwner frameOwner, Method method, Class<?> targetObjectType) {
+    protected Object createInstallHandler(FrameOwner frameOwner, Method method, Class<?> targetObjectType) {
         if (targetObjectType == Function.class) {
-            return new ProvideInvocationFunction(frameOwner, method);
+            return new InstallInvocationFunction(frameOwner, method);
         } else if (targetObjectType == Consumer.class) {
-            return new ProvideInvocationConsumer(frameOwner, method);
+            return new InstallInvocationConsumer(frameOwner, method);
         } else if (targetObjectType == Supplier.class) {
-            return new ProvideInvocationSupplier(frameOwner, method);
+            return new InstallInvocationSupplier(frameOwner, method);
         } else if (targetObjectType == BiFunction.class) {
-            return new ProvideInvocationBiFunction(frameOwner, method);
+            return new InstallInvocationBiFunction(frameOwner, method);
         } else {
             ClassLoader classLoader = getClass().getClassLoader();
             return newProxyInstance(classLoader, new Class[]{targetObjectType},
-                    new ProvideInvocationProxyHandler(frameOwner, method)
+                    new InstallInvocationProxyHandler(frameOwner, method)
             );
         }
     }
@@ -286,7 +286,7 @@ public class UiControllerDependencyInjector {
             Method method = annotatedMethod.getMethod();
             Subscribe annotation = annotatedMethod.getAnnotation();
 
-            String target = ScreenDescriptorUtils.getInferredSubscribeId(annotation);
+            String target = UiDescriptorUtils.getInferredSubscribeId(annotation);
 
             Parameter parameter = method.getParameters()[0];
             Class<?> eventType = parameter.getType();
@@ -673,11 +673,11 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    public static class ProvideInvocationFunction implements Function {
+    public static class InstallInvocationFunction implements Function {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public ProvideInvocationFunction(FrameOwner frameOwner, Method method) {
+        public InstallInvocationFunction(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -687,24 +687,24 @@ public class UiControllerDependencyInjector {
             try {
                 return method.invoke(frameOwner, o);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Exception on @Provide invocation", e);
+                throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
 
         @Override
         public String toString() {
-            return "ProvideInvocationFunction{" +
+            return "InstallInvocationFunction{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class ProvideInvocationConsumer implements Consumer {
+    public static class InstallInvocationConsumer implements Consumer {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public ProvideInvocationConsumer(FrameOwner frameOwner, Method method) {
+        public InstallInvocationConsumer(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -714,24 +714,24 @@ public class UiControllerDependencyInjector {
             try {
                 method.invoke(frameOwner, o);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Exception on @Provide invocation", e);
+                throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
 
         @Override
         public String toString() {
-            return "ProvideInvocationConsumer{" +
+            return "InstallInvocationConsumer{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class ProvideInvocationSupplier implements Supplier {
+    public static class InstallInvocationSupplier implements Supplier {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public ProvideInvocationSupplier(FrameOwner frameOwner, Method method) {
+        public InstallInvocationSupplier(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -741,24 +741,24 @@ public class UiControllerDependencyInjector {
             try {
                 return method.invoke(frameOwner);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Exception on @Provide invocation", e);
+                throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
 
         @Override
         public String toString() {
-            return "ProvideInvocationSupplier{" +
+            return "InstallInvocationSupplier{" +
                     "target=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class ProvideInvocationBiFunction implements BiFunction {
+    public static class InstallInvocationBiFunction implements BiFunction {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public ProvideInvocationBiFunction(FrameOwner frameOwner, Method method) {
+        public InstallInvocationBiFunction(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -768,24 +768,24 @@ public class UiControllerDependencyInjector {
             try {
                 return method.invoke(frameOwner, o1, o2);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Exception on @Provide invocation", e);
+                throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
 
         @Override
         public String toString() {
-            return "ProvideInvocationBiFunction{" +
+            return "InstallInvocationBiFunction{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class ProvideInvocationProxyHandler implements InvocationHandler {
+    public static class InstallInvocationProxyHandler implements InvocationHandler {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public ProvideInvocationProxyHandler(FrameOwner frameOwner, Method method) {
+        public InstallInvocationProxyHandler(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -811,12 +811,12 @@ public class UiControllerDependencyInjector {
                 }
             }
 
-            throw new UnsupportedOperationException("ProvideInvocationProxyHandler does not support method " + invokedMethod);
+            throw new UnsupportedOperationException("InstallInvocationProxyHandler does not support method " + invokedMethod);
         }
 
         @Override
         public String toString() {
-            return "ProvideInvocationProxyHandler{" +
+            return "InstallInvocationProxyHandler{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';

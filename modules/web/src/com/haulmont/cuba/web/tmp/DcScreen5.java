@@ -97,7 +97,7 @@ public class DcScreen5 extends Screen {
         }
     }
 
-    @Provide(to = "usersLoader", subject = "loadDelegate", target = Target.DATA_LOADER)
+    @Install(subject = "loadDelegate", to = "usersLoader", target = Target.DATA_LOADER)
     private List<User> loadUsers(LoadContext<User> loadContext) {
         List<User> users = dataManager.loadList(loadContext);
         System.out.println("Loaded users: " + users.size());

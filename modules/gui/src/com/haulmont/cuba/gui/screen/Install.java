@@ -16,17 +16,20 @@
 
 package com.haulmont.cuba.gui.screen;
 
-import java.lang.annotation.*;
-import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-/**
- * Sets primary subject for {@link Provide} target classes.
- */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Inherited
 @Documented
-public @interface ProvideSubject {
+@java.lang.annotation.Target(ElementType.METHOD)
+public @interface Install {
+    Target target() default Target.COMPONENT;
 
-    String value();
+    Class type() default Object.class;
+
+    String subject() default "";
+
+    String to() default "";
 }
