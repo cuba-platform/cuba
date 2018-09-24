@@ -114,7 +114,7 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * @return true if {@param attributeName} is changed
+     * @return true if attribute is changed
      */
     public boolean isChanged(String attributeName) {
         for (Change change : changes) {
@@ -125,7 +125,7 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * @return old value for changed own attribute {@param attributeName}
+     * @return old value for changed own attribute.
      */
     @Nullable
     public <T> T getOldValue(String attributeName) {
@@ -138,7 +138,7 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * @return old value for changed attribute {@param attributeName}.
+     * @return old value for changed attribute.
      * Includes changed embedded attributes
      */
     @Nullable
