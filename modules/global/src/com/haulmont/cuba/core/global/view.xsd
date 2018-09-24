@@ -16,13 +16,10 @@
   ~
   -->
 
-<xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/view.xsd"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/view.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified"
-        >
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/view.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.haulmont.com/cuba/view.xsd"
+           elementFormDefault="qualified">
 
     <xs:element name="views">
         <xs:complexType>

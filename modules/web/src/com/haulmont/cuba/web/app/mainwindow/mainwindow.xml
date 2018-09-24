@@ -16,44 +16,62 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        xmlns:main="http://schemas.haulmont.com/cuba/mainwindow.xsd"
         class="com.haulmont.cuba.web.app.mainwindow.AppMainWindow"
         caption="mainMsg://application.caption">
 
     <layout expand="foldersSplit">
-        <hbox id="titleBar" stylename="c-app-menubar"
-              expand="mainMenu" width="100%" height="AUTO"
-              spacing="true" margin="false;false;false;true">
+        <hbox id="titleBar"
+              stylename="c-app-menubar"
+              expand="mainMenu"
+              width="100%"
+              spacing="true"
+              margin="false;false;false;true">
 
-            <image id="logoImage" align="MIDDLE_LEFT" scaleMode="SCALE_DOWN" stylename="c-app-icon"/>
+            <image id="logoImage"
+                   align="MIDDLE_LEFT"
+                   scaleMode="SCALE_DOWN"
+                   stylename="c-app-icon"/>
 
-            <main:menu id="mainMenu" align="MIDDLE_LEFT"/>
+            <menu id="mainMenu"
+                  align="MIDDLE_LEFT"/>
 
-            <main:ftsField id="ftsField" align="MIDDLE_LEFT"/>
+            <ftsField id="ftsField"
+                      align="MIDDLE_LEFT"/>
 
-            <main:userIndicator id="userIndicator" align="MIDDLE_LEFT"/>
+            <userIndicator id="userIndicator"
+                           align="MIDDLE_LEFT"/>
 
-            <main:timeZoneIndicator id="timeZoneIndicator" align="MIDDLE_LEFT"/>
+            <timeZoneIndicator id="timeZoneIndicator"
+                               align="MIDDLE_LEFT"/>
 
-            <hbox id="mainButtonsBox" stylename="c-main-buttons" align="MIDDLE_LEFT">
-                <main:newWindowButton id="newWindowButton"
-                                      icon="app/images/new-window.png"
-                                      description="msg://newWindowBtnDescription"/>
+            <hbox id="mainButtonsBox"
+                  stylename="c-main-buttons"
+                  align="MIDDLE_LEFT">
+                <newWindowButton id="newWindowButton"
+                                 icon="app/images/new-window.png"
+                                 description="msg://newWindowBtnDescription"/>
 
-                <main:logoutButton id="logoutButton"
-                                   icon="app/images/exit.png"
-                                   description="msg://logoutBtnDescription"/>
+                <logoutButton id="logoutButton"
+                              icon="app/images/exit.png"
+                              description="msg://logoutBtnDescription"/>
             </hbox>
         </hbox>
 
-        <split id="foldersSplit" width="100%" orientation="horizontal" pos="200px">
-            <main:foldersPane id="foldersPane" width="100%" height="100%"/>
+        <split id="foldersSplit"
+               width="100%"
+               orientation="horizontal"
+               pos="200px">
+            <foldersPane id="foldersPane"
+                         width="100%"
+                         height="100%"/>
 
-            <main:workArea id="workArea" width="100%" height="100%">
-                <main:initialLayout spacing="true" margin="true">
+            <workArea id="workArea"
+                     width="100%"
+                     height="100%">
+                <initialLayout spacing="true" margin="true">
 
-                </main:initialLayout>
-            </main:workArea>
+                </initialLayout>
+            </workArea>
         </split>
     </layout>
 </window>
