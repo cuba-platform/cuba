@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
@@ -22,93 +23,26 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.*;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 
 public class WebComponentsHelper {
-
-    @Deprecated
-    protected static final Map<String, Class<? extends FontIcon>> fontIcons = new ConcurrentHashMap<>();
-
-    static {
-        registerFontIcon("font-icon", FontAwesome.class);
-        registerFontIcon("font-awesome-icon", FontAwesome.class);
-    }
-
-    /**
-     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconResolver} instead.
-     */
-    @Deprecated
-    public static Resource getResource(String resURL) {
-        if (StringUtils.isEmpty(resURL)) return null;
-
-        if (resURL.startsWith("file:")) {
-            return new FileResource(new File(resURL.substring("file:".length())));
-        } else if (resURL.startsWith("jar:")) {
-            return new ClassResource(resURL.substring("jar:".length()));
-        } else if (resURL.startsWith("theme:")) {
-            String resourceId = resURL.substring("theme:".length());
-
-            ThemeConstants themeConstants = App.getInstance().getThemeConstants();
-            if (isFontIconsEnabled(themeConstants)) {
-                String fontIcon;
-
-                String iconKey = "cuba.web." + StringUtils.replace(resourceId, "/", ".");
-                fontIcon = themeConstants.get(iconKey);
-
-                try {
-                    Resource resource = getFontIconResource(fontIcon);
-                    if (resource != null) {
-                        return resource;
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
-                }
-            }
-
-            return new ThemeResource(resourceId);
-        } else if (resURL.contains("icon:")) {
-            try {
-                return getFontIconResource(resURL);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon " + resURL);
-            }
-            return null;
-        } else {
-            return new ThemeResource(resURL);
-        }
-    }
-
-    protected static boolean isFontIconsEnabled(ThemeConstants themeConstants) {
-        return themeConstants.getBoolean("cuba.web.useFontIcons", true);
-    }
 
     @SuppressWarnings("unchecked")
     public static <T extends Component> Collection<T> getComponents(HasComponents container, Class<T> aClass) {
@@ -292,85 +226,6 @@ public class WebComponentsHelper {
         int closeCode = closeCombination.getKey().getCode();
 
         button.setClickShortcut(closeCode, closeModifiers);
-    }
-
-    /**
-     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconResolver} instead.
-     */
-    @Deprecated
-    @Nullable
-    public static Resource getIcon(String iconName) {
-        if (StringUtils.isEmpty(iconName)) {
-            return null;
-        }
-
-        ThemeConstants themeConstants = App.getInstance().getThemeConstants();
-        if (isFontIconsEnabled(themeConstants)) {
-            String fontIcon;
-
-            if (StringUtils.contains(iconName, ":")) {
-                fontIcon = iconName;
-            } else {
-                String iconKey = "cuba.web." + StringUtils.replace(iconName, "/", ".");
-                fontIcon = themeConstants.get(iconKey);
-            }
-
-            try {
-                Resource resource = getFontIconResource(fontIcon);
-                if (resource != null) {
-                    return resource;
-                }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon {}", fontIcon);
-            }
-        }
-        return new ThemeResource(iconName);
-    }
-
-    /**
-     * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
-     * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
-     */
-    @Deprecated
-    @Nullable
-    public static Resource getFontIconResource(String fontIcon)
-            throws NoSuchFieldException, IllegalAccessException {
-        if (StringUtils.isNotEmpty(fontIcon)) {
-            String fontIconName = "font-awesome-icon";
-            String fontIconField;
-            if (fontIcon.contains(":")) {
-                fontIconName = StringUtils.substring(fontIcon, 0, fontIcon.indexOf(":"));
-                fontIconField = StringUtils.substring(fontIcon, fontIcon.indexOf(":") + 1);
-            } else {
-                fontIconField = fontIcon;
-            }
-            return getFontIconResource(fontIconName, fontIconField);
-        }
-        return null;
-    }
-
-    /**
-     * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
-     * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
-     */
-    @Deprecated
-    @Nullable
-    public static Resource getFontIconResource(String fontIconName, String fontIconField)
-            throws NoSuchFieldException, IllegalAccessException {
-        final Class<? extends FontIcon> fontIcon = fontIcons.get(fontIconName);
-        if (fontIcon != null) {
-            Field field = fontIcon.getDeclaredField(fontIconField);
-            return (Resource) field.get(null);
-        }
-        return null;
-    }
-
-    /**
-     * @deprecated Use {@link com.haulmont.cuba.web.gui.icons.IconProvider} beans instead.
-     */
-    @Deprecated
-    public static void registerFontIcon(String name, Class<? extends FontIcon> font) {
-        fontIcons.put(name, font);
     }
 
     @Deprecated
