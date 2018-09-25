@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.Group;
@@ -56,7 +57,7 @@ public class DcScreen5 extends Screen {
     private CollectionContainer<User> usersCont;
 
     @Inject
-    private DataLoader usersLoader;
+    private CollectionLoader usersLoader;
 
     @Subscribe
     protected void beforeShow(BeforeShowEvent event) {
@@ -97,7 +98,7 @@ public class DcScreen5 extends Screen {
         }
     }
 
-    @Install(subject = "loadDelegate", to = "usersLoader", target = Target.DATA_LOADER)
+    @Install(to = "usersLoader", target = Target.DATA_LOADER)
     private List<User> loadUsers(LoadContext<User> loadContext) {
         List<User> users = dataManager.loadList(loadContext);
         System.out.println("Loaded users: " + users.size());

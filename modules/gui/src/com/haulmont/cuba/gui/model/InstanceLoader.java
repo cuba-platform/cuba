@@ -19,10 +19,12 @@ package com.haulmont.cuba.gui.model;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.screen.InstallSubject;
 
 import java.util.Collection;
 import java.util.function.Function;
 
+@InstallSubject("loadDelegate")
 public interface InstanceLoader<E extends Entity> extends DataLoader {
 
     InstanceContainer<E> getContainer();
