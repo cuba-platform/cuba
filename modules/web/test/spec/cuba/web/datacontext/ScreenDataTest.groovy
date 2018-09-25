@@ -22,16 +22,13 @@ import com.haulmont.cuba.gui.model.*
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader
 import com.haulmont.cuba.gui.model.impl.StandardCollectionLoader
 import com.haulmont.cuba.gui.model.impl.StandardInstanceLoader
-import com.haulmont.cuba.security.entity.Permission
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.security.entity.UserRole
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
 import com.haulmont.cuba.web.testmodel.sales.ProductTag
 import org.dom4j.Document
 import spec.cuba.web.WebSpec
-import spock.lang.Ignore
 
 class ScreenDataTest extends WebSpec {
 
@@ -91,6 +88,18 @@ class ScreenDataTest extends WebSpec {
                         </query>
                     </loader>
                 </collection>
+                
+                <keyValueCollection id="userInfoCont">
+                    <properties>
+                        <property name="login"/>
+                        <property name="name"/>
+                    </properties>
+                    <loader id="userInfoLoader">
+                        <query>
+                            select u.login, u.name from sec$User u where u.id = 1
+                        </query>
+                    </loader>
+                </keyValueCollection>
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
@@ -105,6 +114,8 @@ class ScreenDataTest extends WebSpec {
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionContainer<User> usersCont = screenData.getContainer('usersCont')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
+        KeyValueCollectionContainer userInfoCont = screenData.getContainer('userInfoCont')
+        KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
 
         then:
 
@@ -124,6 +135,11 @@ class ScreenDataTest extends WebSpec {
         usersLoader.firstResult == 0
         usersLoader.maxResults == Integer.MAX_VALUE
         !usersLoader.cacheable
+
+        userInfoCont.getEntityMetaClass().getProperty('login') != null
+        userInfoCont.getEntityMetaClass().getProperty('name') != null
+        userInfoLoader.getContainer() == userInfoCont
+        userInfoLoader.getQuery() == 'select u.login, u.name from sec$User u where u.id = 1'
     }
 
     def "loader options"() {
@@ -132,18 +148,32 @@ class ScreenDataTest extends WebSpec {
                 <instance id="userCont"
                           class="com.haulmont.cuba.security.entity.User" view="user.edit">
                           
-                    <loader id="userLoader" entityId="60885987-1b61-4247-94c7-dff348347f93" softDeletion="false"/>
+                    <loader id="userLoader" entityId="60885987-1b61-4247-94c7-dff348347f93" softDeletion="false"
+                            dynamicAttributes="true"/>
                 </instance>
 
                 <collection id="usersCont"
                             class="com.haulmont.cuba.security.entity.User" view="user.browse">
             
-                    <loader id="usersLoader" softDeletion="false" firstResult="100" maxResults="1000" cacheable="true">
+                    <loader id="usersLoader" softDeletion="false" firstResult="100" maxResults="1000" cacheable="true"
+                            dynamicAttributes="true">
                         <query>
                             select u from sec$User u
                         </query>
                     </loader>
                 </collection>
+
+                <keyValueCollection id="userInfoCont">
+                    <properties>
+                        <property name="login"/>
+                        <property name="name"/>
+                    </properties>
+                    <loader id="userInfoLoader" store="foo" softDeletion="false" firstResult="100" maxResults="1000">
+                        <query>
+                            select u.login, u.name from sec$User u where u.id = 1
+                        </query>
+                    </loader>
+                </keyValueCollection>
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
@@ -155,18 +185,26 @@ class ScreenDataTest extends WebSpec {
         screenDataLoader.load(screenData, document.rootElement)
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
+        KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
 
         then:
 
         userLoader.entityId == UUID.fromString('60885987-1b61-4247-94c7-dff348347f93')
         !userLoader.softDeletion
+        userLoader.loadDynamicAttributes
         ((StandardInstanceLoader) userLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.edit')
 
         !usersLoader.softDeletion
         usersLoader.firstResult == 100
         usersLoader.maxResults == 1000
         usersLoader.cacheable
+        usersLoader.loadDynamicAttributes
         ((StandardCollectionLoader) usersLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.browse')
+
+        !userInfoLoader.softDeletion
+        userInfoLoader.firstResult == 100
+        userInfoLoader.maxResults == 1000
+        userInfoLoader.storeName == 'foo'
     }
 
     def "nested containers"() {

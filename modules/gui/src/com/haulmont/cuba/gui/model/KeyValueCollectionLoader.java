@@ -27,37 +27,17 @@ import java.util.function.Function;
  *
  */
 @InstallSubject("loadDelegate")
-public interface KeyValueCollectionLoader extends DataLoader {
+public interface KeyValueCollectionLoader extends BaseCollectionLoader {
 
     KeyValueCollectionContainer getContainer();
 
     void setContainer(KeyValueCollectionContainer container);
 
+    ValueLoadContext createLoadContext();
+
     String getStoreName();
 
     void setStoreName(String name);
-
-    /**
-     * The position of the first instance to load, numbered from 0.
-     * Returns 0 if {@link #setFirstResult(int)} was not called.
-     */
-    int getFirstResult();
-
-    /**
-     * Sets the position of the first instance to load, numbered from 0.
-     */
-    void setFirstResult(int firstResult);
-
-    /**
-     * The maximum number of instances to load.
-     * Returns {@code Integer.MAX_VALUE} if {@link #setMaxResults} was not called.
-     */
-    int getMaxResults();
-
-    /**
-     * Sets the maximum number of instances to load.
-     */
-    void setMaxResults(int maxResults);
 
     /**
      * Returns a function which will be used to load data instead of standard implementation.

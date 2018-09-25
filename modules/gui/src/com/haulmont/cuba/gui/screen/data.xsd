@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2018 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/screen/data.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.haulmont.com/cuba/screen/data.xsd"
+           elementFormDefault="qualified">
+
+    <xs:complexType name="screenData">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="instance" type="instanceContainerType"/>
+                <xs:element name="collection" type="collectionContainerType"/>
+                <xs:element name="keyValueCollection" type="keyValueCollectionContainerType"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="instanceContainerType">
+        <xs:sequence>
+            <xs:element name="loader" type="instanceLoaderType"/>
+            <xs:element name="instance" type="nestedContainerType"/>
+            <xs:element name="collection" type="nestedContainerType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="view" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="collectionContainerType">
+        <xs:sequence>
+            <xs:element name="loader" type="collectionLoaderType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="view" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="nestedContainerType">
+        <xs:sequence>
+            <xs:element name="instance" type="nestedContainerType"/>
+            <xs:element name="collection" type="nestedContainerType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="property" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="instanceLoaderType">
+        <xs:sequence>
+            <xs:element name="query" type="queryType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="dynamicAttributes" type="xs:boolean"/>
+        <xs:attribute name="entityId" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="collectionLoaderType">
+        <xs:sequence>
+            <xs:element name="query" type="queryType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="dynamicAttributes" type="xs:boolean"/>
+        <xs:attribute name="firstResult" type="xs:integer"/>
+        <xs:attribute name="maxResults" type="xs:integer"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="keyValueCollectionContainerType">
+        <xs:sequence>
+            <xs:element name="properties" type="keyValueCollectionContainerProperties"/>
+            <xs:element name="loader" type="keyValueCollectionLoaderType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+
+    </xs:complexType>
+
+    <xs:complexType name="keyValueCollectionLoaderType">
+        <xs:sequence>
+            <xs:element name="query" type="queryType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="firstResult" type="xs:integer"/>
+        <xs:attribute name="maxResults" type="xs:integer"/>
+    </xs:complexType>
+
+    <xs:complexType name="keyValueCollectionContainerProperties">
+        <xs:sequence>
+            <xs:element name="property" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                    <xs:attribute name="datatype" type="xs:string"/>
+                    <xs:attribute name="class" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attribute name="idProperty" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="queryType">
+        <xs:sequence>
+            <xs:element name="condition" type="conditionType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="conditionType">
+            <!-- todo -->
+    </xs:complexType>
+</xs:schema>

@@ -19,8 +19,11 @@ package com.haulmont.cuba.gui.model.impl;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
@@ -58,6 +61,8 @@ public class ScreenDataXmlLoader {
                 loadCollectionContainer(screenData, el);
             } else if (el.getName().equals("instance")) {
                 loadInstanceContainer(screenData, el);
+            } else if (el.getName().equals("keyValueCollection")) {
+                loadKeyValueCollectionContainer(screenData, el);
             }
         }
     }
@@ -95,6 +100,48 @@ public class ScreenDataXmlLoader {
 
         for (Element collectionEl : element.elements()) {
             loadNestedContainer(screenData, collectionEl, container);
+        }
+    }
+
+    protected void loadKeyValueCollectionContainer(ScreenData screenData, Element element) {
+        String containerId = getRequiredAttr(element, "id");
+
+        KeyValueCollectionContainer container = factory.createKeyValueCollectionContainer();
+
+        loadProperties(element, container);
+
+        String idName = element.attributeValue("idName");
+        if (!Strings.isNullOrEmpty(idName))
+            container.setIdName(idName);
+
+        Element loaderEl = element.element("loader");
+        if (loaderEl != null) {
+            loadKeyValueCollectionLoader(screenData, loaderEl, container);
+        }
+
+        screenData.registerContainer(containerId, container);
+    }
+
+    private void loadProperties(Element element, KeyValueCollectionContainer container) {
+        Element propsEl = element.element("properties");
+        if (propsEl != null) {
+            for (Element propEl : propsEl.elements()) {
+                String name = propEl.attributeValue("name");
+                String className = propEl.attributeValue("class");
+                if (className != null) {
+                    container.addProperty(name, ReflectionHelper.getClass(className));
+                } else {
+                    String typeName = propEl.attributeValue("datatype");
+                    Datatype datatype = typeName == null ? Datatypes.getNN(String.class) : Datatypes.get(typeName);
+                    container.addProperty(name, datatype);
+                }
+            }
+            String idProperty = propsEl.attributeValue("idProperty");
+            if (idProperty != null) {
+                if (container.getEntityMetaClass().getProperty(idProperty) == null)
+                    throw new DevelopmentException(String.format("Property '%s' is not defined", idProperty));
+                container.setIdName(idProperty);
+            }
         }
     }
 
@@ -153,6 +200,7 @@ public class ScreenDataXmlLoader {
         loader.setContainer(container);
 
         loadSoftDeletion(element, loader);
+        loadDynamicAttributes(element, loader);
         loadQuery(element, loader);
         loadEntityId(element, loader);
 
@@ -169,9 +217,29 @@ public class ScreenDataXmlLoader {
 
         loadQuery(element, loader);
         loadSoftDeletion(element, loader);
+        loadDynamicAttributes(element, loader);
         loadFirstResult(element, loader);
         loadMaxResults(element, loader);
         loadCacheable(element, loader);
+
+        String loaderId = element.attributeValue("id");
+        if (loaderId != null) {
+            screenData.registerLoader(loaderId, loader);
+        }
+    }
+
+    protected void loadKeyValueCollectionLoader(ScreenData screenData, Element element, KeyValueCollectionContainer container) {
+        KeyValueCollectionLoader loader = factory.createKeyValueCollectionLoader();
+        loader.setContainer(container);
+
+        loadQuery(element, loader);
+        loadSoftDeletion(element, loader);
+        loadFirstResult(element, loader);
+        loadMaxResults(element, loader);
+
+        String storeName = element.attributeValue("store");
+        if (!Strings.isNullOrEmpty(storeName))
+            loader.setStoreName(storeName);
 
         String loaderId = element.attributeValue("id");
         if (loaderId != null) {
@@ -219,6 +287,17 @@ public class ScreenDataXmlLoader {
             loader.setSoftDeletion(Boolean.valueOf(softDeletionVal));
     }
 
+    protected void loadDynamicAttributes(Element element, DataLoader loader) {
+        String dynamicAttributes = element.attributeValue("dynamicAttributes");
+        if (!Strings.isNullOrEmpty(dynamicAttributes)) {
+            if (loader instanceof InstanceLoader) {
+                ((InstanceLoader) loader).setLoadDynamicAttributes(Boolean.valueOf(dynamicAttributes));
+            } else if (loader instanceof CollectionLoader) {
+                ((CollectionLoader) loader).setLoadDynamicAttributes(Boolean.valueOf(dynamicAttributes));
+            }
+        }
+    }
+
     protected void loadEntityId(Element element, InstanceLoader<Entity> loader) {
         String entityIdStr = element.attributeValue("entityId");
         if (Strings.isNullOrEmpty(entityIdStr)) {
@@ -240,7 +319,7 @@ public class ScreenDataXmlLoader {
         }
     }
 
-    protected void loadFirstResult(Element element, CollectionLoader<Entity> loader) {
+    protected void loadFirstResult(Element element, BaseCollectionLoader loader) {
         String firstResultStr = element.attributeValue("firstResult");
         if (Strings.isNullOrEmpty(firstResultStr))
             return;
@@ -248,7 +327,7 @@ public class ScreenDataXmlLoader {
         loader.setFirstResult(Integer.valueOf(firstResultStr));
     }
 
-    protected void loadMaxResults(Element element, CollectionLoader<Entity> loader) {
+    protected void loadMaxResults(Element element, BaseCollectionLoader loader) {
         String maxResultsStr = element.attributeValue("maxResults");
         if (Strings.isNullOrEmpty(maxResultsStr))
             return;

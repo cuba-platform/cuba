@@ -65,7 +65,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
     @SuppressWarnings("unchecked")
     protected void loadContainer(T component, Element element) {
-        String containerId = element.attributeValue("container");
+        String containerId = element.attributeValue("dataContainer");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);

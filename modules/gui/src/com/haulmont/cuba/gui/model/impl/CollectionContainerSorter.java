@@ -21,8 +21,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.data.impl.EntityComparator;
+import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.Sorter;
 
 import java.util.ArrayList;
@@ -35,10 +35,10 @@ import java.util.List;
 public class CollectionContainerSorter implements Sorter {
 
     private final CollectionContainer<Entity> container;
-    private final CollectionLoader<Entity> loader;
+    private final BaseCollectionLoader loader;
 
     @SuppressWarnings("unchecked")
-    public CollectionContainerSorter(CollectionLoader loader) {
+    public CollectionContainerSorter(BaseCollectionLoader loader) {
         this.container = loader.getContainer();
         if (this.container == null) {
             throw new IllegalStateException("Container is not set for the loader");

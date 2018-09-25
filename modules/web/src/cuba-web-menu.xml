@@ -30,6 +30,7 @@
         <item id="tmpGroupBrowse"/>
         <item id="tmpUserDataGrid"/>
         <item id="tmpGroupTreeDataGrid"/>
+        <item id="tmpUserInfoBrowse"/>
         <separator/>
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>

@@ -900,6 +900,11 @@
         <xs:attribute name="property" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasDataContainer">
+        <xs:attribute name="dataContainer" type="xs:string"/>
+        <xs:attribute name="property" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="requiresDatasource">
         <xs:attribute name="datasource" type="xs:string" use="required"/>
     </xs:attributeGroup>
@@ -941,6 +946,7 @@
 
     <xs:attributeGroup name="hasOptions">
         <xs:attribute name="optionsDatasource" type="xs:string"/>
+        <xs:attribute name="optionsContainer" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaptionSource">
@@ -1050,7 +1056,15 @@
     </xs:complexType>
 
     <xs:complexType name="tableRowsType">
-        <xs:attribute name="datasource" type="xs:string" use="required"/>
+        <xs:attribute name="datasource" type="xs:string"/>
+        <xs:attribute name="dataContainer" type="xs:string"/>
+        <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
+    </xs:complexType>
+
+    <xs:complexType name="treeTableRowsType">
+        <xs:attribute name="datasource" type="xs:string"/>
+        <xs:attribute name="dataContainer" type="xs:string"/>
+        <xs:attribute name="hierarchyProperty" type="xs:string"/>
         <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
     </xs:complexType>
 
@@ -1231,6 +1245,7 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
@@ -2046,6 +2061,27 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- TreeTable -->
+    <xs:complexType name="treeTableComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="actions" minOccurs="0" type="componentActions"/>
+                    <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
+                    <xs:element name="rowsCount" minOccurs="0">
+                        <xs:complexType/>
+                    </xs:element>
+                    <xs:element name="columns" type="tableColumnsList"/>
+                    <xs:element name="rows" type="treeTableRowsType"/>
+                </xs:all>
+
+                <xs:attribute name="stylename" type="tableStylename"/>
+                <xs:attributeGroup ref="isTableComponent"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- GroupTable -->
     <xs:complexType name="groupTableComponent">
         <xs:complexContent>
@@ -2108,6 +2144,7 @@
                 <xs:attribute name="columnResizeMode" type="dataGridColumnResizeMode"/>
                 <xs:attribute name="contextMenuEnabled" type="xs:boolean"/>
                 <xs:attribute name="datasource" type="xs:string"/>
+                <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="frozenColumnCount" type="xs:integer"/>
                 <xs:attribute name="headerVisible" type="xs:boolean"/>
                 <xs:attribute name="footerVisible" type="xs:boolean"/>
@@ -2133,7 +2170,9 @@
     <!-- TreeDataGrid -->
     <xs:complexType name="treeDataGridComponent">
         <xs:complexContent>
-            <xs:extension base="dataGridComponent"/>
+            <xs:extension base="dataGridComponent">
+                <xs:attribute name="hierarchyProperty" type="xs:string"/>
+            </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
@@ -2902,7 +2941,7 @@
 
                 <xs:element name="tree" type="treeComponent"/>
                 <xs:element name="table" type="tableComponent"/>
-                <xs:element name="treeTable" type="tableComponent"/>
+                <xs:element name="treeTable" type="treeTableComponent"/>
                 <xs:element name="groupTable" type="groupTableComponent"/>
                 <xs:element name="dataGrid" type="dataGridComponent"/>
                 <xs:element name="treeDataGrid" type="treeDataGridComponent"/>

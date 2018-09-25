@@ -129,7 +129,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         DataLoader dataLoader = null;
         Datasource datasource = null;
 
-        String containerId = element.attributeValue("container");
+        String containerId = element.attributeValue("dataContainer");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);

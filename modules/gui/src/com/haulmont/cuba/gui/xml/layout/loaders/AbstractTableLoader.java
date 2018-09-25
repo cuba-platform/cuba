@@ -127,7 +127,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         DataLoader dataLoader = null;
         Datasource datasource = null;
 
-        String containerId = rowsElement.attributeValue("container");
+        String containerId = rowsElement.attributeValue("dataContainer");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);

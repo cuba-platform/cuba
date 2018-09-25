@@ -19,10 +19,12 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.HasLoader;
 import com.haulmont.cuba.gui.model.KeyValueCollectionContainer;
 import com.haulmont.cuba.gui.model.KeyValueCollectionLoader;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +48,7 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     private int firstResult = 0;
     private int maxResults = Integer.MAX_VALUE;
     private boolean softDeletion = true;
+    private Sort sort;
 
     private String storeName = Stores.MAIN;
     private Function<ValueLoadContext, Collection<KeyValueEntity>> delegate;
@@ -94,7 +97,8 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
         container.setItems(list);
     }
 
-    protected ValueLoadContext createLoadContext() {
+    @Override
+    public ValueLoadContext createLoadContext() {
         ValueLoadContext loadContext = ValueLoadContext.create();
         loadContext.setStoreName(storeName);
         loadContext.setIdName(container.getIdName());
@@ -105,9 +109,12 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
         ValueLoadContext.Query query = loadContext.setQueryString(this.query);
 
         query.setCondition(condition);
+        query.setSort(sort);
         query.setParameters(parameters);
 
-        if (maxResults > 0)
+        if (firstResult > 0)
+            query.setFirstResult(firstResult);
+        if (maxResults < Integer.MAX_VALUE)
             query.setMaxResults(maxResults);
 
         loadContext.setSoftDeletion(softDeletion);
@@ -122,6 +129,10 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     @Override
     public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
+        if (container instanceof HasLoader) {
+            ((HasLoader) container).setLoader(this);
+        }
+        container.setSorter(new CollectionContainerSorter(this));
     }
 
     @Override
@@ -179,6 +190,20 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     @Override
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
+    }
+
+    @Override
+    public Sort getSort() {
+        return sort;
+    }
+
+    @Override
+    public void setSort(Sort sort) {
+        if (sort == null || sort.getOrders().isEmpty()) {
+            this.sort = null;
+        } else {
+            this.sort = sort;
+        }
     }
 
     @Override

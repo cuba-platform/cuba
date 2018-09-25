@@ -15,24 +15,35 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
-        caption="Groups">
+        caption="User Info Browser">
 
     <data>
-        <collection id="groupsCont" class="com.haulmont.cuba.security.entity.Group" view="group.browse">
-            <loader id="groupsLoader">
-                <query>select g from sec$Group g order by g.name</query>
+        <keyValueCollection id="userInfoCont">
+            <properties>
+                <property name="login"/>
+                <property name="name"/>
+            </properties>
+            <loader id="userInfoLoader">
+                <query>
+                    select u.login, u.name from sec$User u
+                    order by u.login
+                </query>
             </loader>
-        </collection>
+        </keyValueCollection>
     </data>
 
-    <layout spacing="true" expand="groupsTree">
-        <treeDataGrid id="groupsTree" width="100%" multiselect="true"
-                      dataContainer="groupsCont" hierarchyProperty="parent">
+    <layout spacing="true" expand="userInfoGrid">
+        <dataGrid id="userInfoGrid"
+                  dataContainer="userInfoCont"
+                  width="100%">
+            <buttonsPanel>
+                <button id="createBtn" caption="Create"/>
+            </buttonsPanel>
+            <!--<rowsCount/>-->
             <columns>
+                <column property="login"/>
                 <column property="name"/>
-                <column property="id"/>
-                <column property="version"/>
             </columns>
-        </treeDataGrid>
+        </dataGrid>
     </layout>
 </window>

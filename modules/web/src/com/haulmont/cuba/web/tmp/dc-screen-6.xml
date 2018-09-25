@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<window caption="User Editor">
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="User Editor">
 
     <data>
         <instance id="userCont" class="com.haulmont.cuba.security.entity.User" view="user.edit">
@@ -25,8 +26,8 @@
     </data>
 
     <layout spacing="true" expand="userRolesTable">
-        <textField id="loginField" container="userCont" property="login"/>
-        <textField id="nameField" container="userCont" property="name"/>
+        <textField id="loginField" dataContainer="userCont" property="login"/>
+        <textField id="nameField" dataContainer="userCont" property="name"/>
         <table id="userRolesTable"
                width="100%">
             <buttonsPanel>
@@ -38,7 +39,7 @@
                 <column id="role.name"/>
                 <column id="role.locName"/>
             </columns>
-            <rows container="userRolesCont"/>
+            <rows dataContainer="userRolesCont"/>
         </table>
         <hbox spacing="true">
             <button id="okBtn" caption="OK"/>

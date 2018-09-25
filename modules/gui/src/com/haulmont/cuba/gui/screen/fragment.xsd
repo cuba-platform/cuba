@@ -18,15 +18,19 @@
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/screen/fragment.xsd"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns="http://schemas.haulmont.com/cuba/screen/fragment.xsd"
+           xmlns:data="http://schemas.haulmont.com/cuba/screen/data.xsd"
            xmlns:layout="http://schemas.haulmont.com/cuba/screen/layout.xsd"
            elementFormDefault="qualified">
 
+    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/screen/data.xsd"/>
     <xs:include schemaLocation="http://schemas.haulmont.com/cuba/screen/layout.xsd"/>
 
     <!-- Window -->
     <xs:element name="fragment">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="data" type="data:screenData"/>
+
                 <xs:element name="actions" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>

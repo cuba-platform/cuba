@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 
@@ -29,35 +28,13 @@ import java.util.function.Function;
  *
  */
 @InstallSubject("loadDelegate")
-public interface CollectionLoader<E extends Entity> extends DataLoader {
+public interface CollectionLoader<E extends Entity> extends BaseCollectionLoader {
 
     CollectionContainer<E> getContainer();
 
     void setContainer(CollectionContainer<E> container);
 
     LoadContext<E> createLoadContext();
-
-    /**
-     * The position of the first instance to load, numbered from 0.
-     * Returns 0 if {@link #setFirstResult(int)} was not called.
-     */
-    int getFirstResult();
-
-    /**
-     * Sets the position of the first instance to load, numbered from 0.
-     */
-    void setFirstResult(int firstResult);
-
-    /**
-     * The maximum number of instances to load.
-     * Returns {@code Integer.MAX_VALUE} if {@link #setMaxResults} was not called.
-     */
-    int getMaxResults();
-
-    /**
-     * Sets the maximum number of instances to load.
-     */
-    void setMaxResults(int maxResults);
 
     boolean isLoadDynamicAttributes();
 
@@ -72,10 +49,6 @@ public interface CollectionLoader<E extends Entity> extends DataLoader {
     void setView(View view);
 
     void setView(String viewName);
-
-    Sort getSort();
-
-    void setSort(Sort sort);
 
     /**
      * Returns a function which will be used to load data instead of standard implementation.

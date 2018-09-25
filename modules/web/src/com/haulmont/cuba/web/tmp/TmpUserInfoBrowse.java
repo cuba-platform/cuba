@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.model;
+package com.haulmont.cuba.web.tmp;
 
-import java.util.Set;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Subscribe;
+import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.UiDescriptor;
 
-public interface ScreenData {
+@UiController("tmpUserInfoBrowse")
+@UiDescriptor("tmp-user-info-browse.xml")
+public class TmpUserInfoBrowse extends Screen {
 
-    String NAME = "cuba_ScreenData";
-
-    DataContext getDataContext();
-
-    void loadAll();
-
-    <T extends InstanceContainer> T getContainer(String id);
-
-    <T extends DataLoader> T getLoader(String id);
-
-    Set<String> getContainerIds();
-
-    Set<String> getLoaderIds();
-
-    void registerContainer(String id, InstanceContainer container);
-
-    void registerLoader(String id, DataLoader loader);
+    @Subscribe
+    protected void beforeShow(BeforeShowEvent event) {
+        getScreenData().loadAll();
+    }
 }

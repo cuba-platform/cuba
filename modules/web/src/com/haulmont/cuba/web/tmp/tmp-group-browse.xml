@@ -14,11 +14,12 @@
   ~ limitations under the License.
   -->
 
-<window caption="Groups">
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="Groups">
 
     <data>
         <collection id="groupsCont" class="com.haulmont.cuba.security.entity.Group" view="group.browse">
-            <loader id="groupsLoader">
+            <loader id="groupsLoader" maxResults="www">
                 <query>select g from sec$Group g order by g.name</query>
             </loader>
         </collection>
@@ -31,7 +32,7 @@
                 <column id="id"/>
                 <column id="version"/>
             </columns>
-            <rows container="groupsCont" hierarchyProperty="parent"/>
+            <rows dataContainer="groupsCont" hierarchyProperty="parent"/>
         </treeTable>
     </layout>
 </window>

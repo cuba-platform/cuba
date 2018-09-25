@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<window
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         class="com.haulmont.cuba.web.tmp.DcScreen4"
         caption="Screen 4"
         messagesPack="com.haulmont.cuba.web.tmp">
@@ -28,7 +28,7 @@
                     cacheable="false" softDeletion="true">
                 <query>
                     select u from sec$User u
-                    where u.group = :groupId
+                    where u.group.id = :groupId
                     order by u.name
                     <condition>
                         <and>

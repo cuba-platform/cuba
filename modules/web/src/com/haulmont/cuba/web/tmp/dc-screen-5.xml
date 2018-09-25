@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<window caption="User Browser">
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="User Browser">
 
     <data>
         <collection id="usersCont"
@@ -46,7 +47,7 @@
                 <column id="group"/>
                 <column id="active"/>
             </columns>
-            <rows container="usersCont"/>
+            <rows dataContainer="usersCont"/>
         </groupTable>
     </layout>
 </window>

@@ -14,13 +14,14 @@
   ~ limitations under the License.
   -->
 
-<window caption="User Browser">
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="User Browser">
 
     <data>
         <collection id="usersCont"
                     class="com.haulmont.cuba.security.entity.User" view="user.browse">
 
-            <loader id="usersLoader">
+            <loader id="usersLoader" dynamicAttributes="true">
                 <query>
                     select u from sec$User u
                     order by u.name
@@ -33,7 +34,7 @@
         <filter id="usersFilter"
                 dataLoader="usersLoader"/>
         <dataGrid id="usersGrid"
-                  container="usersCont"
+                  dataContainer="usersCont"
                   width="100%">
             <buttonsPanel>
                 <button id="createBtn" caption="Create"/>

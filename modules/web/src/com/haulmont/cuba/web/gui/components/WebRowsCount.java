@@ -18,8 +18,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
@@ -35,9 +35,13 @@ import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRowsCount;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -70,6 +74,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected List<BeforeRefreshListener> beforeRefreshListeners;
 
     private RowsCountTarget target;
+
+    private static final Logger log = LoggerFactory.getLogger(WebRowsCount.class);
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -164,10 +170,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (container instanceof HasLoader) {
             loader = ((HasLoader) container).getLoader();
         }
-        if (!(loader instanceof CollectionLoader)) {
-            throw new IllegalStateException(String.format("Invalid loader for container %s: %s", container, loader));
+        if (loader == null) {
+            throw new IllegalStateException(String.format("Loader for container %s not found", container));
         }
-        return new LoaderAdapter((CollectionLoader) loader);
+        if (!(loader instanceof BaseCollectionLoader)) {
+            throw new IllegalStateException("RowsCount component currently supports only BaseCollectionLoader");
+        }
+        return new LoaderAdapter((BaseCollectionLoader) loader);
     }
 
     protected Adapter createDatasourceAdapter(CollectionDatasource datasource) {
@@ -436,10 +445,10 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected class LoaderAdapter implements Adapter {
 
         private CollectionContainer container;
-        private CollectionLoader loader;
+        private BaseCollectionLoader loader;
 
         @SuppressWarnings("unchecked")
-        public LoaderAdapter(CollectionLoader loader) {
+        public LoaderAdapter(BaseCollectionLoader loader) {
             this.loader = loader;
             container = loader.getContainer();
 
@@ -482,7 +491,22 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         @SuppressWarnings("unchecked")
         @Override
         public int getCount() {
-            return (int) dataManager.getCount(loader.createLoadContext());
+            if (loader instanceof CollectionLoader) {
+                return (int) dataManager.getCount(((CollectionLoader) loader).createLoadContext());
+            } else if (loader instanceof KeyValueCollectionLoader) {
+                ValueLoadContext context = ((KeyValueCollectionLoader) loader).createLoadContext();
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
+                // TODO it doesn't work for query containing scalars in select
+                transformer.replaceWithCount();
+                context.getQuery().setQueryString(transformer.getResult());
+                context.setProperties(Collections.singletonList("cnt"));
+                List<KeyValueEntity> list = dataManager.loadValues(context);
+                Number count = list.get(0).getValue("cnt");
+                return count == null ? 0 : count.intValue();
+            } else {
+                log.warn("Unsupported loader type: " + loader.getClass().getName());
+                return 0;
+            }
         }
 
         @Override
