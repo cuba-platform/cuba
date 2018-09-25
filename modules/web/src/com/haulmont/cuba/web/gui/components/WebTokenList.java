@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
@@ -23,10 +24,10 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -36,64 +37,64 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.screen.StandardCloseAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.ui.CustomField;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
-public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList, V> implements TokenList<V> {
+public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenList<V>, V, Collection<V>> implements TokenList<V>,
+        InitializingBean {
 
     protected CollectionDatasource datasource;
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     protected String captionProperty;
-
     protected CaptionMode captionMode;
 
-    protected Position position = Position.TOP;
-
     protected ItemChangeHandler itemChangeHandler;
-
     protected ItemClickListener itemClickListener;
 
     protected AfterLookupCloseHandler afterLookupCloseHandler;
-
     protected AfterLookupSelectionHandler afterLookupSelectionHandler;
 
-    protected boolean inline;
+    protected Button addButton;
+    protected Button clearButton;
 
-    protected WebButton addButton;
-
-    protected WebButton clearButton;
-
-    protected WebLookupPickerField<Entity> lookupPickerField;
-
+    protected LookupPickerField<Entity> lookupPickerField;
+    protected PickerField.LookupAction lookupAction;
     protected String lookupScreen;
-    protected OpenType lookupOpenMode = OpenType.THIS_TAB;
     protected Map<String, Object> lookupScreenParams;
+    protected OpenType lookupOpenMode = OpenType.THIS_TAB;
 
-    protected Function<Object, String> tokenStyleGenerator;
-
+    protected Position position = Position.TOP;
+    protected boolean inline;
     protected boolean lookup = false;
-
     protected boolean clearEnabled = true;
     protected boolean simple = false;
-
     protected boolean multiselect;
-    protected PickerField.LookupAction lookupAction;
+
+    protected UiComponents uiComponents;
+    protected Messages messages;
+    protected Metadata metadata;
+    protected WindowConfig windowConfig;
+
+    protected Function<Object, String> tokenStyleGenerator;
 
     protected final Consumer<ValueChangeEvent<Entity>> lookupSelectListener = e -> {
         if (isEditable()) {
@@ -101,21 +102,50 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
         }
     };
 
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
-
     public WebTokenList() {
-        addButton = new WebButton();
-        Messages messages = AppBeans.get(Messages.NAME);
-        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
+        component = new CubaTokenList<>(this);
+    }
 
-        clearButton = new WebButton();
-        clearButton.setCaption(messages.getMessage(TokenList.class, "actions.Clear"));
+    @Inject
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
+    }
 
-        lookupPickerField = new WebLookupPickerField();
+    @Inject
+    public void setMessages(Messages messages) {
+        this.messages = messages;
+    }
+
+    @Inject
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @Inject
+    public void setWindowConfig(WindowConfig windowConfig) {
+        this.windowConfig = windowConfig;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        createComponents();
+        initComponentsCaptions();
+    }
+
+    protected void createComponents() {
+        addButton = uiComponents.create(Button.class);
+        clearButton = uiComponents.create(Button.class);
+
+        //noinspection unchecked
+        lookupPickerField = uiComponents.create(LookupPickerField.class);
         lookupPickerField.addValueChangeListener(lookupSelectListener);
-        component = new CubaTokenList();
 
         setMultiSelect(false);
+    }
+
+    protected void initComponentsCaptions() {
+        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
+        clearButton.setCaption(messages.getMessage(TokenList.class, "actions.Clear"));
     }
 
     @Override
@@ -125,7 +155,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+        Preconditions.checkNotNullArgument(datasource, "Datasource is null");
 
         if (this.datasource != null) {
             throw new UnsupportedOperationException("Changing datasource is not supported by the TokenList component");
@@ -256,17 +286,17 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
     @Override
     @SuppressWarnings("unchecked")
-    public V getValue() {
+    public Collection<V> getValue() {
         if (datasource != null) {
             List<Object> items = new ArrayList(datasource.getItems());
-            return (V) items;
+            return (Collection<V>) items;
         } else
-            return (V) Collections.emptyList();
+            return Collections.emptyList();
     }
 
     @Override
-    public void setValue(Object value) {
-        throw new UnsupportedOperationException();
+    public void setValue(Collection<V> value) {
+        throw new UnsupportedOperationException("Setting value to TokenList is not supported");
     }
 
     @Override
@@ -614,7 +644,7 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
 
             throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'", captionProperty));
         } else {
-            return instance.getInstanceName();
+            return metadata.getTools().getInstanceName(instance);
         }
     }
 
@@ -626,425 +656,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
-    }
-
-    public class CubaTokenList extends CustomField {
-
-        protected VerticalLayout composition;
-
-        protected CubaScrollBoxLayout tokenContainer;
-
-        protected HorizontalLayout editor;
-
-        protected Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
-        protected Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
-
-        public CubaTokenList() {
-            setWidthUndefined();
-
-            composition = new VerticalLayout();
-            composition.setWidthUndefined();
-
-            tokenContainer = new CubaScrollBoxLayout();
-            tokenContainer.setStyleName("c-tokenlist-scrollbox");
-            tokenContainer.setWidthUndefined();
-            tokenContainer.setMargin(new MarginInfo(true, false, false, false));
-
-            composition.addComponent(tokenContainer);
-            setPrimaryStyleName("c-tokenlist");
-        }
-
-        @Override
-        public boolean isEmpty() {
-            if (datasource != null) {
-                return datasource.getItems().isEmpty();
-            }
-
-            return super.isEmpty();
-        }
-
-        @Override
-        public void setHeight(String height) {
-            super.setHeight(height);
-
-            if (getHeight() > 0) {
-                composition.setHeight("100%");
-                composition.setExpandRatio(tokenContainer, 1);
-                tokenContainer.setHeight("100%");
-            } else {
-                composition.setHeightUndefined();
-                composition.setExpandRatio(tokenContainer, 0);
-                tokenContainer.setHeightUndefined();
-            }
-        }
-
-        @Override
-        public void setWidth(float width, Unit unit) {
-            super.setWidth(width, unit);
-
-            if (composition != null && tokenContainer != null) {
-                if (getWidth() > 0) {
-                    composition.setWidth("100%");
-                    editor.setWidth("100%");
-
-                    if (!isSimple()) {
-                        lookupPickerField.setWidthFull();
-                        editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
-                    }
-                } else {
-                    composition.setWidthUndefined();
-                    editor.setWidthUndefined();
-
-                    if (!isSimple()) {
-                        lookupPickerField.setWidthAuto();
-                        editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
-                    }
-                }
-            }
-        }
-
-        @Override
-        protected Component initContent() {
-            return composition;
-        }
-
-        protected void initField() {
-            if (editor == null) {
-                editor = new HorizontalLayout();
-                editor.setSpacing(true);
-                editor.setWidthUndefined();
-            }
-            editor.removeAllComponents();
-
-            if (!isSimple()) {
-                lookupPickerField.setWidthAuto();
-                editor.addComponent(WebComponentsHelper.getComposition(lookupPickerField));
-            }
-            lookupPickerField.setVisible(!isSimple());
-
-            addButton.setVisible(isSimple());
-            addButton.setStyleName("add-btn");
-
-            Button wrappedButton = (Button) WebComponentsHelper.unwrap(addButton);
-            Collection listeners = wrappedButton.getListeners(Button.ClickEvent.class);
-            for (Object listener : listeners) {
-                wrappedButton.removeClickListener((Button.ClickListener) listener);
-            }
-
-            if (!isSimple()) {
-                wrappedButton.addClickListener(e -> {
-                    if (isEditable()) {
-                        addValueFromLookupPickerField();
-                    }
-                    wrappedButton.focus();
-                });
-            } else {
-                wrappedButton.addClickListener(e -> {
-                    WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-
-                    String windowAlias;
-                    if (getLookupScreen() != null) {
-                        windowAlias = getLookupScreen();
-                    } else if (getOptionsDatasource() != null) {
-                        windowAlias = windowConfig.getBrowseScreenId(getOptionsDatasource().getMetaClass());
-                    } else {
-                        windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
-                    }
-
-                    WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("windowOpener", WebTokenList.this.getFrame().getId());
-                    if (isMultiSelect()) {
-                        WindowParams.MULTI_SELECT.set(params, true);
-                        // for backward compatibility
-                        params.put("multiSelect", "true");
-                    }
-                    if (lookupScreenParams != null) {
-                        params.putAll(lookupScreenParams);
-                    }
-
-                    WindowManager wm = App.getInstance().getWindowManager();
-
-                    AbstractLookup lookup = (AbstractLookup) wm.openLookup(windowInfo, items -> {
-                        if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                            lookupPickerField.getOptionsDatasource().refresh();
-                        }
-
-                        if (isEditable()) {
-                            if (items == null || items.isEmpty()) return;
-
-                            handleLookupInternal(items);
-
-                            if (afterLookupSelectionHandler != null) {
-                                afterLookupSelectionHandler.onSelect(items);
-                            }
-                        }
-                        wrappedButton.focus();
-                    }, lookupOpenMode, params);
-
-                    if (afterLookupCloseHandler != null) {
-                        lookup.addCloseListener(actionId ->
-                                afterLookupCloseHandler.onClose(lookup, actionId)
-                        );
-                    }
-                });
-            }
-            editor.addComponent(wrappedButton);
-
-            clearButton.setVisible(clearEnabled);
-            clearButton.setStyleName("clear-btn");
-
-            Button wrappedClearButton = (Button) WebComponentsHelper.unwrap(clearButton);
-            wrappedClearButton.addClickListener(e -> {
-                for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
-                    doRemove(item);
-                }
-                wrappedClearButton.focus();
-            });
-            if (isSimple()) {
-                final HorizontalLayout clearLayout = new HorizontalLayout();
-                clearLayout.addComponent(wrappedClearButton);
-                editor.addComponent(clearLayout);
-                editor.setExpandRatio(clearLayout, 1);
-            } else {
-                editor.addComponent(wrappedClearButton);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void handleLookupInternal(Collection items) {
-            // get master entity and inverse attribute in case of nested datasource
-            Entity masterEntity = getMasterEntity(datasource);
-            MetaProperty inverseProp = getInverseProperty(datasource);
-            boolean initializeMasterReference = inverseProp != null && isInitializeMasterReference(inverseProp);
-
-            for (final Object item : items) {
-                if (itemChangeHandler != null) {
-                    itemChangeHandler.addItem(item);
-                } else {
-                    if (item instanceof Entity) {
-                        Entity entity = (Entity) item;
-                        if (datasource != null && !datasource.containsItem(entity.getId())) {
-                            // Initialize reference to master entity
-                            if (initializeMasterReference) {
-                                entity.setValue(inverseProp.getName(), masterEntity);
-                            }
-                            datasource.addItem(entity);
-                        }
-                    }
-                }
-            }
-        }
-
-        public void refreshComponent() {
-            if (inline) {
-                addStyleName("inline");
-            } else {
-                removeStyleName("inline");
-            }
-
-            if (editable) {
-                removeStyleName("readonly");
-            } else {
-                addStyleName("readonly");
-            }
-
-            if (editor != null) {
-                composition.removeComponent(editor);
-            }
-
-            initField();
-
-            if (isEditable()) {
-                if (position == Position.TOP) {
-                    composition.addComponentAsFirst(editor);
-                } else {
-                    composition.addComponent(editor);
-                }
-            }
-
-            tokenContainer.removeAllComponents();
-
-            if (datasource != null) {
-                List<Instance> usedItems = new ArrayList<>();
-
-                // New tokens
-                for (final Object itemId : datasource.getItemIds()) {
-                    final Instance item = datasource.getItem(itemId);
-                    CubaTokenListLabel f = itemComponents.get(item);
-                    if (f == null) {
-                        f = createToken();
-                        itemComponents.put(item, f);
-                        componentItems.put(f, item);
-                    }
-                    f.setEditable(isEditable());
-                    f.setText(instanceCaption(item));
-                    f.setWidthUndefined();
-
-                    setTokenStyle(f, itemId);
-                    tokenContainer.addComponent(f);
-                    usedItems.add(item);
-                }
-
-                // Remove obsolete items
-                for (Instance componentItem : new ArrayList<>(itemComponents.keySet())) {
-                    if (!usedItems.contains(componentItem)) {
-                        componentItems.remove(itemComponents.get(componentItem));
-                        itemComponents.remove(componentItem);
-                    }
-                }
-            }
-            if (getHeight() < 0) {
-                tokenContainer.setVisible(!isEmpty());
-            } else {
-                tokenContainer.setVisible(true);
-            }
-
-            updateEditorMargins();
-
-            updateSizes();
-        }
-
-        protected void updateEditorMargins() {
-            if (tokenContainer.isVisible()) {
-                if (position == Position.TOP) {
-                    editor.setMargin(new MarginInfo(false, false, true, false));
-                } else {
-                    editor.setMargin(new MarginInfo(true, false, false, false));
-                }
-            } else {
-                editor.setMargin(false);
-            }
-        }
-
-        protected void updateSizes() {
-            if (getHeight() > 0) {
-                composition.setHeight("100%");
-                composition.setExpandRatio(tokenContainer, 1);
-                tokenContainer.setHeight("100%");
-            } else {
-                composition.setHeightUndefined();
-                composition.setExpandRatio(tokenContainer, 0);
-                tokenContainer.setHeightUndefined();
-            }
-
-            if (getWidth() > 0) {
-                composition.setWidth("100%");
-                editor.setWidth("100%");
-
-                if (!isSimple()) {
-                    lookupPickerField.setWidthFull();
-                    editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
-                }
-            } else {
-                composition.setWidthUndefined();
-                editor.setWidthUndefined();
-
-                if (!isSimple()) {
-                    lookupPickerField.setWidthAuto();
-                    editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
-                }
-            }
-        }
-
-        public void refreshClickListeners(ItemClickListener listener) {
-            if (datasource != null && CollectionDatasource.State.VALID.equals(datasource.getState())) {
-                for (Object id : datasource.getItemIds()) {
-                    Instance item = datasource.getItem(id);
-                    final CubaTokenListLabel label = itemComponents.get(item);
-                    if (label != null) {
-                        if (listener != null) {
-                            label.setClickListener(new CubaTokenListLabel.ClickListener() {
-                                @Override
-                                public void onClick(CubaTokenListLabel source) {
-                                    doClick(label);
-                                }
-                            });
-                        } else {
-                            label.setClickListener(null);
-                        }
-                    }
-                }
-            }
-        }
-
-        protected CubaTokenListLabel createToken() {
-            final CubaTokenListLabel label = new CubaTokenListLabel();
-            label.setWidth("100%");
-            label.addListener(new CubaTokenListLabel.RemoveTokenListener() {
-                @Override
-                public void removeToken(final CubaTokenListLabel source) {
-                    if (isEditable()) {
-                        doRemove(source);
-                    }
-                }
-            });
-            return label;
-        }
-
-        protected void doRemove(CubaTokenListLabel source) {
-            Instance item = componentItems.get(source);
-            if (item != null) {
-                itemComponents.remove(item);
-                componentItems.remove(source);
-
-                if (itemChangeHandler != null) { //todo test
-                    itemChangeHandler.removeItem(item);
-                } else {
-                    if (datasource != null) {
-                        // get inverse attribute in case of nested datasource
-                        MetaProperty inverseProp = getInverseProperty(datasource);
-                        boolean initializeMasterReference = inverseProp != null
-                                && isInitializeMasterReference(inverseProp);
-
-                        if (initializeMasterReference) {
-                            item.setValue(inverseProp.getName(), null);
-                            datasource.excludeItem((Entity) item);
-                            return;
-                        } else {
-                            datasource.removeItem((Entity) item);
-                        }
-                    }
-                }
-            }
-        }
-
-        protected void doClick(CubaTokenListLabel source) {
-            if (itemClickListener != null) {
-                Instance item = componentItems.get(source);
-                if (item != null)
-                    itemClickListener.onClick(item);
-            }
-        }
-
-        @Override
-        public Class<?> getType() {
-            return List.class;
-        }
-
-        protected void setTokenStyle(CubaTokenListLabel label, Object itemId) {
-            if (tokenStyleGenerator != null) {
-                String styleName = tokenStyleGenerator.apply(itemId);
-                if (styleName != null && !styleName.equals("")) {
-                    label.setStyleName(styleName);
-                }
-            }
-        }
-
-        @Override
-        public void setBuffered(boolean buffered) {
-        }
-
-        @Override
-        public boolean isBuffered() {
-            return false;
-        }
-
-        @Override
-        public void removeAllValidators() {
-            getValidators().clear();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -1109,7 +720,6 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
     }
 
     protected boolean isInversePropertyAssignableFromDsClass(MetaProperty inverseProp) {
-        Metadata metadata = AppBeans.get(Metadata.NAME);
         ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
         Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
@@ -1130,6 +740,424 @@ public class WebTokenList<V> extends WebAbstractField<WebTokenList.CubaTokenList
             addButton.focus();
         } else {
             lookupPickerField.focus();
+        }
+    }
+
+    public static class CubaTokenList<T> extends CustomField<T> {
+
+        protected static final String TOKENLIST_STYLENAME = "c-tokenlist";
+        protected static final String TOKENLIST_SCROLLBOX_STYLENAME = "c-tokenlist-scrollbox";
+
+        protected static final String ADD_BTN_STYLENAME = "add-btn";
+        protected static final String CLEAR_BTN_STYLENAME = "clear-btn";
+        protected static final String INLINE_STYLENAME = "inline";
+        protected static final String READONLY_STYLENAME = "readonly";
+
+        protected WebTokenList owner;
+
+        protected VerticalLayout composition;
+        protected CubaScrollBoxLayout tokenContainer;
+        protected HorizontalLayout editor;
+
+        protected Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
+        protected Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
+
+        protected Subscription addButtonSub;
+
+        public CubaTokenList(WebTokenList owner) {
+            this.owner = owner;
+
+            setWidthUndefined();
+
+            composition = new VerticalLayout();
+            composition.setWidthUndefined();
+
+            tokenContainer = new CubaScrollBoxLayout();
+            tokenContainer.setStyleName(TOKENLIST_SCROLLBOX_STYLENAME);
+            tokenContainer.setWidthUndefined();
+            tokenContainer.setMargin(new MarginInfo(true, false, false, false));
+
+            composition.addComponent(tokenContainer);
+            setPrimaryStyleName(TOKENLIST_STYLENAME);
+        }
+
+        @Override
+        public T getValue() {
+            // do nothing
+            return null;
+        }
+
+        @Override
+        protected void doSetValue(T value) {
+            // do nothing
+        }
+
+        @Override
+        public boolean isEmpty() {
+            if (owner.datasource != null) {
+                return owner.datasource.getItems().isEmpty();
+            }
+            return super.isEmpty();
+        }
+
+        @Override
+        public void setHeight(String height) {
+            super.setHeight(height);
+
+            if (getHeight() > 0) {
+                composition.setHeight("100%");
+                composition.setExpandRatio(tokenContainer, 1);
+                tokenContainer.setHeight("100%");
+            } else {
+                composition.setHeightUndefined();
+                composition.setExpandRatio(tokenContainer, 0);
+                tokenContainer.setHeightUndefined();
+            }
+        }
+
+        @Override
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
+
+            if (composition != null && tokenContainer != null) {
+                if (getWidth() > 0) {
+                    composition.setWidth("100%");
+                    editor.setWidth("100%");
+
+                    if (!owner.isSimple()) {
+                        owner.lookupPickerField.setWidthFull();
+                        editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 1);
+                    }
+                } else {
+                    composition.setWidthUndefined();
+                    editor.setWidthUndefined();
+
+                    if (!owner.isSimple()) {
+                        owner.lookupPickerField.setWidthAuto();
+                        editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 0);
+                    }
+                }
+            }
+        }
+
+        @Override
+        protected Component initContent() {
+            return composition;
+        }
+
+        protected void initField() {
+            if (editor == null) {
+                editor = new HorizontalLayout();
+                editor.setSpacing(true);
+                editor.setWidthUndefined();
+            }
+            editor.removeAllComponents();
+
+            if (!owner.isSimple()) {
+                owner.lookupPickerField.setWidthAuto();
+                editor.addComponent(WebComponentsHelper.getComposition(owner.lookupPickerField));
+            }
+            owner.lookupPickerField.setVisible(!owner.isSimple());
+
+            owner.addButton.setVisible(owner.isSimple());
+            owner.addButton.setStyleName(ADD_BTN_STYLENAME);
+
+            if (addButtonSub != null) {
+                addButtonSub.remove();
+            }
+
+            if (!owner.isSimple()) {
+                addButtonSub = owner.addButton.addClickListener(e -> {
+                    if (owner.isEditable()) {
+                        owner.addValueFromLookupPickerField();
+                    }
+                    owner.addButton.focus();
+                });
+            } else {
+                addButtonSub = owner.addButton.addClickListener(e -> {
+                    String windowAlias;
+                    if (owner.getLookupScreen() != null) {
+                        windowAlias = owner.getLookupScreen();
+                    } else if (owner.getOptionsDatasource() != null) {
+                        windowAlias = owner.windowConfig.getBrowseScreenId(owner.getOptionsDatasource().getMetaClass());
+                    } else {
+                        windowAlias = owner.windowConfig.getBrowseScreenId(owner.getDatasource().getMetaClass());
+                    }
+
+                    WindowInfo windowInfo = owner.windowConfig.getWindowInfo(windowAlias);
+
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("windowOpener", owner.getFrame().getId());
+                    if (owner.isMultiSelect()) {
+                        WindowParams.MULTI_SELECT.set(params, true);
+                        // for backward compatibility
+                        params.put("multiSelect", "true");
+                    }
+                    if (owner.lookupScreenParams != null) {
+                        //noinspection unchecked
+                        params.putAll(owner.lookupScreenParams);
+                    }
+
+                    WindowManager wm = App.getInstance().getWindowManager();
+
+                    AbstractLookup lookupWindow = (AbstractLookup) wm.openLookup(windowInfo, items -> {
+                        if (owner.lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                            owner.lookupPickerField.getOptionsDatasource().refresh();
+                        }
+
+                        if (owner.isEditable()) {
+                            if (items == null || items.isEmpty()) return;
+
+                            handleLookupInternal(items);
+
+                            if (owner.afterLookupSelectionHandler != null) {
+                                owner.afterLookupSelectionHandler.onSelect(items);
+                            }
+                        }
+                        owner.addButton.focus();
+                    }, owner.lookupOpenMode, params);
+
+                    if (owner.afterLookupCloseHandler != null) {
+                        lookupWindow.addAfterCloseListener(event -> {
+                            String actionId = ((StandardCloseAction) event.getCloseAction()).getActionId();
+                            owner.afterLookupCloseHandler.onClose(lookupWindow, actionId);
+                        });
+                    }
+                });
+            }
+            editor.addComponent(owner.addButton.unwrap(com.vaadin.ui.Button.class));
+
+            owner.clearButton.setVisible(owner.clearEnabled);
+            owner.clearButton.setStyleName(CLEAR_BTN_STYLENAME);
+            owner.clearButton.addClickListener(e -> {
+                for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
+                    doRemove(item);
+                }
+                owner.clearButton.focus();
+            });
+
+            com.vaadin.ui.Button vClearButton = owner.clearButton.unwrap(com.vaadin.ui.Button.class);
+            if (owner.isSimple()) {
+                final HorizontalLayout clearLayout = new HorizontalLayout();
+                clearLayout.addComponent(vClearButton);
+                editor.addComponent(clearLayout);
+                editor.setExpandRatio(clearLayout, 1);
+            } else {
+                editor.addComponent(vClearButton);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        protected void handleLookupInternal(Collection items) {
+            // get master entity and inverse attribute in case of nested datasource
+            Entity masterEntity = owner.getMasterEntity(owner.datasource);
+            MetaProperty inverseProp = owner.getInverseProperty(owner.datasource);
+            boolean initializeMasterReference = inverseProp != null && owner.isInitializeMasterReference(inverseProp);
+
+            for (final Object item : items) {
+                if (owner.itemChangeHandler != null) {
+                    owner.itemChangeHandler.addItem(item);
+                } else {
+                    if (item instanceof Entity) {
+                        Entity entity = (Entity) item;
+                        if (owner.datasource != null && !owner.datasource.containsItem(entity.getId())) {
+                            // Initialize reference to master entity
+                            if (initializeMasterReference) {
+                                entity.setValue(inverseProp.getName(), masterEntity);
+                            }
+                            owner.datasource.addItem(entity);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void refreshComponent() {
+            if (owner.inline) {
+                addStyleName(INLINE_STYLENAME);
+            } else {
+                removeStyleName(INLINE_STYLENAME);
+            }
+
+            if (owner.editable) {
+                removeStyleName(READONLY_STYLENAME);
+            } else {
+                addStyleName(READONLY_STYLENAME);
+            }
+
+            if (editor != null) {
+                composition.removeComponent(editor);
+            }
+
+            initField();
+
+            if (owner.isEditable()) {
+                if (owner.position == Position.TOP) {
+                    composition.addComponentAsFirst(editor);
+                } else {
+                    composition.addComponent(editor);
+                }
+            }
+
+            tokenContainer.removeAllComponents();
+
+            if (owner.datasource != null) {
+                List<Instance> usedItems = new ArrayList<>();
+
+                // New tokens
+                for (final Object itemId : owner.datasource.getItemIds()) {
+                    //noinspection unchecked
+                    final Instance item = owner.datasource.getItem(itemId);
+                    CubaTokenListLabel f = itemComponents.get(item);
+                    if (f == null) {
+                        f = createToken();
+                        itemComponents.put(item, f);
+                        componentItems.put(f, item);
+                    }
+                    f.setEditable(owner.isEditable());
+                    f.setText(owner.instanceCaption(item));
+                    f.setWidthUndefined();
+
+                    setTokenStyle(f, itemId);
+                    tokenContainer.addComponent(f);
+                    usedItems.add(item);
+                }
+
+                // Remove obsolete items
+                for (Instance componentItem : new ArrayList<>(itemComponents.keySet())) {
+                    if (!usedItems.contains(componentItem)) {
+                        componentItems.remove(itemComponents.get(componentItem));
+                        itemComponents.remove(componentItem);
+                    }
+                }
+            }
+
+            if (getHeight() < 0) {
+                tokenContainer.setVisible(!isEmpty());
+            } else {
+                tokenContainer.setVisible(true);
+            }
+
+            updateEditorMargins();
+
+            updateSizes();
+        }
+
+        protected void updateEditorMargins() {
+            if (tokenContainer.isVisible()) {
+                if (owner.position == Position.TOP) {
+                    editor.setMargin(new MarginInfo(false, false, true, false));
+                } else {
+                    editor.setMargin(new MarginInfo(true, false, false, false));
+                }
+            } else {
+                editor.setMargin(false);
+            }
+        }
+
+        protected void updateSizes() {
+            if (getHeight() > 0) {
+                composition.setHeight("100%");
+                composition.setExpandRatio(tokenContainer, 1);
+                tokenContainer.setHeight("100%");
+            } else {
+                composition.setHeightUndefined();
+                composition.setExpandRatio(tokenContainer, 0);
+                tokenContainer.setHeightUndefined();
+            }
+
+            if (getWidth() > 0) {
+                composition.setWidth("100%");
+                editor.setWidth("100%");
+
+                if (!owner.isSimple()) {
+                    owner.lookupPickerField.setWidthFull();
+                    editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 1);
+                }
+            } else {
+                composition.setWidthUndefined();
+                editor.setWidthUndefined();
+
+                if (!owner.isSimple()) {
+                    owner.lookupPickerField.setWidthAuto();
+                    editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 0);
+                }
+            }
+        }
+
+        public void refreshClickListeners(ItemClickListener listener) {
+            if (owner.datasource != null && CollectionDatasource.State.VALID.equals(owner.datasource.getState())) {
+                for (Object id : owner.datasource.getItemIds()) {
+                    //noinspection unchecked
+                    Instance item = owner.datasource.getItem(id);
+                    final CubaTokenListLabel label = itemComponents.get(item);
+                    if (label != null) {
+                        if (listener != null) {
+                            label.setClickListener(source ->
+                                    doClick(label));
+                        } else {
+                            label.setClickListener(null);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected CubaTokenListLabel createToken() {
+            final CubaTokenListLabel label = new CubaTokenListLabel();
+            label.setWidth("100%");
+            label.addListener((CubaTokenListLabel.RemoveTokenListener) source -> {
+                if (owner.isEditable()) {
+                    doRemove(source);
+                }
+            });
+            return label;
+        }
+
+        @SuppressWarnings("unchecked")
+        protected void doRemove(CubaTokenListLabel source) {
+            Instance item = componentItems.get(source);
+            if (item != null) {
+                itemComponents.remove(item);
+                componentItems.remove(source);
+
+                if (owner.itemChangeHandler != null) {
+                    owner.itemChangeHandler.removeItem(item);
+                } else {
+                    if (owner.datasource != null) {
+                        // get inverse attribute in case of nested datasource
+                        MetaProperty inverseProp = owner.getInverseProperty(owner.datasource);
+                        boolean initializeMasterReference = inverseProp != null
+                                && owner.isInitializeMasterReference(inverseProp);
+
+                        if (initializeMasterReference) {
+                            item.setValue(inverseProp.getName(), null);
+                            owner.datasource.excludeItem((Entity) item);
+                        } else {
+                            owner.datasource.removeItem((Entity) item);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void doClick(CubaTokenListLabel source) {
+            if (owner.itemClickListener != null) {
+                Instance item = componentItems.get(source);
+                if (item != null) {
+                    owner.itemClickListener.onClick(item);
+                }
+            }
+        }
+
+        protected void setTokenStyle(CubaTokenListLabel label, Object itemId) {
+            if (owner.tokenStyleGenerator != null) {
+                //noinspection unchecked
+                String styleName = ((Function<Object, String>) owner.getTokenStyleGenerator()).apply(itemId);
+                if (styleName != null && !styleName.equals("")) {
+                    label.setStyleName(styleName);
+                }
+            }
         }
     }
 }
