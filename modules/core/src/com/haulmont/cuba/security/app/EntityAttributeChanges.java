@@ -32,13 +32,10 @@ import java.util.stream.Collectors;
 
 /**
  * Accumulates changes in entity attributes.
- * Entity changes for entity is created by:
- * <pre>
- *  EntityAttributeChanges changes = new EntityAttributeChanges();
- *  changes.addChanges(entity)
- * </pre>
- * System allows you to add changes for attributes manually by calling
- * {@link EntityAttributeChanges#addChange(String, Object)}
+ * The {@code #addChanges(Entity entity)} method is used by EntityLog when registering
+ * changes for the whole entity automatically.
+ * You can add changes for some attributes by calling
+ * {@link EntityAttributeChanges#addChange(String, Object)} and calling EntityLog programmatically.
  */
 public class EntityAttributeChanges {
 
@@ -46,7 +43,7 @@ public class EntityAttributeChanges {
     protected Map<String, EntityAttributeChanges> embeddedChanges = new HashMap<>();
 
     /**
-     * Add change for the entity attribute
+     * Add change for the given entity attribute.
      *
      * @param attributeName - attribute name
      * @param oldValue      - old attribute value
@@ -56,7 +53,7 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * Add changes for the embedded entity attribute
+     * Adds changes for the embedded entity attribute.
      *
      * @param attributeName - attribute name
      * @param changes       - {@link EntityAttributeChanges} changes for embedded object
@@ -66,7 +63,7 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * Accumulates changes for entity. Stores changed attribute name and old value
+     * Accumulates changes for the entity. Stores changed attribute names and old values.
      */
     public void addChanges(Entity entity) {
         if (!(entity instanceof ChangeTracker))
@@ -82,14 +79,14 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * @return changed attributes names for current entity
+     * @return changed attributes names for current entity.
      */
     public Set<String> getOwnAttributes() {
         return changes.stream().map(change -> change.name).collect(Collectors.toSet());
     }
 
     /**
-     * @return changed attributes names for current entity and all embedded entities
+     * @return changed attributes names for current entity and all embedded entities.
      */
     public Set<String> getAttributes() {
         Set<String> attributes = new HashSet<>();
@@ -107,14 +104,14 @@ public class EntityAttributeChanges {
     }
 
     /**
-     * @return changes {@link EntityAttributeChanges} for embedded attribute
+     * @return returns {@link EntityAttributeChanges} for an embedded attribute.
      */
     public EntityAttributeChanges getEmbeddedChanges(String attributeName) {
         return embeddedChanges.get(attributeName);
     }
 
     /**
-     * @return true if attribute is changed
+     * @return true if attribute is changed.
      */
     public boolean isChanged(String attributeName) {
         for (Change change : changes) {
@@ -139,7 +136,7 @@ public class EntityAttributeChanges {
 
     /**
      * @return old value for changed attribute.
-     * Includes changed embedded attributes
+     * Includes changed embedded attributes.
      */
     @Nullable
     public <T> T getOldValueEx(String attributePath) {
