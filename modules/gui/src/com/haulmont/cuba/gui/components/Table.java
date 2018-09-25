@@ -708,6 +708,48 @@ public interface Table<E extends Entity>
         DESCENDING
     }
 
+    /**
+     * Registers a new selection listener
+     *
+     * @param listener the listener to register
+     */
+    Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener);
+
+    /**
+     * An event that specifies what in a selection has changed, and where the
+     * selection took place.
+     */
+    class SelectionEvent<E extends Entity> extends EventObject {
+        protected final List<E> selected;
+
+        /**
+         * Constructor for a selection event.
+         *
+         * @param component the Table from which this event originates
+         * @param selected  items that are currently selected
+         */
+        public SelectionEvent(Table<E> component,  List<E> selected) {
+            super(component);
+
+            this.selected = selected;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Table<E> getSource() {
+            return (Table<E>) super.getSource();
+        }
+
+        /**
+         * A {@link List} of all the items that are currently selected.
+         *
+         * @return a List of the items that are currently selected
+         */
+        public List<E> getSelected() {
+            return selected;
+        }
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasFormatter {

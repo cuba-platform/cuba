@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
@@ -992,7 +993,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
-        // todo implement selection change events
+
+        fireSelectionEvent(event);
+    }
+
+    protected void fireSelectionEvent(@SuppressWarnings("unused") Property.ValueChangeEvent e) {
+        List<E> selectedItems = ImmutableList.copyOf(getSelected());
+
+        SelectionEvent<E> event =
+                new SelectionEvent<>(this, selectedItems);
+        publish(SelectionEvent.class, event);
     }
 
     @SuppressWarnings("unchecked")
@@ -2500,6 +2510,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void removeClickListener(String columnId) {
         component.removeClickListener(getColumn(columnId).getId());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        return getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
     }
 
     @Override
