@@ -2454,6 +2454,7 @@
                 <xs:group ref="layoutOrComponent"/>
 
                 <xs:attributeGroup ref="hasSpacingMargin"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="stylename" type="layoutStylename"/>
                 <xs:attribute name="orientation" type="orientation"/>
