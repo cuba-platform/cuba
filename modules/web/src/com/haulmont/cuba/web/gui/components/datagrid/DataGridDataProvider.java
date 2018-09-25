@@ -74,7 +74,7 @@ public class DataGridDataProvider<T> extends AbstractDataProvider<T, Serializabl
 
     @Override
     public int size(Query<T, SerializablePredicate<T>> query) {
-        // TODO: gg, query?
+        // FIXME: gg, query?
         if (dataGridSource.getState() == BindingState.INACTIVE) {
             return 0;
         }

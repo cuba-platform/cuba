@@ -17,214 +17,130 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.google.common.base.Preconditions;
-import com.haulmont.cuba.web.widgets.client.tree.CubaTreeClientRpc;
-import com.haulmont.cuba.web.widgets.client.tree.CubaTreeState;
+import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
+import com.vaadin.data.SelectionModel;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.event.Action;
-import com.vaadin.event.ActionManager;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.server.Resource;
-import com.vaadin.shared.Registration;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
-import com.vaadin.ui.Layout;
-import com.vaadin.v7.ui.Tree;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.TreeGrid;
+import com.vaadin.ui.components.grid.GridSelectionModel;
+import com.vaadin.ui.components.grid.MultiSelectionModel;
+import com.vaadin.ui.components.grid.NoSelectionModel;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class CubaTree extends Tree implements HasComponents {
-
-    protected Runnable beforePaintListener;
-
-    public CubaTree() {
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
-    }
-
-    /**
-     * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
-     */
-    protected ActionManager shortcutActionManager;
-    protected ItemIconProvider itemIconProvider;
+public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
 
     @Override
-    protected CubaTreeState getState() {
-        return (CubaTreeState) super.getState();
+    protected TreeGrid<T> createTreeGrid() {
+        return new CubaTreeGrid<>();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public CubaTreeGrid<T> getCompositionRoot() {
+        return (CubaTreeGrid<T>) super.getCompositionRoot();
+    }
+
+    public void setGridSelectionModel(GridSelectionModel<T> model) {
+        getCompositionRoot().setGridSelectionModel(model);
     }
 
     @Override
-    protected CubaTreeState getState(boolean markAsDirty) {
-        return (CubaTreeState) super.getState(markAsDirty);
-    }
-
-    public void setContextMenuPopup(Layout contextMenu) {
-        getState().contextMenu = contextMenu;
-    }
-
-    public void hideContextMenuPopup() {
-        getRpcProxy(CubaTreeClientRpc.class).hideContextMenuPopup();
-    }
-
-    public void setDoubleClickMode(boolean doubleClickMode) {
-        if (getState(false).doubleClickMode != doubleClickMode) {
-            getState().doubleClickMode = doubleClickMode;
+    protected Grid.SelectionMode getSelectionMode() {
+        SelectionModel<T> selectionModel = getSelectionModel();
+        Grid.SelectionMode mode = null;
+        if (selectionModel instanceof SingleSelectionModel) {
+            mode = Grid.SelectionMode.SINGLE;
+        } else if (selectionModel instanceof MultiSelectionModel) {
+            mode = Grid.SelectionMode.MULTI;
+        } else if (selectionModel instanceof NoSelectionModel) {
+            mode = Grid.SelectionMode.NONE;
         }
-    }
-
-    public boolean isDoubleClickMode() {
-        return getState(false).doubleClickMode;
-    }
-
-    public void setNodeCaptionsAsHtml(boolean nodeCaptionsAsHtml) {
-        if (getState(false).nodeCaptionsAsHtml != nodeCaptionsAsHtml) {
-            getState().nodeCaptionsAsHtml = nodeCaptionsAsHtml;
-        }
-    }
-
-    public boolean isNodeCaptionsAsHtml() {
-        return getState(false).nodeCaptionsAsHtml;
+        return mode;
     }
 
     @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-
-        if (shortcutActionManager != null) {
-            shortcutActionManager.handleActions(variables, this);
+    public void setDataProvider(DataProvider<T, ?> dataProvider) {
+        if (!(dataProvider instanceof EnhancedTreeDataProvider)) {
+            throw new IllegalArgumentException("DataProvider must implement " +
+                    "com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider");
         }
+
+        super.setDataProvider(dataProvider);
     }
 
-    @Override
-    public Registration addShortcutListener(ShortcutListener shortcut) {
-        if (shortcutActionManager == null) {
-            shortcutActionManager = new ShortcutActionManager(this);
-        }
-
-        shortcutActionManager.addAction(shortcut);
-
-        return () -> shortcutActionManager.removeAction(shortcut);
+    public Collection<T> getChildren(T item) {
+        return getDataProvider().fetchChildren(new HierarchicalQuery<>(null, item))
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void removeShortcutListener(ShortcutListener shortcut) {
-        if (shortcutActionManager != null) {
-            shortcutActionManager.removeAction(shortcut);
-        }
+    public boolean hasChildren(T item) {
+        return getDataProvider().hasChildren(item);
     }
 
-    @Override
-    protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
-        super.paintActions(target, actionSet);
-
-        if (shortcutActionManager != null) {
-            shortcutActionManager.paintActions(null, target);
-        }
+    @SuppressWarnings("unchecked")
+    public Stream<T> getItems() {
+        return ((EnhancedTreeDataProvider<T>) getDataProvider()).getItems();
     }
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        if (beforePaintListener != null) {
-            beforePaintListener.run();
-        }
-
-        if (isNodeCaptionsAsHtml()) {
-            target.addAttribute("nodeCaptionsAsHtml", true);
-        }
-        super.paintContent(target);
-    }
-
-    @Override
-    public Iterator<Component> iterator() {
-        if (getState(false).contextMenu != null) {
-            return Collections.singleton((Component)getState(false).contextMenu).iterator();
-        }
-        return Collections.emptyIterator();
+    @SuppressWarnings("unchecked")
+    protected T getParentItem(T item) {
+        return ((EnhancedTreeDataProvider<T>) getDataProvider()).getParent(item);
     }
 
     public void expandAll() {
-        for (Object id : getItemIds()) {
-            expandItemRecursively(id);
-        }
+        expand(getItems().collect(Collectors.toList()));
     }
 
-    public void expandItemRecursively(Object id) {
-        expandItem(id);
-        if (hasChildren(id)) {
-            for (Object childId: getChildren(id)) {
-                expandItemRecursively(childId);
-            }
-        }
-    }
+    public void expandItemWithParents(T item) {
+        List<T> itemsToExpand = new ArrayList<>();
 
-    public void expandItemWithParents(Object id) {
-        Object currentId = id;
-        while (currentId != null) {
-            expandItem(currentId);
-
-            currentId = getParent(currentId);
+        T current = item;
+        while (current != null) {
+            itemsToExpand.add(current);
+            current = getParentItem(current);
         }
-    }
 
-    public void collapseItemRecursively(Object id) {
-        if (hasChildren(id)) {
-            for (Object childId: getChildren(id)) {
-                collapseItemRecursively(childId);
-            }
-        }
-        collapseItem(id);
+        expand(itemsToExpand);
     }
 
     public void collapseAll() {
-        for (Object id : getItemIds()) {
-            collapseItemRecursively(id);
-        }
+        collapse(getItems().collect(Collectors.toList()));
+    }
+
+    public void collapseItemWithChildren(T item) {
+        Collection<T> itemsToCollapse = getItemWithChildren(item)
+                .collect(Collectors.toList());
+        collapse(itemsToCollapse);
+    }
+
+    protected Stream<T> getItemWithChildren(T item) {
+        return Stream.concat(Stream.of(item), hasChildren(item)
+                ? getChildren(item).stream().flatMap(this::getItemWithChildren)
+                : Stream.empty());
     }
 
     public void expandUpTo(int level) {
         Preconditions.checkArgument(level > 0, "level should be greater than 0");
 
-        List<Object> currentLevelItemIds = new ArrayList<>(getItemIds());
-
-        int i = 0;
-        while (i < level && !currentLevelItemIds.isEmpty()) {
-            for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
-                expandItem(itemId);
-                currentLevelItemIds.remove(itemId);
-                currentLevelItemIds.addAll(getChildren(itemId));
-            }
-            i++;
-        }
+        Collection<T> rootItems = getChildren(null);
+        expandRecursively(rootItems, level - 1);
     }
 
-    @Override
-    public Resource getItemIcon(Object itemId) {
-        if (itemIconProvider != null) {
-            Resource itemIcon = itemIconProvider.getItemIcon(itemId);
-            if (itemIcon != null) {
-                return itemIcon;
-            }
-        }
-
-        return super.getItemIcon(itemId);
+    public void deselectAll() {
+        getSelectionModel().deselectAll();
     }
 
-    public ItemIconProvider getItemIconProvider() {
-        return itemIconProvider;
-    }
-
-    public void setItemIconProvider(ItemIconProvider itemIconProvider) {
-        if (this.itemIconProvider != itemIconProvider) {
-            this.itemIconProvider = itemIconProvider;
-            markAsDirty();
-        }
-    }
-
-    public interface ItemIconProvider {
-        Resource getItemIcon(Object itemId);
-    }
-
-    public void setBeforePaintListener(Runnable beforePaintListener) {
-        this.beforePaintListener = beforePaintListener;
+    public void repaint() {
+        markAsDirtyRecursive();
+        getCompositionRoot().repaint();
     }
 }

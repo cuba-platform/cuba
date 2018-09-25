@@ -16,79 +16,46 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.WidgetsTree;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
+import com.haulmont.cuba.web.widgets.CubaTree;
 import com.haulmont.cuba.web.widgets.CubaWidgetsTree;
-import com.vaadin.v7.ui.Tree;
 
-public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidgetsTree, E> implements WidgetsTree<E> {
+import java.util.function.Consumer;
 
-    protected String hierarchyProperty;
+public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidgetsTree<E>, E> implements WidgetsTree<E> {
 
     public WebWidgetsTree() {
-        component = new CubaWidgetsTree();
-        component.setSelectable(false);
-        component.setBeforePaintListener(() -> {
+    }
+
+    @Override
+    protected CubaWidgetsTree<E> createComponent() {
+        return new CubaWidgetsTree<>();
+    }
+
+    @Override
+    public void initComponent(CubaTree<E> component) {
+        // TODO: gg, implement
+        /*component.setBeforePaintListener(() -> {
             Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
             if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {
                 //noinspection unchecked
                 ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
             }
-        });
+        });*/
 
-        initComponent(component);
+        super.initComponent(component);
+
+        setSelectionMode(SelectionMode.NONE);
     }
 
     @Override
-    protected ContextMenuButton createContextMenuButton() {
-        //noinspection IncorrectCreateGuiComponent
-        return new ContextMenuButton(showIconsForPopupMenuActions) {
-            @Override
-            protected Component getActionEventTarget() {
-                return WebWidgetsTree.this;
-            }
-
-            @Override
-            protected void beforeActionPerformed() {
-                WebWidgetsTree.this.component.hideContextMenuPopup();
-            }
-        };
-    }
-
-    @Override
-    public String getHierarchyProperty() {
-        return hierarchyProperty;
-    }
-
-    @Override
-    public void setDatasource(HierarchicalDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
-
-        if (this.datasource != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the WidgetsTree component");
-        }
-
-        this.datasource = datasource;
-        this.hierarchyProperty = datasource.getHierarchyPropertyName();
-        collectionDsListenersWrapper = createCollectionDsListenersWrapper();
-
-        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource, collectionDsListenersWrapper);
-        component.setContainerDataSource(wrapper);
-
-        for (Action action : getActions()) {
-            action.refreshState();
-        }
-    }
-
-    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
-        return new CollectionDsListenersWrapper();
+    public void setSelectionMode(SelectionMode selectionMode) {
+        // TODO: gg, check if we need this
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -103,14 +70,15 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
 
     @Override
     public void setWidgetBuilder(final WidgetBuilder widgetBuilder) {
-        if (widgetBuilder != null) {
+        // TODO: gg, implement
+        /*if (widgetBuilder != null) {
             component.setWidgetBuilder((CubaWidgetsTree.WidgetBuilder) (source, itemId, leaf) -> {
                 Component widget = widgetBuilder.build((HierarchicalDatasource) datasource, itemId, leaf);
                 return WebComponentsHelper.getComposition(widget);
             });
         } else {
             component.setWidgetBuilder(null);
-        }
+        }*/
     }
 
     @Override
@@ -134,7 +102,13 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
     }
 
     @Override
-    public void focus() {
-        component.focus();
+    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        //do nothing
+        return null;
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
+        //do nothing
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,23 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.widgets.client.tree;
+package com.haulmont.cuba.web.gui.components.tree;
 
-import com.vaadin.shared.Connector;
-import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.v7.shared.ui.tree.TreeState;
+import com.haulmont.cuba.gui.components.data.TreeSource;
 
-public class CubaTreeState extends TreeState {
+public interface TreeSourceEventsDelegate<I> {
 
-    @NoLayout
-    public boolean doubleClickMode = false;
+    void treeSourceItemSetChanged(TreeSource.ItemSetChangeEvent<I> event);
 
-    @NoLayout
-    public boolean nodeCaptionsAsHtml = false;
+    void treeSourcePropertyValueChanged(TreeSource.ValueChangeEvent<I> event);
 
-    @NoLayout
-    public Connector contextMenu;
+    void treeSourceStateChanged(TreeSource.StateChangeEvent<I> event);
+
+    void treeSourceSelectedItemChanged(TreeSource.SelectedItemChangeEvent<I> event);
 }

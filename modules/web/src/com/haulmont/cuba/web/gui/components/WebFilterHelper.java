@@ -75,8 +75,8 @@ public class WebFilterHelper implements FilterHelper {
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
         RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
         FoldersPane foldersPane = null;
-        if (topLevelWindow instanceof Window.HasFoldersPane) {
-            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
+        if (topLevelWindow.getFrameOwner() instanceof Window.HasFoldersPane) {
+            foldersPane = ((Window.HasFoldersPane) topLevelWindow.getFrameOwner()).getFoldersPane();
         }
 
         if (foldersPane == null)

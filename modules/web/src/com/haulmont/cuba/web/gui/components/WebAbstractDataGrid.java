@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
 import com.haulmont.cuba.gui.components.data.EntityDataGridSource;
@@ -94,7 +95,7 @@ import java.util.stream.Collectors;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
-public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, E extends Entity>
+public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E>, E extends Entity>
         extends WebAbstractComponent<T>
         implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier,
         DataGridSourceEventsDelegate<E>, HasInnerComponents, InitializingBean {
@@ -370,9 +371,9 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     protected ShortcutListenerDelegate createEnterShortcutListener() {
         return new ShortcutListenerDelegate("dataGridEnter", KeyCode.ENTER, null)
                 .withHandler((sender, target) -> {
-                    T dataGridComponent = this.component;
+                    T dataGridComponent = WebAbstractDataGrid.this.component;
 
-                    if (target == this.component) {
+                    if (target == dataGridComponent) {
                         if (WebAbstractDataGrid.this.isEditorEnabled()) {
                             // Prevent custom actions on Enter if DataGrid editor is enabled
                             // since it's the default shortcut to open editor
@@ -557,19 +558,13 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void setLookupSelectHandler(Runnable selectHandler) {
-        setEnterPressAction(new AbstractAction(Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID) {
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                selectHandler.run();
-            }
-        });
+        Consumer<Action.ActionPerformedEvent> actionHandler = event -> selectHandler.run();
 
-        setItemClickAction(new AbstractAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID) {
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                selectHandler.run();
-            }
-        });
+        setEnterPressAction(new BaseAction(Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID)
+                .withHandler(actionHandler));
+
+        setItemClickAction(new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
+                .withHandler(actionHandler));
     }
 
     @Override
@@ -593,14 +588,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
     protected RowStyleGeneratorAdapter<E> createRowStyleGenerator() {
         return new RowStyleGeneratorAdapter<>();
     }
-
-//    protected CellStyleGeneratorAdapter createCellStyleGenerator() {
-//        return new CellStyleGeneratorAdapter();
-//    }
-
-    /*protected CubaGridEditorFieldFactory createEditorFieldFactory() {
-        return new WebDataGridEditorFieldFactory(this);
-    }*/
 
     @Override
     public List<Column<E>> getColumns() {
@@ -1541,7 +1528,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid, 
 
     @Override
     public void setSelected(@Nullable E item) {
-        if (getSelectionMode().equals(SelectionMode.NONE)) {
+        if (SelectionMode.NONE.equals(getSelectionMode())) {
             return;
         }
 

@@ -17,261 +17,71 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.LookupComponent;
-import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
-import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.EntityTreeSource;
+import com.haulmont.cuba.gui.components.data.TreeSource;
 import com.haulmont.cuba.web.widgets.CubaTree;
-import com.haulmont.cuba.web.widgets.CubaUI;
-import com.vaadin.v7.event.ItemClickEvent;
-import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.Tree;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
+import com.vaadin.event.selection.SelectionEvent;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
-        implements LookupComponent.LookupSelectionChangeNotifier {
-
-    protected String hierarchyProperty;
-    protected CaptionMode captionMode = CaptionMode.ITEM;
-    protected String captionProperty;
-
-    protected Action doubleClickAction;
-    protected ItemClickEvent.ItemClickListener itemClickListener;
+public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree<E>, E> {
 
     public WebTree() {
-        component = new CubaTree();
-        component.setMultiSelect(false);
-        component.setBeforePaintListener(() -> {
-            Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
-            if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {
-                //noinspection unchecked
-                ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
-            }
-        });
-
-        component.setItemCaptionMode(ItemCaptionMode.ITEM);
-
-        contextMenuPopup.setParent(component);
-        component.setContextMenuPopup(contextMenuPopup);
-
-        component.addValueChangeListener(event -> {
-            if (datasource != null) {
-                Set<E> selected = getSelected();
-                if (selected.isEmpty()) {
-                    Entity dsItem = datasource.getItemIfValid();
-                    datasource.setItem(null);
-
-                    if (dsItem == null) {
-                        // in this case item change event will not be generated
-                        refreshActionsState();
-                    }
-                } else {
-                    // reset selection and select new item
-                    if (isMultiSelect()) {
-                        datasource.setItem(null);
-                    }
-                    Entity newItem = selected.iterator().next();
-                    Entity dsItem = datasource.getItemIfValid();
-                    datasource.setItem(newItem);
-
-                    if (Objects.equals(dsItem, newItem)) {
-                        // in this case item change event will not be generated
-                        refreshActionsState();
-                    }
-                }
-            }
-
-            LookupSelectionChangeEvent lvChangeEvent = new LookupSelectionChangeEvent(this);
-            publish(LookupSelectionChangeEvent.class, lvChangeEvent);
-        });
-
-        initComponent(component);
-    }
-
-    protected void refreshActionsState() {
-        for (Action action : getActions()) {
-            action.refreshState();
-        }
     }
 
     @Override
-    protected ContextMenuButton createContextMenuButton() {
-        //noinspection IncorrectCreateGuiComponent
-        return new ContextMenuButton(showIconsForPopupMenuActions) {
-            @Override
-            protected void beforeActionPerformed() {
-                WebTree.this.component.hideContextMenuPopup();
-            }
-
-            @Override
-            protected Component getActionEventTarget() {
-                return WebTree.this;
-            }
-        };
+    protected CubaTree<E> createComponent() {
+        return new CubaTree<>();
     }
 
     @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
+    public void initComponent(CubaTree<E> component) {
+        super.initComponent(component);
+
+        setSelectionMode(SelectionMode.SINGLE);
     }
 
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        if (this.captionMode != captionMode) {
-            this.captionMode = captionMode;
-            switch (captionMode) {
-                case ITEM:
-                    component.setItemCaptionMode(ItemCaptionMode.ITEM);
-                    break;
+    protected void onSelectionChange(SelectionEvent<E> event) {
+        TreeSource<E> treeSource = getTreeSource();
 
-                case PROPERTY:
-                    component.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-                    break;
-
-                default:
-                    throw new UnsupportedOperationException();
-            }
-        }
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        if (StringUtils.isEmpty(captionProperty)) {
-            setCaptionMode(CaptionMode.ITEM);
-        } else {
-            setCaptionMode(CaptionMode.PROPERTY);
+        if (treeSource == null
+                || treeSource.getState() == BindingState.INACTIVE) {
+            return;
         }
 
-        if (!Objects.equals(this.captionProperty, captionProperty)) {
-            this.captionProperty = captionProperty;
-
-            tryToAssignCaptionProperty();
-        }
-    }
-
-    @Override
-    public String getHierarchyProperty() {
-        return hierarchyProperty;
-    }
-
-    protected void tryToAssignCaptionProperty() {
-        if (datasource != null && captionProperty != null && captionMode == CaptionMode.PROPERTY) {
-            MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(captionProperty);
-
-            if (propertyPath != null && component.getContainerDataSource() != null) {
-                ((HierarchicalDsWrapper) component.getContainerDataSource()).addProperty(propertyPath);
-                component.setItemCaptionPropertyId(propertyPath);
+        Set<E> selected = getSelected();
+        if (treeSource instanceof EntityTreeSource) {
+            if (selected.isEmpty()) {
+                ((EntityTreeSource<E>) treeSource).setSelectedItem(null);
             } else {
-                throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
-            }
-        }
-    }
-
-    @Override
-    public void setDatasource(HierarchicalDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
-
-        if (this.datasource != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the Tree component");
-        }
-
-        this.datasource = datasource;
-        this.hierarchyProperty = datasource.getHierarchyPropertyName();
-        collectionDsListenersWrapper = createCollectionDsListenersWrapper();
-
-        component.setContainerDataSource(new HierarchicalDsWrapper(datasource, collectionDsListenersWrapper));
-
-        tryToAssignCaptionProperty();
-
-        Security security = AppBeans.get(Security.NAME);
-        if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
-            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
-            if (action == null) {
-                action = new ShowInfoAction();
-                addAction(action);
-            }
-        }
-
-        collectionDsListenersWrapper.bind(datasource);
-
-        for (Action action : getActions()) {
-            action.refreshState();
-        }
-    }
-
-    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
-        return new TreeCollectionDsListenersWrapper();
-    }
-
-    @Override
-    public Action getItemClickAction() {
-        return doubleClickAction;
-    }
-
-    @Override
-    public void setItemClickAction(Action action) {
-        if (this.doubleClickAction != action) {
-            if (action != null) {
-                if (itemClickListener == null) {
-                    component.setDoubleClickMode(true);
-                    itemClickListener = event -> {
-                        if (event.isDoubleClick() && !component.isReadOnly()) {
-                            CubaUI ui = (CubaUI) component.getUI();
-                            if (!ui.isAccessibleForUser(component)) {
-                                LoggerFactory.getLogger(WebTree.class)
-                                        .debug("Ignore click attempt because Tree is inaccessible for user");
-                                return;
-                            }
-
-                            if (!component.isMultiSelect()) {
-                                component.setValue(event.getItemId());
-                            } else {
-                                component.setValue(Collections.singletonList(event.getItemId()));
-                            }
-
-                            if (doubleClickAction != null) {
-                                doubleClickAction.actionPerform(WebTree.this);
-                            }
-                        }
-                    };
-                    component.addItemClickListener(itemClickListener);
+                // reset selection and select new item
+                if (isMultiSelect()) {
+                    ((EntityTreeSource<E>) treeSource).setSelectedItem(null);
                 }
-            } else {
-                component.setDoubleClickMode(false);
-                component.removeItemClickListener(itemClickListener);
-                itemClickListener = null;
-            }
 
-            this.doubleClickAction = action;
+                E newItem = selected.iterator().next();
+                ((EntityTreeSource<E>) treeSource).setSelectedItem(newItem);
+            }
         }
+
+        LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+        publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
+
+        // todo implement selection change events
     }
 
     @Override
-    public void focus() {
-        component.focus();
+    public void setSelectionMode(SelectionMode selectionMode) {
+        super.setSelectionMode(selectionMode);
+
+        // Every time we change selection mode, the new selection model is set,
+        // so we need to add selection listener again.
+        if (!SelectionMode.NONE.equals(selectionMode)) {
+            component.addSelectionListener(this::onSelectionChange);
+        }
     }
 
     @Override
@@ -282,68 +92,5 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E>
     @Override
     public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
         unsubscribe(LookupSelectionChangeEvent.class, listener);
-    }
-
-    public class TreeCollectionDsListenersWrapper extends CollectionDsListenersWrapper {
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
-            // replacement for collectionChangeSelectionListener
-            // #PL-2035, reload selection from ds
-            Set<Object> selectedItemIds = getSelectedItemIds();
-            if (selectedItemIds == null) {
-                selectedItemIds = Collections.emptySet();
-            }
-
-            Set<Object> newSelection = new HashSet<>();
-            for (Object entityId : selectedItemIds) {
-                if (e.getDs().containsItem(entityId)) {
-                    newSelection.add(entityId);
-                }
-            }
-
-            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                newSelection.add(e.getDs().getItem().getId());
-            }
-
-            if (newSelection.isEmpty()) {
-                setSelected((E) null);
-            } else {
-                setSelectedIds(newSelection);
-            }
-
-            super.collectionChanged(e);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void itemChanged(Datasource.ItemChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            super.itemChanged(e);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            super.itemPropertyChanged(e);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void stateChanged(Datasource.StateChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            super.stateChanged(e);
-        }
     }
 }

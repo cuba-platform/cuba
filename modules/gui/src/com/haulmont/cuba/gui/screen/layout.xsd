@@ -393,6 +393,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="treeSelectionMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SINGLE"/>
+            <xs:enumeration value="MULTI"/>
+            <xs:enumeration value="NONE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Style names -->
 
     <xs:simpleType name="labelStylename">
@@ -1893,6 +1901,7 @@
                 </xs:all>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
+                <xs:attribute name="selectionMode" type="treeSelectionMode"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasContextHelp"/>

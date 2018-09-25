@@ -51,9 +51,10 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
         com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
         vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
 
-        CubaTree vTree = groupsTree.unwrap(CubaTree.class);
-        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        vTree.setDropHandler(new DropHandler() {
+        CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
+        // TODO: gg, re-implement
+//        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
+        /*vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable transferable = (DataBoundTransferable) dropEvent.getTransferable();
@@ -121,23 +122,23 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                         new Not(AbstractSelect.VerticalLocationIs.BOTTOM),
                         new Not(AbstractSelect.VerticalLocationIs.TOP));
             }
-        });
+        });*/
     }
 
-    protected boolean isNotContainDropOver(Object groupId, Object dropOverId, CubaTree vTree) {
-        if (!vTree.hasChildren(groupId)) {
+    protected boolean isNotContainDropOver(Group group, Group dropOver, CubaTree<Group> vTree) {
+        if (!vTree.hasChildren(group)) {
             return true;
         }
 
-        return checkAllChildrenRecursively(vTree.getChildren(groupId), dropOverId, vTree);
+        return checkAllChildrenRecursively(vTree.getChildren(group), dropOver, vTree);
     }
 
-    protected boolean checkAllChildrenRecursively(Collection children, Object dropOverId, CubaTree vTree) {
-        for (Object id : children) {
-            if (id.equals(dropOverId)) {
+    protected boolean checkAllChildrenRecursively(Collection<Group> children, Group dropOver, CubaTree<Group> vTree) {
+        for (Group group : children) {
+            if (group.equals(dropOver)) {
                 return false;
-            } else if (vTree.hasChildren(id)) {
-                if (!checkAllChildrenRecursively(vTree.getChildren(id), dropOverId, vTree)) {
+            } else if (vTree.hasChildren(group)) {
+                if (!checkAllChildrenRecursively(vTree.getChildren(group), dropOver, vTree)) {
                     return false;
                 }
             }

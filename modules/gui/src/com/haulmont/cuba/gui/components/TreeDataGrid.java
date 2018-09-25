@@ -32,14 +32,14 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
     @Override
     default HierarchicalDatasource getDatasource() {
         DataGridSource<E> dataGridSource = getDataGridSource();
-        return dataGridSource != null ?
-                (HierarchicalDatasource) ((HierarchicalDatasourceDataGridAdapter) dataGridSource).getDatasource()
+        return dataGridSource != null
+                ? (HierarchicalDatasource) ((HierarchicalDatasourceDataGridAdapter) dataGridSource).getDatasource()
                 : null;
     }
 
     @Deprecated
     default void setDatasource(HierarchicalDatasource datasource) {
-        setDatasource(datasource);
+        setDatasource((CollectionDatasource) datasource);
     }
 
     @SuppressWarnings("unchecked")

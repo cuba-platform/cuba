@@ -50,13 +50,18 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.haulmont.cuba.web.widgets.CubaTree;
+import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
+import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.HierarchicalQuery;
+import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.Resource;
+import com.vaadin.server.SerializableFunction;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.v7.event.ItemClickEvent;
-import com.vaadin.v7.ui.Tree;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +69,9 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 
@@ -77,14 +85,12 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected boolean visible;
 
-    protected Tree appFoldersTree;
-    protected Tree searchFoldersTree;
+    protected CubaTree<AppFolder> appFoldersTree;
+    protected CubaTree<SearchFolder> searchFoldersTree;
 
     protected Label appFoldersLabel;
     protected Label searchFoldersLabel;
 
-    protected Object appFoldersRoot;
-    protected Object searchFoldersRoot;
     protected FoldersPaneTimer timer;
 
     protected static final int DEFAULT_VERT_SPLIT_POS = 50;
@@ -279,28 +285,27 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    protected void collapseItemInTree(Tree tree, final String foldersCollapse) {
+    protected <T extends AbstractSearchFolder> void collapseItemInTree(CubaTree<T> tree, final String foldersCollapse) {
         String s = userSettingService.loadSetting(foldersCollapse);
         List<UUID> idFolders = strToIds(s);
-        //noinspection unchecked, RedundantCast
-        for (AbstractSearchFolder folder : (Collection<AbstractSearchFolder>) tree.getItemIds()) {
-            if (idFolders.contains(folder.getId())) {
-                tree.collapseItem(folder);
-            }
-        }
+
+        List<T> foldersToCollapse = tree.getItems()
+                .filter(folder ->
+                        idFolders.contains(folder.getId()))
+                .collect(Collectors.toList());
+
+        tree.collapse(foldersToCollapse);
+
         tree.addExpandListener(event -> {
-            if (event.getItemId() instanceof AbstractSearchFolder) {
-                UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                String str = userSettingService.loadSetting(foldersCollapse);
-                userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
-            }
+            UUID uuid = event.getExpandedItem().getId();
+            String str = userSettingService.loadSetting(foldersCollapse);
+            userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
         });
+
         tree.addCollapseListener(event -> {
-            if (event.getItemId() instanceof AbstractSearchFolder) {
-                UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                String str = userSettingService.loadSetting(foldersCollapse);
-                userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
-            }
+            UUID uuid = event.getCollapsedItem().getId();
+            String str = userSettingService.loadSetting(foldersCollapse);
+            userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
         });
     }
 
@@ -405,8 +410,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected Collection<AppFolder> getChildFolders(AppFolder parentFolder) {
         Collection<AppFolder> result = new LinkedList<>();
-        //noinspection unchecked
-        Collection<AppFolder> childFolders = (Collection<AppFolder>) appFoldersTree.getChildren(parentFolder);
+        Collection<AppFolder> childFolders = appFoldersTree.getChildren(parentFolder);
         if (childFolders != null) {
             result.addAll(childFolders);
             for (AppFolder folder : childFolders)
@@ -436,15 +440,15 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     protected List<AppFolder> getReloadedFolders() {
-        @SuppressWarnings("unchecked")
-        List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
+        List<AppFolder> folders = appFoldersTree.getItems()
+                .collect(Collectors.toList());
         FoldersService service = AppBeans.get(FoldersService.NAME);
         return service.reloadAppFolders(folders);
     }
 
     protected void updateFolders(List<AppFolder> reloadedFolders) {
-        @SuppressWarnings("unchecked")
-        List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
+        List<AppFolder> folders = appFoldersTree.getItems()
+                .collect(Collectors.toList());
         for (AppFolder folder : reloadedFolders) {
             int index = reloadedFolders.indexOf(folder);
             AppFolder f = folders.get(index);
@@ -452,7 +456,6 @@ public class CubaFoldersPane extends VerticalLayout {
                 f.setItemStyle(folder.getItemStyle());
                 f.setQuantity(folder.getQuantity());
             }
-            setFolderTreeItemCaption(appFoldersTree, folder);
         }
     }
 
@@ -463,16 +466,16 @@ public class CubaFoldersPane extends VerticalLayout {
         List<AppFolder> appFolders = foldersService.loadAppFolders();
         if (appFolders.isEmpty())
             return null;
-
-        appFoldersTree = new CubaTree();
+        appFoldersTree = new CubaTree<>();
         appFoldersTree.setCubaId("appFoldersTree");
-        appFoldersTree.setSelectable(true);
-        appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
+        appFoldersTree.setDataProvider(createTreeDataProvider());
+        appFoldersTree.setGridSelectionModel(new CubaSingleSelectionModel<>());
+        appFoldersTree.setStyleGenerator(new FolderTreeStyleProvider<>());
         appFoldersTree.addShortcutListener(
                 new ShortcutListenerDelegate("applyAppFolder", ShortcutAction.KeyCode.ENTER, null)
                         .withHandler((sender, target) -> {
                             if (target == appFoldersTree) {
-                                AbstractSearchFolder folder = (AbstractSearchFolder) appFoldersTree.getValue();
+                                AbstractSearchFolder folder = appFoldersTree.asSingleSelect().getValue();
                                 if (folder != null) {
                                     openFolder(folder);
                                 }
@@ -480,47 +483,48 @@ public class CubaFoldersPane extends VerticalLayout {
                         }));
 
         appFoldersTree.addExpandListener(event -> {
-            AppFolder folder = (AppFolder) event.getItemId();
+            AppFolder folder = event.getExpandedItem();
             if (StringUtils.isBlank(folder.getQuantityScript())) {
                 folder.setQuantity(null);
                 folder.setItemStyle(null);
-                setFolderTreeItemCaption(appFoldersTree, folder);
             }
         });
         appFoldersTree.addCollapseListener(event -> {
-            AppFolder folder = (AppFolder) event.getItemId();
+            AppFolder folder = event.getCollapsedItem();
             if (StringUtils.isBlank(folder.getQuantityScript())) {
                 reloadSingleParentFolder(folder, null);
-                setFolderTreeItemCaption(appFoldersTree, folder);
             }
         });
 
-        appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
-        fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
-        appFoldersTree.addItemClickListener(new FolderClickListener());
-        appFoldersTree.addActionHandler(new AppFolderActionsHandler());
-
-        for (Object itemId : appFoldersTree.rootItemIds()) {
-            appFoldersTree.expandItemsRecursively(itemId);
+        fillTree(appFoldersTree, appFolders);
+        appFoldersTree.addItemClickListener(new FolderClickListener<>());
+        if (webConfig.getShowFolderIcons()) {
+            appFoldersTree.setItemIconGenerator(this::getAppFolderIcon);
         }
+        appFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
+        // TODO: gg, fix
+//        appFoldersTree.addActionHandler(new AppFolderActionsHandler());
+
+        appFoldersTree.expand(appFoldersTree.getItems().collect(Collectors.toList()));
 
         return appFoldersTree;
     }
 
-    protected <T extends Folder> void setFolderTreeItemCaption(Tree tree, T folder) {
-        tree.setItemCaption(folder, folder.getCaption());
+    protected Resource getAppFolderIcon(AppFolder item) {
+        return iconResolver.getIconResource("icons/app-folder-small.png");
     }
 
     protected Component createSearchFoldersPane() {
-        searchFoldersTree = new CubaTree();
-        searchFoldersTree.setSelectable(true);
+        searchFoldersTree = new CubaTree<>();
         searchFoldersTree.setCubaId("searchFoldersTree");
-        searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
+        searchFoldersTree.setDataProvider(createTreeDataProvider());
+        searchFoldersTree.setGridSelectionModel(new CubaSingleSelectionModel<>());
+        searchFoldersTree.setStyleGenerator(new FolderTreeStyleProvider<>());
         searchFoldersTree.addShortcutListener(
                 new ShortcutListenerDelegate("applySearchFolder", ShortcutAction.KeyCode.ENTER, null)
                         .withHandler((sender, target) -> {
                             if (target == searchFoldersTree) {
-                                AbstractSearchFolder folder = (AbstractSearchFolder) searchFoldersTree.getValue();
+                                AbstractSearchFolder folder = searchFoldersTree.asSingleSelect().getValue();
                                 if (folder != null) {
                                     openFolder(folder);
                                 }
@@ -528,65 +532,48 @@ public class CubaFoldersPane extends VerticalLayout {
                         }));
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
-        searchFoldersRoot = messages.getMainMessage("folders.searchFoldersRoot");
-        searchFoldersTree.addItemClickListener(new FolderClickListener());
-        searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
+
+        searchFoldersTree.addItemClickListener(new FolderClickListener<>());
+        if (webConfig.getShowFolderIcons()) {
+            searchFoldersTree.setItemIconGenerator(this::getSearchFolderIcon);
+        }
+        searchFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
+        // TODO: gg, fix
+//        searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
         if (!searchFolders.isEmpty()) {
-            fillTree(searchFoldersTree, searchFolders, isNeedRootSearchFolder() ? searchFoldersRoot : null);
+            fillTree(searchFoldersTree, searchFolders);
         }
 
-        for (Object itemId : searchFoldersTree.rootItemIds()) {
-            searchFoldersTree.expandItemsRecursively(itemId);
-        }
+        searchFoldersTree.expand(searchFoldersTree.getItems().collect(Collectors.toList()));
+
         return searchFoldersTree;
     }
 
-    protected void fillTree(Tree tree, List<? extends Folder> folders, Object rootItemId) {
-        if (rootItemId != null) {
-            tree.addItem(rootItemId);
-        }
-        for (Folder folder : folders) {
-            tree.addItem(folder);
-            setFolderTreeItemCaption(tree, folder);
-            if (webConfig.getShowFolderIcons()) {
-                if (folder instanceof SearchFolder) {
-                    if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
-                        tree.setItemIcon(folder, iconResolver.getIconResource("icons/set-small.png"));
-                    } else {
-                        tree.setItemIcon(folder, iconResolver.getIconResource("icons/search-folder-small.png"));
-                    }
-                } else if (folder instanceof AppFolder) {
-                    tree.setItemIcon(folder, iconResolver.getIconResource("icons/app-folder-small.png"));
-                }
-            }
-        }
-        for (Folder folder : folders) {
-            if (folder.getParent() == null) {
-                tree.setParent(folder, rootItemId);
-            } else {
-                if (tree.getItem(folder.getParent()) != null)
-                    tree.setParent(folder, folder.getParent());
-                else
-                    tree.setParent(folder, rootItemId);
-            }
-        }
-        for (Folder folder : folders) {
-            if (!tree.hasChildren(folder)) {
-                tree.setChildrenAllowed(folder, false);
-            }
+    private <T extends Folder> FoldersDataProvider<T> createTreeDataProvider() {
+        TreeData<T> treeData = new TreeData<>();
+        return new FoldersDataProvider<>(treeData);
+    }
+
+    private String getFolderTreeItemCaption(Folder folder) {
+        return folder.getCaption();
+    }
+
+    protected Resource getSearchFolderIcon(SearchFolder item) {
+        return BooleanUtils.isTrue(item.getIsSet())
+                ? iconResolver.getIconResource("icons/set-small.png")
+                : iconResolver.getIconResource("icons/search-folder-small.png");
+    }
+
+    protected <T extends Folder> void fillTree(CubaTree<T> tree, List<T> folders) {
+        for (T folder : folders) {
+            //noinspection unchecked
+            tree.getTreeData().addItem((T) folder.getParent(), folder);
+
         }
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
         folders.openFolder(folder);
-    }
-
-    protected boolean isNeedRootAppFolder() {
-        return false;
-    }
-
-    protected boolean isNeedRootSearchFolder() {
-        return false;
     }
 
     protected boolean isNeedFoldersTitle() {
@@ -617,15 +604,9 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     public Collection<SearchFolder> getSearchFolders() {
-        if (searchFoldersTree == null) {
-            return Collections.emptyList();
-        } else {
-            @SuppressWarnings("unchecked")
-            List result = new ArrayList(searchFoldersTree.getItemIds());
-            result.remove(searchFoldersRoot);
-            //noinspection unchecked
-            return result;
-        }
+        return searchFoldersTree != null
+                ? searchFoldersTree.getItems().collect(Collectors.toList())
+                : Collections.emptyList();
     }
 
     protected boolean getItemClickable(Folder folder) {
@@ -646,17 +627,18 @@ public class CubaFoldersPane extends VerticalLayout {
         return frame;
     }
 
-    protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
+    protected class FolderTreeStyleProvider<T extends AbstractSearchFolder> implements StyleGenerator<T> {
         @Override
-        public String getStyle(Tree source, Object itemId) {
-            Folder folder = ((Folder) itemId);
+        public String apply(T folder) {
             if (folder != null) {
                 String style;
                 // clickable tree item
-                if (getItemClickable(folder))
+                if (getItemClickable(folder)) {
                     style = "c-clickable-folder";
-                else
+                } else {
                     style = "c-nonclickable-folder";
+                }
+
                 // handle custom styles
                 if (StringUtils.isNotBlank(folder.getItemStyle())) {
                     style += " " + folder.getItemStyle();
@@ -664,26 +646,24 @@ public class CubaFoldersPane extends VerticalLayout {
 
                 return style;
             }
-            return "";
+            return null;
         }
     }
 
-    protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
+    protected class FolderClickListener<T extends AbstractSearchFolder> implements Tree.ItemClickListener<T> {
         @Override
-        public void itemClick(ItemClickEvent event) {
-            if (event.getButton() == MouseEventDetails.MouseButton.LEFT) {
-                Folder folder = (Folder) event.getItemId();
+        public void itemClick(Tree.ItemClick<T> event) {
+            if (event.getMouseEventDetails().getButton() == MouseEventDetails.MouseButton.LEFT) {
+                T folder = event.getItem();
                 if (getItemClickable(folder)) {
-                    openFolder((AbstractSearchFolder) event.getItemId());
+                    openFolder(folder);
                 } else if (isItemExpandable(folder)) {
-                    Component component = event.getComponent();
-                    if (component instanceof Tree) {
-                        Tree tree = (Tree) component;
-                        if (tree.isExpanded(folder)) {
-                            tree.collapseItem(folder);
-                        } else {
-                            tree.expandItem(folder);
-                        }
+                    //noinspection unchecked
+                    Tree<AbstractSearchFolder> tree = (Tree<AbstractSearchFolder>) event.getSource();
+                    if (tree.isExpanded(folder)) {
+                        tree.collapse(folder);
+                    } else {
+                        tree.expand(folder);
                     }
                 }
             }
@@ -999,5 +979,36 @@ public class CubaFoldersPane extends VerticalLayout {
 
     // used for instance of to detect folders pane timer
     protected static class FoldersPaneTimer extends CubaTimer {
+    }
+
+    protected class FoldersDataProvider<T extends Folder> extends TreeDataProvider<T>
+            implements EnhancedTreeDataProvider<T> {
+
+        public FoldersDataProvider(TreeData<T> treeData) {
+            super(treeData);
+        }
+
+        @Override
+        public Stream<T> getItems() {
+            return getChildrenRecursively(null);
+        }
+
+        protected Stream<T> getChildrenRecursively(T parent) {
+            Supplier<Stream<T>> children = () -> getChildren(parent);
+            Stream<T> items = children.get().flatMap((SerializableFunction<T, Stream<T>>)
+                    this::getChildrenRecursively);
+
+            return Stream.concat(children.get(), items);
+        }
+
+        protected Stream<T> getChildren(T item) {
+            return fetchChildren(new HierarchicalQuery<>(null, item));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public T getParent(T item) {
+            return (T) item.getParent();
+        }
     }
 }

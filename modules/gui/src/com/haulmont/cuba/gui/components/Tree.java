@@ -18,12 +18,14 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.TreeSource;
+import com.haulmont.cuba.gui.components.data.tree.HierarchicalDatasourceTreeAdapter;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public interface Tree<E extends Entity> extends ListComponent<E>, Component.Editable, HasButtonsPanel,
+public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
                                                 Component.HasCaption, Component.HasIcon, LookupComponent,
                                                 Component.Focusable, HasContextHelp {
 
@@ -34,10 +36,26 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     }
 
     void expandTree();
+
+    /**
+     * @param itemId the id of item to expand
+     * @deprecated Use {@link #expand(Entity)} instead
+     */
+    @Deprecated
     void expand(Object itemId);
 
+    void expand(E item);
+
     void collapseTree();
+
+    /**
+     * @param itemId the id of item to collapse
+     * @deprecated Use {@link #collapse(Entity)} instead
+     */
+    @Deprecated
     void collapse(Object itemId);
+
+    void collapse(E item);
 
     /**
      * Expand tree including specified level
@@ -56,10 +74,27 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     void setCaptionProperty(String captionProperty);
 
     String getHierarchyProperty();
-    void setDatasource(HierarchicalDatasource datasource);
 
+    @Deprecated
+    default void setDatasource(HierarchicalDatasource datasource) {
+        //noinspection unchecked
+        setTreeSource(datasource != null
+                ? new HierarchicalDatasourceTreeAdapter(datasource)
+                : null);
+    }
+
+    @Deprecated
     @Override
-    HierarchicalDatasource getDatasource();
+    default HierarchicalDatasource getDatasource() {
+        TreeSource<E> treeSource = getTreeSource();
+        return treeSource != null
+                ? ((HierarchicalDatasourceTreeAdapter) treeSource).getDatasource()
+                : null;
+    }
+
+    TreeSource<E> getTreeSource();
+
+    void setTreeSource(TreeSource<E> treeSource);
 
     /**
      * Assign action to be executed on double click inside a tree node.
@@ -128,6 +163,11 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      */
     Action getEnterPressAction();
 
+    /**
+     * @param multiselect {@code true} for multiselect, {@code false} otherwise
+     * @deprecated Use {@link #setSelectionMode(SelectionMode)} instead
+     */
+    @Deprecated
     void setMultiSelect(boolean multiselect);
 
     /**
@@ -135,4 +175,33 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      */
     @Deprecated
     void refresh();
+
+    /**
+     * @return the currently used {@link SelectionMode}
+     */
+    SelectionMode getSelectionMode();
+
+    /**
+     * Sets the Tree's selection mode.
+     *
+     * @param selectionMode the selection mode to use
+     */
+    void setSelectionMode(SelectionMode selectionMode);
+
+    enum SelectionMode {
+        /**
+         * A SelectionMode that supports for only single rows to be selected at a time.
+         */
+        SINGLE,
+
+        /**
+         * A SelectionMode that supports multiple selections to be made.
+         */
+        MULTI,
+
+        /**
+         * A SelectionMode that does not allow for rows to be selected.
+         */
+        NONE
+    }
 }

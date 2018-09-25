@@ -18,24 +18,14 @@
 @mixin cuba-folders-pane {
   .c-folders-pane {
     background: $v-panel-background-color;
-
-    .v-tree {
-      border-color: transparent;
-      overflow: auto;
-    }
   }
 
-  .v-tree-node-c-clickable-folder .v-tree-node-caption span {
+  .v-tree8-row.c-clickable-folder .v-tree8-cell-content span {
     cursor: pointer;
   }
 
-  .v-tree-node-c-clickable-folder .v-tree-node-caption span:hover {
+  .v-tree8-row.c-clickable-folder .v-tree8-cell-content span:hover {
     text-decoration: underline;
-    background: transparent none;
-  }
-
-  .v-tree-node-c-nonclickable-folder .v-tree-node-caption span:hover {
-    background: transparent none;
   }
 
   .c-folders-pane-caption {

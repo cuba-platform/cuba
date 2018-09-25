@@ -70,6 +70,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
+
+        loadSelectionMode(resultComponent, element);
     }
 
     protected void loadTreeChildren() {
@@ -112,6 +114,13 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
             Window window = ComponentsHelper.getWindowImplementation(component);
             String alwaysVisible = buttonsPanelElement.attributeValue("alwaysVisible");
             panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
+        }
+    }
+
+    protected void loadSelectionMode(Tree component, Element element) {
+        String selectionMode = element.attributeValue("selectionMode");
+        if (StringUtils.isNotEmpty(selectionMode)) {
+            component.setSelectionMode(Tree.SelectionMode.valueOf(selectionMode));
         }
     }
 }

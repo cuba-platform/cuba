@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.widgets.client.tree;
+package com.haulmont.cuba.web.widgets.tree;
 
-import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.shared.communication.ClientRpc;
+import java.util.stream.Stream;
 
-public interface CubaTreeClientRpc extends ClientRpc {
+public interface EnhancedTreeDataProvider<T> {
 
-    @NoLayout
-    void hideContextMenuPopup();
+    Stream<T> getItems();
+
+    T getParent(T item);
 }

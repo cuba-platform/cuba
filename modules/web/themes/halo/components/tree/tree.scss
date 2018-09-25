@@ -15,31 +15,14 @@
  *
  */
 
-@mixin halo-tree($primary-stylename: v-tree) {
-  .#{$primary-stylename},
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
-  }
-
-  .#{$primary-stylename}-node,
-  .#{$primary-stylename}-node-focused {
-    // This a v-tree-node-caption element
-    &:after {
-      @include box-defaults;
-    }
-
-    .v-ie8 & {
-      @include box-defaults;
-    }
-  }
-
+@mixin halo-tree($primary-stylename: v-tree8) {
   .#{$primary-stylename} {
-    padding: round($v-unit-size/4);
-    border: valo-border();
+    @include user-select(none);
   }
 
-  .#{$primary-stylename} > div {
-    position: relative;
+  .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
+    $font-color: valo-font-color($v-selection-color, 0.9);
+    color: $font-color;
   }
 
   .c-tree-composition {

@@ -25,7 +25,7 @@ import com.vaadin.v7.data.Container;
 import java.io.Serializable;
 import java.util.*;
 
-public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
+public class CubaWidgetsTree<T> extends CubaTree<T> implements ComponentContainer {
 
     protected WidgetBuilder widgetBuilder;
 
@@ -33,19 +33,21 @@ public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
 
     protected final List<Object> itemIds = new ArrayList<>();
 
-    @Override
+    // VAADIN8: gg, replace
+    /*@Override
     public void containerItemSetChange(Container.ItemSetChangeEvent event) {
         super.containerItemSetChange(event);
 
         refreshRenderedComponents();
-    }
+    }*/
 
-    @Override
+    // VAADIN8: gg, replace
+    /*@Override
     public void containerPropertySetChange(Container.PropertySetChangeEvent event) {
         super.containerPropertySetChange(event);
 
         refreshRenderedComponents();
-    }
+    }*/
 
     protected void detachGeneratedComponents() {
         for (Component c : nodeWidgets) {
@@ -61,7 +63,8 @@ public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
         nodeWidgets.clear();
         itemIds.clear();
 
-        if (widgetBuilder != null) {
+        // VAADIN8: gg, implement
+        /*if (widgetBuilder != null) {
             // Iterates through hierarchical tree using a stack of iterators
             final Stack<Iterator<?>> iteratorStack = new Stack<>();
             Collection<?> ids = rootItemIds();
@@ -96,10 +99,11 @@ public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
                     }
                 }
             }
-        }
+        }*/
     }
 
-    @Override
+    // VAADIN8: gg, replace
+    /*@Override
     protected void paintItem(
             PaintTarget target,
             Object itemId,
@@ -111,7 +115,7 @@ public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
         if (itemIds.indexOf(itemId) >= 0) {
             target.addAttribute("widgetIndex", itemIds.indexOf(itemId));
         }
-    }
+    }*/
 
     public WidgetBuilder getWidgetBuilder() {
         return widgetBuilder;
