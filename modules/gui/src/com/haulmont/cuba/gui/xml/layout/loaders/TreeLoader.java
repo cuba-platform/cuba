@@ -16,12 +16,20 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.data.tree.CollectionContainerTreeSource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -74,21 +82,40 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadSelectionMode(resultComponent, element);
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadTreeChildren() {
         Element itemsElem = element.element("treechildren");
         if (itemsElem == null)
             return;
 
-        String datasource = itemsElem.attributeValue("datasource");
-        if (!StringUtils.isBlank(datasource)) {
-            HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
-            resultComponent.setDatasource(ds);
-
-            String captionProperty = itemsElem.attributeValue("captionProperty");
-            if (!StringUtils.isEmpty(captionProperty)) {
-                resultComponent.setCaptionProperty(captionProperty);
-                resultComponent.setCaptionMode(CaptionMode.PROPERTY);
+        String containerId = itemsElem.attributeValue("dataContainer");
+        if (containerId != null) {
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+            CollectionContainer collectionContainer;
+            if (container instanceof CollectionContainer) {
+                collectionContainer = (CollectionContainer) container;
+            } else {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
             }
+            String hierarchyProperty = itemsElem.attributeValue("hierarchyProperty");
+            if (Strings.isNullOrEmpty(hierarchyProperty)) {
+                throw new GuiDevelopmentException("Tree doesn't have 'hierarchyProperty' attribute of the 'treechildren' element", context.getCurrentFrameId(),
+                        "Tree ID", element.attributeValue("id"));
+            }
+            resultComponent.setTreeSource(new CollectionContainerTreeSource(collectionContainer, hierarchyProperty));
+        } else {
+            String datasource = itemsElem.attributeValue("datasource");
+            if (!StringUtils.isBlank(datasource)) {
+                HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
+                resultComponent.setDatasource(ds);
+            }
+        }
+        String captionProperty = itemsElem.attributeValue("captionProperty");
+        if (!StringUtils.isEmpty(captionProperty)) {
+            resultComponent.setCaptionProperty(captionProperty);
+            resultComponent.setCaptionMode(CaptionMode.PROPERTY);
         }
     }
 

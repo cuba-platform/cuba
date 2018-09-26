@@ -1894,7 +1894,8 @@
                     <xs:element name="treechildren" minOccurs="0">
                         <xs:complexType>
                             <xs:attributeGroup ref="hasCaptionSource"/>
-                            <xs:attribute name="datasource" type="xs:string" use="required"/>
+                            <xs:attribute name="dataContainer" type="xs:string"/>
+                            <xs:attribute name="datasource" type="xs:string"/>
                             <xs:attribute name="hierarchyProperty" type="xs:string"/>
                         </xs:complexType>
                     </xs:element>
