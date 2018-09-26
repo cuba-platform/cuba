@@ -17,7 +17,6 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 
 import javax.annotation.Nullable;
 
