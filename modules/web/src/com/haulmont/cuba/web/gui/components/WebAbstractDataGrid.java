@@ -52,6 +52,7 @@ import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.components.valueproviders.*;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.addons.contextmenu.Menu;
@@ -73,7 +74,6 @@ import com.vaadin.event.selection.MultiSelectionEvent;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.Footer;
 import com.vaadin.ui.components.grid.Header;
@@ -194,7 +194,12 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
     public WebAbstractDataGrid() {
         component = createComponent();
+        componentComposition = createComponentComposition();
         shortcutsDelegate = createShortcutsDelegate();
+    }
+
+    protected GridComposition createComponentComposition() {
+        return new GridComposition();
     }
 
     protected abstract T createComponent();
@@ -207,7 +212,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
                         new ShortcutListenerDelegate(actionId, keyCombination.getKey().getCode(),
                                 KeyCombination.Modifier.codes(keyCombination.getModifiers())
                         ).withHandler((sender, target) -> {
-                            if (target == component) {
+                            if (sender == componentComposition) {
                                 Action action = getAction(actionId);
                                 if (action != null && action.isEnabled() && action.isVisible()) {
                                     action.actionPerform(WebAbstractDataGrid.this);
@@ -215,13 +220,13 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
                             }
                         });
 
-                component.addShortcutListener(shortcut);
+                componentComposition.addShortcutListener(shortcut);
                 return shortcut;
             }
 
             @Override
             protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
-                component.removeShortcutListener(shortcutDescriptor);
+                componentComposition.removeShortcutListener(shortcutDescriptor);
             }
 
             @Override
@@ -234,6 +239,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void afterPropertiesSet() throws Exception {
         initComponent(component);
+        initComponentComposition(componentComposition);
 
         initHeaderRows(component);
         initFooterRows(component);
@@ -279,21 +285,23 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
         component.setColumnReorderingAllowed(true);
 
-        component.addShortcutListener(createEnterShortcutListener());
         component.addItemClickListener(createItemClickListener());
         component.addColumnReorderListener(createColumnReorderListener());
         component.addSortListener(createSortListener());
-
-        componentComposition = new GridComposition();
-        componentComposition.setPrimaryStyleName("c-data-grid-composition");
-        componentComposition.setGrid(component);
-        componentComposition.addComponent(component);
-        componentComposition.setWidthUndefined();
 
         component.setSizeUndefined();
         component.setHeightMode(HeightMode.UNDEFINED);
 
         component.setStyleGenerator(createRowStyleGenerator());
+    }
+
+    protected void initComponentComposition(GridComposition componentComposition) {
+        componentComposition.setPrimaryStyleName("c-data-grid-composition");
+        componentComposition.setGrid(component);
+        componentComposition.addComponent(component);
+        componentComposition.setWidthUndefined();
+
+        componentComposition.addShortcutListener(createEnterShortcutListener());
     }
 
     protected com.vaadin.event.SortEvent.SortListener<GridSortOrder<E>> createSortListener() {
@@ -373,17 +381,15 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     protected ShortcutListenerDelegate createEnterShortcutListener() {
         return new ShortcutListenerDelegate("dataGridEnter", KeyCode.ENTER, null)
                 .withHandler((sender, target) -> {
-                    T dataGridComponent = WebAbstractDataGrid.this.component;
-
-                    if (target == dataGridComponent) {
+                    if (sender == componentComposition) {
                         if (WebAbstractDataGrid.this.isEditorEnabled()) {
                             // Prevent custom actions on Enter if DataGrid editor is enabled
                             // since it's the default shortcut to open editor
                             return;
                         }
 
-                        CubaUI ui = (CubaUI) dataGridComponent.getUI();
-                        if (!ui.isAccessibleForUser(dataGridComponent)) {
+                        CubaUI ui = (CubaUI) componentComposition.getUI();
+                        if (!ui.isAccessibleForUser(componentComposition)) {
                             LoggerFactory.getLogger(WebDataGrid.class)
                                     .debug("Ignore click attempt because DataGrid is inaccessible for user");
                             return;
@@ -3708,7 +3714,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
         }
     }
 
-    protected static class GridComposition extends CssLayout {
+    protected static class GridComposition extends CubaCssActionsLayout {
         protected Grid<?> grid;
 
         public Grid<?> getGrid() {
