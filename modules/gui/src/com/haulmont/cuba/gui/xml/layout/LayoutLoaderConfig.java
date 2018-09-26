@@ -104,7 +104,6 @@ public class LayoutLoaderConfig {
         loaders.put(PopupView.NAME, PopupViewLoader.class);
         loaders.put(FieldGroup.NAME, FieldGroupLoader.class);
         loaders.put(TokenList.NAME, TokenListLoader.class);
-        loaders.put(WidgetsTree.NAME, WidgetsTreeLoader.class);
         loaders.put(TwinColumn.NAME, TwinColumnLoader.class);
         loaders.put(ProgressBar.NAME, ProgressBarLoader.class);
         loaders.put(SearchField.NAME, SearchFieldLoader.class);

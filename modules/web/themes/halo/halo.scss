@@ -64,7 +64,6 @@
 @import "components/multiupload/multiupload";
 @import "components/optiongroup/optiongroup";
 @import "components/optionlist/optionlist";
-@import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
 @import "components/popupview/popupview";
 @import "components/progressbar/progressbar";
@@ -175,7 +174,6 @@
   @include halo-cuba-listeditor;
   @include halo-cuba-dateintervaleditor;
   @include halo-cuba-contextmenu;
-  @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
   @include halo-cuba-sidemenu;
   @include halo-cuba-multiupload;

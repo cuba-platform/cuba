@@ -114,7 +114,6 @@ public class WebUiComponents implements UiComponents {
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
         classes.put(TokenList.NAME, WebTokenList.class);
-        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
         classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);

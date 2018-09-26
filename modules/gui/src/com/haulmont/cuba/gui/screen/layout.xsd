@@ -2384,26 +2384,6 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <!-- WidgetsTree -->
-    <xs:complexType name="widgetsTreeComponent">
-        <xs:sequence>
-            <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
-            <xs:element name="items">
-                <xs:complexType>
-                    <xs:attributeGroup ref="hasDatasourceProp"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasSize"/>
-        <xs:attributeGroup ref="hasEnableProp"/>
-        <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasTabIndex"/>
-        <xs:attributeGroup ref="hasCaption"/>
-        <xs:attributeGroup ref="hasContextHelp"/>
-    </xs:complexType>
-
     <!-- TwinColumn -->
     <xs:complexType name="twinColumnComponent">
         <xs:complexContent>
@@ -2961,7 +2941,6 @@
 
                 <xs:element name="fieldGroup" type="fieldGroupComponent"/>
                 <xs:element name="tokenList" type="tokenListComponent"/>
-                <xs:element name="widgetsTree" type="widgetsTreeComponent"/>
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
                 <xs:element name="relatedEntities" type="relatedComponent"/>
                 <xs:element name="bulkEditor" type="bulkEditorComponent"/>

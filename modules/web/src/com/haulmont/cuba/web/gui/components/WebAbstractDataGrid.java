@@ -1512,6 +1512,9 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
                 component.setSelectionMode(Grid.SelectionMode.NONE);
                 return;
         }
+
+        // Every time we change selection mode, the new selection model is set,
+        // so we need to add selection listener again.
         component.getSelectionModel().addSelectionListener(selectionListener);
     }
 
