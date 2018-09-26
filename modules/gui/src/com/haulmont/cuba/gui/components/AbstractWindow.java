@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Base class for simple screen controllers.
@@ -723,22 +725,12 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     }
 
     @Override
-    public void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
-        ((Window) frame).addBeforeCloseWithShortcutListener(listener);
+    public Subscription addBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
+        return ((Window) frame).addBeforeWindowCloseListener(listener);
     }
 
     @Override
-    public void removeBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
-        ((Window) frame).removeBeforeCloseWithShortcutListener(listener);
-    }
-
-    @Override
-    public void addBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
-        ((Window) frame).addBeforeCloseWithCloseButtonListener(listener);
-    }
-
-    @Override
-    public void removeBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
-        ((Window) frame).removeBeforeCloseWithCloseButtonListener(listener);
+    public void removeBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
+        ((Window) frame).removeBeforeWindowCloseListener(listener);
     }
 }

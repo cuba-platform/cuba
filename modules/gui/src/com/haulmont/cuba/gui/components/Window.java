@@ -17,16 +17,14 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
-import com.haulmont.cuba.gui.components.compatibility.CloseListenerAdapter;
-import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
-import com.haulmont.cuba.gui.components.compatibility.SelectValidatorAdapter;
+import com.haulmont.cuba.gui.components.compatibility.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -546,19 +544,29 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         void windowClosedWithCommitAction();
     }
 
+    /**
+     *  An event that is fired before a screen is closed. The way a screen was closed
+     *  can be obtained via {@link #getCloseOrigin()}.
+     */
     class BeforeCloseEvent extends EventObject {
         protected boolean closePrevented = false;
+        protected CloseOrigin closeOrigin;
 
         /**
          * @param source the window to be closed
          */
-        public BeforeCloseEvent(Window source) {
+        public BeforeCloseEvent(Window source, CloseOrigin closeOrigin) {
             super(source);
+            this.closeOrigin = closeOrigin;
         }
 
         @Override
         public Window getSource() {
             return (Window) super.getSource();
+        }
+
+        public CloseOrigin getCloseOrigin() {
+            return closeOrigin;
         }
 
         public void preventWindowClose() {
@@ -571,27 +579,34 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     * Listener to be notified when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
+     * Registers a new before window close listener.
+     *
+     * @param listener the listener to register
+     * @return a registration object for removing an event listener added to a window
      */
-    @FunctionalInterface
-    interface BeforeCloseWithShortcutListener {
-        /**
-         * Called when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
-         *
-         * @param event an event providing more information
-         */
-        void beforeCloseWithShortcut(BeforeCloseWithShortcutEvent event);
-    }
+    Subscription addBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener);
+
+    /**
+     * Removes a previously added listener.
+     *
+     * @param listener the listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    void removeBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener);
 
     /**
      * An event that is fired before a screen is closed with {@link ClientConfig#getCloseShortcut()}.
+     *
+     * @deprecated Use {@link BeforeCloseEvent} with {@link CloseOrigin}
      */
+    @Deprecated
     class BeforeCloseWithShortcutEvent extends BeforeCloseEvent {
         /**
          * @param source the window to be closed
          */
         public BeforeCloseWithShortcutEvent(Window source) {
-            super(source);
+            super(source, CloseOriginType.SHORTCUT);
         }
     }
 
@@ -600,40 +615,34 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      *
      * @param listener the listener to register
      */
-    void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener);
+    @Deprecated
+    default void addBeforeCloseWithShortcutListener(Consumer<BeforeCloseWithShortcutEvent> listener) {
+        addBeforeWindowCloseListener(new BeforeCloseWithShortcutListenerAdapter(listener));
+    }
 
     /**
      * Removes a previously registered before close with shortcut listener.
      *
      * @param listener the listener to remove
      */
-    void removeBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener);
-
-    /**
-     * Listener to be notified when a screen is closed with one of the following approaches:
-     * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
-     */
-    @FunctionalInterface
-    interface BeforeCloseWithCloseButtonListener {
-        /**
-         * Called when a screen is closed with one of the following approaches:
-         * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
-         *
-         * @param event an event providing more information
-         */
-        void beforeCloseWithCloseButton(BeforeCloseWithCloseButtonEvent event);
+    @Deprecated
+    default void removeBeforeCloseWithShortcutListener(Consumer<BeforeCloseWithShortcutEvent> listener) {
+        removeBeforeWindowCloseListener(new BeforeCloseWithShortcutListenerAdapter(listener));
     }
 
     /**
      * An event that is fired before a screen is closed with one of the following approaches:
      * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
+     *
+     * @deprecated Use {@link BeforeCloseEvent} with {@link CloseOrigin}
      */
+    @Deprecated
     class BeforeCloseWithCloseButtonEvent extends BeforeCloseEvent {
         /**
          * @param source the window to be closed
          */
         public BeforeCloseWithCloseButtonEvent(Window source) {
-            super(source);
+            super(source, CloseOriginType.CLOSE_BUTTON);
         }
     }
 
@@ -642,14 +651,20 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      *
      * @param listener the listener to register
      */
-    void addBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener);
+    @Deprecated
+    default void addBeforeCloseWithCloseButtonListener(Consumer<BeforeCloseWithCloseButtonEvent> listener) {
+        addBeforeWindowCloseListener(new BeforeCloseWithCloseButtonListenerAdapter(listener));
+    }
 
     /**
      * Removes a previously registered before close with close button listener.
      *
      * @param listener the listener to remove
      */
-    void removeBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener);
+    @Deprecated
+    default void removeBeforeCloseWithCloseButtonListener(Consumer<BeforeCloseWithCloseButtonEvent> listener) {
+        removeBeforeWindowCloseListener(new BeforeCloseWithCloseButtonListenerAdapter(listener));
+    }
 
     /**
      * INTERNAL.
@@ -659,5 +674,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     @Deprecated
     interface Wrapper {
         Window getWrappedWindow();
+    }
+
+    /**
+     * Marker interface for all window close types, which describes the way a window was closed.
+     */
+    interface CloseOrigin {
     }
 }

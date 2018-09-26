@@ -122,8 +122,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
             return;
         }
 
-        BeforeCloseWithCloseButtonEvent event = new BeforeCloseWithCloseButtonEvent(this);
-        fireBeforeCloseWithCloseButton(event);
+        BeforeCloseEvent event = new BeforeCloseEvent(this, CloseOriginType.CLOSE_BUTTON);
+        fireBeforeClose(event);
 
         if (!event.isClosePrevented()) {
             // user has clicked on X
@@ -141,8 +141,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
                 return;
             }
 
-            BeforeCloseWithShortcutEvent event = new BeforeCloseWithShortcutEvent(this);
-            fireBeforeCloseWithShortcut(event);
+            BeforeCloseEvent event = new BeforeCloseEvent(this, CloseOriginType.SHORTCUT);
+            fireBeforeClose(event);
 
             if (!event.isClosePrevented()) {
                 getFrameOwner().close(new StandardCloseAction(Window.CLOSE_ACTION_ID));

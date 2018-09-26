@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.Dialogs.OptionDialog;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Disposable;
-import com.haulmont.cuba.gui.components.Window.BeforeCloseWithCloseButtonEvent;
-import com.haulmont.cuba.gui.components.Window.BeforeCloseWithShortcutEvent;
 import com.haulmont.cuba.gui.components.Window.HasWorkArea;
 import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -1144,7 +1142,7 @@ public class WebScreens implements Screens, WindowManager {
                         return;
                     }
 
-                    if (isCloseWithShortcutPrevented(breadCrumbs.getCurrentWindow())) {
+                    if (isWindowClosePrevented(breadCrumbs.getCurrentWindow(), CloseOriginType.SHORTCUT)) {
                         return;
                     }
 
@@ -1166,7 +1164,7 @@ public class WebScreens implements Screens, WindowManager {
             Iterator<WindowBreadCrumbs> it = getTabs(workArea).iterator();
             if (it.hasNext()) {
                 Window currentWindow = it.next().getCurrentWindow();
-                if (!isCloseWithShortcutPrevented(currentWindow)) {
+                if (!isWindowClosePrevented(currentWindow, CloseOriginType.SHORTCUT)) {
                     ui.focus();
                     currentWindow.close(Window.CLOSE_ACTION_ID);
                 }
@@ -1472,7 +1470,7 @@ public class WebScreens implements Screens, WindowManager {
                 }
 
                 if (window != currentWindow) {
-                    if (!isCloseWithCloseButtonPrevented(currentWindow)) {
+                    if (!isWindowClosePrevented(currentWindow, CloseOriginType.BREADCRUMBS)) {
                         // todo call controller instead
                         currentWindow.closeAndRun(CLOSE_ACTION_ID, this);
                     }
@@ -1507,7 +1505,7 @@ public class WebScreens implements Screens, WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                if (!isCloseWithCloseButtonPrevented(windowToClose)) {
+                if (!isWindowClosePrevented(windowToClose, CloseOriginType.CLOSE_BUTTON)) {
                     // todo call controller method
                     windowToClose.closeAndRun(CLOSE_ACTION_ID, new TabCloseTask(breadCrumbs));
                 }
@@ -1515,17 +1513,10 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    // todo provide single BeforeClose event, move to screen
-    protected boolean isCloseWithShortcutPrevented(Window window) {
-        BeforeCloseWithShortcutEvent event = new BeforeCloseWithShortcutEvent(window);
-        ((WebWindow) window).fireBeforeCloseWithShortcut(event);
-        return event.isClosePrevented();
-    }
+    protected boolean isWindowClosePrevented(Window window, Window.CloseOrigin closeOrigin) {
+        Window.BeforeCloseEvent event = new Window.BeforeCloseEvent(window, closeOrigin);
+        ((WebWindow) window).fireBeforeClose(event);
 
-    // todo provide single BeforeClose event, move to screen
-    protected boolean isCloseWithCloseButtonPrevented(Window window) {
-        BeforeCloseWithCloseButtonEvent event = new BeforeCloseWithCloseButtonEvent(window);
-        ((WebWindow) window).fireBeforeCloseWithCloseButton(event);
         return event.isClosePrevented();
     }
 

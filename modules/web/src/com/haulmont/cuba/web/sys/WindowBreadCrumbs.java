@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.components.CloseOriginType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -132,8 +133,8 @@ public class WindowBreadCrumbs extends CssLayout {
         WebWindow webWindow = (WebWindow) currentWindow;
 
         if (webWindow != null) {
-            Window.BeforeCloseWithCloseButtonEvent event = new Window.BeforeCloseWithCloseButtonEvent(webWindow);
-            webWindow.fireBeforeCloseWithCloseButton(event);
+            Window.BeforeCloseEvent event = new Window.BeforeCloseEvent(webWindow, CloseOriginType.CLOSE_BUTTON);
+            webWindow.fireBeforeClose(event);
             return event.isClosePrevented();
         }
 

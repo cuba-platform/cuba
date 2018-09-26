@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
@@ -49,6 +50,7 @@ import org.springframework.context.ApplicationListener;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -515,33 +517,17 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
-        getEventRouter().addListener(BeforeCloseWithShortcutListener.class, listener);
+    public Subscription addBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener) {
+        return getEventHub().subscribe(BeforeCloseEvent.class, listener);
     }
 
     @Override
-    public void removeBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
-        getEventRouter().removeListener(BeforeCloseWithShortcutListener.class, listener);
+    public void removeBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener) {
+        getEventHub().unsubscribe(BeforeCloseEvent.class, listener);
     }
 
-    public void fireBeforeCloseWithShortcut(BeforeCloseWithShortcutEvent event) {
-        getEventRouter().fireEvent(BeforeCloseWithShortcutListener.class,
-                BeforeCloseWithShortcutListener::beforeCloseWithShortcut, event);
-    }
-
-    @Override
-    public void addBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
-        getEventRouter().addListener(BeforeCloseWithCloseButtonListener.class, listener);
-    }
-
-    @Override
-    public void removeBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
-        getEventRouter().removeListener(BeforeCloseWithCloseButtonListener.class, listener);
-    }
-
-    public void fireBeforeCloseWithCloseButton(BeforeCloseWithCloseButtonEvent event) {
-        getEventRouter().fireEvent(BeforeCloseWithCloseButtonListener.class,
-                BeforeCloseWithCloseButtonListener::beforeCloseWithCloseButton, event);
+    public void fireBeforeClose(BeforeCloseEvent event) {
+        getEventHub().publish(BeforeCloseEvent.class, event);
     }
 
     @Override
