@@ -16,13 +16,11 @@
 
 package com.haulmont.cuba.testmodel.primary_keys;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.BaseStringIdEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity(name = "test$StringKeyEntity")
 @Table(name = "TEST_STRING_KEY")
@@ -37,6 +35,10 @@ public class StringKeyEntity extends BaseStringIdEntity {
 
     @Column(name = "NAME")
     protected String name;
+
+    @MetaProperty
+    @Transient
+    protected String description;
 
     @Override
     public String getId() {
@@ -62,5 +64,13 @@ public class StringKeyEntity extends BaseStringIdEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

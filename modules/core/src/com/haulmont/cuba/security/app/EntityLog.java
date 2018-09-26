@@ -29,7 +29,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AuditInfoProvider;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
-import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
