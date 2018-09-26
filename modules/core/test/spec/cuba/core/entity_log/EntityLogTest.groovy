@@ -257,10 +257,14 @@ class EntityLogTest extends Specification {
 
         when:
 
-        IdentityEntity entity = cont.persistence().callInTransaction { em ->
-            def e = new IdentityEntity(name: 'test1')
-            em.persist(e)
-            e
+        IdentityEntity entity = null
+        Transaction tx = cont.persistence().createTransaction()
+        try {
+            entity = new IdentityEntity(name: 'test1')
+            cont.persistence().entityManager.persist(entity)
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
@@ -273,9 +277,13 @@ class EntityLogTest extends Specification {
 
         when:
 
-        cont.persistence().runInTransaction { em ->
-            def e = em.find(IdentityEntity, entity.id)
+        tx = cont.persistence().createTransaction()
+        try {
+            IdentityEntity e = cont.persistence().entityManager.find(IdentityEntity, entity.id)
             e.name = 'test2'
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
@@ -295,10 +303,14 @@ class EntityLogTest extends Specification {
 
         when:
 
-        IntIdentityEntity entity = cont.persistence().callInTransaction { em ->
-            def e = new IntIdentityEntity(name: 'test1')
-            em.persist(e)
-            e
+        IntIdentityEntity entity = null
+        Transaction tx = cont.persistence().createTransaction()
+        try {
+            entity = new IntIdentityEntity(name: 'test1')
+            cont.persistence().entityManager.persist(entity)
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
@@ -314,6 +326,15 @@ class EntityLogTest extends Specification {
         cont.persistence().runInTransaction { em ->
             def e = em.find(IntIdentityEntity, entity.id)
             e.name = 'test2'
+        }
+
+        tx = cont.persistence().createTransaction()
+        try {
+            IntIdentityEntity e = cont.persistence().entityManager.find(IntIdentityEntity, entity.id)
+            e.name = 'test2'
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
@@ -349,8 +370,9 @@ class EntityLogTest extends Specification {
 
         when:
 
-        cont.persistence().runInTransaction { em ->
-            StringKeyEntity e = em.find(StringKeyEntity, entity.id)
+        tx = cont.persistence().createTransaction()
+        try {
+            StringKeyEntity e = cont.persistence().entityManager.find(StringKeyEntity, entity.id)
             e.name = 'test2'
             e.description = 'description2'
 
@@ -358,6 +380,9 @@ class EntityLogTest extends Specification {
             changes.addChanges(e)
             changes.addChange('description', 'description1')
             entityLog.registerModify(e, false, changes)
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
