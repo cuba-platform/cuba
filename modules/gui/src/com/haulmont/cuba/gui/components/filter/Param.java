@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.google.common.collect.Lists;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -56,6 +58,9 @@ import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @org.springframework.stereotype.Component(Param.NAME)
@@ -78,6 +83,9 @@ public class Param {
     public static final String NAME = "cuba_FilterParam";
     public static final String NULL = "NULL";
 
+    protected static final List<Class> dateTimeClasses = Lists.newArrayList(LocalDate.class, LocalDateTime.class,
+            OffsetDateTime.class);
+
     protected String name;
     protected Type type;
     protected Class javaClass;
@@ -99,6 +107,7 @@ public class Param {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected DatatypeRegistry datatypeRegistry = AppBeans.get(DatatypeRegistry.class);
     protected ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
     protected List<ParamValueChangeListener> listeners = new ArrayList<>();
@@ -539,7 +548,7 @@ public class Param {
 
         if (String.class.equals(javaClass)) {
             component = createTextField(valueProperty);
-        } else if (Date.class.isAssignableFrom(javaClass)) {
+        } else if (Date.class.isAssignableFrom(javaClass) || dateTimeClasses.contains(javaClass)) {
             component = createDateField(javaClass, valueProperty);
         } else if (Number.class.isAssignableFrom(javaClass)) {
             component = createNumberField(datatype, valueProperty);
@@ -625,10 +634,12 @@ public class Param {
         boolean dateOnly = false;
         if (property != null) {
             TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-            dateOnly = (tt == TemporalType.DATE);
+            dateOnly = tt == TemporalType.DATE || LocalDate.class.equals(javaClass);
             Object ignoreUserTimeZone = metadataTools.getMetaAnnotationValue(property, IgnoreUserTimeZone.class);
             supportTimezones = !dateOnly && !Boolean.TRUE.equals(ignoreUserTimeZone);
-        } else if (javaClass.equals(java.sql.Date.class)) {
+        } else if (LocalDate.class.equals(javaClass)) {
+            dateOnly = true;
+        } else if (java.sql.Date.class.equals(javaClass)) {
             dateOnly = true;
             if (useUserTimeZone) {
                 supportTimezones = true;
@@ -648,6 +659,7 @@ public class Param {
         }
 
         DateField<Date> dateField = componentsFactory.createComponent(DateField.class);
+        dateField.setDatatype(datatypeRegistry.get(javaClass));
 
         DateField.Resolution resolution;
         String formatStr;
@@ -857,7 +869,7 @@ public class Param {
 //            if (ds instanceof CollectionDatasource.Suspendable)
 //                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
 //            else
-                ds.refresh();
+        ds.refresh();
 //        }
 
         return ds;

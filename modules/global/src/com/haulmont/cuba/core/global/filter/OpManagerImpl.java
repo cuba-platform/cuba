@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
@@ -27,8 +28,10 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.*;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import static com.haulmont.cuba.core.global.filter.Op.*;
@@ -42,12 +45,18 @@ public class OpManagerImpl implements OpManager {
     @Inject
     protected Metadata metadata;
 
+    protected static final List<Class> dateTimeClasses = Lists.newArrayList(LocalDate.class, LocalDateTime.class,
+            OffsetDateTime.class, LocalTime.class, OffsetTime.class);
+
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
 
         else if (Date.class.isAssignableFrom(javaClass))
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
+
+        else if (dateTimeClasses.contains(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
 
         else if (Number.class.isAssignableFrom(javaClass))
