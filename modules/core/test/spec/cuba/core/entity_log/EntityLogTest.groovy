@@ -17,21 +17,12 @@
 package spec.cuba.core.entity_log
 
 import com.haulmont.bali.db.QueryRunner
-import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.PersistenceTools
-import com.haulmont.cuba.core.Query
-import com.haulmont.cuba.core.Transaction
-import com.haulmont.cuba.core.TypedQuery
+import com.haulmont.cuba.core.*
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.app.EntityAttributeChanges
-import com.haulmont.cuba.security.app.EntityLog
 import com.haulmont.cuba.security.app.EntityLogAPI
-import com.haulmont.cuba.security.entity.EntityLogItem
-import com.haulmont.cuba.security.entity.Group
-import com.haulmont.cuba.security.entity.LoggedAttribute
-import com.haulmont.cuba.security.entity.LoggedEntity
-import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.security.entity.*
 import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
@@ -45,7 +36,8 @@ import java.sql.SQLException
 
 class EntityLogTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private UUID user1Id, user2Id
@@ -341,10 +333,14 @@ class EntityLogTest extends Specification {
 
         when:
 
-        StringKeyEntity entity = cont.persistence().callInTransaction { em ->
-            def e = new StringKeyEntity(code: 'code1', name: 'test1')
-            em.persist(e)
-            e
+        Transaction tx = cont.persistence().createTransaction()
+        StringKeyEntity entity = null
+        try {
+            entity = new StringKeyEntity(code: 'code1', name: 'test1')
+            cont.persistence().entityManager.persist(entity)
+            tx.commit()
+        } finally {
+            tx.end()
         }
 
         then:
@@ -354,7 +350,7 @@ class EntityLogTest extends Specification {
         when:
 
         cont.persistence().runInTransaction { em ->
-            def e = em.find(StringKeyEntity, entity.id)
+            StringKeyEntity e = em.find(StringKeyEntity, entity.id)
             e.name = 'test2'
             e.description = 'description2'
 
