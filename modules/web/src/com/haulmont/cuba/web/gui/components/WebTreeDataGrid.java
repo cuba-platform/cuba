@@ -8,6 +8,9 @@ import com.haulmont.cuba.gui.components.data.TreeDataGridSource;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.datagrid.HierarchicalDataGridDataProvider;
 import com.haulmont.cuba.web.widgets.CubaTreeGrid;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Grid;
 
@@ -40,6 +43,11 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         }
 
         super.setDataGridSource(dataGridSource);
+    }
+
+    @Override
+    protected DataProvider<E, ?> createEmptyDataProvider() {
+        return new TreeDataProvider<>(new TreeData<>());
     }
 
     @Override

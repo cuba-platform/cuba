@@ -50,7 +50,9 @@ import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
 import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
 import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
-import com.vaadin.data.provider.ListDataProvider;
+import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
@@ -68,6 +70,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
@@ -280,8 +283,7 @@ public abstract class WebAbstractTree<C extends CubaTree<E>, E extends Entity>
             this.dataBinding.unbind();
             this.dataBinding = null;
 
-            this.component.setDataProvider(
-                    new ListDataProvider<>(Collections.emptyList()));
+            this.component.setDataProvider(createEmptyDataProvider());
         }
 
         if (treeSource != null) {
@@ -293,6 +295,10 @@ public abstract class WebAbstractTree<C extends CubaTree<E>, E extends Entity>
             initShowInfoAction();
             refreshActionsState();
         }
+    }
+
+    protected DataProvider<E, ?> createEmptyDataProvider() {
+        return new EmptyTreeDataSource<>();
     }
 
     @Override
@@ -984,5 +990,24 @@ public abstract class WebAbstractTree<C extends CubaTree<E>, E extends Entity>
     @Override
     public void focus() {
         component.focus();
+    }
+
+    protected class EmptyTreeDataSource<T>
+            extends com.vaadin.data.provider.TreeDataProvider<T>
+            implements EnhancedTreeDataProvider<T> {
+
+        public EmptyTreeDataSource() {
+            super(new TreeData<>());
+        }
+
+        @Override
+        public Stream<T> getItems() {
+            return Stream.empty();
+        }
+
+        @Override
+        public T getParent(T item) {
+            return null;
+        }
     }
 }

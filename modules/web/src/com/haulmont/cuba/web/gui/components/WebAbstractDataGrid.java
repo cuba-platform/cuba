@@ -64,7 +64,9 @@ import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrder;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.selection.MultiSelectionEvent;
@@ -803,7 +805,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
             this.dataBinding.unbind();
             this.dataBinding = null;
 
-            this.component.setDataProvider(null);
+            this.component.setDataProvider(createEmptyDataProvider());
         }
 
         if (dataGridSource != null) {
@@ -846,6 +848,10 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
             refreshActionsState();
         }
+    }
+
+    protected DataProvider<E, ?> createEmptyDataProvider() {
+        return new ListDataProvider<>(Collections.emptyList());
     }
 
     protected void setVisibleColumns(List<Column<E>> visibleColumnsOrder) {
