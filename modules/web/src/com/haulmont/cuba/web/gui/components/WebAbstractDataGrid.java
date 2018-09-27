@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.ImmutableMap;
-import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
@@ -40,7 +39,7 @@ import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.App;
@@ -84,7 +83,6 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -97,8 +95,8 @@ import java.util.stream.Collectors;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
-public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E>, E extends Entity>
-        extends WebAbstractComponent<T>
+public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E>, E extends Entity>
+        extends WebAbstractComponent<C>
         implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier,
         DataGridSourceEventsDelegate<E>, HasInnerComponents, InitializingBean {
 
@@ -108,7 +106,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     private static final Logger log = LoggerFactory.getLogger(WebAbstractDataGrid.class);
 
     /* Beans */
-    protected ApplicationContext applicationContext;
     protected MetadataTools metadataTools;
     protected Security security;
     protected Messages messages;
@@ -153,10 +150,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
     protected Registration columnCollapsingChangeListenerRegistration;
     protected Registration columnResizeListenerRegistration;
-    protected Registration sortListenerRegistration;
     protected Registration contextClickListenerRegistration;
-
-    protected com.vaadin.event.selection.SelectionListener<E> selectionListener;
 
 //    protected CubaGrid.EditorCloseListener editorCloseListener;
 //    protected CubaGrid.BeforeEditorOpenListener beforeEditorOpenListener;
@@ -202,7 +196,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
         return new GridComposition();
     }
 
-    protected abstract T createComponent();
+    protected abstract C createComponent();
 
     protected ShortcutsDelegate<ShortcutListener> createShortcutsDelegate() {
         return new ShortcutsDelegate<ShortcutListener>() {
@@ -249,11 +243,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     }
 
     @Inject
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    @Inject
     public void setMetadataTools(MetadataTools metadataTools) {
         this.metadataTools = metadataTools;
     }
@@ -280,19 +269,18 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void initComponent(Grid<E> component) {
-        selectionListener = createSelectionListener();
         setSelectionMode(SelectionMode.SINGLE);
 
         component.setColumnReorderingAllowed(true);
 
-        component.addItemClickListener(createItemClickListener());
-        component.addColumnReorderListener(createColumnReorderListener());
-        component.addSortListener(createSortListener());
+        component.addItemClickListener(this::onItemClick);
+        component.addColumnReorderListener(this::onColumnReorder);
+        component.addSortListener(this::onSort);
 
         component.setSizeUndefined();
         component.setHeightMode(HeightMode.UNDEFINED);
 
-        component.setStyleGenerator(createRowStyleGenerator());
+        component.setStyleGenerator(this::getGeneratedRowStyle);
     }
 
     protected void initComponentComposition(GridComposition componentComposition) {
@@ -304,57 +292,106 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
         componentComposition.addShortcutListener(createEnterShortcutListener());
     }
 
-    protected com.vaadin.event.SortEvent.SortListener<GridSortOrder<E>> createSortListener() {
-        return (com.vaadin.event.SortEvent.SortListener<GridSortOrder<E>>) event -> {
-            if (component.getDataProvider() instanceof SortableDataProvider) {
-                //noinspection unchecked
-                SortableDataProvider<E> dataProvider = (SortableDataProvider<E>) component.getDataProvider();
+    protected void onItemClick(Grid.ItemClick<E> e) {
+        CubaUI ui = (CubaUI) component.getUI();
+        if (!ui.isAccessibleForUser(component)) {
+            LoggerFactory.getLogger(WebDataGrid.class)
+                    .debug("Ignore click attempt because DataGrid is inaccessible for user");
+            return;
+        }
 
-                List<GridSortOrder<E>> sortOrders = event.getSortOrder();
-                if (sortOrders.isEmpty()) {
-                    dataProvider.resetSortOrder();
-                } else {
-                    GridSortOrder<E> sortOrder = sortOrders.get(0);
+        com.vaadin.shared.MouseEventDetails vMouseEventDetails = e.getMouseEventDetails();
+        if (vMouseEventDetails.isDoubleClick() && e.getItem() != null
+                && !WebAbstractDataGrid.this.isEditorEnabled()) {
+            // note: for now Grid doesn't send double click if editor is enabled,
+            // but it's better to handle it manually
+            handleDoubleClickAction();
+        }
 
-                    Column<E> column = getColumnByGridColumn(sortOrder.getSorted());
-                    if (column != null) {
-                        MetaPropertyPath propertyPath = column.getPropertyPath();
-                        boolean ascending = com.vaadin.shared.data.sort.SortDirection.ASCENDING
-                                .equals(sortOrder.getDirection());
-                        dataProvider.sort(new Object[]{propertyPath}, new boolean[]{ascending});
-                    }
-                }
-            }
-        };
-    }
+        if (hasSubscriptions(ItemClickEvent.class)) {
+            MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(vMouseEventDetails);
 
-    protected com.vaadin.event.selection.SelectionListener<E> createSelectionListener() {
-        return e -> {
-            DataGridSource<E> dataGridSource = getDataGridSource();
-
-            if (dataGridSource == null
-                    || dataGridSource.getState() == BindingState.INACTIVE) {
+            //noinspection unchecked
+            E item = e.getItem();
+            if (item == null) {
+                // this can happen if user clicked on an item which is removed from the
+                // datasource, so we don't want to send such event because it's useless
                 return;
             }
 
-            Set<E> selected = getSelected();
-            if (selected.isEmpty()) {
-                dataGridSource.setSelectedItem(null);
-            } else {
-                // reset selection and select new item
-                if (isMultiSelect()) {
-                    dataGridSource.setSelectedItem(null);
-                }
+            Column<E> column = getColumnById(item.getId());
 
-                E newItem = selected.iterator().next();
-                dataGridSource.setSelectedItem(newItem);
+            ItemClickEvent<E> event = new ItemClickEvent<>(WebAbstractDataGrid.this,
+                    mouseEventDetails, item, item.getId(), column != null ? column.getId() : null);
+            publish(ItemClickEvent.class, event);
+        }
+    }
+
+    protected void onColumnReorder(Grid.ColumnReorderEvent e) {
+        if (e.isUserOriginated()) {
+            // Grid doesn't know about columns hidden by security permissions,
+            // so we need to return them back to they previous positions
+            columnsOrder = restoreColumnsOrder(getColumnsOrderInternal());
+
+            ColumnReorderEvent event = new ColumnReorderEvent(WebAbstractDataGrid.this);
+            publish(ColumnReorderEvent.class, event);
+        }
+    }
+
+    protected void onSort(com.vaadin.event.SortEvent<GridSortOrder<E>> e) {
+        if (component.getDataProvider() instanceof SortableDataProvider) {
+            //noinspection unchecked
+            SortableDataProvider<E> dataProvider = (SortableDataProvider<E>) component.getDataProvider();
+
+            List<GridSortOrder<E>> sortOrders = e.getSortOrder();
+            if (sortOrders.isEmpty()) {
+                dataProvider.resetSortOrder();
+            } else {
+                GridSortOrder<E> sortOrder = sortOrders.get(0);
+
+                Column<E> column = getColumnByGridColumn(sortOrder.getSorted());
+                if (column != null) {
+                    MetaPropertyPath propertyPath = column.getPropertyPath();
+                    boolean ascending = com.vaadin.shared.data.sort.SortDirection.ASCENDING
+                            .equals(sortOrder.getDirection());
+                    dataProvider.sort(new Object[]{propertyPath}, new boolean[]{ascending});
+                }
+            }
+        }
+
+        if (e.isUserOriginated()) {
+            List<SortOrder> sortOrders = convertToDataGridSortOrder(e.getSortOrder());
+
+            SortEvent event = new SortEvent(WebAbstractDataGrid.this, sortOrders);
+            publish(SortEvent.class, event);
+        }
+    }
+
+    protected void onSelectionChange(com.vaadin.event.selection.SelectionEvent<E> e) {
+        DataGridSource<E> dataGridSource = getDataGridSource();
+
+        if (dataGridSource == null
+                || dataGridSource.getState() == BindingState.INACTIVE) {
+            return;
+        }
+
+        Set<E> selected = getSelected();
+        if (selected.isEmpty()) {
+            dataGridSource.setSelectedItem(null);
+        } else {
+            // reset selection and select new item
+            if (isMultiSelect()) {
+                dataGridSource.setSelectedItem(null);
             }
 
-            LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
-            publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
+            E newItem = selected.iterator().next();
+            dataGridSource.setSelectedItem(newItem);
+        }
 
-            fireSelectionEvent(e);
-        };
+        LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+        publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
+
+        fireSelectionEvent(e);
     }
 
     protected void fireSelectionEvent(com.vaadin.event.selection.SelectionEvent<E> e) {
@@ -402,56 +439,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
                         }
                     }
                 });
-    }
-
-    protected com.vaadin.ui.components.grid.ItemClickListener<E> createItemClickListener() {
-        return e -> {
-            CubaUI ui = (CubaUI) component.getUI();
-            if (!ui.isAccessibleForUser(component)) {
-                LoggerFactory.getLogger(WebDataGrid.class)
-                        .debug("Ignore click attempt because DataGrid is inaccessible for user");
-                return;
-            }
-
-            com.vaadin.shared.MouseEventDetails vMouseEventDetails = e.getMouseEventDetails();
-            if (vMouseEventDetails.isDoubleClick() && e.getItem() != null
-                    && !WebAbstractDataGrid.this.isEditorEnabled()) {
-                // note: for now Grid doesn't send double click if editor is enabled,
-                // but it's better to handle it manually
-                handleDoubleClickAction();
-            }
-
-            if (hasSubscriptions(ItemClickEvent.class)) {
-                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(vMouseEventDetails);
-
-                //noinspection unchecked
-                E item = e.getItem();
-                if (item == null) {
-                    // this can happen if user clicked on an item which is removed from the
-                    // datasource, so we don't want to send such event because it's useless
-                    return;
-                }
-
-                Column<E> column = getColumnById(item.getId());
-
-                ItemClickEvent<E> event = new ItemClickEvent<>(WebAbstractDataGrid.this,
-                        mouseEventDetails, item, item.getId(), column != null ? column.getId() : null);
-                publish(ItemClickEvent.class, event);
-            }
-        };
-    }
-
-    protected com.vaadin.ui.components.grid.ColumnReorderListener createColumnReorderListener() {
-        return e -> {
-            if (e.isUserOriginated()) {
-                // Grid doesn't know about columns hidden by security permissions,
-                // so we need to return them back to they previous positions
-                columnsOrder = restoreColumnsOrder(getColumnsOrderInternal());
-
-                ColumnReorderEvent event = new ColumnReorderEvent(WebAbstractDataGrid.this);
-                publish(ColumnReorderEvent.class, event);
-            }
-        };
     }
 
     @Override
@@ -591,10 +578,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
             }
         }
         return null;
-    }
-
-    protected RowStyleGeneratorAdapter<E> createRowStyleGenerator() {
-        return new RowStyleGeneratorAdapter<>();
     }
 
     @Override
@@ -1515,7 +1498,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
         // Every time we change selection mode, the new selection model is set,
         // so we need to add selection listener again.
-        component.getSelectionModel().addSelectionListener(selectionListener);
+        component.getSelectionModel().addSelectionListener(this::onSelectionChange);
     }
 
     @Override
@@ -2182,7 +2165,7 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
     @SuppressWarnings("unchecked")
     @Override
-    public Function<E, String>getRowDescriptionProvider() {
+    public Function<E, String> getRowDescriptionProvider() {
         return (Function<E, String>) rowDescriptionProvider;
     }
 
@@ -2196,16 +2179,15 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
         this.rowDescriptionProvider = provider;
 
         if (provider != null) {
-            component.setDescriptionGenerator(createRowDescriptionGenerator(),
+            component.setDescriptionGenerator(this::getRowDescription,
                     WebWrapperUtils.toVaadinContentMode(contentMode));
         } else {
             component.setDescriptionGenerator(null);
         }
     }
 
-    protected DescriptionGenerator<E> createRowDescriptionGenerator() {
-        return item ->
-                rowDescriptionProvider.apply(item);
+    protected String getRowDescription(E item) {
+        return rowDescriptionProvider.apply(item);
     }
 
     @Override
@@ -2356,12 +2338,12 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public Subscription addSortListener(Consumer<SortEvent> listener) {
-        if (sortListenerRegistration == null) {
-            sortListenerRegistration = component.addSortListener(this::onSort);
-        }
-        getEventHub().subscribe(SortEvent.class, listener);
+        return getEventHub().subscribe(SortEvent.class, listener);
+    }
 
-        return () -> removeSortListener(listener);
+    @Override
+    public void removeSortListener(Consumer<SortEvent> listener) {
+        unsubscribe(SortEvent.class, listener);
     }
 
     @Override
@@ -2436,26 +2418,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void removeItemClickListener(Consumer<ItemClickEvent<E>> listener) {
         unsubscribe(ItemClickEvent.class, (Consumer) listener);
-    }
-
-    protected void onSort(com.vaadin.event.SortEvent<GridSortOrder<E>> e) {
-        if (e.isUserOriginated()) {
-            List<SortOrder> sortOrders = convertToDataGridSortOrder(e.getSortOrder());
-
-            SortEvent event = new SortEvent(WebAbstractDataGrid.this, sortOrders);
-            publish(SortEvent.class, event);
-        }
-    }
-
-    @Override
-    public void removeSortListener(Consumer<SortEvent> listener) {
-        unsubscribe(SortEvent.class, listener);
-
-        if (!hasSubscriptions(SortEvent.class)
-                && sortListenerRegistration != null) {
-            sortListenerRegistration.remove();
-            sortListenerRegistration = null;
-        }
     }
 
     @Override
@@ -2635,14 +2597,12 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void setDetailsGenerator(DetailsGenerator<E> detailsGenerator) {
         this.detailsGenerator = detailsGenerator;
-        component.setDetailsGenerator(detailsGenerator != null ? createDetailsGenerator() : null);
+        component.setDetailsGenerator(detailsGenerator != null ? this::getRowDetails : null);
     }
 
-    protected com.vaadin.ui.components.grid.DetailsGenerator<E> createDetailsGenerator() {
-        return (com.vaadin.ui.components.grid.DetailsGenerator<E>) item -> {
-            com.haulmont.cuba.gui.components.Component component = detailsGenerator.getDetails(item);
-            return component != null ? component.unwrapComposition(Component.class) : null;
-        };
+    protected Component getRowDetails(E item) {
+        com.haulmont.cuba.gui.components.Component component = detailsGenerator.getDetails(item);
+        return component != null ? component.unwrapComposition(Component.class) : null;
     }
 
     @Override
@@ -2663,13 +2623,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
-    }
-
-    protected class RowStyleGeneratorAdapter<T extends E> implements StyleGenerator<T> {
-        @Override
-        public String apply(T item) {
-            return getGeneratedRowStyle(item);
-        }
     }
 
     @Nullable
@@ -3750,169 +3703,6 @@ public abstract class WebAbstractDataGrid<T extends Grid<E> & CubaEnhancedGrid<E
             } else {
                 grid.setWidth(100, Unit.PERCENTAGE);
             }
-        }
-    }
-
-    @Deprecated
-    public class CollectionDsListenersWrapper implements
-            Datasource.ItemChangeListener,
-            Datasource.ItemPropertyChangeListener,
-            Datasource.StateChangeListener,
-            CollectionDatasource.CollectionChangeListener {
-
-        protected WeakItemChangeListener weakItemChangeListener;
-        protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
-        protected WeakStateChangeListener weakStateChangeListener;
-        protected WeakCollectionChangeListener weakCollectionChangeListener;
-
-        private EventRouter eventRouter;
-
-        /**
-         * Use EventRouter for listeners instead of fields with listeners List.
-         *
-         * @return lazily initialized {@link EventRouter} instance.
-         * @see EventRouter
-         */
-        protected EventRouter getEventRouter() {
-            if (eventRouter == null) {
-                eventRouter = new EventRouter();
-            }
-            return eventRouter;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
-            // #PL-2035, reload selection from ds
-            Set<E> selectedItems = component.getSelectedItems();
-            if (selectedItems == null) {
-                selectedItems = Collections.emptySet();
-            }
-
-            //noinspection unchecked
-            Set<E> newSelection = selectedItems.stream()
-                    .filter(entity -> e.getDs().containsItem(entity.getId()))
-                    .collect(Collectors.toSet());
-
-            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                newSelection.add((E) e.getDs().getItem());
-            }
-
-            if (newSelection.isEmpty()) {
-                setSelected((E) null);
-            } else {
-                setSelectedItems(newSelection);
-            }
-
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            if (getEventRouter().hasListeners(CollectionDatasource.CollectionChangeListener.class)) {
-                getEventRouter().fireEvent(CollectionDatasource.CollectionChangeListener.class,
-                        CollectionDatasource.CollectionChangeListener::collectionChanged, e);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void itemChanged(Datasource.ItemChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            if (getEventRouter().hasListeners(Datasource.ItemChangeListener.class)) {
-                getEventRouter().fireEvent(Datasource.ItemChangeListener.class,
-                        Datasource.ItemChangeListener::itemChanged, e);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            if (getEventRouter().hasListeners(Datasource.ItemPropertyChangeListener.class)) {
-                getEventRouter().fireEvent(Datasource.ItemPropertyChangeListener.class,
-                        Datasource.ItemPropertyChangeListener::itemPropertyChanged, e);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void stateChanged(Datasource.StateChangeEvent e) {
-            for (Action action : getActions()) {
-                action.refreshState();
-            }
-
-            if (getEventRouter().hasListeners(Datasource.StateChangeListener.class)) {
-                getEventRouter().fireEvent(Datasource.StateChangeListener.class,
-                        Datasource.StateChangeListener::stateChanged, e);
-            }
-        }
-
-        public void addCollectionChangeListener(CollectionDatasource.CollectionChangeListener listener) {
-            getEventRouter().addListener(CollectionDatasource.CollectionChangeListener.class, listener);
-        }
-
-        public void removeCollectionChangeListener(CollectionDatasource.CollectionChangeListener listener) {
-            getEventRouter().removeListener(CollectionDatasource.CollectionChangeListener.class, listener);
-        }
-
-        public void addItemChangeListener(Datasource.ItemChangeListener listener) {
-            getEventRouter().addListener(Datasource.ItemChangeListener.class, listener);
-        }
-
-        public void removeItemChangeListener(Datasource.ItemChangeListener listener) {
-            getEventRouter().removeListener(Datasource.ItemChangeListener.class, listener);
-        }
-
-        public void addItemPropertyChangeListener(Datasource.ItemPropertyChangeListener listener) {
-            getEventRouter().addListener(Datasource.ItemPropertyChangeListener.class, listener);
-        }
-
-        public void removeItemPropertyChangeListener(Datasource.ItemPropertyChangeListener listener) {
-            getEventRouter().removeListener(Datasource.ItemPropertyChangeListener.class, listener);
-        }
-
-        public void addStateChangeListener(Datasource.StateChangeListener listener) {
-            getEventRouter().addListener(Datasource.StateChangeListener.class, listener);
-        }
-
-        public void removeStateChangeListener(Datasource.StateChangeListener listener) {
-            getEventRouter().removeListener(Datasource.StateChangeListener.class, listener);
-        }
-
-        @SuppressWarnings("unchecked")
-        public void bind(CollectionDatasource ds) {
-            weakItemChangeListener = new WeakItemChangeListener(ds, this);
-            ds.addItemChangeListener(weakItemChangeListener);
-
-            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(ds, this);
-            ds.addItemPropertyChangeListener(weakItemPropertyChangeListener);
-
-            weakStateChangeListener = new WeakStateChangeListener(ds, this);
-            ds.addStateChangeListener(weakStateChangeListener);
-
-            weakCollectionChangeListener = new WeakCollectionChangeListener(ds, this);
-            ds.addCollectionChangeListener(weakCollectionChangeListener);
-        }
-
-        @SuppressWarnings("unchecked")
-        public void unbind(CollectionDatasource ds) {
-            ds.removeItemChangeListener(weakItemChangeListener);
-            weakItemChangeListener = null;
-
-            ds.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
-            weakItemPropertyChangeListener = null;
-
-            ds.removeStateChangeListener(weakStateChangeListener);
-            weakStateChangeListener = null;
-
-            ds.removeCollectionChangeListener(weakCollectionChangeListener);
-            weakCollectionChangeListener = null;
         }
     }
 }
