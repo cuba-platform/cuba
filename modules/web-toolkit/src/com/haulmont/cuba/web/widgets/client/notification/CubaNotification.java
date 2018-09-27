@@ -55,9 +55,13 @@ public class CubaNotification extends VNotification {
 
     @Override
     protected void beforeAddNotificationToCollection() {
+        if (!isTrayNotification(getElement())) {
+            return;
+        }
+
         for (int i = NOTIFICATIONS.size() - 1; i >= 0; i--) {
             final Element el = NOTIFICATIONS.get(i).getElement();
-            if (el.hasClassName("v-position-bottom") && el.hasClassName(TRAY_STYLE)) {
+            if (isTrayNotification(el)) {
                 int notificationPosition = 0;
                 try {
                     notificationPosition = Integer.valueOf(el.getStyle()
@@ -68,7 +72,7 @@ public class CubaNotification extends VNotification {
                             .getRequiredHeight(getElement());
                 }
 
-                notificationPosition += (i == NOTIFICATIONS.size() - 1) ? (2 * MARGIN_SIZE) : MARGIN_SIZE;
+                notificationPosition += isLastTrayNotification(i) ? (2 * MARGIN_SIZE) : MARGIN_SIZE;
                 el.getStyle().setPropertyPx("bottom", notificationPosition);
             }
         }
@@ -81,10 +85,14 @@ public class CubaNotification extends VNotification {
         }
 
         Element removedElement = removedNotification.getElement();
+        if (!isTrayNotification(removedElement)) {
+            return;
+        }
+
         int removedElementHeight = WidgetUtil.getRequiredHeight(removedElement);
         for (int i = removedIdx - 1; i >= 0; i--) {
             Element el = NOTIFICATIONS.get(i).getElement();
-            if (el.hasClassName("v-position-bottom") && el.hasClassName(TRAY_STYLE)) {
+            if (isTrayNotification(el)) {
                 int notificationPosition = 0;
                 if (i == NOTIFICATIONS.size() - 1) {
                     notificationPosition = MARGIN_SIZE;
@@ -100,5 +108,22 @@ public class CubaNotification extends VNotification {
                 el.getStyle().setPropertyPx("bottom", notificationPosition);
             }
         }
+    }
+
+    protected boolean isTrayNotification(Element element) {
+        return element.hasClassName("v-position-bottom") && element.hasClassName(TRAY_STYLE);
+    }
+
+    protected boolean isLastTrayNotification(int index) {
+        int lastTrayIndex = 0;
+        for (int i = NOTIFICATIONS.size() - 1; i > 0; i--) {
+            Element notification = NOTIFICATIONS.get(i).getElement();
+            if (isTrayNotification(notification)) {
+                lastTrayIndex = i;
+                break;
+            }
+        }
+
+        return lastTrayIndex == index;
     }
 }
