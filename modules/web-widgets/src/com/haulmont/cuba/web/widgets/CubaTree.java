@@ -32,6 +32,7 @@ import com.vaadin.ui.components.grid.SingleSelectionModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -97,7 +98,7 @@ public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
     }
 
     public void expandAll() {
-        expand(getItems().collect(Collectors.toList()));
+        expandRecursively(getChildren(null), Integer.MAX_VALUE);
     }
 
     public void expandItemWithParents(T item) {
@@ -113,19 +114,11 @@ public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
     }
 
     public void collapseAll() {
-        collapse(getItems().collect(Collectors.toList()));
+        collapseRecursively(getChildren(null), Integer.MAX_VALUE);
     }
 
     public void collapseItemWithChildren(T item) {
-        Collection<T> itemsToCollapse = getItemWithChildren(item)
-                .collect(Collectors.toList());
-        collapse(itemsToCollapse);
-    }
-
-    protected Stream<T> getItemWithChildren(T item) {
-        return Stream.concat(Stream.of(item), hasChildren(item)
-                ? getChildren(item).stream().flatMap(this::getItemWithChildren)
-                : Stream.empty());
+        collapseRecursively(Collections.singleton(item), Integer.MAX_VALUE);
     }
 
     public void expandUpTo(int level) {

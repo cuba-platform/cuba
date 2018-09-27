@@ -35,6 +35,12 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         return new CubaTreeGrid<>();
     }
 
+    @Nullable
+    @Override
+    public TreeDataGridSource<E> getDataGridSource() {
+        return (TreeDataGridSource<E>) super.getDataGridSource();
+    }
+
     @Override
     public void setDataGridSource(DataGridSource<E> dataGridSource) {
         if (dataGridSource != null
@@ -56,10 +62,6 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
         CubaTreeGrid<E> treeGrid = (CubaTreeGrid<E>) component;
         treeGrid.setItemCollapseAllowedProvider(itemCollapseAllowedProvider::test);
-    }
-
-    protected TreeDataGridSource<E> getTreeDataGridSource() {
-        return (TreeDataGridSource<E>) getDataGridSource();
     }
 
     @Override
@@ -112,6 +114,13 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     }
 
     @Override
+    public void expandAll() {
+        if (getDataGridSource() != null) {
+            expandRecursively(getDataGridSource().getChildren(null), Integer.MAX_VALUE);
+        }
+    }
+
+    @Override
     public void collapse(Collection<E> items) {
         component.collapse(items);
     }
@@ -119,6 +128,13 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     @Override
     public void collapseRecursively(Stream<E> items, int depth) {
         component.collapseRecursively(items, depth);
+    }
+
+    @Override
+    public void collapseAll() {
+        if (getDataGridSource() != null) {
+            collapseRecursively(getDataGridSource().getChildren(null), Integer.MAX_VALUE);
+        }
     }
 
     @Override

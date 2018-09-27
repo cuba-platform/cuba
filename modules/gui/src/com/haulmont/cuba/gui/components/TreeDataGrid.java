@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.TreeDataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.HierarchicalDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -55,6 +56,10 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
             setDataGridSource(new HierarchicalDatasourceDataGridAdapter((HierarchicalDatasource) datasource));
         }
     }
+
+    @Nullable
+    @Override
+    TreeDataGridSource<E> getDataGridSource();
 
     /**
      * Get the currently set hierarchy column. The hierarchy column is a column
@@ -148,6 +153,13 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
     }
 
     /**
+     * Expands all items.
+     * <p>
+     * This method will <i>not</i> fire events for expanded nodes.
+     */
+    void expandAll();
+
+    /**
      * Expands the given items and their children recursively until the given depth.
      * <p>
      * {@code depth} describes the maximum distance between a given item and its descendant,
@@ -218,6 +230,13 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * @see #collapseRecursively(Collection, int)
      */
     void collapseRecursively(Stream<E> items, int depth);
+
+    /**
+     * Collapses all items.
+     * <p>
+     * This method will <i>not</i> fire events for expanded nodes.
+     */
+    void collapseAll();
 
     /**
      * Returns whether a given item is expanded or collapsed.
