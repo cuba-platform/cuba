@@ -18,12 +18,19 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import org.eclipse.persistence.platform.database.SQLServerPlatform;
 
+import java.util.UUID;
+
 public class CubaSQLServerPlatform extends SQLServerPlatform {
 
     @Override
     public Object convertObject(Object sourceObject, Class javaClass) {
-        if (sourceObject != null && sourceObject.getClass().getName().equals("microsoft.sql.DateTimeOffset"))
+        if (sourceObject != null && sourceObject.getClass().getName().equals("microsoft.sql.DateTimeOffset")) {
             return super.convertObject(sourceObject.toString(), javaClass);
+        }
+
+        if (sourceObject instanceof UUID && javaClass == String.class) {
+            return sourceObject.toString().toUpperCase();
+        }
 
         return super.convertObject(sourceObject, javaClass);
     }
