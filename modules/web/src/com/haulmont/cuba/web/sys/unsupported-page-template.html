@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2008-2018 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html,
+        body {
+          margin: 0;
+          font: 400 1em/1.5 "Helvetica Neue", Roboto, "Segoe UI", sans-serif;
+          font-size: 1.1em;
+        }
+
+        .notification {
+          margin: 40px;
+          text-align: center;
+          vertical-align: middle;
+        }
+
+        .browser-item-container {
+          display: inline-block;
+          width: 450px;
+        }
+
+        .browser-item {
+          margin-bottom: 10px;
+          height: 70px;
+          text-align: left;
+          width: 450px;
+        }
+
+        .browser-item img {
+          position: absolute;
+          height: 70px;
+          width: 70px;
+        }
+
+        .browser-item p {
+          height: 70px;
+          line-height: 70px;
+          margin: 0 0 0 80px;
+          position: absolute;
+        }
+
+        a {
+          color: #197de1;
+          text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="notification">
+    <p>${captionMessage}</p>
+    <p>${descriptionMessage}</p>
+    <p>${browserListCaption}</p>
+    <div class="browser-item-container">
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/chrome.png">
+            <p>${chromeMessage}</p>
+        </div>
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/firefox.png">
+            <p>${firefoxMessage}</p>
+        </div>
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/safari.png">
+            <p>${safariMessage}</p>
+        </div>
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/opera.png">
+            <p>${operaMessage}</p>
+        </div>
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/edge.png">
+            <p>${edgeMessage}</p>
+        </div>
+        <div class="browser-item">
+            <img src="VAADIN/themes/halo/images/browsers/explorer.png">
+            <p>${explorerMessage}</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

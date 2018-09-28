@@ -176,6 +176,8 @@ public class CubaVaadinServletService extends VaadinServletService
                 // add support for jquery file upload
                 cubaRequestHandlers.add(handler);
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
+            } else if (handler instanceof UnsupportedBrowserHandler) {
+                cubaRequestHandlers.add(new CubaUnsupportedBrowserHandler());
             } else if (handler instanceof ServletUIInitHandler) {
                 cubaRequestHandlers.add(new CubaServletUIInitHandler(servletContext));
             } else if (handler instanceof PushRequestHandler) {

@@ -470,4 +470,14 @@ public interface WebConfig extends Config {
     @Source(type = SourceType.APP)
     @DefaultLong(60 * 60 * 24 * 365)
     long getWebJarResourcesCacheTime();
+
+    /**
+     * Defines the path to the unsupported HTML page that is shown when an application doesn't support the current
+     * browser version.
+     *
+     * @return path to the unsupported HTML page
+     */
+    @Property("cuba.web.unsupportedPagePath")
+    @DefaultString("/com/haulmont/cuba/web/sys/unsupported-page-template.html")
+    String getUnsupportedPagePath();
 }
