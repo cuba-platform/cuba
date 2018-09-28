@@ -1782,38 +1782,124 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             return false;
         }
 
+        boolean settingsChanged = false;
+
         if (isUsePresentations()) {
-            element.addAttribute("textSelection", String.valueOf(component.isTextSelectionEnabled()));
+            String textSelection = String.valueOf(component.isTextSelectionEnabled());
+            if (!textSelection.equals(element.attributeValue("textSelection"))) {
+                element.addAttribute("textSelection", textSelection);
+
+                settingsChanged = true;
+            }
         }
+
+        String settingsSortProperty = null;
+        String settingsSortAscending = null;
 
         Element columnsElem = element.element("columns");
+
         if (columnsElem != null) {
-            element.remove(columnsElem);
+            settingsSortProperty = columnsElem.attributeValue("sortProperty");
+            settingsSortAscending = columnsElem.attributeValue("sortAscending");
         }
-        columnsElem = element.addElement("columns");
+
+        boolean commonSettingsChanged = isCommonTableSettingsChanged(columnsElem);
+
+        if (commonSettingsChanged) {
+            if (columnsElem != null) {
+                element.remove(columnsElem);
+            }
+            columnsElem = element.addElement("columns");
+
+            Object[] visibleColumns = component.getVisibleColumns();
+            for (Object column : visibleColumns) {
+                Element colElem = columnsElem.addElement("columns");
+                colElem.addAttribute("id", column.toString());
+
+                int width = component.getColumnWidth(column);
+                if (width > -1)
+                    colElem.addAttribute("width", String.valueOf(width));
+
+                boolean visible = !component.isColumnCollapsed(column);
+                colElem.addAttribute("visible", Boolean.toString(visible));
+            }
+
+            settingsChanged = true;
+        }
+
+        if (isSettingsSortPropertyChanged(settingsSortProperty, settingsSortAscending) || commonSettingsChanged) {
+            MetaPropertyPath sortProperty = (MetaPropertyPath) component.getSortContainerPropertyId();
+            if (sortProperty != null) {
+                boolean sortAscending = component.isSortAscending();
+
+                if (columnsElem != null) {
+                    columnsElem.addAttribute("sortProperty", sortProperty.toString());
+                    columnsElem.addAttribute("sortAscending", Boolean.toString(sortAscending));
+
+                    settingsChanged = true;
+                }
+            }
+        }
+
+        return settingsChanged;
+    }
+
+    protected boolean isCommonTableSettingsChanged(Element columnsElem) {
+        if (columnsElem == null) {
+            return true;
+        }
+
+        List<Element> settingsColumnList = columnsElem.elements("columns");
 
         Object[] visibleColumns = component.getVisibleColumns();
-        for (Object column : visibleColumns) {
-            Element colElem = columnsElem.addElement("columns");
-            colElem.addAttribute("id", column.toString());
+        for (int i = 0; i < visibleColumns.length; i++) {
+            Object columnId = visibleColumns[i];
 
-            int width = component.getColumnWidth(column);
-            if (width > -1)
-                colElem.addAttribute("width", String.valueOf(width));
+            Element settingsColumn = settingsColumnList.get(i);
+            String settingsColumnId = settingsColumn.attributeValue("id");
 
-            Boolean visible = !component.isColumnCollapsed(column);
-            colElem.addAttribute("visible", visible.toString());
+            if (columnId.toString().equals(settingsColumnId)) {
+                int columnWidth = component.getColumnWidth(columnId);
+
+                String settingsColumnWidth = settingsColumn.attributeValue("width");
+                int settingColumnWidth = settingsColumnWidth == null ? -1 : Integer.parseInt(settingsColumnWidth);
+
+                if (columnWidth != settingColumnWidth) {
+                    return true;
+                }
+
+                boolean columnVisible = !component.isColumnCollapsed(columnId);
+                boolean settingsColumnVisible = Boolean.parseBoolean(settingsColumn.attributeValue("visible"));
+
+                if (columnVisible != settingsColumnVisible) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
 
+        return false;
+    }
+
+    protected boolean isSettingsSortPropertyChanged(String settingsSortProperty, String settingsSortAscending) {
         MetaPropertyPath sortProperty = (MetaPropertyPath) component.getSortContainerPropertyId();
-        if (sortProperty != null) {
-            Boolean sortAscending = component.isSortAscending();
 
-            columnsElem.addAttribute("sortProperty", sortProperty.toString());
-            columnsElem.addAttribute("sortAscending", sortAscending.toString());
+        if (settingsSortProperty == null && sortProperty == null) {
+            return false;
         }
 
-        return true;
+        if (settingsSortProperty == null ||
+                !sortProperty.toString().equals(settingsSortProperty)) {
+            return true;
+        }
+
+        Boolean sortAscending = component.isSortAscending();
+        if (!sortAscending.equals(Boolean.parseBoolean(settingsSortAscending))) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

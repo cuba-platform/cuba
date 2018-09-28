@@ -282,6 +282,10 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             return false;
         }
 
+        if (!isSettingsChanged(element)) {
+            return false;
+        }
+
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {
             element.remove(groupBoxElement);
@@ -395,5 +399,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         MarginInfo vMargin = component.getOuterMargin();
         return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
                 vMargin.hasLeft());
+    }
+
+    protected boolean isSettingsChanged(Element element) {
+        Element groupBoxElement = element.element("groupBox");
+
+        if (groupBoxElement == null) {
+            return true;
+        }
+
+        String expanded = groupBoxElement.attributeValue("expanded"); // old value
+        return isExpanded() != Boolean.parseBoolean(expanded);
     }
 }

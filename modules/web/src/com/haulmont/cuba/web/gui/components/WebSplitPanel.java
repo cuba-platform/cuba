@@ -199,6 +199,10 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             return false;
         }
 
+        if (!isSplitPanelSettingsChanged(element)) {
+            return false;
+        }
+
         Element e = element.element("position");
         if (e == null) {
             e = element.addElement("position");
@@ -360,5 +364,32 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
         unsubscribe(SplitPositionChangeEvent.class, listener);
+    }
+
+    protected boolean isSplitPanelSettingsChanged(Element splitPanelElement) {
+        if (splitPanelElement == null) {
+            return true;
+        }
+
+        Element positionElement = splitPanelElement.element("position");
+        if (positionElement == null) {
+            return true;
+        }
+
+        String settingsUnit = positionElement.attributeValue("unit");
+        String unit = String.valueOf(component.getSplitPositionUnit());
+
+        if (!unit.equals(settingsUnit)) {
+            return true;
+        }
+
+        String settingsValue = positionElement.attributeValue("value");
+        String value = String.valueOf(component.getSplitPosition());
+
+        if (!value.equals(settingsValue)) {
+            return true;
+        }
+
+        return false;
     }
 }

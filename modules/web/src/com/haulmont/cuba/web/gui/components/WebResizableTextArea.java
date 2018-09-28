@@ -146,6 +146,10 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
             return false;
         }
 
+        if (!isResizableTextAreaSettingsChanged(element)) {
+            return false;
+        }
+
         String width = String.valueOf(getWidth()) + wrapper.getWidthUnits().toString();
         String height = String.valueOf(getHeight()) + wrapper.getHeightUnits().toString();
         element.addAttribute("width", width);
@@ -195,5 +199,27 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     public void setResizableDirection(ResizeDirection direction) {
         Preconditions.checkNotNullArgument(direction);
         wrapper.setResizableDirection(WebWrapperUtils.toVaadinResizeDirection(direction));
+    }
+
+    protected boolean isResizableTextAreaSettingsChanged(Element element) {
+        if (element == null) {
+            return true;
+        }
+
+        String settingsWidth = element.attributeValue("width");
+        String width = String.valueOf(getWidth()) + wrapper.getWidthUnits().toString();
+
+        if (!width.equals(settingsWidth)) {
+            return true;
+        }
+
+        String settingsHeight = element.attributeValue("height");
+        String height = String.valueOf(getHeight()) + wrapper.getHeightUnits().toString();
+
+        if (!height.equals(settingsHeight)) {
+            return true;
+        }
+
+        return false;
     }
 }

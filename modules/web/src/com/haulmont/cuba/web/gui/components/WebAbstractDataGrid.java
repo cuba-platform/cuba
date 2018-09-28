@@ -2047,33 +2047,116 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             return false;
         }
 
+        boolean settingsChanged = false;
+
         Element columnsElem = element.element("columns");
+
+        String sortColumnId = null;
+        String sortDirection = null;
+
         if (columnsElem != null) {
-            element.remove(columnsElem);
+            sortColumnId = columnsElem.attributeValue("sortColumnId");
+            sortDirection = columnsElem.attributeValue("sortDirection");
         }
-        columnsElem = element.addElement("columns");
 
-        List<Column<E>> visibleColumns = getVisibleColumns();
-        for (Column<E> column : visibleColumns) {
-            Element colElem = columnsElem.addElement("columns");
-            colElem.addAttribute("id", column.toString());
+        boolean commonSettingsChanged = isCommonDataGridSettingsChanged(columnsElem);
 
-            double width = column.getWidth();
-            if (width > -1) {
-                colElem.addAttribute("width", String.valueOf(width));
+        if (commonSettingsChanged) {
+            if (columnsElem != null) {
+                element.remove(columnsElem);
+            }
+            columnsElem = element.addElement("columns");
+
+            List<Column<E>> visibleColumns = getVisibleColumns();
+            for (Column<E> column : visibleColumns) {
+                Element colElem = columnsElem.addElement("columns");
+                colElem.addAttribute("id", column.toString());
+
+                double width = column.getWidth();
+                if (width > -1) {
+                    colElem.addAttribute("width", String.valueOf(width));
+                }
+
+                colElem.addAttribute("collapsed", Boolean.toString(column.isCollapsed()));
             }
 
-            colElem.addAttribute("collapsed", Boolean.toString(column.isCollapsed()));
+            settingsChanged = true;
         }
 
+        if (isSortPropertySettingsChanged(sortColumnId, sortDirection) || commonSettingsChanged) {
+            List<GridSortOrder<E>> sortOrders = component.getSortOrder();
+            if (!sortOrders.isEmpty()) {
+                GridSortOrder<E> sortOrder = sortOrders.get(0);
+
+                if (columnsElem != null) {
+                    columnsElem.addAttribute("sortColumnId", sortOrder.getSorted().getId());
+                    columnsElem.addAttribute("sortDirection", sortOrder.getDirection().toString());
+                }
+            }
+
+            settingsChanged = true;
+        }
+
+        return settingsChanged;
+    }
+
+    protected boolean isCommonDataGridSettingsChanged(Element columnsElem) {
+        if (columnsElem == null) {
+            return true;
+        }
+
+        List<Element> settingsColumnList = columnsElem.elements("columns");
+        List<Column<E>> visibleColumns = getVisibleColumns();
+
+        for (int i = 0; i < visibleColumns.size(); i++) {
+            Object columnId = visibleColumns.get(i).getId();
+
+            Element settingsColumn = settingsColumnList.get(i);
+            String settingsColumnId = settingsColumn.attributeValue("id");
+
+            if (columnId.toString().equals(settingsColumnId)) {
+                double columnWidth = visibleColumns.get(i).getWidth();
+
+                String settingsColumnWidth = settingsColumn.attributeValue("width");
+                double settingColumnWidth = settingsColumnWidth == null ? -1 : Double.parseDouble(settingsColumnWidth);
+
+                if (columnWidth != settingColumnWidth) {
+                    return true;
+                }
+
+                boolean columnCollapsed = visibleColumns.get(i).isCollapsed();
+                boolean settingsColumnCollapsed = Boolean.parseBoolean(settingsColumn.attributeValue("collapsed"));
+
+                if (columnCollapsed != settingsColumnCollapsed) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isSortPropertySettingsChanged(String settingsSortColumnId, String settingsSortDirection) {
         List<GridSortOrder<E>> sortOrders = component.getSortOrder();
+
+        String columnId = null;
+        String sortDirection = null;
+
         if (!sortOrders.isEmpty()) {
             GridSortOrder<E> sortOrder = sortOrders.get(0);
-            columnsElem.addAttribute("sortColumnId", sortOrder.getSorted().getId());
-            columnsElem.addAttribute("sortDirection", sortOrder.getDirection().toString());
+
+            columnId = sortOrder.getSorted().getId();
+            sortDirection = sortOrder.getDirection().toString();
         }
 
-        return true;
+        if (!Objects.equals(columnId, settingsSortColumnId)
+                || !Objects.equals(sortDirection, settingsSortDirection)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Nullable

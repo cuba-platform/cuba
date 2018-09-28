@@ -112,25 +112,65 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             return false;
         }
 
-        super.saveSettings(element);
+        boolean commonTableSettingsChanged = super.saveSettings(element);
+        boolean groupTableSettingsChanged = isGroupTableSettingsChanged(element);
 
-        Element groupPropertiesElement = element.element("groupProperties");
-        if (groupPropertiesElement != null) {
-            element.remove(groupPropertiesElement);
+        if (!groupTableSettingsChanged && !commonTableSettingsChanged) {
+            return false;
         }
 
-        groupPropertiesElement = element.addElement("groupProperties");
+        if (groupTableSettingsChanged) {
+            Element groupPropertiesElement = element.element("groupProperties");
+            if (groupPropertiesElement != null) {
+                element.remove(groupPropertiesElement);
+            }
 
-        for (Object groupProperty : component.getGroupProperties()) {
-            Column<E> column = getColumn(groupProperty.toString());
+            groupPropertiesElement = element.addElement("groupProperties");
 
-            if (getNotCollapsedColumns().contains(column)) {
-                Element groupPropertyElement = groupPropertiesElement.addElement("property");
-                groupPropertyElement.addAttribute("id", groupProperty.toString());
+            for (Object groupProperty : component.getGroupProperties()) {
+                Column<E> column = getColumn(groupProperty.toString());
+
+                if (getNotCollapsedColumns().contains(column)) {
+                    Element groupPropertyElement = groupPropertiesElement.addElement("property");
+                    groupPropertyElement.addAttribute("id", groupProperty.toString());
+                }
             }
         }
 
         return true;
+    }
+
+    protected boolean isGroupTableSettingsChanged(Element element) {
+        Element groupPropertiesElement = element.element("groupProperties");
+
+        if (groupPropertiesElement == null) {
+            return true;
+        }
+
+        List<Element> settingsProperties = groupPropertiesElement.elements("property");
+        if (settingsProperties.size() != component.getGroupProperties().size()) {
+            return true;
+        }
+
+        @SuppressWarnings("unchecked")
+        List groupProperties = new ArrayList(component.getGroupProperties());
+
+        for (int i = 0; i < groupProperties.size(); i++) {
+            String columnId = groupProperties.get(i).toString();
+
+            String settingsColumnId = settingsProperties.get(i).attributeValue("id");
+
+            Column<E> column = getColumn(columnId);
+            if (getNotCollapsedColumns().contains(column)) {
+                if (!columnId.equals(settingsColumnId)) {
+                    return true;
+                }
+            } else if (columnId.equals(settingsColumnId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
