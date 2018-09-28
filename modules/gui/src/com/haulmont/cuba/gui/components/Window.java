@@ -266,6 +266,10 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     @Deprecated
     WindowManager getWindowManager();
 
+    default ScreenContext getScreenContext() {
+        return getFrameOwner().getScreenContext();
+    }
+
     /**
      * @return dialog options of window. Options will be applied only if window opened with {@link OpenMode#DIALOG}.
      */
@@ -380,6 +384,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * @see com.haulmont.cuba.core.global.BeanValidation
          */
         void setCrossFieldValidate(boolean crossFieldValidate);
+
+        @Override
+        default ScreenContext getScreenContext() {
+            return Window.super.getScreenContext();
+        }
     }
 
     /**
@@ -487,6 +496,11 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
              * @return true to proceed with selection, false to interrupt the selection and don't close the screen
              */
             boolean validate();
+        }
+
+        @Override
+        default ScreenContext getScreenContext() {
+            return Window.super.getScreenContext();
         }
     }
 

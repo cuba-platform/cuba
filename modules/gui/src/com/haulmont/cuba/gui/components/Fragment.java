@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 
 /**
@@ -32,4 +33,8 @@ public interface Fragment extends Frame {
 
     @Override
     ScreenFragment getFrameOwner();
+
+    default ScreenContext getScreenContext() {
+        return getFrameOwner().getScreenContext();
+    }
 }

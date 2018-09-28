@@ -16,33 +16,42 @@
 
 package com.haulmont.cuba.web.tmp;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.EditorScreens;
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 @UiController("dcScreen6")
 @UiDescriptor("dc-screen-6.xml")
+// todo uncomment for testing
+//@PrimaryEditorScreen(User.class)
+@EditedEntityContainer("userCx")
 public class DcScreen6 extends StandardEditor<User> {
-
-//    @Inject
-//    protected Screens screens;
     @Inject
-    protected Editors editors;
-
+    protected EditorScreens editorScreens;
     @Inject
     protected CollectionContainer<UserRole> userRolesCont;
+    @Inject
+    protected DataManager dataManager;
 
     @Override
-    protected InstanceContainer<Entity> getEditedEntityContainer() {
-        return getScreenData().getContainer("userCont");
+    public void setEntityToEdit(User user) {
+        super.setEntityToEdit(user);
+
+        if (PersistenceHelper.isNew(user)) {
+            Group group = dataManager.load(Group.class)
+                    .id(UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"))
+                    .one();
+            user.setGroup(group);
+        }
     }
 
     @Subscribe
@@ -51,33 +60,13 @@ public class DcScreen6 extends StandardEditor<User> {
     }
 
     @Subscribe("editBtn")
-    private void onEditClick(Button.ClickEvent event) {
-        editors.editEntity(userRolesCont, TmpUserRoleEdit.class, getScreenData().getDataContext());
+    protected void onEditClick(Button.ClickEvent event) {
+        TmpUserRoleEdit tmpUserRoleEdit = editorScreens.builder(UserRole.class, this)
+                .withEntity(userRolesCont.getItem())
+                .withParentDataContext(getScreenData().getDataContext())
+                .withScreen(TmpUserRoleEdit.class)
+                .create();
 
-//        UserRole selectedUserRole = userRolesCont.getItemOrNull();
-//        if (selectedUserRole != null) {
-//            TmpUserRoleEdit userRoleEdit = screens.create(TmpUserRoleEdit.class, OpenMode.THIS_TAB);
-//            userRoleEdit.setEntityToEdit(selectedUserRole);
-//
-//            UiControllerUtils.getScreenData(userRoleEdit).getDataContext().setParent(getScreenData().getDataContext());
-//
-//            userRoleEdit.addAfterCloseListener(afterCloseEvent -> {
-//                CloseAction closeAction = afterCloseEvent.getCloseAction();
-//                if ((closeAction instanceof StandardCloseAction) && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-//                    userRolesCont.replaceItem(userRoleEdit.getEditedEntity());
-//                }
-//            });
-//            screens.show(userRoleEdit);
-//        }
-    }
-
-    @Subscribe("okBtn")
-    protected void onOkClick(Button.ClickEvent event) {
-        closeWithCommit();
-    }
-
-    @Subscribe("cancelBtn")
-    protected void onCancelClick(Button.ClickEvent event) {
-        close(WINDOW_CLOSE_ACTION);
+        tmpUserRoleEdit.show();
     }
 }

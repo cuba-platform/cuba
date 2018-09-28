@@ -18,16 +18,19 @@
         caption="User Editor">
 
     <data>
-        <instance id="userCont" class="com.haulmont.cuba.security.entity.User" view="user.edit">
+        <instance id="userCx"
+                  class="com.haulmont.cuba.security.entity.User"
+                  view="user.edit">
             <loader id="userLoader"/>
 
-            <collection id="userRolesCont" property="userRoles"/>
+            <collection id="userRolesCont"
+                        property="userRoles"/>
         </instance>
     </data>
 
     <layout spacing="true" expand="userRolesTable">
-        <textField id="loginField" dataContainer="userCont" property="login"/>
-        <textField id="nameField" dataContainer="userCont" property="name"/>
+        <textField id="loginField" dataContainer="userCx" property="login"/>
+        <textField id="nameField" dataContainer="userCx" property="name"/>
         <table id="userRolesTable"
                width="100%">
             <buttonsPanel>
@@ -41,9 +44,8 @@
             </columns>
             <rows dataContainer="userRolesCont"/>
         </table>
-        <hbox spacing="true">
-            <button id="okBtn" caption="OK"/>
-            <button id="cancelBtn" caption="Cancel"/>
-        </hbox>
+
+        <fragment id="editActions"
+                  screen="editorActions"/>
     </layout>
 </window>

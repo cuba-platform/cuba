@@ -78,7 +78,7 @@ public class FilteringLookupAction extends PickerField.LookupAction {
             }
         });
         if (!found) {
-            LegacyFrame.of(target.getFrame()).showNotification(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"), Frame.NotificationType.WARNING);
+            LegacyFrame.of(pickerField).showNotification(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"), Frame.NotificationType.WARNING);
         }
         AbstractWindow controller = (AbstractWindow) (lookupWindow).getFrameOwner();
         ((DsContextImplementation) controller.getDsContext()).resumeSuspended();

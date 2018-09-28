@@ -417,7 +417,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
+    public void setLookupSelectHandler(Consumer selectHandler) {
         // do nothing
     }
 

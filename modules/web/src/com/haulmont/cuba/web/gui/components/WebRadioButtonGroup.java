@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,7 +100,7 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
+    public void setLookupSelectHandler(Consumer selectHandler) {
         // do nothing
     }
 

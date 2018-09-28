@@ -104,7 +104,8 @@ public abstract class Screen implements FrameOwner {
         this.id = id;
     }
 
-    protected ScreenContext getScreenContext() {
+    @Override
+    public ScreenContext getScreenContext() {
         return screenContext;
     }
 

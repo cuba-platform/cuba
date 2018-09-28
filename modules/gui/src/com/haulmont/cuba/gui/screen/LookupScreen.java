@@ -27,16 +27,16 @@ import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
 /**
  * JavaDoc
  *
- * @param <T>
+ * @param <E>
  */
-public interface LookupScreen<T extends Entity> {
+public interface LookupScreen<E extends Entity> {
     CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
 
-    Consumer<Collection<T>> getSelectHandler();
-    void setSelectHandler(Consumer<Collection<T>> selectHandler);
+    Consumer<Collection<E>> getSelectHandler();
+    void setSelectHandler(Consumer<Collection<E>> selectHandler);
 
-    Predicate<ValidationContext<T>> getSelectValidator();
-    void setSelectValidator(Predicate<ValidationContext<T>> selectValidator);
+    Predicate<ValidationContext<E>> getSelectValidator();
+    void setSelectValidator(Predicate<ValidationContext<E>> selectValidator);
 
     class ValidationContext<T extends Entity> {
         private Screen screen;

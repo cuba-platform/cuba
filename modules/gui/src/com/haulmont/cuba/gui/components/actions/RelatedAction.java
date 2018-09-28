@@ -43,7 +43,7 @@ import javax.inject.Inject;
  */
 @org.springframework.stereotype.Component("cuba_RelatedAction")
 @Scope("prototype")
-public class RelatedAction extends BaseAction implements Action.HasBeforeActionPerformedHandler {
+public class RelatedAction extends ListAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = "related";
 

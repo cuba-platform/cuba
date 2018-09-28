@@ -19,8 +19,8 @@
 
     <data>
         <collection id="usersCont"
-                    class="com.haulmont.cuba.security.entity.User" view="user.browse">
-
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="user.browse">
             <loader id="usersLoader">
                 <query>
                     select u from sec$User u
@@ -35,10 +35,15 @@
                 dataLoader="usersLoader"/>
         <groupTable id="usersTable"
                width="100%">
+            <actions>
+                <action id="create" type="entity_create"/>
+                <action id="edit" type="entity_edit"/>
+                <action id="remove" type="entity_remove"/>
+            </actions>
             <buttonsPanel>
-                <button id="createBtn" caption="Create"/>
-                <button id="editBtn" caption="Edit"/>
-                <button id="removeBtn" caption="Remove"/>
+                <button id="createBtn" action="usersTable.create"/>
+                <button id="editBtn" action="usersTable.edit"/>
+                <button id="removeBtn" action="usersTable.remove"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>

@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -170,7 +171,7 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
+    public void setLookupSelectHandler(Consumer selectHandler) {
         // do nothing
     }
 

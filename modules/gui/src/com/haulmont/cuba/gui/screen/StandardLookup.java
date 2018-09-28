@@ -16,7 +16,9 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.LookupComponent;
 import com.haulmont.cuba.gui.util.OperationResult;
 
 import java.util.Collection;
@@ -26,6 +28,18 @@ import java.util.function.Predicate;
 public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T> {
     private Consumer<Collection<T>> selectHandler;
     private Predicate<ValidationContext<T>> selectValidator;
+
+    public StandardLookup() {
+        addBeforeShowListener(this::setupLookupComponent);
+    }
+
+    // todo lookup actions frame
+    // todo show actions if needed
+
+    protected void setupLookupComponent(@SuppressWarnings("unused") BeforeShowEvent event) {
+        LookupComponent<T> lookupComponent = getLookupComponent();
+        lookupComponent.setLookupSelectHandler(this::select);
+    }
 
     @Override
     public Consumer<Collection<T>> getSelectHandler() {
@@ -45,6 +59,18 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     @Override
     public void setSelectValidator(Predicate<ValidationContext<T>> selectValidator) {
         this.selectValidator = selectValidator;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected LookupComponent<T> getLookupComponent() {
+        com.haulmont.cuba.gui.screen.LookupComponent annotation =
+                getClass().getAnnotation(com.haulmont.cuba.gui.screen.LookupComponent.class);
+        if (annotation == null || Strings.isNullOrEmpty(annotation.value())) {
+            throw new IllegalStateException(
+                    String.format("StandardLookup %s does not declare @LookupComponent", getClass())
+            );
+        }
+        return (LookupComponent) getWindow().getComponentNN(annotation.value());
     }
 
     protected void select(Collection<T> items) {

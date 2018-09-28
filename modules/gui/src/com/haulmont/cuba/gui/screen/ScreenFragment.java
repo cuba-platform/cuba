@@ -114,7 +114,8 @@ public abstract class ScreenFragment implements FrameOwner {
         this.screenContext = screenContext;
     }
 
-    protected ScreenContext getScreenContext() {
+    @Override
+    public ScreenContext getScreenContext() {
         return screenContext;
     }
 

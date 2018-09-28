@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,7 +101,7 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
+    public void setLookupSelectHandler(Consumer selectHandler) {
         // do nothing
     }
 

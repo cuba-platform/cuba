@@ -214,7 +214,7 @@ public class EntityLogBrowser extends AbstractWindow {
                     Lookup.Handler lookupWindowHandler = items -> {
                         if (!items.isEmpty()) {
                             Object item = items.iterator().next();
-                            pickerField.setValue(item);
+                            pickerField.setValue((Entity) item);
                             afterSelect(items);
                         }
                     };

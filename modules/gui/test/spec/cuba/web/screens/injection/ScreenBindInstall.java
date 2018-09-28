@@ -12,7 +12,7 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
 
-public class ScreenBindProvide extends Screen {
+public class ScreenBindInstall extends Screen {
 
     @Install(subject = "formatter", to = "label1")
     private String format(Date date) {
@@ -33,4 +33,6 @@ public class ScreenBindProvide extends Screen {
     public String getIcon(User user) {
         return "ok.png";
     }
+
+    // todo validator support
 }

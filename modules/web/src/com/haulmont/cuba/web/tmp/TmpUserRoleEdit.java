@@ -16,24 +16,14 @@
 
 package com.haulmont.cuba.web.tmp;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.screen.StandardEditor;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.UserRole;
 
 @UiController("tmpUserRoleEdit")
 @UiDescriptor("tmp-user-role-edit.xml")
+@EditedEntityContainer("userRoleCont")
 public class TmpUserRoleEdit extends StandardEditor<UserRole> {
-
-    @Override
-    protected InstanceContainer<Entity> getEditedEntityContainer() {
-        return getScreenData().getContainer("userRoleCont");
-    }
-
     @Subscribe
     protected void beforeShow(BeforeShowEvent event) {
         getScreenData().loadAll();

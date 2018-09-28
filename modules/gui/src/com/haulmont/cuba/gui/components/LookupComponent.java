@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
 import java.util.EventObject;
@@ -24,41 +25,39 @@ import java.util.function.Consumer;
 
 /**
  * A component which can be set as lookup component for a screen.
- *
- * vaadin8 add typings
  */
-public interface LookupComponent extends Component {
+public interface LookupComponent<E extends Entity> extends Component {
     /**
      * @param selectHandler handler that should be executed when a user select an item in the lookup screen
      */
-    void setLookupSelectHandler(Runnable selectHandler);
+    void setLookupSelectHandler(Consumer<Collection<E>> selectHandler);
 
     /**
      * @return items selected in lookup component
      */
-    Collection getLookupSelectedItems();
+    Collection<E> getLookupSelectedItems();
 
     /**
      * Component that fires {@link LookupSelectionChangeEvent} when lookup selected items set is changed.
      */
-    interface LookupSelectionChangeNotifier extends LookupComponent {
-
-        Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener);
+    interface LookupSelectionChangeNotifier<T extends Entity> extends LookupComponent<T> {
+        Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<T>> listener);
 
         /**
          * @deprecated Use {@link Subscription} instead
          */
         @Deprecated
-        void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener);
+        void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<T>> listener);
     }
 
-    class LookupSelectionChangeEvent extends EventObject {
-        public LookupSelectionChangeEvent(LookupComponent source) {
+    class LookupSelectionChangeEvent<T extends Entity> extends EventObject {
+        public LookupSelectionChangeEvent(LookupComponent<T> source) {
             super(source);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public LookupComponent getSource() {
+        public LookupComponent<T> getSource() {
             return (LookupComponent) super.getSource();
         }
     }

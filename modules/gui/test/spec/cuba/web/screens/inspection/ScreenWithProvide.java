@@ -38,4 +38,6 @@ public class ScreenWithProvide extends Screen {
     protected void consumeEvent(Button.ClickEvent event) {
 
     }
+
+    // todo validator support
 }

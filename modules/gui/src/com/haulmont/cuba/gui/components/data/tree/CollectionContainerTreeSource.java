@@ -171,4 +171,8 @@ public class CollectionContainerTreeSource<E extends Entity> implements EntityTr
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
         return events.subscribe(SelectedItemChangeEvent.class, (Consumer) listener);
     }
+
+    public CollectionContainer<E> getContainer() {
+        return container;
+    }
 }

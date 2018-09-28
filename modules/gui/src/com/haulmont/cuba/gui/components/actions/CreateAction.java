@@ -52,7 +52,7 @@ import java.util.function.Supplier;
  */
 @org.springframework.stereotype.Component("cuba_CreateAction")
 @Scope("prototype")
-public class CreateAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler  {
+public class CreateAction extends ListAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler  {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 

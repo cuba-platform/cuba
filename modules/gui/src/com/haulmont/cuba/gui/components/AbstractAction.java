@@ -86,6 +86,10 @@ public abstract class AbstractAction implements Action {
         return eventHub;
     }
 
+    protected boolean hasSubscriptions(Class<?> eventClass) {
+        return eventHub != null && eventHub.hasSubscriptions(eventClass);
+    }
+
     @Override
     public String getId() {
         return id;

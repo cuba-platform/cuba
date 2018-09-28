@@ -18,9 +18,11 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
+import com.haulmont.cuba.gui.components.data.EntityDataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -40,7 +42,7 @@ import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
 
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
         Component.HasIcon, HasContextHelp, HasRowsCount, HasSettings,
-        LookupComponent, Component.Focusable,
+        LookupComponent<E>, Component.Focusable,
         RowsCount.RowsCountTarget, HasSubParts {
 
     String NAME = "dataGrid";

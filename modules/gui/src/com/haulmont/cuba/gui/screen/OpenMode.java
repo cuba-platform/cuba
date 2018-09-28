@@ -21,7 +21,7 @@ package com.haulmont.cuba.gui.screen;
 import com.haulmont.cuba.gui.Screens;
 
 /**
- * JavaDoc
+ * Standard launch modes of {@link Screen}s.
  */
 public enum OpenMode implements Screens.LaunchMode {
     /**

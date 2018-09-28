@@ -32,10 +32,12 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.EntityTreeSource;
 import com.haulmont.cuba.gui.components.data.TreeSource;
+import com.haulmont.cuba.gui.components.data.tree.CollectionContainerTreeSource;
 import com.haulmont.cuba.gui.components.data.tree.HierarchicalDatasourceTreeAdapter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.tree.TreeDataProvider;
@@ -80,8 +82,8 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 public class WebTree<E extends Entity>
         extends WebAbstractComponent<CubaTree<E>>
-        implements Tree<E>, LookupSelectionChangeNotifier, SecuredActionsHolder,
-        HasInnerComponents, InitializingBean, TreeSourceEventsDelegate<E> {
+        implements Tree<E>, LookupSelectionChangeNotifier<E>, SecuredActionsHolder,
+        HasInnerComponents, SupportsEntityBinding, SupportsContainerBinding, InitializingBean, TreeSourceEventsDelegate<E> {
 
     private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
 
@@ -167,7 +169,7 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponentComposition(componentComposition);
         initComponent(component);
 
@@ -746,8 +748,11 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
-        Consumer<Action.ActionPerformedEvent> actionHandler = event -> selectHandler.run();
+    public void setLookupSelectHandler(Consumer<Collection<E>> selectHandler) {
+        Consumer<Action.ActionPerformedEvent> actionHandler = event ->  {
+            Set<E> selected = getSelected();
+            selectHandler.accept(selected);
+        };
 
         setItemClickAction(new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
                 .withHandler(actionHandler)
@@ -1010,6 +1015,24 @@ public class WebTree<E extends Entity>
         setSelectedInternal(items);
     }
 
+    @Nullable
+    @Override
+    public MetaClass getBindingMetaClass() {
+        if (getTreeSource() instanceof EntityTreeSource) {
+            return ((EntityTreeSource<E>) getTreeSource()).getEntityMetaClass();
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public CollectionContainer getBindingContainer() {
+        if (getTreeSource() instanceof CollectionContainerTreeSource) {
+            return ((CollectionContainerTreeSource<E>) getTreeSource()).getContainer();
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     protected void setSelectedInternal(Collection<E> items) {
         switch (selectionMode) {
@@ -1028,14 +1051,16 @@ public class WebTree<E extends Entity>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
-        return getEventHub().subscribe(LookupSelectionChangeEvent.class, listener);
+    public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
+        return getEventHub().subscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent> listener) {
-        unsubscribe(LookupSelectionChangeEvent.class, listener);
+    public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
+        unsubscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
     }
 
     @Override

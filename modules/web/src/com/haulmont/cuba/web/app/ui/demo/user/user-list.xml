@@ -22,6 +22,11 @@
     <layout>
         <hbox>
             <label value="OK"/>
+            <pickerField id="picker">
+                <actions>
+                    <action id="lookup" type="lookup"/>
+                </actions>
+            </pickerField>
         </hbox>
     </layout>
 </window>

@@ -1134,6 +1134,8 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasIcon"/>
 
+        <xs:attribute name="type" type="xs:string"/>
+
         <xs:attribute name="openType" type="openType"/>
         <xs:attribute name="trackSelection" type="xs:boolean"/>
         <xs:attribute name="invoke" type="xs:string"/>
@@ -2221,7 +2223,7 @@
                     </xs:element>
                 </xs:sequence>
 
-                <xs:attributeGroup ref="requiresDatasource"/>
+                <xs:attributeGroup ref="hasDatasource"/>
                 <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="margin" type="xs:string"/>

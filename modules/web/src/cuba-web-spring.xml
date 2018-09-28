@@ -61,15 +61,23 @@
 
     <!-- Screens registry -->
 
-    <!-- todo custom XSD for screen configuration: scanning/defining screens -->
+    <!-- todo custom XSD for screen configuration: scanning/defining screens and actions -->
 
-    <bean id="cuba_web_UiControllersConfiguration" class="com.haulmont.cuba.gui.sys.UiControllersConfiguration">
+    <bean id="cuba_UiControllersConfiguration" class="com.haulmont.cuba.gui.sys.UiControllersConfiguration">
         <property name="packages">
             <list>
                 <value>com.haulmont.cuba.gui.screen.actions</value>
                 <value>com.haulmont.cuba.gui.app</value>
                 <value>com.haulmont.cuba.web.app</value>
                 <value>com.haulmont.cuba.web.tmp</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cuba_ActionsConfiguration" class="com.haulmont.cuba.gui.sys.ActionsConfiguration">
+        <property name="packages">
+            <list>
+                <value>com.haulmont.cuba.gui.components.actions</value>
             </list>
         </property>
     </bean>

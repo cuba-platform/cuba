@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.model.ScreenData;
 
 /**
  * Marker interface for UI controllers.
@@ -39,4 +38,6 @@ public interface FrameOwner {
             return "{NO OPTIONS}";
         }
     };
+
+    ScreenContext getScreenContext();
 }

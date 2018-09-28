@@ -356,6 +356,16 @@ public abstract class ComponentsHelper {
         return null;
     }
 
+    public static Window getWindowNN(Component.BelongToFrame component) {
+        Window window = getWindow(component);
+
+        if (window == null) {
+            throw new IllegalStateException("Unable to find window for component");
+        }
+
+        return window;
+    }
+
     @Nullable
     public static Screen getScreen(ScreenFragment frameOwner) {
         Frame frame = frameOwner.getFragment();

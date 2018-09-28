@@ -19,7 +19,10 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.KeyCombination;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -58,7 +61,7 @@ import static com.haulmont.bali.util.BitUtils.writeBit;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class BaseAction extends AbstractAction implements Action.HasTarget, Action.SecuredAction {
+public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
     private static final int ENABLED_EXPLICITLY_BIT = 0;
     private static final int VISIBLE_EXPLICITLY_BIT = 1;
@@ -68,9 +71,6 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
     private byte uiSecurityState = 0x0f;    // all flags true
 
     private List<EnabledRule> enabledRules; // lazy initialized list
-
-    @Deprecated
-    protected ListComponent target;
 
     public BaseAction(String id) {
         this(id, null);
@@ -163,22 +163,6 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
                 && isPermitted() && isApplicable() && isEnabledByRule());
     }
 
-    @Deprecated
-    @Override
-    public ListComponent getTarget() {
-        return target;
-    }
-
-    @Deprecated
-    @Override
-    public void setTarget(ListComponent target) {
-        if (this.target != target) {
-            this.target = target;
-
-            refreshState();
-        }
-    }
-
     @Override
     public boolean isEnabledByUiPermissions() {
         return readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
@@ -253,6 +237,11 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         }
     }
 
+    @SuppressWarnings("unused") // called on declarative events registration
+    public Subscription addActionPerformedListener(Consumer<ActionPerformedEvent> listener) {
+        return getEventHub().subscribe(ActionPerformedEvent.class, listener);
+    }
+
     /**
      * Set caption using fluent API method.
      *
@@ -309,10 +298,6 @@ public class BaseAction extends AbstractAction implements Action.HasTarget, Acti
         getEventHub().subscribe(ActionPerformedEvent.class, handler);
 
         return this;
-    }
-
-    public Subscription addActionPerformedListener(Consumer<ActionPerformedEvent> listener) {
-        return getEventHub().subscribe(ActionPerformedEvent.class, listener);
     }
 
     /**

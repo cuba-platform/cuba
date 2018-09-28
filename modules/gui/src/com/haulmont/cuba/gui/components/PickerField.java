@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -85,12 +86,14 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
      * Adds LookupAction to the component. If the LookupAction already exists, it will be replaced with the new instance.
      * @return added action
      */
-    LookupAction addLookupAction();
+    @Deprecated
+    LookupAction addLookupAction(); // todo do not use in new screens
 
     /**
      * @return LookupAction instance
      * @throws java.lang.IllegalArgumentException if the LookupAction does not exist in the component
      */
+    @Deprecated
     default LookupAction getLookupAction() {
         return (LookupAction) getActionNN(LookupAction.NAME);
     }
@@ -99,12 +102,14 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
      * Adds ClearAction to the component. If the ClearAction already exists, it will be replaced with the new instance.
      * @return added action
      */
-    ClearAction addClearAction();
+    @Deprecated
+    ClearAction addClearAction(); // todo do not use in new screens
 
     /**
      * @return ClearAction instance
      * @throws java.lang.IllegalArgumentException if the ClearAction does not exist in the component
      */
+    @Deprecated
     default ClearAction getClearAction() {
         return (ClearAction) getActionNN(ClearAction.NAME);
     }
@@ -113,12 +118,14 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
      * Adds OpenAction to the component. If the OpenAction already exists, it will be replaced with the new instance.
      * @return added action
      */
-    OpenAction addOpenAction();
+    @Deprecated
+    OpenAction addOpenAction(); // todo do not use in new screens
 
     /**
      * @return OpenAction instance
      * @throws java.lang.IllegalArgumentException if the OpenAction does not exist in the component
      */
+    @Deprecated
     default OpenAction getOpenAction() {
         return (OpenAction) getActionNN(OpenAction.NAME);
     }
@@ -179,6 +186,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
     /**
      * Enumerates standard picker action types. Can create a corresponding action instance.
      */
+    @Deprecated
     enum ActionType {
 
         LOOKUP("lookup") {
@@ -215,11 +223,9 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         public abstract Action createAction(PickerField pickerField);
     }
 
-    abstract class StandardAction extends BaseAction {
+    abstract class StandardAction extends BaseAction  implements PickerFieldAction {
 
-        public static final String PROP_EDITABLE = "editable";
-
-        protected PickerField pickerField;
+        protected PickerField<Entity> pickerField;
 
         protected boolean editable = true;
 
@@ -230,6 +236,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             this.pickerField = pickerField;
         }
 
+        @Override
         public boolean isEditable() {
             return editable;
         }
@@ -257,6 +264,15 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     return datasource;
             }
             return null;
+        }
+
+        @Override
+        public void setPickerField(PickerField pickerField) {
+        }
+
+        @Override
+        public void editableChanged(PickerField pickerField, boolean editable) {
+            setEditable(editable);
         }
     }
 
@@ -538,10 +554,10 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
-                Object value = pickerField.getValue();
+                Entity value = pickerField.getValue();
 
                 EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-                if (value instanceof Entity
+                if (value != null
                         && entityValueSource.getMetaPropertyPath() != null
                         && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
                     // TODO: gg, use value source
@@ -559,7 +575,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                                 }
                             }
                         }
-                        ((DatasourceImplementation) propertyDatasource).deleted((Entity) value);
+                        ((DatasourceImplementation) propertyDatasource).deleted(value);
                     }
                 }
 
@@ -696,7 +712,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
 
             if (!composition) {
-                entity = LegacyFrame.of(window).getDsContext().getDataSupplier().reload(entity, View.MINIMAL);
+                DsContext dsContext = LegacyFrame.of(window).getDsContext();
+                entity = dsContext.getDataSupplier().reload(entity, View.MINIMAL);
             }
 
             String windowAlias = getEditScreen();
@@ -747,23 +764,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         }
 
         protected Entity getEntity() {
-            Object value = pickerField.getValue();
-
-            if (value instanceof Entity) {
-                return (Entity) value;
-            }
-
-            if (pickerField.getValueSource() != null && !pickerField.isBuffered()) {
-                EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-                Entity item = entityValueSource.getItem();
-                if (item != null) {
-                    Object dsValue = item.getValue(entityValueSource.getMetaPropertyPath().getMetaProperty().getName());
-                    if (dsValue instanceof Entity)
-                        return (Entity) dsValue;
-                }
-            }
-
-            return null;
+            return pickerField.getValue();
         }
 
         protected Entity initEntity() {
@@ -840,5 +841,15 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
             return sb.toString();
         }
+    }
+
+    interface PickerFieldAction {
+        String PROP_EDITABLE = "editable";
+
+        void setPickerField(@Nullable PickerField pickerField);
+
+        void editableChanged(PickerField pickerField, boolean editable);
+
+        boolean isEditable();
     }
 }

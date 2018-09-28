@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanValidation;
@@ -74,21 +75,33 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     protected InstanceLoader getEditedEntityLoader() {
         InstanceContainer<Entity> container = getEditedEntityContainer();
-        if (container == null)
+        if (container == null) {
             throw new IllegalStateException("Edited entity container not defined");
+        }
         DataLoader loader = null;
         if (container instanceof HasLoader) {
             loader = ((HasLoader) container).getLoader();
         }
-        if (loader == null)
+        if (loader == null) {
             throw new IllegalStateException("Loader of edited entity container not found");
-        if (!(loader instanceof InstanceLoader))
+        }
+        if (!(loader instanceof InstanceLoader)) {
             throw new IllegalStateException(String.format(
-                "Loader %s of edited entity container %s must implement InstanceLoader", loader, container));
+                    "Loader %s of edited entity container %s must implement InstanceLoader", loader, container));
+        }
         return (InstanceLoader) loader;
     }
 
-    protected abstract InstanceContainer<Entity> getEditedEntityContainer();
+    protected InstanceContainer<Entity> getEditedEntityContainer() {
+        EditedEntityContainer annotation = getClass().getAnnotation(EditedEntityContainer.class);
+        if (annotation == null || Strings.isNullOrEmpty(annotation.value())) {
+            throw new IllegalStateException(
+                    String.format("StandardEditor %s does not declare @EditedEntityContainer", getClass())
+            );
+        }
+
+        return getScreenData().getContainer(annotation.value());
+    }
 
     @SuppressWarnings("unchecked")
     @Override

@@ -576,7 +576,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected Action loadInvokeAction(ActionsHolder actionsHolder, Element element, String id, boolean shouldTrackSelection, String invokeMethod) {
-        DeclarativeAction action;
+        BaseAction action;
         String shortcut = loadShortcut(trimToNull(element.attributeValue("shortcut")));
         if (shouldTrackSelection) {
             action = new DeclarativeTrackingAction(
@@ -776,7 +776,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
-            // todo
+            // todo check if legacy screen
 
             // Try to create a standard picker action
             for (PickerField.ActionType type : PickerField.ActionType.values()) {

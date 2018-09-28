@@ -22,12 +22,21 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsHolder;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.actions.ListAction;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 
-public class DeclarativeTrackingAction extends DeclarativeAction implements Action.HasTarget, Action.SecuredAction,
+public class DeclarativeTrackingAction extends ListAction implements Action.HasTarget, Action.SecuredAction,
         Action.HasSecurityConstraint {
+
+    protected Frame frame;
+    protected String methodName;
 
     protected Security security = AppBeans.get(Security.NAME);
 
@@ -36,7 +45,60 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Acti
 
     public DeclarativeTrackingAction(String id, String caption, String description, String icon, String enable, String visible,
                                      String methodName, @Nullable String shortcut, ActionsHolder holder) {
-        super(id, caption, description, icon, enable, visible, methodName, shortcut, holder);
+        super(id);
+        this.caption = caption;
+        this.description = description;
+        this.icon = icon;
+
+        setEnabled(enable == null || Boolean.parseBoolean(enable));
+        setVisible(visible == null || Boolean.parseBoolean(visible));
+
+        this.methodName = methodName;
+        checkActionsHolder(holder);
+    }
+
+    protected void checkActionsHolder(ActionsHolder holder) {
+        if (holder instanceof Frame) {
+            frame = (Frame) holder;
+        } else if (holder instanceof Component.BelongToFrame) {
+            frame = ((Component.BelongToFrame) holder).getFrame();
+        } else {
+            throw new IllegalStateException(String.format("Component %s can't contain DeclarativeAction", holder));
+        }
+    }
+
+    @Override
+    public void actionPerform(Component component) {
+        if (StringUtils.isEmpty(methodName)) {
+            return;
+        }
+
+        FrameOwner controller = frame.getFrameOwner();
+        Method method;
+        try {
+            method = controller.getClass().getMethod(methodName, Component.class);
+        } catch (NoSuchMethodException e) {
+            try {
+                method = controller.getClass().getMethod(methodName);
+            } catch (NoSuchMethodException e1) {
+                throw new IllegalStateException(String.format("No suitable methods named %s for action %s", methodName, id));
+            }
+        }
+
+        try {
+            if (method.getParameterCount() == 1) {
+                method.invoke(controller, component);
+            } else {
+                method.invoke(controller);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Exception on action handling", e);
+        }
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
     }
 
     @Override

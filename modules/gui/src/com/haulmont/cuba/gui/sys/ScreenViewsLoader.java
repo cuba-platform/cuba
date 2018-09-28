@@ -30,6 +30,7 @@ import java.io.InputStream;
  * Loads views defined in screen descriptors.
  */
 @Component(ScreenViewsLoader.NAME)
+@Deprecated
 public class ScreenViewsLoader {
 
     public static final String NAME = "cuba_ScreenViewsLoader";
@@ -71,5 +72,4 @@ public class ScreenViewsLoader {
         }
         return resourceInputStream;
     }
-
 }

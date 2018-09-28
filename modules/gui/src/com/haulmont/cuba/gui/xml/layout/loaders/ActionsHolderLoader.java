@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
@@ -55,6 +56,20 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
 
                         return instance;
                     }
+                }
+            } else {
+                String actionTypeId = element.attributeValue("type");
+                if (StringUtils.isNotEmpty(actionTypeId)) {
+                    Actions actions = beanLocator.get(Actions.NAME);
+                    Action instance = actions.create(actionTypeId, id);
+
+                    loadStandardActionProperties(instance, element);
+
+                    loadActionConstraint(instance, element);
+
+                    loadShortcut(instance, element);
+
+                    return instance;
                 }
             }
         }

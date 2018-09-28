@@ -28,9 +28,10 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.sys.UiControllerDefinition;
+import com.haulmont.cuba.gui.sys.AnnotationScanMetadataReaderFactory;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
+import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +39,12 @@ import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -68,6 +74,9 @@ public class WindowConfig {
 
     protected Map<String, WindowInfo> screens = new HashMap<>();
 
+    protected Map<Class, WindowInfo> primaryEditors = new HashMap<>();
+    protected Map<Class, WindowInfo> primaryLookups = new HashMap<>();
+
     @Inject
     protected Resources resources;
     @Inject
@@ -78,6 +87,11 @@ public class WindowConfig {
     protected List<UiControllersConfiguration> configurations;
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
+
+    @Inject
+    protected ApplicationContext applicationContext;
+    @Inject
+    protected AnnotationScanMetadataReaderFactory metadataReaderFactory;
 
     protected volatile boolean initialized;
 
@@ -106,6 +120,14 @@ public class WindowConfig {
             return extractControllerClass(windowInfo);
         }
     };
+
+    protected MetadataReaderFactory getMetadataReaderFactory() {
+        return metadataReaderFactory;
+    }
+
+    protected ResourceLoader getResourceLoader() {
+        return applicationContext;
+    }
 
     protected WindowInfo.Type extractWindowInfoType(WindowInfo windowInfo) {
         Class<? extends FrameOwner> controllerClass = extractControllerClass(windowInfo);
@@ -221,6 +243,8 @@ public class WindowConfig {
         long startTime = System.currentTimeMillis();
 
         screens.clear();
+        primaryEditors.clear();
+        primaryLookups.clear();
 
         loadScreenConfigurations();
         loadScreensXml();
@@ -230,12 +254,12 @@ public class WindowConfig {
 
     protected void loadScreenConfigurations() {
         for (UiControllersConfiguration provider : configurations) {
-            List<UiControllerDefinition> uiControllers = provider.getUIControllers();
+            List<UiControllerDefinition> uiControllers = provider.getUiControllers();
 
             for (UiControllerDefinition definition : uiControllers) {
                 WindowInfo windowInfo = new WindowInfo(definition.getId(), windowAttributesProvider,
                         definition.getControllerClass());
-                screens.put(definition.getId(), windowInfo);
+                registerScreen(definition.getId(), windowInfo);
             }
         }
     }
@@ -281,7 +305,58 @@ public class WindowConfig {
                 continue;
             }
             WindowInfo windowInfo = new WindowInfo(id, windowAttributesProvider, element);
-            screens.put(id, windowInfo);
+            registerScreen(id, windowInfo);
+        }
+    }
+
+    protected void registerScreen(String id, WindowInfo windowInfo) {
+        String controllerClassName = windowInfo.getControllerClassName();
+        if (controllerClassName != null) {
+            MetadataReader classMetadata = loadClassMetadata(controllerClassName);
+            AnnotationMetadata annotationMetadata = classMetadata.getAnnotationMetadata();
+
+            registerPrimaryEditor(windowInfo, annotationMetadata);
+            registerPrimaryLookup(windowInfo, annotationMetadata);
+        }
+
+        screens.put(id, windowInfo);
+    }
+
+    protected void registerPrimaryEditor(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {
+        Map<String, Object> primaryEditorAnnotation =
+                annotationMetadata.getAnnotationAttributes(PrimaryEditorScreen.class.getName());
+        if (primaryEditorAnnotation != null) {
+            Class entityClass = (Class) primaryEditorAnnotation.get("value");
+            if (entityClass != null) {
+                MetaClass metaClass = metadata.getClass(entityClass);
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+                primaryEditors.put(originalMetaClass.getJavaClass(), windowInfo);
+            }
+        }
+    }
+
+    protected void registerPrimaryLookup(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {
+        Map<String, Object> primaryEditorAnnotation =
+                annotationMetadata.getAnnotationAttributes(PrimaryLookupScreen.class.getName());
+        if (primaryEditorAnnotation != null) {
+            Class entityClass = (Class) primaryEditorAnnotation.get("value");
+            if (entityClass != null) {
+                MetaClass metaClass = metadata.getClass(entityClass);
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+                primaryLookups.put(originalMetaClass.getJavaClass(), windowInfo);
+            }
+        }
+    }
+
+    protected MetadataReader loadClassMetadata(String className) {
+        Resource resource = getResourceLoader().getResource("/" + className.replace(".", "/") + ".class");
+        if (!resource.isReadable()) {
+            throw new RuntimeException(String.format("Resource %s is not readable for class %s", resource, className));
+        }
+        try {
+            return getMetadataReaderFactory().getMetadataReader(resource);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read resource " + resource, e);
         }
     }
 
@@ -375,15 +450,33 @@ public class WindowConfig {
     }
 
     public String getLookupScreenId(MetaClass metaClass) {
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+        WindowInfo windowInfo = primaryLookups.get(originalMetaClass.getJavaClass());
+        if (windowInfo != null) {
+            return windowInfo.getId();
+        }
+
         return getMetaClassScreenId(metaClass, Window.LOOKUP_WINDOW_SUFFIX);
     }
 
     public String getEditorScreenId(MetaClass metaClass) {
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+        WindowInfo windowInfo = primaryEditors.get(originalMetaClass.getJavaClass());
+        if (windowInfo != null) {
+            return windowInfo.getId();
+        }
+
         return getMetaClassScreenId(metaClass, Window.EDITOR_WINDOW_SUFFIX);
     }
 
     public WindowInfo getEditorScreen(Entity entity) {
         MetaClass metaClass = entity.getMetaClass();
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+        WindowInfo windowInfo = primaryLookups.get(originalMetaClass.getJavaClass());
+        if (windowInfo != null) {
+            return windowInfo;
+        }
+
         String editorScreenId = getEditorScreenId(metaClass);
         return getWindowInfo(editorScreenId);
     }
@@ -397,6 +490,13 @@ public class WindowConfig {
      */
     public WindowInfo getLookupScreen(Class<? extends Entity> entityClass) {
         MetaClass metaClass = metadata.getSession().getClass(entityClass);
+
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+        WindowInfo windowInfo = primaryLookups.get(originalMetaClass.getJavaClass());
+        if (windowInfo != null) {
+            return windowInfo;
+        }
+
         String lookupScreenId = getAvailableLookupScreenId(metaClass);
         return getWindowInfo(lookupScreenId);
     }

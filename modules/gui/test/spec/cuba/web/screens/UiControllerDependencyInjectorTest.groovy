@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.screen.impl.MessageBundleImpl
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
 import spec.cuba.web.screens.injection.ScreenBindEventListener
-import spec.cuba.web.screens.injection.ScreenBindProvide
+import spec.cuba.web.screens.injection.ScreenBindInstall
 import spec.cuba.web.screens.injection.ScreenBindSubscribe
 import spec.cuba.web.screens.injection.ScreenInjectToFields
 import spec.cuba.web.screens.injection.ScreenInjectToSetters
@@ -190,7 +190,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     }
 
     def "Injector supports @Install methods"() {
-        def screen = new ScreenBindProvide()
+        def screen = new ScreenBindInstall()
 
         def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
         def inspector = new UiControllerReflectionInspector()

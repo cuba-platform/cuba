@@ -66,12 +66,13 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected MetaClass metaClass;
 
     protected List<Action> actions = new ArrayList<>(4);
-    protected Map<String, CubaButton> actionButtons = new HashMap<>(4);
-    protected Map<String, Consumer<PropertyChangeEvent>> actionPropertyChangeListeners = new HashMap<>(4);
+    protected Map<Action, CubaButton> actionButtons = new HashMap<>(4);
     protected Registration fieldListenerRegistration;
 
     protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
     protected WebPickerFieldActionHandler actionHandler;
+
+    protected Consumer<PropertyChangeEvent> actionPropertyChangeListener = this::actionPropertyChanged;
 
     public WebPickerField() {
         component = createComponent();
@@ -222,17 +223,19 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         setPickerButtonAction(vButton, action);
 
         component.addButton(vButton, index);
-        actionButtons.put(action.getId(), vButton);
-
-        // apply Editable after action owner is set
-        if (action instanceof StandardAction) {
-            ((StandardAction) action).setEditable(isEditable());
-        }
 
         if (StringUtils.isNotEmpty(getDebugId())) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             // Set debug id
             vButton.setId(testIdManager.getTestId(getDebugId() + "_" + action.getId()));
+        }
+
+        if (action instanceof PickerFieldAction) {
+            PickerFieldAction pickerFieldAction = (PickerFieldAction) action;
+            pickerFieldAction.setPickerField(this);
+            if (!isEditable()) {
+                pickerFieldAction.editableChanged(this, isEditable());
+            }
         }
 
         actionsPermissions.apply(action);
@@ -254,9 +257,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             setPickerButtonIcon(button, action.getIcon());
         }
 
-        Consumer<PropertyChangeEvent> actionPropertyChangeListener = createActionPropertyChangeListener(button, action);
         action.addPropertyChangeListener(actionPropertyChangeListener);
-        actionPropertyChangeListeners.put(action.getId(), actionPropertyChangeListener);
 
         button.setClickHandler(createPickerButtonClickHandler(action));
     }
@@ -272,23 +273,24 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         }
     }
 
-    protected Consumer<PropertyChangeEvent> createActionPropertyChangeListener(CubaButton button, Action action) {
-        return evt -> {
-            if (Action.PROP_ICON.equals(evt.getPropertyName())) {
-                setPickerButtonIcon(button, action.getIcon());
-            } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
-                button.setCaption(action.getCaption());
-            } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
-                button.setDescription(action.getDescription());
-            } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
-                button.setEnabled(action.isEnabled());
-            } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
-                button.setVisible(action.isVisible());
-            } else if (action instanceof PickerField.StandardAction
-                    && PickerField.StandardAction.PROP_EDITABLE.equals(evt.getPropertyName())) {
-                button.setVisible(((StandardAction) action).isEditable());
-            }
-        };
+    protected void actionPropertyChanged(PropertyChangeEvent evt) {
+        Action action = (Action) evt.getSource();
+        CubaButton button = actionButtons.get(action);
+
+        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+            setPickerButtonIcon(button, action.getIcon());
+        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+            button.setCaption(action.getCaption());
+        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+            button.setDescription(action.getDescription());
+        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+            button.setEnabled(action.isEnabled());
+        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+            button.setVisible(action.isVisible());
+        } else if (action instanceof PickerFieldAction
+                && PickerFieldAction.PROP_EDITABLE.equals(evt.getPropertyName())) {
+            button.setVisible(((PickerFieldAction) action).isEditable());
+        }
     }
 
     protected Consumer<MouseEventDetails> createPickerButtonClickHandler(Action action) {
@@ -307,7 +309,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             for (Action action : actions) {
-                CubaButton button = actionButtons.get(action.getId());
+                CubaButton button = actionButtons.get(action);
                 if (button != null && Strings.isNullOrEmpty(button.getId())) {
                     button.setId(testIdManager.getTestId(debugId + "_" + action.getId()));
                 }
@@ -321,11 +323,14 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             actionHandler.removeAction(action);
 
             if (action != null) {
-                CubaButton button = actionButtons.remove(action.getId());
+                CubaButton button = actionButtons.remove(action);
                 component.removeButton(button);
 
-                Consumer<PropertyChangeEvent> listener = actionPropertyChangeListeners.remove(action.getId());
-                action.removePropertyChangeListener(listener);
+                action.removePropertyChangeListener(actionPropertyChangeListener);
+            }
+
+            if (action instanceof PickerFieldAction) {
+                ((PickerFieldAction) action).setPickerField(null);
             }
         }
     }
@@ -387,7 +392,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
-    public void setLookupSelectHandler(Runnable selectHandler) {
+    public void setLookupSelectHandler(Consumer selectHandler) {
         // do nothing
     }
 
@@ -421,8 +426,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         super.setEditable(editable);
 
         for (Action action : getActions()) {
-            if (action instanceof StandardAction) {
-                ((StandardAction) action).setEditable(editable);
+            if (action instanceof PickerFieldAction) {
+                ((PickerFieldAction) action).editableChanged(this, editable);
             }
         }
     }
@@ -456,7 +461,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
         private int[] modifiers;
 
-        private Map<ShortcutAction, Action> actionsMap = new HashMap<>(4);
+        private Map<ShortcutAction, Action> actionsMap = new HashMap<>(4);  // todo replace with custom class
         private List<com.vaadin.event.Action> shortcuts = new ArrayList<>(4);
         private List<ShortcutAction> orderedShortcuts = new ArrayList<>(4);
 
@@ -527,7 +532,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-            Action pickerAction = actionsMap.get(action);
+            //noinspection RedundantCast
+            Action pickerAction = actionsMap.get((ShortcutAction) action);
             if (pickerAction != null) {
                 pickerAction.actionPerform(WebPickerField.this);
             }

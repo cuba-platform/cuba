@@ -38,7 +38,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class ItemTrackingAction extends BaseAction implements Action.HasSecurityConstraint {
+public class ItemTrackingAction extends ListAction implements Action.HasSecurityConstraint {
 
     protected ConstraintOperationType constraintOperationType;
     protected String constraintCode;

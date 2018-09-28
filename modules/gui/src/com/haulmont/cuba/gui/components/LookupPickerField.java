@@ -27,8 +27,11 @@ public interface LookupPickerField<V extends Entity> extends LookupField<V>, Pic
     String NAME = "lookupPickerField";
 
     /**
-     * Use this method to enable items refreshing in component after closing lookup window
-     * */
+     * Use this method to enable items refreshing in component after closing lookup window.
+     *
+     * @deprecated Override LookupAction if needed instead of using this option.
+     */
+    @Deprecated
     void setRefreshOptionsOnLookupClose(boolean refresh);
     boolean isRefreshOptionsOnLookupClose();
 }

@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
-                                                Component.HasCaption, Component.HasIcon, LookupComponent,
+                                                Component.HasCaption, Component.HasIcon, LookupComponent<E>,
                                                 Component.Focusable, HasContextHelp {
 
     String NAME = "tree";
