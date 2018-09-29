@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.ConditionXmlLoader;
 import com.haulmont.cuba.gui.model.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
@@ -206,8 +207,9 @@ public class ScreenDataXmlLoader {
 
         String loaderId = element.attributeValue("id");
         if (loaderId != null) {
-            screenData.registerLoader(loaderId, loader);
+            loaderId = generateId();
         }
+        screenData.registerLoader(loaderId, loader);
     }
 
     protected void loadCollectionLoader(ScreenData screenData, Element element, CollectionContainer<Entity> container) {
@@ -224,8 +226,9 @@ public class ScreenDataXmlLoader {
 
         String loaderId = element.attributeValue("id");
         if (loaderId != null) {
-            screenData.registerLoader(loaderId, loader);
+            loaderId = generateId();
         }
+        screenData.registerLoader(loaderId, loader);
     }
 
     protected void loadKeyValueCollectionLoader(ScreenData screenData, Element element, KeyValueCollectionContainer container) {
@@ -243,8 +246,9 @@ public class ScreenDataXmlLoader {
 
         String loaderId = element.attributeValue("id");
         if (loaderId != null) {
-            screenData.registerLoader(loaderId, loader);
+            loaderId = generateId();
         }
+        screenData.registerLoader(loaderId, loader);
     }
 
     protected Class<Entity> getEntityClass(Element element) {
@@ -346,5 +350,9 @@ public class ScreenDataXmlLoader {
         if (id == null)
             throw new IllegalStateException("Required attribute '" + attributeName + "' not found in " + element);
         return id.trim();
+    }
+
+    protected String generateId() {
+        return RandomStringUtils.randomAlphanumeric(8);
     }
 }
