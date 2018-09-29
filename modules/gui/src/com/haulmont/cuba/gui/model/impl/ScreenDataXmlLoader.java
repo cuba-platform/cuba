@@ -206,7 +206,7 @@ public class ScreenDataXmlLoader {
         loadEntityId(element, loader);
 
         String loaderId = element.attributeValue("id");
-        if (loaderId != null) {
+        if (loaderId == null) {
             loaderId = generateId();
         }
         screenData.registerLoader(loaderId, loader);
@@ -225,7 +225,7 @@ public class ScreenDataXmlLoader {
         loadCacheable(element, loader);
 
         String loaderId = element.attributeValue("id");
-        if (loaderId != null) {
+        if (loaderId == null) {
             loaderId = generateId();
         }
         screenData.registerLoader(loaderId, loader);
@@ -245,7 +245,7 @@ public class ScreenDataXmlLoader {
             loader.setStoreName(storeName);
 
         String loaderId = element.attributeValue("id");
-        if (loaderId != null) {
+        if (loaderId == null) {
             loaderId = generateId();
         }
         screenData.registerLoader(loaderId, loader);

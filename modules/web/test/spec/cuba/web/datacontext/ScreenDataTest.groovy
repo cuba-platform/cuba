@@ -89,6 +89,16 @@ class ScreenDataTest extends WebSpec {
                     </loader>
                 </collection>
                 
+                <collection id="usersCont1"
+                            class="com.haulmont.cuba.security.entity.User" view="user.browse">
+            
+                    <loader>
+                        <query>
+                            select u from sec$User u
+                        </query>
+                    </loader>
+                </collection>
+                
                 <keyValueCollection id="userInfoCont">
                     <properties>
                         <property name="login"/>
@@ -100,6 +110,8 @@ class ScreenDataTest extends WebSpec {
                         </query>
                     </loader>
                 </keyValueCollection>
+                
+                
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
@@ -113,6 +125,7 @@ class ScreenDataTest extends WebSpec {
         InstanceContainer<User> userCont = screenData.getContainer('userCont')
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionContainer<User> usersCont = screenData.getContainer('usersCont')
+        CollectionContainer<User> usersCont1 = screenData.getContainer('usersCont1')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
         KeyValueCollectionContainer userInfoCont = screenData.getContainer('userInfoCont')
         KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
@@ -135,6 +148,8 @@ class ScreenDataTest extends WebSpec {
         usersLoader.firstResult == 0
         usersLoader.maxResults == Integer.MAX_VALUE
         !usersLoader.cacheable
+
+        screenData.getLoaderIds().find { String id -> screenData.getLoader(id) == usersCont1.loader } != null
 
         userInfoCont.getEntityMetaClass().getProperty('login') != null
         userInfoCont.getEntityMetaClass().getProperty('name') != null
