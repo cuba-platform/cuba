@@ -30,13 +30,14 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
 
 @ActionType(RemoveAction.ID)
 public class RemoveAction extends SecuredListAction {
 
-    public static final String ID = "entity_remove";
+    public static final String ID = "remove";
 
     protected Messages messages;
 
@@ -67,7 +68,31 @@ public class RemoveAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
+        if (!(target instanceof SupportsEntityBinding)) {
+            return false;
+        }
+
+        if (!checkRemovePermission()) {
+            return false;
+        }
+
         return super.isPermitted();
+    }
+
+    protected boolean checkRemovePermission() {
+        MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+        if (metaClass == null) {
+            return true;
+        }
+
+        boolean entityOpPermitted = security.isEntityOpPermitted(metaClass, EntityOp.DELETE);
+        if (!entityOpPermitted) {
+            return false;
+        }
+
+        // todo support nested properties or use separate action ?
+
+        return true;
     }
 
     @Override

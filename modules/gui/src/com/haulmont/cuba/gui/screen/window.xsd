@@ -29,7 +29,7 @@
     <xs:element name="window">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="data" type="data:screenData"/>
+                <xs:element name="data" type="data:screenData" minOccurs="0"/>
 
                 <xs:element name="timers" minOccurs="0" type="layout:timer"/>
                 <xs:element name="actions" minOccurs="0">

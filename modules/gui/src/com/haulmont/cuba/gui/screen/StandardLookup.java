@@ -17,8 +17,15 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupComponent;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.util.OperationResult;
 
 import java.util.Collection;
@@ -26,19 +33,41 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T> {
-    private Consumer<Collection<T>> selectHandler;
-    private Predicate<ValidationContext<T>> selectValidator;
+    public static final String LOOKUP_ACTIONS_FRAGMENT_ID = "lookupActions";
+
+    protected Consumer<Collection<T>> selectHandler;
+    protected Predicate<ValidationContext<T>> selectValidator;
 
     public StandardLookup() {
+        addInitListener(this::initActions);
         addBeforeShowListener(this::setupLookupComponent);
     }
 
-    // todo lookup actions frame
-    // todo show actions if needed
+    protected void initActions(@SuppressWarnings("unused") InitEvent event) {
+        Window window = getWindow();
+
+        Configuration configuration = getBeanLocator().get(Configuration.NAME);
+        Messages messages = getBeanLocator().get(Messages.NAME);
+
+        String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
+
+        Action commitAction = new BaseAction(LOOKUP_SELECT_ACTION_ID)
+                .withCaption(messages.getMainMessage("actions.Select"))
+                .withPrimary(true)
+                .withShortcut(commitShortcut)
+                .withHandler(this::select);
+
+        window.addAction(commitAction);
+
+        Action closeAction = new BaseAction(LOOKUP_CANCEL_ACTION_ID)
+                .withCaption(messages.getMainMessage("actions.Cancel"))
+                .withHandler(this::cancel);
+
+        window.addAction(closeAction);
+    }
 
     protected void setupLookupComponent(@SuppressWarnings("unused") BeforeShowEvent event) {
-        LookupComponent<T> lookupComponent = getLookupComponent();
-        lookupComponent.setLookupSelectHandler(this::select);
+        getLookupComponent().setLookupSelectHandler(this::select);
     }
 
     @Override
@@ -49,6 +78,11 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     @Override
     public void setSelectHandler(Consumer<Collection<T>> selectHandler) {
         this.selectHandler = selectHandler;
+
+        Component lookupActionsFragment = getWindow().getComponent(LOOKUP_ACTIONS_FRAGMENT_ID);
+        if (lookupActionsFragment != null) {
+            lookupActionsFragment.setVisible(true);
+        }
     }
 
     @Override
@@ -71,6 +105,16 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
             );
         }
         return (LookupComponent) getWindow().getComponentNN(annotation.value());
+    }
+
+    protected void select(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        LookupComponent<T> lookupComponent = getLookupComponent();
+        Collection<T> lookupSelectedItems = lookupComponent.getLookupSelectedItems();
+        select(lookupSelectedItems);
+    }
+
+    protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        close(WINDOW_DISCARD_AND_CLOSE_ACTION);
     }
 
     protected void select(Collection<T> items) {

@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
-    <layout>
+<fragment xmlns="http://schemas.haulmont.com/cuba/screen/fragment.xsd">
+    <layout visible="false">
         <hbox id="lookupActionsBox" spacing="true" stylename="c-lookup-window-actions">
             <button id="selectButton" action="lookupSelectAction" caption="mainMsg://actions.Select"
                     icon="LOOKUP_OK" stylename="c-window-action-button"/>
@@ -23,4 +23,4 @@
                     icon="LOOKUP_CANCEL" stylename="c-window-action-button"/>
         </hbox>
     </layout>
-</window>
+</fragment>

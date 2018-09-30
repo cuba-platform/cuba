@@ -540,8 +540,8 @@ public class UiControllerReflectionInspector {
 
         for (Method m : ReflectionUtils.getUniqueDeclaredMethods(clazz)) {
             if (Modifier.isPublic(m.getModifiers())
-                && m.getName().startsWith("set")
-                && m.getParameterCount() == 1) {
+                    && m.getParameterCount() == 1
+                    && (m.getName().startsWith("set") || m.getName().startsWith("add"))) {
 
                 Class<?> parameterType = m.getParameterTypes()[0];
 

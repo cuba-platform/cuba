@@ -17,7 +17,9 @@
 package com.haulmont.cuba.gui.components.actions.list;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
@@ -27,8 +29,6 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -39,19 +39,10 @@ public class ExcelAction extends ListAction {
 
     public static final String ID = "excel";
 
-    private static final Logger log = LoggerFactory.getLogger(ExcelAction.class);
-
     protected Messages messages;
-
-    protected ExportDisplay display;
+    protected BeanLocator beanLocator;
 
     protected String fileName = null;
-
-    @Inject
-    protected Notifications notifications;
-
-    @Inject
-    protected Dialogs dialogs;
 
     /**
      * If true and table is aggregatable will export aggregation row to excel document.
@@ -78,11 +69,8 @@ public class ExcelAction extends ListAction {
     }
 
     @Inject
-    protected void setExportDisplay(ExportDisplay exportDisplay) {
-        this.display = exportDisplay;
-        if (target != null) {
-            display.setFrame(target.getFrame());
-        }
+    protected void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 
     @Override
@@ -90,9 +78,6 @@ public class ExcelAction extends ListAction {
         if (target != null
                 && !(target instanceof SupportsEntityBinding)) {
             throw new IllegalStateException("ExcelAction target does not implement SupportsEntityBinding");
-        }
-        if (display != null && target != null) {
-            display.setFrame(target.getFrame());
         }
         super.setTarget(target);
     }
@@ -124,6 +109,9 @@ public class ExcelAction extends ListAction {
                         exportAllAction,
                         new DialogAction(DialogAction.Type.CANCEL)
                 };
+
+                Window window = ComponentsHelper.getWindowNN(target);
+                Dialogs dialogs = window.getScreenContext().getDialogs();
 
                 dialogs.createOptionDialog()
                         .setCaption(messages.getMainMessage("actions.exportSelectedTitle"))
@@ -167,6 +155,11 @@ public class ExcelAction extends ListAction {
         ExcelExporter exporter = new ExcelExporter();
         exporter.setExportAggregation(exportAggregation);
 
+        Window window = ComponentsHelper.getWindowNN(target);
+
+        ExportDisplay display = beanLocator.get(ExportDisplay.NAME);
+        display.setFrame(window);
+
         if (target instanceof Table) {
             @SuppressWarnings("unchecked")
             Table<Entity> table = (Table<Entity>) target;
@@ -183,6 +176,8 @@ public class ExcelAction extends ListAction {
         }
 
         if (exporter.isXlsMaxRowNumberExceeded()) {
+            Notifications notifications = window.getScreenContext().getNotifications();
+
             notifications.create()
                     .setCaption(messages.getMainMessage("actions.warningExport.title"))
                     .setDescription(messages.getMainMessage("actions.warningExport.message"))

@@ -21,4 +21,6 @@ public @interface Subscribe {
 
     @AliasFor("value")
     String id() default "";
+
+    boolean optional() default false;
 }

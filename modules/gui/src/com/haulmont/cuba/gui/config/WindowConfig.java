@@ -472,7 +472,7 @@ public class WindowConfig {
     public WindowInfo getEditorScreen(Entity entity) {
         MetaClass metaClass = entity.getMetaClass();
         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
-        WindowInfo windowInfo = primaryLookups.get(originalMetaClass.getJavaClass());
+        WindowInfo windowInfo = primaryEditors.get(originalMetaClass.getJavaClass());
         if (windowInfo != null) {
             return windowInfo;
         }

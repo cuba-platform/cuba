@@ -16,15 +16,14 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 
 /**
  * Enumerates standard list action types. Can create a corresponding action instance with default parameters.
  *
+ * @deprecated Use {@link Actions} instead.
  */
+@Deprecated
 public enum ListActionType {
 
     CREATE("create") {

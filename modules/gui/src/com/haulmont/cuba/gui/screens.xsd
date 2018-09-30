@@ -38,9 +38,6 @@
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="template" type="xs:string"/>
         <xs:attribute name="multipleOpen" type="xs:boolean"/>
-
-        <!-- screen agent deprecated and will be removed in 7.0 -->
-        <!--<xs:attribute name="agent" type="screenAgent"/>-->
     </xs:complexType>
 
     <xs:complexType name="includeType">

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Component.Focusable;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.SupportsContainerBinding;
 import com.haulmont.cuba.gui.components.Window;
@@ -133,6 +134,22 @@ public class EditorScreens {
             });
         }
 
+        com.haulmont.cuba.gui.components.Component field = builder.getField();
+        if (field != null) {
+            screen.addAfterCloseListener(afterCloseEvent -> {
+                CloseAction closeAction = afterCloseEvent.getCloseAction();
+                if (isCommitCloseAction(closeAction)) {
+                    // todo do we need to remove listeners from entity here ?
+                    // todo composition support
+                    ((HasValue) field).setValue(editorScreen.getEditedEntity());
+                }
+
+                if (field instanceof Focusable) {
+                    ((Focusable) field).focus();
+                }
+            });
+        }
+
         return (S) screen;
     }
 
@@ -158,6 +175,7 @@ public class EditorScreens {
         protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
         protected ScreenOptions options = FrameOwner.NO_OPTIONS;
         protected ListComponent<E> listComponent;
+        protected com.haulmont.cuba.gui.components.Component field;
 
         protected String screenId;
         protected DataContext parentDataContext;
@@ -240,6 +258,15 @@ public class EditorScreens {
 
         public <S extends Screen & EditorScreen<E>> EditorClassBuilder<E, S> withScreen(Class<S> screenClass) {
             return new EditorClassBuilder<>(this, screenClass);
+        }
+
+        public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> EditorBuilder<E> withField(T field) {
+            this.field = field;
+            return this;
+        }
+
+        public com.haulmont.cuba.gui.components.Component getField() {
+            return field;
         }
 
         public String getScreenId() {
@@ -359,6 +386,12 @@ public class EditorScreens {
         @Override
         public EditorBuilder<E> withScreen(String screenId) {
             throw new IllegalStateException("EditorClassBuilder does not support screenId");
+        }
+
+        @Override
+        public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> EditorClassBuilder<E, S> withField(T field) {
+            super.withField(field);
+            return this;
         }
 
         public Class<S> getScreenClass() {

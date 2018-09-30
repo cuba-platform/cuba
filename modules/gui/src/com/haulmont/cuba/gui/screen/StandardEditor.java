@@ -18,11 +18,17 @@ package com.haulmont.cuba.gui.screen;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanValidation;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.EntityStates;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ValidationErrors;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
 
@@ -37,14 +43,45 @@ import java.util.Set;
  */
 public abstract class StandardEditor<T extends Entity> extends Screen implements EditorScreen<T> {
 
-    private T entityToEdit;
+    protected boolean commitActionPerformed = false;
 
+    private T entityToEdit;
     private boolean crossFieldValidate = true;
     private boolean justLocked = false; // todo
     private boolean readOnly = false; // todo
 
     protected StandardEditor() {
+        addInitListener(this::initActions);
         addBeforeShowListener(this::setupEntityToEdit);
+    }
+
+    protected void initActions(@SuppressWarnings("unused") InitEvent event) {
+        Window window = getWindow();
+
+        Configuration configuration = getBeanLocator().get(Configuration.NAME);
+        Messages messages = getBeanLocator().get(Messages.NAME);
+
+        String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
+
+        Action commitAndCloseAction = new BaseAction(WINDOW_COMMIT_AND_CLOSE)
+                .withCaption(messages.getMainMessage("actions.Ok"))
+                .withPrimary(true)
+                .withShortcut(commitShortcut)
+                .withHandler(this::commitAndClose);
+
+        window.addAction(commitAndCloseAction);
+
+        Action commitAction = new BaseAction(WINDOW_COMMIT)
+                .withCaption(messages.getMainMessage("actions.Save"))
+                .withHandler(this::commit);
+
+        window.addAction(commitAction);
+
+        Action closeAction = new BaseAction(WINDOW_CLOSE)
+                .withCaption(messages.getMainMessage("actions.Cancel"))
+                .withHandler(this::cancel);
+
+        window.addAction(closeAction);
     }
 
     protected void setupEntityToEdit(@SuppressWarnings("unused") BeforeShowEvent event) {
@@ -182,5 +219,19 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     private EntityStates getEntityStates() {
         return getBeanLocator().get(EntityStates.NAME);
+    }
+
+    protected void commitAndClose(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        closeWithCommit();
+    }
+
+    protected void commit(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        commitChanges()
+                .then(() -> commitActionPerformed = true);
+    }
+
+    protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        close(commitActionPerformed ?
+                WINDOW_COMMIT_AND_CLOSE_ACTION : WINDOW_DISCARD_AND_CLOSE_ACTION);
     }
 }

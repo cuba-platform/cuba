@@ -153,6 +153,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         this.metaClass = metaClass;
     }
 
+    @Deprecated
     @Override
     public LookupAction addLookupAction() {
         LookupAction action = LookupAction.create(this);
@@ -161,12 +162,14 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
+    @Deprecated
     public ClearAction addClearAction() {
         ClearAction action = ClearAction.create(this);
         addAction(action);
         return action;
     }
 
+    @Deprecated
     @Override
     public PickerField.OpenAction addOpenAction() {
         OpenAction action = OpenAction.create(this);

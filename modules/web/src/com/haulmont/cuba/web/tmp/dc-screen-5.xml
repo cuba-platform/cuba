@@ -31,14 +31,23 @@
     </data>
 
     <layout spacing="true" expand="usersTable">
+
+        <pickerField id="userPicker" metaClass="sec$User">
+            <actions>
+                <action id="lookup" type="picker_lookup"/>
+                <action id="open" type="picker_open"/>
+                <action id="clear" type="picker_clear"/>
+            </actions>
+        </pickerField>
+
         <filter id="usersFilter"
                 dataLoader="usersLoader"/>
         <groupTable id="usersTable"
                width="100%">
             <actions>
-                <action id="create" type="entity_create"/>
-                <action id="edit" type="entity_edit"/>
-                <action id="remove" type="entity_remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <buttonsPanel>
                 <button id="createBtn" action="usersTable.create"/>
@@ -54,5 +63,8 @@
             </columns>
             <rows dataContainer="usersCont"/>
         </groupTable>
+
+        <fragment id="lookupActions"
+                  screen="lookupActions"/>
     </layout>
 </window>

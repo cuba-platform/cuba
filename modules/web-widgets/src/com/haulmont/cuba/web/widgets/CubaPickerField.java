@@ -64,11 +64,6 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
     protected void init() {
         setPrimaryStyleName(PRIMARY_STYLENAME);
         setSizeUndefined();
-
-        // VAADIN8: gg,
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
-//        setShowErrorForDisabledState(false);
     }
 
     @Override
@@ -116,6 +111,12 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         this.field = field;
 
         field.addValueChangeListener(this::onFieldValueChange);
+    }
+
+    @Override
+    protected boolean isDifferentValue(T newValue) {
+        Object value = getValue();
+        return value != newValue;
     }
 
     protected void onFieldValueChange(ValueChangeEvent<?> event) {

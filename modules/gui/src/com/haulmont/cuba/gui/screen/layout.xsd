@@ -809,19 +809,24 @@
 
     <xs:attributeGroup name="hasId">
         <xs:attribute name="id" type="xs:string"/>
-        <xs:anyAttribute processContents="lax"/>
+
+        <xs:attribute name="box.expandRatio" type="xs:float"/>
+        <xs:attribute name="colspan" type="xs:integer"/>
+        <xs:attribute name="rowspan" type="xs:integer"/>
+
+        <!-- todo grid.colspan and grid.rowspan attributes -->
+
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresId">
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:anyAttribute processContents="lax"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSize">
         <xs:attribute name="width" type="componentSize"/>
         <xs:attribute name="height" type="componentSize"/>
-        <xs:attribute name="colspan" type="xs:integer"/>
-        <xs:attribute name="rowspan" type="xs:integer"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasIcon">
@@ -3010,6 +3015,4 @@
             <xs:enumeration value="CENTER"/>
         </xs:restriction>
     </xs:simpleType>
-
-    <xs:attribute name="box.expandRatio" type="xs:float"/>
 </xs:schema>

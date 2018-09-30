@@ -653,7 +653,10 @@ public abstract class ComponentsHelper {
     /**
      * INTERNAL.
      * Adds actions specified in {@link Lookup} annotation on entity attribute to the given PickerField.
+     *
+     * @deprecated Use {@link GuiActionSupport#createActionsByMetaAnnotations(PickerField)} instead.
      */
+    @Deprecated
     public static boolean createActionsByMetaAnnotations(PickerField pickerField) {
         MetaPropertyPath mpp = pickerField.getMetaPropertyPath();
         if (mpp == null) {

@@ -58,6 +58,8 @@ public interface Field<T> extends DatasourceComponent<T>, HasValueBinding<T>, Co
      * Field validator.<br>
      * Validators are invoked when {@link Validatable#validate()} is called.
      * Editor screen calls {@code validate()} on commit.
+     *
+     * vaadin8 replace with Consumer<T>
      */
     interface Validator {
         /**

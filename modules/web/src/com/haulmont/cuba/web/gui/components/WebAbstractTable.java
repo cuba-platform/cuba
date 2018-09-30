@@ -55,6 +55,8 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.InstallTargetHandler;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -91,6 +93,8 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -102,7 +106,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractActionsHolderComponent<T>
         implements Table<E>, TableSourceEventsDelegate<E>, LookupSelectionChangeNotifier<E>,
-        HasInnerComponents, SupportsEntityBinding, SupportsContainerBinding, InitializingBean {
+        HasInnerComponents, SupportsEntityBinding, SupportsContainerBinding, InstallTargetHandler, InitializingBean {
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -2877,5 +2881,41 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
         unsubscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
+    }
+
+    @Nullable
+    @Override
+    public Object createInstallHandler(Class<?> targetObjectType, FrameOwner frameOwner, Method method) {
+        if (targetObjectType == StyleProvider.class) {
+            return new InstalledStyleProvider(frameOwner, method);
+        }
+        return null;
+    }
+
+    protected static class InstalledStyleProvider implements StyleProvider {
+        private final FrameOwner frameOwner;
+        private final Method method;
+
+        public InstalledStyleProvider(FrameOwner frameOwner, Method method) {
+            this.frameOwner = frameOwner;
+            this.method = method;
+        }
+
+        @Override
+        public String getStyleName(Entity entity, @Nullable String property) {
+            try {
+                return (String) method.invoke(frameOwner, entity, property);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Exception on @Install invocation", e);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "InstalledStyleProvider{" +
+                    "frameOwner=" + frameOwner.getClass() +
+                    ", method=" + method +
+                    '}';
+        }
     }
 }

@@ -52,6 +52,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -127,7 +128,15 @@ public class UiControllerDependencyInjector {
             MethodHandle targetSetterMethod = getInstallTargetSetterMethod(annotation, frame, instanceClass, installMethod);
             Class<?> targetParameterType = targetSetterMethod.type().parameterList().get(1);
 
-            Object handler = createInstallHandler(frameOwner, installMethod, targetParameterType);
+            Object handler = null;
+            if (targetInstance instanceof InstallTargetHandler) {
+                handler = ((InstallTargetHandler) targetInstance).createInstallHandler(targetParameterType,
+                        frameOwner, installMethod);
+            }
+
+            if (handler == null) {
+                handler = createInstallHandler(frameOwner, installMethod, targetParameterType);
+            }
 
             try {
                 targetSetterMethod.invoke(targetInstance, handler);
@@ -158,7 +167,13 @@ public class UiControllerDependencyInjector {
         }
 
         String subjectSetterName = "set" + StringUtils.capitalize(subjectProperty);
-        MethodHandle targetSetterMethod = reflectionInspector.getInstallTargetMethod(instanceClass, subjectSetterName);
+        // Check if addSubject is supported, e.g: addValidator(), addStyleProvider()
+        String subjectAddName = "add" + StringUtils.capitalize(subjectProperty);
+
+        MethodHandle targetSetterMethod = reflectionInspector.getInstallTargetMethod(instanceClass, subjectAddName);
+        if (targetSetterMethod == null) {
+            targetSetterMethod = reflectionInspector.getInstallTargetMethod(instanceClass, subjectSetterName);
+        }
 
         if (targetSetterMethod == null) {
             throw new DevelopmentException(
@@ -253,17 +268,19 @@ public class UiControllerDependencyInjector {
 
     protected Object createInstallHandler(FrameOwner frameOwner, Method method, Class<?> targetObjectType) {
         if (targetObjectType == Function.class) {
-            return new InstallInvocationFunction(frameOwner, method);
+            return new InstalledFunction(frameOwner, method);
         } else if (targetObjectType == Consumer.class) {
-            return new InstallInvocationConsumer(frameOwner, method);
+            return new InstalledConsumer(frameOwner, method);
         } else if (targetObjectType == Supplier.class) {
-            return new InstallInvocationSupplier(frameOwner, method);
+            return new InstalledSupplier(frameOwner, method);
         } else if (targetObjectType == BiFunction.class) {
-            return new InstallInvocationBiFunction(frameOwner, method);
+            return new InstalledBiFunction(frameOwner, method);
         } else {
+            // todo check if UI component can provide declarative handler better than proxy class, e.g. StyleProvider of Table
+
             ClassLoader classLoader = getClass().getClassLoader();
             return newProxyInstance(classLoader, new Class[]{targetObjectType},
-                    new InstallInvocationProxyHandler(frameOwner, method)
+                    new InstalledProxyHandler(frameOwner, method)
             );
         }
     }
@@ -325,6 +342,14 @@ public class UiControllerDependencyInjector {
                 eventTarget = findEventTarget(frame, target);
             }
 
+            if (eventTarget == null) {
+                if (!annotation.optional()) {
+                    throw new DevelopmentException(String.format("Unable to find @Subscribe target %s in %s", target, frame.getId()));
+                }
+
+                continue;
+            }
+
             Consumer listener;
             if (reflectionInspector.isLambdaHandlersAvailable()) {
                 // CAUTION here we use JDK internal API that could be unavailable
@@ -343,7 +368,8 @@ public class UiControllerDependencyInjector {
 
             MethodHandle addListenerMethod = reflectionInspector.getAddListenerMethod(eventTarget.getClass(), eventType);
             if (addListenerMethod == null) {
-                throw new DevelopmentException("Target does not support event type " + eventType);
+                throw new DevelopmentException(String.format("Target %s does not support event type %s",
+                        eventTarget.getClass().getName(), eventType));
             }
 
             try {
@@ -356,6 +382,7 @@ public class UiControllerDependencyInjector {
         }
     }
 
+    @Nullable
     protected Object findEventTarget(Frame frame, String target) {
         String[] elements = ValuePathHelper.parse(target);
         if (elements.length > 1) {
@@ -391,7 +418,7 @@ public class UiControllerDependencyInjector {
             }
         }
 
-        throw new DevelopmentException(String.format("Unable to find @Subscribe target %s in %s", target, frame.getId()));
+        return null;
     }
 
     protected void initUiEventListeners(FrameOwner frameOwner) {
@@ -673,11 +700,11 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    public static class InstallInvocationFunction implements Function {
+    public static class InstalledFunction implements Function {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public InstallInvocationFunction(FrameOwner frameOwner, Method method) {
+        public InstalledFunction(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -693,18 +720,18 @@ public class UiControllerDependencyInjector {
 
         @Override
         public String toString() {
-            return "InstallInvocationFunction{" +
+            return "InstalledFunction{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class InstallInvocationConsumer implements Consumer {
+    public static class InstalledConsumer implements Consumer {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public InstallInvocationConsumer(FrameOwner frameOwner, Method method) {
+        public InstalledConsumer(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -720,18 +747,18 @@ public class UiControllerDependencyInjector {
 
         @Override
         public String toString() {
-            return "InstallInvocationConsumer{" +
+            return "InstalledConsumer{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class InstallInvocationSupplier implements Supplier {
+    public static class InstalledSupplier implements Supplier {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public InstallInvocationSupplier(FrameOwner frameOwner, Method method) {
+        public InstalledSupplier(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -747,18 +774,18 @@ public class UiControllerDependencyInjector {
 
         @Override
         public String toString() {
-            return "InstallInvocationSupplier{" +
+            return "InstalledSupplier{" +
                     "target=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class InstallInvocationBiFunction implements BiFunction {
+    public static class InstalledBiFunction implements BiFunction {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public InstallInvocationBiFunction(FrameOwner frameOwner, Method method) {
+        public InstalledBiFunction(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -774,18 +801,18 @@ public class UiControllerDependencyInjector {
 
         @Override
         public String toString() {
-            return "InstallInvocationBiFunction{" +
+            return "InstalledBiFunction{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
     }
 
-    public static class InstallInvocationProxyHandler implements InvocationHandler {
+    public static class InstalledProxyHandler implements InvocationHandler {
         private final FrameOwner frameOwner;
         private final Method method;
 
-        public InstallInvocationProxyHandler(FrameOwner frameOwner, Method method) {
+        public InstalledProxyHandler(FrameOwner frameOwner, Method method) {
             this.frameOwner = frameOwner;
             this.method = method;
         }
@@ -811,12 +838,12 @@ public class UiControllerDependencyInjector {
                 }
             }
 
-            throw new UnsupportedOperationException("InstallInvocationProxyHandler does not support method " + invokedMethod);
+            throw new UnsupportedOperationException("InstalledProxyHandler does not support method " + invokedMethod);
         }
 
         @Override
         public String toString() {
-            return "InstallInvocationProxyHandler{" +
+            return "InstalledProxyHandler{" +
                     "frameOwner=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';

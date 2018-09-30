@@ -36,7 +36,7 @@ import javax.inject.Inject;
 @ActionType(CreateAction.ID)
 public class CreateAction extends ListAction {
 
-    public static final String ID = "entity_create";
+    public static final String ID = "create";
 
     protected Security security;
     protected EditorScreens editorScreens;

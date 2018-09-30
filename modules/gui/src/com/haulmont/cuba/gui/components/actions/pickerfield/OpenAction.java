@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import javax.inject.Inject;
 
@@ -98,12 +99,19 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
         this.messages = messages;
     }
 
+    @Inject
+    protected void setEditorScreens(EditorScreens editorScreens) {
+        this.editorScreens = editorScreens;
+    }
+
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-
             Entity entity = pickerField.getValue();
+            if (entity == null) {
+                return;
+            }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 Window window = ComponentsHelper.getWindowNN(pickerField);
@@ -128,17 +136,14 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
             Window window = ComponentsHelper.getWindowNN(pickerField);
 
             // todo composition
-
             // todo inverseProperty support
 
-            // todo !
-
-            /*Screen editorScreen = editorScreens.builder(entityClass, window.getFrameOwner())
+            Screen editorScreen = editorScreens.builder(entityClass, window.getFrameOwner())
                     .editEntity(entity)
-                    .withField(pickerField) // todo
+                    .withField(pickerField)
                     .create();
 
-            editorScreen.show();*/
+            editorScreen.show();
         } else {
             // call action perform handlers from super, delegate execution
             super.actionPerform(component);

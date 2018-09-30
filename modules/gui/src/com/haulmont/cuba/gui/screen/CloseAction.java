@@ -18,10 +18,17 @@
 package com.haulmont.cuba.gui.screen;
 
 /**
- * JavaDoc
+ * Result of {@link Screen} close. Can provide additional data for screen consumers.
  */
 public interface CloseAction {
-    // todo add optional cause - event of window that triggered this event
 
-    boolean isCheckForUnsavedChanges();
+    /**
+     * Optional interface of {@link CloseAction} for actions related to unsaved changes.
+     */
+    interface Command {
+        /**
+         * @return true if screen should prevent close if there are unsaved changes
+         */
+        boolean isCheckForUnsavedChanges();
+    }
 }

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.screen.LookupScreen;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.components.Window.Lookup;
 
@@ -95,12 +96,15 @@ public class SelectAction extends AbstractAction {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void handleSelection() {
-        Lookup.Handler lookupHandler = getLookupHandler();
+        LookupScreen frameOwner = (LookupScreen) window.getFrameOwner();
+
+        Consumer<Collection> lookupHandler = frameOwner.getSelectHandler();
         LookupComponent lookupComponent = getLookupComponent();
 
         Collection selected = getSelectedItems(lookupComponent);
         removeListeners(selected);
-        lookupHandler.handleLookup(selected);
+        lookupHandler.accept(selected);
     }
 }

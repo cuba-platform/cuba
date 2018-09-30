@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.EditorScreens;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -33,7 +32,9 @@ import java.util.List;
 
 @UiController("dcScreen5")
 @UiDescriptor("dc-screen-5.xml")
-public class DcScreen5 extends Screen {
+@PrimaryLookupScreen(User.class)
+@LookupComponent("usersTable")
+public class DcScreen5 extends StandardLookup<User> {
 
     @Inject
     protected DataManager dataManager;
@@ -53,11 +54,8 @@ public class DcScreen5 extends Screen {
     @Inject
     private Table<User> usersTable;
 
-    @Inject
-    private Actions actions;
-
     @Subscribe
-    protected void beforeShow(BeforeShowEvent event) {
+    private void beforeShow(BeforeShowEvent event) {
         getScreenData().loadAll();
     }
 

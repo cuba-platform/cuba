@@ -14,11 +14,11 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
+<fragment xmlns="http://schemas.haulmont.com/cuba/screen/fragment.xsd">
     <layout>
-        <hbox spacing="true" stylename="c-edit-window-actions">
-            <button id="windowCommitAndClose" action="windowCommitAndClose" icon="EDITOR_OK"/>
-            <button id="windowClose" action="windowClose" icon="EDITOR_CANCEL"/>
+        <hbox id="editorActionsBox" spacing="true" stylename="c-edit-window-actions">
+            <button id="okButton" action="windowCommitAndClose" icon="EDITOR_OK"/>
+            <button id="cancelButton" action="windowClose" icon="EDITOR_CANCEL"/>
         </hbox>
     </layout>
-</window>
+</fragment>

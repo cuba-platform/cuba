@@ -399,8 +399,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
         String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
         String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
-        String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
-        String LOOKUP_CANCEL_ACTION_ID = "lookupCancelAction";
 
         /**
          * Name that is used to register a client type specific screen implementation in

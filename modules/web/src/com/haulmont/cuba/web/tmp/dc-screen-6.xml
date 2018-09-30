@@ -29,8 +29,23 @@
     </data>
 
     <layout spacing="true" expand="userRolesTable">
-        <textField id="loginField" dataContainer="userCx" property="login"/>
-        <textField id="nameField" dataContainer="userCx" property="name"/>
+        <textField id="loginField"
+                   dataContainer="userCx"
+                   property="login"/>
+        <textField id="nameField"
+                   dataContainer="userCx"
+                   property="name"/>
+
+        <pickerField id="groupField"
+                     dataContainer="userCx"
+                     property="group">
+            <actions>
+                <action id="lookup" type="picker_lookup"/>
+                <action id="open" type="picker_open"/>
+                <action id="clear" type="picker_clear"/>
+            </actions>
+        </pickerField>
+
         <table id="userRolesTable"
                width="100%">
             <buttonsPanel>

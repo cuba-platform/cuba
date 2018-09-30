@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
@@ -183,6 +184,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected ThemeConstants getTheme() {
         ThemeConstantsManager manager = beanLocator.get(ThemeConstantsManager.NAME);
         return manager.getConstants();
+    }
+
+    protected boolean isLegacyFrame() {
+        return context.getFrame().getFrameOwner() instanceof LegacyFrame;
     }
 
     protected void loadId(Component component, Element element) {
@@ -776,42 +781,59 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
-            // todo check if legacy screen
+            if (isLegacyFrame()) {
+                Action legacyAction = loadLegacyPickerAction((PickerField) actionsHolder, id);
+                if (legacyAction != null) {
+                    return legacyAction;
+                }
+            } else {
+                String type = element.attributeValue("type");
+                if (StringUtils.isNotEmpty(type)) {
+                    Actions actions = beanLocator.get(Actions.NAME);
 
-            // Try to create a standard picker action
-            for (PickerField.ActionType type : PickerField.ActionType.values()) {
-                if (type.getId().equals(id)) {
-                    Action action = type.createAction((PickerField) actionsHolder);
-                    if (type != PickerField.ActionType.LOOKUP && type != PickerField.ActionType.OPEN) {
-                        return action;
-                    }
-
-                    String openTypeString = element.attributeValue("openType");
-                    if (openTypeString == null) {
-                        return action;
-                    }
-
-                    WindowManager.OpenType openType;
-                    try {
-                        openType = WindowManager.OpenType.valueOf(openTypeString);
-                    } catch (IllegalArgumentException e) {
-                        throw new GuiDevelopmentException(
-                                String.format("Unknown open type: '%s' for action: '%s'", openTypeString, id),
-                                context.getFullFrameId()
-                        );
-                    }
-
-                    if (action instanceof PickerField.LookupAction) {
-                        ((PickerField.LookupAction) action).setLookupScreenOpenType(openType);
-                    } else if (action instanceof PickerField.OpenAction) {
-                        ((PickerField.OpenAction) action).setEditScreenOpenType(openType);
-                    }
-                    return action;
+                    return actions.create(type);
                 }
             }
         }
 
         return loadDeclarativeActionDefault(actionsHolder, element);
+    }
+
+    @Deprecated
+    @Nullable
+    protected Action loadLegacyPickerAction(PickerField actionsHolder, String actionId) {
+        // Try to create a standard picker action
+        for (PickerField.ActionType type : PickerField.ActionType.values()) {
+            if (type.getId().equals(actionId)) {
+                Action action = type.createAction(actionsHolder);
+                if (type != PickerField.ActionType.LOOKUP && type != PickerField.ActionType.OPEN) {
+                    return action;
+                }
+
+                String openTypeString = element.attributeValue("openType");
+                if (openTypeString == null) {
+                    return action;
+                }
+
+                WindowManager.OpenType openType;
+                try {
+                    openType = WindowManager.OpenType.valueOf(openTypeString);
+                } catch (IllegalArgumentException e) {
+                    throw new GuiDevelopmentException(
+                            String.format("Unknown open type: '%s' for action: '%s'", openTypeString, actionId),
+                            context.getFullFrameId()
+                    );
+                }
+
+                if (action instanceof PickerField.LookupAction) {
+                    ((PickerField.LookupAction) action).setLookupScreenOpenType(openType);
+                } else if (action instanceof PickerField.OpenAction) {
+                    ((PickerField.OpenAction) action).setEditScreenOpenType(openType);
+                }
+                return action;
+            }
+        }
+        return null;
     }
 
     protected Function<?, String> loadFormatter(Element element) {

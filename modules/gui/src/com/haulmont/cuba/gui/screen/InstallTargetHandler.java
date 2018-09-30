@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.screen.actions;
+package com.haulmont.cuba.gui.screen;
 
-import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 
-@UiDescriptor("editor-actions.xml")
-@UiController("editorActions")
-public class EditorActionsFragment extends ScreenFragment {
+public interface InstallTargetHandler {
+
+    @Nullable
+    Object createInstallHandler(Class<?> targetObjectType, FrameOwner frameOwner, Method method);
 }

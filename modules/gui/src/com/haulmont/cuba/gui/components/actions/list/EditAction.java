@@ -27,15 +27,20 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
 
 @ActionType(EditAction.ID)
 public class EditAction extends SecuredListAction {
 
-    public static final String ID = "entity_edit";
+    public static final String ID = "edit";
 
     protected EditorScreens editorScreens;
+
+    // Set default caption only once
+    protected boolean captionInitialized = false;
+    protected Messages messages;
 
     public EditAction() {
         super(ID);
@@ -52,6 +57,7 @@ public class EditAction extends SecuredListAction {
 
     @Inject
     protected void setMessages(Messages messages) {
+        this.messages = messages;
         this.caption = messages.getMainMessage("actions.Edit");
     }
 
@@ -77,12 +83,48 @@ public class EditAction extends SecuredListAction {
     }
 
     @Override
+    public void setCaption(String caption) {
+        super.setCaption(caption);
+
+        this.captionInitialized = true;
+    }
+
+    @Override
     protected boolean isPermitted() {
         if (!(target instanceof SupportsEntityBinding)) {
             return false;
         }
 
+        MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+        if (metaClass == null) {
+            return true;
+        }
+
+        boolean entityOpPermitted = security.isEntityOpPermitted(metaClass, EntityOp.READ);
+        if (!entityOpPermitted) {
+            return false;
+        }
+
         return super.isPermitted();
+    }
+
+    @Override
+    public void refreshState() {
+        super.refreshState();
+
+        if (!(target instanceof SupportsEntityBinding))
+            return;
+
+        if (!captionInitialized) {
+            MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+            if (metaClass != null) {
+                if (security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
+                    setCaption(messages.getMainMessage("actions.Edit"));
+                } else {
+                    setCaption(messages.getMainMessage("actions.View"));
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -15,12 +15,12 @@
   ~
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
+<fragment xmlns="http://schemas.haulmont.com/cuba/screen/fragment.xsd">
     <layout>
-        <hbox spacing="true" stylename="c-extended-edit-window-actions">
-            <button id="windowCommitAndClose" action="windowCommitAndClose" icon="EDITOR_OK"/>
-            <button id="windowCommit" action="windowCommit"/>
-            <button id="windowClose" action="windowClose" icon="EDITOR_CANCEL"/>
+        <hbox id="editorActionsBox" spacing="true" stylename="c-extended-edit-window-actions">
+            <button id="okButton" action="windowCommitAndClose" icon="EDITOR_OK"/>
+            <button id="saveButton" action="windowCommit"/>
+            <button id="cancelButton" action="windowClose" icon="EDITOR_CANCEL"/>
         </hbox>
     </layout>
-</window>
+</fragment>

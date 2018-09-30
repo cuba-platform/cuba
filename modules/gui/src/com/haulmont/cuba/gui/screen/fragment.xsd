@@ -29,7 +29,7 @@
     <xs:element name="fragment">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="data" type="data:screenData"/>
+                <xs:element name="data" type="data:screenData" minOccurs="0"/>
 
                 <xs:element name="actions" minOccurs="0">
                     <xs:complexType>
@@ -41,7 +41,16 @@
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="layout" type="layout:rootLayout"/>
+                <xs:element name="layout">
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="layout:rootLayout">
+                                <xs:attributeGroup ref="layout:hasVisibility"/>
+                                <xs:attributeGroup ref="layout:hasEnableProp"/>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
 
             <xs:attribute name="extends" type="xs:string"/>

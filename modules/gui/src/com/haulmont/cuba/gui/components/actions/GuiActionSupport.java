@@ -16,13 +16,22 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityStates;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.Actions;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.actions.pickerfield.ClearAction;
+import com.haulmont.cuba.gui.components.actions.pickerfield.LookupAction;
+import com.haulmont.cuba.gui.components.actions.pickerfield.OpenAction;
+import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -37,12 +46,15 @@ public class GuiActionSupport {
 
     @Inject
     protected ViewRepository viewRepository;
-
     @Inject
     protected EntityStates entityStates;
-
     @Inject
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
+
+    @Inject
+    protected MetadataTools metadataTools;
+    @Inject
+    protected Actions actions;
 
     /**
      * Returns an entity reloaded with the view of the target datasource if it is wider than the set of attributes
@@ -69,5 +81,65 @@ public class GuiActionSupport {
             dynamicAttributesGuiTools.reloadDynamicAttributes((BaseGenericIdEntity) entity);
         }
         return entity;
+    }
+
+    /**
+     * Adds actions specified in {@link Lookup} annotation on entity attribute to the given PickerField.
+     *
+     * @param pickerField field
+     * @return true if actions have been added
+     */
+    public boolean createActionsByMetaAnnotations(PickerField pickerField) {
+        ValueSource valueSource = pickerField.getValueSource();
+        if (!(valueSource instanceof EntityValueSource)) {
+            return false;
+        }
+
+        EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
+        MetaPropertyPath mpp = entityValueSource.getMetaPropertyPath();
+        if (mpp == null) {
+            return false;
+        }
+
+        String[] actionIds = (String[]) metadataTools
+                .getMetaAnnotationAttributes(mpp.getMetaProperty().getAnnotations(), Lookup.class)
+                .get("actions");
+        if (actionIds != null && actionIds.length > 0) {
+            for (String actionId : actionIds) {
+                if (pickerField.getFrame() != null
+                        && pickerField.getFrame().getFrameOwner() instanceof LegacyFrame) {
+
+                    // in legacy screens
+                    for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
+                        if (actionType.getId().equals(actionId.trim())) {
+                            pickerField.addAction(actionType.createAction(pickerField));
+                            break;
+                        }
+                    }
+                } else {
+
+                    switch (actionId) {
+                        case "lookup":
+                            pickerField.addAction(actions.create(LookupAction.ID));
+                            break;
+
+                        case "open":
+                            pickerField.addAction(actions.create(OpenAction.ID));
+                            break;
+
+                        case "clear":
+                            pickerField.addAction(actions.create(ClearAction.ID));
+                            break;
+
+                        default:
+                            LoggerFactory.getLogger(GuiActionSupport.class)
+                                    .warn("Unsupported PickerField action type " + actionId);
+                            break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

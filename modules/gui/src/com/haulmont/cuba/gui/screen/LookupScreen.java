@@ -30,6 +30,9 @@ import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
  * @param <E>
  */
 public interface LookupScreen<E extends Entity> {
+    String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
+    String LOOKUP_CANCEL_ACTION_ID = "lookupCancelAction";
+
     CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
 
     Consumer<Collection<E>> getSelectHandler();

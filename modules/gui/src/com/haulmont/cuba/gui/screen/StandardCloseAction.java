@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.screen;
 
-public class StandardCloseAction implements CloseAction {
+public class StandardCloseAction implements CloseAction, CloseAction.Command {
 
     private final String actionId;
     private final boolean checkForUnsavedChanges;

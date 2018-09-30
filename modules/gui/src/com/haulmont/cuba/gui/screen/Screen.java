@@ -295,7 +295,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Request screen close with passed action.
      *
      * @param action close action
      * @return result of operation
@@ -307,8 +307,9 @@ public abstract class Screen implements FrameOwner {
             return OperationResult.fail();
         }
 
-        if (action.isCheckForUnsavedChanges() && hasUnsavedChanges()) {
-            // todo extract to Dialogs bean
+        if (action instanceof CloseAction.Command
+                && ((CloseAction.Command) action).isCheckForUnsavedChanges()
+                && hasUnsavedChanges()) {
             Configuration configuration = beanLocator.get(Configuration.NAME);
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 

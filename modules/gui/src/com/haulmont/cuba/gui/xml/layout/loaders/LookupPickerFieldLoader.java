@@ -18,10 +18,13 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
+import com.haulmont.cuba.gui.components.actions.pickerfield.ClearAction;
+import com.haulmont.cuba.gui.components.actions.pickerfield.LookupAction;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -47,10 +50,20 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
         loadActions(lookupPickerField, element);
 
         if (lookupPickerField.getActions().isEmpty()) {
-            boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(lookupPickerField);
+            GuiActionSupport guiActionSupport = getGuiActionSupport();
+
+            boolean actionsByMetaAnnotations = guiActionSupport.createActionsByMetaAnnotations(lookupPickerField);
             if (!actionsByMetaAnnotations) {
-                lookupPickerField.addLookupAction();
-                lookupPickerField.addOpenAction();
+
+                if (isLegacyFrame()) {
+                    lookupPickerField.addLookupAction();
+                    lookupPickerField.addClearAction();
+                } else {
+                    Actions actions = getActions();
+
+                    lookupPickerField.addAction(actions.create(LookupAction.ID));
+                    lookupPickerField.addAction(actions.create(ClearAction.ID));
+                }
             }
         }
 
@@ -58,6 +71,14 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
         if (refreshOptionsOnLookupClose != null) {
             lookupPickerField.setRefreshOptionsOnLookupClose(Boolean.parseBoolean(refreshOptionsOnLookupClose));
         }
+    }
+
+    protected GuiActionSupport getGuiActionSupport() {
+        return beanLocator.get(GuiActionSupport.NAME);
+    }
+
+    protected Actions getActions() {
+        return beanLocator.get(Actions.NAME);
     }
 
     protected Metadata getMetadata() {

@@ -17,11 +17,11 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ActionsHolder;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
+import com.haulmont.cuba.gui.components.actions.pickerfield.ClearAction;
+import com.haulmont.cuba.gui.components.actions.pickerfield.LookupAction;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -51,14 +51,32 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
 
         loadActions(resultComponent, element);
         if (resultComponent.getActions().isEmpty()) {
-            boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(resultComponent);
+            GuiActionSupport guiActionSupport = getGuiActionSupport();
+
+            boolean actionsByMetaAnnotations = guiActionSupport.createActionsByMetaAnnotations(resultComponent);
             if (!actionsByMetaAnnotations) {
-                resultComponent.addLookupAction();
-                resultComponent.addClearAction();
+
+                if (isLegacyFrame()) {
+                    resultComponent.addLookupAction();
+                    resultComponent.addClearAction();
+                } else {
+                    Actions actions = getActions();
+
+                    resultComponent.addAction(actions.create(LookupAction.ID));
+                    resultComponent.addAction(actions.create(ClearAction.ID));
+                }
             }
         }
 
         loadBuffered(resultComponent, element);
+    }
+
+    protected Actions getActions() {
+        return beanLocator.get(Actions.NAME);
+    }
+
+    protected GuiActionSupport getGuiActionSupport() {
+        return beanLocator.get(GuiActionSupport.NAME);
     }
 
     protected Metadata getMetadata() {

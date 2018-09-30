@@ -23,5 +23,4 @@ import com.haulmont.cuba.gui.screen.UiDescriptor;
 @UiDescriptor("lookup-actions.xml")
 @UiController("lookupActions")
 public class LookupActionsFragment extends ScreenFragment {
-
 }
