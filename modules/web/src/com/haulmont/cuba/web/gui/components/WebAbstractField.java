@@ -35,8 +35,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
-    protected List<Field.Validator> validators; // lazily initialized list
-
+    protected List<Consumer> validators; // lazily initialized list
 
     protected boolean editable = true;
 
@@ -225,7 +224,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     }
 
     @Override
-    public void addValidator(Field.Validator validator) {
+    public void addValidator(Consumer<? super V> validator) {
         if (validators == null) {
             validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
         }
@@ -235,19 +234,20 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     }
 
     @Override
-    public void removeValidator(Field.Validator validator) {
+    public void removeValidator(Consumer<V> validator) {
         if (validators != null) {
             validators.remove(validator);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<Validator> getValidators() {
+    public Collection<Consumer<V>> getValidators() {
         if (validators == null) {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableCollection(validators);
+        return (Collection) Collections.unmodifiableCollection(validators);
     }
 
     @Override
@@ -281,8 +281,8 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
 
         if (validators != null) {
             try {
-                for (Field.Validator validator : validators) {
-                    validator.validate(value);
+                for (Consumer validator : validators) {
+                    validator.accept(value);
                 }
             } catch (ValidationException e) {
                 setValidationError(e.getDetailsMessage());

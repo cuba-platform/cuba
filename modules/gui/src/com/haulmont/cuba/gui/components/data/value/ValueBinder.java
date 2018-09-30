@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 // todo buffering support
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -169,10 +170,11 @@ public class ValueBinder {
             }
         }
 
+        @SuppressWarnings("unchecked")
         protected void disableBeanValidator(Field<?> component) {
-            Collection<Field.Validator> validators = component.getValidators();
+            Collection<? extends Consumer<?>> validators = component.getValidators();
 
-            for (Field.Validator validator : validators.toArray(new Field.Validator[0])) {
+            for (Consumer validator : validators.toArray(new Consumer[0])) {
                 if (validator instanceof BeanValidator) {
                     component.removeValidator(validator);
                 }

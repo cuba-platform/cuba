@@ -19,14 +19,11 @@
         <action id="commit" caption="Commit" shortcut="${COMMIT_SHORTCUT}"/>
     </actions>
 
-    <layout>
+    <layout spacing="true">
         <hbox>
             <label value="OK"/>
-            <pickerField id="picker">
-                <actions>
-                    <action id="lookup" type="lookup"/>
-                </actions>
-            </pickerField>
+            <textField id="textField1"/>
         </hbox>
+        <button id="validateBnt" caption="Validate"/>
     </layout>
 </window>

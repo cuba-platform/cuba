@@ -180,7 +180,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def methods = inspector.getAnnotatedInstallMethods(ScreenWithProvide).collect({ it.method })
+        def methods = inspector.getAnnotatedInstallMethods(ScreenWithInstall).collect({ it.method })
 
         then:
 

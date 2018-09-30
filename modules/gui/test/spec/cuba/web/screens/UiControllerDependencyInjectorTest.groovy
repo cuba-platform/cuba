@@ -1,6 +1,17 @@
 /*
- * Copyright (c) 2008-2018 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package spec.cuba.web.screens
@@ -201,11 +212,13 @@ class UiControllerDependencyInjectorTest extends Specification {
         def usersTable = Mock(Table)
         def groupTable = Mock(Table)
         def tree = Mock(Tree)
+        def textField1 = Mock(TextField)
 
         window.getComponent("label1") >> label1
         window.getComponent("usersTable") >> usersTable
         window.getComponent("groupTable") >> groupTable
         window.getComponent("tree") >> tree
+        window.getComponent("textField1") >> textField1
 
         screen.window = window
 
@@ -223,9 +236,10 @@ class UiControllerDependencyInjectorTest extends Specification {
         screen != null
 
         1 * label1.setFormatter(_)
-        1 * usersTable.setStyleProvider(_)
-        1 * groupTable.setStyleProvider(_)
+        1 * usersTable.addStyleProvider(_)
+        1 * groupTable.addStyleProvider(_)
         1 * tree.setIconProvider(_)
+        1 * textField1.addValidator(_)
     }
 
     private interface TestWindow extends Window, WindowImplementation {

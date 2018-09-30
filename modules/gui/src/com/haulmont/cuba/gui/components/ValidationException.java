@@ -18,10 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * Exception to be thrown by field validators.
- *
- * vaadin8 convert to unchecked exception
  */
-public class ValidationException extends Exception {
+public class ValidationException extends RuntimeException {
 
     public ValidationException() {
     }

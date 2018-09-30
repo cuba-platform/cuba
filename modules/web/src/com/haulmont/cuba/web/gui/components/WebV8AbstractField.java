@@ -39,7 +39,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         extends WebAbstractValueComponent<T, P, V> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
-    protected List<Validator> validators; // lazily initialized list
+    protected List<Consumer> validators; // lazily initialized list
 
     protected boolean editable = true;
 
@@ -143,7 +143,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     }
 
     @Override
-    public void addValidator(Validator validator) {
+    public void addValidator(Consumer<? super V> validator) {
         if (validators == null) {
             validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
         }
@@ -153,19 +153,20 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     }
 
     @Override
-    public void removeValidator(Validator validator) {
+    public void removeValidator(Consumer<V> validator) {
         if (validators != null) {
             validators.remove(validator);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<Validator> getValidators() {
+    public Collection<Consumer<V>> getValidators() {
         if (validators == null) {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableCollection(validators);
+        return (Collection) Collections.unmodifiableCollection(validators);
     }
 
     @Override
@@ -215,8 +216,8 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     protected void triggerValidators(V value) throws ValidationFailedException {
         if (validators != null) {
             try {
-                for (Validator validator : validators) {
-                    validator.validate(value);
+                for (Consumer validator : validators) {
+                    validator.accept(value);
                 }
             } catch (ValidationException e) {
                 setValidationError(e.getDetailsMessage());

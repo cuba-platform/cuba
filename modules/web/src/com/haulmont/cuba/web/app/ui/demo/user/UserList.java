@@ -21,14 +21,9 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UiComponents;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 
 import javax.inject.Inject;
 
@@ -43,6 +38,9 @@ public class UserList extends Screen implements UserListMixin {
     protected Dialogs dialogs;
     @Inject
     protected Notifications notifications;
+
+    @Inject
+    protected TextField<String> textField1;
 
     @Subscribe
     protected void init(InitEvent event) {
@@ -83,5 +81,15 @@ public class UserList extends Screen implements UserListMixin {
                 spacer
         );
         getWindow().expand(spacer);
+    }
+
+    @Install(subject = "validator", to = "textField1")
+    protected void validateText(String value) {
+        throw new ValidationException("Invalid data: " + value);
+    }
+
+    @Subscribe("validateBnt")
+    protected void onValidateClick(Button.ClickEvent event) {
+        textField1.validate();
     }
 }

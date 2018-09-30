@@ -741,6 +741,11 @@ public class UiControllerDependencyInjector {
             try {
                 method.invoke(frameOwner, o);
             } catch (IllegalAccessException | InvocationTargetException e) {
+                if (e instanceof InvocationTargetException
+                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                }
+
                 throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
@@ -768,6 +773,11 @@ public class UiControllerDependencyInjector {
             try {
                 return method.invoke(frameOwner);
             } catch (IllegalAccessException | InvocationTargetException e) {
+                if (e instanceof InvocationTargetException
+                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                }
+
                 throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
@@ -795,6 +805,11 @@ public class UiControllerDependencyInjector {
             try {
                 return method.invoke(frameOwner, o1, o2);
             } catch (IllegalAccessException | InvocationTargetException e) {
+                if (e instanceof InvocationTargetException
+                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                }
+
                 throw new RuntimeException("Exception on @Install invocation", e);
             }
         }
@@ -834,6 +849,10 @@ public class UiControllerDependencyInjector {
                 try {
                     return this.method.invoke(frameOwner, args);
                 } catch (InvocationTargetException e) {
+                    if (e.getTargetException() instanceof RuntimeException) {
+                        throw e.getTargetException();
+                    }
+
                     throw e.getTargetException();
                 }
             }

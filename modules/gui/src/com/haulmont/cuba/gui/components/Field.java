@@ -19,12 +19,13 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.components.data.HasValueBinding;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
  */
-public interface Field<T> extends DatasourceComponent<T>, HasValueBinding<T>, Component.HasCaption,
-        HasValue<T>, Component.Editable, Component.BelongToFrame, Validatable, Component.HasIcon,
+public interface Field<V> extends DatasourceComponent<V>, HasValueBinding<V>, Component.HasCaption,
+        HasValue<V>, Component.Editable, Component.BelongToFrame, Validatable, Component.HasIcon,
         HasContextHelp {
 
     /**
@@ -39,33 +40,36 @@ public interface Field<T> extends DatasourceComponent<T>, HasValueBinding<T>, Co
      */
     void setRequiredMessage(String msg);
 
-    /*
-     * vaadin8 move to HasValidators *
-     */
-
     /**
-     * Add {@link Validator} instance.
+     * Add validator instance.
+     * {@link ValidationException} this exception must be thrown by the validator if the value is not valid.
      */
-    void addValidator(Validator validator);
-    void removeValidator(Validator validator);
+    void addValidator(Consumer<? super V> validator);
+    void removeValidator(Consumer<V> validator);
 
     /**
      * @return unmodifiable collection with Field validators
      */
-    Collection<Validator> getValidators();
+    Collection<Consumer<V>> getValidators();
 
     /**
      * Field validator.<br>
      * Validators are invoked when {@link Validatable#validate()} is called.
      * Editor screen calls {@code validate()} on commit.
      *
-     * vaadin8 replace with Consumer<T>
+     * @deprecated Use typed {@link Consumer} instead.
      */
-    interface Validator {
+    @Deprecated
+    interface Validator<T> extends Consumer<T> {
         /**
          * @param value field value to validate
          * @throws ValidationException this exception must be thrown by the validator if the value is not valid
          */
         void validate(Object value) throws ValidationException;
+
+        @Override
+        default void accept(T t) {
+            validate(t);
+        }
     }
 }

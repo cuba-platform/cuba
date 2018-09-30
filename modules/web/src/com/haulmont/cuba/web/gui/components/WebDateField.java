@@ -58,7 +58,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     @Inject
     protected DateTimeTransformations dateTimeTransformations;
 
-    protected List<Validator> validators; // lazily initialized list
+    protected List<Consumer> validators; // lazily initialized list
 
     protected Resolution resolution;
     protected ZoneId zoneId;
@@ -586,7 +586,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     }
 
     @Override
-    public void addValidator(Validator validator) {
+    public void addValidator(Consumer<? super V> validator) {
         if (validators == null) {
             validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
         }
@@ -596,19 +596,20 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     }
 
     @Override
-    public void removeValidator(Validator validator) {
+    public void removeValidator(Consumer<V> validator) {
         if (validators != null) {
             validators.remove(validator);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<Validator> getValidators() {
+    public Collection<Consumer<V>> getValidators() {
         if (validators == null) {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableCollection(validators);
+        return (Collection) Collections.unmodifiableList(validators);
     }
 
     @Override
@@ -647,8 +648,8 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
     protected void triggerValidators(V value) throws ValidationFailedException {
         if (validators != null) {
             try {
-                for (Validator validator : validators) {
-                    validator.validate(value);
+                for (Consumer validator : validators) {
+                    validator.accept(value);
                 }
             } catch (ValidationException e) {
                 setValidationError(e.getDetailsMessage());
