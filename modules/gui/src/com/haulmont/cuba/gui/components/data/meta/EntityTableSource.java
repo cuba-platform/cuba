@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.TableSource;
 
-import java.util.Collection;
+import javax.annotation.Nullable;
 
 // todo JavaDoc
-public interface EntityTableSource<E extends Entity> extends TableSource<E> {
-    MetaClass getEntityMetaClass();
+public interface EntityTableSource<E extends Entity> extends TableSource<E>, EntityDataSource<E> {
+    /**
+     * @return the current item contained in the source
+     */
+    @Nullable
+    E getSelectedItem();
 
-    // todo rename
-    Collection<MetaPropertyPath> getAutowiredProperties();
+    /**
+     * Set current item in the source.
+     *
+     * @param item the item to set
+     */
+    void setSelectedItem(@Nullable E item);
 }

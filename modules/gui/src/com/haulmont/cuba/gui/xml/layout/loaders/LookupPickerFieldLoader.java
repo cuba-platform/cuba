@@ -23,8 +23,8 @@ import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
-import com.haulmont.cuba.gui.components.actions.pickerfield.ClearAction;
-import com.haulmont.cuba.gui.components.actions.pickerfield.LookupAction;
+import com.haulmont.cuba.gui.actions.picker.ClearAction;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 

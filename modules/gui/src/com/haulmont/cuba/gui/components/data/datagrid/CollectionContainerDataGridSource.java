@@ -26,7 +26,8 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.EntityDataGridSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataGridSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class CollectionContainerDataGridSource<E extends Entity>
-        implements EntityDataGridSource<E>, DataGridSource.Sortable<E> {
+        implements EntityDataGridSource<E>, DataGridSource.Sortable<E>, ContainerDataSource<E> {
 
     protected CollectionContainer<E> container;
 
@@ -50,6 +51,7 @@ public class CollectionContainerDataGridSource<E extends Entity>
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
     }
 
+    @Override
     public CollectionContainer<E> getContainer() {
         return container;
     }
@@ -71,17 +73,6 @@ public class CollectionContainerDataGridSource<E extends Entity>
     @Override
     public MetaClass getEntityMetaClass() {
         return container.getEntityMetaClass();
-    }
-
-    @Override
-    public Collection<MetaPropertyPath> getAutowiredProperties() {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-
-        return container.getView() != null
-                // if a view is specified - use view properties
-                ? metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass())
-                // otherwise use all properties from meta-class
-                : metadataTools.getPropertyPaths(container.getEntityMetaClass());
     }
 
     @Override

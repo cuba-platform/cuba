@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
-// todo JavaDoc
-public interface Binding {
-    void unbind();
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
+
+public interface OptionsBinding<I> extends Binding {
+    OptionsSource<I> getSource();
+    Component getComponent();
+
+    void activate();
 }

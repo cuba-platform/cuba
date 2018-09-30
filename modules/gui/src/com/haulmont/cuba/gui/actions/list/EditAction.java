@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.actions.list;
+package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.EditorScreens;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -73,16 +74,6 @@ public class EditAction extends SecuredListAction {
     }
 
     @Override
-    public void setTarget(ListComponent target) {
-        if (target != null
-                && !(target instanceof SupportsEntityBinding)) {
-            throw new IllegalStateException("EditAction target does not implement SupportsEntityBinding");
-        }
-
-        super.setTarget(target);
-    }
-
-    @Override
     public void setCaption(String caption) {
         super.setCaption(caption);
 
@@ -91,11 +82,11 @@ public class EditAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (!(target instanceof SupportsEntityBinding)) {
+        if (target == null ||!(target.getDataSource() instanceof EntityDataSource)) {
             return false;
         }
 
-        MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+        MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -112,11 +103,12 @@ public class EditAction extends SecuredListAction {
     public void refreshState() {
         super.refreshState();
 
-        if (!(target instanceof SupportsEntityBinding))
+        if (!(target.getDataSource() instanceof EntityDataSource)) {
             return;
+        }
 
         if (!captionInitialized) {
-            MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
             if (metaClass != null) {
                 if (security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
                     setCaption(messages.getMainMessage("actions.Edit"));
@@ -132,11 +124,11 @@ public class EditAction extends SecuredListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target instanceof SupportsEntityBinding)) {
-                throw new IllegalStateException("EditAction target is null or does not implement SupportsEntityBinding");
+            if (!(target.getDataSource() instanceof EntityDataSource)) {
+                throw new IllegalStateException("EditAction target dataSource is null or does not implement EntityDataSource");
             }
 
-            MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
             if (metaClass == null) {
                 throw new IllegalStateException("Target is not bound to entity");
             }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.bali.events.Subscription;
@@ -13,12 +29,7 @@ import java.util.stream.Stream;
  *
  * @param <T> items type
  */
-public interface DataGridSource<T> {
-
-    /**
-     * @return a state of this source
-     */
-    BindingState getState();
+public interface DataGridSource<T> extends DataSource<T> {
 
     /**
      * @param item the item for obtaining the id
@@ -82,14 +93,6 @@ public interface DataGridSource<T> {
     void setSelectedItem(@Nullable T item);
 
     /**
-     * Registers a new state change listener.
-     *
-     * @param listener the listener to be added
-     * @return a registration object for removing an event listener added to a source
-     */
-    Subscription addStateChangeListener(Consumer<StateChangeEvent<T>> listener);
-
-    /**
      * Registers a new value change listener.
      *
      * @param listener the listener to be added
@@ -123,30 +126,6 @@ public interface DataGridSource<T> {
         void sort(Object[] propertyId, boolean[] ascending);
 
         void resetSortOrder();
-    }
-
-    /**
-     * An event that is fired when DataGridSource state is changed.
-     *
-     * @param <T> the source component type
-     */
-    class StateChangeEvent<T> extends EventObject {
-        protected BindingState state;
-
-        public StateChangeEvent(DataGridSource<T> source, BindingState state) {
-            super(source);
-            this.state = state;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public DataGridSource<T> getSource() {
-            return (DataGridSource<T>) super.getSource();
-        }
-
-        public BindingState getState() {
-            return state;
-        }
     }
 
     /**

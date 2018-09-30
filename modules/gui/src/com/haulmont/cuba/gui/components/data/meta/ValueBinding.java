@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 
-public interface OptionsBinding<I> extends Binding {
-    OptionsSource<I> getSource();
-    Component getComponent();
+/**
+ * vaadin8 todo JavaDoc
+ * vaadin8 subclasses for EntityValueBinding
+ *
+ * @param <V> todo
+ */
+public interface ValueBinding<V> extends Binding {
+    ValueSource<V> getSource();
+    HasValue<V> getComponent();
 
     void activate();
+
+    // todo buffering support
 }

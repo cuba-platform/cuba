@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
 import com.haulmont.cuba.gui.components.data.GroupTableSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.components.data.table.GroupDatasourceTableAdapter;
@@ -64,26 +64,26 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     @Override
-    public void setTableSource(TableSource<E> tableSource) {
+    public void setDataSource(TableSource<E> tableSource) {
         if (tableSource != null &&
                 !(tableSource instanceof GroupTableSource)) {
             throw new IllegalArgumentException("GroupTable supports only GroupTableSource data binding");
         }
 
-        super.setTableSource(tableSource);
+        super.setDataSource(tableSource);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setTableSource(null);
+            setDataSource(null);
         } else {
             if (!(datasource instanceof GroupDatasource)) {
                 throw new IllegalArgumentException("GroupTable supports only GroupDatasource");
             }
 
-            setTableSource(new GroupDatasourceTableAdapter((GroupDatasource) datasource));
+            setDataSource(new GroupDatasourceTableAdapter((GroupDatasource) datasource));
         }
     }
 
@@ -179,7 +179,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
-            MetaClass metaClass = ((EntityTableSource) getTableSource()).getEntityMetaClass();
+            MetaClass metaClass = ((EntityTableSource) getDataSource()).getEntityMetaClass();
             List elements = groupPropertiesElement.elements("property");
             List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (Object o : elements) {
@@ -448,8 +448,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     @Override
     public void selectAll() {
         if (isMultiSelect()) {
-            if (getTableSource() instanceof GroupTableSource) {
-                GroupTableSource<E> tableSource = (GroupTableSource<E>) getTableSource();
+            if (getDataSource() instanceof GroupTableSource) {
+                GroupTableSource<E> tableSource = (GroupTableSource<E>) getDataSource();
                 Collection<?> itemIds = tableSource.hasGroups()
                         ? getAllItemIds(tableSource)
                         : tableSource.getItemIds();
@@ -471,7 +471,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
-        GroupTableSource<E> groupTableSource = (GroupTableSource<E>) getTableSource();
+        GroupTableSource<E> groupTableSource = (GroupTableSource<E>) getDataSource();
         if (groupTableSource.hasChildren(groupId)) {
             final List<GroupInfo> children = groupTableSource.getChildren(groupId);
             for (final GroupInfo child : children) {

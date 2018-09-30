@@ -467,7 +467,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         String iconPath = null;
 
         if (ICON_NAME_REGEX.matcher(icon).matches()) {
-            iconPath = beanLocator.get(Icons.class).get(icon);
+            Icons icons = beanLocator.get(Icons.NAME);
+            iconPath = icons.get(icon);
         }
 
         if (StringUtils.isEmpty(iconPath)) {
@@ -478,6 +479,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return iconPath;
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     protected Field.Validator loadValidator(Element validatorElement) {
         String className = validatorElement.attributeValue("class");
@@ -518,6 +520,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return validator;
     }
 
+    @Deprecated
     protected Field.Validator getDefaultValidator(MetaProperty property) {
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {

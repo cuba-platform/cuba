@@ -21,8 +21,9 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.SupportsContainerBinding;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.data.DataSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -113,8 +114,10 @@ public class EditorScreens {
 
         ListComponent<E> listComponent = builder.getListComponent();
 
-        CollectionContainer<E> listComponentContainer = listComponent instanceof SupportsContainerBinding ?
-                ((SupportsContainerBinding) listComponent).getBindingContainer() : null;
+        DataSource<E> dataSource = listComponent.getDataSource();
+
+        CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataSource ?
+                ((ContainerDataSource) dataSource).getContainer() : null;
 
         CollectionContainer<E> container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
 

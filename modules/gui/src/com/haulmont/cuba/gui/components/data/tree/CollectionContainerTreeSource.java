@@ -22,14 +22,15 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTreeSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTreeSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CollectionContainerTreeSource<E extends Entity> implements EntityTreeSource<E> {
+public class CollectionContainerTreeSource<E extends Entity> implements EntityTreeSource<E>, ContainerDataSource<E> {
 
     protected final CollectionContainer<E> container;
 
@@ -172,6 +173,7 @@ public class CollectionContainerTreeSource<E extends Entity> implements EntityTr
         return events.subscribe(SelectedItemChangeEvent.class, (Consumer) listener);
     }
 
+    @Override
     public CollectionContainer<E> getContainer() {
         return container;
     }

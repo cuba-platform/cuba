@@ -29,7 +29,7 @@ import com.haulmont.cuba.gui.components.Component.Editable;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.HasValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import org.springframework.stereotype.Component;

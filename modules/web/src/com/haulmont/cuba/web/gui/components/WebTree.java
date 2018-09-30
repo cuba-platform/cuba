@@ -30,14 +30,12 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTreeSource;
 import com.haulmont.cuba.gui.components.data.TreeSource;
-import com.haulmont.cuba.gui.components.data.tree.CollectionContainerTreeSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTreeSource;
 import com.haulmont.cuba.gui.components.data.tree.HierarchicalDatasourceTreeAdapter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.tree.TreeDataProvider;
@@ -83,7 +81,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public class WebTree<E extends Entity>
         extends WebAbstractComponent<CubaTree<E>>
         implements Tree<E>, LookupSelectionChangeNotifier<E>, SecuredActionsHolder,
-        HasInnerComponents, SupportsEntityBinding, SupportsContainerBinding, InitializingBean, TreeSourceEventsDelegate<E> {
+        HasInnerComponents, InitializingBean, TreeSourceEventsDelegate<E> {
 
     private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
 
@@ -282,12 +280,12 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public TreeSource<E> getTreeSource() {
+    public TreeSource<E> getDataSource() {
         return this.dataBinding != null ? this.dataBinding.getTreeSource() : null;
     }
 
     @Override
-    public void setTreeSource(TreeSource<E> treeSource) {
+    public void setDataSource(TreeSource<E> treeSource) {
         if (this.dataBinding != null) {
             this.dataBinding.unbind();
             this.dataBinding = null;
@@ -582,7 +580,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void collapse(Object itemId) {
-        collapse(getTreeSource().getItem(itemId));
+        collapse(getDataSource().getItem(itemId));
     }
 
     @Override
@@ -592,7 +590,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void expand(Object itemId) {
-        expand(getTreeSource().getItem(itemId));
+        expand(getDataSource().getItem(itemId));
     }
 
     @Override
@@ -607,7 +605,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public boolean isExpanded(Object itemId) {
-        return component.isExpanded(getTreeSource().getItem(itemId));
+        return component.isExpanded(getDataSource().getItem(itemId));
     }
 
     @Override
@@ -766,7 +764,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void refresh() {
-        TreeSource<E> treeSource = getTreeSource();
+        TreeSource<E> treeSource = getDataSource();
         if (treeSource instanceof HierarchicalDatasourceTreeAdapter) {
             ((HierarchicalDatasourceTreeAdapter) treeSource).getDatasource().refresh();
         }
@@ -931,7 +929,7 @@ public class WebTree<E extends Entity>
     }
 
     protected void onSelectionChange(SelectionEvent<E> event) {
-        TreeSource<E> treeSource = getTreeSource();
+        TreeSource<E> treeSource = getDataSource();
 
         if (treeSource == null
                 || treeSource.getState() == BindingState.INACTIVE) {
@@ -1003,7 +1001,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void setSelected(Collection<E> items) {
-        TreeSource<E> treeSource = getTreeSource();
+        TreeSource<E> treeSource = getDataSource();
 
         boolean allMatch = items.stream()
                 .allMatch(treeSource::containsItem);
@@ -1013,24 +1011,6 @@ public class WebTree<E extends Entity>
         }
 
         setSelectedInternal(items);
-    }
-
-    @Nullable
-    @Override
-    public MetaClass getBindingMetaClass() {
-        if (getTreeSource() instanceof EntityTreeSource) {
-            return ((EntityTreeSource<E>) getTreeSource()).getEntityMetaClass();
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public CollectionContainer getBindingContainer() {
-        if (getTreeSource() instanceof CollectionContainerTreeSource) {
-            return ((CollectionContainerTreeSource<E>) getTreeSource()).getContainer();
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")

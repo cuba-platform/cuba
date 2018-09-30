@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  *
  * @param <I>
  */
-public interface TableSource<I> {
+public interface TableSource<I> extends DataSource<I> {
     Collection<?> getItemIds();
 
     @Nullable
@@ -48,19 +48,12 @@ public interface TableSource<I> {
 
     boolean containsId(Object itemId);
 
-    BindingState getState();
-
     Class<?> getType(Object propertyId);
 
     boolean supportsProperty(Object propertyId);
 
-    @Nullable
-    I getSelectedItem();
-    void setSelectedItem(@Nullable I item);
-
-    Subscription addStateChangeListener(Consumer<TableSource.StateChangeEvent<I>> listener);
-    Subscription addValueChangeListener(Consumer<TableSource.ValueChangeEvent<I>> listener);
-    Subscription addItemSetChangeListener(Consumer<TableSource.ItemSetChangeEvent<I>> listener);
+    Subscription addValueChangeListener(Consumer<ValueChangeEvent<I>> listener);
+    Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<I>> listener);
     Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<I>> listener);
 
     interface Ordered<T> extends TableSource<T> {
@@ -81,26 +74,6 @@ public interface TableSource<I> {
         void sort(Object[] propertyId, boolean[] ascending);
 
         void resetSortOrder();
-    }
-
-    // todo
-    class StateChangeEvent<T> extends EventObject {
-        protected BindingState state;
-
-        public StateChangeEvent(TableSource<T> source, BindingState state) {
-            super(source);
-            this.state = state;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public TableSource<T> getSource() {
-            return (TableSource<T>) super.getSource();
-        }
-
-        public BindingState getState() {
-            return state;
-        }
     }
 
     // todo

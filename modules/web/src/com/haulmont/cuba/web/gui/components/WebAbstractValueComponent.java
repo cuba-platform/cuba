@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.HasValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueBinding;
+import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import org.slf4j.LoggerFactory;

@@ -19,9 +19,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
-import com.haulmont.cuba.gui.components.actions.pickerfield.ClearAction;
-import com.haulmont.cuba.gui.components.actions.pickerfield.LookupAction;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.actions.picker.ClearAction;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 

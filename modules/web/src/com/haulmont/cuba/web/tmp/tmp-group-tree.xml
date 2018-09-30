@@ -26,8 +26,10 @@
     </data>
 
     <layout spacing="true" expand="groupsTree">
-        <tree id="groupsTree" width="100%" multiselect="true">
-            <treechildren dataContainer="groupsCont" hierarchyProperty="parent"/>
-        </tree>
+        <tree id="groupsTree"
+              width="100%"
+              multiselect="true"
+              dataContainer="groupsCont"
+              hierarchyProperty="parent"/>
     </layout>
 </window>

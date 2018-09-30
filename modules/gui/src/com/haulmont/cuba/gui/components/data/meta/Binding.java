@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.data.meta;
 
-import com.haulmont.chile.core.model.MetaClass;
-
-import javax.annotation.Nullable;
-
-public interface SupportsEntityBinding {
+/**
+ * Data binding instance.
+ */
+public interface Binding {
     /**
-     * @return metaclass that corresponds to data binding setup
+     * Destroy data binding.
      */
-    @Nullable
-    MetaClass getBindingMetaClass();
+    void unbind();
 }

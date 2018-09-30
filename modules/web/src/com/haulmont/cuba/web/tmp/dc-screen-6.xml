@@ -47,6 +47,7 @@
         </pickerField>
 
         <table id="userRolesTable"
+               dataContainer="userRolesCont"
                width="100%">
             <buttonsPanel>
                 <!--<button id="createBtn" caption="Create"/>-->
@@ -57,7 +58,6 @@
                 <column id="role.name"/>
                 <column id="role.locName"/>
             </columns>
-            <rows dataContainer="userRolesCont"/>
         </table>
 
         <fragment id="editActions"

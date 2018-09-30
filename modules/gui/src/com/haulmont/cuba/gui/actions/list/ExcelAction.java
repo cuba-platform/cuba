@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.actions.list;
+package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanLocator;
@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListAction;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -74,15 +75,6 @@ public class ExcelAction extends ListAction {
     }
 
     @Override
-    public void setTarget(ListComponent target) {
-        if (target != null
-                && !(target instanceof SupportsEntityBinding)) {
-            throw new IllegalStateException("ExcelAction target does not implement SupportsEntityBinding");
-        }
-        super.setTarget(target);
-    }
-
-    @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
             if (needExportAll()) {
@@ -126,9 +118,10 @@ public class ExcelAction extends ListAction {
     }
 
     protected boolean needExportAll() {
-        if (target.getSelected().isEmpty())
+        if (target.getSelected().isEmpty()) {
             return true;
-        CollectionContainer container = ((SupportsContainerBinding) target).getBindingContainer();
+        }
+        CollectionContainer container = ((ContainerDataSource) target).getContainer();
         return container != null && container.getItems().size() <= 1;
     }
 

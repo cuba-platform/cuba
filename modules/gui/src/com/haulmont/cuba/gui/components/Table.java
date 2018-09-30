@@ -73,8 +73,9 @@ public interface Table<E extends Entity>
 
     Map<Object, Object> getAggregationResults();
 
-    void setTableSource(TableSource<E> tableSource);
-    TableSource<E> getTableSource();
+    void setDataSource(TableSource<E> tableSource);
+    @Override
+    TableSource<E> getDataSource();
 
     // todo convert to default method
     @Deprecated
@@ -83,7 +84,7 @@ public interface Table<E extends Entity>
     @Deprecated
     @Override
     default CollectionDatasource getDatasource() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         return tableSource != null ? ((CollectionDatasourceTableAdapter) tableSource).getDatasource() : null;
     }
 

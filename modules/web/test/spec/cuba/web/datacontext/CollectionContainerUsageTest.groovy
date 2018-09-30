@@ -33,7 +33,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath('name')))
-        table.setTableSource(new CollectionContainerTableSource(this.container))
+        table.setDataSource(new CollectionContainerTableSource(this.container))
     }
 
     def "sort items"() {

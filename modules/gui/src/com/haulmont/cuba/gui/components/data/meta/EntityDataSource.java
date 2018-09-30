@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.data.meta;
 
-import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.DataSource;
 
-import javax.annotation.Nullable;
-
-public interface SupportsContainerBinding {
-    @Nullable
-    CollectionContainer getBindingContainer();
+public interface EntityDataSource<E extends Entity> extends DataSource<E> {
+    /**
+     * @return {@link MetaClass} of an entity contained in the source
+     */
+    MetaClass getEntityMetaClass();
 }

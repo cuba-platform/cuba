@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
+
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.DataGridSource;
 
 /**
- * Data binding state.
+ * A common interface for providing data for the {@link com.haulmont.cuba.gui.components.DataGrid} component.
+ *
+ * @param <E> items type, extends {@link Entity}.
  */
-public enum BindingState {
-    /**
-     * Binding is active and UI component can read data
-     */
-    ACTIVE,
-
-    /**
-     * Binding is not active and cannot be read.
-     */
-    INACTIVE
+public interface EntityDataGridSource<E extends Entity> extends DataGridSource<E>, EntityDataSource<E> {
 }

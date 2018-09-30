@@ -21,17 +21,18 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CollectionContainerOptions<E extends Entity<K>, K> implements OptionsSource<E>, EntityOptionsSource<E> {
+public class CollectionContainerOptions<E extends Entity<K>, K> implements OptionsSource<E>, EntityOptionsSource<E>,
+        ContainerDataSource<E> {
 
     protected CollectionContainer<E> container;
 
@@ -101,12 +102,6 @@ public class CollectionContainerOptions<E extends Entity<K>, K> implements Optio
     }
 
     @Override
-    public void refresh(Map<String, Object> parameters) {
-        if (loader != null)
-            loader.load();
-    }
-
-    @Override
     public Stream<E> getOptions() {
         return container.getItems().stream();
     }
@@ -132,5 +127,10 @@ public class CollectionContainerOptions<E extends Entity<K>, K> implements Optio
     @Override
     public Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<E>> listener) {
         return events.subscribe(OptionsChangeEvent.class, (Consumer) listener);
+    }
+
+    @Override
+    public CollectionContainer<E> getContainer() {
+        return container;
     }
 }

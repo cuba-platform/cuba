@@ -22,7 +22,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTreeSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTreeSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -30,9 +30,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HierarchicalDatasourceTreeAdapter<E extends Entity<K>, K> implements EntityTreeSource<E> {

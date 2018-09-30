@@ -78,7 +78,7 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
     @Deprecated
     default void setDatasource(HierarchicalDatasource datasource) {
         //noinspection unchecked
-        setTreeSource(datasource != null
+        setDataSource(datasource != null
                 ? new HierarchicalDatasourceTreeAdapter(datasource)
                 : null);
     }
@@ -86,15 +86,16 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
     @Deprecated
     @Override
     default HierarchicalDatasource getDatasource() {
-        TreeSource<E> treeSource = getTreeSource();
+        TreeSource<E> treeSource = getDataSource();
         return treeSource != null
                 ? ((HierarchicalDatasourceTreeAdapter) treeSource).getDatasource()
                 : null;
     }
 
-    TreeSource<E> getTreeSource();
+    @Override
+    TreeSource<E> getDataSource();
 
-    void setTreeSource(TreeSource<E> treeSource);
+    void setDataSource(TreeSource<E> treeSource);
 
     /**
      * Assign action to be executed on double click inside a tree node.

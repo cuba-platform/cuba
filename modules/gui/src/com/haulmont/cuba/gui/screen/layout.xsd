@@ -971,6 +971,9 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isTableComponent">
+        <xs:attribute name="dataContainer" type="xs:string"/>
+        <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
+
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasSettings"/>
         <xs:attributeGroup ref="hasTabIndex"/>
@@ -1070,15 +1073,11 @@
 
     <xs:complexType name="tableRowsType">
         <xs:attribute name="datasource" type="xs:string"/>
-        <xs:attribute name="dataContainer" type="xs:string"/>
-        <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
     </xs:complexType>
 
     <xs:complexType name="treeTableRowsType">
         <xs:attribute name="datasource" type="xs:string"/>
-        <xs:attribute name="dataContainer" type="xs:string"/>
         <xs:attribute name="hierarchyProperty" type="xs:string"/>
-        <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
     </xs:complexType>
 
     <xs:complexType name="tableColumnsList">
@@ -1899,14 +1898,18 @@
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
                     <xs:element name="treechildren" minOccurs="0">
+                        <!-- legacy data binding -->
                         <xs:complexType>
                             <xs:attributeGroup ref="hasCaptionSource"/>
-                            <xs:attribute name="dataContainer" type="xs:string"/>
                             <xs:attribute name="datasource" type="xs:string"/>
                             <xs:attribute name="hierarchyProperty" type="xs:string"/>
                         </xs:complexType>
                     </xs:element>
                 </xs:all>
+
+                <xs:attribute name="dataContainer" type="xs:string"/>
+                <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="treeSelectionMode"/>
@@ -2092,6 +2095,7 @@
                     <xs:element name="rows" type="treeTableRowsType"/>
                 </xs:all>
 
+                <xs:attribute name="hierarchyProperty" type="xs:string"/>
                 <xs:attribute name="stylename" type="tableStylename"/>
                 <xs:attributeGroup ref="isTableComponent"/>
                 <xs:attributeGroup ref="hasContextHelp"/>

@@ -21,12 +21,11 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
@@ -36,7 +35,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class CollectionContainerTableSource<E extends Entity> implements EntityTableSource<E>, TableSource.Sortable<E> {
+public class CollectionContainerTableSource<E extends Entity> implements EntityTableSource<E>, TableSource.Sortable<E>,
+        ContainerDataSource<E> {
 
     protected CollectionContainer<E> container;
 
@@ -153,17 +153,6 @@ public class CollectionContainerTableSource<E extends Entity> implements EntityT
     @Override
     public MetaClass getEntityMetaClass() {
         return container.getEntityMetaClass();
-    }
-
-    @Override
-    public Collection<MetaPropertyPath> getAutowiredProperties() {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-
-        return container.getView() != null ?
-                // if a view is specified - use view properties
-                metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass()) :
-                // otherwise use all properties from meta-class
-                metadataTools.getPropertyPaths(container.getEntityMetaClass());
     }
 
     @Override

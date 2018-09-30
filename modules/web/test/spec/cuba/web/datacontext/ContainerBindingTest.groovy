@@ -63,7 +63,7 @@ class ContainerBindingTest extends WebSpec {
 
         Table<Foo> table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath("name")))
-        table.setTableSource(new CollectionContainerTableSource(container))
+        table.setDataSource(new CollectionContainerTableSource(container))
 
         TextField textField = componentsFactory.createComponent(TextField)
         textField.setValueSource(new ContainerValueSource(container, 'name'))

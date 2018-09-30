@@ -22,11 +22,9 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
- * vaadin8 document
- *
- * @param <V> todo
+ * JavaDoc
  */
-public interface ValueSource<V> {
+public interface ValueSource<V> extends DataSource<V> {
     V getValue();
     void setValue(V value);
 
@@ -34,30 +32,7 @@ public interface ValueSource<V> {
 
     Class<V> getType();
 
-    BindingState getState();
-
-    Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener);
     Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener);
-
-    // todo
-    class StateChangeEvent<V> extends EventObject {
-        protected BindingState state;
-
-        public StateChangeEvent(ValueSource<V> source, BindingState state) {
-            super(source);
-            this.state = state;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public ValueSource<V> getSource() {
-            return (ValueSource<V>) super.getSource();
-        }
-
-        public BindingState getState() {
-            return state;
-        }
-    }
 
     // todo
     class ValueChangeEvent<V> extends EventObject {

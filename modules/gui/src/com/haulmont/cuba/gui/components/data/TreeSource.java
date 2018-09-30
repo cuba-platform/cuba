@@ -20,16 +20,10 @@ import com.haulmont.bali.events.Subscription;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface TreeSource<T> {
-
-    /**
-     * @return a state of this source
-     */
-    BindingState getState();
+public interface TreeSource<T> extends DataSource<T> {
 
     /**
      * @param item the item for obtaining the id
@@ -90,14 +84,6 @@ public interface TreeSource<T> {
     String getHierarchyPropertyName();
 
     /**
-     * Registers a new state change listener.
-     *
-     * @param listener the listener to be added
-     * @return a registration object for removing an event listener added to a source
-     */
-    Subscription addStateChangeListener(Consumer<StateChangeEvent<T>> listener);
-
-    /**
      * Registers a new value change listener.
      *
      * @param listener the listener to be added
@@ -120,30 +106,6 @@ public interface TreeSource<T> {
      * @return a registration object for removing an event listener added to a source
      */
     Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<T>> listener);
-
-    /**
-     * An event that is fired when TreeSource state is changed.
-     *
-     * @param <T> the source component type
-     */
-    class StateChangeEvent<T> extends EventObject {
-        protected BindingState state;
-
-        public StateChangeEvent(TreeSource<T> source, BindingState state) {
-            super(source);
-            this.state = state;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public TreeSource<T> getSource() {
-            return (TreeSource<T>) super.getSource();
-        }
-
-        public BindingState getState() {
-            return state;
-        }
-    }
 
     /**
      * An event that is fired when TreeSource value is changed.

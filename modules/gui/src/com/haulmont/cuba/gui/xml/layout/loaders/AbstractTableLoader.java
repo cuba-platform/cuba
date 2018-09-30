@@ -100,20 +100,22 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
 
-        if (rowsElement == null) {
-            throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentFrameId(),
-                    "Table ID", element.attributeValue("id"));
-        }
+        if (rowsElement != null) {
+            String rowHeaderMode = rowsElement.attributeValue("rowHeaderMode");
+            if (StringUtils.isBlank(rowHeaderMode)) {
+                rowHeaderMode = rowsElement.attributeValue("headerMode");
+                if (StringUtils.isNotBlank(rowHeaderMode)) {
+                    Logger log = LoggerFactory.getLogger(AbstractTableLoader.class);
+                    log.warn("Attribute headerMode is deprecated. Use rowHeaderMode.");
+                }
+            }
 
-        String rowHeaderMode = rowsElement.attributeValue("rowHeaderMode");
-        if (StringUtils.isBlank(rowHeaderMode)) {
-            rowHeaderMode = rowsElement.attributeValue("headerMode");
-            if (StringUtils.isNotBlank(rowHeaderMode)) {
-                Logger log = LoggerFactory.getLogger(AbstractTableLoader.class);
-                log.warn("Attribute headerMode is deprecated. Use rowHeaderMode.");
+            if (!StringUtils.isEmpty(rowHeaderMode)) {
+                resultComponent.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
             }
         }
 
+        String rowHeaderMode = element.attributeValue("rowHeaderMode");
         if (!StringUtils.isEmpty(rowHeaderMode)) {
             resultComponent.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
         }
@@ -127,7 +129,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         DataLoader dataLoader = null;
         Datasource datasource = null;
 
-        String containerId = rowsElement.attributeValue("dataContainer");
+        String containerId = element.attributeValue("dataContainer");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
@@ -142,7 +144,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 dataLoader = ((HasLoader) collectionContainer).getLoader();
             }
 
-        } else {
+        } else if (rowsElement != null) {
             String datasourceId = rowsElement.attributeValue("datasource");
             if (StringUtils.isBlank(datasourceId)) {
                 throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
@@ -159,6 +161,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
 
             metaClass = datasource.getMetaClass();
+        } else {
+            throw new GuiDevelopmentException("Table doesn't have data binding",
+                    context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
         }
 
         List<Table.Column> availableColumns;
@@ -180,7 +185,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
             }
             //noinspection unchecked
-            resultComponent.setTableSource(createContainerTableSource(collectionContainer));
+            resultComponent.setDataSource(createContainerTableSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);

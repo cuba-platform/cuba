@@ -85,10 +85,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
     @SuppressWarnings("unchecked")
     protected void loadTreeChildren() {
         Element itemsElem = element.element("treechildren");
-        if (itemsElem == null)
-            return;
 
-        String containerId = itemsElem.attributeValue("dataContainer");
+        String containerId = element.attributeValue("dataContainer");
         if (containerId != null) {
             FrameOwner frameOwner = context.getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
@@ -99,20 +97,29 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
             } else {
                 throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
             }
-            String hierarchyProperty = itemsElem.attributeValue("hierarchyProperty");
+            String hierarchyProperty = element.attributeValue("hierarchyProperty");
+            if (hierarchyProperty == null && itemsElem != null) {
+                // legacy behaviour
+                hierarchyProperty = itemsElem.attributeValue("hierarchyProperty");
+            }
+
             if (Strings.isNullOrEmpty(hierarchyProperty)) {
                 throw new GuiDevelopmentException("Tree doesn't have 'hierarchyProperty' attribute of the 'treechildren' element", context.getCurrentFrameId(),
                         "Tree ID", element.attributeValue("id"));
             }
-            resultComponent.setTreeSource(new CollectionContainerTreeSource(collectionContainer, hierarchyProperty));
-        } else {
+            resultComponent.setDataSource(new CollectionContainerTreeSource(collectionContainer, hierarchyProperty));
+        } else if (itemsElem != null) {
             String datasource = itemsElem.attributeValue("datasource");
             if (!StringUtils.isBlank(datasource)) {
                 HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
                 resultComponent.setDatasource(ds);
             }
         }
-        String captionProperty = itemsElem.attributeValue("captionProperty");
+        String captionProperty = element.attributeValue("captionProperty");
+        if (captionProperty == null && itemsElem != null) {
+            captionProperty = itemsElem.attributeValue("captionProperty");
+        }
+
         if (!StringUtils.isEmpty(captionProperty)) {
             resultComponent.setCaptionProperty(captionProperty);
             resultComponent.setCaptionMode(CaptionMode.PROPERTY);

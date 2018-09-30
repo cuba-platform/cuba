@@ -41,7 +41,7 @@ public class TableApiScreen1 extends AbstractWindow {
         usersTable.addColumn(new Table.Column<>(User.class, "active"));
         usersTable.addColumn(new Table.Column<>(User.class, "name"));
 
-        usersTable.setTableSource(new SortableCollectionDatasourceTableAdapter<>(usersDs));
+        usersTable.setDataSource(new SortableCollectionDatasourceTableAdapter<>(usersDs));
         usersTable.setSizeFull();
 
         add(usersTable);

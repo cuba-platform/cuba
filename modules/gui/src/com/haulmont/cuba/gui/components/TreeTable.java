@@ -52,7 +52,7 @@ public interface TreeTable<E extends Entity> extends Table<E> {
     @Override
     @Deprecated
     default HierarchicalDatasource getDatasource() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null) {
             return null;
         }

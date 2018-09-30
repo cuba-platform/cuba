@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -143,7 +142,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected Adapter createAdapter(RowsCountTarget target) {
         if (target instanceof Table) {
-            TableSource tableSource = ((Table) target).getTableSource();
+            TableSource tableSource = ((Table) target).getDataSource();
             if (tableSource instanceof CollectionDatasourceTableAdapter) {
                 return createDatasourceAdapter(((CollectionDatasourceTableAdapter) tableSource).getDatasource());
             } else if (tableSource instanceof CollectionContainerTableSource) {
@@ -152,7 +151,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 throw new IllegalStateException("Unsupported TableSource: " + tableSource);
             }
         } else if (target instanceof DataGrid) {
-            DataGridSource dataGridSource = ((DataGrid) target).getDataGridSource();
+            DataGridSource dataGridSource = ((DataGrid) target).getDataSource();
             if (dataGridSource instanceof CollectionDatasourceDataGridAdapter) {
                 return createDatasourceAdapter(((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource());
             } else if (dataGridSource instanceof CollectionContainerDataGridSource) {

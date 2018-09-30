@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
-/**
- * Data binding state.
- */
-public enum BindingState {
-    /**
-     * Binding is active and UI component can read data
-     */
-    ACTIVE,
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.DataSource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 
-    /**
-     * Binding is not active and cannot be read.
-     */
-    INACTIVE
+public interface ContainerDataSource<E extends Entity> extends DataSource<E> {
+    CollectionContainer<E> getContainer();
 }

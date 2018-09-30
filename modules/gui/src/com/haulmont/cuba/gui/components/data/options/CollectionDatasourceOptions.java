@@ -21,13 +21,12 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptionsSource;
 import com.haulmont.cuba.gui.components.data.OptionsSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -107,11 +106,6 @@ public class CollectionDatasourceOptions<E extends Entity<K>, K> implements Opti
     @Override
     public void refresh() {
         datasource.refresh();
-    }
-
-    @Override
-    public void refresh(Map<String, Object> parameters) {
-        datasource.refresh(parameters);
     }
 
     @SuppressWarnings("unchecked")

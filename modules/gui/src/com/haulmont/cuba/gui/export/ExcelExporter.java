@@ -32,6 +32,8 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataGridSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -206,7 +208,7 @@ public class ExcelExporter {
             cell.setCellStyle(headerCellStyle);
         }
 
-        TableSource<Entity> tableSource = table.getTableSource();
+        TableSource<Entity> tableSource = table.getDataSource();
 
         if (exportMode == ExportMode.SELECTED_ROWS && table.getSelected().size() > 0) {
             Set<Entity> selected = table.getSelected();
@@ -230,7 +232,7 @@ public class ExcelExporter {
             }
             if (table instanceof TreeTable) {
                 TreeTable treeTable = (TreeTable) table;
-                TreeTableSource treeTableSource = (TreeTableSource) treeTable.getTableSource();
+                TreeTableSource treeTableSource = (TreeTableSource) treeTable.getDataSource();
                 for (Object itemId : treeTableSource.getRootItemIds()) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
@@ -361,7 +363,7 @@ public class ExcelExporter {
         }
 
         @SuppressWarnings("unchecked")
-        EntityDataGridSource<Entity> dataGridSource = (EntityDataGridSource) dataGrid.getDataGridSource();
+        EntityDataGridSource<Entity> dataGridSource = (EntityDataGridSource) dataGrid.getDataSource();
         if (dataGridSource == null) {
             throw new IllegalStateException("DataGrid is not bound to data");
         }
@@ -424,7 +426,7 @@ public class ExcelExporter {
     @SuppressWarnings("unchecked")
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
                                        Boolean exportExpanded, int rowNumber, Object itemId) {
-        TreeTableSource treeTableSource = (TreeTableSource) table.getTableSource();
+        TreeTableSource treeTableSource = (TreeTableSource) table.getDataSource();
         createRow(table, columns, 0, ++rowNumber, itemId);
         if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(itemId) && !treeTableSource.getChildren(itemId).isEmpty()) {
             return rowNumber;
@@ -468,7 +470,7 @@ public class ExcelExporter {
     @SuppressWarnings("unchecked")
     protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber,
                                  GroupInfo groupInfo, int groupNumber) {
-        GroupTableSource<Entity> groupTableSource = (GroupTableSource) table.getTableSource();
+        GroupTableSource<Entity> groupTableSource = (GroupTableSource) table.getDataSource();
 
         HSSFRow row = sheet.createRow(rowNumber);
         Map<Object, Object> aggregations = table.isAggregatable()
@@ -576,7 +578,7 @@ public class ExcelExporter {
         }
 
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) table.getTableSource().getItem(itemId);
+        Instance instance = (Instance) table.getDataSource().getItem(itemId);
 
         int level = 0;
         if (table instanceof TreeTable) {
@@ -623,7 +625,7 @@ public class ExcelExporter {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) dataGrid.getDataGridSource().getItem(itemId);
+        Instance instance = (Instance) dataGrid.getDataSource().getItem(itemId);
 
         int level = 0;
         for (int c = startColumn; c < columns.size(); c++) {

@@ -26,13 +26,16 @@
     </data>
 
     <layout spacing="true" expand="groupsTree">
-        <treeTable id="groupsTree" width="100%" multiselect="true">
+        <treeTable id="groupsTree"
+                   width="100%"
+                   multiselect="true"
+                   dataContainer="groupsCont"
+                   hierarchyProperty="parent">
             <columns>
                 <column id="name"/>
                 <column id="id"/>
                 <column id="version"/>
             </columns>
-            <rows dataContainer="groupsCont" hierarchyProperty="parent"/>
         </treeTable>
     </layout>
 </window>

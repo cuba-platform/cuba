@@ -26,7 +26,7 @@
     </data>
 
     <layout spacing="true" expand="groupsTree">
-        <treeDataGrid id="groupsTree" width="100%" multiselect="true"
+        <treeDataGrid id="groupsTree" width="100%" selectionMode="MULTI"
                       dataContainer="groupsCont" hierarchyProperty="parent">
             <columns>
                 <column property="name"/>

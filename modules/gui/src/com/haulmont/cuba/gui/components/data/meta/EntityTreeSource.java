@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.TreeSource;
 
 import javax.annotation.Nullable;
 
-public interface EntityTreeSource<E extends Entity> extends TreeSource<E> {
-
-    /**
-     * @return {@link MetaClass} of an entity contained in the source
-     */
-    MetaClass getEntityMetaClass();
-
+public interface EntityTreeSource<E extends Entity> extends TreeSource<E>, EntityDataSource<E> {
     /**
      * @return the current item contained in the source
      */

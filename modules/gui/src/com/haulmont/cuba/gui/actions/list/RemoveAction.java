@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.actions.list;
+package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -23,8 +23,13 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.ActionType;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -68,7 +73,7 @@ public class RemoveAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (!(target instanceof SupportsEntityBinding)) {
+        if (target == null || !(target.getDataSource() instanceof EntityDataSource)) {
             return false;
         }
 
@@ -80,7 +85,7 @@ public class RemoveAction extends SecuredListAction {
     }
 
     protected boolean checkRemovePermission() {
-        MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+        MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -96,31 +101,21 @@ public class RemoveAction extends SecuredListAction {
     }
 
     @Override
-    public void setTarget(ListComponent target) {
-        if (target != null
-                && !(target instanceof SupportsEntityBinding)) {
-            throw new IllegalStateException("RemoveAction target does not implement SupportsEntityBinding");
-        }
-
-        super.setTarget(target);
-    }
-
-    @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target instanceof SupportsEntityBinding)) {
-                throw new IllegalStateException("RemoveAction target is null or does not implement SupportsEntityBinding");
+            if (!(target.getDataSource() instanceof EntityDataSource)) {
+                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement EntityDataSource");
             }
-            if (!(target instanceof SupportsContainerBinding)) {
-                throw new IllegalStateException("RemoveAction target is null or does not implement SupportsContainerBinding");
+            if (!(target.getDataSource() instanceof ContainerDataSource)) {
+                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement ContainerDataSource");
             }
 
-            CollectionContainer container = ((SupportsContainerBinding) target).getBindingContainer();
+            CollectionContainer container = ((ContainerDataSource) target.getDataSource()).getContainer();
             if (container == null) {
                 throw new IllegalStateException("RemoveAction target is not bound to CollectionContainer");
             }
 
-            MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
             if (metaClass == null) {
                 throw new IllegalStateException("Target is not bound to entity");
             }

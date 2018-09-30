@@ -77,7 +77,7 @@ public class DcScreen4 extends AbstractWindow {
         usersLoader.setParameter("groupId", UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
         usersContainer = screenData.getContainer("usersCont");
-        usersTable.setTableSource(new CollectionContainerTableSource<>(usersContainer));
+        usersTable.setDataSource(new CollectionContainerTableSource<>(usersContainer));
 
         loginField.addValueChangeListener(e -> {
             usersLoader.setParameter("login", Strings.isNullOrEmpty((String) e.getValue()) ? null : "(?i)%" + e.getValue() + "%");

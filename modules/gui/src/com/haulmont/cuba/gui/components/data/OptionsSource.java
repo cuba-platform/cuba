@@ -27,34 +27,11 @@ import java.util.stream.Stream;
  *
  * @param <I> type of option object
  */
-public interface OptionsSource<I> {
+public interface OptionsSource<I> extends DataSource<I> {
     Stream<I> getOptions();
 
-    BindingState getState();
-
-    Subscription addStateChangeListener(Consumer<StateChangeEvent<I>> listener);
     Subscription addValueChangeListener(Consumer<ValueChangeEvent<I>> listener);
     Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<I>> listener);
-
-    // todo
-    class StateChangeEvent<T> extends EventObject {
-        protected BindingState state;
-
-        public StateChangeEvent(OptionsSource<T> source, BindingState state) {
-            super(source);
-            this.state = state;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public OptionsSource<T> getSource() {
-            return (OptionsSource<T>) super.getSource();
-        }
-
-        public BindingState getState() {
-            return state;
-        }
-    }
 
     // todo
     class ValueChangeEvent<T> extends EventObject {

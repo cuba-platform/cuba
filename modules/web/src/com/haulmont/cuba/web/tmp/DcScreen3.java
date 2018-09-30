@@ -85,8 +85,8 @@ public class DcScreen3 extends AbstractWindow {
             userRolesContainer.setItems(user != null ? user.getUserRoles() : null);
         });
 
-        usersTable.setTableSource(new CollectionContainerTableSource<>(usersContainer));
-        userRolesTable.setTableSource(new CollectionContainerTableSource<>(userRolesContainer));
+        usersTable.setDataSource(new CollectionContainerTableSource<>(usersContainer));
+        userRolesTable.setDataSource(new CollectionContainerTableSource<>(userRolesContainer));
         
         textField1.setValueSource(new ContainerValueSource<>(usersContainer, "name"));
     }

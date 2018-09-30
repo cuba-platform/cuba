@@ -52,24 +52,24 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setTableSource(null);
+            setDataSource(null);
         } else {
             if (!(datasource instanceof HierarchicalDatasource)) {
                 throw new IllegalArgumentException("TreeTable supports only HierarchicalDatasource");
             }
 
-            setTableSource(new HierarchicalDatasourceTableAdapter((HierarchicalDatasource) datasource));
+            setDataSource(new HierarchicalDatasourceTableAdapter((HierarchicalDatasource) datasource));
         }
     }
 
     @Override
-    public void setTableSource(TableSource<E> tableSource) {
+    public void setDataSource(TableSource<E> tableSource) {
         if (tableSource != null &&
                 !(tableSource instanceof TreeTableSource)) {
             throw new IllegalArgumentException("TreeTable supports only TreeTableSource data binding");
         }
 
-        super.setTableSource(tableSource);
+        super.setDataSource(tableSource);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @SuppressWarnings("unchecked")
     protected TreeTableSource<E> getTreeTableSource() {
-        return ((TreeTableSource) getTableSource());
+        return ((TreeTableSource) getDataSource());
     }
 
     @Override

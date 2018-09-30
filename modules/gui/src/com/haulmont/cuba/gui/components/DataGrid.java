@@ -18,11 +18,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.EntityDataGridSource;
 import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -156,23 +154,24 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * @return The DataGrid source
      */
+    @Override
     @Nullable
-    DataGridSource<E> getDataGridSource();
+    DataGridSource<E> getDataSource();
 
     /**
      * Sets an instance of {@link DataGridSource} as the DataGrid data source.
      *
      * @param dataGridSource the DataGrid data source
      */
-    void setDataGridSource(@Nullable DataGridSource<E> dataGridSource);
+    void setDataSource(@Nullable DataGridSource<E> dataGridSource);
 
     /**
      * @return the DataGrid data source
-     * @deprecated use {@link #getDataGridSource()} instead
+     * @deprecated use {@link #getDataSource()} instead
      */
     @Deprecated
     default CollectionDatasource getDatasource() {
-        DataGridSource<E> dataGridSource = getDataGridSource();
+        DataGridSource<E> dataGridSource = getDataSource();
         return dataGridSource != null ? ((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource() : null;
     }
 
@@ -180,13 +179,13 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * Sets an instance of {@link CollectionDatasource} as the DataGrid data source.
      *
      * @param datasource the DataGrid data source, not null
-     * @deprecated use {@link #setDataGridSource(DataGridSource)} instead
+     * @deprecated use {@link #setDataSource(DataGridSource)} instead
      */
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataGridSource(null);
+            setDataSource(null);
         } else {
             DataGridSource<E> dataGridSource;
             if (datasource instanceof Sortable) {
@@ -194,7 +193,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
             } else {
                 dataGridSource = new CollectionDatasourceDataGridAdapter<>(datasource);
             }
-            setDataGridSource(dataGridSource);
+            setDataSource(dataGridSource);
         }
     }
 

@@ -172,7 +172,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
             }
             //noinspection unchecked
-            resultComponent.setDataGridSource(createContainerDataGridSource(collectionContainer));
+            resultComponent.setDataSource(createContainerDataGridSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);

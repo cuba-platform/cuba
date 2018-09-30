@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.actions.list;
+package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.ActionType;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.actions.ListAction;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -58,26 +60,13 @@ public class RefreshAction extends ListAction {
     }
 
     @Override
-    public void setTarget(ListComponent target) {
-        if (target != null
-                && !(target instanceof SupportsEntityBinding)) {
-            throw new IllegalStateException("RefreshAction target does not implement SupportsEntityBinding");
-        }
-
-        super.setTarget(target);
-    }
-
-    @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target instanceof SupportsEntityBinding)) {
-                throw new IllegalStateException("RefreshAction target is null or does not implement SupportsEntityBinding");
-            }
-            if (!(target instanceof SupportsContainerBinding)) {
+            if (!(target.getDataSource() instanceof ContainerDataSource)) {
                 throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
             }
 
-            CollectionContainer container = ((SupportsContainerBinding) target).getBindingContainer();
+            CollectionContainer container = ((ContainerDataSource) target).getContainer();
             if (container == null) {
                 throw new IllegalStateException("RefreshAction target is not bound to CollectionContainer");
             }

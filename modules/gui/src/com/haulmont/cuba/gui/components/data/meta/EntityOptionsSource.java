@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.data;
+package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.OptionsSource;
 
 import java.util.Map;
 
 public interface EntityOptionsSource<E extends Entity> extends OptionsSource<E> {
     MetaClass getEntityMetaClass();
 
+    /**
+     * Set current item in the source.
+     *
+     * @param item the item to set
+     */
     void setSelectedItem(E item);
 
     /**
@@ -41,12 +47,4 @@ public interface EntityOptionsSource<E extends Entity> extends OptionsSource<E> 
      * Refreshes the source moving it to the {@link BindingState#ACTIVE} state
      */
     void refresh();
-
-    /**
-     * Refreshes the source passing specified parameters to the query.
-     * <p>These parameters may be referenced in the query text by "custom$" prefix.</p>
-     *
-     * @param parameters parameters map
-     */
-    void refresh(Map<String, Object> parameters);
 }

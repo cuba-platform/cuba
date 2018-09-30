@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.HasRange;
 import com.haulmont.cuba.gui.components.TextInputField;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import org.apache.commons.collections4.MapUtils;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;

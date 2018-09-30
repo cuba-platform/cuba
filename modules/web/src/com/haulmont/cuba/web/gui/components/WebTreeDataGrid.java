@@ -37,18 +37,18 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Nullable
     @Override
-    public TreeDataGridSource<E> getDataGridSource() {
-        return (TreeDataGridSource<E>) super.getDataGridSource();
+    public TreeDataGridSource<E> getDataSource() {
+        return (TreeDataGridSource<E>) super.getDataSource();
     }
 
     @Override
-    public void setDataGridSource(DataGridSource<E> dataGridSource) {
+    public void setDataSource(DataGridSource<E> dataGridSource) {
         if (dataGridSource != null
                 && !(dataGridSource instanceof TreeDataGridSource)) {
             throw new IllegalArgumentException("TreeDataGrid supports only TreeDataGridSource data binding");
         }
 
-        super.setDataGridSource(dataGridSource);
+        super.setDataSource(dataGridSource);
     }
 
     @Override
@@ -115,8 +115,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Override
     public void expandAll() {
-        if (getDataGridSource() != null) {
-            expandRecursively(getDataGridSource().getChildren(null), Integer.MAX_VALUE);
+        if (getDataSource() != null) {
+            expandRecursively(getDataSource().getChildren(null), Integer.MAX_VALUE);
         }
     }
 
@@ -132,8 +132,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Override
     public void collapseAll() {
-        if (getDataGridSource() != null) {
-            collapseRecursively(getDataGridSource().getChildren(null), Integer.MAX_VALUE);
+        if (getDataSource() != null) {
+            collapseRecursively(getDataSource().getChildren(null), Integer.MAX_VALUE);
         }
     }
 

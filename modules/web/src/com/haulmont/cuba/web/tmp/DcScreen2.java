@@ -91,7 +91,7 @@ public class DcScreen2 extends AbstractWindow {
 
 //        container.setItems(users);
 
-        table.setTableSource(new CollectionContainerTableSource<>(container));
+        table.setDataSource(new CollectionContainerTableSource<>(container));
 
         textField1.setValueSource(new ContainerValueSource<>(container, "name"));
     }

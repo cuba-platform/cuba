@@ -77,7 +77,7 @@
     <bean id="cuba_ActionsConfiguration" class="com.haulmont.cuba.gui.sys.ActionsConfiguration">
         <property name="packages">
             <list>
-                <value>com.haulmont.cuba.gui.components.actions</value>
+                <value>com.haulmont.cuba.gui.actions</value>
             </list>
         </property>
     </bean>

@@ -42,8 +42,10 @@
 
         <filter id="usersFilter"
                 dataLoader="usersLoader"/>
+
         <groupTable id="usersTable"
-               width="100%">
+                    dataContainer="usersCont"
+                    width="100%">
             <actions>
                 <action id="create" type="create"/>
                 <action id="edit" type="edit"/>
@@ -61,7 +63,6 @@
                 <column id="group"/>
                 <column id="active"/>
             </columns>
-            <rows dataContainer="usersCont"/>
         </groupTable>
 
         <fragment id="lookupActions"

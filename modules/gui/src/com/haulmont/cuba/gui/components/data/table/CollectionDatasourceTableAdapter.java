@@ -21,10 +21,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.meta.LegacyDataSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
@@ -34,7 +33,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
-public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements EntityTableSource<E> {
+public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements EntityTableSource<E>, LegacyDataSource<E> {
 
     protected CollectionDatasource datasource;
     protected EventHub events = new EventHub();
@@ -166,16 +165,5 @@ public class CollectionDatasourceTableAdapter<E extends Entity<K>, K> implements
     @Override
     public MetaClass getEntityMetaClass() {
         return datasource.getMetaClass();
-    }
-
-    @Override
-    public Collection<MetaPropertyPath> getAutowiredProperties() {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-
-        return datasource.getView() != null ?
-                // if a view is specified - use view properties
-                metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
-                // otherwise use all properties from meta-class
-                metadataTools.getPropertyPaths(datasource.getMetaClass());
     }
 }

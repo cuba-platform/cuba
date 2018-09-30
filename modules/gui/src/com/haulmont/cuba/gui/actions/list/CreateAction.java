@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.actions.list;
+package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -24,8 +24,11 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.EditorScreens;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.ActionType;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.ListAction;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -77,11 +80,11 @@ public class CreateAction extends ListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (!(target instanceof SupportsEntityBinding)) {
+        if (target == null || !(target.getDataSource() instanceof EntityDataSource)) {
             return false;
         }
 
-        MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+        MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -94,26 +97,16 @@ public class CreateAction extends ListAction {
         return super.isPermitted();
     }
 
-    @Override
-    public void setTarget(ListComponent target) {
-        if (target != null
-                && !(target instanceof SupportsEntityBinding)) {
-            throw new IllegalStateException("CreateAction target is null or does not implement SupportsEntityBinding");
-        }
-
-        super.setTarget(target);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target instanceof SupportsEntityBinding)) {
-                throw new IllegalStateException("CreateAction target is null or does not implement SupportsEntityBinding");
+            if (!(target.getDataSource() instanceof EntityDataSource)) {
+                throw new IllegalStateException("CreateAction target dataSource is null or does not implement EntityDataSource");
             }
 
-            MetaClass metaClass = ((SupportsEntityBinding) target).getBindingMetaClass();
+            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
             if (metaClass == null) {
                 throw new IllegalStateException("Target is not bound to entity");
             }

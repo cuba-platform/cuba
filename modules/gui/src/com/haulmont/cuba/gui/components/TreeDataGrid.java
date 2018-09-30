@@ -32,7 +32,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
 
     @Override
     default HierarchicalDatasource getDatasource() {
-        DataGridSource<E> dataGridSource = getDataGridSource();
+        DataGridSource<E> dataGridSource = getDataSource();
         return dataGridSource != null
                 ? (HierarchicalDatasource) ((HierarchicalDatasourceDataGridAdapter) dataGridSource).getDatasource()
                 : null;
@@ -47,19 +47,19 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
     @Override
     default void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataGridSource(null);
+            setDataSource(null);
         } else {
             if (!(datasource instanceof HierarchicalDatasource)) {
                 throw new IllegalArgumentException("TreeDataGrid supports only HierarchicalDatasource");
             }
 
-            setDataGridSource(new HierarchicalDatasourceDataGridAdapter((HierarchicalDatasource) datasource));
+            setDataSource(new HierarchicalDatasourceDataGridAdapter((HierarchicalDatasource) datasource));
         }
     }
 
     @Nullable
     @Override
-    TreeDataGridSource<E> getDataGridSource();
+    TreeDataGridSource<E> getDataSource();
 
     /**
      * Get the currently set hierarchy column. The hierarchy column is a column

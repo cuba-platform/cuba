@@ -44,7 +44,7 @@ public interface GroupTable<E extends Entity> extends Table<E> {
     @Deprecated
     @Override
     default GroupDatasource getDatasource() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null) {
             return null;
         }

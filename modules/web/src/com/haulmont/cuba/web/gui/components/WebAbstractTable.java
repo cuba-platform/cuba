@@ -40,9 +40,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.EntityTableSource;
 import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
+import com.haulmont.cuba.gui.components.data.meta.LegacyDataSource;
 import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.components.data.table.SortableCollectionDatasourceTableAdapter;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -106,7 +107,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractActionsHolderComponent<T>
         implements Table<E>, TableSourceEventsDelegate<E>, LookupSelectionChangeNotifier<E>,
-        HasInnerComponents, SupportsEntityBinding, SupportsContainerBinding, InstallTargetHandler, InitializingBean {
+        HasInnerComponents, InstallTargetHandler, InitializingBean {
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -269,7 +270,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @SuppressWarnings("unchecked")
     @Override
     public E getSingleSelected() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null
                 || tableSource.getState() == BindingState.INACTIVE) {
             return null;
@@ -283,7 +284,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @SuppressWarnings("unchecked")
     @Override
     public Set<E> getSelected() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null
                 || tableSource.getState() == BindingState.INACTIVE) {
             return Collections.emptySet();
@@ -321,7 +322,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @SuppressWarnings("unchecked")
     @Override
     public void setSelected(Collection<E> items) {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null
                 || tableSource.getState() == BindingState.INACTIVE) {
             throw new IllegalStateException("TableSource is not active");
@@ -595,7 +596,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             component.disableContentBufferRefreshing();
 
-            EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+            EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
             if (entityTableSource != null) {
                 com.vaadin.v7.data.Container ds = component.getContainerDataSource();
@@ -689,7 +690,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void setSortable(boolean sortable) {
-        component.setSortEnabled(sortable && canBeSorted(getTableSource()));
+        component.setSortEnabled(sortable && canBeSorted(getDataSource()));
     }
 
     @Override
@@ -978,7 +979,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected void tableSelectionChanged(@SuppressWarnings("unused") Property.ValueChangeEvent event) {
-        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
         if (entityTableSource == null
                 || entityTableSource.getState() == BindingState.INACTIVE) {
@@ -1014,7 +1015,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @SuppressWarnings("unchecked")
     protected String formatCellValue(@SuppressWarnings("unused") Object rowId, Object colId, Property<?> property) {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null
                 || tableSource.getState() == BindingState.INACTIVE) {
             return null;
@@ -1040,7 +1041,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     // vaadin8 move to Column
                     String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
                     if (StringUtils.isNotEmpty(captionProperty)) {
-                        E item = getTableSource().getItemNN(rowId);
+                        E item = getDataSource().getItemNN(rowId);
                         Object captionValue = item.getValueEx(captionProperty);
                         return captionValue != null ? String.valueOf(captionValue) : null;
                     }
@@ -1094,7 +1095,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (styleProviders == null) {
             return null;
         }
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource == null) {
             return null;
         }
@@ -1232,12 +1233,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public TableSource<E> getTableSource() {
+    public TableSource<E> getDataSource() {
         return this.dataBinding != null ? this.dataBinding.getTableSource() : null;
     }
 
     @Override
-    public void setTableSource(TableSource<E> tableSource) {
+    public void setDataSource(TableSource<E> tableSource) {
         if (this.dataBinding != null) {
             this.dataBinding.unbind();
             this.dataBinding = null;
@@ -1293,30 +1294,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
-    @Nullable
-    @Override
-    public MetaClass getBindingMetaClass() {
-        if (getTableSource() instanceof EntityTableSource) {
-            return ((EntityTableSource<E>) getTableSource()).getEntityMetaClass();
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public CollectionContainer getBindingContainer() {
-        if (getTableSource() instanceof CollectionContainerTableSource) {
-            return ((CollectionContainerTableSource<E>) getTableSource()).getContainer();
-        }
-        return null;
-    }
-
     protected List<Object> getPropertyColumns(EntityTableSource<E> entityTableSource, List<Column<E>> columnsOrder) {
+        MetaClass entityMetaClass = entityTableSource.getEntityMetaClass();
         return columnsOrder.stream()
                 .filter(c -> {
                     MetaPropertyPath propertyPath = c.getBoundProperty();
                     return propertyPath != null
-                            && security.isEntityAttrReadPermitted(entityTableSource.getEntityMetaClass(), propertyPath.toPathString());
+                            && security.isEntityAttrReadPermitted(entityMetaClass, propertyPath.toPathString());
                 })
                 .map(Column::getBoundProperty)
                 .collect(Collectors.toList());
@@ -1373,7 +1357,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected void setupAutowiredColumns(EntityTableSource<E> entityTableSource) {
-        Collection<MetaPropertyPath> paths = entityTableSource.getAutowiredProperties();
+        Collection<MetaPropertyPath> paths = getAutowiredProperties(entityTableSource);
 
         for (MetaPropertyPath metaPropertyPath : paths) {
             MetaProperty property = metaPropertyPath.getMetaProperty();
@@ -1392,6 +1376,30 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
+    protected Collection<MetaPropertyPath> getAutowiredProperties(EntityTableSource<E> entityTableSource) {
+        if (entityTableSource instanceof ContainerDataSource) {
+            CollectionContainer container = ((ContainerDataSource) entityTableSource).getContainer();
+
+            return container.getView() != null ?
+                    // if a view is specified - use view properties
+                    metadataTools.getViewPropertyPaths(container.getView(), container.getEntityMetaClass()) :
+                    // otherwise use all properties from meta-class
+                    metadataTools.getPropertyPaths(container.getEntityMetaClass());
+        }
+
+        if (entityTableSource instanceof LegacyDataSource) {
+            CollectionDatasource datasource = ((LegacyDataSource) entityTableSource).getDatasource();
+
+            return datasource.getView() != null ?
+                    // if a view is specified - use view properties
+                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
+                    // otherwise use all properties from meta-class
+                    metadataTools.getPropertyPaths(datasource.getMetaClass());
+        }
+
+        return Collections.emptyList();
+    }
+
     @Override
     public void tableSourceItemSetChanged(TableSource.ItemSetChangeEvent<E> event) {
         // replacement for collectionChangeSelectionListener
@@ -1402,16 +1410,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         Set<Object> newSelection = new HashSet<>();
+
+        TableSource<E> tableSource = event.getSource();
         for (Object entityId : selectedItemIds) {
             //noinspection unchecked
-            if (event.getSource().getItem(entityId) != null) {
+            if (tableSource.getItem(entityId) != null) {
                 newSelection.add(entityId);
             }
         }
 
-        if (event.getSource().getState() == BindingState.ACTIVE
-                && event.getSource().getSelectedItem() != null) {
-            newSelection.add(event.getSource().getSelectedItem().getId());
+        if (tableSource.getState() == BindingState.ACTIVE
+            && tableSource instanceof EntityTableSource) {
+
+            EntityTableSource entityTableSource = (EntityTableSource) tableSource;
+
+            if (entityTableSource.getSelectedItem() != null) {
+                newSelection.add(entityTableSource.getSelectedItem().getId());
+            }
         }
 
         if (newSelection.isEmpty()) {
@@ -1449,7 +1464,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setTableSource(null);
+            setDataSource(null);
         } else {
             TableSource<E> tableSource;
             if (datasource instanceof CollectionDatasource.Sortable) {
@@ -1457,7 +1472,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             } else {
                 tableSource = new CollectionDatasourceTableAdapter(datasource);
             }
-            setTableSource(tableSource);
+            setDataSource(tableSource);
         }
     }
 
@@ -1669,11 +1684,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @SuppressWarnings("unchecked")
     protected Resource getItemIcon(Object itemId) {
         if (iconProvider == null
-                || getTableSource() == null) {
+                || getDataSource() == null) {
             return null;
         }
 
-        E item = getTableSource().getItem(itemId);
+        E item = getDataSource().getItem(itemId);
         if (item == null) {
             return null;
         }
@@ -1788,7 +1803,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             String sortProp = columnsElem.attributeValue("sortProperty");
             if (!StringUtils.isEmpty(sortProp)) {
                 @SuppressWarnings("unchecked")
-                EntityTableSource<E> entityTableSource = (EntityTableSource) getTableSource();
+                EntityTableSource<E> entityTableSource = (EntityTableSource) getDataSource();
 
                 MetaPropertyPath sortProperty = entityTableSource.getEntityMetaClass().getPropertyPath(sortProp);
                 if (newColumns.contains(sortProperty)) {
@@ -2024,7 +2039,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         checkNotNullArgument(columnId, "columnId is null");
         checkNotNullArgument(generator, "generator is null for column id '%s'", columnId);
 
-        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
         MetaPropertyPath targetCol = entityTableSource != null ?
                 entityTableSource.getEntityMetaClass().getPropertyPath(columnId) : null;
@@ -2058,7 +2073,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     @SuppressWarnings("unchecked")
                     @Override
                     public Object generateCell(com.vaadin.v7.ui.Table source, Object itemId, Object columnId) {
-                        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+                        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
                         if (entityTableSource == null) {
                             return null;
                         }
@@ -2120,7 +2135,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void removeGeneratedColumn(String columnId) {
-        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+        EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
         MetaPropertyPath targetCol = entityTableSource != null ?
                 entityTableSource.getEntityMetaClass().getPropertyPath(columnId) : null;
@@ -2330,7 +2345,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Deprecated
     @Override
     public void refresh() {
-        TableSource<E> tableSource = getTableSource();
+        TableSource<E> tableSource = getDataSource();
         if (tableSource instanceof CollectionDatasourceTableAdapter) {
             ((CollectionDatasourceTableAdapter) tableSource).getDatasource().refresh();
         }
@@ -2610,7 +2625,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
 //            TableItemWrapper wrapper = (TableItemWrapper) component.getItem(itemId);
 //            Object itemId2 = wrapper.getItemId();
-            TableSource<E> tableSource = getTableSource();
+            TableSource<E> tableSource = getDataSource();
             if (tableSource == null) {
                 return;
             }
@@ -2695,7 +2710,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             if (propertyId instanceof MetaPropertyPath) {
                 propertyPath = (MetaPropertyPath) propertyId;
             } else {
-                EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+                EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
                 propertyPath = entityTableSource != null ?
                         entityTableSource.getEntityMetaClass().getPropertyPath(propertyId.toString()) : null;
@@ -2741,7 +2756,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
                     style = "c-table-cell-link";
                 } else if (column.getMaxTextLength() != null) {
-                    EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getTableSource();
+                    EntityTableSource<E> entityTableSource = (EntityTableSource<E>) getDataSource();
 
                     if (entityTableSource == null) {
                         throw new IllegalStateException("TableSource is not set");
