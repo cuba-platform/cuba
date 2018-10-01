@@ -37,7 +37,7 @@ public class DateTimeTransformations {
         Preconditions.checkNotNull(date);
         ZoneId zoneId = ZoneId.systemDefault();
         if (date instanceof java.sql.Date) {
-            ((java.sql.Date) date).toLocalDate().atStartOfDay(zoneId);
+            return ((java.sql.Date) date).toLocalDate().atStartOfDay(zoneId);
         } else if (date instanceof Date) {
             return ((Date) date).toInstant().atZone(zoneId);
         } else if (date instanceof LocalDate) {
