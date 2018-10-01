@@ -17,9 +17,13 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Dialog that can be enabled/disabled like the main frame.
@@ -39,6 +43,15 @@ public class DialogWindow extends JDialog {
         glassPane = new DisabledGlassPane();
         JRootPane rootPane = SwingUtilities.getRootPane(this);
         rootPane.setGlassPane(glassPane);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                DesktopComponentsHelper.flushCurrentInputField();
+            }
+        });
     }
 
     public void disableWindow(@Nullable String message) {

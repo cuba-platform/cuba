@@ -17,11 +17,26 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class JTabbedPaneExt extends JTabbedPane {
 
     protected static boolean focusOnSelectionChange = true;
+
+    public JTabbedPaneExt() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                DesktopComponentsHelper.flushCurrentInputField();
+            }
+        });
+    }
 
     @Override
     public void requestFocus() {
