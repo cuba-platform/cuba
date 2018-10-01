@@ -34,7 +34,7 @@ import java.util.List;
 @UiDescriptor("dc-screen-5.xml")
 @PrimaryLookupScreen(User.class)
 @LookupComponent("usersTable")
-public class DcScreen5 extends StandardLookup<User> {
+public class DcScreen5 extends StandardLookup<User> implements DemoMixin {
 
     @Inject
     protected DataManager dataManager;

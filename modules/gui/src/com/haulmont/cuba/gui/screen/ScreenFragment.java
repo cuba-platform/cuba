@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationListener;
 import javax.inject.Inject;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -56,6 +57,9 @@ public abstract class ScreenFragment implements FrameOwner {
     // Global event listeners
     private List<ApplicationListener> uiEventListeners;
 
+    // Extensions state
+    private Map<Class<?>, Object> extensions;
+
     @Inject
     protected void setBeanLocator(BeanLocator beanLocator) {
         this.beanLocator = beanLocator;
@@ -63,6 +67,14 @@ public abstract class ScreenFragment implements FrameOwner {
 
     protected BeanLocator getBeanLocator() {
         return beanLocator;
+    }
+
+    protected Map<Class<?>, Object> getExtensions() {
+        return extensions;
+    }
+
+    protected void setExtensions(Map<Class<?>, Object> extensions) {
+        this.extensions = extensions;
     }
 
     protected EventHub getEventHub() {

@@ -45,10 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -78,6 +75,9 @@ public abstract class Screen implements FrameOwner {
     // Global event listeners
     private List<ApplicationListener> uiEventListeners;
 
+    // Extensions state
+    private Map<Class<?>, Object> extensions;
+
     protected BeanLocator getBeanLocator() {
         return beanLocator;
     }
@@ -89,6 +89,14 @@ public abstract class Screen implements FrameOwner {
 
     protected EventHub getEventHub() {
         return eventHub;
+    }
+
+    protected Map<Class<?>, Object> getExtensions() {
+        return extensions;
+    }
+
+    protected void setExtensions(Map<Class<?>, Object> extensions) {
+        this.extensions = extensions;
     }
 
     public String getId() {
