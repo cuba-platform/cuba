@@ -43,8 +43,8 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     protected static final Map<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>> units = new HashMap<>();
 
     static {
-        units.put("year", (zdt, num) -> zdt.plusYears(num).withDayOfYear(1));
-        units.put("month", (zdt, num) -> zdt.plusMonths(num).withDayOfMonth(1));
+        units.put("year", (zdt, num) -> zdt.plusYears(num).withDayOfYear(1).truncatedTo(ChronoUnit.DAYS));
+        units.put("month", (zdt, num) -> zdt.plusMonths(num).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS));
         units.put("day", (zdt, num) -> zdt.plusDays(num).truncatedTo(ChronoUnit.DAYS));
         units.put("hour", (zdt, num) -> zdt.plusHours(num).truncatedTo(ChronoUnit.HOURS));
         units.put("minute", (zdt, num) -> zdt.plusMinutes(num).truncatedTo(ChronoUnit.MINUTES));
