@@ -26,7 +26,7 @@ public class SecurityContextAwareCallable<V> implements Callable<V> {
     private Callable<V> target;
     private SecurityContext securityContext;
 
-    SecurityContextAwareCallable(Callable<V> target) {
+    public SecurityContextAwareCallable(Callable<V> target) {
         this.target = target;
         this.securityContext = AppContext.getSecurityContext();
     }
