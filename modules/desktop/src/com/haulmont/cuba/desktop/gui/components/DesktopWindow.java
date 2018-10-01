@@ -638,6 +638,13 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         JTabbedPaneExt jTabbedPaneExt = getJTabbedPaneExt();
         jTabbedPaneExt.setTitleAt(jTabbedPaneExt.getSelectedIndex(), formattedCaption);
+
+        java.awt.Component tabHeaderComponent = jTabbedPaneExt.getTabComponentAt(jTabbedPaneExt.getSelectedIndex());
+        if (tabHeaderComponent != null) {
+            tabHeaderComponent.invalidate();
+            tabHeaderComponent.repaint();
+        }
+
         windowManager.getBreadCrumbs(tabWindow).update();
     }
 
