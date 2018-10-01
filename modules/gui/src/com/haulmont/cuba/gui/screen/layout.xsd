@@ -694,6 +694,9 @@
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="${TABLE_EDIT_SHORTCUT}"/>
+                    <xs:enumeration value="${TABLE_INSERT_SHORTCUT}"/>
+                    <xs:enumeration value="${TABLE_ADD_SHORTCUT}"/>
+                    <xs:enumeration value="${TABLE_REMOVE_SHORTCUT}"/>
                     <xs:enumeration value="${COMMIT_SHORTCUT}"/>
                     <xs:enumeration value="${CLOSE_SHORTCUT}"/>
                     <xs:enumeration value="${FILTER_APPLY_SHORTCUT}"/>

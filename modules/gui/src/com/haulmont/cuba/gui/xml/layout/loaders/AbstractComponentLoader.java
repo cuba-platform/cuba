@@ -61,9 +61,12 @@ import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
-    protected static final Map<String, Function<ClientConfig, String>> shortcutAliases =
+    protected static final Map<String, Function<ClientConfig, String>> SHORTCUT_ALIASES =
             ImmutableMap.<String, Function<ClientConfig, String>>builder()
                     .put("TABLE_EDIT_SHORTCUT", ClientConfig::getTableEditShortcut)
+                    .put("TABLE_INSERT_SHORTCUT", ClientConfig::getTableInsertShortcut)
+                    .put("TABLE_ADD_SHORTCUT", ClientConfig::getTableAddShortcut)
+                    .put("TABLE_REMOVE_SHORTCUT", ClientConfig::getTableRemoveShortcut)
                     .put("COMMIT_SHORTCUT", ClientConfig::getCommitShortcut)
                     .put("CLOSE_SHORTCUT", ClientConfig::getCloseShortcut)
                     .put("FILTER_APPLY_SHORTCUT", ClientConfig::getFilterApplyShortcut)
@@ -742,9 +745,9 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected String loadShortcutFromAlias(String shortcut) {
         if (shortcut.endsWith("_SHORTCUT}")) {
             String alias = shortcut.substring(2, shortcut.length() - 1);
-            if (shortcutAliases.containsKey(alias)) {
+            if (SHORTCUT_ALIASES.containsKey(alias)) {
                 ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
-                return shortcutAliases.get(alias).apply(clientConfig);
+                return SHORTCUT_ALIASES.get(alias).apply(clientConfig);
             } else {
                 String message = String.format("An error occurred while loading shortcut. " +
                         "Can't find shortcut for alias \"%s\"", alias);
