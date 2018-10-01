@@ -19,12 +19,16 @@ package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
@@ -56,6 +60,15 @@ public class TopLevelFrame extends JFrame {
         if (StringUtils.isNotEmpty(config.getWindowIcon())) {
             setIconImage(resources.getImage(config.getWindowIcon()));
         }
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                DesktopComponentsHelper.flushCurrentInputField();
+            }
+        });
     }
 
     public void deactivate(@Nullable String message) {
