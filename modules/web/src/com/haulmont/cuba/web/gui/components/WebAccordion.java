@@ -542,6 +542,13 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
                 loader.loadComponent();
 
+                // do not show icon/caption in layout, it is used in Tab only
+                WebAbstractComponent contentComponent = (WebAbstractComponent) lazyContent;
+
+                contentComponent.setIcon(null);
+                contentComponent.setCaption(null);
+                contentComponent.setDescription(null);
+
                 Window window = ComponentsHelper.getWindow(WebAccordion.this);
                 if (window != null) {
                     Settings settings = UiControllerUtils.getSettings(window.getFrameOwner());
