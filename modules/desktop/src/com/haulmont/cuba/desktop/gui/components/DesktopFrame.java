@@ -53,7 +53,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class DesktopFrame
         extends DesktopVBox
-        implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {
+        implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor, Frame.UiEventListenersHolder {
 
     private final Logger log = LoggerFactory.getLogger(DesktopFrame.class);
 
@@ -581,5 +581,12 @@ public class DesktopFrame
     @Nullable
     public Action getAction(String id) {
         return actionsHolder.getAction(id);
+    }
+
+    @Override
+    public void initEventListeners(List<ApplicationListener> uiEventListeners) {
+        if (isAttachedToRoot && uiEventListeners != null) {
+            enableEventListeners();
+        }
     }
 }

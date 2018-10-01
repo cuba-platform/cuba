@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -632,5 +633,9 @@ public interface Frame
 
     interface Wrapper {
         Frame getWrappedFrame();
+    }
+
+    interface UiEventListenersHolder {
+        void initEventListeners(List<ApplicationListener> uiEventListeners);
     }
 }
