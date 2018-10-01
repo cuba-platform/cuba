@@ -48,10 +48,16 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     // stub
     private DockMode dockMode = null;
 
+    private boolean rendered = false;
+
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
             @Override
             public void paint(Graphics g) {
+                if (!rendered) {
+                    rendered = true;
+                }
+
                 super.paint(g);
 
                 if (applyNewPosition) {
@@ -101,10 +107,21 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
         }
 
         this.position = pos;
-        this.applyNewPosition = true;
 
-        impl.revalidate();
-        impl.repaint();
+        if (rendered) {
+            this.applyNewPosition = true;
+
+            impl.revalidate();
+            impl.repaint();
+        } else {
+            // ignore defaults
+            this.applyNewPosition = false;
+
+            double ratio = pos / 100.0;
+
+            impl.setDividerLocation(ratio);
+            impl.setResizeWeight(ratio);
+        }
     }
 
     @Override
