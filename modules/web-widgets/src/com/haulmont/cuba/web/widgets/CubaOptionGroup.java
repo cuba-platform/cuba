@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.optiongroup.CubaOptionGroupState;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
+import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.vaadin.v7.ui.OptionGroup;
 
 import java.util.function.Function;
@@ -67,5 +68,13 @@ public class CubaOptionGroup extends OptionGroup {
 
     public void setItemCaptionGenerator(Function<Object, String> itemCaptionGenerator) {
         this.itemCaptionGenerator = itemCaptionGenerator;
+    }
+
+    @Override
+    protected void fireValueChange(boolean repaintIsNotNeeded) {
+        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        if (!repaintIsNotNeeded) {
+            markAsDirty();
+        }
     }
 }

@@ -181,14 +181,21 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
     /**
      * Event that indicates a change in SplitPanel's splitter position.
      */
-    class SplitPositionChangeEvent extends EventObject {
+    class SplitPositionChangeEvent extends EventObject implements HasUserOriginated {
         private final float previousPosition;
         private final float newPosition;
+        private final boolean userOriginated;
 
         public SplitPositionChangeEvent(SplitPanel splitPanel, float previousPosition, float newPosition) {
-            super(splitPanel);
+            this(splitPanel, previousPosition, newPosition, false);
+        }
+
+        public SplitPositionChangeEvent(Object source,
+                                        float previousPosition, float newPosition, boolean userOriginated) {
+            super(source);
             this.previousPosition = previousPosition;
             this.newPosition = newPosition;
+            this.userOriginated = userOriginated;
         }
 
         @Override
@@ -202,6 +209,11 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
 
         public float getNewPosition() {
             return newPosition;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 

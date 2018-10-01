@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
+import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -190,11 +191,12 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     protected void attachListener(T component) {
         component.addValueChangeListener(event -> {
             Object value = event.getProperty().getValue();
-            componentValueChanged(value);
+            componentValueChanged(value, event instanceof CubaValueChangeEvent
+                    && ((CubaValueChangeEvent) event).isUserOriginated());
         });
     }
 
-    protected void componentValueChanged(Object newComponentValue) {
+    protected void componentValueChanged(Object newComponentValue, boolean userOriginated) {
         V value = convertToModel(newComponentValue);
         V oldValue = internalValue;
         internalValue = value;
@@ -204,7 +206,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
                 setValidationError(null);
             }
 
-            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value);
+            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, userOriginated);
             publish(ValueChangeEvent.class, event);
         }
     }

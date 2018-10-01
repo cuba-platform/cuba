@@ -525,7 +525,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
                     context.executeInitTasks();
                 }
                 // Fire GUI listener
-                fireTabChanged(new SelectedTabChangeEvent(WebTabSheet.this, getSelectedTab()));
+                fireTabChanged(new SelectedTabChangeEvent(WebTabSheet.this,
+                        getSelectedTab(), event.isUserOriginated()));
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {

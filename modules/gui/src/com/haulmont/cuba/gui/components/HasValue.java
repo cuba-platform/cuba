@@ -55,16 +55,20 @@ public interface HasValue<V> {
     /**
      * Describes value change event.
      */
-    class ValueChangeEvent<V> extends EventObject {
+    class ValueChangeEvent<V> extends EventObject implements HasUserOriginated {
         private final V prevValue;
         private final V value;
-
-        // vaadin8 add isUserOriginated !!!!!
+        private final boolean userOriginated;
 
         public ValueChangeEvent(HasValue component, V prevValue, V value) {
-            super(component);
+            this(component, prevValue, value, false);
+        }
+
+        public ValueChangeEvent(Object source, V prevValue, V value, boolean userOriginated) {
+            super(source);
             this.prevValue = prevValue;
             this.value = value;
+            this.userOriginated = userOriginated;
         }
 
         @SuppressWarnings("unchecked")
@@ -95,6 +99,11 @@ public interface HasValue<V> {
         @Nullable
         public V getValue() {
             return value;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 }

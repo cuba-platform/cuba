@@ -20,6 +20,7 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableState;
+import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.vaadin.event.Action;
@@ -901,5 +902,13 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         }
 
         super.paintContent(target);
+    }
+
+    @Override
+    protected void fireValueChange(boolean repaintIsNotNeeded) {
+        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        if (!repaintIsNotNeeded) {
+            markAsDirty();
+        }
     }
 }

@@ -163,7 +163,7 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
             internalValue = value;
 
             if (!fieldValueEquals(value, oldValue)) {
-                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
+                ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, isUserOriginated);
                 publish(ValueChangeEvent.class, event);
             }
         }

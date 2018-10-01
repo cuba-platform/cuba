@@ -46,7 +46,8 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     String NAME = "dataGrid";
 
     static <T extends Entity> TypeToken<DataGrid<T>> of(Class<T> itemClass) {
-        return new TypeToken<DataGrid<T>>() {};
+        return new TypeToken<DataGrid<T>>() {
+        };
     }
 
     /**
@@ -1516,9 +1517,10 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired when a column's collapsing changes.
      */
-    class ColumnCollapsingChangeEvent extends AbstractDataGridEvent {
+    class ColumnCollapsingChangeEvent extends AbstractDataGridEvent implements HasUserOriginated {
         protected final Column column;
         protected final boolean collapsed;
+        protected final boolean userOriginated;
 
         /**
          * Constructor for a column visibility change event.
@@ -1529,9 +1531,24 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          *                  {@code false} if it became visible
          */
         public ColumnCollapsingChangeEvent(DataGrid component, Column column, boolean collapsed) {
+            this(component, column, collapsed, false);
+        }
+
+        /**
+         * Constructor for a column visibility change event.
+         *
+         * @param component      the DataGrid from which this event originates
+         * @param column         the column that changed its visibility
+         * @param collapsed      {@code true} if the column was collapsed,
+         *                       {@code false} if it became visible
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
+         */
+        public ColumnCollapsingChangeEvent(DataGrid component, Column column, boolean collapsed, boolean userOriginated) {
             super(component);
             this.column = column;
             this.collapsed = collapsed;
+            this.userOriginated = userOriginated;
         }
 
         /**
@@ -1549,6 +1566,11 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         public boolean isCollapsed() {
             return collapsed;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
@@ -1571,7 +1593,8 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired when the columns are reordered.
      */
-    class ColumnReorderEvent extends AbstractDataGridEvent {
+    class ColumnReorderEvent extends AbstractDataGridEvent implements HasUserOriginated {
+        protected final boolean userOriginated;
 
         /**
          * Constructor for a column reorder change event.
@@ -1579,7 +1602,24 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param component the DataGrid from which this event originates
          */
         public ColumnReorderEvent(DataGrid component) {
+            this(component, false);
+        }
+
+        /**
+         * Constructor for a column reorder change event.
+         *
+         * @param component      the DataGrid from which this event originates
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
+         */
+        public ColumnReorderEvent(DataGrid component, boolean userOriginated) {
             super(component);
+            this.userOriginated = userOriginated;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
@@ -1602,8 +1642,9 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired when a column is resized.
      */
-    class ColumnResizeEvent extends AbstractDataGridEvent {
+    class ColumnResizeEvent extends AbstractDataGridEvent implements HasUserOriginated {
         protected final Column column;
+        protected final boolean userOriginated;
 
         /**
          * Constructor for a column resize event.
@@ -1611,8 +1652,20 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param component the DataGrid from which this event originates
          */
         public ColumnResizeEvent(DataGrid component, Column column) {
+            this(component, column, false);
+        }
+
+        /**
+         * Constructor for a column resize event.
+         *
+         * @param component      the DataGrid from which this event originates
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
+         */
+        public ColumnResizeEvent(DataGrid component, Column column, boolean userOriginated) {
             super(component);
             this.column = column;
+            this.userOriginated = userOriginated;
         }
 
         /**
@@ -1622,6 +1675,11 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         public Column getColumn() {
             return column;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
@@ -1645,59 +1703,75 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * An event that specifies what in a selection has changed, and where the
      * selection took place.
      */
-    class SelectionEvent<E> extends AbstractDataGridEvent {
-        protected final List<E> added;
-        protected final List<E> removed;
-        protected final List<E> selected;
+    class SelectionEvent<E extends Entity> extends AbstractDataGridEvent implements HasUserOriginated {
+        protected final Set<E> selected;
+        protected final Set<E> oldSelection;
+        protected final boolean userOriginated;
 
         /**
          * Constructor for a selection event.
          *
-         * @param component the DataGrid from which this event originates
-         * @param added     items that became selected
-         * @param removed   items that became deselected
-         * @param selected  items that are currently selected
+         * @param component      the DataGrid from which this event originates
+         * @param oldSelection   the old set of selected items
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
          */
-        public SelectionEvent(DataGrid component,
-                              List<E> added, List<E> removed, List<E> selected) {
+        public SelectionEvent(DataGrid<E> component, Set<E> oldSelection, boolean userOriginated) {
             super(component);
-
-            this.added = Collections.unmodifiableList(added);
-            this.removed = Collections.unmodifiableList(removed);
-            this.selected = Collections.unmodifiableList(selected);
+            this.oldSelection = oldSelection;
+            this.selected = component.getSelected();
+            this.userOriginated = userOriginated;
         }
 
         /**
-         * A {@link List} of all the items that became selected.
+         * A {@link Set} of all the items that became selected.
          *
          * <em>Note:</em> this excludes all items that might have been previously
          * selected.
          *
-         * @return a List of the items that became selected
+         * @return a set of the items that became selected
          */
-        public List<E> getAdded() {
-            return added;
+        public Set<E> getAdded() {
+            LinkedHashSet<E> copy = new LinkedHashSet<>(getSelected());
+            copy.removeAll(getOldSelection());
+            return copy;
         }
 
         /**
-         * A {@link List} of all the items that became deselected.
+         * A {@link Set} of all the items that became deselected.
          *
          * <em>Note:</em> this excludes all items that might have been previously
          * deselected.
          *
-         * @return a List of the items that became deselected
+         * @return a set of the items that became deselected
          */
-        public List<E> getRemoved() {
-            return removed;
+        public Set<E> getRemoved() {
+            LinkedHashSet<E> copy = new LinkedHashSet<>(getOldSelection());
+            copy.removeAll(getSelected());
+            return copy;
         }
 
         /**
-         * A {@link List} of all the items that are currently selected.
+         * A {@link Set} of all the items that are currently selected.
          *
-         * @return a List of the items that are currently selected
+         * @return a set of the items that are currently selected
          */
-        public List<E> getSelected() {
+        public Set<E> getSelected() {
             return selected;
+        }
+
+        /**
+         * A {@link Set} of all the items that were selected before the selection was changed.
+         *
+         * @return a set of items selected before the selection was changed
+         */
+        public Set<E> getOldSelection() {
+            return oldSelection;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
@@ -1774,8 +1848,9 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired when a sort order is changed.
      */
-    class SortEvent extends AbstractDataGridEvent {
+    class SortEvent extends AbstractDataGridEvent implements HasUserOriginated {
         protected final List<SortOrder> sortOrder;
+        protected final boolean userOriginated;
 
         /**
          * Creates a new sort order change event with a sort order list.
@@ -1784,8 +1859,21 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param sortOrder the new sort order list
          */
         public SortEvent(DataGrid component, List<SortOrder> sortOrder) {
+            this(component, sortOrder, false);
+        }
+
+        /**
+         * Creates a new sort order change event with a sort order list.
+         *
+         * @param component      the DataGrid from which this event originates
+         * @param sortOrder      the new sort order list
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
+         */
+        public SortEvent(DataGrid component, List<SortOrder> sortOrder, boolean userOriginated) {
             super(component);
             this.sortOrder = sortOrder;
+            this.userOriginated = userOriginated;
         }
 
         /**
@@ -1793,6 +1881,11 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         public List<SortOrder> getSortOrder() {
             return sortOrder;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 

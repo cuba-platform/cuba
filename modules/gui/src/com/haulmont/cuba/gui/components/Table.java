@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -720,8 +721,9 @@ public interface Table<E extends Entity>
      * An event that specifies what in a selection has changed, and where the
      * selection took place.
      */
-    class SelectionEvent<E extends Entity> extends EventObject {
-        protected final List<E> selected;
+    class SelectionEvent<E extends Entity> extends EventObject implements HasUserOriginated {
+        protected final Set<E> selected;
+        protected final boolean userOriginated;
 
         /**
          * Constructor for a selection event.
@@ -729,10 +731,10 @@ public interface Table<E extends Entity>
          * @param component the Table from which this event originates
          * @param selected  items that are currently selected
          */
-        public SelectionEvent(Table<E> component,  List<E> selected) {
+        public SelectionEvent(Table<E> component, Set<E> selected, boolean userOriginated) {
             super(component);
-
             this.selected = selected;
+            this.userOriginated = userOriginated;
         }
 
         @SuppressWarnings("unchecked")
@@ -742,12 +744,17 @@ public interface Table<E extends Entity>
         }
 
         /**
-         * A {@link List} of all the items that are currently selected.
+         * A {@link Set} of all the items that are currently selected.
          *
          * @return a List of the items that are currently selected
          */
-        public List<E> getSelected() {
+        public Set<E> getSelected() {
             return selected;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 

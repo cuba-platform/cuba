@@ -98,7 +98,7 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
         this.internalValue = value;
 
         if (!fieldValueEquals(value, oldValue)) {
-            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value); // todo isUserOriginated
+            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
             publish(ValueChangeEvent.class, event);
         }
     }

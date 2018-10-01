@@ -218,12 +218,18 @@ public interface TabSheet extends ComponentContainer, Component.BelongToFrame, C
     /**
      * SelectedTabChangeEvents are fired when a selected tab is changed.
      */
-    class SelectedTabChangeEvent extends EventObject {
+    class SelectedTabChangeEvent extends EventObject implements HasUserOriginated {
         private final Tab selectedTab;
+        protected final boolean userOriginated;
 
         public SelectedTabChangeEvent(TabSheet tabSheet, Tab selectedTab) {
-            super(tabSheet);
+            this(tabSheet, selectedTab, false);
+        }
+
+        public SelectedTabChangeEvent(Object source, Tab selectedTab, boolean userOriginated) {
+            super(source);
             this.selectedTab = selectedTab;
+            this.userOriginated = userOriginated;
         }
 
         @Override
@@ -233,6 +239,11 @@ public interface TabSheet extends ComponentContainer, Component.BelongToFrame, C
 
         public Tab getSelectedTab() {
             return selectedTab;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 }
