@@ -36,7 +36,9 @@ public class DateTimeTransformations {
     public ZonedDateTime transformToZDT(Object date) {
         Preconditions.checkNotNull(date);
         ZoneId zoneId = ZoneId.systemDefault();
-        if (date instanceof Date) {
+        if (date instanceof java.sql.Date) {
+            ((java.sql.Date) date).toLocalDate().atStartOfDay(zoneId);
+        } else if (date instanceof Date) {
             return ((Date) date).toInstant().atZone(zoneId);
         } else if (date instanceof LocalDate) {
             return ((LocalDate) date).atStartOfDay(zoneId);
