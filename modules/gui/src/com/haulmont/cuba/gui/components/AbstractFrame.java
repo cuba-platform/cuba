@@ -472,6 +472,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     /** INTERNAL. Don't call from application code. */
     public void setUiEventListeners(List<ApplicationListener> uiEventListeners) {
         this.uiEventListeners = uiEventListeners;
+
+        // in case dynamic Frame open, WebFrame is already attached
+        if (frame instanceof UiEventListenersHolder) {
+            ((UiEventListenersHolder) frame).initEventListeners(uiEventListeners);
+        }
     }
 
     @Override

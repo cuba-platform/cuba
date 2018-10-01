@@ -44,7 +44,7 @@ import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
+public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame, Frame.UiEventListenersHolder {
 
     private static final Logger log = LoggerFactory.getLogger(WebFrame.class);
 
@@ -492,5 +492,12 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     @Nullable
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return actionsHolder.getAction(id);
+    }
+
+    @Override
+    public void initEventListeners(List<ApplicationListener> uiEventListeners) {
+        if (component.isAttached() && uiEventListeners != null) {
+            enableEventListeners();
+        }
     }
 }
