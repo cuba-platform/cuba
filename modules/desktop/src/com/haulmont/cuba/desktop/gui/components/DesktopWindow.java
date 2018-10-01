@@ -71,6 +71,8 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -172,6 +174,15 @@ public class DesktopWindow implements Window, Component.Disposable,
             @Override
             public void ancestorMoved(AncestorEvent event) {
                 // do nothing
+            }
+        });
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                DesktopComponentsHelper.flushCurrentInputField();
             }
         });
     }
