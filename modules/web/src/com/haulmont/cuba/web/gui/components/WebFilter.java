@@ -18,26 +18,24 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.MarginInfo;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * Generic filter implementation for the web-client.
  */
-public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implements Filter, FilterImplementation {
+public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> implements Filter, FilterImplementation {
 
     protected static final String FILTER_STYLENAME = "c-generic-filter";
 
@@ -45,20 +43,23 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     protected boolean settingsEnabled = true;
 
     protected PropertiesFilterPredicate propertiesFilterPredicate;
-    protected FilterDelegate.FDExpandedStateChangeListener fdExpandedStateChangeListener;
 
     public WebFilter() {
-        delegate = AppBeans.get(FilterDelegate.class); // todo use injection
+    }
+
+    @Inject
+    protected void setDelegate(FilterDelegate delegate) {
+        this.delegate = delegate;
+
         delegate.setFilter(this);
-        component = new CubaCssActionsLayout();
+
         ComponentContainer layout = delegate.getLayout();
 
-        com.vaadin.ui.Component vLayout = layout.unwrapComposition(com.vaadin.ui.Component.class);
-        component.addComponent(vLayout);
+        component = layout.unwrapComposition(com.vaadin.ui.Component.class);
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        component.setPrimaryStyleName(FILTER_STYLENAME);
+        component.addStyleName(FILTER_STYLENAME);
 
-        delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
+        delegate.setExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
         delegate.setCaptionChangedListener(this::updateCaptions);
     }
 
@@ -171,16 +172,14 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
-        MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
-                marginInfo.hasLeft());
-        component.setMargin(vMargin);
+        HasOuterMargin layout = (HasOuterMargin) delegate.getLayout();
+        layout.setOuterMargin(marginInfo);
     }
 
     @Override
     public com.haulmont.cuba.gui.components.MarginInfo getMargin() {
-        MarginInfo vMargin = component.getMargin();
-        return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
-                vMargin.hasLeft());
+        HasOuterMargin layout = (HasOuterMargin) delegate.getLayout();
+        return layout.getOuterMargin();
     }
 
     @Override
@@ -207,16 +206,6 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
             component.setCaption(caption);
             ((HasCaption) delegate.getLayout()).setCaption(null);
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return null; // vaadin8 why ??
-    }
-
-    @Override
-    public void setDescription(String description) {
-        // vaadin8 why ??
     }
 
     @Override
@@ -271,15 +260,7 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public Subscription addExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener) {
-        if (fdExpandedStateChangeListener == null) {
-            fdExpandedStateChangeListener = e -> {
-                ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, e.isExpanded());
-                getEventHub().publish(ExpandedStateChangeEvent.class, event);
-            };
-            delegate.addExpandedStateChangeListener(fdExpandedStateChangeListener);
-        }
         getEventHub().subscribe(ExpandedStateChangeEvent.class, listener);
-
         return () -> removeExpandedStateChangeListener(listener);
     }
 

@@ -36,11 +36,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.*;
 import com.haulmont.cuba.core.global.queryconditions.JpqlCondition;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
-import com.haulmont.cuba.gui.WindowManagerProvider;
-import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.Alignment;
@@ -149,7 +146,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected List<Filter.FilterEntityChangeListener> filterEntityChangeListeners = new ArrayList<>();
 
     protected GroupBoxLayout groupBoxLayout;
-    protected BoxLayout layout;
+    protected GroupBoxLayout layout;  // layout for all nested panels
     protected PopupButton filtersPopupButton;
     protected ComponentContainer conditionsLayout;
     protected BoxLayout maxResultsLayout;
@@ -200,7 +197,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected SaveAsFolderAction saveAsSearchFolderAction;
     protected LookupField filtersLookup;
 
-    protected List<FDExpandedStateChangeListener> expandedStateChangeListeners;
+    protected Consumer<FDExpandedStateChangeEvent> expandedStateChangeListener;
 
     protected Filter.BeforeFilterAppliedHandler beforeFilterAppliedHandler;
 
@@ -239,22 +236,28 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBoxLayout.addExpandedStateChangeListener(e -> fireExpandStateChange());
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             groupBoxLayout.setWidth("100%");
-            layout = componentsFactory.createComponent(VBoxLayout.class);
-            layout.setWidth("100%");
-            groupBoxLayout.add(layout);
-            if (caption == null)
+
+            layout = groupBoxLayout;
+            layout.setSpacing(true);
+
+            if (caption == null) {
                 setCaption(getMainMessage("filter.groupBoxCaption"));
+            }
         } else {
             Collection<Component> components = layout.getComponents();
             for (Component component : components) {
                 layout.remove(component);
             }
         }
-        layout.setSpacing(true);
 
         appliedFiltersLayout = componentsFactory.createComponent(VBoxLayout.class);
 
-        conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        if (AppConfig.getClientType() == ClientType.DESKTOP) {
+            conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        } else {
+            conditionsLayout = componentsFactory.createComponent(CssLayout.class);
+        }
+
         conditionsLayout.setVisible(false); // initially hidden
         conditionsLayout.setWidth("100%");
         conditionsLayout.setStyleName("filter-conditions");
@@ -2073,44 +2076,27 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public void addExpandedStateChangeListener(FDExpandedStateChangeListener listener) {
-        if (expandedStateChangeListeners == null) {
-            expandedStateChangeListeners = new ArrayList<>();
-        }
-        if (!expandedStateChangeListeners.contains(listener)) {
-            expandedStateChangeListeners.add(listener);
-        }
-    }
-
-    @Override
-    public void removeExpandedStateChangeListener(FDExpandedStateChangeListener listener) {
-        if (expandedStateChangeListeners != null) {
-            expandedStateChangeListeners.remove(listener);
-        }
+    public void setExpandedStateChangeListener(Consumer<FDExpandedStateChangeEvent> listener) {
+        expandedStateChangeListener = listener;
     }
 
     protected void fireExpandStateChange() {
-        if (expandedStateChangeListeners != null) {
+        if (expandedStateChangeListener != null) {
             FDExpandedStateChangeEvent event = new FDExpandedStateChangeEvent(this, isExpanded());
-
-            for (FDExpandedStateChangeListener listener : expandedStateChangeListeners) {
-                listener.expandedStateChanged(event);
-            }
+            expandedStateChangeListener.accept(event);
         }
     }
 
     @Override
     public void setFilter(Filter filter) {
         this.filter = filter;
-        addConditionHelper = new AddConditionHelper(filter, new AddConditionHelper.Handler() {
-            @Override
-            public void handle(AbstractCondition condition) {
-                try {
-                    addCondition(condition);
-                } catch (Exception e) {
-                    conditions.removeCondition(condition);
-                    throw e;
-                }
+
+        addConditionHelper = new AddConditionHelper(filter, condition -> {
+            try {
+                addCondition(condition);
+            } catch (Exception e) {
+                conditions.removeCondition(condition);
+                throw e;
             }
         });
     }

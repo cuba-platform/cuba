@@ -70,7 +70,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         setWidth("100%");
 
-        delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
+        delegate.setExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
         delegate.setCaptionChangedListener(this::updateCaption);
     }
 

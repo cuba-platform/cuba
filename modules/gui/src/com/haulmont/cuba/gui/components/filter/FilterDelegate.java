@@ -166,15 +166,7 @@ public interface FilterDelegate {
         }
     }
 
-    /**
-     * Listener to expanded state change events.
-     */
-    interface FDExpandedStateChangeListener {
-        void expandedStateChanged(FDExpandedStateChangeEvent e);
-    }
-
-    void addExpandedStateChangeListener(FDExpandedStateChangeListener listener);
-    void removeExpandedStateChangeListener(FDExpandedStateChangeListener listener);
+    void setExpandedStateChangeListener(Consumer<FDExpandedStateChangeEvent> listener);
 
     void setBorderVisible(boolean visible);
     boolean isBorderVisible();
