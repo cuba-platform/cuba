@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.TabWindow;
@@ -33,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 public class WebTabWindow extends WebWindow implements TabWindow {
 
     private static final Logger log = LoggerFactory.getLogger(WebTabWindow.class);
@@ -43,6 +44,9 @@ public class WebTabWindow extends WebWindow implements TabWindow {
 
     public WebTabWindow() {
         setSizeFull();
+
+        // default caption for Tab is not empty
+        setCaption(" ");
     }
 
     @Inject
@@ -109,8 +113,7 @@ public class WebTabWindow extends WebWindow implements TabWindow {
 
     @Override
     public void setContentSwitchMode(ContentSwitchMode mode) {
-        Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
-                "Use ContentSwitchMode.DEFAULT option instead");
+        checkNotNullArgument(mode, "Content switch mode can't be null. Use ContentSwitchMode.DEFAULT option instead");
 
         MainTabSheetMode tabSheetMode = beanLocator.get(Configuration.class)
                 .getConfig(WebConfig.class)

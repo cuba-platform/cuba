@@ -17,12 +17,12 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * JavaDoc
+ * Tab window UI component.
  */
 public interface TabWindow extends Window {
     /**
      * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+     * {@link com.haulmont.cuba.gui.UiComponents}
      */
     String NAME = "tabWindow";
 

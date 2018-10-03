@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.EventHub;
-import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
@@ -95,9 +94,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     protected DialogOptions dialogOptions; // lazily initialized
 
     protected boolean closeable = true;
-
-    // todo remove
-    private EventRouter eventRouter;
 
     private EventHub eventHub;
 
@@ -501,19 +497,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
         } else {
             findAndFocusChildComponent();
         }
-    }
-
-    /**
-     * Use EventRouter for listeners instead of fields with listeners List.
-     *
-     * @return lazily initialized {@link EventRouter} instance.
-     * @see EventRouter
-     */
-    protected EventRouter getEventRouter() {
-        if (eventRouter == null) {
-            eventRouter = new EventRouter();
-        }
-        return eventRouter;
     }
 
     @Override
