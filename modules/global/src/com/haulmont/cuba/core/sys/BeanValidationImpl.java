@@ -115,7 +115,7 @@ public class BeanValidationImpl implements BeanValidation {
         @SuppressWarnings("UnnecessaryLocalVariable")
         HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
                 .configure()
-                .timeProvider(new CubaValidationTimeProvider(timeSource))
+                .clockProvider(new CubaValidationTimeProvider(timeSource))
                 .traversableResolver(new CubaValidationTraversableResolver(metadata, entityStates))
                 .messageInterpolator(new CubaValidationMessagesInterpolator(messages, locale));
 

@@ -18,15 +18,14 @@ package com.haulmont.cuba.core.sys.validation;
 
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import org.hibernate.validator.internal.engine.resolver.DefaultTraversableResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.Path;
+import javax.validation.TraversableResolver;
 import java.lang.annotation.ElementType;
 
-public class CubaValidationTraversableResolver extends DefaultTraversableResolver {
+public class CubaValidationTraversableResolver implements TraversableResolver {
 
     private static final Logger log = LoggerFactory.getLogger(CubaValidationTraversableResolver.class);
 
@@ -44,7 +43,8 @@ public class CubaValidationTraversableResolver extends DefaultTraversableResolve
                                      Class<?> rootBeanType,
                                      Path pathToTraversableObject,
                                      ElementType elementType) {
-        log.trace("Calling isReachable on object {} with node name {}", traversableObject, traversableProperty.getName());
+        log.trace("Calling isReachable on object {} with node name {}",
+                traversableObject, traversableProperty.getName());
 
         if (traversableObject == null
                 || metadata.getClass(traversableObject.getClass()) == null) {
@@ -52,5 +52,11 @@ public class CubaValidationTraversableResolver extends DefaultTraversableResolve
         }
 
         return entityStates.isLoaded(traversableObject, traversableProperty.getName());
+    }
+
+    @Override
+    public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType,
+                                Path pathToTraversableObject, ElementType elementType) {
+        return isReachable(traversableObject, traversableProperty, rootBeanType, pathToTraversableObject, elementType);
     }
 }

@@ -17,9 +17,12 @@
 package com.haulmont.cuba.core.sys.validation;
 
 import com.haulmont.cuba.core.global.TimeSource;
-import org.hibernate.validator.spi.time.TimeProvider;
 
-public class CubaValidationTimeProvider implements TimeProvider {
+import javax.validation.ClockProvider;
+import java.time.Clock;
+import java.time.ZonedDateTime;
+
+public class CubaValidationTimeProvider implements ClockProvider {
 
     protected TimeSource timeSource;
 
@@ -28,7 +31,8 @@ public class CubaValidationTimeProvider implements TimeProvider {
     }
 
     @Override
-    public long getCurrentTime() {
-        return timeSource.currentTimeMillis();
+    public Clock getClock() {
+        ZonedDateTime now = timeSource.now();
+        return Clock.fixed(now.toInstant(), now.getZone());
     }
 }
