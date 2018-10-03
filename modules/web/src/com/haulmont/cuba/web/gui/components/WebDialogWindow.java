@@ -329,7 +329,11 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
         @Override
         protected DialogOptions setWidth(Float width, SizeUnit sizeUnit) {
-            setDialogWidth(width + sizeUnit.getSymbol());
+            if (width != null && sizeUnit != null) {
+                setDialogWidth(width + sizeUnit.getSymbol());
+            } else {
+                super.setWidth(width, sizeUnit);
+            }
 
             return this;
         }
@@ -346,7 +350,11 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
         @Override
         protected DialogOptions setHeight(Float height, SizeUnit sizeUnit) {
-            setDialogHeight(height + sizeUnit.getSymbol());
+            if (height != null && sizeUnit != null) {
+                setDialogHeight(height + sizeUnit.getSymbol());
+            } else {
+                super.setHeight(height, sizeUnit);
+            }
 
             return this;
         }

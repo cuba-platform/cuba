@@ -133,6 +133,9 @@ public abstract class Screen implements FrameOwner {
         eventHub.publish(eventType, event);
     }
 
+    /**
+     * @return screen UI component
+     */
     public Window getWindow() {
         return window;
     }

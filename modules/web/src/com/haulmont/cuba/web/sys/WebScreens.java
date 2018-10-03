@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.Dialogs.OptionDialog;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Disposable;
+import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
 import com.haulmont.cuba.gui.components.Window.HasWorkArea;
 import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -547,6 +548,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         show(screen);
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
@@ -558,6 +561,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         show(screen);
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
@@ -571,6 +576,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         EditorScreen editorScreen = (EditorScreen) screen;
         if (editorScreen instanceof AbstractEditor) {
             ((AbstractEditor) editorScreen).setParentDs(parentDs);
@@ -590,6 +597,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         EditorScreen editorScreen = (EditorScreen) screen;
         editorScreen.setEntityToEdit(item);
         show(screen);
@@ -605,6 +614,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         EditorScreen editorScreen = (EditorScreen) screen;
         editorScreen.setEntityToEdit(item);
         show(screen);
@@ -621,6 +632,8 @@ public class WebScreens implements Screens, WindowManager {
         MapScreenOptions options = new MapScreenOptions(params);
 
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         EditorScreen editorScreen = (EditorScreen) screen;
         if (editorScreen instanceof AbstractEditor) {
             ((AbstractEditor) editorScreen).setParentDs(parentDs);
@@ -637,6 +650,8 @@ public class WebScreens implements Screens, WindowManager {
 
         MapScreenOptions options = new MapScreenOptions(params);
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
 
         show(screen);
@@ -650,6 +665,8 @@ public class WebScreens implements Screens, WindowManager {
 
         MapScreenOptions options = new MapScreenOptions(params);
         Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        applyOpenTypeParameters(screen.getWindow(), openType);
+
         ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
 
         show(screen);
@@ -1561,6 +1578,38 @@ public class WebScreens implements Screens, WindowManager {
         return ui.getWindows().stream()
                 .anyMatch(com.vaadin.ui.Window::isModal);
     }
+
+    @Deprecated
+    protected void applyOpenTypeParameters(Window window, OpenType openType) {
+        if (window instanceof DialogWindow) {
+            DialogWindow dialogWindow = (DialogWindow) window;
+
+            if (openType.getCloseOnClickOutside() != null) {
+                dialogWindow.setCloseOnClickOutside(openType.getCloseOnClickOutside());
+            }
+            if (openType.getMaximized() != null) {
+                dialogWindow.setWindowMode(openType.getMaximized() ? WindowMode.MAXIMIZED : WindowMode.NORMAL);
+            }
+            if (openType.getModal() != null) {
+                dialogWindow.setModal(openType.getModal());
+            }
+            if (openType.getResizable() != null) {
+                dialogWindow.setResizable(openType.getResizable());
+            }
+            if (openType.getWidth() != null) {
+                dialogWindow.setDialogWidth(openType.getWidth() + openType.getWidthUnit().getSymbol());
+            }
+            if (openType.getHeight() != null) {
+                dialogWindow.setDialogHeight(openType.getHeight() + openType.getHeightUnit().getSymbol());
+            }
+        }
+
+        if (openType.getCloseable() != null) {
+            window.setCloseable(openType.getCloseable());
+        }
+    }
+
+    // todo message type parameters
 
     /**
      * Content of each tab of AppWorkArea TabSheet.
