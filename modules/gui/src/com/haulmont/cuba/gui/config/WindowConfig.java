@@ -28,17 +28,17 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.sys.UiControllerDefinition;
 import com.haulmont.cuba.gui.sys.AnnotationScanMetadataReaderFactory;
+import com.haulmont.cuba.gui.sys.UiControllerDefinition;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -77,14 +77,15 @@ public class WindowConfig {
     protected Map<Class, WindowInfo> primaryEditors = new HashMap<>();
     protected Map<Class, WindowInfo> primaryLookups = new HashMap<>();
 
+    @Autowired(required = false)
+    protected List<UiControllersConfiguration> configurations = Collections.emptyList();
+
     @Inject
     protected Resources resources;
     @Inject
     protected Scripting scripting;
     @Inject
     protected Metadata metadata;
-    @Inject
-    protected List<UiControllersConfiguration> configurations;
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
 
@@ -183,7 +184,8 @@ public class WindowConfig {
                 // default is false
                 return false;
             }
-            return uiController.multipleOpen();
+            // todo multi open
+            return false;
         }
 
         throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
@@ -270,14 +272,10 @@ public class WindowConfig {
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
+                try (InputStream stream = resource.getInputStream()) {
                     loadConfig(Dom4j.readDocument(stream).getRootElement());
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to read window config from " + location, e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
                 }
             } else {
                 log.warn("Resource {} not found, ignore it", location);

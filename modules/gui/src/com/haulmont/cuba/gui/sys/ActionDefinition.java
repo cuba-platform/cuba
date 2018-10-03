@@ -19,26 +19,26 @@ package com.haulmont.cuba.gui.sys;
 public final class ActionDefinition {
 
     private final String id;
-    private final String controllerClass;
+    private final String actionClass;
 
-    public ActionDefinition(String id, String controllerClass) {
+    public ActionDefinition(String id, String actionClass) {
         this.id = id;
-        this.controllerClass = controllerClass;
+        this.actionClass = actionClass;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getControllerClass() {
-        return controllerClass;
+    public String getActionClass() {
+        return actionClass;
     }
 
     @Override
     public String toString() {
         return "ActionDefinition{" +
                 "id='" + id + '\'' +
-                ", controllerClass='" + controllerClass + '\'' +
+                ", actionClass='" + actionClass + '\'' +
                 '}';
     }
 }

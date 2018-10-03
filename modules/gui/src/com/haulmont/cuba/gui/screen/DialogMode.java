@@ -23,5 +23,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DialogMode {
-
+    // todo width
+    // todo height
+    // todo maximized
+    // todo modal
+    // todo forceDialog
 }

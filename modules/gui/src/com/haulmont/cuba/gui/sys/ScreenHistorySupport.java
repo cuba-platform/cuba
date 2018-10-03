@@ -39,6 +39,7 @@ import java.util.*;
  * from application code.
  *
  * todo convert to bean
+ * todo implement new screen history for web
  */
 public class ScreenHistorySupport {
 

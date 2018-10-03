@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 public class ActionsConfiguration extends AbstractScanConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(ActionsConfiguration.class);
@@ -41,8 +42,8 @@ public class ActionsConfiguration extends AbstractScanConfiguration {
     protected ApplicationContext applicationContext;
     protected MetadataReaderFactory metadataReaderFactory;
 
-    protected List<String> packages = Collections.emptyList();
-    protected List<String> classNames = Collections.emptyList();
+    protected List<String> basePackages = Collections.emptyList();
+    protected List<ActionDefinition> explicitDefinitions = Collections.emptyList();
 
     public ActionsConfiguration() {
     }
@@ -57,37 +58,35 @@ public class ActionsConfiguration extends AbstractScanConfiguration {
         this.metadataReaderFactory = metadataReaderFactory;
     }
 
-    public List<String> getPackages() {
-        return packages;
+    public List<String> getBasePackages() {
+        return basePackages;
     }
 
-    public void setPackages(List<String> packages) {
-        Preconditions.checkNotNullArgument(packages);
+    public void setBasePackages(List<String> basePackages) {
+        checkNotNullArgument(basePackages);
 
-        this.packages = packages;
+        this.basePackages = basePackages;
     }
 
-    public List<String> getClassNames() {
-        return classNames;
+    public List<ActionDefinition> getExplicitDefinitions() {
+        return explicitDefinitions;
     }
 
-    public void setClassNames(List<String> classNames) {
-        this.classNames = classNames;
+    public void setExplicitDefinitions(List<ActionDefinition> explicitDefinitions) {
+        checkNotNullArgument(explicitDefinitions);
+
+        this.explicitDefinitions = explicitDefinitions;
     }
 
     public List<ActionDefinition> getActions() {
-        log.trace("Scanning packages {}", packages);
+        log.trace("Scanning packages {}", basePackages);
 
-        Stream<ActionDefinition> scannedActionsStream = packages.stream()
+        Stream<ActionDefinition> scannedActionsStream = basePackages.stream()
                 .flatMap(this::scanPackage)
                 .filter(this::isCandidateUiController)
                 .map(this::extractActionDefinition);
 
-        Stream<ActionDefinition> explicitActionsStream = classNames.stream()
-                .map(this::loadClassMetadata)
-                .map(this::extractActionDefinition);
-
-        return Stream.concat(scannedActionsStream, explicitActionsStream)
+        return Stream.concat(scannedActionsStream, explicitDefinitions.stream())
                 .collect(Collectors.toList());
     }
 

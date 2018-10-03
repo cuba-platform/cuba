@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 
 /**
- * todo unit tests!
- *
  * Factory to create UI components in client independent manner.
  *
  * <br> An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
@@ -54,7 +52,6 @@ public interface UiComponents {
      *
      * @param type component type token
      * @return component instance for the current client type (web or desktop)
-     *
      * @see com.haulmont.cuba.gui.components.Label#TYPE_DEFAULT
      * @see com.haulmont.cuba.gui.components.TextField#TYPE_DEFAULT
      */

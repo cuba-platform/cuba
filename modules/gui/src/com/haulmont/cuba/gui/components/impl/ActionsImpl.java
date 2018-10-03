@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.sys.ActionsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -36,6 +37,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +47,11 @@ public class ActionsImpl implements Actions, ApplicationListener<ContextRefreshe
 
     private final Logger log = LoggerFactory.getLogger(ActionsImpl.class);
 
+    @Autowired(required = false)
+    protected List<ActionsConfiguration> configurations = Collections.emptyList();
+
     @Inject
     protected Scripting scripting;
-    @Inject
-    protected List<ActionsConfiguration> configurations;
     @Inject
     protected ApplicationContext applicationContext;
 
@@ -165,24 +168,26 @@ public class ActionsImpl implements Actions, ApplicationListener<ContextRefreshe
     @SuppressWarnings("unchecked")
     @Override
     public void onApplicationEvent(@Nonnull ContextRefreshedEvent event) {
-        long startTime = System.currentTimeMillis();
+        // here we receive events for all child contexts
+        if (event.getApplicationContext() == this.applicationContext) {
+            long startTime = System.currentTimeMillis();
 
-        Map<String, String> squashedMap = new HashMap<>();
+            Map<String, String> squashedMap = new HashMap<>();
 
-        for (ActionsConfiguration configuration : configurations) {
-            for (ActionDefinition actionDefinition : configuration.getActions()) {
-                squashedMap.put(actionDefinition.getId(), actionDefinition.getControllerClass());
+            for (ActionsConfiguration configuration : configurations) {
+                for (ActionDefinition actionDefinition : configuration.getActions()) {
+                    squashedMap.put(actionDefinition.getId(), actionDefinition.getActionClass());
+                }
             }
+
+            classes.clear();
+
+            for (Map.Entry<String, String> entry : squashedMap.entrySet()) {
+                Class clazz = scripting.loadClassNN(entry.getValue());
+                classes.put(entry.getKey(), clazz);
+            }
+
+            log.debug("Actions initialized in {} ms", System.currentTimeMillis() - startTime);
         }
-
-        classes.clear();
-
-        for (Map.Entry<String, String> entry : squashedMap.entrySet()) {
-            // todo load actual classes lazily because they can load a lot of dependent classes !
-            Class clazz = scripting.loadClassNN(entry.getValue());
-            classes.put(entry.getKey(), clazz);
-        }
-
-        log.debug("Actions initialized in {} ms", System.currentTimeMillis() - startTime);
     }
 }

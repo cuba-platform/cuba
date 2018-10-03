@@ -33,18 +33,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * Configuration that performs ClassPath scanning of {@link UiController}s and provides {@link UiControllerDefinition}.
  */
-public class UiControllersConfiguration extends AbstractScanConfiguration{
+public class UiControllersConfiguration extends AbstractScanConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(UiControllersConfiguration.class);
 
     protected ApplicationContext applicationContext;
     protected MetadataReaderFactory metadataReaderFactory;
 
-    protected List<String> packages = Collections.emptyList();
-    protected List<String> classNames = Collections.emptyList();
+    protected List<String> basePackages = Collections.emptyList();
+    protected List<UiControllerDefinition> explicitDefinitions = Collections.emptyList();
 
     public UiControllersConfiguration() {
     }
@@ -54,42 +56,35 @@ public class UiControllersConfiguration extends AbstractScanConfiguration{
         this.applicationContext = applicationContext;
     }
 
-    @Inject
-    public void setMetadataReaderFactory(AnnotationScanMetadataReaderFactory metadataReaderFactory) {
-        this.metadataReaderFactory = metadataReaderFactory;
+    public List<String> getBasePackages() {
+        return basePackages;
     }
 
-    public List<String> getPackages() {
-        return packages;
+    public void setBasePackages(List<String> basePackages) {
+        Preconditions.checkNotNullArgument(basePackages);
+
+        this.basePackages = basePackages;
     }
 
-    public void setPackages(List<String> packages) {
-        Preconditions.checkNotNullArgument(packages);
-
-        this.packages = packages;
+    public List<UiControllerDefinition> getExplicitDefinitions() {
+        return explicitDefinitions;
     }
 
-    public List<String> getClassNames() {
-        return classNames;
-    }
+    public void setExplicitDefinitions(List<UiControllerDefinition> explicitDefinitions) {
+        checkNotNullArgument(explicitDefinitions);
 
-    public void setClassNames(List<String> classNames) {
-        this.classNames = classNames;
+        this.explicitDefinitions = explicitDefinitions;
     }
 
     public List<UiControllerDefinition> getUiControllers() {
-        log.trace("Scanning packages {}", packages);
+        log.trace("Scanning packages {}", basePackages);
 
-        Stream<UiControllerDefinition> scannedControllersStream = packages.stream()
+        Stream<UiControllerDefinition> scannedControllersStream = basePackages.stream()
                 .flatMap(this::scanPackage)
                 .filter(this::isCandidateUiController)
                 .map(this::extractControllerDefinition);
 
-        Stream<UiControllerDefinition> explicitControllersStream = classNames.stream()
-                .map(this::loadClassMetadata)
-                .map(this::extractControllerDefinition);
-
-        return Stream.concat(scannedControllersStream, explicitControllersStream)
+        return Stream.concat(scannedControllersStream, explicitDefinitions.stream())
                 .collect(Collectors.toList());
     }
 
@@ -118,6 +113,11 @@ public class UiControllersConfiguration extends AbstractScanConfiguration{
     @Override
     protected MetadataReaderFactory getMetadataReaderFactory() {
         return metadataReaderFactory;
+    }
+
+    @Inject
+    public void setMetadataReaderFactory(AnnotationScanMetadataReaderFactory metadataReaderFactory) {
+        this.metadataReaderFactory = metadataReaderFactory;
     }
 
     @Override

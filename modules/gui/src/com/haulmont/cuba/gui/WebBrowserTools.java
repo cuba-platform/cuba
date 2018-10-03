@@ -27,8 +27,6 @@ public interface WebBrowserTools {
     String NAME = "cuba_WebBrowserTools";
 
     /**
-     * WebPages bean!
-     *
      * Open a web page in browser.
      *
      * @param url    URL of the page

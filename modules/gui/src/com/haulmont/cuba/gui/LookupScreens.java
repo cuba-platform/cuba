@@ -57,7 +57,13 @@ public class LookupScreens {
             Class sreenClass = ((LookupClassBuilder) builder).getSreenClass();
             screen = screens.create(sreenClass, builder.getLaunchMode(), builder.getOptions());
         } else {
-            WindowInfo windowInfo = windowConfig.getLookupScreen(builder.getEntityClass());
+            WindowInfo windowInfo;
+            if (builder.getScreenId() != null) {
+                windowInfo = windowConfig.getWindowInfo(builder.getScreenId());
+            }else {
+                windowInfo = windowConfig.getLookupScreen(builder.getEntityClass());
+            }
+
             screen = screens.create(windowInfo, builder.getLaunchMode(), builder.getOptions());
         }
 
@@ -98,8 +104,6 @@ public class LookupScreens {
 
     public static class LookupBuilder<E extends Entity> {
 
-        // todo add screenId parameter to builder
-
         protected final FrameOwner origin;
         protected final Class<E> entityClass;
         protected final Function<LookupBuilder<E>, Screen> handler;
@@ -109,6 +113,7 @@ public class LookupScreens {
         protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
         protected ScreenOptions options = FrameOwner.NO_OPTIONS;
 
+        protected String screenId;
         protected com.haulmont.cuba.gui.components.Component field;
 
         public LookupBuilder(LookupBuilder<E> builder) {
@@ -156,6 +161,15 @@ public class LookupScreens {
 
         public <S extends Screen & LookupScreen<E>> LookupClassBuilder<E, S> withScreen(Class<S> screenClass) {
             return new LookupClassBuilder<>(this, screenClass);
+        }
+
+        public LookupBuilder<E> withScreen(String screenId) {
+            this.screenId = screenId;
+            return this;
+        }
+
+        public String getScreenId() {
+            return screenId;
         }
 
         public LaunchMode getLaunchMode() {
@@ -238,6 +252,11 @@ public class LookupScreens {
         public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> LookupClassBuilder<E, S> withField(T field) {
             super.withField(field);
             return this;
+        }
+
+        @Override
+        public LookupBuilder<E> withScreen(String screenId) {
+            throw new IllegalStateException("LookupClassBuilder does not support screenId");
         }
 
         @SuppressWarnings("unchecked")
