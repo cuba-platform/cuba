@@ -57,6 +57,7 @@ public class CubaValidationTraversableResolver implements TraversableResolver {
     @Override
     public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType,
                                 Path pathToTraversableObject, ElementType elementType) {
-        return isReachable(traversableObject, traversableProperty, rootBeanType, pathToTraversableObject, elementType);
+        // return true as org.hibernate.validator.internal.engine.resolver.JPATraversableResolver does
+        return true;
     }
 }
