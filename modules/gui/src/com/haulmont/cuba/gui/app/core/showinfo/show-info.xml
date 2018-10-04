@@ -32,7 +32,9 @@
                               datasourceClass="com.haulmont.cuba.gui.app.core.showinfo.EntityParamsDatasource"/>
     </dsContext>
 
-    <dialogMode resizable="true" forceDialog="true" height="350px"/>
+    <dialogMode resizable="true"
+                forceDialog="true"
+                height="350px"/>
 
     <layout expand="infoTable" spacing="true">
         <table id="infoTable" width="100%"

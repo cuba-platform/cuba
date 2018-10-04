@@ -31,6 +31,8 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.StandardCloseAction;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -63,14 +65,20 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         this.dialogWindow.setModal(true);
 
         this.dialogWindow.addPreCloseListener(this::onCloseButtonClick);
-
-        // todo default size
     }
 
     @Override
     public void afterPropertiesSet() {
         setupDialogShortcuts();
         setupContextMenu();
+        setupDefaultSize();
+    }
+
+    protected void setupDefaultSize() {
+        ThemeConstantsManager themeConstantsManager = beanLocator.get(ThemeConstantsManager.NAME);
+        ThemeConstants theme = themeConstantsManager.getConstants();
+
+        setWidth(theme.get("cuba.web.WebWindowManager.dialog.width"));
     }
 
     protected void setupContextMenu() {

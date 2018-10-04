@@ -17,43 +17,43 @@
 
 package com.haulmont.cuba.web.app.core.showinfo;
 
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.app.core.showinfo.SystemInfoWindow;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.widgets.CubaTable;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
+import com.haulmont.cuba.web.widgets.CubaTable;
 import com.vaadin.ui.Notification;
-
-import static com.vaadin.server.FontAwesome.CLIPBOARD;
-
 
 public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
     @Override
     public void initInfoTable(Table infoTable) {
-        CubaTable webTable = (CubaTable) WebComponentsHelper.unwrap(infoTable);
-        webTable.setTextSelectionEnabled(true);
+        CubaTable vTable = infoTable.unwrap(CubaTable.class);
+        vTable.setTextSelectionEnabled(true);
     }
 
     @Override
-    public void addCopyButton(BoxLayout boxLayout, String description, String success, String fail,
-                              String cubaCopyLogContentClass, ComponentsFactory componentsFactory) {
+    public void addCopyButton(ComponentContainer container, String description,
+                              String successMessage, String failMessage,
+                              String cubaCopyLogContentClass, UiComponents uiComponents) {
         if (CubaCopyButtonExtension.browserSupportCopy()) {
-            Button copyButton = componentsFactory.createComponent(WebButton.class);
+            Button copyButton = uiComponents.create(Button.class);
+
+            copyButton.setIconFromSet(CubaIcon.CLIPBOARD);
             copyButton.setId("copy");
             copyButton.setVisible(false);
+            copyButton.setDescription(description);
+
             com.vaadin.ui.Button button = copyButton.unwrap(com.vaadin.ui.Button.class);
-            button.setIcon(CLIPBOARD);
-            button.setDescription(description);
-            CubaCopyButtonExtension copyExtension = CubaCopyButtonExtension.copyWith(button,
-                    cubaCopyLogContentClass + " textarea");
+            CubaCopyButtonExtension copyExtension =
+                    CubaCopyButtonExtension.copyWith(button, cubaCopyLogContentClass + " textarea");
+
             copyExtension.addCopyListener(event ->
-                    Notification.show(event.isSuccess() ? success : fail,
+                    Notification.show(event.isSuccess() ? successMessage : failMessage,
                             Notification.Type.TRAY_NOTIFICATION));
-            boxLayout.add(copyButton);
+            container.add(copyButton);
         }
     }
 }

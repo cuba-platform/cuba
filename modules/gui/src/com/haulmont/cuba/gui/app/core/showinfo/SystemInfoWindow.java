@@ -21,11 +21,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EntitySqlGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.Role;
 
@@ -38,45 +39,30 @@ public class SystemInfoWindow extends AbstractWindow {
     public interface Companion {
         void initInfoTable(Table infoTable);
 
-        void addCopyButton(BoxLayout boxLayout, String description, String successfulMessage, String failedMessage,
-                           String cubaCopyLogContentClass, ComponentsFactory componentsFactory);
+        void addCopyButton(ComponentContainer container, String description, String successfulMessage, String failedMessage,
+                           String cubaCopyLogContentClass, UiComponents components);
     }
 
+    @WindowParam(name = "item")
+    protected Entity item;
     @Inject
     protected EntityParamsDatasource paramsDs;
 
     @Inject
-    protected Table infoTable;
-
+    protected Table<InfoParamEntity> infoTable;
     @Inject
-    protected TextArea scriptArea;
-
-    @Inject
-    protected EntitySqlGenerationService sqlGenerationService;
-
-    @Inject
-    protected ClientConfig clientConfig;
-
-    @WindowParam(name = "item")
-    protected Entity item;
-
-    @Inject
-    protected Button insert;
-
-    @Inject
-    protected Button select;
-
-    @Inject
-    protected Button update;
-
+    protected TextArea<String> scriptArea;
     @Inject
     protected BoxLayout buttonsHbox;
 
     @Inject
     protected Metadata metadata;
-
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
+    @Inject
+    protected EntitySqlGenerationService sqlGenerationService;
+    @Inject
+    protected Configuration configuration;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -96,10 +82,12 @@ public class SystemInfoWindow extends AbstractWindow {
             companion.addCopyButton(buttonsHbox, messages.getMainMessage("systemInfoWindow.copy"),
                     messages.getMainMessage("systemInfoWindow.copingSuccessful"),
                     messages.getMainMessage("systemInfoWindow.copingFailed"),
-                    cubaCopyLogContentClass, componentsFactory);
+                    cubaCopyLogContentClass, uiComponents);
         }
 
         infoTable.removeAllActions();
+
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         if (!clientConfig.getSystemInfoScriptsEnabled()
                 || item == null
                 || !metadata.getTools().isPersistent(item.getMetaClass())) {
@@ -143,7 +131,7 @@ public class SystemInfoWindow extends AbstractWindow {
         showScriptArea();
     }
 
-    private void setCopyButtonVisible() {
+    protected void setCopyButtonVisible() {
         Component copyBtn = buttonsHbox.getComponent("copy");
         if (copyBtn != null) {
             copyBtn.setVisible(true);

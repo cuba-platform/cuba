@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
@@ -35,7 +34,6 @@ import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
@@ -49,10 +47,6 @@ import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 public class WindowLoader extends ContainerLoader<Window> implements ComponentRootLoader<Window> {
 
     protected String windowId;
-
-    protected Window createComponent(ComponentsFactory factory) {
-        return factory.createComponent(Window.class);
-    }
 
     @Override
     public void createComponent() {
@@ -101,10 +95,11 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         loadSubComponentsAndExpand(resultComponent, layoutElement);
 
         loadFocusedComponent(resultComponent, element);
-        loadCrossFieldValidate(resultComponent, element);
 
         Screen controller = resultComponent.getFrameOwner();
         if (controller instanceof AbstractWindow) {
+            loadCrossFieldValidate(resultComponent, element);
+
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
                 StopWatch companionStopWatch = createStopWatch(LifeCycle.COMPANION, controller.getId());
@@ -141,15 +136,6 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             }
         }
         return null;
-    }
-
-    protected void loadMessagesPack(Frame frame, Element element) {
-        String msgPack = element.attributeValue("messagesPack");
-        if (msgPack != null) {
-            setMessagesPack(msgPack);
-        } else {
-            setMessagesPack(this.messagesPack);
-        }
     }
 
     protected void loadScreenData(Window window, Element element) {
@@ -193,11 +179,6 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
                 dialogOptions.setModal(Boolean.parseBoolean(modal));
             }
 
-            String forceDialog = dialogModeElement.attributeValue("forceDialog");
-            if (StringUtils.isNotEmpty(forceDialog)) {
-                dialogOptions.setForceDialog(Boolean.parseBoolean(forceDialog));
-            }
-
             String closeOnClickOutside = dialogModeElement.attributeValue("closeOnClickOutside");
             if (StringUtils.isNotEmpty(closeOnClickOutside)) {
                 dialogOptions.setCloseOnClickOutside(Boolean.parseBoolean(closeOnClickOutside));
@@ -228,26 +209,12 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         this.windowId = windowId;
     }
 
-    public static class Editor extends WindowLoader {
-        @Override
-        protected Window createComponent(ComponentsFactory factory) {
-            return factory.createComponent(Window.Editor.class);
-        }
-    }
-
-    public static class Lookup extends WindowLoader {
-        @Override
-        protected Window createComponent(ComponentsFactory factory) {
-            return factory.createComponent(Window.Lookup.class);
-        }
-    }
-
     protected void loadTimers(UiComponents factory, Window component, Element element) {
         Element timersElement = element.element("timers");
         if (timersElement != null) {
-            final List timers = timersElement.elements("timer");
-            for (final Object o : timers) {
-                loadTimer(factory, component, (Element) o);
+            List<Element> timers = timersElement.elements("timer");
+            for (Element timer : timers) {
+                loadTimer(factory, component, timer);
             }
         }
     }
@@ -256,6 +223,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         Timer timer = factory.create(Timer.class);
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
+
         String delay = element.attributeValue("delay");
         if (StringUtils.isEmpty(delay)) {
             throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentFrameId(),
@@ -311,8 +279,10 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
     protected void loadCrossFieldValidate(Window window, Element element) {
         String crossFieldValidate = element.attributeValue("crossFieldValidate");
         if (StringUtils.isNotEmpty(crossFieldValidate)) {
-            if (window instanceof Window.Editor) {
-                ((Window.Editor) window).setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
+            // todo lookupComponent
+            if (window.getFrameOwner() instanceof Window.Editor) {
+                Window.Editor editor = (Window.Editor) window.getFrameOwner();
+                editor.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
             } else {
                 throw new GuiDevelopmentException("Window should extend Window.Editor to use crossFieldValidate attribute",
                         context.getCurrentFrameId());
