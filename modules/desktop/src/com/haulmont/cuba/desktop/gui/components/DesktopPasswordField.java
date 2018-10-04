@@ -111,6 +111,16 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
         return capsLockIndicator;
     }
 
+    @Override
+    public String getInputPrompt() {
+        return null;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        // do nothing
+    }
+
     protected class PasswordFlushableField extends JPasswordField implements Flushable {
 
         public PasswordFlushableField() {
