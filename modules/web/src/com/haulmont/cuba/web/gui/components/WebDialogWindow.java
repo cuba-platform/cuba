@@ -40,6 +40,7 @@ import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -63,6 +64,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
         this.dialogWindow.center();
         this.dialogWindow.setModal(true);
+        dialogWindow.setResizable(false);
 
         this.dialogWindow.addPreCloseListener(this::onCloseButtonClick);
     }
@@ -78,7 +80,11 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         ThemeConstantsManager themeConstantsManager = beanLocator.get(ThemeConstantsManager.NAME);
         ThemeConstants theme = themeConstantsManager.getConstants();
 
-        setWidth(theme.get("cuba.web.WebWindowManager.dialog.width"));
+        dialogWindow.setWidth(theme.get("cuba.web.WebWindowManager.dialog.width"));
+        dialogWindow.setHeightUndefined();
+
+        component.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        component.setHeightUndefined();
     }
 
     protected void setupContextMenu() {
@@ -205,6 +211,12 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
     @Override
     public void setDialogWidth(String dialogWidth) {
         dialogWindow.setWidth(dialogWidth);
+
+        if (dialogWindow.getWidth() < 0) {
+            component.setWidthUndefined();
+        } else {
+            component.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        }
     }
 
     @Override
@@ -220,6 +232,12 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
     @Override
     public void setDialogHeight(String dialogHeight) {
         dialogWindow.setHeight(dialogHeight);
+
+        if (dialogWindow.getHeight() < 0) {
+            component.setHeightUndefined();
+        } else {
+            component.setHeight(100, Sizeable.Unit.PERCENTAGE);
+        }
     }
 
     @Override
@@ -324,6 +342,10 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         return dialogWindow.getPositionY();
     }
 
+    /**
+     * Compatibility layer class.
+     */
+    @Deprecated
     protected class WebDialogOptions extends DialogOptions {
         @Override
         public Float getWidth() {

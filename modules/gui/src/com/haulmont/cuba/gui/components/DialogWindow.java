@@ -21,10 +21,13 @@ package com.haulmont.cuba.gui.components;
  */
 public interface DialogWindow extends Window {
     /**
-     * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+     * Name that is used to register a client type specific screen implementation in {@link com.haulmont.cuba.gui.UiComponents}
      */
     String NAME = "dialogWindow";
+
+//    todo new feature
+//    void setScrollable(boolean scrollable);
+//    boolean isScrollable();
 
     void setDialogWidth(String dialogWidth);
     float getDialogWidth();

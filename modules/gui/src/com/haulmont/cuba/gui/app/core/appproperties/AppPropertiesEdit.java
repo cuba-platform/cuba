@@ -27,10 +27,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class AppPropertiesEdit extends AbstractWindow {
     private FieldGroup fieldGroup;
 
     @Inject
-    private ComponentsFactory componentsFactory;
+    private UiComponents uiComponents;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -85,7 +85,7 @@ public class AppPropertiesEdit extends AbstractWindow {
 
         fieldGroup.addCustomField("currentValue", (datasource, propertyId) -> {
             if (item.getOverridden()) {
-                TextField textField = componentsFactory.createComponent(TextField.class);
+                TextField<String> textField = uiComponents.create(TextField.NAME);
                 textField.setValue(item.getDisplayedCurrentValue());
                 textField.setEditable(false);
                 return textField;
@@ -97,14 +97,14 @@ public class AppPropertiesEdit extends AbstractWindow {
                     return createLookupField(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString()), item.getCurrentValue());
                 } else {
                     if (Boolean.TRUE.equals(item.getSecret())) {
-                        PasswordField passwordField = componentsFactory.createComponent(PasswordField.class);
+                        PasswordField passwordField = uiComponents.create(PasswordField.class);
                         passwordField.setValue(item.getCurrentValue());
                         passwordField.addValueChangeListener(e -> {
-                            appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
+                            appPropertyDs.getItem().setCurrentValue(e.getValue());
                         });
                         return passwordField;
                     } else {
-                        TextField<String> textField = componentsFactory.createComponent(TextField.class);
+                        TextField<Object> textField = uiComponents.create(TextField.NAME);
                         textField.setValue(item.getCurrentValue());
 
                         try {
@@ -124,7 +124,7 @@ public class AppPropertiesEdit extends AbstractWindow {
             }
         });
 
-        final Function<String, String> defaultValueFormatter = (value) -> {
+        Function<String, String> defaultValueFormatter = (value) -> {
             if (datatype instanceof BooleanDatatype) {
                 return value;
             }
@@ -143,11 +143,11 @@ public class AppPropertiesEdit extends AbstractWindow {
     }
 
     private Component createLookupField(List<String> values, String currentValue) {
-        LookupField<String> lookupField = componentsFactory.createComponent(LookupField.class);
+        LookupField<String> lookupField = uiComponents.create(LookupField.NAME);
         lookupField.setOptionsList(values);
         lookupField.setValue(currentValue);
         lookupField.addValueChangeListener(e -> {
-            appPropertyDs.getItem().setCurrentValue((String) e.getValue());
+            appPropertyDs.getItem().setCurrentValue(e.getValue());
         });
         return lookupField;
     }
