@@ -48,8 +48,7 @@ public class QueryFilter extends FilterParser implements Serializable {
         root.getConditions().add(src1.getRoot());
         root.getConditions().add(src2.getRoot());
 
-        QueryFilter queryFilter = new QueryFilter(root);
-        return queryFilter;
+        return new QueryFilter(root);
     }
 
     public Collection<ParameterInfo> getParameters() {

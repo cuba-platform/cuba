@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-import com.haulmont.bali.util.Dom4j;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -61,7 +60,7 @@ public class FilterParser implements Serializable {
                     conditionElement.attributeValue("operatorType"),
                     conditionElement.attributeValue("type"));
             // support unary conditions without parameters in text (e.g. "is null")
-            for (Element paramElem : Dom4j.elements(conditionElement, "param")) {
+            for (Element paramElem : conditionElement.elements("param")) {
                 Set<ParameterInfo> params = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
                 Attribute javaClass = paramElem.attribute("javaClass");
                 if (javaClass != null) {
@@ -108,7 +107,7 @@ public class FilterParser implements Serializable {
     }
 
     protected void parse(Element parentElem, List<Condition> conditions) {
-        for (Element element : Dom4j.elements(parentElem)) {
+        for (Element element : parentElem.elements()) {
             if ("param".equals(element.getName()) || "join".equals(element.getName()))
                 continue;
 
