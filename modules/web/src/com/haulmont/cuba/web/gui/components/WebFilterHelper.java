@@ -101,9 +101,9 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        com.vaadin.v7.ui.Tree vTree = tree.unwrap(com.vaadin.v7.ui.Tree.class);
-        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        vTree.setDropHandler(new DropHandler() {
+        com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
+//        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
+        /*vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent event) {
                 Transferable t = event.getTransferable();
@@ -205,7 +205,7 @@ public class WebFilterHelper implements FilterHelper {
                 }
                 return groupConditions;
             }
-        });
+        });*/
     }
 
     @Override
