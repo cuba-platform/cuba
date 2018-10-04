@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
@@ -801,14 +800,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 setupAutowiredColumns(entityDataGridSource);
             }
 
-            // TEST: gg, do we need this?
-//            component.removeAllColumns();
-
             // Bind new datasource
             this.dataBinding = createDataGridDataProvider(dataGridSource);
             this.component.setDataProvider(this.dataBinding);
-
-            createStubsForGeneratedColumns();
 
             List<Column<E>> visibleColumnsOrder = getInitialVisibleColumns();
 
@@ -951,23 +945,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 .filter(Column::isVisible)
                 .map(Column::getId)
                 .toArray(String[]::new);
-    }
-
-    /**
-     * Creates empty columns for columns with no property, i.e. generated columns with no value.
-     */
-    protected void createStubsForGeneratedColumns() {
-        ValueProvider<E, Object> valueProvider = createEmptyValueProvider();
-        for (Column<E> column : columnsOrder) {
-            if (column.getPropertyPath() == null) {
-                component.addColumn(valueProvider)
-                        .setId(column.getId());
-            }
-        }
-    }
-
-    protected ValueProvider<E, Object> createEmptyValueProvider() {
-        return (ValueProvider<E, Object>) e -> null;
     }
 
     protected void initShowInfoAction() {
