@@ -1401,6 +1401,7 @@
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="autocomplete" type="xs:boolean"/>
                 <xs:attribute name="capsLockIndicator" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>

@@ -67,4 +67,14 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> im
     public CapsLockIndicator getCapsLockIndicator() {
         return capsLockIndicator;
     }
+
+    @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
+    }
 }

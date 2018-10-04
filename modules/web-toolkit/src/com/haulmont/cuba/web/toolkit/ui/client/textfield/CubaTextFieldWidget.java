@@ -21,6 +21,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTextField;
 
@@ -38,6 +39,7 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
 
     protected boolean readOnlyFocusable = false;
     protected String caseConversion = CASE_CONVERSION_MODE_NONE;
+    protected String placeholder;
 
     public CubaTextFieldWidget() {
         // handle shortcuts
@@ -187,12 +189,41 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     protected void refreshEnabledOrReadonly() {
         if (!isEnabled() || isReadOnly()) {
             addStyleName(CUBA_DISABLED_OR_READONLY);
+            if (getPlaceholder() != null) {
+                setPlaceholder(null);
+            }
         } else {
             removeStyleName(CUBA_DISABLED_OR_READONLY);
+            if (placeholder != null) {
+                setPlaceholder(placeholder);
+            }
         }
     }
 
     public void setCaseConversion(String caseConversion) {
         this.caseConversion = caseConversion;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        if (!BrowserInfo.get().isIE9()) {
+            this.placeholder = inputPrompt;
+        } else {
+            super.setInputPrompt(inputPrompt);
+        }
+
+        refreshEnabledOrReadonly();
+    }
+
+    protected String getPlaceholder() {
+        return getElement().getAttribute("placeholder");
+    }
+
+    protected void setPlaceholder(String inputPrompt) {
+        if (inputPrompt != null) {
+            getElement().setAttribute("placeholder", inputPrompt);
+        } else {
+            getElement().removeAttribute("placeholder");
+        }
     }
 }

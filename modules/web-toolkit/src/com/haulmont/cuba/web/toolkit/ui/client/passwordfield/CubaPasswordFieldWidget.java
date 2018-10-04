@@ -33,6 +33,8 @@ public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressH
     protected HandlerRegistration pressHandlerRegistration = null;
     protected HandlerRegistration downHandlerRegistration = null;
 
+    protected String placeholder;
+
     public void setAutocomplete(boolean autocomplete) {
         if (autocomplete) {
             getElement().removeAttribute("autocomplete");
@@ -117,6 +119,41 @@ public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressH
     protected void showCapsLockStatus(boolean isCapsLock) {
         if (capslockIndicator instanceof CapsLockChangeHandler) {
             ((CapsLockChangeHandler) capslockIndicator).showCapsLockStatus(isCapsLock);
+        }
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        if (!BrowserInfo.get().isIE9()) {
+            this.placeholder = inputPrompt;
+        } else {
+            super.setInputPrompt(inputPrompt);
+        }
+
+        refreshEnabledOrReadonly();
+    }
+
+    protected void refreshEnabledOrReadonly() {
+        if (!isEnabled() || isReadOnly()) {
+            if (getPlaceholder() != null) {
+                setPlaceholder(null);
+            }
+        } else {
+            if (placeholder != null) {
+                setPlaceholder(placeholder);
+            }
+        }
+    }
+
+    protected String getPlaceholder() {
+        return getElement().getAttribute("placeholder");
+    }
+
+    protected void setPlaceholder(String inputPrompt) {
+        if (inputPrompt != null) {
+            getElement().setAttribute("placeholder", inputPrompt);
+        } else {
+            getElement().removeAttribute("placeholder");
         }
     }
 }
