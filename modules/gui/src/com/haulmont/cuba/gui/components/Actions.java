@@ -17,7 +17,9 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * JavaDoc
+ * Factory to create actions declared as {@link ActionType}.
+ *
+ * @see Action
  */
 public interface Actions {
 

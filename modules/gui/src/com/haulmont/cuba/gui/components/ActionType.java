@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import java.lang.annotation.*;
 
 /**
- * JavaDoc
+ * Indicates that {@link Action} can be created with {@link Actions} factory and can be used in screen XML descriptor.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -27,5 +27,8 @@ import java.lang.annotation.*;
 public @interface ActionType {
     String VALUE_ATTRIBUTE = "value";
 
+    /**
+     * @return id of action type
+     */
     String value();
 }
