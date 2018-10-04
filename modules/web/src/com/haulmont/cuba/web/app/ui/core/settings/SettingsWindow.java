@@ -304,7 +304,7 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected Set<String> getAllWindowIds() {
-        List<WindowInfo> windows = (List<WindowInfo>) windowConfig.getWindows();
+        Collection<WindowInfo> windows = windowConfig.getWindows();
         return windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
     }
 }
