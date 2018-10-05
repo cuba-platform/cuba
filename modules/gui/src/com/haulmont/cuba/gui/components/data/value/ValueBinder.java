@@ -30,9 +30,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
-import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 // todo buffering support
@@ -124,6 +125,8 @@ public class ValueBinder {
         protected Subscription sourceStateChangeSupscription;
         protected Subscription sourceInstanceChangeSubscription;
 
+        protected boolean buffered = false;
+
         public ValueBindingImpl(HasValue<V> component, ValueSource<V> source) {
             this.source = source;
             this.component = component;
@@ -192,6 +195,43 @@ public class ValueBinder {
             }
         }
 
+        @Override
+        public void write() {
+            if (isBuffered()
+                    && isModified()) {
+                setValueToSource(component.getValue());
+            }
+        }
+
+        @Override
+        public void discard() {
+            if (source.getState() == BindingState.ACTIVE
+                    && isBuffered()
+                    && isModified()) {
+                component.setValue(source.getValue());
+            }
+        }
+
+        @Override
+        public boolean isBuffered() {
+            return buffered;
+        }
+
+        @Override
+        public void setBuffered(boolean buffered) {
+            this.buffered = buffered;
+            if (!buffered
+                    && source.getState() == BindingState.ACTIVE) {
+                // reset value of the component
+                component.setValue(source.getValue());
+            }
+        }
+
+        @Override
+        public boolean isModified() {
+            return !Objects.equals(component.getValue(), source.getValue());
+        }
+
         protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {
             if (event.getState() == BindingState.ACTIVE) {
                 // read value to component
@@ -201,18 +241,27 @@ public class ValueBinder {
 
         @SuppressWarnings("unchecked")
         protected void componentValueChanged(@SuppressWarnings("unused") HasValue.ValueChangeEvent event) {
+            if (!isBuffered()) {
+                setValueToSource((V) event.getValue());
+            }
+        }
+
+        protected void setValueToSource(V value) {
             if (source.getState() == BindingState.ACTIVE
                     && !source.isReadOnly()) {
-                source.setValue((V) event.getValue());
+                source.setValue(value);
             }
         }
 
         protected void sourceValueChanged(ValueSource.ValueChangeEvent<V> event) {
-            component.setValue(event.getValue());
+            if (!isBuffered()) {
+                component.setValue(event.getValue());
+            }
         }
 
         protected void sourceInstanceChanged(@SuppressWarnings("unused") EntityValueSource.InstanceChangeEvent<Entity> event) {
-            if (source.getState() == BindingState.ACTIVE) {
+            if (source.getState() == BindingState.ACTIVE
+                    && !isBuffered()) {
                 // read value to component
                 component.setValue(source.getValue());
             }

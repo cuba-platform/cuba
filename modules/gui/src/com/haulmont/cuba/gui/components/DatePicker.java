@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V> {
+public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V>, Buffered {
     String NAME = "datePicker";
 
     enum Resolution {

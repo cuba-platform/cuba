@@ -31,5 +31,46 @@ public interface ValueBinding<V> extends Binding {
 
     void activate();
 
-    // todo buffering support
+    /**
+     * Updates all changes since the previous write to the value source.
+     */
+    void write();
+
+    /**
+     * Discards all changes since last write. The component updates its value from the value source.
+     */
+    void discard();
+
+    /**
+     * @return {@code true} if the buffered mode is on, {@code false} otherwise
+     */
+    boolean isBuffered();
+
+    /**
+     * Sets the buffered mode.
+     * <p>
+     * When in buffered mode, the component value changes will not be reflected
+     * in value source until {@link #write()} is called. Calling {@link #discard()}
+     * will revert the components value to the value of the value source.
+     * <p>
+     * When in non-buffered mode both read and write operations will be done
+     * directly on the value source. In this mode the {@link #write()} and
+     * {@link #discard()} methods serve no purpose.
+     * <p>
+     * If the value in the component has been modified since the last value source update
+     * and the buffered mode is switched off at runtime, then the component will
+     * update its value from the value source.
+     *
+     * @param buffered {@code true} if the buffered mode should be turned on, {@code false} otherwise
+     */
+    void setBuffered(boolean buffered);
+
+    /**
+     * Tests if the value stored in the component has been modified since it was
+     * last updated from the value source.
+     *
+     * @return {@code true} if the value in the component has been modified
+     * since the last value source update, {@code false} if not.
+     */
+    boolean isModified();
 }

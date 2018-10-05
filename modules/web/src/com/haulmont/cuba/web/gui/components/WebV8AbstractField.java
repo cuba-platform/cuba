@@ -227,33 +227,6 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         }
     }
 
-    protected void commit() {
-//        vaadin8
-//        component.commit();
-    }
-
-    protected void discard() {
-//        vaadin8
-//        component.discard();
-    }
-
-    protected boolean isBuffered() {
-//        vaadin8
-//        return component.isBuffered();
-        return false;
-    }
-
-    protected void setBuffered(boolean buffered) {
-//        vaadin8
-//        component.setBuffered(buffered);
-    }
-
-    protected boolean isModified() {
-//        vaadin8
-//        return component.isModified();
-        return false;
-    }
-
     protected boolean isEmpty(Object value) {
         return value == null;
     }

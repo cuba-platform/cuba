@@ -50,7 +50,8 @@ import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class WebDateField<V extends Comparable<V>> extends WebAbstractViewComponent<CubaCssActionsLayout, LocalDateTime, V>
+public class WebDateField<V extends Comparable<V>>
+        extends WebAbstractViewComponent<CubaCssActionsLayout, LocalDateTime, V>
         implements DateField<V>, InitializingBean {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
@@ -406,62 +407,27 @@ public class WebDateField<V extends Comparable<V>> extends WebAbstractViewCompon
 
     @Override
     public void commit() {
-        // VAADIN8: gg, implement
-        /*if (updatingInstance) {
-            return;
-        }
-
-        updatingInstance = true;
-        try {
-            if (getDatasource() != null && getMetaPropertyPath() != null) {
-                Date value = constructDate();
-
-                if (getDatasource().getItem() != null) {
-                    InstanceUtils.setValueEx(getDatasource().getItem(), getMetaPropertyPath().getPath(), value);
-                    setModified(false);
-                }
-            }
-        } finally {
-            updatingInstance = false;
-        }
-
-        Object newValue = getValue();
-        fireValueChanged(newValue);*/
-//        super.commit();
+        valueBinding.write();
     }
 
     @Override
     public void discard() {
-        // VAADIN8: gg, implement
-        /*if (getDatasource() != null && getDatasource().getItem() != null) {
-            Date value = getEntityValue(getDatasource().getItem());
-            setValueToFields(value);
-            fireValueChanged(value);
-        }*/
+        valueBinding.discard();
     }
 
     @Override
     public boolean isBuffered() {
-        // VAADIN8: gg, implement
-        return false;
+        return valueBinding.isBuffered();
     }
 
     @Override
     public void setBuffered(boolean buffered) {
-        // VAADIN8: gg, implement
-//        this.buffered = buffered;
+        valueBinding.setBuffered(buffered);
     }
 
     @Override
     public boolean isModified() {
-        // VAADIN8: gg, implement
-//        return dateField.isModified();
-        return false;
-    }
-
-    protected void setModified(boolean modified) {
-        // VAADIN8: gg,
-//        dateField.setModified(modified);
+        return valueBinding.isModified();
     }
 
     @Override

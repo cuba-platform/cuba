@@ -200,4 +200,29 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     public void setDatatype(Datatype<V> datatype) {
         this.datatype = datatype;
     }
+
+    @Override
+    public void commit() {
+        super.commit();
+    }
+
+    @Override
+    public void discard() {
+        super.discard();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return super.isBuffered();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        super.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isModified() {
+        return super.isModified();
+    }
 }

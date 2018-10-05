@@ -188,28 +188,26 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
 
     @Override
     public void commit() {
-        // vaadin8
+        super.commit();
     }
 
     @Override
     public void discard() {
-        // vaadin8
+        super.discard();
     }
 
     @Override
     public boolean isBuffered() {
-        // vaadin8
-        return false;
+        return super.isBuffered();
     }
 
     @Override
     public void setBuffered(boolean buffered) {
-        // vaadin8
+        super.setBuffered(buffered);
     }
 
     @Override
     public boolean isModified() {
-        // vaadin8
-        return false;
+        return super.isModified();
     }
 }

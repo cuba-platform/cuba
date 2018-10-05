@@ -157,4 +157,24 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
     protected boolean fieldValueEquals(V value, V oldValue) {
         return InstanceUtils.propertyValueEquals(oldValue, value);
     }
+
+    protected void commit() {
+        valueBinding.write();
+    }
+
+    protected void discard() {
+        valueBinding.discard();
+    }
+
+    protected boolean isBuffered() {
+        return valueBinding.isBuffered();
+    }
+
+    protected void setBuffered(boolean buffered) {
+        valueBinding.setBuffered(buffered);
+    }
+
+    protected boolean isModified() {
+        return valueBinding.isModified();
+    }
 }

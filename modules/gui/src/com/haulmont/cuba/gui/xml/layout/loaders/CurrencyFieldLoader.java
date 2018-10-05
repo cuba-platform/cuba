@@ -41,6 +41,7 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
         loadShowCurrencyLabel(resultComponent, element);
         loadCurrencyLabelPosition(resultComponent, element);
         loadDatatype(resultComponent, element);
+        loadBuffered(resultComponent, element);
     }
 
     protected void loadCurrencyLabelPosition(CurrencyField resultComponent, Element element) {

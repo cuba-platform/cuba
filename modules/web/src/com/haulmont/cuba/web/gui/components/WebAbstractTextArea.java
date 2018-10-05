@@ -206,29 +206,27 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     @Override
     public void commit() {
-        // vaadin8
+        super.commit();
     }
 
     @Override
     public void discard() {
-        // vaadin8
+        super.discard();
     }
 
     @Override
     public boolean isBuffered() {
-        // vaadin8
-        return false;
+        return super.isBuffered();
     }
 
     @Override
     public void setBuffered(boolean buffered) {
-        // vaadin8
+        super.setBuffered(buffered);
     }
 
     @Override
     public boolean isModified() {
-        // vaadin8
-        return false;
+        return super.isModified();
     }
 
     @Override

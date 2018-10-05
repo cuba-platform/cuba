@@ -43,6 +43,8 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
         loadRangeEnd(resultComponent, element);
 
         loadResolution(resultComponent, element);
+
+        loadBuffered(resultComponent, element);
     }
 
     protected void loadResolution(DatePicker resultComponent, Element element) {

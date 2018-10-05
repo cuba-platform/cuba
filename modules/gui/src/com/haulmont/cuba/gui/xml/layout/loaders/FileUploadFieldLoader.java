@@ -66,6 +66,8 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadClearButton(resultComponent, element);
         loadUploadButton(resultComponent, element);
+
+        loadBuffered(resultComponent, element);
     }
 
     protected void loadFileSizeLimit() {
