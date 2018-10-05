@@ -113,13 +113,20 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         boolean commonTableSettingsChanged = super.saveSettings(element);
-        boolean groupTableSettingsChanged = isGroupTableSettingsChanged(element);
+        boolean groupTableSettingsChanged = isGroupTableSettingsChanged(element.element("groupProperties"));
 
         if (!groupTableSettingsChanged && !commonTableSettingsChanged) {
             return false;
         }
 
         if (groupTableSettingsChanged) {
+
+            // add "column" if there is no such element
+            if (element.element("columns") == null) {
+                Element columnsElem = element.addElement("columns");
+                saveCommonTableColumnSettings(columnsElem);
+            }
+
             Element groupPropertiesElement = element.element("groupProperties");
             if (groupPropertiesElement != null) {
                 element.remove(groupPropertiesElement);
@@ -140,11 +147,9 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         return true;
     }
 
-    protected boolean isGroupTableSettingsChanged(Element element) {
-        Element groupPropertiesElement = element.element("groupProperties");
-
+    protected boolean isGroupTableSettingsChanged(Element groupPropertiesElement) {
         if (groupPropertiesElement == null) {
-            return true;
+            return isDefaultGroupTableSettingsChanged();
         }
 
         List<Element> settingsProperties = groupPropertiesElement.elements("property");
@@ -171,6 +176,19 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         return false;
+    }
+
+    protected boolean isDefaultGroupTableSettingsChanged() {
+        Element groupPropertiesElement = null;
+
+        if (defaultSettings != null) {
+            groupPropertiesElement = defaultSettings.getRootElement().element("groupProperties");
+            if (groupPropertiesElement == null) {
+                return true;
+            }
+        }
+
+        return isGroupTableSettingsChanged(groupPropertiesElement);
     }
 
     @Override

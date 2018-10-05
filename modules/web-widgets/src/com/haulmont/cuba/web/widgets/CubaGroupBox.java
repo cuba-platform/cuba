@@ -33,7 +33,7 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     public CubaGroupBox() {
         registerRpc((CubaGroupBoxServerRpc) expanded -> {
             if (getState().collapsable) {
-                setExpanded(expanded);
+                setExpanded(expanded, true);
             }
         });
 
@@ -103,6 +103,10 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     }
 
     public void setExpanded(boolean expanded) {
+        setExpanded(expanded, false);
+    }
+
+    public void setExpanded(boolean expanded, boolean invokedByUser) {
         if (expanded != getState(false).expanded) {
             getContent().setVisible(expanded);
             markAsDirtyRecursive();
@@ -110,7 +114,7 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
 
         getState().expanded = expanded;
         if (expandChangeHandler != null)
-            expandChangeHandler.expandStateChanged(expanded);
+            expandChangeHandler.expandStateChanged(expanded, invokedByUser);
     }
 
     public boolean isCollapsable() {
@@ -182,7 +186,7 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     }
 
     public interface ExpandChangeHandler {
-        void expandStateChanged(boolean expanded);
+        void expandStateChanged(boolean expanded, boolean invokedByUser);
     }
 
     public void setShowAsPanel(boolean showAsPanel) {

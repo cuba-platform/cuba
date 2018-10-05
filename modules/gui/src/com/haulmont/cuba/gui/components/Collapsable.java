@@ -39,13 +39,15 @@ public interface Collapsable extends Component {
     @Deprecated
     void removeExpandedStateChangeListener(Consumer<ExpandedStateChangeEvent> listener);
 
-    class ExpandedStateChangeEvent {
+    class ExpandedStateChangeEvent implements HasUserOriginated {
         private final Collapsable component;
         private final boolean expanded;
+        private final boolean userOriginated;
 
-        public ExpandedStateChangeEvent(Collapsable component, boolean expanded) {
+        public ExpandedStateChangeEvent(Collapsable component, boolean expanded, boolean userOriginated) {
             this.component = component;
             this.expanded = expanded;
+            this.userOriginated = userOriginated;
         }
 
         public Collapsable getComponent() {
@@ -57,6 +59,11 @@ public interface Collapsable extends Component {
          */
         public boolean isExpanded() {
             return expanded;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 }

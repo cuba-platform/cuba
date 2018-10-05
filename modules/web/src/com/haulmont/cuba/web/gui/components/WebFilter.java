@@ -59,7 +59,7 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         component.addStyleName(FILTER_STYLENAME);
 
-        delegate.setExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
+        delegate.setExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded(), e.isUserOriginated()));
         delegate.setCaptionChangedListener(this::updateCaptions);
     }
 
@@ -269,8 +269,8 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
         unsubscribe(ExpandedStateChangeEvent.class, listener);
     }
 
-    protected void fireExpandStateChange(boolean expanded) {
-        ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+    protected void fireExpandStateChange(boolean expanded, boolean userOriginated) {
+        ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded, userOriginated);
         publish(ExpandedStateChangeEvent.class, event);
     }
 

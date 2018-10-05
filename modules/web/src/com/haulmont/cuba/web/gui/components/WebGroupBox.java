@@ -45,6 +45,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     protected Orientation orientation = Orientation.VERTICAL;
 
     protected boolean settingsEnabled = true;
+    protected boolean settingsChanged = false;
 
     protected Map<ShortcutAction, ShortcutListener> shortcuts;
 
@@ -258,9 +259,13 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         unsubscribe(ExpandedStateChangeEvent.class, listener);
     }
 
-    protected void fireExpandStateChange(boolean expanded) {
-        ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+    protected void fireExpandStateChange(boolean expanded, boolean invokedByUser) {
+        ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded, invokedByUser);
         publish(ExpandedStateChangeEvent.class, event);
+
+        if (invokedByUser) {
+            settingsChanged = true;
+        }
     }
 
     @Override
@@ -282,7 +287,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             return false;
         }
 
-        if (!isSettingsChanged(element)) {
+        if (!settingsChanged) {
             return false;
         }
 
@@ -399,16 +404,5 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         MarginInfo vMargin = component.getOuterMargin();
         return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
                 vMargin.hasLeft());
-    }
-
-    protected boolean isSettingsChanged(Element element) {
-        Element groupBoxElement = element.element("groupBox");
-
-        if (groupBoxElement == null) {
-            return true;
-        }
-
-        String expanded = groupBoxElement.attributeValue("expanded"); // old value
-        return isExpanded() != Boolean.parseBoolean(expanded);
     }
 }

@@ -82,6 +82,8 @@ import com.vaadin.ui.components.grid.Header;
 import com.vaadin.ui.components.grid.StaticSection;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +156,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected Registration columnCollapsingChangeListenerRegistration;
     protected Registration columnResizeListenerRegistration;
     protected Registration contextClickListenerRegistration;
+
+    protected Document defaultSettings;
 
 //    protected CubaGrid.EditorCloseListener editorCloseListener;
 //    protected CubaGrid.BeforeEditorOpenListener beforeEditorOpenListener;
@@ -1956,6 +1960,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             return;
         }
 
+        if (defaultSettings == null) {
+            defaultSettings = DocumentHelper.createDocument();
+            defaultSettings.setRootElement(defaultSettings.addElement("presentation"));
+            // init default settings
+            saveSettings(defaultSettings.getRootElement());
+        }
+
         Element columnsElem = element.element("columns");
         if (columnsElem != null) {
             List<Column<E>> modelColumns = getVisibleColumns();
@@ -2045,8 +2056,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             return false;
         }
 
-        boolean settingsChanged = false;
-
         Element columnsElem = element.element("columns");
 
         String sortColumnId = null;
@@ -2058,8 +2067,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         boolean commonSettingsChanged = isCommonDataGridSettingsChanged(columnsElem);
+        boolean sortChanged = isSortPropertySettingsChanged(sortColumnId, sortDirection);
 
-        if (commonSettingsChanged) {
+        boolean settingsChanged = commonSettingsChanged || sortChanged;
+
+        if (settingsChanged) {
             if (columnsElem != null) {
                 element.remove(columnsElem);
             }
@@ -2078,21 +2090,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 colElem.addAttribute("collapsed", Boolean.toString(column.isCollapsed()));
             }
 
-            settingsChanged = true;
-        }
-
-        if (isSortPropertySettingsChanged(sortColumnId, sortDirection) || commonSettingsChanged) {
             List<GridSortOrder<E>> sortOrders = component.getSortOrder();
             if (!sortOrders.isEmpty()) {
                 GridSortOrder<E> sortOrder = sortOrders.get(0);
 
-                if (columnsElem != null) {
-                    columnsElem.addAttribute("sortColumnId", sortOrder.getSorted().getId());
-                    columnsElem.addAttribute("sortDirection", sortOrder.getDirection().toString());
-                }
+                columnsElem.addAttribute("sortColumnId", sortOrder.getSorted().getId());
+                columnsElem.addAttribute("sortDirection", sortOrder.getDirection().toString());
             }
-
-            settingsChanged = true;
         }
 
         return settingsChanged;
@@ -2100,7 +2104,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     protected boolean isCommonDataGridSettingsChanged(Element columnsElem) {
         if (columnsElem == null) {
-            return true;
+            return isDefaultDataGridSettingsChanged();
         }
 
         List<Element> settingsColumnList = columnsElem.elements("columns");
@@ -2134,6 +2138,19 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         return false;
+    }
+
+    protected boolean isDefaultDataGridSettingsChanged() {
+        Element columnsElement = null;
+
+        if (defaultSettings != null) {
+            columnsElement = defaultSettings.getRootElement().element("columns");
+            if (columnsElement == null) {
+                return true;
+            }
+        }
+
+        return isCommonDataGridSettingsChanged(columnsElement);
     }
 
     protected boolean isSortPropertySettingsChanged(String settingsSortColumnId, String settingsSortDirection) {

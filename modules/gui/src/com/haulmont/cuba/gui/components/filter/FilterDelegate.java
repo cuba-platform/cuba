@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.HasUserOriginated;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -145,13 +146,15 @@ public interface FilterDelegate {
 
     void setCaptionChangedListener(Consumer<String> captionChangedListener);
 
-    class FDExpandedStateChangeEvent {
+    class FDExpandedStateChangeEvent implements HasUserOriginated {
         private final FilterDelegate delegate;
         private final boolean expanded;
+        private final boolean userOriginated;
 
-        public FDExpandedStateChangeEvent(FilterDelegate delegate, boolean expanded) {
+        public FDExpandedStateChangeEvent(FilterDelegate delegate, boolean expanded, boolean userOriginated) {
             this.delegate = delegate;
             this.expanded = expanded;
+            this.userOriginated = userOriginated;
         }
 
         public FilterDelegate getComponent() {
@@ -163,6 +166,11 @@ public interface FilterDelegate {
          */
         public boolean isExpanded() {
             return expanded;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
