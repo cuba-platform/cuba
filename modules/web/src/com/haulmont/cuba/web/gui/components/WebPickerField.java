@@ -226,6 +226,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         setPickerButtonAction(vButton, action);
 
         component.addButton(vButton, index);
+        actionButtons.put(action, vButton);
 
         if (StringUtils.isNotEmpty(getDebugId())) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
