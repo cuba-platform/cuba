@@ -76,6 +76,7 @@ public class FileLoaderImpl implements FileLoader {
             if (existingFile == null || entityStates.isDeleted(existingFile)) {
                 throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fd.getName());
             }
+            tx.commit();
         }
     }
 }
