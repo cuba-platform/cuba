@@ -5,14 +5,14 @@ This Contribution License Agreement (**“Agreement”**) is agreed to by the pa
 **1. Definitions.**
 
   **“Code”** means the computer software code, whether in human-readable or machine-executable form, that is delivered by You to Haulmont under this Agreement.
-  
-  **“Project”** means any of the projects owned or managed by Haulmont and offered under a license approved by the Open Source Initiative (http://www.opensource.org).
-  
-  **“Submit”** is the act of uploading, submitting, transmitting, or distributing code or other content to any Project, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Project for the purpose of discussing and improving that Project, but excluding communication that is conspicuously marked or otherwise designated in writing by You as “Not a Submission.” 
+
+  **“Project”** means any of the projects owned or managed by Haulmont and offered under a license approved by the Open Source Initiative (www.opensource.org).
+
+  **“Submit”** is the act of uploading, submitting, transmitting, or distributing code or other content to any Project, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Project for the purpose of discussing and improving that Project, but excluding communication that is conspicuously marked or otherwise designated in writing by You as “Not a Submission.”
 
   **“Submission”** means the Code and any other copyrightable material Submitted by You, including any associated comments and documentation.
-  
-**2. Your Submission.** You must agree to the terms of this Agreement before making a Submission to any Project. This Agreement covers any and all Submissions that You, now or in the future (except as described in Section 4 below), Submit to any Project.
+
+**2. Your Submission.** You must agree to the terms of this Agreement before making a Submission to any Project. This Agreement covers any and all Submissions that You, now or in the future (except as described in Section 4 below), Submit to any Project. 
 
 **3. Originality of Work.** You represent that each of Your Submissions is entirely Your original work. Should You wish to Submit materials that are not Your original work, You may Submit them separately to the Project if You (a) retain all copyright and license information that was in the materials as You received them, (b) in the description accompanying Your Submission, include the phrase “Submission containing materials of a third party:” followed by the names of the third party and any licenses or other restrictions of which You are aware, and (c) follow any other instructions in the Project’s written guidelines concerning Submissions.
 
@@ -32,6 +32,12 @@ This Contribution License Agreement (**“Agreement”**) is agreed to by the pa
 
 **8. Information about Submissions.** You agree that contributions to Projects and information about contributions may be maintained indefinitely and disclosed publicly, including Your name and other information that You submit with Your Submission.
 
-**9. Governing Law/Jurisdiction.** This Agreement will be governed by and construed in accordance with the laws of England and Wales excluding its conflicts of law provisions. Under certain circumstances, the governing law in this section might be superseded by the United Nations Convention on Contracts for the International Sale of Goods (“UN Convention”) and the parties intend to avoid the application of the UN Convention to this Agreement and, thus, exclude the application of the UN Convention in its entirety to this Agreement.
+**9. Governing Law/Jurisdiction.** 
 
-**10. Entire Agreement/Assignment.** This Agreement is the entire agreement between the parties, and supersedes any and all prior agreements, understandings or communications, written or oral, between the parties relating to the subject matter hereof. This Agreement may be assigned by Haulmont. 
+9.1. Any relationships between the Parties to this Agreement, including those related to its conclusion, existence, validity, interpretation, execution, breach, refusal to perform, or termination shall be governed by the UNIDROIT Principles of International Commercial Contracts (2016) and, with respect to issues not covered by such Principles, by the law of England and Wales.
+
+9.2. In case of any inconsistency between the provisions of the UNIDROIT Principles and this Agreement, this Agreement shall prevail.
+
+9.3. The Parties irrevocably agree that any dispute, controversy or claim arising out of or in connection with this Agreement, including any question regarding its conclusion, existence, validity, interpretation, execution, breach, refusal to perform, or termination, and including non-contractual disputes or claims, shall be referred to and finally resolved by the London Court of International Arbitration (LCIA Court) under the LCIA Rules, which Rules are deemed to be incorporated by reference into this clause. The number of arbitrators shall be one. The seat, or legal place, of arbitration shall be the city of London, the United Kingdom. The language to be used in the arbitral proceedings shall be English. Judgment upon the award rendered by the arbitrator may be entered by any court having jurisdiction thereof.
+
+**10. Entire Agreement/Assignment.** This Agreement is the entire agreement between the parties, and supersedes any and all prior agreements, understandings or communications, written or oral, between the parties relating to the subject matter hereof. This Agreement may be assigned by Haulmont.
