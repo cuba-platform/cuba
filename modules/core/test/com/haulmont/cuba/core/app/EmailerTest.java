@@ -426,8 +426,16 @@ public class EmailerTest {
         emailer.sendEmailAsync(info);
         emailer.processQueuedEmails();
         sent = testMailSender.fetchSentEmail();
-        body = getBody(sent);
-        assertEquals("Greetings, Bob!", body.trim());
+        assertEquals("Greetings, Bob!", getBody(sent).trim());
+
+        info = new EmailInfo("bob@example.com", "${greeting} Test", null, null);
+        info.setBody("Greetings, ${userName}!");
+        emailer.sendEmailAsync(info);
+        emailer.processQueuedEmails();
+        sent = testMailSender.fetchSentEmail();
+
+        assertEquals("Greetings, ${userName}!", getBody(sent).trim());
+        assertEquals("${greeting} Test", getCaption(sent).trim());
     }
 
 

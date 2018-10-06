@@ -161,12 +161,11 @@ public class Emailer implements EmailerAPI {
     }
 
     private String buildStringWithTemplateParams(EmailInfo info, String templateContents) {
-        Map<String, Serializable> params = info.getTemplateParameters() == null
-                ? Collections.<String, Serializable>emptyMap()
-                : info.getTemplateParameters();
-
-        return TemplateHelper.processTemplate(templateContents, params);
-
+        String content = templateContents;
+        if(info.getTemplateParameters() != null && info.getTemplateParameters().size() > 0) {
+            content = TemplateHelper.processTemplate(templateContents, info.getTemplateParameters());
+        }
+        return content;
     }
 
 
