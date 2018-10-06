@@ -128,7 +128,7 @@ public class Emailer implements EmailerAPI {
 
     protected void prepareEmailInfo(EmailInfo emailInfo) {
         processBodyTemplate(emailInfo);
-        processCationTemplate(emailInfo);
+        processCaptionTemplate(emailInfo);
 
         if (emailInfo.getFrom() == null) {
             String defaultFromAddress = config.getFromAddress();
@@ -139,7 +139,7 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    protected void processCationTemplate(EmailInfo emailInfo) {
+    protected void processCaptionTemplate(EmailInfo emailInfo) {
         String caption = buildStringWithTemplateParams(emailInfo, emailInfo.getCaption());
         emailInfo.setCaption(caption);
     }
