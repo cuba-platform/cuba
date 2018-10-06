@@ -128,6 +128,7 @@ public class Emailer implements EmailerAPI {
 
     protected void prepareEmailInfo(EmailInfo emailInfo) {
         processBodyTemplate(emailInfo);
+        processCationTemplate(emailInfo);
 
         if (emailInfo.getFrom() == null) {
             String defaultFromAddress = config.getFromAddress();
@@ -138,22 +139,36 @@ public class Emailer implements EmailerAPI {
         }
     }
 
+    protected void processCationTemplate(EmailInfo emailInfo) {
+        String caption = buildStringWithTemplateParams(emailInfo, emailInfo.getCaption());
+        emailInfo.setCaption(caption);
+    }
+
     protected void processBodyTemplate(EmailInfo info) {
         String templatePath = info.getTemplatePath();
-        if (templatePath == null) {
-            return;
+        String templateContents;
+        if (templatePath != null) {
+            templateContents = resources.getResourceAsString(templatePath);
+            if (templateContents == null) {
+                throw new IllegalArgumentException("Could not find template by path: " + templatePath);
+            }
+        }else{
+            templateContents = info.getBody();
         }
 
+        templateContents = buildStringWithTemplateParams(info, templateContents);
+        info.setBody(templateContents);
+    }
+
+    private String buildStringWithTemplateParams(EmailInfo info, String templateContents) {
         Map<String, Serializable> params = info.getTemplateParameters() == null
                 ? Collections.<String, Serializable>emptyMap()
                 : info.getTemplateParameters();
-        String templateContents = resources.getResourceAsString(templatePath);
-        if (templateContents == null) {
-            throw new IllegalArgumentException("Could not find template by path: " + templatePath);
-        }
-        String body = TemplateHelper.processTemplate(templateContents, params);
-        info.setBody(body);
+
+        return TemplateHelper.processTemplate(templateContents, params);
+
     }
+
 
     protected List<SendingMessage> splitEmail(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline) {
         List<SendingMessage> sendingMessageList = new ArrayList<>();
