@@ -16,7 +16,6 @@
  */
 package com.haulmont.chile.core.model;
 
-import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.annotation.Nullable;
@@ -87,24 +86,6 @@ public interface Instance extends Serializable {
      * @param value        attribute value
      */
     void setValueEx(String propertyPath, Object value);
-
-    /**
-     * Add listener to track attributes changes.
-     *
-     * @deprecated Use {@link #addPropertyChangeListener(PropertyChangeListener)}
-     * @param listener  listener
-     */
-    @Deprecated
-    void addListener(ValueListener listener);
-
-    /**
-     * Remove listener.
-     *
-     * @deprecated User {@link #removePropertyChangeListener(PropertyChangeListener)}
-     * @param listener listener to remove
-     */
-    @Deprecated
-    void removeListener(ValueListener listener);
 
     /**
      * Add listener to track attributes changes.

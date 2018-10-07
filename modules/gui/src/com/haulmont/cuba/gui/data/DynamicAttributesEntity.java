@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
@@ -63,16 +62,6 @@ public class DynamicAttributesEntity implements Entity {
     @Override
     public String getInstanceName() {
         return null;
-    }
-
-    @Override
-    public void addListener(com.haulmont.chile.core.common.ValueListener listener) {
-        mainItem.addListener(listener);
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        mainItem.removeListener(listener);
     }
 
     @Override

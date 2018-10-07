@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -34,12 +33,8 @@ public class EntityCalendarEvent implements CalendarEvent {
         this.entity = entity;
         this.provider = provider;
 
-        this.entity.addPropertyChangeListener(new Instance.PropertyChangeListener() {
-            @Override
-            public void propertyChanged(Instance.PropertyChangeEvent e) {
-                fireEventChanged();
-            }
-        });
+        // todo bad practice, use datasource listener instead
+        this.entity.addPropertyChangeListener(e -> fireEventChanged());
     }
 
     protected void fireEventChanged() {

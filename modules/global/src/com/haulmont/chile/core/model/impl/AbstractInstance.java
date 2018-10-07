@@ -17,8 +17,6 @@
 
 package com.haulmont.chile.core.model.impl;
 
-import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
@@ -62,16 +60,6 @@ public abstract class AbstractInstance implements Instance {
     @Override
     public String getInstanceName() {
         return InstanceUtils.getInstanceName(this);
-    }
-
-    @Override
-    public void addListener(ValueListener listener) {
-        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
     }
 
     @Override
