@@ -16,15 +16,15 @@
 
 package com.haulmont.cuba.web.gui.components.tree;
 
-import com.haulmont.cuba.gui.components.data.TreeSource;
+import com.haulmont.cuba.gui.components.data.TreeItems;
 
 public interface TreeSourceEventsDelegate<I> {
 
-    void treeSourceItemSetChanged(TreeSource.ItemSetChangeEvent<I> event);
+    void treeSourceItemSetChanged(TreeItems.ItemSetChangeEvent<I> event);
 
-    void treeSourcePropertyValueChanged(TreeSource.ValueChangeEvent<I> event);
+    void treeSourcePropertyValueChanged(TreeItems.ValueChangeEvent<I> event);
 
-    void treeSourceStateChanged(TreeSource.StateChangeEvent<I> event);
+    void treeSourceStateChanged(TreeItems.StateChangeEvent<I> event);
 
-    void treeSourceSelectedItemChanged(TreeSource.SelectedItemChangeEvent<I> event);
+    void treeSourceSelectedItemChanged(TreeItems.SelectedItemChangeEvent<I> event);
 }

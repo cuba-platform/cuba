@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListAction;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -121,7 +121,7 @@ public class ExcelAction extends ListAction {
         if (target.getSelected().isEmpty()) {
             return true;
         }
-        CollectionContainer container = ((ContainerDataSource) target).getContainer();
+        CollectionContainer container = ((ContainerDataUnit) target).getContainer();
         return container != null && container.getItems().size() <= 1;
     }
 

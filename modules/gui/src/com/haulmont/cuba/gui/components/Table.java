@@ -26,8 +26,8 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrapper;
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
-import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
@@ -74,9 +74,9 @@ public interface Table<E extends Entity>
 
     Map<Object, Object> getAggregationResults();
 
-    void setDataSource(TableSource<E> tableSource);
+    void setItems(TableItems<E> tableItems);
     @Override
-    TableSource<E> getDataSource();
+    TableItems<E> getItems();
 
     // todo convert to default method
     @Deprecated
@@ -85,8 +85,8 @@ public interface Table<E extends Entity>
     @Deprecated
     @Override
     default CollectionDatasource getDatasource() {
-        TableSource<E> tableSource = getDataSource();
-        return tableSource != null ? ((CollectionDatasourceTableAdapter) tableSource).getDatasource() : null;
+        TableItems<E> tableItems = getItems();
+        return tableItems != null ? ((DatasourceTableItems) tableItems).getDatasource() : null;
     }
 
     void setRequired(Column<E> column, boolean required, String message);

@@ -17,7 +17,7 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
@@ -33,7 +33,7 @@ class CollectionContainerUsageTest extends WebSpec {
 
         table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath('name')))
-        table.setDataSource(new CollectionContainerTableSource(this.container))
+        table.setItems(new ContainerTableItems(this.container))
     }
 
     def "sort items"() {

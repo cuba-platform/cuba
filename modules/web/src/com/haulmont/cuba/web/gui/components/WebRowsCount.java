@@ -21,12 +21,12 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.datagrid.CollectionContainerDataGridSource;
-import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
-import com.haulmont.cuba.gui.components.data.table.CollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.datagrid.ContainerDataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.DatasourceDataGridItems;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,6 +47,8 @@ import java.util.function.Consumer;
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
     protected static final String TABLE_ROWS_COUNT_STYLENAME = "c-table-rows-count";
+
+    private static final Logger log = LoggerFactory.getLogger(WebRowsCount.class);
 
     protected Messages messages;
 
@@ -72,9 +74,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected List<BeforeRefreshListener> beforeRefreshListeners;
 
-    private RowsCountTarget target;
-
-    private static final Logger log = LoggerFactory.getLogger(WebRowsCount.class);
+    protected RowsCountTarget target;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -88,7 +88,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Inject
     public void setIconResolver(IconResolver iconResolver) {
-        // todo extract icon contants
+        // todo extract icon constants
         component.getFirstButton().setIcon(iconResolver.getIconResource("icons/rows-count-first.png"));
         component.getPrevButton().setIcon(iconResolver.getIconResource("icons/rows-count-prev.png"));
         component.getNextButton().setIcon(iconResolver.getIconResource("icons/rows-count-next.png"));
@@ -142,29 +142,29 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected Adapter createAdapter(RowsCountTarget target) {
         if (target instanceof Table) {
-            TableSource tableSource = ((Table) target).getDataSource();
-            if (tableSource instanceof CollectionDatasourceTableAdapter) {
-                return createDatasourceAdapter(((CollectionDatasourceTableAdapter) tableSource).getDatasource());
-            } else if (tableSource instanceof CollectionContainerTableSource) {
-                return createLoaderAdapter(((CollectionContainerTableSource) tableSource).getContainer());
+            TableItems tableItems = ((Table) target).getItems();
+            if (tableItems instanceof DatasourceTableItems) {
+                return createDatasourceAdapter(((DatasourceTableItems) tableItems).getDatasource());
+            } else if (tableItems instanceof ContainerTableItems) {
+                return createLoaderAdapter(((ContainerTableItems) tableItems).getContainer());
             } else {
-                throw new IllegalStateException("Unsupported TableSource: " + tableSource);
+                throw new IllegalStateException("Unsupported TableItems: " + tableItems);
             }
         } else if (target instanceof DataGrid) {
-            DataGridSource dataGridSource = ((DataGrid) target).getDataSource();
-            if (dataGridSource instanceof CollectionDatasourceDataGridAdapter) {
-                return createDatasourceAdapter(((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource());
-            } else if (dataGridSource instanceof CollectionContainerDataGridSource) {
-                return createLoaderAdapter(((CollectionContainerDataGridSource) dataGridSource).getContainer());
+            DataGridItems dataGridItems = ((DataGrid) target).getItems();
+            if (dataGridItems instanceof DatasourceDataGridItems) {
+                return createDatasourceAdapter(((DatasourceDataGridItems) dataGridItems).getDatasource());
+            } else if (dataGridItems instanceof ContainerDataGridItems) {
+                return createLoaderAdapter(((ContainerDataGridItems) dataGridItems).getContainer());
             } else {
-                throw new IllegalStateException("Unsupported DataGridSource: " + dataGridSource);
+                throw new IllegalStateException("Unsupported DataGridItems: " + dataGridItems);
             }
         } else {
             throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
         }
     }
 
-    private Adapter createLoaderAdapter(CollectionContainer container) {
+    protected Adapter createLoaderAdapter(CollectionContainer container) {
         DataLoader loader = null;
         if (container instanceof HasLoader) {
             loader = ((HasLoader) container).getLoader();
@@ -503,7 +503,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 Number count = list.get(0).getValue("cnt");
                 return count == null ? 0 : count.intValue();
             } else {
-                log.warn("Unsupported loader type: " + loader.getClass().getName());
+                log.warn("Unsupported loader type: {}", loader.getClass().getName());
                 return 0;
             }
         }

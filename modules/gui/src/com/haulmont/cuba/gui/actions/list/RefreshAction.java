@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.actions.ListAction;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -62,11 +62,11 @@ public class RefreshAction extends ListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target.getDataSource() instanceof ContainerDataSource)) {
+            if (!(target.getItems() instanceof ContainerDataUnit)) {
                 throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
             }
 
-            CollectionContainer container = ((ContainerDataSource) target.getDataSource()).getContainer();
+            CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
             if (container == null) {
                 throw new IllegalStateException("RefreshAction target is not bound to CollectionContainer");
             }

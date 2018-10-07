@@ -20,9 +20,9 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.TreeTableSource;
-import com.haulmont.cuba.gui.components.data.table.HierarchicalDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.TreeTableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceTreeTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.components.table.TableDataContainer;
@@ -52,34 +52,34 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataSource(null);
+            setItems(null);
         } else {
             if (!(datasource instanceof HierarchicalDatasource)) {
                 throw new IllegalArgumentException("TreeTable supports only HierarchicalDatasource");
             }
 
-            setDataSource(new HierarchicalDatasourceTableAdapter((HierarchicalDatasource) datasource));
+            setItems(new DatasourceTreeTableItems((HierarchicalDatasource) datasource));
         }
     }
 
     @Override
-    public void setDataSource(TableSource<E> tableSource) {
-        if (tableSource != null &&
-                !(tableSource instanceof TreeTableSource)) {
-            throw new IllegalArgumentException("TreeTable supports only TreeTableSource data binding");
+    public void setItems(TableItems<E> tableItems) {
+        if (tableItems != null &&
+                !(tableItems instanceof TreeTableItems)) {
+            throw new IllegalArgumentException("TreeTable supports only TreeTableItems data binding");
         }
 
-        super.setDataSource(tableSource);
+        super.setItems(tableItems);
     }
 
     @Override
-    protected TableDataContainer<E> createTableDataContainer(TableSource<E> tableSource) {
-        return new TreeTableDataContainer<>((TreeTableSource<E>) tableSource, this);
+    protected TableDataContainer<E> createTableDataContainer(TableItems<E> tableItems) {
+        return new TreeTableDataContainer<>((TreeTableItems<E>) tableItems, this);
     }
 
     @SuppressWarnings("unchecked")
-    protected TreeTableSource<E> getTreeTableSource() {
-        return ((TreeTableSource) getDataSource());
+    protected TreeTableItems<E> getTreeTableSource() {
+        return ((TreeTableItems) getItems());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @Override
     public void expandAll() {
-        TreeTableSource<E> treeTableSource = getTreeTableSource();
+        TreeTableItems<E> treeTableSource = getTreeTableSource();
         if (treeTableSource != null) {
             Object nullParentItemId = new Object();
 
@@ -107,7 +107,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         }
     }
 
-    protected Map<Object, Object> getParentsMapping(TreeTableSource<E> tableSource, Object nullParentItemId) {
+    protected Map<Object, Object> getParentsMapping(TreeTableItems<E> tableSource, Object nullParentItemId) {
         Map<Object, Object> parentsMapping = new LinkedHashMap<>();
 
         Collection<?> itemIds = tableSource.getItemIds();
@@ -170,7 +170,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     }
 
     protected List<Object> getCollapsedItemIds() {
-        TreeTableSource<E> treeTableSource = getTreeTableSource();
+        TreeTableItems<E> treeTableSource = getTreeTableSource();
         if (treeTableSource == null) {
             return Collections.emptyList();
         }

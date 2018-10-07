@@ -24,11 +24,11 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
-import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -133,7 +133,7 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
             filterForDs = QueryUtils.escapeForLike(filterForDs);
         }
 
-        CollectionDatasource optionsDatasource = ((CollectionDatasourceOptions) optionsBinding.getSource()).getDatasource();
+        CollectionDatasource optionsDatasource = ((DatasourceOptions) optionsBinding.getSource()).getDatasource();
 
         if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
             setValue(null);
@@ -442,25 +442,25 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     }
 
     @Override
-    public OptionsSource<V> getOptionsSource() {
+    public Options<V> getOptions() {
         return optionsBinding != null ? optionsBinding.getSource() : null;
     }
 
     @Override
-    public void setOptionsSource(OptionsSource<V> optionsSource) {
+    public void setOptions(Options<V> options) {
         if (this.optionsBinding != null) {
             this.optionsBinding.unbind();
             this.optionsBinding = null;
         }
 
-        if (optionsSource != null) {
+        if (options != null) {
             OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
-            this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
+            this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
 
             if (getMetaClass() == null
-                    && optionsSource instanceof EntityOptionsSource) {
-                setMetaClass(((EntityOptionsSource<V>) optionsSource).getEntityMetaClass());
+                    && options instanceof EntityOptions) {
+                setMetaClass(((EntityOptions<V>) options).getEntityMetaClass());
             }
         }
     }

@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.web.gui.data.StaticItemSetChangeEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Container;
@@ -48,8 +48,8 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         }
     };
 
-    protected TableSource<I> tableSource;
-    protected TableSourceEventsDelegate<I> dataEventsDelegate;
+    protected TableItems<I> tableItems;
+    protected TableItemsEventsDelegate<I> dataEventsDelegate;
     protected boolean ignoreListeners;
 
     protected Collection<Object> properties = new ArrayList<>();
@@ -67,14 +67,14 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
     protected Subscription stateChangeSubscription;
     protected Subscription selectedItemChangeSubscription;
 
-    public TableDataContainer(TableSource<I> tableSource, TableSourceEventsDelegate<I> dataEventsDelegate) {
-        this.tableSource = tableSource;
+    public TableDataContainer(TableItems<I> tableItems, TableItemsEventsDelegate<I> dataEventsDelegate) {
+        this.tableItems = tableItems;
         this.dataEventsDelegate = dataEventsDelegate;
 
-        this.itemSetChangeSubscription = this.tableSource.addItemSetChangeListener(this::datasourceItemSetChanged);
-        this.valueChangeSubscription = this.tableSource.addValueChangeListener(this::datasourceValueChanged);
-        this.stateChangeSubscription = this.tableSource.addStateChangeListener(this::datasourceStateChanged);
-        this.selectedItemChangeSubscription = this.tableSource.addSelectedItemChangeListener(this::datasourceSelectedItemChanged);
+        this.itemSetChangeSubscription = this.tableItems.addItemSetChangeListener(this::datasourceItemSetChanged);
+        this.valueChangeSubscription = this.tableItems.addValueChangeListener(this::datasourceValueChanged);
+        this.stateChangeSubscription = this.tableItems.addStateChangeListener(this::datasourceStateChanged);
+        this.selectedItemChangeSubscription = this.tableItems.addSelectedItemChangeListener(this::datasourceSelectedItemChanged);
     }
 
     public void setProperties(Collection<Object> properties) {
@@ -105,12 +105,12 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
 
     @Override
     public Item getItem(Object itemId) {
-        Object dataItem = tableSource.getItem(itemId);
+        Object dataItem = tableItems.getItem(itemId);
         return dataItem == null ? null : getItemWrapper(dataItem, itemId);
     }
 
     public I getInternalItem(Object itemId) {
-        return tableSource.getItem(itemId);
+        return tableItems.getItem(itemId);
     }
 
     protected Item getItemWrapper(Object dataItem, Object itemId) {
@@ -172,11 +172,11 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
 
     @Override
     public Collection<?> getItemIds() {
-        if (tableSource.getState() == BindingState.INACTIVE) {
+        if (tableItems.getState() == BindingState.INACTIVE) {
             return Collections.emptyList();
         }
 
-        return tableSource.getItemIds();
+        return tableItems.getItemIds();
     }
 
     @Override
@@ -187,21 +187,21 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
 
     @Override
     public Class<?> getType(Object propertyId) {
-        return tableSource.getType(propertyId);
+        return tableItems.getType(propertyId);
     }
 
     @Override
     public int size() {
-        if (tableSource.getState() == BindingState.INACTIVE) {
+        if (tableItems.getState() == BindingState.INACTIVE) {
             return 0;
         }
 
-        return tableSource.size();
+        return tableItems.size();
     }
 
     @Override
     public boolean containsId(Object itemId) {
-        return tableSource.containsId(itemId);
+        return tableItems.containsId(itemId);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
     @Override
     public boolean addContainerProperty(Object propertyId, Class<?> type, Object defaultValue)
             throws UnsupportedOperationException {
-        if (tableSource.supportsProperty(propertyId)) {
+        if (tableItems.supportsProperty(propertyId)) {
             return this.properties.add(propertyId);
         }
         throw new UnsupportedOperationException();
@@ -261,7 +261,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         removeItemSetChangeListener(listener);
     }
 
-    protected void datasourceItemSetChanged(TableSource.ItemSetChangeEvent<I> e) {
+    protected void datasourceItemSetChanged(TableItems.ItemSetChangeEvent<I> e) {
         for (TableItemWrapper itemWrapper : itemsCache.values()) {
             returnItemWrapper(itemWrapper);
         }
@@ -277,7 +277,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         dataEventsDelegate.tableSourceItemSetChanged(e);
     }
 
-    protected void datasourceValueChanged(TableSource.ValueChangeEvent<I> e) {
+    protected void datasourceValueChanged(TableItems.ValueChangeEvent<I> e) {
         for (Property.ValueChangeListener listener : propertyValueChangeListeners) {
             // table implementation does not use property of value change event
             // see /com/vaadin/v7/ui/Table.java:valueChange(Property.ValueChangeEvent event)
@@ -287,7 +287,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         dataEventsDelegate.tableSourcePropertyValueChanged(e);
     }
 
-    protected void datasourceStateChanged(TableSource.StateChangeEvent<I> e) {
+    protected void datasourceStateChanged(TableItems.StateChangeEvent<I> e) {
         if (e.getState() == BindingState.INACTIVE) {
             for (TableItemWrapper itemWrapper : itemsCache.values()) {
                 returnItemWrapper(itemWrapper);
@@ -298,12 +298,12 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         dataEventsDelegate.tableSourceStateChanged(e);
     }
 
-    protected void datasourceSelectedItemChanged(TableSource.SelectedItemChangeEvent<I> e) {
+    protected void datasourceSelectedItemChanged(TableItems.SelectedItemChangeEvent<I> e) {
         dataEventsDelegate.tableSourceSelectedItemChanged(e);
     }
 
-    public TableSource<I> getTableSource() {
-        return tableSource;
+    public TableItems<I> getTableItems() {
+        return tableItems;
     }
 
     public void addValueChangeListener(Property.ValueChangeListener propertyValueChangeListener) {

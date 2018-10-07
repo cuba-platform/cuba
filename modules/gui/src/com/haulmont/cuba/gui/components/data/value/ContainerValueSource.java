@@ -37,8 +37,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class ContainerValueSource<E extends Entity, V> implements EntityValueSource<E, V> {
 
-    private final InstanceContainer<E> container;
-    private final MetaPropertyPath metaPropertyPath;
+    protected final InstanceContainer<E> container;
+    protected final MetaPropertyPath metaPropertyPath;
 
     protected BindingState state = BindingState.INACTIVE;
 

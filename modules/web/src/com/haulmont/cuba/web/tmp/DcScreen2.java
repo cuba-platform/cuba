@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -91,7 +91,7 @@ public class DcScreen2 extends AbstractWindow {
 
 //        container.setItems(users);
 
-        table.setDataSource(new CollectionContainerTableSource<>(container));
+        table.setItems(new ContainerTableItems<>(container));
 
         textField1.setValueSource(new ContainerValueSource<>(container, "name"));
     }

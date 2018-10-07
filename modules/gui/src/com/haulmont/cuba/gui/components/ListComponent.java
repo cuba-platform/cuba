@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.DataSource;
+import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
@@ -40,7 +40,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
     @Deprecated
     CollectionDatasource getDatasource();
 
-    DataSource<E> getDataSource();
+    DataUnit<E> getItems();
 
     /**
      * Allows to set icons for particular rows in the table.

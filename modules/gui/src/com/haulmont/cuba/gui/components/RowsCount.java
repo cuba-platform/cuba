@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.components.data.TableSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.EventObject;

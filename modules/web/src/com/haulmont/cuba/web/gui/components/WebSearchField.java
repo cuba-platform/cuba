@@ -22,8 +22,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
-import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
@@ -113,7 +113,7 @@ public class WebSearchField<V extends Entity> extends WebLookupField<V> implemen
             filterForDs = QueryUtils.escapeForLike(filterForDs);
         }
 
-        CollectionDatasource optionsDatasource = ((CollectionDatasourceOptions) optionsBinding.getSource()).getDatasource();
+        CollectionDatasource optionsDatasource = ((DatasourceOptions) optionsBinding.getSource()).getDatasource();
 
         if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
             setValue(null);
@@ -233,10 +233,10 @@ public class WebSearchField<V extends Entity> extends WebLookupField<V> implemen
     }
 
     @Override
-    public void setOptionsSource(OptionsSource<V> optionsSource) {
-        if (optionsSource != null && !(optionsSource instanceof CollectionDatasourceOptions)) {
-            throw new UnsupportedOperationException("SearchField supports only CollectionDatasourceOptions as options source");
+    public void setOptions(Options<V> options) {
+        if (options != null && !(options instanceof DatasourceOptions)) {
+            throw new UnsupportedOperationException("SearchField supports only DatasourceOptions as options source");
         }
-        super.setOptionsSource(optionsSource);
+        super.setOptions(options);
     }
 }

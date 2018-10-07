@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.GroupTableSource;
+import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.widgets.data.GroupTableContainer;
 
@@ -31,13 +31,13 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     protected Object first;
     protected Object last;
 
-    public GroupTableDataContainer(GroupTableSource<I> tableSource,
-                                   TableSourceEventsDelegate<I> dataEventsDelegate) {
+    public GroupTableDataContainer(GroupTableItems<I> tableSource,
+                                   TableItemsEventsDelegate<I> dataEventsDelegate) {
         super(tableSource, dataEventsDelegate);
     }
 
-    protected GroupTableSource<I> getGroupTableSource() {
-        return (GroupTableSource<I>) tableSource;
+    protected GroupTableItems<I> getGroupTableSource() {
+        return (GroupTableItems<I>) tableItems;
     }
 
     @Override
@@ -189,7 +189,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
 
     @Override
     public Collection<?> getItemIds() {
-        if (tableSource.getState() == BindingState.INACTIVE) {
+        if (tableItems.getState() == BindingState.INACTIVE) {
             return Collections.emptyList();
         }
 
@@ -226,7 +226,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
 
     protected void collectItemIds(GroupInfo groupId, List<Object> itemIds) {
         if (expandedGroups.contains(groupId)) {
-            GroupTableSource<I> groupTableSource = getGroupTableSource();
+            GroupTableItems<I> groupTableSource = getGroupTableSource();
 
             if (groupTableSource.hasChildren(groupId)) {
                 List<GroupInfo> children = groupTableSource.getChildren(groupId);

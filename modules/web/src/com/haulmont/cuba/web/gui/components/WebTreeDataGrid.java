@@ -3,8 +3,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeDataGrid;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.TreeDataGridSource;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.datagrid.HierarchicalDataGridDataProvider;
 import com.haulmont.cuba.web.widgets.CubaTreeGrid;
@@ -37,18 +37,18 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Nullable
     @Override
-    public TreeDataGridSource<E> getDataSource() {
-        return (TreeDataGridSource<E>) super.getDataSource();
+    public TreeDataGridItems<E> getItems() {
+        return (TreeDataGridItems<E>) super.getItems();
     }
 
     @Override
-    public void setDataSource(DataGridSource<E> dataGridSource) {
-        if (dataGridSource != null
-                && !(dataGridSource instanceof TreeDataGridSource)) {
-            throw new IllegalArgumentException("TreeDataGrid supports only TreeDataGridSource data binding");
+    public void setItems(DataGridItems<E> dataGridItems) {
+        if (dataGridItems != null
+                && !(dataGridItems instanceof TreeDataGridItems)) {
+            throw new IllegalArgumentException("TreeDataGrid supports only TreeDataGridItems data binding");
         }
 
-        super.setDataSource(dataGridSource);
+        super.setItems(dataGridItems);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     }
 
     @Override
-    protected DataGridDataProvider<E> createDataGridDataProvider(DataGridSource<E> dataGridSource) {
-        return new HierarchicalDataGridDataProvider<>((TreeDataGridSource<E>) dataGridSource, this);
+    protected DataGridDataProvider<E> createDataGridDataProvider(DataGridItems<E> dataGridItems) {
+        return new HierarchicalDataGridDataProvider<>((TreeDataGridItems<E>) dataGridItems, this);
     }
 
     @Override
@@ -115,8 +115,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Override
     public void expandAll() {
-        if (getDataSource() != null) {
-            expandRecursively(getDataSource().getChildren(null), Integer.MAX_VALUE);
+        if (getItems() != null) {
+            expandRecursively(getItems().getChildren(null), Integer.MAX_VALUE);
         }
     }
 
@@ -132,8 +132,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
 
     @Override
     public void collapseAll() {
-        if (getDataSource() != null) {
-            collapseRecursively(getDataSource().getChildren(null), Integer.MAX_VALUE);
+        if (getItems() != null) {
+            collapseRecursively(getItems().getChildren(null), Integer.MAX_VALUE);
         }
     }
 

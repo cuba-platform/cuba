@@ -20,7 +20,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.ScreenData;
@@ -77,7 +77,7 @@ public class DcScreen4 extends AbstractWindow {
         usersLoader.setParameter("groupId", UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
         usersContainer = screenData.getContainer("usersCont");
-        usersTable.setDataSource(new CollectionContainerTableSource<>(usersContainer));
+        usersTable.setItems(new ContainerTableItems<>(usersContainer));
 
         loginField.addValueChangeListener(e -> {
             usersLoader.setParameter("login", Strings.isNullOrEmpty((String) e.getValue()) ? null : "(?i)%" + e.getValue() + "%");

@@ -31,9 +31,9 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.compatibility.PickerFieldFieldListenerWrapper;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -403,10 +403,10 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                             && pickerField instanceof LookupPickerField) {
                         LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
-                        OptionsSource optionsSource = lookupPickerField.getOptionsSource();
-                        if (optionsSource instanceof EntityOptionsSource
+                        Options options = lookupPickerField.getOptions();
+                        if (options instanceof EntityOptions
                                 && lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                            ((EntityOptionsSource) optionsSource).refresh();
+                            ((EntityOptions) options).refresh();
                         }
                     }
 
@@ -456,9 +456,9 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             if (pickerField instanceof LookupPickerField) {
                 LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
-                OptionsSource optionsSource = lookupPickerField.getOptionsSource();
-                if (optionsSource instanceof EntityOptionsSource) {
-                    EntityOptionsSource entityOptionsSource = (EntityOptionsSource) optionsSource;
+                Options options = lookupPickerField.getOptions();
+                if (options instanceof EntityOptions) {
+                    EntityOptions entityOptionsSource = (EntityOptions) options;
                     if (entityOptionsSource.containsItem(newValue)) {
                         entityOptionsSource.updateItem(newValue);
                     }
@@ -786,7 +786,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             if (pickerField instanceof LookupField) {
                 LookupField lookupPickerField = ((LookupField) pickerField);
 
-                EntityOptionsSource entityOptionsSource = (EntityOptionsSource) lookupPickerField.getOptionsSource();
+                EntityOptions entityOptionsSource = (EntityOptions) lookupPickerField.getOptions();
                 if (entityOptionsSource != null
                         && entityOptionsSource.containsItem(item)) {
                     entityOptionsSource.updateItem(item);

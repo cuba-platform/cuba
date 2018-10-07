@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 
 /**
  * vaadin8 todo JavaDoc
- * vaadin8 subclasses for EntityValueBinding
  *
  * @param <V> todo
  */

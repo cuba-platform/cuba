@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -29,7 +29,7 @@ import com.haulmont.cuba.gui.data.Datasource;
  * vaadin8
  */
 @Deprecated
-public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValueBinding<V> {
+public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValueSource<V> {
 
     /**
      * vaadin8

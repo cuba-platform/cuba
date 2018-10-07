@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 
 /**
  * Progress bar is a component that visually displays the progress of some task.
@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.data.HasValueBinding;
  * To indicate that a task of unknown length is executing, you can put a progress bar into indeterminate mode.
  */
 public interface ProgressBar extends Component, Component.BelongToFrame,
-        HasValue<Double>, HasValueBinding<Double>, DatasourceComponent<Double>,
+        HasValue<Double>, HasValueSource<Double>, DatasourceComponent<Double>,
         Component.HasIcon, Component.HasCaption, HasContextHelp {
 
     String NAME = "progressBar";

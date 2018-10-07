@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.EditorScreens;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -82,11 +82,11 @@ public class EditAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (target == null ||!(target.getDataSource() instanceof EntityDataSource)) {
+        if (target == null ||!(target.getItems() instanceof EntityDataUnit)) {
             return false;
         }
 
-        MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
+        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -103,12 +103,12 @@ public class EditAction extends SecuredListAction {
     public void refreshState() {
         super.refreshState();
 
-        if (!(target.getDataSource() instanceof EntityDataSource)) {
+        if (!(target.getItems() instanceof EntityDataUnit)) {
             return;
         }
 
         if (!captionInitialized) {
-            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
+            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
             if (metaClass != null) {
                 if (security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
                     setCaption(messages.getMainMessage("actions.Edit"));
@@ -124,11 +124,11 @@ public class EditAction extends SecuredListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target.getDataSource() instanceof EntityDataSource)) {
-                throw new IllegalStateException("EditAction target dataSource is null or does not implement EntityDataSource");
+            if (!(target.getItems() instanceof EntityDataUnit)) {
+                throw new IllegalStateException("EditAction target dataSource is null or does not implement EntityDataUnit");
             }
 
-            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
+            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
             if (metaClass == null) {
                 throw new IllegalStateException("Target is not bound to entity");
             }

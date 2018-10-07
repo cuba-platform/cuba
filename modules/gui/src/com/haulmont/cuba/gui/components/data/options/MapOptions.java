@@ -20,13 +20,13 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class MapOptions<V> implements OptionsSource<V> {
+public class MapOptions<V> implements Options<V> {
     protected Map<String, V> options;
 
     public MapOptions(Map<String, V> options) {

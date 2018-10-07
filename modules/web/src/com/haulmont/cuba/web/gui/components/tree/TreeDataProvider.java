@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.tree;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.TreeSource;
+import com.haulmont.cuba.gui.components.data.TreeItems;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
 import com.vaadin.data.provider.*;
 import com.vaadin.server.SerializablePredicate;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class TreeDataProvider<T> extends AbstractDataProvider<T, SerializablePredicate<T>>
         implements HierarchicalDataProvider<T, SerializablePredicate<T>>, EnhancedTreeDataProvider<T> {
 
-    protected TreeSource<T> treeSource;
+    protected TreeItems<T> treeItems;
     protected TreeSourceEventsDelegate<T> eventsDelegate;
 
     protected Subscription itemSetChangeSubscription;
@@ -36,19 +36,19 @@ public class TreeDataProvider<T> extends AbstractDataProvider<T, SerializablePre
     protected Subscription stateChangeSubscription;
     protected Subscription selectedItemChangeSubscription;
 
-    public TreeDataProvider(TreeSource<T> treeSource,
+    public TreeDataProvider(TreeItems<T> treeItems,
                             TreeSourceEventsDelegate<T> eventsDelegate) {
-        this.treeSource = treeSource;
+        this.treeItems = treeItems;
         this.eventsDelegate = eventsDelegate;
 
         this.itemSetChangeSubscription =
-                this.treeSource.addItemSetChangeListener(this::datasourceItemSetChanged);
+                this.treeItems.addItemSetChangeListener(this::datasourceItemSetChanged);
         this.valueChangeSubscription =
-                this.treeSource.addValueChangeListener(this::datasourceValueChanged);
+                this.treeItems.addValueChangeListener(this::datasourceValueChanged);
         this.stateChangeSubscription =
-                this.treeSource.addStateChangeListener(this::datasourceStateChanged);
+                this.treeItems.addStateChangeListener(this::datasourceStateChanged);
         this.selectedItemChangeSubscription =
-                this.treeSource.addSelectedItemChangeListener(this::datasourceSelectedItemChanged);
+                this.treeItems.addSelectedItemChangeListener(this::datasourceSelectedItemChanged);
     }
 
     public void unbind() {
@@ -73,13 +73,13 @@ public class TreeDataProvider<T> extends AbstractDataProvider<T, SerializablePre
         }
     }
 
-    public TreeSource<T> getTreeSource() {
-        return treeSource;
+    public TreeItems<T> getTreeItems() {
+        return treeItems;
     }
 
     @Override
     public Object getId(T item) {
-        return treeSource.getItemId(item);
+        return treeItems.getItemId(item);
     }
 
     @Override
@@ -90,69 +90,69 @@ public class TreeDataProvider<T> extends AbstractDataProvider<T, SerializablePre
     @Override
     public int size(Query<T, SerializablePredicate<T>> query) {
         // FIXME: gg, query?
-        if (treeSource.getState() == BindingState.INACTIVE) {
+        if (treeItems.getState() == BindingState.INACTIVE) {
             return 0;
         }
 
-        return treeSource.size();
+        return treeItems.size();
     }
 
     @Override
     public int getChildCount(HierarchicalQuery<T, SerializablePredicate<T>> query) {
-        if (treeSource.getState() == BindingState.INACTIVE) {
+        if (treeItems.getState() == BindingState.INACTIVE) {
             return 0;
         }
 
-        return treeSource.getChildCount(query.getParent());
+        return treeItems.getChildCount(query.getParent());
     }
 
     @Override
     public Stream<T> fetchChildren(HierarchicalQuery<T, SerializablePredicate<T>> query) {
-        if (treeSource.getState() == BindingState.INACTIVE) {
+        if (treeItems.getState() == BindingState.INACTIVE) {
             return Stream.empty();
         }
 
-        return treeSource.getChildren(query.getParent())
+        return treeItems.getChildren(query.getParent())
                 .skip(query.getOffset())
                 .limit(query.getLimit());
     }
 
     @Override
     public boolean hasChildren(T item) {
-        return treeSource.hasChildren(item);
+        return treeItems.hasChildren(item);
     }
 
     @Override
     public Stream<T> getItems() {
-        return treeSource.getItems();
+        return treeItems.getItems();
     }
 
     @Override
     public T getParent(T item) {
-        if (treeSource.getState() == BindingState.INACTIVE) {
+        if (treeItems.getState() == BindingState.INACTIVE) {
             return null;
         }
 
-        return treeSource.getParent(item);
+        return treeItems.getParent(item);
     }
 
-    protected void datasourceItemSetChanged(TreeSource.ItemSetChangeEvent<T> event) {
+    protected void datasourceItemSetChanged(TreeItems.ItemSetChangeEvent<T> event) {
         fireEvent(new DataChangeEvent<>(this));
 
         eventsDelegate.treeSourceItemSetChanged(event);
     }
 
-    protected void datasourceValueChanged(TreeSource.ValueChangeEvent<T> event) {
+    protected void datasourceValueChanged(TreeItems.ValueChangeEvent<T> event) {
         fireEvent(new DataChangeEvent.DataRefreshEvent<>(this, event.getItem()));
 
         eventsDelegate.treeSourcePropertyValueChanged(event);
     }
 
-    protected void datasourceStateChanged(TreeSource.StateChangeEvent<T> event) {
+    protected void datasourceStateChanged(TreeItems.StateChangeEvent<T> event) {
         eventsDelegate.treeSourceStateChanged(event);
     }
 
-    protected void datasourceSelectedItemChanged(TreeSource.SelectedItemChangeEvent<T> event) {
+    protected void datasourceSelectedItemChanged(TreeItems.SelectedItemChangeEvent<T> event) {
         eventsDelegate.treeSourceSelectedItemChanged(event);
     }
 }

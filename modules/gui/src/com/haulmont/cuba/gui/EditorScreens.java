@@ -25,8 +25,8 @@ import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.data.DataSource;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
+import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.*;
@@ -76,9 +76,9 @@ public class EditorScreens {
         boolean nested = false;
 
         if (listComponent != null) {
-            DataSource<E> dataSource = listComponent.getDataSource();
-            CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataSource ?
-                    ((ContainerDataSource) dataSource).getContainer() : null;
+            DataUnit<E> dataSource = listComponent.getItems();
+            CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataUnit ?
+                    ((ContainerDataUnit) dataSource).getContainer() : null;
             container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
             nested = container instanceof Nestable && ((Nestable) container).isNested();
         }

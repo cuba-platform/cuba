@@ -30,10 +30,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
-import com.haulmont.cuba.gui.components.data.meta.EntityDataGridSource;
-import com.haulmont.cuba.gui.components.data.meta.LegacyDataSource;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
+import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
@@ -48,7 +48,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
-import com.haulmont.cuba.web.gui.components.datagrid.DataGridSourceEventsDelegate;
+import com.haulmont.cuba.web.gui.components.datagrid.DataGridItemsEventsDelegate;
 import com.haulmont.cuba.web.gui.components.datagrid.SortableDataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -103,7 +103,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E>, E extends Entity>
         extends WebAbstractComponent<C>
         implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier<E>,
-        DataGridSourceEventsDelegate<E>, HasInnerComponents, InitializingBean {
+        DataGridItemsEventsDelegate<E>, HasInnerComponents, InitializingBean {
 
     protected static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
     protected static final String TEXT_SELECTION_ENABLED_STYLE = "text-selection-enabled";
@@ -371,24 +371,24 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onSelectionChange(com.vaadin.event.selection.SelectionEvent<E> e) {
-        DataGridSource<E> dataGridSource = getDataSource();
+        DataGridItems<E> dataGridItems = getItems();
 
-        if (dataGridSource == null
-                || dataGridSource.getState() == BindingState.INACTIVE) {
+        if (dataGridItems == null
+                || dataGridItems.getState() == BindingState.INACTIVE) {
             return;
         }
 
         Set<E> selected = getSelected();
         if (selected.isEmpty()) {
-            dataGridSource.setSelectedItem(null);
+            dataGridItems.setSelectedItem(null);
         } else {
             // reset selection and select new item
             if (isMultiSelect()) {
-                dataGridSource.setSelectedItem(null);
+                dataGridItems.setSelectedItem(null);
             }
 
             E newItem = selected.iterator().next();
-            dataGridSource.setSelectedItem(newItem);
+            dataGridItems.setSelectedItem(newItem);
         }
 
         LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
@@ -762,31 +762,31 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Nullable
     @Override
-    public DataGridSource<E> getDataSource() {
-        return this.dataBinding != null ? this.dataBinding.getDataGridSource() : null;
+    public DataGridItems<E> getItems() {
+        return this.dataBinding != null ? this.dataBinding.getDataGridItems() : null;
     }
 
-    protected DataGridSource<E> getDataGridSourceNN() {
-        DataGridSource<E> dataGridSource = getDataSource();
-        if (dataGridSource == null
-                || dataGridSource.getState() == BindingState.INACTIVE) {
-            throw new IllegalStateException("DataGridSource is not active");
+    protected DataGridItems<E> getDataGridSourceNN() {
+        DataGridItems<E> dataGridItems = getItems();
+        if (dataGridItems == null
+                || dataGridItems.getState() == BindingState.INACTIVE) {
+            throw new IllegalStateException("DataGridItems is not active");
         }
-        return dataGridSource;
+        return dataGridItems;
     }
 
-    protected EntityDataGridSource<E> getEntityDataGridSource() {
-        return getDataSource() != null ? (EntityDataGridSource<E>) getDataSource() : null;
+    protected EntityDataGridItems<E> getEntityDataGridSource() {
+        return getItems() != null ? (EntityDataGridItems<E>) getItems() : null;
     }
 
-    protected EntityDataGridSource<E> getEntityDataGridSourceNN() {
-        return (EntityDataGridSource<E>) getDataGridSourceNN();
+    protected EntityDataGridItems<E> getEntityDataGridSourceNN() {
+        return (EntityDataGridItems<E>) getDataGridSourceNN();
     }
 
     @Override
-    public void setDataSource(DataGridSource<E> dataGridSource) {
-        if (dataGridSource != null && !(dataGridSource instanceof EntityDataGridSource)) {
-            throw new IllegalArgumentException("DataGrid supports only EntityDataGridSource");
+    public void setItems(DataGridItems<E> dataGridItems) {
+        if (dataGridItems != null && !(dataGridItems instanceof EntityDataGridItems)) {
+            throw new IllegalArgumentException("DataGrid supports only EntityDataGridItems");
         }
 
         if (this.dataBinding != null) {
@@ -796,16 +796,16 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             this.component.setDataProvider(createEmptyDataProvider());
         }
 
-        if (dataGridSource != null) {
-            // DataGrid supports only EntityDataGridSource
-            EntityDataGridSource<E> entityDataGridSource = (EntityDataGridSource<E>) dataGridSource;
+        if (dataGridItems != null) {
+            // DataGrid supports only EntityDataGridItems
+            EntityDataGridItems<E> entityDataGridSource = (EntityDataGridItems<E>) dataGridItems;
 
             if (this.columns.isEmpty()) {
                 setupAutowiredColumns(entityDataGridSource);
             }
 
             // Bind new datasource
-            this.dataBinding = createDataGridDataProvider(dataGridSource);
+            this.dataBinding = createDataGridDataProvider(dataGridItems);
             this.component.setDataProvider(this.dataBinding);
 
             List<Column<E>> visibleColumnsOrder = getInitialVisibleColumns();
@@ -825,7 +825,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 rowsCount.setRowsCountTarget(this);
             }
 
-            if (!canBeSorted(dataGridSource)) {
+            if (!canBeSorted(dataGridItems)) {
                 setSortable(false);
             }
 
@@ -849,9 +849,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 });
     }
 
-    protected Collection<MetaPropertyPath> getAutowiredProperties(EntityDataGridSource<E> entityTableSource) {
-        if (entityTableSource instanceof ContainerDataSource) {
-            CollectionContainer container = ((ContainerDataSource) entityTableSource).getContainer();
+    protected Collection<MetaPropertyPath> getAutowiredProperties(EntityDataGridItems<E> entityTableSource) {
+        if (entityTableSource instanceof ContainerDataUnit) {
+            CollectionContainer container = ((ContainerDataUnit) entityTableSource).getContainer();
 
             return container.getView() != null ?
                     // if a view is specified - use view properties
@@ -860,8 +860,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                     metadataTools.getPropertyPaths(container.getEntityMetaClass());
         }
 
-        if (entityTableSource instanceof LegacyDataSource) {
-            CollectionDatasource datasource = ((LegacyDataSource) entityTableSource).getDatasource();
+        if (entityTableSource instanceof LegacyDataUnit) {
+            CollectionDatasource datasource = ((LegacyDataUnit) entityTableSource).getDatasource();
 
             return datasource.getView() != null ?
                     // if a view is specified - use view properties
@@ -874,7 +874,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
 
-    protected void setupAutowiredColumns(EntityDataGridSource<E> entityDataGridSource) {
+    protected void setupAutowiredColumns(EntityDataGridItems<E> entityDataGridSource) {
         Collection<MetaPropertyPath> paths = getAutowiredProperties(entityDataGridSource);
 
         for (MetaPropertyPath metaPropertyPath : paths) {
@@ -891,14 +891,14 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
     }
 
-    protected DataGridDataProvider<E> createDataGridDataProvider(DataGridSource<E> dataGridSource) {
-        return (dataGridSource instanceof DataGridSource.Sortable)
-                ? new SortableDataGridDataProvider<>((DataGridSource.Sortable<E>) dataGridSource, this)
-                : new DataGridDataProvider<>(dataGridSource, this);
+    protected DataGridDataProvider<E> createDataGridDataProvider(DataGridItems<E> dataGridItems) {
+        return (dataGridItems instanceof DataGridItems.Sortable)
+                ? new SortableDataGridDataProvider<>((DataGridItems.Sortable<E>) dataGridItems, this)
+                : new DataGridDataProvider<>(dataGridItems, this);
     }
 
     @Override
-    public void dataGridSourceItemSetChanged(DataGridSource.ItemSetChangeEvent<E> event) {
+    public void dataGridSourceItemSetChanged(DataGridItems.ItemSetChangeEvent<E> event) {
         // #PL-2035, reload selection from ds
         Set<E> selectedItems = getSelected();
         Set<E> newSelection = new HashSet<>();
@@ -929,17 +929,17 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     @Override
-    public void dataGridSourcePropertyValueChanged(DataGridSource.ValueChangeEvent<E> event) {
+    public void dataGridSourcePropertyValueChanged(DataGridItems.ValueChangeEvent<E> event) {
         refreshActionsState();
     }
 
     @Override
-    public void dataGridSourceStateChanged(DataGridSource.StateChangeEvent<E> event) {
+    public void dataGridSourceStateChanged(DataGridItems.StateChangeEvent<E> event) {
         refreshActionsState();
     }
 
     @Override
-    public void dataGridSourceSelectedItemChanged(DataGridSource.SelectedItemChangeEvent<E> event) {
+    public void dataGridSourceSelectedItemChanged(DataGridItems.SelectedItemChangeEvent<E> event) {
         refreshActionsState();
     }
 
@@ -1010,8 +1010,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void setSortable(boolean sortable) {
         this.sortable = sortable
-                && (getDataSource() == null
-                || canBeSorted(getDataSource()));
+                && (getItems() == null
+                || canBeSorted(getItems()));
         for (Column<E> column : getColumns()) {
             ((ColumnImpl<E>) column).updateSortable();
         }
@@ -1031,7 +1031,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected Datasource createItemDatasource(Entity item) {
-        EntityDataGridSource<E> entityDataGridSource = getEntityDataGridSourceNN();
+        EntityDataGridItems<E> entityDataGridSource = getEntityDataGridSourceNN();
 
         Datasource fieldDatasource = DsBuilder.create()
                 .setAllowCommit(false)
@@ -1109,13 +1109,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     public void editItem(Object itemId) {
         checkNotNullArgument(itemId, "Item's Id must be non null");
 
-        DataGridSource<E> dataGridSource = getDataSource();
-        if (dataGridSource == null
-                || dataGridSource.getState() == BindingState.INACTIVE) {
+        DataGridItems<E> dataGridItems = getItems();
+        if (dataGridItems == null
+                || dataGridItems.getState() == BindingState.INACTIVE) {
             return;
         }
 
-        E item = getDataSource().getItem(itemId);
+        E item = getItems().getItem(itemId);
         edit(item);
     }
 
@@ -1123,17 +1123,17 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     public void edit(E item) {
         checkNotNullArgument(item, "Entity must be non null");
 
-        DataGridSource<E> dataGridSource = getDataSource();
-        if (dataGridSource == null
-                || dataGridSource.getState() == BindingState.INACTIVE) {
+        DataGridItems<E> dataGridItems = getItems();
+        if (dataGridItems == null
+                || dataGridItems.getState() == BindingState.INACTIVE) {
             return;
         }
 
-        if (!dataGridSource.containsItem(item)) {
+        if (!dataGridItems.containsItem(item)) {
             throw new IllegalArgumentException("Datasource doesn't contain item");
         }
 
-        int rowIndex = dataGridSource.indexOfItem(item);
+        int rowIndex = dataGridItems.indexOfItem(item);
         component.getEditor().editRow(rowIndex);
     }
 
@@ -1541,10 +1541,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public void setSelected(Collection<E> items) {
-        DataGridSource<E> dataGridSource = getDataGridSourceNN();
+        DataGridItems<E> dataGridItems = getDataGridSourceNN();
 
         for (E item : items) {
-            if (!dataGridSource.containsItem(item)) {
+            if (!dataGridItems.containsItem(item)) {
                 throw new IllegalStateException("Datasource doesn't contain items");
             }
         }
@@ -1726,7 +1726,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected List<Column<E>> getInitialVisibleColumns() {
-        EntityDataGridSource<E> entityDataGridSource = getEntityDataGridSource();
+        EntityDataGridItems<E> entityDataGridSource = getEntityDataGridSource();
         if (entityDataGridSource == null
                 || entityDataGridSource.getState() == BindingState.INACTIVE) {
             return Collections.emptyList();
@@ -1767,12 +1767,12 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         Preconditions.checkNotNullArgument(item);
         Preconditions.checkNotNullArgument(destination);
 
-        DataGridSource<E> dataGridSource = getDataGridSourceNN();
-        if (!dataGridSource.containsItem(item)) {
+        DataGridItems<E> dataGridItems = getDataGridSourceNN();
+        if (!dataGridItems.containsItem(item)) {
             throw new IllegalArgumentException("Unable to find item in DataGrid");
         }
 
-        int rowIndex = dataGridSource.indexOfItem(item);
+        int rowIndex = dataGridItems.indexOfItem(item);
         component.scrollTo(rowIndex, WebWrapperUtils.convertToGridScrollDestination(destination));
     }
 
@@ -1791,8 +1791,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         component.repaint();
     }
 
-    protected boolean canBeSorted(@Nullable DataGridSource<E> dataGridSource) {
-        return dataGridSource instanceof DataGridSource.Sortable;
+    protected boolean canBeSorted(@Nullable DataGridItems<E> dataGridItems) {
+        return dataGridItems instanceof DataGridItems.Sortable;
     }
 
     @Override

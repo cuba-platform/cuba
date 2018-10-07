@@ -18,7 +18,7 @@ package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.components.TextField
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.InstanceContainer
@@ -63,7 +63,7 @@ class ContainerBindingTest extends WebSpec {
 
         Table<Foo> table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath("name")))
-        table.setDataSource(new CollectionContainerTableSource(container))
+        table.setItems(new ContainerTableItems(container))
 
         TextField textField = componentsFactory.createComponent(TextField)
         textField.setValueSource(new ContainerValueSource(container, 'name'))

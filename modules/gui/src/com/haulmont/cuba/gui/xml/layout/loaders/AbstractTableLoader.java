@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
@@ -185,7 +185,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
             }
             //noinspection unchecked
-            resultComponent.setDataSource(createContainerTableSource(collectionContainer));
+            resultComponent.setItems(createContainerTableSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);
@@ -209,8 +209,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     @SuppressWarnings("unchecked")
-    protected CollectionContainerTableSource createContainerTableSource(CollectionContainer container) {
-        return new CollectionContainerTableSource(container);
+    protected ContainerTableItems createContainerTableSource(CollectionContainer container) {
+        return new ContainerTableItems(container);
     }
 
     protected MetadataTools getMetadataTools() {

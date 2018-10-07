@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
@@ -184,20 +184,20 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     }
 
     @Override
-    public OptionsSource<I> getOptionsSource() {
+    public Options<I> getOptions() {
         return optionsBinding != null ? optionsBinding.getSource() : null;
     }
 
     @Override
-    public void setOptionsSource(OptionsSource<I> optionsSource) {
+    public void setOptions(Options<I> options) {
         if (this.optionsBinding != null) {
             this.optionsBinding.unbind();
             this.optionsBinding = null;
         }
 
-        if (optionsSource != null) {
+        if (options != null) {
             OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
-            this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
+            this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }
     }

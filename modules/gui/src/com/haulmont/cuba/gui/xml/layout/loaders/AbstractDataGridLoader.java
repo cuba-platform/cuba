@@ -32,8 +32,8 @@ import com.haulmont.cuba.gui.components.DataGrid.Column;
 import com.haulmont.cuba.gui.components.HasButtonsPanel;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.datagrid.CollectionContainerDataGridSource;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.ContainerDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
@@ -172,7 +172,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
             }
             //noinspection unchecked
-            resultComponent.setDataSource(createContainerDataGridSource(collectionContainer));
+            resultComponent.setItems(createContainerDataGridSource(collectionContainer));
         } else {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);
@@ -184,8 +184,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     @SuppressWarnings("unchecked")
-    protected DataGridSource createContainerDataGridSource(CollectionContainer container) {
-        return new CollectionContainerDataGridSource(container);
+    protected DataGridItems createContainerDataGridSource(CollectionContainer container) {
+        return new ContainerDataGridItems(container);
     }
 
     protected void loadEditorEnabled(DataGrid component, Element element) {

@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
@@ -169,7 +169,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
 
             if (metaProperty.getRange().isEnum()) {
                 //noinspection unchecked
-                setOptionsSource(new EnumOptions(metaProperty.getJavaType()));
+                setOptions(new EnumOptions(metaProperty.getJavaType()));
             }
 
             // vaadin8 dynamic attributes
@@ -259,20 +259,20 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
     }
 
     @Override
-    public OptionsSource<V> getOptionsSource() {
+    public Options<V> getOptions() {
         return optionsBinding != null ? optionsBinding.getSource() : null;
     }
 
     @Override
-    public void setOptionsSource(OptionsSource<V> optionsSource) {
+    public void setOptions(Options<V> options) {
         if (this.optionsBinding != null) {
             this.optionsBinding.unbind();
             this.optionsBinding = null;
         }
 
-        if (optionsSource != null) {
+        if (options != null) {
             OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
-            this.optionsBinding = optionsBinder.bind(optionsSource, this, this::setItemsToPresentation);
+            this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }
     }

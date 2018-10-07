@@ -18,8 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.TreeSource;
-import com.haulmont.cuba.gui.components.data.tree.HierarchicalDatasourceTreeAdapter;
+import com.haulmont.cuba.gui.components.data.TreeItems;
+import com.haulmont.cuba.gui.components.data.tree.DatasourceTreeItems;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
@@ -78,24 +78,23 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
     @Deprecated
     default void setDatasource(HierarchicalDatasource datasource) {
         //noinspection unchecked
-        setDataSource(datasource != null
-                ? new HierarchicalDatasourceTreeAdapter(datasource)
+        setItems(datasource != null
+                ? new DatasourceTreeItems(datasource)
                 : null);
     }
 
     @Deprecated
     @Override
     default HierarchicalDatasource getDatasource() {
-        TreeSource<E> treeSource = getDataSource();
-        return treeSource != null
-                ? ((HierarchicalDatasourceTreeAdapter) treeSource).getDatasource()
+        TreeItems<E> treeItems = getItems();
+        return treeItems != null
+                ? ((DatasourceTreeItems) treeItems).getDatasource()
                 : null;
     }
 
     @Override
-    TreeSource<E> getDataSource();
-
-    void setDataSource(TreeSource<E> treeSource);
+    TreeItems<E> getItems();
+    void setItems(TreeItems<E> treeItems);
 
     /**
      * Assign action to be executed on double click inside a tree node.

@@ -30,7 +30,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import org.springframework.stereotype.Component;
 
@@ -88,11 +88,11 @@ public class AttributeAccessSupport {
     }
 
     protected void visitComponent(com.haulmont.cuba.gui.components.Component component, boolean reset) {
-        if (!(component instanceof HasValueBinding)) {
+        if (!(component instanceof HasValueSource)) {
             return;
         }
 
-        ValueSource valueSource = ((HasValueBinding) component).getValueSource();
+        ValueSource valueSource = ((HasValueSource) component).getValueSource();
         if (!(valueSource instanceof EntityValueSource)) {
             return;
         }

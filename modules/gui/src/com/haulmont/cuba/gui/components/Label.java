@@ -17,14 +17,14 @@
 package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
-public interface Label<V> extends HasValueBinding<V>, DatasourceComponent<V>, HasFormatter<V>,
+public interface Label<V> extends HasValueSource<V>, DatasourceComponent<V>, HasFormatter<V>,
         Component.HasDescription, Component.HasIcon, HasContextHelp {
 
     String NAME = "label";

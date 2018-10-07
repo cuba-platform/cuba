@@ -20,19 +20,16 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
-import com.haulmont.cuba.gui.components.data.options.CollectionDatasourceOptions;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.ListOptions;
 import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * todo JavaDoc
@@ -41,15 +38,8 @@ import java.util.stream.Stream;
  * @param <I>
  */
 public interface OptionsField<V, I> extends Field<V> {
-    default void setOptions(Stream<I> options) {
-        setOptions(options.collect(Collectors.toList()));
-    }
-    default void setOptions(Collection<I> options) {
-        setOptionsSource(new ListOptions<>(options));
-    }
-
-    void setOptionsSource(OptionsSource<I> optionsSource);
-    OptionsSource<I> getOptionsSource();
+    void setOptions(Options<I> options);
+    Options<I> getOptions();
 
     void setOptionCaptionProvider(Function<? super I, String> captionProvider);
     Function<? super I, String> getOptionCaptionProvider();
@@ -70,9 +60,9 @@ public interface OptionsField<V, I> extends Field<V> {
 
     @Deprecated
     default CollectionDatasource getOptionsDatasource() {
-        OptionsSource<I> optionsSource = getOptionsSource();
-        if (optionsSource instanceof CollectionDatasourceOptions) {
-            return ((CollectionDatasourceOptions) optionsSource).getDatasource();
+        Options<I> options = getOptions();
+        if (options instanceof DatasourceOptions) {
+            return ((DatasourceOptions) options).getDatasource();
         }
         return null;
     }
@@ -80,30 +70,30 @@ public interface OptionsField<V, I> extends Field<V> {
     @Deprecated
     default void setOptionsDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setOptionsSource(null);
+            setOptions(null);
         } else {
-            setOptionsSource(new CollectionDatasourceOptions<>(datasource));
+            setOptions(new DatasourceOptions<>(datasource));
         }
     }
 
     default List getOptionsList() {
-        OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof ListOptions) {
-            return (List) ((ListOptions) optionsSource).getItemsCollection();
+        Options options = getOptions();
+        if (options instanceof ListOptions) {
+            return (List) ((ListOptions) options).getItemsCollection();
         }
         return null;
     }
     @SuppressWarnings("unchecked")
     default void setOptionsList(List optionsList) {
-        setOptionsSource(new ListOptions<>(optionsList));
+        setOptions(new ListOptions<>(optionsList));
     }
 
     @SuppressWarnings("unchecked")
     @Deprecated
     default Map<String, ?> getOptionsMap() {
-        OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof MapOptions) {
-            return ((MapOptions) optionsSource).getItemsCollection();
+        Options options = getOptions();
+        if (options instanceof MapOptions) {
+            return ((MapOptions) options).getItemsCollection();
         }
         return null;
     }
@@ -117,16 +107,16 @@ public interface OptionsField<V, I> extends Field<V> {
 
         BiMap<String, I> biMap = ImmutableBiMap.copyOf(map);
 
-        setOptionsSource(new MapOptions<>(map));
+        setOptions(new MapOptions<>(map));
         setOptionCaptionProvider(v -> biMap.inverse().get(v));
     }
 
     @SuppressWarnings("unchecked")
     @Deprecated
     default Class<? extends EnumClass> getOptionsEnum() {
-        OptionsSource optionsSource = getOptionsSource();
-        if (optionsSource instanceof EnumOptions) {
-            return ((EnumOptions) optionsSource).getEnumClass();
+        Options options = getOptions();
+        if (options instanceof EnumOptions) {
+            return ((EnumOptions) options).getEnumClass();
         }
         return null;
     }
@@ -139,6 +129,6 @@ public interface OptionsField<V, I> extends Field<V> {
     default void setOptionsEnum(Class<V> optionsEnum) {
         Preconditions.checkNotNullArgument(optionsEnum);
 
-        setOptionsSource(new EnumOptions(optionsEnum));
+        setOptions(new EnumOptions(optionsEnum));
     }
 }

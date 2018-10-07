@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components.table;
 
-import com.haulmont.cuba.gui.components.data.TableSource;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Item;
@@ -26,7 +26,7 @@ import java.util.Collection;
 @SuppressWarnings("deprecation")
 public class SortableDataContainer<I> extends TableDataContainer<I> implements Container.Sortable, TableSortableContainer {
 
-    public SortableDataContainer(TableSource.Sortable<I> tableDataSource, TableSourceEventsDelegate<I> dataEventsDelegate) {
+    public SortableDataContainer(TableItems.Sortable<I> tableDataSource, TableItemsEventsDelegate<I> dataEventsDelegate) {
         super(tableDataSource, dataEventsDelegate);
     }
 
@@ -35,8 +35,8 @@ public class SortableDataContainer<I> extends TableDataContainer<I> implements C
         getSortableTableSource().sort(propertyId, ascending);
     }
 
-    protected TableSource.Sortable getSortableTableSource() {
-        return (TableSource.Sortable) tableSource;
+    protected TableItems.Sortable getSortableTableSource() {
+        return (TableItems.Sortable) tableItems;
     }
 
     @Override

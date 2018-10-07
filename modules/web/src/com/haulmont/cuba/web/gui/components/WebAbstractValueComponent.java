@@ -21,7 +21,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.HasValueBinding;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import java.util.function.Consumer;
 
 public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
-        extends WebAbstractComponent<T> implements HasValue<V>, HasValueBinding<V> {
+        extends WebAbstractComponent<T> implements HasValue<V>, HasValueSource<V> {
 
     protected BeanLocator beanLocator;
 

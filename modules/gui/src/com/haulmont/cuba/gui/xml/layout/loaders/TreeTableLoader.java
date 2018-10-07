@@ -20,8 +20,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.components.data.table.CollectionContainerTableSource;
-import com.haulmont.cuba.gui.components.data.table.HierarchicalContainerTableSource;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
+import com.haulmont.cuba.gui.components.data.table.ContainerTreeTableItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.dom4j.Element;
 
@@ -35,7 +35,7 @@ public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected CollectionContainerTableSource createContainerTableSource(CollectionContainer container) {
+    protected ContainerTableItems createContainerTableSource(CollectionContainer container) {
         Element rowsEl = element.element("rows");
         String hierarchyProperty = element.attributeValue("hierarchyProperty");
         if (hierarchyProperty == null && rowsEl != null) {
@@ -46,6 +46,6 @@ public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
             throw new GuiDevelopmentException("TreeTable doesn't have 'hierarchyProperty' attribute", context.getCurrentFrameId(),
                     "TreeTable ID", element.attributeValue("id"));
         }
-        return new HierarchicalContainerTableSource(container, hierarchyProperty);
+        return new ContainerTreeTableItems(container, hierarchyProperty);
     }
 }

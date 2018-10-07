@@ -20,9 +20,9 @@ import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.datagrid.CollectionDatasourceDataGridAdapter;
-import com.haulmont.cuba.gui.components.data.datagrid.SortableCollectionDatasourceDataGridAdapter;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.DatasourceDataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.SortableDatasourceDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -157,44 +157,44 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      */
     @Override
     @Nullable
-    DataGridSource<E> getDataSource();
+    DataGridItems<E> getItems();
 
     /**
-     * Sets an instance of {@link DataGridSource} as the DataGrid data source.
+     * Sets an instance of {@link DataGridItems} as the DataGrid data source.
      *
-     * @param dataGridSource the DataGrid data source
+     * @param dataGridItems the DataGrid data source
      */
-    void setDataSource(@Nullable DataGridSource<E> dataGridSource);
+    void setItems(@Nullable DataGridItems<E> dataGridItems);
 
     /**
      * @return the DataGrid data source
-     * @deprecated use {@link #getDataSource()} instead
+     * @deprecated use {@link #getItems()} instead
      */
     @Deprecated
     default CollectionDatasource getDatasource() {
-        DataGridSource<E> dataGridSource = getDataSource();
-        return dataGridSource != null ? ((CollectionDatasourceDataGridAdapter) dataGridSource).getDatasource() : null;
+        DataGridItems<E> dataGridItems = getItems();
+        return dataGridItems != null ? ((DatasourceDataGridItems) dataGridItems).getDatasource() : null;
     }
 
     /**
      * Sets an instance of {@link CollectionDatasource} as the DataGrid data source.
      *
      * @param datasource the DataGrid data source, not null
-     * @deprecated use {@link #setDataSource(DataGridSource)} instead
+     * @deprecated use {@link #setItems(DataGridItems)} instead
      */
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataSource(null);
+            setItems(null);
         } else {
-            DataGridSource<E> dataGridSource;
+            DataGridItems<E> dataGridItems;
             if (datasource instanceof Sortable) {
-                dataGridSource = new SortableCollectionDatasourceDataGridAdapter<>((Sortable) datasource);
+                dataGridItems = new SortableDatasourceDataGridItems<>((Sortable) datasource);
             } else {
-                dataGridSource = new CollectionDatasourceDataGridAdapter<>(datasource);
+                dataGridItems = new DatasourceDataGridItems<>(datasource);
             }
-            setDataSource(dataGridSource);
+            setItems(dataGridItems);
         }
     }
 

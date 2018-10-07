@@ -21,9 +21,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptionsSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -35,10 +35,10 @@ public class OptionsBinder {
 
     public static final String NAME = "cuba_OptionsBinder";
 
-    public <V> OptionsBinding<V> bind(OptionsSource<V> optionsSource, Component component,
+    public <V> OptionsBinding<V> bind(Options<V> options, Component component,
                                       OptionsTarget<V> optionsTarget) {
 
-        OptionBindingImpl<V> binding = new OptionBindingImpl<>(optionsSource, component, optionsTarget);
+        OptionBindingImpl<V> binding = new OptionBindingImpl<>(options, component, optionsTarget);
         binding.bind();
         return binding;
     }
@@ -48,7 +48,7 @@ public class OptionsBinder {
     }
 
     public static class OptionBindingImpl<V> implements OptionsBinding<V> {
-        protected OptionsSource<V> source;
+        protected Options<V> source;
         protected OptionsTarget<V> optionsTarget;
         protected Component component;
 
@@ -58,14 +58,14 @@ public class OptionsBinder {
         protected Subscription sourceOptionsChangeSupscription;
         protected Subscription sourceValueChangeSupscription;
 
-        public OptionBindingImpl(OptionsSource<V> source, Component component, OptionsTarget<V> optionsTarget) {
+        public OptionBindingImpl(Options<V> source, Component component, OptionsTarget<V> optionsTarget) {
             this.source = source;
             this.component = component;
             this.optionsTarget = optionsTarget;
         }
 
         @Override
-        public OptionsSource<V> getSource() {
+        public Options<V> getSource() {
             return source;
         }
 
@@ -82,22 +82,21 @@ public class OptionsBinder {
         }
 
         public void bind() {
-            if (source instanceof EntityOptionsSource
+            if (source instanceof EntityOptions
                     && component instanceof HasValue) {
                 this.componentValueChangeSubscription =
                         ((HasValue<?>) component).addValueChangeListener(this::componentValueChanged);
             }
-            // vaadin8 weak references for listeners ?
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::optionsSourceStateChanged);
             this.sourceValueChangeSupscription = source.addValueChangeListener(this::optionsSourceValueChanged);
             this.sourceOptionsChangeSupscription = source.addOptionsChangeListener(this::optionsSourceOptionsChanged);
         }
 
-        protected void optionsSourceOptionsChanged(OptionsSource.OptionsChangeEvent<V> event) {
+        protected void optionsSourceOptionsChanged(Options.OptionsChangeEvent<V> event) {
             optionsTarget.setOptions(source.getOptions());
         }
 
-        protected void optionsSourceValueChanged(OptionsSource.ValueChangeEvent<V> event) {
+        protected void optionsSourceValueChanged(Options.ValueChangeEvent<V> event) {
             optionsTarget.setOptions(source.getOptions());
         }
 
@@ -106,12 +105,12 @@ public class OptionsBinder {
             // value could be List / Set / something else
             if (event.getValue() instanceof Entity
                     || event.getValue() == null) {
-                EntityOptionsSource entityOptionsSource = (EntityOptionsSource) this.source;
+                EntityOptions entityOptionsSource = (EntityOptions) this.source;
                 entityOptionsSource.setSelectedItem((Entity) event.getValue());
             }
         }
 
-        protected void optionsSourceStateChanged(OptionsSource.StateChangeEvent<V> event) {
+        protected void optionsSourceStateChanged(Options.StateChangeEvent<V> event) {
             if (event.getState() == BindingState.ACTIVE) {
                 optionsTarget.setOptions(source.getOptions());
             }

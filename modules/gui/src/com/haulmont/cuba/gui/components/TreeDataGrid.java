@@ -3,9 +3,9 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.DataGridSource;
-import com.haulmont.cuba.gui.components.data.TreeDataGridSource;
-import com.haulmont.cuba.gui.components.data.datagrid.HierarchicalDatasourceDataGridAdapter;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.DatasourceTreeDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
@@ -32,9 +32,9 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
 
     @Override
     default HierarchicalDatasource getDatasource() {
-        DataGridSource<E> dataGridSource = getDataSource();
-        return dataGridSource != null
-                ? (HierarchicalDatasource) ((HierarchicalDatasourceDataGridAdapter) dataGridSource).getDatasource()
+        DataGridItems<E> dataGridItems = getItems();
+        return dataGridItems != null
+                ? (HierarchicalDatasource) ((DatasourceTreeDataGridItems) dataGridItems).getDatasource()
                 : null;
     }
 
@@ -47,19 +47,19 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
     @Override
     default void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataSource(null);
+            setItems(null);
         } else {
             if (!(datasource instanceof HierarchicalDatasource)) {
                 throw new IllegalArgumentException("TreeDataGrid supports only HierarchicalDatasource");
             }
 
-            setDataSource(new HierarchicalDatasourceDataGridAdapter((HierarchicalDatasource) datasource));
+            setItems(new DatasourceTreeDataGridItems((HierarchicalDatasource) datasource));
         }
     }
 
     @Nullable
     @Override
-    TreeDataGridSource<E> getDataSource();
+    TreeDataGridItems<E> getItems();
 
     /**
      * Get the currently set hierarchy column. The hierarchy column is a column

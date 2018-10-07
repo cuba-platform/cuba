@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components.table;
 
-import com.haulmont.cuba.gui.components.data.TreeTableSource;
+import com.haulmont.cuba.gui.components.data.TreeTableItems;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
 
 import java.util.Collection;
@@ -27,8 +27,8 @@ public class TreeTableDataContainer<I> extends SortableDataContainer<I> implemen
     // vaadin8 aggregation
     protected List<Object> aggregationProperties = null;
 
-    public TreeTableDataContainer(TreeTableSource<I> tableDataSource,
-                                  TableSourceEventsDelegate<I> dataEventsDelegate) {
+    public TreeTableDataContainer(TreeTableItems<I> tableDataSource,
+                                  TableItemsEventsDelegate<I> dataEventsDelegate) {
         super(tableDataSource, dataEventsDelegate);
     }
 
@@ -50,8 +50,8 @@ public class TreeTableDataContainer<I> extends SortableDataContainer<I> implemen
         return getTreeTableSource().getChildren(itemId);
     }
 
-    protected TreeTableSource<Object> getTreeTableSource() {
-        return (TreeTableSource<Object>) tableSource;
+    protected TreeTableItems<Object> getTreeTableSource() {
+        return (TreeTableItems<Object>) tableItems;
     }
 
     @Override

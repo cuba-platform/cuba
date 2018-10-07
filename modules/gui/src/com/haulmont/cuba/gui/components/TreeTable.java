@@ -18,8 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.table.HierarchicalDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceTreeTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
@@ -52,12 +52,12 @@ public interface TreeTable<E extends Entity> extends Table<E> {
     @Override
     @Deprecated
     default HierarchicalDatasource getDatasource() {
-        TableSource<E> tableSource = getDataSource();
-        if (tableSource == null) {
+        TableItems<E> tableItems = getItems();
+        if (tableItems == null) {
             return null;
         }
 
-        HierarchicalDatasourceTableAdapter adapter = (HierarchicalDatasourceTableAdapter) tableSource;
+        DatasourceTreeTableItems adapter = (DatasourceTreeTableItems) tableItems;
         return (HierarchicalDatasource) adapter.getDatasource();
     }
 

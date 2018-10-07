@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.data.tree.CollectionContainerTreeSource;
+import com.haulmont.cuba.gui.components.data.tree.ContainerTreeItems;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -107,7 +107,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
                 throw new GuiDevelopmentException("Tree doesn't have 'hierarchyProperty' attribute of the 'treechildren' element", context.getCurrentFrameId(),
                         "Tree ID", element.attributeValue("id"));
             }
-            resultComponent.setDataSource(new CollectionContainerTreeSource(collectionContainer, hierarchyProperty));
+            resultComponent.setItems(new ContainerTreeItems(collectionContainer, hierarchyProperty));
         } else if (itemsElem != null) {
             String datasource = itemsElem.attributeValue("datasource");
             if (!StringUtils.isBlank(datasource)) {

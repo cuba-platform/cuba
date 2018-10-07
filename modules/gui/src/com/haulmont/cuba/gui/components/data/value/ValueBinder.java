@@ -187,7 +187,6 @@ public class ValueBinder {
         public void bind() {
             this.componentValueChangeSubscription = component.addValueChangeListener(this::componentValueChanged);
 
-            // vaadin8 weak references on binding !
             this.sourceValueChangeSubscription = source.addValueChangeListener(this::sourceValueChanged);
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::valueSourceStateChanged);
             if (source instanceof EntityValueSource) {

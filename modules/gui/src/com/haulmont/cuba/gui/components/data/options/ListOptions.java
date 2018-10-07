@@ -20,13 +20,13 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ListOptions<V> implements OptionsSource<V> {
+public class ListOptions<V> implements Options<V> {
     protected Collection<V> options;
 
     public ListOptions(Collection<V> options) {

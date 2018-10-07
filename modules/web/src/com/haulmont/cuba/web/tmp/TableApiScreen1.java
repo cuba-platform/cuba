@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.tmp;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.data.table.SortableCollectionDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
@@ -41,7 +41,7 @@ public class TableApiScreen1 extends AbstractWindow {
         usersTable.addColumn(new Table.Column<>(User.class, "active"));
         usersTable.addColumn(new Table.Column<>(User.class, "name"));
 
-        usersTable.setDataSource(new SortableCollectionDatasourceTableAdapter<>(usersDs));
+        usersTable.setItems(new SortableDatasourceTableItems<>(usersDs));
         usersTable.setSizeFull();
 
         add(usersTable);

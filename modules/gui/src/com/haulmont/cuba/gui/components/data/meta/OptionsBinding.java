@@ -17,10 +17,10 @@
 package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.data.OptionsSource;
+import com.haulmont.cuba.gui.components.data.Options;
 
 public interface OptionsBinding<I> extends Binding {
-    OptionsSource<I> getSource();
+    Options<I> getSource();
     Component getComponent();
 
     void activate();

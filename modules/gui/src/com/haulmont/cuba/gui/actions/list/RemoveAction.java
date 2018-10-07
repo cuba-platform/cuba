@@ -29,8 +29,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
-import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -76,7 +76,7 @@ public class RemoveAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (target == null || !(target.getDataSource() instanceof EntityDataSource)) {
+        if (target == null || !(target.getItems() instanceof EntityDataUnit)) {
             return false;
         }
 
@@ -88,7 +88,7 @@ public class RemoveAction extends SecuredListAction {
     }
 
     protected boolean checkRemovePermission() {
-        MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
+        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -106,19 +106,19 @@ public class RemoveAction extends SecuredListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target.getDataSource() instanceof EntityDataSource)) {
-                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement EntityDataSource");
+            if (!(target.getItems() instanceof EntityDataUnit)) {
+                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement EntityDataUnit");
             }
-            if (!(target.getDataSource() instanceof ContainerDataSource)) {
-                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement ContainerDataSource");
+            if (!(target.getItems() instanceof ContainerDataUnit)) {
+                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement ContainerDataUnit");
             }
 
-            CollectionContainer container = ((ContainerDataSource) target.getDataSource()).getContainer();
+            CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
             if (container == null) {
                 throw new IllegalStateException("RemoveAction target is not bound to CollectionContainer");
             }
 
-            MetaClass metaClass = ((EntityDataSource) target.getDataSource()).getEntityMetaClass();
+            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
             if (metaClass == null) {
                 throw new IllegalStateException("Target is not bound to entity");
             }

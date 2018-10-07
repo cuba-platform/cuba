@@ -24,10 +24,10 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.data.meta.EntityTableSource;
-import com.haulmont.cuba.gui.components.data.GroupTableSource;
-import com.haulmont.cuba.gui.components.data.TableSource;
-import com.haulmont.cuba.gui.components.data.table.GroupDatasourceTableAdapter;
+import com.haulmont.cuba.gui.components.data.GroupTableItems;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceGroupTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -64,32 +64,32 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     @Override
-    public void setDataSource(TableSource<E> tableSource) {
-        if (tableSource != null &&
-                !(tableSource instanceof GroupTableSource)) {
-            throw new IllegalArgumentException("GroupTable supports only GroupTableSource data binding");
+    public void setItems(TableItems<E> tableItems) {
+        if (tableItems != null &&
+                !(tableItems instanceof GroupTableItems)) {
+            throw new IllegalArgumentException("GroupTable supports only GroupTableItems data binding");
         }
 
-        super.setDataSource(tableSource);
+        super.setItems(tableItems);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         if (datasource == null) {
-            setDataSource(null);
+            setItems(null);
         } else {
             if (!(datasource instanceof GroupDatasource)) {
                 throw new IllegalArgumentException("GroupTable supports only GroupDatasource");
             }
 
-            setDataSource(new GroupDatasourceTableAdapter((GroupDatasource) datasource));
+            setItems(new DatasourceGroupTableItems((GroupDatasource) datasource));
         }
     }
 
     @Override
-    protected TableDataContainer<E> createTableDataContainer(TableSource<E> tableSource) {
-        return new GroupTableDataContainer<>((GroupTableSource<E>) tableSource, this);
+    protected TableDataContainer<E> createTableDataContainer(TableItems<E> tableItems) {
+        return new GroupTableDataContainer<>((GroupTableItems<E>) tableItems, this);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,7 +197,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
-            MetaClass metaClass = ((EntityTableSource) getDataSource()).getEntityMetaClass();
+            MetaClass metaClass = ((EntityTableItems) getItems()).getEntityMetaClass();
             List elements = groupPropertiesElement.elements("property");
             List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (Object o : elements) {
@@ -466,8 +466,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     @Override
     public void selectAll() {
         if (isMultiSelect()) {
-            if (getDataSource() instanceof GroupTableSource) {
-                GroupTableSource<E> tableSource = (GroupTableSource<E>) getDataSource();
+            if (getItems() instanceof GroupTableItems) {
+                GroupTableItems<E> tableSource = (GroupTableItems<E>) getItems();
                 Collection<?> itemIds = tableSource.hasGroups()
                         ? getAllItemIds(tableSource)
                         : tableSource.getItemIds();
@@ -478,7 +478,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         super.selectAll();
     }
 
-    protected LinkedList<Object> getAllItemIds(GroupTableSource<E> tableSource) {
+    protected LinkedList<Object> getAllItemIds(GroupTableItems<E> tableSource) {
         List<GroupInfo> roots = tableSource.rootGroups();
         final LinkedList<Object> result = new LinkedList<>();
         for (final GroupInfo root : roots) {
@@ -489,7 +489,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
-        GroupTableSource<E> groupTableSource = (GroupTableSource<E>) getDataSource();
+        GroupTableItems<E> groupTableSource = (GroupTableItems<E>) getItems();
         if (groupTableSource.hasChildren(groupId)) {
             final List<GroupInfo> children = groupTableSource.getChildren(groupId);
             for (final GroupInfo child : children) {

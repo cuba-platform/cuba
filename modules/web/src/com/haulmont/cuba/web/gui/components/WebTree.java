@@ -30,9 +30,9 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.TreeSource;
-import com.haulmont.cuba.gui.components.data.meta.EntityTreeSource;
-import com.haulmont.cuba.gui.components.data.tree.HierarchicalDatasourceTreeAdapter;
+import com.haulmont.cuba.gui.components.data.TreeItems;
+import com.haulmont.cuba.gui.components.data.meta.EntityTreeItems;
+import com.haulmont.cuba.gui.components.data.tree.DatasourceTreeItems;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -280,12 +280,12 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public TreeSource<E> getDataSource() {
-        return this.dataBinding != null ? this.dataBinding.getTreeSource() : null;
+    public TreeItems<E> getItems() {
+        return this.dataBinding != null ? this.dataBinding.getTreeItems() : null;
     }
 
     @Override
-    public void setDataSource(TreeSource<E> treeSource) {
+    public void setItems(TreeItems<E> treeItems) {
         if (this.dataBinding != null) {
             this.dataBinding.unbind();
             this.dataBinding = null;
@@ -293,9 +293,9 @@ public class WebTree<E extends Entity>
             this.component.setDataProvider(createEmptyDataProvider());
         }
 
-        if (treeSource != null) {
-            this.dataBinding = createDataGridDataProvider(treeSource);
-            this.hierarchyProperty = treeSource.getHierarchyPropertyName();
+        if (treeItems != null) {
+            this.dataBinding = createDataGridDataProvider(treeItems);
+            this.hierarchyProperty = treeItems.getHierarchyPropertyName();
 
             this.component.setDataProvider(this.dataBinding);
 
@@ -305,7 +305,7 @@ public class WebTree<E extends Entity>
     }
 
     protected DataProvider<E, ?> createEmptyDataProvider() {
-        return new EmptyTreeDataSource<>();
+        return new EmptyTreeDataProvider<>();
     }
 
     @Override
@@ -406,8 +406,8 @@ public class WebTree<E extends Entity>
         }
     }
 
-    protected TreeDataProvider<E> createDataGridDataProvider(TreeSource<E> treeSource) {
-        return new TreeDataProvider<>(treeSource, this);
+    protected TreeDataProvider<E> createDataGridDataProvider(TreeItems<E> treeItems) {
+        return new TreeDataProvider<>(treeItems, this);
     }
 
     @Override
@@ -521,11 +521,11 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public void treeSourceItemSetChanged(TreeSource.ItemSetChangeEvent<E> event) {
+    public void treeSourceItemSetChanged(TreeItems.ItemSetChangeEvent<E> event) {
         // #PL-2035, reload selection from ds
         Set<E> selectedItems = getSelected();
         Set<E> newSelection = new HashSet<>();
-        TreeSource<E> source = event.getSource();
+        TreeItems<E> source = event.getSource();
         for (E item : selectedItems) {
             //noinspection unchecked
             if (source.containsItem(item)) {
@@ -534,9 +534,9 @@ public class WebTree<E extends Entity>
         }
 
         if (source.getState() == BindingState.ACTIVE
-                && source instanceof EntityTreeSource
-                && ((EntityTreeSource<E>) source).getSelectedItem() != null) {
-            newSelection.add(((EntityTreeSource<E>) source).getSelectedItem());
+                && source instanceof EntityTreeItems
+                && ((EntityTreeItems<E>) source).getSelectedItem() != null) {
+            newSelection.add(((EntityTreeItems<E>) source).getSelectedItem());
         }
 
         if (newSelection.isEmpty()) {
@@ -554,17 +554,17 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public void treeSourcePropertyValueChanged(TreeSource.ValueChangeEvent<E> event) {
+    public void treeSourcePropertyValueChanged(TreeItems.ValueChangeEvent<E> event) {
         refreshActionsState();
     }
 
     @Override
-    public void treeSourceStateChanged(TreeSource.StateChangeEvent<E> event) {
+    public void treeSourceStateChanged(TreeItems.StateChangeEvent<E> event) {
         refreshActionsState();
     }
 
     @Override
-    public void treeSourceSelectedItemChanged(TreeSource.SelectedItemChangeEvent<E> event) {
+    public void treeSourceSelectedItemChanged(TreeItems.SelectedItemChangeEvent<E> event) {
         refreshActionsState();
     }
 
@@ -580,7 +580,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void collapse(Object itemId) {
-        collapse(getDataSource().getItem(itemId));
+        collapse(getItems().getItem(itemId));
     }
 
     @Override
@@ -590,7 +590,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public void expand(Object itemId) {
-        expand(getDataSource().getItem(itemId));
+        expand(getItems().getItem(itemId));
     }
 
     @Override
@@ -605,7 +605,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public boolean isExpanded(Object itemId) {
-        return component.isExpanded(getDataSource().getItem(itemId));
+        return component.isExpanded(getItems().getItem(itemId));
     }
 
     @Override
@@ -764,9 +764,9 @@ public class WebTree<E extends Entity>
 
     @Override
     public void refresh() {
-        TreeSource<E> treeSource = getDataSource();
-        if (treeSource instanceof HierarchicalDatasourceTreeAdapter) {
-            ((HierarchicalDatasourceTreeAdapter) treeSource).getDatasource().refresh();
+        TreeItems<E> treeItems = getItems();
+        if (treeItems instanceof DatasourceTreeItems) {
+            ((DatasourceTreeItems) treeItems).getDatasource().refresh();
         }
     }
 
@@ -929,25 +929,25 @@ public class WebTree<E extends Entity>
     }
 
     protected void onSelectionChange(SelectionEvent<E> event) {
-        TreeSource<E> treeSource = getDataSource();
+        TreeItems<E> treeItems = getItems();
 
-        if (treeSource == null
-                || treeSource.getState() == BindingState.INACTIVE) {
+        if (treeItems == null
+                || treeItems.getState() == BindingState.INACTIVE) {
             return;
         }
 
         Set<E> selected = getSelected();
-        if (treeSource instanceof EntityTreeSource) {
+        if (treeItems instanceof EntityTreeItems) {
             if (selected.isEmpty()) {
-                ((EntityTreeSource<E>) treeSource).setSelectedItem(null);
+                ((EntityTreeItems<E>) treeItems).setSelectedItem(null);
             } else {
                 // reset selection and select new item
                 if (isMultiSelect()) {
-                    ((EntityTreeSource<E>) treeSource).setSelectedItem(null);
+                    ((EntityTreeItems<E>) treeItems).setSelectedItem(null);
                 }
 
                 E newItem = selected.iterator().next();
-                ((EntityTreeSource<E>) treeSource).setSelectedItem(newItem);
+                ((EntityTreeItems<E>) treeItems).setSelectedItem(newItem);
             }
         }
 
@@ -1001,10 +1001,10 @@ public class WebTree<E extends Entity>
 
     @Override
     public void setSelected(Collection<E> items) {
-        TreeSource<E> treeSource = getDataSource();
+        TreeItems<E> treeItems = getItems();
 
         boolean allMatch = items.stream()
-                .allMatch(treeSource::containsItem);
+                .allMatch(treeItems::containsItem);
 
         if (!allMatch) {
             throw new IllegalStateException("Datasource doesn't contain items");
@@ -1048,11 +1048,11 @@ public class WebTree<E extends Entity>
         component.focus();
     }
 
-    protected class EmptyTreeDataSource<T>
+    protected class EmptyTreeDataProvider<T>
             extends com.vaadin.data.provider.TreeDataProvider<T>
             implements EnhancedTreeDataProvider<T> {
 
-        public EmptyTreeDataSource() {
+        public EmptyTreeDataProvider() {
             super(new TreeData<>());
         }
 
