@@ -23,7 +23,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  *
@@ -32,7 +31,7 @@ import java.util.function.Consumer;
 public class ObservableList<T> extends ForwardingList<T> implements Serializable {
 
     private List<T> delegate;
-    private BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
+    private transient BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
     public ObservableList(List<T> delegate, BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
@@ -40,7 +39,11 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     }
 
     private Object writeReplace() throws ObjectStreamException {
-        return delegate;
+        List result = delegate;
+        while (result instanceof ObservableList) {
+            result = ((ObservableList) result).delegate;
+        }
+        return result;
     }
 
     protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {

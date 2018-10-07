@@ -20,21 +20,21 @@ import com.google.common.collect.ForwardingSet;
 import com.haulmont.cuba.gui.model.CollectionChangeType;
 
 import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  *
  */
 @SuppressWarnings("NullableProblems")
-public class ObservableSet<T> extends ForwardingSet<T> {
+public class ObservableSet<T> extends ForwardingSet<T> implements Serializable {
 
     private final Set<T> delegate;
-    private final BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
+    private transient final BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
     public ObservableSet(Set<T> delegate, BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
@@ -42,7 +42,11 @@ public class ObservableSet<T> extends ForwardingSet<T> {
     }
 
     private Object writeReplace() throws ObjectStreamException {
-        return delegate;
+        Set result = delegate;
+        while (result instanceof ObservableSet) {
+            result = ((ObservableSet) result).delegate;
+        }
+        return result;
     }
 
     protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
