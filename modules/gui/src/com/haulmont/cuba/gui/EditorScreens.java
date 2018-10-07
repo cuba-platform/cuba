@@ -16,7 +16,10 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.HasValue;
@@ -26,8 +29,7 @@ import com.haulmont.cuba.gui.components.data.DataSource;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
@@ -41,8 +43,11 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @Component("cuba_EditorScreens")
 public class EditorScreens {
+
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected ExtendedEntities extendedEntities;
     @Inject
     protected WindowConfig windowConfig;
 
@@ -65,12 +70,28 @@ public class EditorScreens {
 
         E entity = builder.getEntity();
 
+        ListComponent<E> listComponent = builder.getListComponent();
+
+        CollectionContainer<E> container = null;
+        boolean nested = false;
+
+        if (listComponent != null) {
+            DataSource<E> dataSource = listComponent.getDataSource();
+            CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataSource ?
+                    ((ContainerDataSource) dataSource).getContainer() : null;
+            container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
+            nested = container instanceof Nestable && ((Nestable) container).isNested();
+        }
+
+
         if (builder.getMode() == Mode.CREATE) {
             if (entity == null) {
                 entity = metadata.create(builder.getEntityClass());
             }
             if (builder.getInitializer() != null) {
                 builder.getInitializer().accept(entity);
+            } else if (container != null && nested) {
+                initializeNestedEntity(entity, (Nestable) container);
             }
         }
 
@@ -110,25 +131,19 @@ public class EditorScreens {
         DataContext parentDataContext = builder.getParentDataContext();
         if (parentDataContext != null) {
             UiControllerUtils.getScreenData(screen).getDataContext().setParent(parentDataContext);
+        } else if (container != null && nested) {
+            setupParentDataContextForComposition(origin, screen, (Nestable) container);
         }
 
-        ListComponent<E> listComponent = builder.getListComponent();
-
-        DataSource<E> dataSource = listComponent.getDataSource();
-
-        CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataSource ?
-                ((ContainerDataSource) dataSource).getContainer() : null;
-
-        CollectionContainer<E> container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
-
         if (container != null) {
+            CollectionContainer<E> ct = container;
             screen.addAfterCloseListener(afterCloseEvent -> {
                 CloseAction closeAction = afterCloseEvent.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     if (builder.getMode() == Mode.CREATE) {
-                        container.getMutableItems().add(0, editorScreen.getEditedEntity());
+                        ct.getMutableItems().add(0, editorScreen.getEditedEntity());
                     } else {
-                        container.replaceItem(editorScreen.getEditedEntity());
+                        ct.replaceItem(editorScreen.getEditedEntity());
                     }
                 }
                 if (listComponent instanceof Focusable) {
@@ -154,6 +169,36 @@ public class EditorScreens {
         }
 
         return (S) screen;
+    }
+
+    protected  <E extends Entity> void initializeNestedEntity(E entity, Nestable container) {
+        InstanceContainer masterContainer = container.getMaster();
+        String masterProperty = container.getMasterProperty();
+
+        MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
+        MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+
+        MetaProperty inverseProp = masterMetaProperty.getInverse();
+        if (inverseProp != null) {
+            Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
+            Class<?> containerEntityClass = extendedEntities.getEffectiveClass(((CollectionContainer) container).getEntityMetaClass());
+            if (inversePropClass.isAssignableFrom(containerEntityClass)) {
+                entity.setValue(inverseProp.getName(), masterContainer.getItem());
+            }
+        }
+    }
+
+    protected void setupParentDataContextForComposition(FrameOwner origin, Screen screen, Nestable container) {
+        InstanceContainer masterContainer = container.getMaster();
+        String masterProperty = container.getMasterProperty();
+
+        MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
+        MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+
+        if (masterMetaProperty.getType() == MetaProperty.Type.COMPOSITION) {
+            ScreenData screenData = UiControllerUtils.getScreenData(origin);
+            UiControllerUtils.getScreenData(screen).getDataContext().setParent(screenData.getDataContext());
+        }
     }
 
     protected boolean isCommitCloseAction(CloseAction closeAction) {

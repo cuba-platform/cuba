@@ -61,7 +61,7 @@
 
     <xs:complexType name="instanceLoaderType">
         <xs:sequence>
-            <xs:element name="query" type="queryType"/>
+            <xs:element name="query" type="queryType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>

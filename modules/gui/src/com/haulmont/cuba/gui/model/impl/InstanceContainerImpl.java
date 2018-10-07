@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.ParamsMap;
@@ -24,10 +25,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.model.DataLoader;
-import com.haulmont.cuba.gui.model.HasLoader;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.InstanceLoader;
+import com.haulmont.cuba.gui.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +35,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class InstanceContainerImpl<E extends Entity> implements InstanceContainer<E>, HasLoader {
+public class InstanceContainerImpl<E extends Entity> implements InstanceContainer<E>, HasLoader, Nestable {
 
     private static final Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
 
@@ -49,6 +47,8 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
     private DataLoader loader;
+    private InstanceContainer master;
+    private String masterProperty;
 
     public InstanceContainerImpl(MetaClass entityMetaClass) {
         this.entityMetaClass = entityMetaClass;
@@ -153,6 +153,31 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     @Override
     public void setLoader(DataLoader loader) {
         this.loader = loader;
+    }
+
+    @Override
+    public boolean isNested() {
+        return master != null && !Strings.isNullOrEmpty(masterProperty);
+    }
+
+    @Override
+    public InstanceContainer getMaster() {
+        return master;
+    }
+
+    @Override
+    public void setMaster(InstanceContainer master) {
+        this.master = master;
+    }
+
+    @Override
+    public String getMasterProperty() {
+        return masterProperty;
+    }
+
+    @Override
+    public void setMasterProperty(String masterProperty) {
+        this.masterProperty = masterProperty;
     }
 
     protected class ItemListener implements Instance.PropertyChangeListener {

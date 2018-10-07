@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.screen;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanValidation;
@@ -36,7 +38,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 import javax.validation.Validator;
+import java.util.EventObject;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Base class for editor screens
@@ -87,6 +91,9 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     protected void setupEntityToEdit(@SuppressWarnings("unused") BeforeShowEvent event) {
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
+
+            fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, mergedEntity));
+
             InstanceContainer<Entity> container = getEditedEntityContainer();
             container.setItem(mergedEntity);
         } else {
@@ -233,5 +240,28 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
         close(commitActionPerformed ?
                 WINDOW_COMMIT_AND_CLOSE_ACTION : WINDOW_DISCARD_AND_CLOSE_ACTION);
+    }
+
+    @TriggerOnce
+    public static class InitEntityEvent<E> extends EventObject {
+        private final E entity;
+
+        public InitEntityEvent(Screen source, E entity) {
+            super(source);
+            this.entity = entity;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public E getEntity() {
+            return entity;
+        }
+    }
+
+    protected Subscription addInitEntityListener(Consumer<InitEntityEvent> listener) {
+        return getEventHub().subscribe(InitEntityEvent.class, listener);
     }
 }

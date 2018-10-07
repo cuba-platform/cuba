@@ -2245,6 +2245,7 @@
 
                 <xs:attribute name="margin" type="xs:string"/>
 
+                <xs:attribute name="dataLoader" type="xs:string"/>
                 <xs:attribute name="applyTo" type="xs:string"/>
                 <xs:attribute name="useMaxResults" type="xs:boolean"/>
                 <xs:attribute name="textMaxResults" type="xs:boolean"/>

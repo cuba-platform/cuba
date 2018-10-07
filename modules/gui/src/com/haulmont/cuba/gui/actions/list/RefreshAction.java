@@ -66,7 +66,7 @@ public class RefreshAction extends ListAction {
                 throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
             }
 
-            CollectionContainer container = ((ContainerDataSource) target).getContainer();
+            CollectionContainer container = ((ContainerDataSource) target.getDataSource()).getContainer();
             if (container == null) {
                 throw new IllegalStateException("RefreshAction target is not bound to CollectionContainer");
             }

@@ -166,6 +166,8 @@ public class ScreenDataXmlLoader {
             CollectionContainer<Entity> container = factory.createCollectionContainer(
                     metaProperty.getRange().asClass().getJavaClass());
 
+            assignMaster(container, parentContainer, property, containerId);
+
             parentContainer.addItemChangeListener(e -> {
                 container.setItems(parentContainer.getItem().getValue(property));
             });
@@ -178,6 +180,8 @@ public class ScreenDataXmlLoader {
             }
             InstanceContainer<Entity> container = factory.createInstanceContainer(
                     metaProperty.getRange().asClass().getJavaClass());
+
+            assignMaster(container, parentContainer, property, containerId);
 
             parentContainer.addItemChangeListener(e -> {
                 container.setItem(parentContainer.getItem().getValue(property));
@@ -193,6 +197,15 @@ public class ScreenDataXmlLoader {
                 loadNestedContainer(screenData, collectionEl, nestedContainer);
             }
         }
+    }
+
+    protected void assignMaster(InstanceContainer container, InstanceContainer masterContainer, String masterProperty,
+                                String containerId) {
+        if (!(container instanceof Nestable))
+            throw new IllegalStateException(String.format(
+                    "Container '%s' does not implement Nestable so it cannot be defined as nested", containerId));
+        ((Nestable) container).setMaster(masterContainer);
+        ((Nestable) container).setMasterProperty(masterProperty);
     }
 
     protected void loadInstanceLoader(ScreenData screenData, Element element, InstanceContainer<Entity> container) {

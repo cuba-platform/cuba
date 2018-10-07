@@ -107,6 +107,10 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         } else {
             String datasource = element.attributeValue("datasource");
             if (!StringUtils.isBlank(datasource)) {
+                if (context.getDsContext() == null) {
+                    throw new IllegalStateException("'datasource' attribute can be used only in screens with 'dsContext' element. " +
+                            "In a screen with 'data' element use 'dataContainer' attribute.");
+                }
                 CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
                 if (ds == null) {
                     throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());

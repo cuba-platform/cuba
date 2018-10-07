@@ -79,6 +79,13 @@ public final class UiControllerUtils {
         return ((ScreenFragment) frameOwner).getScreenContext();
     }
 
+    public static ScreenData getScreenData(FrameOwner frameOwner) {
+        if (frameOwner instanceof Screen) {
+            return ((Screen) frameOwner).getScreenData();
+        }
+        return ((ScreenFragment) frameOwner).getScreenData();
+    }
+
     public static void setScreenData(FrameOwner screen, ScreenData screenData) {
         if (screen instanceof Screen) {
             ((Screen) screen).setScreenData(screenData);
@@ -101,13 +108,6 @@ public final class UiControllerUtils {
 
     public static Settings getSettings(Screen screen) {
         return screen.getSettings();
-    }
-
-    public static ScreenData getScreenData(FrameOwner frameOwner) {
-        if (frameOwner instanceof Screen) {
-            return ((Screen) frameOwner).getScreenData();
-        }
-        return ((ScreenFragment) frameOwner).getScreenData();
     }
 
     public static Frame getFrame(FrameOwner frameOwner) {

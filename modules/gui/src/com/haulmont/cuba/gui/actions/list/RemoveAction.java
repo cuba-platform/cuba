@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
@@ -33,6 +34,8 @@ import com.haulmont.cuba.gui.components.data.meta.EntityDataSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.Nestable;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -136,7 +139,7 @@ public class RemoveAction extends SecuredListAction {
                             new DialogAction(Type.YES).withHandler(e -> {
                                 container.getMutableItems().remove(entityForRemove);
                                 screenData.getDataContext().remove(entityForRemove);
-                                screenData.getDataContext().commit();
+                                commitIfNeeded(container, screenData);
 
                                 if (target instanceof Component.Focusable) {
                                     ((Component.Focusable) target).focus();
@@ -151,6 +154,22 @@ public class RemoveAction extends SecuredListAction {
                     .show();
         } else {
             super.actionPerform(component);
+        }
+    }
+
+    protected void commitIfNeeded(CollectionContainer container, ScreenData screenData) {
+        boolean needCommit = true;
+        if (container instanceof Nestable && ((Nestable) container).isNested()) {
+            InstanceContainer masterContainer = ((Nestable) container).getMaster();
+            String masterProperty = ((Nestable) container).getMasterProperty();
+
+            MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
+            MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+
+            needCommit = masterMetaProperty.getType() != MetaProperty.Type.COMPOSITION;
+        }
+        if (needCommit) {
+            screenData.getDataContext().commit();
         }
     }
 }
