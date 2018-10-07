@@ -23,9 +23,11 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasValue;
@@ -44,7 +46,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-// todo buffering support
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @org.springframework.stereotype.Component(ValueBinder.NAME)
 public class ValueBinder {
@@ -57,8 +58,14 @@ public class ValueBinder {
     protected MetadataTools metadataTools;
     @Inject
     protected BeanValidation beanValidation;
+    @Inject
+    protected BeanLocator beanLocator;
 
     public <V> ValueBinding<V> bind(HasValue<V> component, ValueSource<V> valueSource) {
+        if (valueSource instanceof BeanLocatorAware) {
+            ((BeanLocatorAware) valueSource).setBeanLocator(beanLocator);
+        }
+
         ValueBindingImpl<V> binding = new ValueBindingImpl<>(component, valueSource);
 
         if (component instanceof Component.Editable) {

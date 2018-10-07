@@ -21,8 +21,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -33,9 +34,11 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class DatasourceValueSource<E extends Entity, V> implements EntityValueSource<E, V> {
+public class DatasourceValueSource<E extends Entity, V> implements EntityValueSource<E, V>, BeanLocatorAware {
     protected final Datasource<E> datasource;
-    protected final MetaPropertyPath metaPropertyPath;
+
+    protected MetaPropertyPath metaPropertyPath;
+    protected String property;
 
     protected BindingState state = BindingState.INACTIVE;
 
@@ -46,14 +49,20 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         checkNotNullArgument(datasource);
         checkNotNullArgument(property);
 
+        this.property = property;
+        this.datasource = datasource;
+    }
+
+    @Override
+    public void setBeanLocator(BeanLocator beanLocator) {
         MetaClass metaClass = datasource.getMetaClass();
 
-        MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(metaClass, property);
+        MetadataTools metadataTools = beanLocator.get(MetadataTools.NAME);
+        MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
 
         checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
 
         this.metaPropertyPath = metaPropertyPath;
-        this.datasource = datasource;
 
         this.datasource.addStateChangeListener(this::datasourceStateChanged);
         this.datasource.addItemChangeListener(this::datasourceItemChanged);
@@ -62,11 +71,6 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         if (datasource.getState() == Datasource.State.VALID) {
             setState(BindingState.ACTIVE);
         }
-    }
-
-    protected MetadataTools getMetadataTools() {
-        // simplify unit testing
-        return AppBeans.get(MetadataTools.NAME);
     }
 
     public void setState(BindingState state) {

@@ -22,8 +22,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.model.DataContextFactory;
@@ -35,10 +36,12 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class ContainerValueSource<E extends Entity, V> implements EntityValueSource<E, V> {
+public class ContainerValueSource<E extends Entity, V> implements EntityValueSource<E, V>, BeanLocatorAware {
 
     protected final InstanceContainer<E> container;
-    protected final MetaPropertyPath metaPropertyPath;
+
+    protected MetaPropertyPath metaPropertyPath;
+    protected String property;
 
     protected BindingState state = BindingState.INACTIVE;
 
@@ -49,16 +52,21 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         checkNotNullArgument(container);
         checkNotNullArgument(property);
 
+        this.container = container;
+        this.property = property;
+    }
+
+    @Override
+    public void setBeanLocator(BeanLocator beanLocator) {
         MetaClass metaClass = container.getEntityMetaClass();
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        MetadataTools metadataTools = beanLocator.get(MetadataTools.NAME);
         MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
         if (metaPropertyPath == null)
             throw new IllegalArgumentException(String.format(
                     "Could not resolve property path '%s' in '%s'", property, metaClass));
 
         this.metaPropertyPath = metaPropertyPath;
-        this.container = container;
 
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
@@ -70,7 +78,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
             String pathToTarget = Joiner.on('.').join(
                     Arrays.copyOfRange(this.metaPropertyPath.getPath(), i, this.metaPropertyPath.length()));
 
-            InstanceContainer propertyCont = AppBeans.get(DataContextFactory.class).createInstanceContainer(
+            InstanceContainer propertyCont = beanLocator.get(DataContextFactory.class).createInstanceContainer(
                     intermediatePath.getRangeJavaClass());
 
             parentCont.addItemChangeListener(e -> {
@@ -181,7 +189,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         return events.subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
-    public void setState(BindingState state) {
+    protected void setState(BindingState state) {
         if (this.state != state) {
             this.state = state;
 
