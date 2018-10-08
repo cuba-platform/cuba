@@ -19,11 +19,19 @@ package com.haulmont.cuba.client.sys.cache;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 
 import java.util.List;
 import java.util.Map;
 
 public class ConfigStorageCache implements ConfigStorageService {
+
+    protected BeanLocator beanLocator;
+
+    public ConfigStorageCache(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
+
     @Override
     public Map<String, String> getDbProperties() {
         return getClientCacheManager().getCached(ConfigCacheStrategy.NAME);
@@ -42,11 +50,11 @@ public class ConfigStorageCache implements ConfigStorageService {
     }
 
     protected ConfigStorageService getService() {
-        return AppBeans.get(ConfigStorageService.NAME);
+        return beanLocator.get(ConfigStorageService.NAME);
     }
 
     protected ClientCacheManager getClientCacheManager() {
-        return AppBeans.get(ClientCacheManager.NAME);
+        return beanLocator.get(ClientCacheManager.NAME);
     }
 
     @Override

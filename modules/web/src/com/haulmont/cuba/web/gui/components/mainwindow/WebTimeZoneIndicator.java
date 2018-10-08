@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
 import java.util.TimeZone;
 
 public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements TimeZoneIndicator {
@@ -35,10 +36,15 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
         component = new Label();
         component.setSizeUndefined();
         component.setStyleName(USER_TIMEZONE_LABEL_STYLENAME);
+    }
 
-        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        super.setBeanLocator(beanLocator);
+
+        UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         TimeZone timeZone = uss.getUserSession().getTimeZone();
-        TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+        TimeZones timeZones = beanLocator.get(TimeZones.NAME);
         component.setValue(timeZones.getDisplayNameShort(timeZone));
         if (timeZone == null) {
             // hidden by default if timeZone is null

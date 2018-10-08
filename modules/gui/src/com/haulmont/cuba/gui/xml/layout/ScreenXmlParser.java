@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +25,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -42,6 +42,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class ScreenXmlParser {
     
     public static final String NAME = "cuba_ScreenXmlParser";
+
+    @Inject
+    protected ThemeConstantsManager themeConstantsManager;
 
     public Document parseDescriptor(InputStream stream) {
         checkNotNullArgument(stream, "Input stream is null");
@@ -69,8 +72,8 @@ public class ScreenXmlParser {
     protected void replaceAssignParameters(Document document) {
         Map<String, String> assignedParams = new HashMap<>();
 
-        List<Element> assignElements = Dom4j.elements(document.getRootElement(), "assign");
-        ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+        List<Element> assignElements = document.getRootElement().elements("assign");
+        ThemeConstantsManager themeManager = this.themeConstantsManager;
         for (Element assignElement : assignElements) {
             String name = assignElement.attributeValue("name");
             if (StringUtils.isEmpty(name)) {

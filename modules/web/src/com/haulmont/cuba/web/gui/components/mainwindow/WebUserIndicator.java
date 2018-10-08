@@ -55,7 +55,6 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     protected Function<? super User, String> userNameFormatter;
 
     protected MetadataTools metadataTools;
-    protected BeanLocator beanLocator;
 
     public WebUserIndicator() {
         component = new com.vaadin.ui.CssLayout();
@@ -67,16 +66,11 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         this.metadataTools = metadataTools;
     }
 
-    @Inject
-    public void setBeanLocator(BeanLocator beanLocator) {
-        this.beanLocator = beanLocator;
-    }
-
     @Override
     public void refreshUserSubstitutions() {
         component.removeAllComponents();
 
-        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+        UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         List<UserSubstitution> substitutions = getUserSubstitutions();
 
         User user = uss.getUserSession().getUser();

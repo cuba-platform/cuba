@@ -17,20 +17,25 @@
 
 package com.haulmont.cuba.portal.config;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
 @Component("cuba_PortalSiteSettings")
 public class SiteSettings {
+
+    @Inject
+    protected Configuration configuration;
+    @Inject
+    protected FormatStringsRegistry formatStringsRegistry;
 
     /**
      * Basically this method prepends webapp's prefix to the path
@@ -39,7 +44,6 @@ public class SiteSettings {
      * @return Full relative path on server
      */
     public String composeFullRelativePath(String path) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String webAppPrefix = "/".concat(globalConfig.getWebContextName().intern());
         return path.startsWith("/") ? webAppPrefix.concat(path) : webAppPrefix.concat("/").concat(path);
@@ -50,21 +54,20 @@ public class SiteSettings {
      * @return Full absolute path including protocol, domain and webapp prefix
      */
     public String composeFullAbsolutePath(String path) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         String webAppUrl = configuration.getConfig(GlobalConfig.class).getWebAppUrl();
         webAppUrl = StringUtils.chomp(webAppUrl, "/"); //remove last slash
         return path.startsWith("/") ? webAppUrl.concat(path) : webAppUrl.concat("/").concat(path);
     }
 
     public Properties getFreeMarkerSettings() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-        Map<String,Locale> availableLocales = globalConfig.getAvailableLocales();
-        if (availableLocales.isEmpty())
+        Map<String, Locale> availableLocales = globalConfig.getAvailableLocales();
+        if (availableLocales.isEmpty()) {
             throw new IllegalStateException("Property cuba.availableLocales is not configured");
+        }
 
         Locale locale = availableLocales.values().iterator().next();
-        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        FormatStrings formatStrings = formatStringsRegistry.getFormatStrings(locale);
 
         final Properties freemarkerSettings = new Properties();
         freemarkerSettings.setProperty("number_format", "#");

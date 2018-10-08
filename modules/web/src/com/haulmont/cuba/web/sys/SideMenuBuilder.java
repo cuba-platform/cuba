@@ -22,9 +22,10 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
-import com.haulmont.cuba.gui.config.MenuCommand;
+import com.haulmont.cuba.gui.config.MenuItemCommands;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.MenuItemCommand;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.event.ShortcutListener;
@@ -54,6 +55,8 @@ public class SideMenuBuilder {
 
     @Inject
     protected MenuConfig menuConfig;
+    @Inject
+    protected MenuItemCommands menuItemCommands;
 
     @Inject
     protected MessageTools messageTools;
@@ -176,7 +179,7 @@ public class SideMenuBuilder {
     }
 
     protected Consumer<SideMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-        return new MenuCommandExecutor(item);
+        return new MenuCommandExecutor(menuItemCommands, item);
     }
 
     protected boolean isMenuItemEmpty(SideMenu.MenuItem menuItem) {
@@ -244,15 +247,17 @@ public class SideMenuBuilder {
 
     public static class MenuCommandExecutor implements Consumer<SideMenu.MenuItem> {
         private final MenuItem item;
+        private final MenuItemCommands menuItemCommands;
 
-        public MenuCommandExecutor(MenuItem item) {
+        public MenuCommandExecutor(MenuItemCommands menuItemCommands, MenuItem item) {
             this.item = item;
+            this.menuItemCommands = menuItemCommands;
         }
 
         @Override
         public void accept(SideMenu.MenuItem menuItem) {
-            MenuCommand command = new MenuCommand(item);
-            command.execute();
+            MenuItemCommand command = menuItemCommands.create(item);
+            command.run();
         }
     }
 }

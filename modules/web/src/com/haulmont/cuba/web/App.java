@@ -17,7 +17,10 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
@@ -202,7 +205,7 @@ public abstract class App {
     public abstract void loginOnStart() throws LoginException;
 
     protected Connection createConnection() {
-        return AppBeans.getPrototype(Connection.NAME);
+        return beanLocator.getPrototype(Connection.NAME);
     }
 
     /**
@@ -227,10 +230,10 @@ public abstract class App {
             }
         });
 
-        appLog = new AppLog();
+        appLog = new AppLog(webConfig);
 
         connection = createConnection();
-        exceptionHandlers = new ExceptionHandlers(this);
+        exceptionHandlers = new ExceptionHandlers(this, beanLocator);
         cookies = new AppCookies();
 
         themeConstants = loadTheme();
@@ -544,6 +547,7 @@ public abstract class App {
             }
         } catch (Exception e) {
             log.error("Error on logout", e);
+
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
             AppUI ui = AppUI.getCurrent();
             if (ui != null) {

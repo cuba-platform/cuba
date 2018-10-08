@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
@@ -67,6 +64,9 @@ public class UserSessionManager {
 
     @Inject
     protected Persistence persistence;
+
+    @Inject
+    protected EntityStates entityStates;
 
     @Inject
     protected Metadata metadata;
@@ -286,10 +286,10 @@ public class UserSessionManager {
             users.add(session.getSubstitutedUser());
         }
         for (User user : users) {
-            if (PersistenceHelper.isDetached(user) && user.getUserRoles() != null) {
+            if (entityStates.isDetached(user) && user.getUserRoles() != null) {
                 for (UserRole userRole : user.getUserRoles()) {
                     Role role = userRole.getRole();
-                    if (userRole.getRole() != null && PersistenceHelper.isLoaded(role, "permissions")) {
+                    if (userRole.getRole() != null && entityStates.isLoaded(role, "permissions")) {
                         userRole.getRole().setPermissions(null);
                     }
                 }

@@ -17,12 +17,12 @@
 
 package com.haulmont.cuba.client.sys.cache;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.events.AppContextStoppedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -63,8 +63,9 @@ public class ClientCacheManager {
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 120)
-    public void initialize() {
-        Map<String, CachingStrategy> cachingStrategyMap = AppBeans.getAll(CachingStrategy.class);
+    public void initialize(AppContextInitializedEvent event) {
+        ApplicationContext applicationContext = event.getApplicationContext();
+        Map<String, CachingStrategy> cachingStrategyMap = applicationContext.getBeansOfType(CachingStrategy.class);
         for (Map.Entry<String, CachingStrategy> entry : cachingStrategyMap.entrySet()) {
             addCachedObject(entry.getKey(), entry.getValue());
         }

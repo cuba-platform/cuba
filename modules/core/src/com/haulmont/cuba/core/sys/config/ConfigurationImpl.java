@@ -24,21 +24,24 @@ import com.haulmont.cuba.core.sys.ConfigPersisterImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Server-side implementation of the {@link Configuration} interface.
- *
- * @version $Id
  */
 @Component(Configuration.NAME)
-public class ConfigurationImpl implements Configuration, BeanFactoryPostProcessor {
+public class ConfigurationImpl implements Configuration, BeanFactoryPostProcessor, ApplicationContextAware {
 
     protected Map<Class, ConfigHandler> cache = new ConcurrentHashMap<>();
+
+    protected ApplicationContext applicationContext;
 
     @Override
     public <T extends Config> T getConfig(Class<T> configInterface) {
@@ -58,6 +61,11 @@ public class ConfigurationImpl implements Configuration, BeanFactoryPostProcesso
     }
 
     protected ConfigPersisterImpl createPersister() {
-        return new ConfigPersisterImpl();
+        return new ConfigPersisterImpl(applicationContext);
+    }
+
+    @Override
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

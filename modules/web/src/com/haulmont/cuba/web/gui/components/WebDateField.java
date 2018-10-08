@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
@@ -26,8 +26,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -119,13 +119,15 @@ public class WebDateField<V extends Comparable<V>>
 
     @Override
     public void afterPropertiesSet() {
-        UserSessionSource userSessionSource = applicationContext.getBean(UserSessionSource.class);
+        UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.class);
         Locale locale = userSessionSource.getLocale();
 
-        dateField.setDateFormat(Datatypes.getFormatStringsNN(locale).getDateFormat());
+        FormatStringsRegistry formatStringsRegistry = beanLocator.get(FormatStringsRegistry.NAME);
+
+        dateField.setDateFormat(formatStringsRegistry.getFormatStringsNN(locale).getDateFormat());
         dateField.setResolution(DateResolution.DAY);
 
-        timeField.setTimeFormat(Datatypes.getFormatStringsNN(locale).getTimeFormat());
+        timeField.setTimeFormat(formatStringsRegistry.getFormatStringsNN(locale).getTimeFormat());
 
         setResolution(Resolution.MIN);
     }
@@ -251,7 +253,7 @@ public class WebDateField<V extends Comparable<V>>
 
     protected void handleDateOutOfRange(V value) {
         if (getFrame() != null) {
-            Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
+            Messages messages = beanLocator.get(Messages.NAME, Messages.class);
             LegacyFrame.of(this).showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
                     Frame.NotificationType.TRAY);
         }
@@ -457,7 +459,7 @@ public class WebDateField<V extends Comparable<V>>
 
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
-            DataAwareComponentsTools dataAwareComponentsTools = applicationContext.getBean(DataAwareComponentsTools.class);
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
             dataAwareComponentsTools.setupDateRange(this, entityValueSource);
             dataAwareComponentsTools.setupDateFormat(this, entityValueSource);
             dataAwareComponentsTools.setupZoneId(this, entityValueSource);

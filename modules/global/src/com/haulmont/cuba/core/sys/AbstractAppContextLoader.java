@@ -33,7 +33,6 @@ import java.io.File;
 
 /**
  * Base class for {@link AppContext} loaders.
- *
  */
 public abstract class AbstractAppContextLoader {
 
@@ -63,7 +62,7 @@ public abstract class AbstractAppContextLoader {
         ApplicationContext appContext = createApplicationContext(locations);
         AppContext.Internals.setApplicationContext(appContext);
 
-        Events events = AppBeans.get(Events.NAME);
+        Events events = appContext.getBean(Events.NAME, Events.class);
         events.publish(new AppContextInitializedEvent(appContext));
 
         log.debug("AppContext initialized");

@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.web.WebConfig;
@@ -42,8 +40,11 @@ public class AppLog {
 
     private transient Deque<LogItem> items = new ArrayDeque<>();
 
-    private static final int CAPACITY = AppBeans.get(Configuration.class)
-            .getConfig(WebConfig.class).getAppLogMaxItemsCount();
+    private final int capacity;
+
+    public AppLog(WebConfig webConfig) {
+        this.capacity = webConfig.getAppLogMaxItemsCount();
+    }
 
     public void log(LogItem item) {
         String msg = item.getMessage();
@@ -60,7 +61,7 @@ public class AppLog {
                 log.debug("{}: {}", item.getLevel(), msg);
         }
         
-        if (items.size() >= CAPACITY) {
+        if (items.size() >= capacity) {
             items.removeLast();
         }
         items.addFirst(item);

@@ -171,7 +171,7 @@ public class AppUI extends CubaUI
     }
 
     protected App createApplication() {
-        return AppBeans.getPrototype(App.NAME);
+        return beanLocator.getPrototype(App.NAME);
     }
 
     @Deprecated

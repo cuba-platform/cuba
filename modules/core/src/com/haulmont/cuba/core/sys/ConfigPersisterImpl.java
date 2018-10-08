@@ -14,19 +14,26 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 public class ConfigPersisterImpl implements ConfigPersister {
 
     protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterImpl.class);
+
+    protected ApplicationContext applicationContext;
+
+    public ConfigPersisterImpl(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     public String getProperty(SourceType sourceType, String name) {
@@ -41,8 +48,9 @@ public class ConfigPersisterImpl implements ConfigPersister {
                 break;
             case DATABASE:
                 value = AppContext.getProperty(name);
-                if (StringUtils.isEmpty(value))
+                if (StringUtils.isEmpty(value)) {
                     value = getConfigStorageAPI().getDbProperty(name);
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
@@ -69,6 +77,6 @@ public class ConfigPersisterImpl implements ConfigPersister {
     }
 
     protected ConfigStorageAPI getConfigStorageAPI() {
-        return AppBeans.get(ConfigStorageAPI.NAME);
+        return (ConfigStorageAPI) applicationContext.getBean(ConfigStorageAPI.NAME);
     }
 }

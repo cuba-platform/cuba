@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
@@ -51,20 +50,23 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     protected UUID tempFileId;
     protected String accept;
 
-    public WebFileMultiUploadField() {
-        initComponent();
-    }
-
     @Inject
     public void setFileUploading(FileUploadingAPI fileUploading) {
         this.fileUploading = fileUploading;
+    }
+
+    @Override
+    public void setBeanLocator(BeanLocator beanLocator) {
+        super.setBeanLocator(beanLocator);
+
+        initComponent();
     }
 
     protected void initComponent() {
         CubaFileUpload impl = createComponent();
         impl.setMultiSelect(true);
 
-        Messages messages = AppBeans.get(Messages.NAME);
+        Messages messages = beanLocator.get(Messages.NAME);
         impl.setProgressWindowCaption(messages.getMainMessage("upload.uploadingProgressTitle"));
         impl.setUnableToUploadFileMessage(messages.getMainMessage("upload.unableToUploadFile"));
         impl.setCancelButtonCaption(messages.getMainMessage("upload.cancel"));
@@ -72,9 +74,9 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         impl.setDropZonePrompt(messages.getMainMessage("upload.dropZonePrompt"));
         impl.setDescription(null);
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        final int maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-        final int maxSizeBytes = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+        Configuration configuration = beanLocator.get(Configuration.NAME);
+        int maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        int maxSizeBytes = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         impl.setFileSizeLimit(maxSizeBytes);
 
@@ -165,7 +167,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         this.icon = icon;
 
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon)); // todo replace with beanLocator
+            component.setIcon(getIconResource(icon));
         } else {
             component.setIcon(null);
         }

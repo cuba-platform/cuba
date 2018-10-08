@@ -35,6 +35,9 @@ public class QueryTransformerFactory {
     protected volatile DomainModel domainModel;
 
     @Inject
+    protected BeanLocator beanLocator;
+
+    @Inject
     public void setConfiguration(Configuration configuration) {
         useAst = configuration.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
     }
@@ -50,10 +53,10 @@ public class QueryTransformerFactory {
     public QueryTransformer transformer(String query) {
         if (useAst) {
             if (domainModel == null) {
-                DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
+                DomainModelBuilder builder = beanLocator.get(DomainModelBuilder.NAME);
                 domainModel = builder.produce();
             }
-            return AppBeans.getPrototype(QueryTransformer.NAME, domainModel, query);
+            return beanLocator.getPrototype(QueryTransformer.NAME, domainModel, query);
         } else {
             return new QueryTransformerRegex(query);
         }
@@ -65,7 +68,7 @@ public class QueryTransformerFactory {
                 DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
                 domainModel = builder.produce();
             }
-            return AppBeans.getPrototype(QueryParser.NAME, domainModel, query);
+            return beanLocator.getPrototype(QueryParser.NAME, domainModel, query);
         } else {
             return new QueryParserRegex(query);
         }

@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.EventRouter;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -33,6 +33,7 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
+import javax.inject.Inject;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -55,10 +56,17 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
     protected Registration contextHelpIconClickListener;
 
+    protected BeanLocator beanLocator;
+
     // todo remove
     private EventRouter eventRouter = null;
 
     private EventHub eventHub = null;
+
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
 
     /**
      * Use EventRouter for listeners instead of fields with listeners List.
@@ -261,10 +269,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            // todo use bean locator !
-
-            Resource iconResource = AppBeans.get(IconResolver.class)
-                    .getIconResource(this.icon);
+            Resource iconResource = getIconResource(icon);
             getComposition().setIcon(iconResource);
             getComposition().addStyleName(ICON_STYLE);
         } else {
@@ -275,10 +280,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setIconFromSet(Icons.Icon icon) {
-        // todo use bean locator !
-        String iconName = AppBeans.get(Icons.class)
-                .get(icon);
+        String iconName = getIconName(icon);
         setIcon(iconName);
+    }
+
+    protected Resource getIconResource(String icon) {
+        return beanLocator.get(IconResolver.class).getIconResource(icon);
+    }
+
+    protected String getIconName(Icons.Icon icon) {
+        return beanLocator.get(Icons.class).get(icon);
     }
 
     @Override
@@ -404,8 +415,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     protected void onContextHelpIconClick(@SuppressWarnings("unused") com.vaadin.ui.Component.HasContextHelp.ContextHelpIconClickEvent e) {
-        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(this);
         if (contextHelpIconClickHandler != null) {
+            ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(this);
             contextHelpIconClickHandler.accept(event);
         }
     }

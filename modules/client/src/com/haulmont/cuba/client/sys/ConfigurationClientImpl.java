@@ -24,9 +24,11 @@ import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.config.ConfigPersister;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +36,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component(Configuration.NAME)
 public class ConfigurationClientImpl implements ClientConfiguration {
     protected Map<Class, ConfigHandler> handlersCache = new ConcurrentHashMap<>();
-    protected ConfigStorageService configStorageCache = new ConfigStorageCache();
+    protected ConfigStorageService configStorageCache;
+
+    @Inject
+    protected void setBeanLocator(BeanLocator beanLocator) {
+        configStorageCache = new ConfigStorageCache(beanLocator);
+    }
 
     @Override
     public <T extends Config> T getConfig(Class<T> configInterface) {

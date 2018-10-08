@@ -20,12 +20,12 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasInnerComponents;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
@@ -76,8 +76,6 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     protected CubaSingleModeContainer singleContainer;
 
-    protected BeanLocator beanLocator;
-
     // lazy initialized listeners list
     protected List<StateChangeListener> stateChangeListeners = null;
 
@@ -90,10 +88,10 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     @Inject
     public void setBeanLocator(BeanLocator beanLocator) {
-        this.beanLocator = beanLocator;
+        super.setBeanLocator(beanLocator);
 
-        ComponentsFactory cf = beanLocator.get(ComponentsFactory.NAME);
-        setInitialLayout(cf.createComponent(VBoxLayout.NAME));
+        UiComponents cf = beanLocator.get(UiComponents.NAME);
+        setInitialLayout(cf.create(VBoxLayout.NAME));
 
         this.tabbedContainer = createTabbedModeContainer();
 

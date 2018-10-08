@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.config;
@@ -22,7 +21,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
@@ -33,51 +32,54 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class MenuCommand {
+@Component("cuba_MenuItemCommands")
+public class MenuItemCommands {
 
-    protected MenuItem item;
-    protected MenuItemCommand command;
+    @Inject
+    protected DataService dataService;
+    @Inject
+    protected MenuConfig menuConfig;
+    @Inject
+    protected WindowConfig windowConfig;
+    @Inject
+    protected Scripting scripting;
+    @Inject
+    protected Metadata metadata;
 
-    public MenuCommand(MenuItem item) {
-        this.item = item;
-        this.command = createCommand(item);
-    }
+    @Inject
+    protected BeanLocator beanLocator;
 
-    protected MenuItemCommand createCommand(MenuItem item) {
+    /**
+     * Create menu command.
+     *
+     * @param item menu item
+     * @return command
+     */
+    public MenuItemCommand create(MenuItem item) {
         Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
 
         if (StringUtils.isNotEmpty(item.getScreen())) {
-            return new ScreenCommand(item.getScreen(), item.getDescriptor(), params);
+            return new ScreenCommand(item, item.getScreen(), item.getDescriptor(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getRunnableClass())) {
-            return new RunnableClassCommand(item.getRunnableClass(), params);
+            return new RunnableClassCommand(item, item.getRunnableClass(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getBean())) {
-            return new BeanCommand(item.getBean(), item.getBeanMethod(), params);
+            return new BeanCommand(item, item.getBean(), item.getBeanMethod(), params);
         }
 
         return null;
-    }
-
-    public void execute() {
-        StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
-
-        command.run();
-
-        sw.stop();
-    }
-
-    public String getCommandDescription() {
-        return command.getDescription();
     }
 
     protected Map<String, Object> loadParams(Element descriptor, String screen) {
@@ -105,7 +107,7 @@ public class MenuCommand {
         }
 
         if (StringUtils.isNotEmpty(screen)) {
-            String caption = AppBeans.get(MenuConfig.class).getItemCaption(screen);
+            String caption = menuConfig.getItemCaption(screen);
             WindowParams.CAPTION.set(params, caption);
         }
 
@@ -119,21 +121,18 @@ public class MenuCommand {
         }
 
         //noinspection unchecked
-        return AppBeans.get(DataService.class).load(ctx);
+        return dataService.load(ctx);
     }
 
-    protected interface MenuItemCommand extends Runnable {
-
-        String getDescription();
-    }
-
-    protected static class ScreenCommand implements MenuItemCommand {
+    protected class ScreenCommand implements MenuItemCommand {
+        protected MenuItem item;
 
         protected String screen;
         protected Element descriptor;
         protected Map<String, Object> params;
 
-        protected ScreenCommand(String screen, Element descriptor, Map<String, Object> params) {
+        protected ScreenCommand(MenuItem item, String screen, Element descriptor, Map<String, Object> params) {
+            this.item = item;
             this.screen = screen;
             this.descriptor = descriptor;
             this.params = params;
@@ -141,10 +140,12 @@ public class MenuCommand {
 
         @Override
         public void run() {
-            OpenType openType = OpenType.NEW_TAB;
+            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+
+            WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
             String openTypeStr = descriptor.attributeValue("openType");
             if (StringUtils.isNotEmpty(openTypeStr)) {
-                openType = OpenType.valueOf(openTypeStr);
+                openType = WindowManager.OpenType.valueOf(openTypeStr);
             }
 
             if (openType.getOpenMode() == OpenMode.DIALOG) {
@@ -154,11 +155,11 @@ public class MenuCommand {
                 }
             }
 
-            WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screen);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screen);
 
             String id = windowInfo.getId();
 
-            Screens screens = AppBeans.get(Screens.NAME);
+            Screens screens = beanLocator.get(Screens.NAME);
 
             if (id.endsWith(Window.CREATE_WINDOW_SUFFIX)
                     || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
@@ -173,17 +174,19 @@ public class MenuCommand {
                     } else if (strings.length == 3) {
                         metaClassName = strings[1];
                     } else {
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException("Incorrect screen parameters in menu item " + item.getId());
                     }
 
-                    entityItem = AppBeans.get(Metadata.class).create(metaClassName);
+                    entityItem = metadata.create(metaClassName);
                 }
-//                todo
-//                wm.openEditor(windowInfo, entityItem, openType, params);
+                ((WindowManager) screens).openEditor(windowInfo, entityItem, openType, params);
+
             } else {
                 Screen screen = screens.create(windowInfo, openType.getOpenMode(), new MapScreenOptions(params));
                 screens.show(screen);
             }
+
+            sw.stop();
         }
 
         @Override
@@ -192,13 +195,16 @@ public class MenuCommand {
         }
     }
 
-    protected static class BeanCommand implements MenuItemCommand {
+    protected class BeanCommand implements MenuItemCommand {
+
+        protected MenuItem item;
 
         protected String bean;
         protected String beanMethod;
         protected Map<String, Object> params;
 
-        protected BeanCommand(String bean, String beanMethod, Map<String, Object> params) {
+        protected BeanCommand(MenuItem item, String bean, String beanMethod, Map<String, Object> params) {
+            this.item = item;
             this.bean = bean;
             this.beanMethod = beanMethod;
             this.params = params;
@@ -206,7 +212,9 @@ public class MenuCommand {
 
         @Override
         public void run() {
-            Object beanInstance = AppBeans.get(bean);
+            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+
+            Object beanInstance = beanLocator.get(bean);
             try {
                 Method methodWithParams = MethodUtils.getAccessibleMethod(beanInstance.getClass(), beanMethod, Map.class);
                 if (methodWithParams != null) {
@@ -218,6 +226,8 @@ public class MenuCommand {
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException("Unable to execute bean method", e);
             }
+
+            sw.stop();
         }
 
         @Override
@@ -226,12 +236,15 @@ public class MenuCommand {
         }
     }
 
-    protected static class RunnableClassCommand implements MenuItemCommand {
+    protected class RunnableClassCommand implements MenuItemCommand {
+
+        protected MenuItem item;
 
         protected String runnableClass;
         protected Map<String, Object> params;
 
-        protected RunnableClassCommand(String runnableClass, Map<String, Object> params) {
+        protected RunnableClassCommand(MenuItem item, String runnableClass, Map<String, Object> params) {
+            this.item = item;
             this.runnableClass = runnableClass;
             this.params = params;
         }
@@ -239,14 +252,18 @@ public class MenuCommand {
         @SuppressWarnings("unchecked")
         @Override
         public void run() {
-            Class<?> clazz = AppBeans.get(Scripting.class).loadClass(runnableClass);
+            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+
+            Class<?> clazz = scripting.loadClass(runnableClass);
             if (clazz == null) {
                 throw new IllegalStateException(String.format("Can't load class: %s", runnableClass));
             }
 
             if (!Runnable.class.isAssignableFrom(clazz)
                     && !Consumer.class.isAssignableFrom(clazz)) {
-                throw new IllegalStateException(String.format("Class \"%s\" must implement Runnable or Consumer<Map<String, Object>>", runnableClass));
+                throw new IllegalStateException(
+                        String.format("Class \"%s\" must implement Runnable or Consumer<Map<String, Object>>",
+                                runnableClass));
             }
 
             Object classInstance;
@@ -261,6 +278,8 @@ public class MenuCommand {
             } else {
                 ((Runnable) classInstance).run();
             }
+
+            sw.stop();
         }
 
         @Override

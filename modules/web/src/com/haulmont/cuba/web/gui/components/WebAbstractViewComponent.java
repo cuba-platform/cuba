@@ -18,13 +18,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
-import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
-import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import java.util.function.Consumer;
@@ -33,11 +33,10 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
         extends WebAbstractComponent<T> implements HasValue<V>, HasValueSource<V> {
 
     @Inject
-    protected ApplicationContext applicationContext;
+    protected BeanLocator beanLocator;
 
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
-
 
     @Override
     public ValueSource<V> getValueSource() {
@@ -53,7 +52,7 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
         }
 
         if (valueSource != null) {
-            ValueBinder binder = applicationContext.getBean(ValueBinder.NAME, ValueBinder.class);
+            ValueBinder binder = beanLocator.get(ValueBinder.NAME, ValueBinder.class);
 
             this.valueBinding = binder.bind(this, valueSource);
 

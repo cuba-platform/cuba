@@ -120,11 +120,19 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Inject
     protected MaxResultsFieldHelper maxResultsFieldHelper;
 
-    protected FtsFilterHelper ftsFilterHelper;
+    @Inject
     protected DataService dataService;
+    @Inject
     protected PersistenceManagerClient persistenceManager;
+    @Inject
     protected ClientConfig clientConfig;
+    @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected BeanLocator beanLocator;
+
+    protected FtsFilterHelper ftsFilterHelper;
     protected AddConditionHelper addConditionHelper;
     protected ThemeConstants theme;
     protected WindowManager windowManager;
@@ -219,12 +227,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void init() {
         theme = themeConstantsManager.getConstants();
         windowManager = windowManagerProvider.get();
-        dataService = AppBeans.get(DataService.class);
-        persistenceManager = AppBeans.get(PersistenceManagerClient.class);
-        globalConfig = configuration.getConfig(GlobalConfig.class);
-        clientConfig = configuration.getConfig(ClientConfig.class);
-        if (AppBeans.containsBean(FtsFilterHelper.NAME)) {
-            ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
+        if (beanLocator.containsBean(FtsFilterHelper.NAME)) {
+            ftsFilterHelper = beanLocator.get(FtsFilterHelper.class);
         }
         filterMode = FilterMode.GENERIC_MODE;
 
@@ -295,12 +299,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         searchBtn.setCaption(getMainMessage("filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setDescription(getMainMessage("filter.searchBtn.description"));
-        searchBtn.setAction(new AbstractAction("search") {
-            @Override
-            public void actionPerform(Component component) {
-                apply(false);
-            }
-        });
+        searchBtn.addClickListener(e ->
+                apply(false)
+        );
+
         filterHelper.setInternalDebugId(searchBtn, "searchBtn");
 
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
@@ -317,12 +319,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         addConditionBtn = componentsFactory.createComponent(LinkButton.class);
         addConditionBtn.setAlignment(Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMainMessage("filter.addCondition"));
-        addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
-            @Override
-            public void actionPerform(Component component) {
-                addConditionHelper.addCondition(conditions);
-            }
-        });
+        addConditionBtn.addClickListener(e ->
+                addConditionHelper.addCondition(conditions)
+        );
         filterHelper.setInternalDebugId(addConditionBtn, "addConditionBtn");
 
         controlsLayoutGap = componentsFactory.createComponent(Label.class);
@@ -456,7 +455,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLayout = componentsFactory.createComponent(HBoxLayout.class);
         maxResultsLayout.setStyleName("c-maxresults");
         maxResultsLayout.setSpacing(true);
-        Label maxResultsLabel = componentsFactory.createComponent(Label.class);
+        Label<String> maxResultsLabel = componentsFactory.createComponent(Label.class);
         maxResultsLabel.setStyleName("c-maxresults-label");
         maxResultsLabel.setValue(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsLabel.setAlignment(Alignment.MIDDLE_RIGHT);
@@ -511,7 +510,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             setFilterEntity(defaultFilter);
         } catch (Exception e) {
             log.error("Exception on loading default filter '{}'", defaultFilter.getName(), e);
-            windowManager.showNotification(messages.formatMainMessage("filter.errorLoadingDefaultFilter", defaultFilter.getName()), Frame.NotificationType.ERROR);
+            windowManager.showNotification(
+                    messages.formatMainMessage("filter.errorLoadingDefaultFilter", defaultFilter.getName()),
+                    Frame.NotificationType.ERROR);
             defaultFilter = adHocFilter;
             setFilterEntity(adHocFilter);
         }

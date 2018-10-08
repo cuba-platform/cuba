@@ -21,9 +21,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
-import com.haulmont.cuba.gui.config.MenuCommand;
-import com.haulmont.cuba.gui.config.MenuConfig;
-import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -52,6 +50,8 @@ public class MenuBuilder {
 
     @Inject
     protected MenuConfig menuConfig;
+    @Inject
+    protected MenuItemCommands menuItemCommands;
 
     @Inject
     protected MessageTools messageTools;
@@ -95,8 +95,9 @@ public class MenuBuilder {
     }
 
     protected void removeExtraSeparators(AppMenu.MenuItem item) {
-        if (!item.hasChildren())
+        if (!item.hasChildren()) {
             return;
+        }
 
         boolean done;
         do {
@@ -185,13 +186,15 @@ public class MenuBuilder {
 
     protected Consumer<AppMenu.MenuItem> createMenuBarCommand(final MenuItem item) {
         if (CollectionUtils.isNotEmpty(item.getChildren()) || item.isMenu())     //check item is menu
+        {
             return null;
+        }
 
         return createMenuCommandExecutor(item);
     }
 
     protected Consumer<AppMenu.MenuItem> createMenuCommandExecutor(MenuItem item) {
-        return new MenuCommandExecutor(item);
+        return new MenuCommandExecutor(menuItemCommands, item);
     }
 
     protected boolean isMenuItemEmpty(AppMenu.MenuItem menuItem) {
@@ -233,15 +236,17 @@ public class MenuBuilder {
 
     public static class MenuCommandExecutor implements Consumer<AppMenu.MenuItem> {
         private final MenuItem item;
+        private final MenuItemCommands menuItemCommands;
 
-        public MenuCommandExecutor(MenuItem item) {
+        public MenuCommandExecutor(MenuItemCommands menuItemCommands, MenuItem item) {
+            this.menuItemCommands = menuItemCommands;
             this.item = item;
         }
 
         @Override
         public void accept(AppMenu.MenuItem menuItem) {
-            MenuCommand command = new MenuCommand(item);
-            command.execute();
+            MenuItemCommand command = menuItemCommands.create(item);
+            command.run();
         }
     }
 }
