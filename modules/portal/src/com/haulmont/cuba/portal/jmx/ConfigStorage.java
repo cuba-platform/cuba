@@ -18,17 +18,11 @@
 package com.haulmont.cuba.portal.jmx;
 
 import com.haulmont.cuba.core.config.ConfigStorageCommon;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {

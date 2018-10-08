@@ -28,7 +28,6 @@ import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
@@ -50,7 +49,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.dom4j.Element;
 
@@ -327,7 +326,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                     constraint.setWhereClause(jpql);
                     Set<String> joins = filterParser.getRoot().getJoins();
                     if (!joins.isEmpty()) {
-                        String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
+                        String joinsStr = new TextStringBuilder().appendWithSeparators(joins, " ").toString();
                         constraint.setJoinClause(joinsStr);
                     }
                 }

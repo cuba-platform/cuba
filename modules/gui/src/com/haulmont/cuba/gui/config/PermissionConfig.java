@@ -33,7 +33,7 @@ import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -209,7 +209,7 @@ public class PermissionConfig {
             specific = new Tree<>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
-            StrTokenizer tokenizer = new StrTokenizer(configName);
+            StringTokenizer tokenizer = new StringTokenizer(configName);
             for (String location : tokenizer.getTokenArray()) {
                 Resource resource = resources.getResource(location);
                 if (resource.exists()) {

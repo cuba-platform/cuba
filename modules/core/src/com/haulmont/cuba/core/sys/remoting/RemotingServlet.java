@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
 import com.haulmont.cuba.core.sys.RemotingContextHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class RemotingServlet extends DispatcherServlet {
         }
         File baseDir = new File(AppContext.getProperty("cuba.confDir"));
 
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        StringTokenizer tokenizer = new StringTokenizer(configProperty);
         String[] tokenArray = tokenizer.getTokenArray();
         StringBuilder locations = new StringBuilder();
         for (String token : tokenArray) {
@@ -85,6 +86,7 @@ public class RemotingServlet extends DispatcherServlet {
         return locations.toString();
     }
 
+    @Nonnull
     @Override
     protected WebApplicationContext initWebApplicationContext() {
         WebApplicationContext wac = findWebApplicationContext();
@@ -111,7 +113,7 @@ public class RemotingServlet extends DispatcherServlet {
     }
 
     @Override
-    protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void doService(HttpServletRequest request, @Nonnull HttpServletResponse response) throws Exception {
         checkConfiguration(request);
 
         RemoteClientInfo remoteClientInfo = new RemoteClientInfo();
@@ -163,8 +165,8 @@ public class RemotingServlet extends DispatcherServlet {
     }
 
     @Override
-    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
-                                                   Object handler, Exception ex) throws Exception {
+    protected ModelAndView processHandlerException(HttpServletRequest request, @Nonnull HttpServletResponse response,
+                                                   Object handler, @Nonnull Exception ex) throws Exception {
         log.error("Error processing request", ex);
         return super.processHandlerException(request, response, handler, ex);
     }
@@ -177,6 +179,7 @@ public class RemotingServlet extends DispatcherServlet {
         }
     }
 
+    @Nonnull
     @Override
     public Class<?> getContextClass() {
         return CubaXmlWebApplicationContext.class;

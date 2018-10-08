@@ -17,7 +17,7 @@
 
 package com.haulmont.chile.core.model;
 
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public class MetaPropertyPath implements Serializable {
     }
 
     protected static String getPathString(String[] path) {
-        return new StrBuilder()
+        return new TextStringBuilder()
                 .appendWithSeparators(path, ".")
                 .toString();
     }
@@ -166,5 +166,4 @@ public class MetaPropertyPath implements Serializable {
     public String toString() {
         return pathString;
     }
-
 }

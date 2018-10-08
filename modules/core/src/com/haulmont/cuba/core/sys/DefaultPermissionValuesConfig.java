@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class DefaultPermissionValuesConfig {
 
         String configName = AppContext.getProperty("cuba.defaultPermissionValuesConfig");
         if (!StringUtils.isBlank(configName)) {
-            StrTokenizer tokenizer = new StrTokenizer(configName);
+            StringTokenizer tokenizer = new StringTokenizer(configName);
             for (String fileName : tokenizer.getTokenArray()) {
                 parseConfigFile(fileName);
             }
@@ -94,7 +94,7 @@ public class DefaultPermissionValuesConfig {
         String fileContent = resources.getResourceAsString(fileName);
         if (!Strings.isNullOrEmpty(fileContent)) {
             Document document = Dom4j.readDocument(fileContent);
-            List<Element> permissionElements = Dom4j.elements(document.getRootElement(), "permission");
+            List<Element> permissionElements = document.getRootElement().elements("permission");
 
             for (Element element : permissionElements) {
                 String target = element.attributeValue("target");

@@ -22,9 +22,8 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Stores;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -33,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.text.ParseException;
@@ -86,7 +86,7 @@ public class MetadataBuildSupport {
 
     public List<XmlFile> init() {
         List<XmlFile> metadataXmlList = new ArrayList<>();
-        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
+        StringTokenizer metadataFilesTokenizer = new StringTokenizer(getMetadataConfig());
         for (String fileName : metadataFilesTokenizer.getTokenArray()) {
             metadataXmlList.add(new XmlFile(fileName, readXml(fileName)));
         }
@@ -162,16 +162,17 @@ public class MetadataBuildSupport {
 
     protected void loadFromPersistenceConfig(Map<String, List<EntityClassInfo>> packages, String db) {
         String persistenceConfig = getPersistenceConfig(db);
-        if (persistenceConfig == null)
+        if (persistenceConfig == null) {
             return;
-        StrTokenizer persistenceFilesTokenizer = new StrTokenizer(persistenceConfig);
+        }
+        StringTokenizer persistenceFilesTokenizer = new StringTokenizer(persistenceConfig);
         for (String fileName : persistenceFilesTokenizer.getTokenArray()) {
             Element root = readXml(fileName);
             Element puEl = root.element("persistence-unit");
             if (puEl == null)
                 throw new IllegalStateException("File " + fileName + " has no persistence-unit element");
 
-            for (Element classEl : Dom4j.elements(puEl, "class")) {
+            for (Element classEl : puEl.elements("class")) {
                 String className = classEl.getText().trim();
                 boolean included = false;
                 for (String rootPackage : packages.keySet()) {
@@ -194,15 +195,15 @@ public class MetadataBuildSupport {
     }
 
     protected Element readXml(String path) {
-        InputStream stream = resources.getResourceAsStream(path);
-        try {
-            stream = resources.getResourceAsStream(path);
-            if (stream == null)
+        try (InputStream stream = resources.getResourceAsStream(path)) {
+            if (stream == null) {
                 throw new IllegalStateException("Resource not found: " + path);
+            }
+
             Document document = Dom4j.readDocument(stream);
             return document.getRootElement();
-        } finally {
-            IOUtils.closeQuietly(stream);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read resource: " + path);
         }
     }
 
@@ -212,22 +213,22 @@ public class MetadataBuildSupport {
         for (XmlFile xmlFile : metadataXmlList) {
             Element annotationsEl = xmlFile.root.element("annotations");
             if (annotationsEl != null) {
-                for (Element entityEl : Dom4j.elements(annotationsEl, "entity")) {
+                for (Element entityEl : annotationsEl.elements("entity")) {
                     String className = entityEl.attributeValue("class");
                     XmlAnnotations entityAnnotations = new XmlAnnotations(className);
-                    for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
+                    for (Element annotEl : entityEl.elements("annotation")) {
                         XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
-                        for (Element attrEl : Dom4j.elements(annotEl, "attribute")) {
+                        for (Element attrEl : annotEl.elements("attribute")) {
                             Object value = getXmlAnnotationAttributeValue(attrEl);
                             xmlAnnotation.attributes.put(attrEl.attributeValue("name"), value);
                         }
                         entityAnnotations.annotations.put(annotEl.attributeValue("name"), xmlAnnotation);
                     }
-                    for (Element propEl : Dom4j.elements(entityEl, "property")) {
+                    for (Element propEl : entityEl.elements("property")) {
                         XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
-                        for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
+                        for (Element annotEl : propEl.elements("annotation")) {
                             XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
-                            for (Element attrEl : Dom4j.elements(annotEl, "attribute")) {
+                            for (Element attrEl : annotEl.elements("attribute")) {
                                 Object value = getXmlAnnotationAttributeValue(attrEl);
                                 xmlAnnotation.attributes.put(attrEl.attributeValue("name"), value);
                             }
@@ -242,7 +243,7 @@ public class MetadataBuildSupport {
         return result;
     }
 
-    private Object getXmlAnnotationAttributeValue(Element attributeEl) {
+    protected Object getXmlAnnotationAttributeValue(Element attributeEl) {
         String value = attributeEl.attributeValue("value");
         String className = attributeEl.attributeValue("class");
         String datatypeName = attributeEl.attributeValue("datatype");
@@ -266,7 +267,7 @@ public class MetadataBuildSupport {
         return null;
     }
 
-    private Object getXmlAnnotationAttributeValue(String value, String className, String datatypeName) {
+    protected Object getXmlAnnotationAttributeValue(String value, String className, String datatypeName) {
         if (className == null && datatypeName == null)
             return inferMetaAnnotationType(value);
         if (className != null) {

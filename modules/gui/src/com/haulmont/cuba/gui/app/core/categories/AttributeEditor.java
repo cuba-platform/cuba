@@ -50,14 +50,14 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.sys.ScreensHelper;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.sys.ScreensHelper;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -68,7 +68,6 @@ import static java.lang.String.format;
 
 /**
  * Class that encapsulates editing of {@link CategoryAttribute} entities.
- * <p>
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
@@ -196,7 +195,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Action createAction = new BaseAction("create") {
             @Override
             public void actionPerform(Component component) {
-                screensDs.addItem(new ScreenAndComponent());
+                screensDs.addItem(metadata.create(ScreenAndComponent.class));
             }
         };
         createAction.setCaption(getMessage("targetScreensTable.create"));
@@ -423,12 +422,13 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             filterEntity.setXml(filterParser1.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
             if (filterEntity.getXml() != null) {
                 Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
-                com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
+                com.haulmont.cuba.core.global.filter.FilterParser filterParser =
+                        new com.haulmont.cuba.core.global.filter.FilterParser(element);
                 String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
                 attribute.setWhereClause(jpql);
                 Set<String> joins = filterParser.getRoot().getJoins();
                 if (!joins.isEmpty()) {
-                    String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
+                    String joinsStr = new TextStringBuilder().appendWithSeparators(joins, " ").toString();
                     attribute.setJoinClause(joinsStr);
                 }
                 attribute.setFilterXml(filterEntity.getXml());

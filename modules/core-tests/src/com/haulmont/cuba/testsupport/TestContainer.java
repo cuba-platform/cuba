@@ -32,7 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrLookup;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -360,11 +360,11 @@ public class TestContainer extends ExternalResource {
 
         String configProperty = AppContext.getProperty(AbstractAppContextLoader.SPRING_CONTEXT_CONFIG);
 
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        StringTokenizer tokenizer = new StringTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();
         locations.add(getSpringConfig());
 
-        springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[locations.size()]));
+        springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);
 
         Events events = AppBeans.get(Events.NAME);

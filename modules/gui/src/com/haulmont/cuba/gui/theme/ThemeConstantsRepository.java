@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -66,7 +66,7 @@ public class ThemeConstantsRepository {
         if (!StringUtils.isBlank(configName)) {
             Map<String, Map<String, String>> themeProperties = new HashMap<>();
 
-            StrTokenizer tokenizer = new StrTokenizer(configName);
+            StringTokenizer tokenizer = new StringTokenizer(configName);
             for (String fileName : tokenizer.getTokenArray()) {
                 String themeName = parseThemeName(fileName);
                 if (StringUtils.isNotBlank(themeName)) {

@@ -25,7 +25,6 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -68,7 +67,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     @Override
     public DesktopTheme loadTheme(String themeName) {
         String themeLocations = config.getResourceLocations();
-        StrTokenizer tokenizer = new StrTokenizer(themeLocations);
+        StringTokenizer tokenizer = new StringTokenizer(themeLocations);
         String[] locationList = tokenizer.getTokenArray();
 
         List<String> resourceLocationList = new ArrayList<>();

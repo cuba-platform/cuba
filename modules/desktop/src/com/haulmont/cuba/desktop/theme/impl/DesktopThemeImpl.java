@@ -22,7 +22,7 @@ import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import net.miginfocom.layout.PlatformDefaults;
 import net.miginfocom.layout.UnitValue;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +135,7 @@ public class DesktopThemeImpl implements DesktopTheme {
     @Override
     public void applyStyle(Object component, String styleNameString, Set<String> state) {
         // split string into individual style names
-        StrTokenizer tokenizer = new StrTokenizer(styleNameString);
+        StringTokenizer tokenizer = new StringTokenizer(styleNameString);
         String[] styleNames = tokenizer.getTokenArray();
         for (String styleName : styleNames) {
             applyStyleName(component, state, styleName);

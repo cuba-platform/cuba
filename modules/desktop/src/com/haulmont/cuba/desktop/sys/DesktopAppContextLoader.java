@@ -26,8 +26,8 @@ import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
+import org.apache.commons.text.TextStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +128,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
 
         final Properties properties = new Properties();
 
-        StrTokenizer tokenizer = new StrTokenizer(appPropertiesConfig);
+        StringTokenizer tokenizer = new StringTokenizer(appPropertiesConfig);
         for (String str : tokenizer.getTokenArray()) {
             InputStream stream = null;
             try {
@@ -163,6 +163,6 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             list.add(key + "=" + AppContext.getProperty(key));
         }
         Collections.sort(list);
-        log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n").toString());
+        log.info(new TextStringBuilder("AppProperties:\n").appendWithSeparators(list, "\n").toString());
     }
 }

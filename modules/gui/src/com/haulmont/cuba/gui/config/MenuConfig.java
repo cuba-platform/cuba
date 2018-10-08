@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +109,7 @@ public class MenuConfig {
 
         String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
 
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {

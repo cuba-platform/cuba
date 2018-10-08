@@ -28,7 +28,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class ConfigStorageCommon {
             }
         }
         Collections.sort(list);
-        return new StrBuilder().appendWithSeparators(list, "\n").toString();
+        return new TextStringBuilder().appendWithSeparators(list, "\n").toString();
     }
 
     public String getAppProperty(String name) {

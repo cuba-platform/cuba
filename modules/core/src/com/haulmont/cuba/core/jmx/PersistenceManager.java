@@ -33,7 +33,7 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -161,10 +161,10 @@ public class PersistenceManager implements PersistenceManagerMBean {
                 File dbDir = new File(serverConfig.getDbDir());
 
                 String indent = "\t";
-                StrBuilder sb = new StrBuilder();
-                sb.append(dbDir.getPath().replace('\\', '/') + "/" + "\n");
+                TextStringBuilder sb = new TextStringBuilder();
+                sb.append(dbDir.getPath().replace('\\', '/')).append("/").append("\n");
                 for (String path : list) {
-                    sb.append(indent + path + "\n");
+                    sb.append(indent).append(path).append("\n");
                 }
 
                 return sb.toString();
@@ -193,7 +193,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
                 List resultList = query.getResultList();
                 tx.commit();
 
-                StrBuilder sb = new StrBuilder();
+                TextStringBuilder sb = new TextStringBuilder();
                 for (Object element : resultList) {
                     if (element instanceof Object[]) {
                         sb.appendWithSeparators((Object[]) element, " | ");

@@ -21,7 +21,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class RestServicePermissions {
 
     protected void init() {
         String configName = AppContext.getProperty(CUBA_REST_SERVICES_CONFIG_PROP_NAME);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {

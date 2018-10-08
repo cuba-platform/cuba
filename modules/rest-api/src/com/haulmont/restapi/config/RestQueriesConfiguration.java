@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +131,7 @@ public class RestQueriesConfiguration {
 
     protected void init() {
         String configName = AppContext.getProperty(CUBA_REST_QUERIES_CONFIG_PROP_NAME);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
@@ -145,13 +145,13 @@ public class RestQueriesConfiguration {
                     IOUtils.closeQuietly(stream);
                 }
             } else {
-                log.warn("Resource " + location + " not found, ignore it");
+                log.warn("Resource {} not found, ignore it", location);
             }
         }
     }
 
     protected void loadConfig(Element rootElem) {
-        for (Element queryElem : Dom4j.elements(rootElem, "query")) {
+        for (Element queryElem : rootElem.elements("query")) {
             String queryName = queryElem.attributeValue("name");
             if (ALL_ENTITIES_QUERY_NAME.equalsIgnoreCase(queryName)) {
                 log.error("{} is a predefined query name. It can not be used.", queryName);
@@ -188,7 +188,7 @@ public class RestQueriesConfiguration {
 
             Element paramsEl = queryElem.element("params");
             if (paramsEl != null) {
-                for (Element paramElem : Dom4j.elements(paramsEl, "param")) {
+                for (Element paramElem : paramsEl.elements("param")) {
                     String paramName = paramElem.attributeValue("name");
                     String paramType = paramElem.attributeValue("type");
                     QueryParamInfo param = new QueryParamInfo(paramName, paramType);

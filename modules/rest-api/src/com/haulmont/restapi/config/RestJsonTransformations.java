@@ -22,14 +22,13 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Table;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.restapi.transform.EntityJsonTransformer;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
 import com.haulmont.restapi.transform.StandardEntityJsonTransformer;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +132,7 @@ public class RestJsonTransformations {
 
     protected void init() {
         String configName = AppContext.getProperty(CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {

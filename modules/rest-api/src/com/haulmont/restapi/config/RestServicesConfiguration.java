@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,9 @@ public class RestServicesConfiguration {
         try {
             checkInitialized();
             RestServiceInfo restServiceInfo = serviceInfosMap.get(serviceName);
-            if (restServiceInfo == null) return null;
+            if (restServiceInfo == null) {
+                return null;
+            }
             Optional<RestMethodInfo> methodInfoOptional = restServiceInfo.getMethods().stream()
                     .filter(restMethodInfo -> methodName.equals(restMethodInfo.getName())
                             && paramsMatches(restMethodInfo.getParams(), methodParamNames))
@@ -137,7 +139,7 @@ public class RestServicesConfiguration {
 
     protected void init() {
         String configName = AppContext.getProperty(CUBA_REST_SERVICES_CONFIG_PROP_NAME);
-        StrTokenizer tokenizer = new StrTokenizer(configName);
+        StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
@@ -242,7 +244,7 @@ public class RestServicesConfiguration {
         } else {
             for (Class<?> serviceInterface : serviceInterfaces) {
                 try {
-                    serviceMethod = serviceInterface.getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
+                    serviceMethod = serviceInterface.getMethod(methodName, paramTypes.toArray(new Class[0]));
                 } catch (NoSuchMethodException ignored) {
                 }
             }
@@ -277,7 +279,7 @@ public class RestServicesConfiguration {
 
     public static class RestServiceInfo {
         protected String name;
-        protected List<RestMethodInfo> methods = new ArrayList<>();
+        protected List<RestMethodInfo> methods;
 
         public RestServiceInfo(String name, List<RestMethodInfo> methods) {
             this.name = name;
@@ -303,7 +305,7 @@ public class RestServicesConfiguration {
 
     public static class RestMethodInfo {
         protected String name;
-        protected List<RestMethodParamInfo> params = new ArrayList<>();
+        protected List<RestMethodParamInfo> params;
         protected boolean anonymousAllowed;
         @JsonIgnore
         protected Method method;

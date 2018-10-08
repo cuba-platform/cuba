@@ -20,11 +20,13 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.io.File;
@@ -49,7 +51,7 @@ public class CubaDispatcherServlet extends DispatcherServlet {
         }
         File baseDir = new File(AppContext.getProperty("cuba.confDir"));
 
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        StringTokenizer tokenizer = new StringTokenizer(configProperty);
         String[] tokenArray = tokenizer.getTokenArray();
         StringBuilder locations = new StringBuilder();
         for (String token : tokenArray) {
@@ -71,6 +73,7 @@ public class CubaDispatcherServlet extends DispatcherServlet {
         return locations.toString();
     }
 
+    @Nonnull
     @Override
     protected WebApplicationContext initWebApplicationContext() {
         WebApplicationContext wac = findWebApplicationContext();
@@ -92,6 +95,7 @@ public class CubaDispatcherServlet extends DispatcherServlet {
         return wac;
     }
 
+    @Nonnull
     @Override
     public Class<?> getContextClass() {
         return CubaXmlWebApplicationContext.class;

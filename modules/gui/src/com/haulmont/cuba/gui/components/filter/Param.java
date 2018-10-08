@@ -50,7 +50,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
 import org.springframework.context.annotation.Scope;
 
@@ -298,7 +298,7 @@ public class Param {
                 if (value instanceof Collection && editComponent instanceof TextField) {
                     //if the value type is an array and the editComponent is a textField ('IN' condition for String attribute)
                     //then we should set the string value (not the array) to the text field
-                    String caption = new StrBuilder().appendWithSeparators((Collection) value, ",").toString();
+                    String caption = new TextStringBuilder().appendWithSeparators((Collection) value, ",").toString();
                     ((TextField) editComponent).setValue(caption);
                 } else {
                     ((HasValue) editComponent).setValue(value);
