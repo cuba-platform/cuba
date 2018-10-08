@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
@@ -28,9 +27,12 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.DsContextCommitListenerWrapper;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class DsContextImpl implements DsContextImplementation {
 
@@ -395,7 +397,7 @@ public class DsContextImpl implements DsContextImplementation {
                     datasource.isAllowCommit() &&
                     (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
 
-                final DataSupplier dataservice = datasource.getDataSupplier();
+                DataSupplier dataservice = datasource.getDataSupplier();
                 Collection<Datasource<Entity>> collection = commitDatasources.get(dataservice);
                 if (collection == null) {
                     collection = new ArrayList<>();
@@ -509,10 +511,10 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public Datasource get(String id) {
-        if (aliasesMap.containsKey(id)) {
-            id = aliasesMap.get(id);
-        }
-        Preconditions.checkNotNullArgument(id, "Null datasource ID");
+        checkNotNullArgument(id, "Null datasource ID");
+
+        id = aliasesMap.getOrDefault(id, id);
+
         Datasource ds = null;
         if (!id.contains(".")) {
             ds = datasourceMap.get(id);
@@ -523,9 +525,13 @@ public class DsContextImpl implements DsContextImplementation {
             if (windowContext != null) {
                 String nestedFramePath = id.substring(0, id.indexOf("."));
                 Component nestedFrame = getFrameContext().getFrame().getComponent(nestedFramePath);
-                if ((nestedFrame) != null && (nestedFrame instanceof Frame)) {
+
+                if (nestedFrame instanceof Frame) {
                     String nestedDsId = id.substring(id.indexOf(".") + 1);
-                    ds = ((LegacyFrame) nestedFrame).getDsContext().get(nestedDsId);
+                    FrameOwner frameOwner = ((Frame) nestedFrame).getFrameOwner();
+                    if (frameOwner instanceof LegacyFrame) {
+                        ds = ((LegacyFrame) frameOwner).getDsContext().get(nestedDsId);
+                    }
                 }
             }
         }
@@ -536,7 +542,7 @@ public class DsContextImpl implements DsContextImplementation {
     public Datasource getNN(String name) {
         Datasource datasource = get(name);
         if (datasource == null) {
-            throw new IllegalArgumentException("Datasource '" + name + "' is not found");
+            throw new IllegalArgumentException(String.format("Datasource '%s' is not found", name));
         }
         return datasource;
     }

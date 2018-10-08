@@ -283,7 +283,9 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     protected Button createActionButton(Action action) {
+        // todo replace with vaadin Button !
         WebButton button = new PopupButtonActionButton();
+        button.beanLocator = beanLocator;
         button.setAction(new PopupActionWrapper(action));
 
         button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
@@ -292,16 +294,21 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         vButton.setSizeFull();
         vButton.setStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
 
-        if (AppUI.getCurrent().isTestMode()) {
-            button.setId(action.getId());
-        }
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null) {
+            if (ui.isTestMode()) {
+                button.setId(action.getId());
+            }
 
-        if (AppUI.getCurrent().isPerformanceTestMode()) {
-            String debugId = getDebugId();
-            if (debugId != null) {
-                button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
+            if (ui.isPerformanceTestMode()) {
+                String debugId = getDebugId();
+                if (debugId != null) {
+                    TestIdManager testIdManager = ui.getTestIdManager();
+                    button.setDebugId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                }
             }
         }
+
         return vButton;
     }
 
