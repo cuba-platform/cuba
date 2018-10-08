@@ -20,6 +20,8 @@ package com.haulmont.cuba.web.sys;
 import com.google.common.hash.HashCode;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.logging.LogMdc;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -50,13 +52,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.hash.Hashing.md5;
 
 public class CubaVaadinServletService extends VaadinServletService
         implements AtmospherePushConnection.UidlWriterFactory {
 
-    private final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
 
     protected WebConfig webConfig;
     protected WebAuthConfig webAuthConfig;
@@ -298,6 +303,70 @@ public class CubaVaadinServletService extends VaadinServletService
         }
     }
 
+    @Override
+    protected void lockSession(WrappedSession wrappedSession) {
+        Lock lock = getSessionLock(wrappedSession);
+        if (lock == null) {
+            /*
+             * No lock found in the session attribute. Ensure only one lock is
+             * created and used by everybody by doing double checked locking.
+             * Assumes there is a memory barrier for the attribute (i.e. that
+             * the CPU flushes its caches and reads the value directly from main
+             * memory).
+             */
+            synchronized (VaadinService.class) {
+                lock = getSessionLock(wrappedSession);
+                if (lock == null) {
+                    lock = new CubaReentrantLock();
+                    setSessionLock(wrappedSession, lock);
+                }
+            }
+        }
+        lock.lock();
+
+        try {
+            // Someone might have invalidated the session between fetching the
+            // lock and acquiring it. Guard for this by calling a method that's
+            // specified to throw IllegalStateException if invalidated
+            // (#12282)
+            wrappedSession.getAttribute(getLockAttributeName());
+        } catch (IllegalStateException e) {
+            lock.unlock();
+            throw e;
+        }
+    }
+
+    /**
+     * Associates the given lock with this service and the given wrapped
+     * session. This method should not be called more than once when the lock is
+     * initialized for the session.
+     *
+     * @param wrappedSession The wrapped session the lock is associated with
+     * @param lock           The lock object
+     * @see #getSessionLock(WrappedSession)
+     */
+    private void setSessionLock(WrappedSession wrappedSession, Lock lock) {
+        if (wrappedSession == null) {
+            throw new IllegalArgumentException(
+                    "Can't set a lock for a null session");
+        }
+        Object currentSessionLock = wrappedSession
+                .getAttribute(getLockAttributeName());
+        assert (currentSessionLock == null
+                || currentSessionLock == lock) : "Changing the lock for a session is not allowed";
+
+        wrappedSession.setAttribute(getLockAttributeName(), lock);
+    }
+
+    /**
+     * Returns the name used to store the lock in the HTTP session.
+     *
+     * @return The attribute name for the lock
+     */
+    private String getLockAttributeName() {
+        return getServiceName() + ".lock";
+    }
+
     /**
      * Generates non-random IDs for components, used for performance testing.
      */
@@ -382,6 +451,67 @@ public class CubaVaadinServletService extends VaadinServletService
         @Override
         protected UidlWriter createUidlWriter() {
             return new CubaUidlWriter(servletContext);
+        }
+    }
+
+    protected static class CubaReentrantLock extends ReentrantLock {
+        public CubaReentrantLock() {
+            super();
+        }
+
+        @Override
+        public void lock() {
+            super.lock();
+            setupLogMdc();
+        }
+
+        @Override
+        public void lockInterruptibly() throws InterruptedException {
+            super.lockInterruptibly();
+            setupLogMdc();
+        }
+
+        @Override
+        public boolean tryLock() {
+            boolean result = super.tryLock();
+            if (result) {
+                setupLogMdc();
+            }
+            return result;
+        }
+
+        @Override
+        public boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException {
+            boolean result = super.tryLock(timeout, unit);
+            if (result) {
+                setupLogMdc();
+            }
+            return result;
+        }
+
+        @Override
+        public void unlock() {
+            super.unlock();
+            clearLogMdc();
+        }
+
+        protected void setupLogMdc() {
+            try {
+                SecurityContext securityContext = AppContext.getSecurityContext();
+                if (securityContext != null) {
+                    LogMdc.setup(securityContext);
+                }
+            } catch (Exception e) {
+                log.debug("Unable to set MDC", e);
+            }
+        }
+
+        protected void clearLogMdc() {
+            try {
+                LogMdc.setup(null);
+            } catch (Exception e) {
+                log.debug("Unable to clear MDC", e);
+            }
         }
     }
 }
