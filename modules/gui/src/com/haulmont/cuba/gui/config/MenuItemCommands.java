@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
@@ -37,7 +39,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -83,7 +84,7 @@ public class MenuItemCommands {
     }
 
     protected Map<String, Object> loadParams(Element descriptor, String screen) {
-        Map<String, Object> params = new HashMap<>();
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         for (Element element : descriptor.elements("param")) {
             String value = element.attributeValue("value");
@@ -91,7 +92,7 @@ public class MenuItemCommands {
             if (info == null) {
                 if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
                     Boolean booleanValue = Boolean.valueOf(value);
-                    params.put(element.attributeValue("name"), booleanValue);
+                    builder.put(element.attributeValue("name"), booleanValue);
                 } else {
                     if (value.startsWith("${") && value.endsWith("}")) {
                         String property = AppContext.getProperty(value.substring(2, value.length() - 1));
@@ -99,19 +100,25 @@ public class MenuItemCommands {
                             value = property;
                         }
                     }
-                    params.put(element.attributeValue("name"), value);
+                    builder.put(element.attributeValue("name"), value);
                 }
             } else {
-                params.put(element.attributeValue("name"), loadEntityInstance(info));
+                builder.put(element.attributeValue("name"), loadEntityInstance(info));
             }
         }
 
         if (StringUtils.isNotEmpty(screen)) {
-            String caption = menuConfig.getItemCaption(screen);
-            WindowParams.CAPTION.set(params, caption);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screen);
+            // caption is passed only for legacy screens
+
+            if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())) {
+                String caption = menuConfig.getItemCaption(screen);
+
+                builder.put(WindowParams.CAPTION.name(), caption);
+            }
         }
 
-        return params;
+        return builder.build();
     }
 
     protected Entity loadEntityInstance(EntityLoadInfo info) {
