@@ -18,16 +18,16 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
-import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class OperationResultWindow extends AbstractWindow {
     @Inject
-    protected Label resultLabel;
+    protected Label<String> resultLabel;
 
     @Inject
     protected ScrollBoxLayout resultContainer;
@@ -63,26 +63,26 @@ public class OperationResultWindow extends AbstractWindow {
     protected String beanName;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         if (exception != null) {
-            Label traceLabel = componentsFactory.createComponent(Label.class);
+            Label<String> traceLabel = uiComponents.create(Label.NAME);
             traceLabel.setValue(getExceptionMessage(exception));
 
-            com.vaadin.v7.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.v7.ui.Label.class);
+            com.vaadin.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.ui.Label.class);
             vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.exception"));
             resultContainer.add(traceLabel);
         } else if (result != null) {
-            Label valueHolder = componentsFactory.createComponent(Label.class);
+            Label<String> valueHolder = uiComponents.create(Label.NAME);
             valueHolder.setValue(AttributeHelper.convertToString(result));
 
-            com.vaadin.v7.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.v7.ui.Label.class);
+            com.vaadin.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.ui.Label.class);
             vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.result"));
