@@ -33,7 +33,6 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaFieldGroup;
 import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
-import com.vaadin.server.Sizeable;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -82,9 +81,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         AppUI ui = AppUI.getCurrent();
         if (ui != null && id != null) {
             for (final FieldConfig fc : fields.values()) {
-                com.vaadin.v7.ui.Field field = ((FieldConfigImpl) fc).getComposition();
-                if (field != null) {
-                    field.setId(ui.getTestIdManager().getTestId(id + "_" + fc.getId()));
+                com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(fc.getComponentNN());
+                if (composition != null) {
+                    composition.setId(ui.getTestIdManager().getTestId(id + "_" + fc.getId()));
                 }
             }
         }
@@ -96,9 +95,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         if (id != null && AppUI.getCurrent().isTestMode()) {
             for (FieldConfig fc : fields.values()) {
-                com.vaadin.v7.ui.Field field = ((FieldConfigImpl) fc).getComposition();
-                if (field != null) {
-                    field.setCubaId(fc.getId());
+                com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(fc.getComponentNN());
+                if (composition != null) {
+                    composition.setCubaId(fc.getId());
                 }
             }
         }
@@ -260,7 +259,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         int insertRowIndex = 0;
         for (FieldConfig fc : columnFCs) {
             if (fc.isBound()) {
-                component.addComponent(((FieldConfigImpl) fc).getComposition(), colIndex, insertRowIndex);
+                com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(fc.getComponentNN());
+                component.addComponent(composition, colIndex, insertRowIndex);
                 insertRowIndex++;
             }
         }
@@ -295,102 +295,73 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     }
 
     protected void managedFieldComponentAssigned(FieldConfigImpl fci, FieldAttachMode mode) {
-        com.vaadin.v7.ui.Field fieldImpl = getFieldImplementation(fci.getComponentNN());
-        fci.setComposition(fieldImpl);
-
         assignTypicalAttributes(fci.getComponentNN());
 
         if (mode == FieldAttachMode.APPLY_DEFAULTS) {
             applyFieldDefaults(fci);
         }
 
-        assignDebugId(fci, fieldImpl);
+        com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(fci.getComponentNN());
+        assignDebugId(fci, composition);
 
         component.setRows(detectRowsCount());
 
         reattachColumnFields(fci.getColumn());
     }
 
+    @SuppressWarnings("unchecked")
     protected void applyFieldDefaults(FieldConfigImpl fci) {
         Component fieldComponent = fci.getComponentNN();
+
+        if (fci.getTargetVisible() != null) {
+            fieldComponent.setVisible(fci.getTargetVisible());
+        }
+
+        if (fieldComponent instanceof Component.HasCaption) {
+            HasCaption hasCaption = (HasCaption) fieldComponent;
+
+            if (fci.getTargetCaption() != null) {
+                hasCaption.setCaption(fci.getTargetCaption());
+            }
+
+            if (fci.getTargetDescription() != null) {
+                // we check empty for description since Vaadin components have "" description by default
+                hasCaption.setDescription(fci.getTargetDescription());
+            }
+        }
+
+        if (fieldComponent instanceof HasContextHelp) {
+            HasContextHelp hasContextHelp = (HasContextHelp) fieldComponent;
+
+            if (fci.getTargetContextHelpText() != null) {
+                hasContextHelp.setContextHelpText(fci.getTargetContextHelpText());
+            }
+            if (fci.getTargetContextHelpTextHtmlEnabled() != null) {
+                hasContextHelp.setContextHelpTextHtmlEnabled(fci.getTargetContextHelpTextHtmlEnabled());
+            }
+            if (fci.getTargetContextHelpIconClickHandler() != null) {
+                hasContextHelp.setContextHelpIconClickHandler(fci.getTargetContextHelpIconClickHandler());
+            }
+
+        }
+
+        if (fieldComponent instanceof Editable && fci.getTargetEditable() != null) {
+            ((Editable) fieldComponent).setEditable(fci.getTargetEditable());
+        }
 
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
 
-            if (fci.getTargetCaption() != null) {
-                cubaField.setCaption(fci.getTargetCaption());
-            }
-            if (fci.getTargetDescription() != null) {
-                // we check empty for description since Vaadin components have "" description by default
-                cubaField.setDescription(fci.getTargetDescription());
-            }
-            if (cubaField instanceof HasInputPrompt && fci.getTargetInputPrompt() != null) {
-                ((HasInputPrompt) cubaField).setInputPrompt(fci.getTargetInputPrompt());
-            }
             if (fci.getTargetRequired() != null) {
                 cubaField.setRequired(fci.getTargetRequired());
             }
+
             if (fci.getTargetRequiredMessage() != null) {
                 cubaField.setRequiredMessage(fci.getTargetRequiredMessage());
             }
-            if (fci.getTargetContextHelpText() != null) {
-                cubaField.setContextHelpText(fci.getTargetContextHelpText());
-            }
-            if (fci.getTargetContextHelpTextHtmlEnabled() != null) {
-                cubaField.setContextHelpTextHtmlEnabled(fci.getTargetContextHelpTextHtmlEnabled());
-            }
-            if (fci.getTargetContextHelpIconClickHandler() != null) {
-                cubaField.setContextHelpIconClickHandler(fci.getTargetContextHelpIconClickHandler());
-            }
-            if (fci.getTargetEditable() != null) {
-                cubaField.setEditable(fci.getTargetEditable());
-            }
-            if (fci.getTargetVisible() != null) {
-                cubaField.setVisible(fci.getTargetVisible());
-            }
-            if (cubaField instanceof Component.Focusable && fci.getTargetTabIndex() != null) {
-                ((Component.Focusable) cubaField).setTabIndex(fci.getTargetTabIndex());
-            }
+
             for (Field.Validator validator : fci.getTargetValidators()) {
                 cubaField.addValidator(validator);
-            }
-
-            if (fci.getTargetWidth() != null) {
-                fieldComponent.setWidth(fci.getTargetWidth());
-            } else {
-                if (App.isBound()) {
-                    ThemeConstants theme = App.getInstance().getThemeConstants();
-                    fieldComponent.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
-                }
-            }
-        } else {
-            com.vaadin.v7.ui.Field composition = fci.getCompositionNN();
-            if (fci.getTargetCaption() != null) {
-                composition.setCaption(fci.getTargetCaption());
-            }
-            if (fci.getTargetDescription() != null) {
-                ((CubaFieldWrapper) composition).setDescription(fci.getTargetDescription());
-            }
-            if (fci.getTargetRequired() != null) {
-                composition.setRequired(fci.getTargetRequired());
-            }
-            if (fci.getTargetRequiredMessage() != null) {
-                composition.setRequiredError(fci.getTargetRequiredMessage());
-            }
-            if (fci.getTargetEditable() != null) {
-                composition.setReadOnly(!fci.getTargetEditable());
-            }
-            if (fci.getTargetVisible() != null) {
-                composition.setVisible(fci.getTargetVisible());
-            }
-
-            if (fci.getTargetWidth() != null) {
-                composition.setWidth(fci.getTargetWidth());
-            } else {
-                if (App.isBound()) {
-                    ThemeConstants theme = App.getInstance().getThemeConstants();
-                    composition.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
-                }
             }
         }
 
@@ -398,8 +369,23 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             ((HasFormatter) fieldComponent).setFormatter(fci.getTargetFormatter());
         }
 
+        if (fieldComponent instanceof HasInputPrompt && fci.getTargetInputPrompt() != null) {
+            ((HasInputPrompt) fieldComponent).setInputPrompt(fci.getTargetInputPrompt());
+        }
+
+        if (fieldComponent instanceof Component.Focusable && fci.getTargetTabIndex() != null) {
+            ((Component.Focusable) fieldComponent).setTabIndex(fci.getTargetTabIndex());
+        }
+
         if (StringUtils.isNotEmpty(fci.getTargetStylename())) {
             fieldComponent.setStyleName(fci.getTargetStylename());
+        }
+
+        if (fci.getTargetWidth() != null) {
+            fieldComponent.setWidth(fci.getTargetWidth());
+        } else if (App.isBound()) {
+            ThemeConstants theme = App.getInstance().getThemeConstants();
+            fieldComponent.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
         }
     }
 
@@ -462,17 +448,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         fc.setComponent(fieldComponent);
     }
 
-    protected com.vaadin.v7.ui.Field getFieldImplementation(Component c) {
-        com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
-
-        // vaadin8 !
-        if (composition instanceof com.vaadin.v7.ui.Field) {
-            return (com.vaadin.v7.ui.Field) composition;
-        } else {
-            return new CubaFieldWrapper(c);
-        }
-    }
-
     protected void assignTypicalAttributes(Component c) {
         if (getFrame() != null && c instanceof BelongToFrame) {
             BelongToFrame belongToFrame = (BelongToFrame) c;
@@ -522,16 +497,14 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 fci.assignComponent(fieldComponent);
                 fci.setAttachMode(generatedField.getAttachMode());
 
-                com.vaadin.v7.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
-                fci.setComposition(fieldImpl);
-
                 assignTypicalAttributes(fieldComponent);
 
                 if (generatedField.getAttachMode() == FieldAttachMode.APPLY_DEFAULTS) {
                     applyFieldDefaults(fci);
                 }
 
-                assignDebugId(fc, fieldImpl);
+                com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(fieldComponent);
+                assignDebugId(fc, composition);
 
                 int columnIndex = fci.getColumn();
                 if (!reattachColumns.contains(columnIndex)) {
@@ -549,7 +522,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
     }
 
-    protected void assignDebugId(FieldConfig fc, com.vaadin.v7.ui.Field composition) {
+    protected void assignDebugId(FieldConfig fc, com.vaadin.ui.Component composition) {
         AppUI ui = AppUI.getCurrent();
         if (ui == null) {
             return;
@@ -819,7 +792,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         protected int column;
 
         protected Component component;
-        protected com.vaadin.v7.ui.Field composition;
 
         protected boolean managed = false;
 
@@ -866,11 +838,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public String getWidth() {
-            if (composition != null && isWrapped()) {
-                float width = composition.getWidth();
-                Sizeable.Unit widthUnit = composition.getWidthUnits();
-                return width + widthUnit.getSymbol();
-            }
             if (component != null) {
                 return ComponentsHelper.getComponentWidth(component);
             }
@@ -879,9 +846,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public void setWidth(String width) {
-            if (composition != null && isWrapped()) {
-                composition.setWidth(width);
-            } else if (component != null) {
+            if (component != null) {
                 component.setWidth(width);
             } else {
                 targetWidth = width;
@@ -900,17 +865,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         public void setStyleName(String stylename) {
             if (component != null) {
                 component.setStyleName(stylename);
-
-                if (composition != null && isWrapped()) {
-                    composition.setStyleName(stylename);
-                }
             } else {
                 this.targetStylename = stylename;
             }
-        }
-
-        protected boolean isWrapped() {
-            return component != null && component.unwrapComposition(com.vaadin.ui.Component.class) != composition;
         }
 
         @Override
@@ -954,8 +911,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 checkNotNullArgument(required, "Unable to reset required flag for the bound FieldConfig");
 
                 ((Field) component).setRequired(required);
-            } else if (composition != null && isWrapped()) {
-                composition.setRequired(required);
             } else {
                 this.targetRequired = required;
             }
@@ -975,8 +930,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 checkNotNullArgument(editable, "Unable to reset editable flag for the bound FieldConfig");
 
                 ((Editable) component).setEditable(editable);
-            } else if (composition != null && isWrapped()) {
-                composition.setReadOnly(!editable);
             } else {
                 this.targetEditable = editable;
             }
@@ -996,10 +949,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 checkNotNullArgument(enabled, "Unable to reset enabled flag for the bound FieldConfig");
 
                 component.setEnabled(enabled);
-
-                if (composition != null && isWrapped()) {
-                    composition.setEnabled(enabled);
-                }
             } else {
                 this.targetEnabled = enabled;
             }
@@ -1019,10 +968,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 checkNotNullArgument(visible, "Unable to reset visible flag for the bound FieldConfig");
 
                 component.setVisible(visible);
-
-                if (composition != null && isWrapped()) {
-                    composition.setVisible(visible);
-                }
             } else {
                 this.targetVisible = visible;
             }
@@ -1087,9 +1032,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             if (component instanceof Field) {
                 return ((Field) component).getRequiredMessage();
             }
-            if (composition != null && isWrapped()) {
-                return composition.getRequiredError();
-            }
             return targetRequiredMessage;
         }
 
@@ -1097,8 +1039,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         public void setRequiredMessage(String requiredMessage) {
             if (component instanceof Field) {
                 ((Field) component).setRequiredMessage(requiredMessage);
-            } else if (composition!= null && isWrapped()) {
-                composition.setRequiredError(requiredMessage);
             } else {
                 this.targetRequiredMessage = requiredMessage;
             }
@@ -1189,21 +1129,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public String getCaption() {
-            if (component instanceof Field) {
-                return ((Field) component).getCaption();
-            }
-            if (composition != null && isWrapped()) {
-                return composition.getCaption();
+            if (component instanceof HasCaption) {
+                return ((HasCaption) component).getCaption();
             }
             return targetCaption;
         }
 
         @Override
         public void setCaption(String caption) {
-            if (component instanceof Field) {
-                ((Field) component).setCaption(caption);
-            } else if (composition != null && isWrapped()) {
-                composition.setCaption(caption);
+            if (component instanceof HasCaption) {
+                ((HasCaption) component).setCaption(caption);
             } else {
                 this.targetCaption = caption;
             }
@@ -1211,21 +1146,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public String getDescription() {
-            if (component instanceof Field) {
-                return ((Field) component).getDescription();
-            }
-            if (composition != null && isWrapped()) {
-                return composition.getDescription();
+            if (component instanceof HasCaption) {
+                return ((HasCaption) component).getDescription();
             }
             return targetDescription;
         }
 
         @Override
         public void setDescription(String description) {
-            if (component instanceof Field) {
-                ((Field) component).setDescription(description);
-            } else if (composition != null && isWrapped()) {
-                ((CubaFieldWrapper) composition).setDescription(description);
+            if (component instanceof HasCaption) {
+                ((HasCaption) component).setDescription(description);
             } else {
                 this.targetDescription = description;
             }
@@ -1250,24 +1180,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public String getContextHelpText() {
-            if (component instanceof Field) {
-                return ((Field) component).getContextHelpText();
-            }
-            if (composition != null && isWrapped()) {
-//                // vaadin8 rework
-//                return composition.getContextHelpText();
-                return null;
+            if (component instanceof HasContextHelp) {
+                return ((HasContextHelp) component).getContextHelpText();
             }
             return targetContextHelpText;
         }
 
         @Override
         public void setContextHelpText(String contextHelpText) {
-            if (component instanceof Field) {
-                ((Field) component).setContextHelpText(contextHelpText);
-            } else if (composition != null && isWrapped()) {
-                // vaadin8 rework
-//                composition.setContextHelpText(contextHelpText);
+            if (component instanceof HasContextHelp) {
+                ((HasContextHelp) component).setContextHelpText(contextHelpText);
             } else {
                 this.targetContextHelpText = contextHelpText;
             }
@@ -1275,29 +1197,18 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public Boolean isContextHelpTextHtmlEnabled() {
-            if (component instanceof Field) {
-                return ((Field) component).isContextHelpTextHtmlEnabled();
-            }
-            if (composition != null && isWrapped()) {
-                return false;
-                // vaadin8 rework
-//                return composition.isContextHelpTextHtmlEnabled();
+            if (component instanceof HasContextHelp) {
+                return ((HasContextHelp) component).isContextHelpTextHtmlEnabled();
             }
             return BooleanUtils.isTrue(targetContextHelpTextHtmlEnabled);
         }
 
         @Override
         public void setContextHelpTextHtmlEnabled(Boolean enabled) {
-            if (component instanceof Field) {
+            if (component instanceof HasContextHelp) {
                 checkNotNullArgument(enabled, "Unable to reset contextHelpTextHtmlEnabled " +
                         "flag for the bound FieldConfig");
-                ((Field) component).setContextHelpTextHtmlEnabled(enabled);
-            } else if (composition != null && isWrapped()) {
-                checkNotNullArgument(enabled, "Unable to reset contextHelpTextHtmlEnabled " +
-                        "flag for the bound FieldConfig");
-
-                // vaadin8 rework
-//                composition.setContextHelpTextHtmlEnabled(enabled);
+                ((HasContextHelp) component).setContextHelpTextHtmlEnabled(enabled);
             } else {
                 this.targetContextHelpTextHtmlEnabled = enabled;
             }
@@ -1305,16 +1216,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public Consumer<HasContextHelp.ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-            if (component instanceof Field) {
-                return ((Field) component).getContextHelpIconClickHandler();
+            if (component instanceof HasContextHelp) {
+                return ((HasContextHelp) component).getContextHelpIconClickHandler();
             }
             return targetContextHelpIconClickHandler;
         }
 
         @Override
         public void setContextHelpIconClickHandler(Consumer<HasContextHelp.ContextHelpIconClickEvent> handler) {
-            if (component instanceof Field) {
-                ((Field) component).setContextHelpIconClickHandler(handler);
+            if (component instanceof HasContextHelp) {
+                ((HasContextHelp) component).setContextHelpIconClickHandler(handler);
             } else {
                 this.targetContextHelpIconClickHandler = handler;
             }
@@ -1353,39 +1264,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         public void setColumn(int column) {
             this.column = column;
-        }
-
-        @Nullable
-        public com.vaadin.v7.ui.Field getComposition() {
-            return composition;
-        }
-
-        public com.vaadin.v7.ui.Field getCompositionNN() {
-            if (composition == null) {
-                throw new IllegalStateException("FieldConfig is not bound to a Component");
-            }
-            return composition;
-        }
-
-        public void setComposition(com.vaadin.v7.ui.Field composition) {
-            checkState(this.composition == null, "Unable to change composition for bound FieldConfig");
-
-            this.composition = composition;
-
-            if (isWrapped()) {
-                if (targetCaption != null) {
-                    composition.setCaption(targetCaption);
-                }
-                if (targetRequired != null) {
-                    composition.setRequired(targetRequired);
-                }
-                if (targetRequiredMessage != null) {
-                    composition.setRequiredError(targetRequiredMessage);
-                }
-                if (targetDescription != null) {
-                    ((CubaFieldWrapper) composition).setDescription(targetDescription);
-                }
-            }
         }
 
         public boolean isManaged() {
