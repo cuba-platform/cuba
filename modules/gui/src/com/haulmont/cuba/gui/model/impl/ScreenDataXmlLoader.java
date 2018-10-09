@@ -164,9 +164,7 @@ public class ScreenDataXmlLoader {
                         "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
             }
             CollectionContainer<Entity> container = factory.createCollectionContainer(
-                    metaProperty.getRange().asClass().getJavaClass());
-
-            assignMaster(container, parentContainer, property, containerId);
+                    metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
             parentContainer.addItemChangeListener(e -> {
                 container.setItems(parentContainer.getItem().getValue(property));
@@ -179,9 +177,7 @@ public class ScreenDataXmlLoader {
                         "Cannot bind instance container '%s' to a non-reference property '%s'", containerId, property));
             }
             InstanceContainer<Entity> container = factory.createInstanceContainer(
-                    metaProperty.getRange().asClass().getJavaClass());
-
-            assignMaster(container, parentContainer, property, containerId);
+                    metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
             parentContainer.addItemChangeListener(e -> {
                 container.setItem(parentContainer.getItem().getValue(property));
@@ -197,15 +193,6 @@ public class ScreenDataXmlLoader {
                 loadNestedContainer(screenData, collectionEl, nestedContainer);
             }
         }
-    }
-
-    protected void assignMaster(InstanceContainer container, InstanceContainer masterContainer, String masterProperty,
-                                String containerId) {
-        if (!(container instanceof Nestable))
-            throw new IllegalStateException(String.format(
-                    "Container '%s' does not implement Nestable so it cannot be defined as nested", containerId));
-        ((Nestable) container).setMaster(masterContainer);
-        ((Nestable) container).setMasterProperty(masterProperty);
     }
 
     protected void loadInstanceLoader(ScreenData screenData, Element element, InstanceContainer<Entity> container) {

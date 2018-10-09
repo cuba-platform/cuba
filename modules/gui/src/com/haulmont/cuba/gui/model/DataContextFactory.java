@@ -50,8 +50,18 @@ public class DataContextFactory implements ApplicationContextAware {
         return new InstanceContainerImpl<>(metadata.getClassNN(entityClass));
     }
 
+    public <E extends Entity> InstancePropertyContainer<E> createInstanceContainer(Class<E> entityClass,
+                                                                                   InstanceContainer parent, String property) {
+        return new InstancePropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
+    }
+
     public <E extends Entity> CollectionContainer<E> createCollectionContainer(Class<E> entityClass) {
         return new CollectionContainerImpl<>(metadata.getClassNN(entityClass));
+    }
+
+    public <E extends Entity> CollectionPropertyContainer<E> createCollectionContainer(Class<E> entityClass,
+                                                                               InstanceContainer parent, String property) {
+        return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
     }
 
     public KeyValueContainer createKeyValueContainer() {

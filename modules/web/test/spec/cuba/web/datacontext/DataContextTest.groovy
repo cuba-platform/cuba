@@ -18,6 +18,7 @@ package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.client.testsupport.TestSupport
 import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
@@ -28,6 +29,8 @@ import com.haulmont.cuba.gui.model.impl.DataContextAccessor
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.testmodel.sales.Customer
+import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
 import com.haulmont.cuba.web.testsupport.TestContainer
@@ -192,6 +195,8 @@ class DataContextTest extends Specification {
         context.find(UserRole, user11Role1.id).is(user11Role1)
         context.find(Role, role1.id).is(role1)
     }
+
+
 
     def "merge new"() throws Exception {
         DataContext context = factory.createDataContext()
@@ -486,7 +491,7 @@ class DataContextTest extends Specification {
 
     def "parent context"() throws Exception {
 
-        DataContext context = factory.createDataContext()
+        DataContext ctx1 = factory.createDataContext()
 
         TestServiceProxy.mock(DataService, Mock(DataService) {
             commit(_) >> Collections.emptySet()
@@ -494,63 +499,149 @@ class DataContextTest extends Specification {
 
         when: "merge instance into parent context"
 
-        User user1 = new User()
-        user1.login = "u1"
-        user1.name = "User 1"
-        user1.userRoles = new ArrayList<>()
+        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User1'))
 
-        context.merge(user1)
+        DataContext ctx2 = factory.createDataContext()
 
-        DataContext childContext = factory.createDataContext()
-
-        childContext.setParent(context)
+        ctx2.setParent(ctx1)
 
         then: "it exists in child context too, but as a different instance"
 
-        User user1InChild = childContext.find(User, user1.id)
-        user1InChild != null
-        user1InChild.userRoles != null
-        !user1InChild.is(user1)
+        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
+        user1_ctx2 != null
+        !user1_ctx2.is(user1_ctx1)
 
         when: "add detail instance to collection of the master object in child context and commit it"
 
-        UserRole user1Role1 = new UserRole()
-        user1Role1.user = user1InChild
-        user1InChild.userRoles.add(user1Role1)
+        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
 
-        childContext.merge(user1Role1)
+        user1_ctx2.userRoles = []
+        user1_ctx2.userRoles.add(ur1_ctx2)
 
         def modified = []
-        childContext.addPreCommitListener({ e ->
+        ctx2.addPreCommitListener({ e ->
             modified.addAll(e.modifiedInstances)
         })
 
-        childContext.commit()
+        ctx2.commit()
 
         then: "child context commits both detail and master instances to parent context"
 
         modified.size() == 2
-        modified.contains(user1InChild)
-        modified.contains(user1Role1)
+        modified.contains(user1_ctx2)
+        modified.contains(ur1_ctx2)
 
-        user1.userRoles != null
-        user1.userRoles.size() == 1
+        user1_ctx1.userRoles != null
+        user1_ctx1.userRoles.size() == 1
+
+        UserRole ur1_ctx1 = ctx1.find(UserRole, ur1_ctx2.id)
+        user1_ctx1.userRoles[0].is(ur1_ctx1)
 
         when: "committing parent context"
 
         modified.clear()
 
-        context.addPreCommitListener({ e ->
+        ctx1.addPreCommitListener({ e ->
             modified.addAll(e.modifiedInstances)
         })
 
-        context.commit()
+        ctx1.commit()
 
         then: "parent context commits both detail and master instances"
 
         modified.size() == 2
-        modified.contains(user1)
-        modified.contains(user1Role1)
+        modified.contains(user1_ctx1)
+        modified.contains(ur1_ctx1)
+    }
+
+    def "parent context with new instances"() throws Exception {
+
+        DataContext ctx1 = factory.createDataContext()
+
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            commit(_) >> Collections.emptySet()
+        })
+
+        when: "merge instance into parent context"
+
+        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User 1'))
+
+        DataContext ctx2 = factory.createDataContext()
+        ctx2.setParent(ctx1)
+
+        then:
+
+        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
+        user1_ctx2 != null
+        !user1_ctx2.is(user1_ctx1)
+        isNew(user1_ctx2)
+
+        when:
+
+        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
+
+        Role r1_ctx2 = ctx2.merge(new Role(name: 'r1'))
+        ur1_ctx2.role = r1_ctx2
+
+        ctx2.commit()
+
+        then:
+
+        User user1 = ctx1.find(User, user1_ctx1.id)
+        user1.is(user1_ctx1)
+
+        UserRole ur1 = ctx1.find(UserRole, ur1_ctx2.id)
+        ur1.user.is(user1_ctx1)
+
+        Role r1 = ctx1.find(Role, r1_ctx2.id)
+        ur1.role.is(r1)
+    }
+
+    def "parent context - collections"() throws Exception {
+
+        DataContext ctx1 = factory.createDataContext()
+
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            commit(_) >> Collections.emptySet()
+        })
+
+        when: "merge instance into parent context"
+
+        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User 1'))
+
+        DataContext ctx2 = factory.createDataContext()
+        ctx2.setParent(ctx1)
+
+        then:
+
+        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
+        user1_ctx2 != null
+        !user1_ctx2.is(user1_ctx1)
+        isNew(user1_ctx2)
+
+        when:
+
+        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
+
+        Role r1_ctx2 = ctx2.merge(new Role(name: 'r1'))
+        ur1_ctx2.role = r1_ctx2
+
+        ctx2.commit()
+
+        then:
+
+        User user1 = ctx1.find(User, user1_ctx1.id)
+        user1.is(user1_ctx1)
+
+        UserRole ur1 = ctx1.find(UserRole, ur1_ctx2.id)
+        ur1.user.is(user1_ctx1)
+
+        Role r1 = ctx1.find(Role, r1_ctx2.id)
+        ur1.role.is(r1)
+    }
+
+    boolean isNew(def entity) {
+        BaseEntityInternalAccess.isNew(entity)
     }
 
     def "remove"() {
@@ -635,6 +726,76 @@ class DataContextTest extends Specification {
         line1.quantity == 20
         line1.product == product2
 
+    }
+
+    def "merged objects always have observable collections"() {
+
+        def dataContext = factory.createDataContext()
+
+        Order order1 = makeSaved(new Order(number: "111", orderLines: []))
+        OrderLine orderLine11 = makeSaved(new OrderLine(quantity: 10))
+        orderLine11.order = order1
+        order1.orderLines.add(orderLine11)
+
+        OrderLine orderLine12 = makeSaved(new OrderLine(quantity: 20))
+        orderLine12.order = order1
+        order1.orderLines.add(orderLine12)
+
+        Order order2 = makeSaved(new Order(id: order1.id, number: "222", orderLines: []))
+        OrderLine orderLine2 = makeSaved(new OrderLine(id: orderLine11.id, order: order2, quantity: 10))
+        order2.orderLines.add(orderLine2)
+
+        when:
+
+        Order order1_1 = dataContext.merge(order1)
+
+        then:
+
+        order1_1.orderLines instanceof com.haulmont.cuba.gui.model.impl.ObservableList
+
+        when:
+
+        Order order2_1 = dataContext.merge(order2)
+
+        then:
+
+        order2_1.is(order1_1)
+        order2_1.orderLines instanceof com.haulmont.cuba.gui.model.impl.ObservableList
+
+        when:
+
+        order2_1.orderLines.add(dataContext.merge(orderLine12))
+
+        then:
+
+        order2_1.orderLines[1].order.is(order2_1)
+        dataContext.isModified(order2_1)
+    }
+
+    def "removed object is removed from collections too"() {
+
+        def dataContext = factory.createDataContext()
+
+        Order order1 = makeSaved(new Order(number: "111", orderLines: []))
+        OrderLine orderLine11 = makeSaved(new OrderLine(quantity: 10))
+        orderLine11.order = order1
+        order1.orderLines.add(orderLine11)
+
+        OrderLine orderLine12 = makeSaved(new OrderLine(quantity: 20))
+        orderLine12.order = order1
+        order1.orderLines.add(orderLine12)
+
+        Order order1_1 = dataContext.merge(order1)
+        OrderLine orderLine12_1 = order1_1.orderLines[1]
+
+        when:
+
+        dataContext.remove(orderLine12_1)
+
+        then:
+
+        order1_1.orderLines.size() == 1
+        !order1_1.orderLines.contains(orderLine12_1)
     }
 
     private <T> T createDetached(Class<T> entityClass) {

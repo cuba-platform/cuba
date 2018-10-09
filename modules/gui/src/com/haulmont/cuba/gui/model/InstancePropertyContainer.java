@@ -16,15 +16,7 @@
 
 package com.haulmont.cuba.gui.model;
 
-public interface Nestable {
+import com.haulmont.cuba.core.entity.Entity;
 
-    boolean isNested();
-
-    InstanceContainer getMaster();
-
-    void setMaster(InstanceContainer master);
-
-    String getMasterProperty();
-
-    void setMasterProperty(String masterProperty);
+public interface InstancePropertyContainer<E extends Entity> extends InstanceContainer<E>, Nested {
 }

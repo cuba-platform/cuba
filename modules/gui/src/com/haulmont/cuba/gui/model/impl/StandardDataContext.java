@@ -22,10 +22,12 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Numbers;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.DataContext;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +36,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -149,22 +152,27 @@ public class StandardDataContext implements DataContext {
     protected Entity internalMerge(Entity entity) {
         Map<Object, Entity> entityMap = content.computeIfAbsent(entity.getClass(), aClass -> new HashMap<>());
         Entity managedInstance = entityMap.get(entity.getId());
+
         if (managedInstance != null) {
             if (managedInstance != entity) {
                 copyState(entity, managedInstance);
                 copyReferences(entity, managedInstance);
             }
             return managedInstance;
-        }
-        entityMap.put(entity.getId(), entity);
 
-        entity.addPropertyChangeListener(propertyChangeListener);
+        } else {
+            mergeReferences(entity);
 
-        if (getEntityStates().isNew(entity)) {
-            modifiedInstances.add(entity);
-            fireChangeListener(entity);
+            entityMap.put(entity.getId(), entity);
+
+            entity.addPropertyChangeListener(propertyChangeListener);
+
+            if (getEntityStates().isNew(entity)) {
+                modifiedInstances.add(entity);
+                fireChangeListener(entity);
+            }
+            return entity;
         }
-        return entity;
     }
 
     protected void copyReferences(Entity srcEntity, Entity dstEntity) {
@@ -174,13 +182,13 @@ public class StandardDataContext implements DataContext {
             String propertyName = property.getName();
             if (!property.getRange().isClass()
                     || property.getRange().getCardinality().isMany()
+                    || property.isReadOnly()
                     || !entityStates.isLoaded(srcEntity, propertyName)
                     || !entityStates.isLoaded(dstEntity, propertyName)) {
                 continue;
             }
             Object value = srcEntity.getValue(propertyName);
-            boolean srcNew = entityStates.isNew(srcEntity);
-            if (!srcNew || value != null) {
+            if (!entityStates.isNew(srcEntity) || value != null) {
                 if (value == null) {
                     dstEntity.setValue(propertyName, null);
                 } else {
@@ -188,6 +196,26 @@ public class StandardDataContext implements DataContext {
                     Entity dstRef = internalMerge(srcRef);
                     ((AbstractInstance) dstEntity).setValue(propertyName, dstRef, false);
                 }
+            }
+        }
+    }
+
+    protected void mergeReferences(Entity entity) {
+        EntityStates entityStates = getEntityStates();
+
+        for (MetaProperty property : getMetadata().getClassNN(entity.getClass()).getProperties()) {
+            String propertyName = property.getName();
+            if (!property.getRange().isClass()
+                    || property.getRange().getCardinality().isMany()
+                    || property.isReadOnly()
+                    || !entityStates.isLoaded(entity, propertyName)) {
+                continue;
+            }
+            Object value = entity.getValue(propertyName);
+            if (value != null) {
+                Entity srcRef = (Entity) value;
+                Entity dstRef = internalMerge(srcRef);
+                ((AbstractInstance) entity).setValue(propertyName, dstRef, false);
             }
         }
     }
@@ -240,7 +268,7 @@ public class StandardDataContext implements DataContext {
             }
         }
         if (!srcNew && dstNew) {
-            copySystemState(dstEntity);
+            copySystemState(srcEntity, dstEntity);
         }
     }
 
@@ -303,7 +331,7 @@ public class StandardDataContext implements DataContext {
                 }
             }
         }
-        copySystemState(dstEntity);
+        copySystemState(srcEntity, dstEntity);
         return dstEntity;
     }
 
@@ -319,12 +347,12 @@ public class StandardDataContext implements DataContext {
         }
     }
 
-    protected void copySystemState(Entity dstEntity) {
+    protected void copySystemState(Entity srcEntity, Entity dstEntity) {
         if (dstEntity instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) dstEntity, false);
-            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) dstEntity, true);
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
+            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) dstEntity, BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) srcEntity));
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
-            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, false);
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
         }
     }
 
@@ -343,7 +371,11 @@ public class StandardDataContext implements DataContext {
                         newDstCollection.add(o);
                 }
             }
-            field.set(dstObject, newDstCollection);
+            BiConsumer<CollectionChangeType, Collection> onChanged = (changeType, changed) -> modified((Entity) dstObject);
+            Collection observable = newDstCollection instanceof List ?
+                    new ObservableList(((List) newDstCollection), onChanged) :
+                    new ObservableSet(((Set) newDstCollection), onChanged);
+            field.set(dstObject, observable);
         } else {
             field.set(dstObject, srcValue);
         }
@@ -362,6 +394,29 @@ public class StandardDataContext implements DataContext {
                 entityMap.remove(entity.getId());
                 entity.removePropertyChangeListener(propertyChangeListener);
                 fireChangeListener(entity);
+                removeFromCollections(mergedEntity);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void removeFromCollections(Entity entityToRemove) {
+        for (Class<?> entityClass : content.keySet()) {
+            MetaClass metaClass = getMetadata().getClassNN(entityClass);
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                if (metaProperty.getRange().isClass()
+                        && metaProperty.getRange().getCardinality().isMany()
+                        && metaProperty.getRange().asClass().getJavaClass().isAssignableFrom(entityToRemove.getClass())) {
+                    Map<Object, Entity> entityMap = content.get(entityClass);
+                    for (Entity entity : entityMap.values()) {
+                        if (getEntityStates().isLoaded(entity, metaProperty.getName())) {
+                            Collection collection = entity.getValue(metaProperty.getName());
+                            if (collection != null) {
+                                collection.remove(entityToRemove);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -464,6 +519,13 @@ public class StandardDataContext implements DataContext {
             resultList.addAll(entityMap.values());
         }
         return resultList;
+    }
+
+    protected void modified(Entity entity) {
+        if (!disableListeners) {
+            modifiedInstances.add(entity);
+            fireChangeListener(entity);
+        }
     }
 
     public String printContent() {
@@ -583,13 +645,6 @@ public class StandardDataContext implements DataContext {
             Entity managed = internalMerge(entity);
             if (managed != entity) {
                 ((AbstractInstance) owningEntity).setValue(propertyName, managed, false);
-            }
-        }
-
-        protected void modified(Entity entity) {
-            if (!disableListeners) {
-                modifiedInstances.add(entity);
-                fireChangeListener(entity);
             }
         }
     }
