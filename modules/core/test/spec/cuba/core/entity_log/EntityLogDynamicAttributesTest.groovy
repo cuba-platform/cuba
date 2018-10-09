@@ -113,7 +113,7 @@ class EntityLogDynamicAttributesTest extends Specification {
         runner.update("delete from SYS_ATTR_VALUE")
     }
 
-    private List<EntityLogItem> getEntityLogItems(def userId) {
+    private List<EntityLogItem> getEntityLogItems(User user) {
         Transaction tx = cont.persistence().createTransaction()
         List<EntityLogItem> items
         try {
@@ -121,7 +121,7 @@ class EntityLogDynamicAttributesTest extends Specification {
             TypedQuery<EntityLogItem> query = em.createQuery(
                     'select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2 order by i.eventTs desc', EntityLogItem.class)
             query.setParameter(1, 'sec$User')
-            query.setParameter(2, userId)
+            query.setParameter(2, user.id)
             items = query.getResultList()
 
             tx.commit()
@@ -132,32 +132,19 @@ class EntityLogDynamicAttributesTest extends Specification {
         items
     }
 
-    def "Entity Log: create/update/delete entity with dynamic attribute"() {
+    private EntityLogItem getLatestEntityLogItem(User user) {
+        getEntityLogItems(user)[0]
+    }
+
+    def "EntityLog logs the creation of a dynamic attribute"() {
 
         given:
 
-        Group group = findCompanyGroup()
-
-        and:
-
-        def expectedRegularAttributeValue = 'test-name'
         def expectedDynamicAttributeValue = "userName"
 
         and:
 
-        User user = cont.metadata().create(User)
-        userId = user.getId()
-        user.group = group
-        user.login = "test"
-        user.name = expectedRegularAttributeValue
-
-        and: 'dynamic attribute needs to be loaded explicitly in order to set it'
-
-        user.getValue(DYNAMIC_ATTRIBUTE_NAME)
-
-        and:
-
-        user.setValue(DYNAMIC_ATTRIBUTE_NAME, expectedDynamicAttributeValue)
+        User user = createUser(expectedDynamicAttributeValue)
 
         when:
 
@@ -165,62 +152,83 @@ class EntityLogDynamicAttributesTest extends Specification {
 
         then:
 
-        def entityLogItemsAfterCreate = getEntityLogItems(userId)
-        entityLogItemsAfterCreate.size() == 1
-
-        and:
-
-        def createdEntityLogItem = entityLogItemsAfterCreate[0]
+        def createdEntityLogItem = getLatestEntityLogItem(user)
 
         createdEntityLogItem.type == EntityLogItem.Type.CREATE
-        createdEntityLogItem.attributes.find { it.name == 'name' }.value == expectedRegularAttributeValue
 
         and:
 
         entityLogAttributeForDynamicAttribute(createdEntityLogItem).value == expectedDynamicAttributeValue
 
+    }
+
+    def "EntityLog logs the update of a dynamic attribute"() {
+
+        given:
+
+        def oldDynamicAttributeValue = 'oldUserName'
+
+        and:
+
+        User user = createAndSaveUser(oldDynamicAttributeValue)
+
         when:
 
         user = reloadUserFromDbWithDynamicAttributes(user)
-        userId = user.id
-        def updatedDynamicAttributeValue = "userName1"
-        user.setValue(DYNAMIC_ATTRIBUTE_NAME, updatedDynamicAttributeValue)
 
-        dataManager.commit(user)
+        def updatedDynamicAttributeValue = 'updatedUserName'
+
+        saveUserWithDynamicAttributeValue(user, updatedDynamicAttributeValue)
 
         then:
 
-        def entityLogItemsAfterModify = getEntityLogItems(userId)
-        entityLogItemsAfterModify.size() == 2
-        def modifiedEntityLogItem = entityLogItemsAfterModify[0]
+        def modifiedEntityLogItem = getLatestEntityLogItem(user)
 
         modifiedEntityLogItem.type == EntityLogItem.Type.MODIFY
 
         and:
 
-        entityLogAttributeForDynamicAttribute(modifiedEntityLogItem).oldValue == expectedDynamicAttributeValue
+        entityLogAttributeForDynamicAttribute(modifiedEntityLogItem).oldValue == oldDynamicAttributeValue
         entityLogAttributeForDynamicAttribute(modifiedEntityLogItem).value == updatedDynamicAttributeValue
+
+    }
+
+    def "EntityLog logs the deletion of a dynamic attribute"() {
+
+        given:
+
+        def oldDynamicAttributeValue = 'oldUserName'
+
+        and:
+
+        User user = createAndSaveUser(oldDynamicAttributeValue)
 
         when:
 
         user = reloadUserFromDbWithDynamicAttributes(user)
-        userId = user.id
-        user.setValue(DYNAMIC_ATTRIBUTE_NAME, null)
-
-        dataManager.commit(user)
+        saveUserWithDynamicAttributeValue(user, null)
 
         then:
 
-        def entityLogItemsAfterDelete = getEntityLogItems(userId)
-        entityLogItemsAfterDelete.size() == 3
-        def deletedEntityLogItem = entityLogItemsAfterDelete[0]
+        def deletedEntityLogItem = getLatestEntityLogItem(user)
 
         deletedEntityLogItem.type == EntityLogItem.Type.MODIFY
 
+        and:
+
         entityLogAttributeForDynamicAttribute(deletedEntityLogItem).value == ""
-        entityLogAttributeForDynamicAttribute(deletedEntityLogItem).oldValue == updatedDynamicAttributeValue
+        entityLogAttributeForDynamicAttribute(deletedEntityLogItem).oldValue == oldDynamicAttributeValue
     }
 
+    User saveUserWithDynamicAttributeValue(User user, String newDynamicAttributeValue) {
+        user.setValue(DYNAMIC_ATTRIBUTE_NAME, newDynamicAttributeValue)
+        dataManager.commit(user)
+    }
+
+    private User createAndSaveUser(String dynamicAttributeValue) {
+        User user = createUser(dynamicAttributeValue)
+        dataManager.commit(user)
+    }
     protected EntityLogAttr entityLogAttributeForDynamicAttribute(EntityLogItem entityLogItem) {
         entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
     }
@@ -229,6 +237,20 @@ class EntityLogDynamicAttributesTest extends Specification {
         cont.persistence().callInTransaction { em ->
             em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
         }
+    }
+
+    private User createUser(String dynamicAttributeValue) {
+        User user = cont.metadata().create(User)
+        userId = user.id
+        user.group = findCompanyGroup()
+        user.login = "test"
+        user.name = 'test-name'
+
+        user.getValue(DYNAMIC_ATTRIBUTE_NAME)
+
+        user.setValue(DYNAMIC_ATTRIBUTE_NAME, dynamicAttributeValue)
+
+        user
     }
 
 
