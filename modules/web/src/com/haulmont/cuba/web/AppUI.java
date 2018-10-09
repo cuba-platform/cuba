@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web;
 
-import com.google.common.collect.Iterables;
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
@@ -607,24 +606,10 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
                 return false;
             }
 
-            int maxBringToFront = windows.stream()
-                    .mapToInt(w -> {
-                        if (w.isModal()
-                                && w.getBringToFront() != null) {
-                            return w.getBringToFront();
-                        }
-                        return -1;
-                    })
-                    .max()
-                    .orElse(-1);
-
-            if (maxBringToFront > 0) {
-                return currentWindow.getBringToFront() != null
-                        && currentWindow.getBringToFront() >= maxBringToFront;
-            }
-            return Iterables.getLast(windows) == currentWindow; // it is top most window
+            // CAUTION we cannot sort windows in UI, because they are ordered only on client side
         }
 
+        // we cannot reliably check if access is permitted
         return true;
     }
 }

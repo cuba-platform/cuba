@@ -87,7 +87,7 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        final AppUI ui = AppUI.getCurrent();
+        AppUI ui = AppUI.getCurrent();
 
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination closeCombination = KeyCombination.create(closeShortcut);
@@ -148,7 +148,7 @@ public class ExceptionDialog extends CubaWindow {
 
         Button closeButton = new CubaButton(messages.getMainMessage("exceptionDialog.closeBtn"));
         closeButton.addClickListener((Button.ClickListener) event ->
-                this.close()
+                forceClose()
         );
         buttonsLayout.addComponent(closeButton);
 

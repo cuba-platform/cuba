@@ -1207,7 +1207,7 @@ public class WebWindowManager extends WindowManager {
     public void showMessageDialog(String title, String message, MessageType messageType) {
         backgroundWorker.checkUIAccess();
 
-        final com.vaadin.ui.Window vWindow = new CubaWindow(title);
+        CubaWindow vWindow = new CubaWindow(title);
 
         if (ui.isTestMode()) {
             vWindow.setCubaId("messageDialog");
@@ -1262,7 +1262,7 @@ public class WebWindowManager extends WindowManager {
         button.setIcon(iconResolver.getIconResource(action.getIcon()));
         button.addStyleName(WebButton.ICON_STYLE);
         button.addClickListener(event ->
-                vWindow.close()
+                vWindow.forceClose()
         );
 
         button.focus();
