@@ -57,14 +57,16 @@ If there are any errors during the compilation please check our public build sta
 
 ### Importing to IDE
 
-We use IntelliJ Idea IDE for development.
+We use IntelliJ IDEA IDE for development.
 
-Generate IntelliJ Idea project files
-```
-> gradlew assemble idea 
-```
+In order to work on CUBA it has to imported as a project in IntelliJ IDEA. To do that execute the following steps:
 
-Open the .ipr file and start working on the project
+* `File > Open > CUBA root directory > build.gradle`
+* Open as project
+* Accept the settings in the project import dialog
+
+See more details on how to [import a project into IntelliJ IDEA](https://www.jetbrains.com/help/idea/creating-and-managing-projects.html#importing-project).
+
 
 ### Starting CUBA as an application
 
