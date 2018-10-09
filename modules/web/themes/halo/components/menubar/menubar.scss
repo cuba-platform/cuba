@@ -21,4 +21,8 @@
     box-shadow: none;
     border: valo-border();
   }
+
+  .#{$primary-stylename}-menuitem {
+    outline: none;
+  }
 }
