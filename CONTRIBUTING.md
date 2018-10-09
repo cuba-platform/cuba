@@ -59,7 +59,7 @@ If there are any errors during the compilation please check our public build sta
 
 We use IntelliJ IDEA IDE for development.
 
-In order to work on CUBA it has to imported as a project in IntelliJ IDEA. To do that execute the following steps:
+In order to work on CUBA it has to be imported as a project in IntelliJ IDEA. To do that execute the following steps:
 
 * `File > Open > CUBA root directory > build.gradle`
 * Open as project
