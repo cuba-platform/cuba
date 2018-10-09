@@ -213,16 +213,14 @@ public class UiControllerDependencyInjector {
                 default:
                     throw new UnsupportedOperationException("Unsupported @Install target " + annotation.target());
             }
+        } else if (annotation.target() == Target.DATA_LOADER) {
+            targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
         } else {
-            if (annotation.target() == Target.DATA_LOADER) {
-                targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
-            } else {
-                targetInstance = findInstallTarget(target, frame);
+            targetInstance = findInstallTarget(target, frame);
 
-                if (targetInstance == null) {
-                    throw new DevelopmentException(
-                            String.format("Unable to find @Install target %s in %s", target, frame.getId()));
-                }
+            if (targetInstance == null) {
+                throw new DevelopmentException(
+                        String.format("Unable to find @Install target %s in %s", target, frame.getId()));
             }
         }
         return targetInstance;
@@ -276,8 +274,6 @@ public class UiControllerDependencyInjector {
         } else if (targetObjectType == BiFunction.class) {
             return new InstalledBiFunction(frameOwner, method);
         } else {
-            // todo check if UI component can provide declarative handler better than proxy class, e.g. StyleProvider of Table
-
             ClassLoader classLoader = getClass().getClassLoader();
             return newProxyInstance(classLoader, new Class[]{targetObjectType},
                     new InstalledProxyHandler(frameOwner, method)
@@ -309,8 +305,9 @@ public class UiControllerDependencyInjector {
             Class<?> eventType = parameter.getType();
 
             Frame frame = UiControllerUtils.getFrame(frameOwner);
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
 
-            Object eventTarget;
+            Object eventTarget = null;
 
             if (Strings.isNullOrEmpty(target)) {
                 switch (annotation.target()) {
@@ -338,8 +335,27 @@ public class UiControllerDependencyInjector {
                         throw new UnsupportedOperationException("Unsupported @Subscribe target " + annotation.target());
                 }
             } else {
-                // component event
-                eventTarget = findEventTarget(frame, target);
+                switch (annotation.target()) {
+                    case COMPONENT:
+                        // component event
+                        eventTarget = findEventTarget(frame, target);
+                        break;
+
+                    case DATA_LOADER:
+                        if (screenData.getLoaderIds().contains(target)) {
+                            eventTarget = screenData.getLoader(target);
+                        }
+                        break;
+
+                    case DATA_CONTAINER:
+                        if (screenData.getContainerIds().contains(target)) {
+                            eventTarget = screenData.getContainer(target);
+                        }
+                        break;
+
+                    default:
+                        throw new UnsupportedOperationException("Unsupported @Subscribe target " + annotation.target());
+                }
             }
 
             if (eventTarget == null) {

@@ -18,7 +18,7 @@
         caption="User Browser">
 
     <data>
-        <collection id="usersCont"
+        <collection id="usersCt"
                     class="com.haulmont.cuba.security.entity.User"
                     view="user.browse">
             <loader id="usersLoader">
@@ -44,7 +44,7 @@
                 dataLoader="usersLoader"/>
 
         <groupTable id="usersTable"
-                    dataContainer="usersCont"
+                    dataContainer="usersCt"
                     width="100%">
             <actions>
                 <action id="create" type="create"/>

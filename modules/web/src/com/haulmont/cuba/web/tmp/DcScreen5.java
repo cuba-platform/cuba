@@ -47,7 +47,7 @@ public class DcScreen5 extends StandardLookup<User> implements DemoMixin {
     protected Dialogs dialogs;
 
     @Inject
-    private CollectionContainer<User> usersCont;
+    private CollectionContainer<User> usersCt;
     @Inject
     private CollectionLoader usersLoader;
 
@@ -64,5 +64,10 @@ public class DcScreen5 extends StandardLookup<User> implements DemoMixin {
         List<User> users = dataManager.loadList(loadContext);
         System.out.println("Loaded users: " + users.size());
         return users;
+    }
+
+    @Subscribe(target = Target.DATA_CONTAINER, id = "usersCt")
+    private void onChange(CollectionContainer.CollectionChangeEvent<User> event) {
+        System.out.println("Changed users: " + event.getChanges().size());
     }
 }

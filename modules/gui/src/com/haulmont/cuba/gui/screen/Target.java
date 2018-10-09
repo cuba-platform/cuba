@@ -16,6 +16,9 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.ScreenData;
+
 /**
  * {@link Subscribe} and {@link Install} target type.
  */
@@ -42,7 +45,11 @@ public enum Target {
     FRAME,
 
     /**
-     * {@code DataLoader} defined in {@code ScreenData}.
+     * {@link DataLoader} defined in {@link ScreenData}.
      */
-    DATA_LOADER
+    DATA_LOADER,
+    /**
+     * Data container defined in {@link ScreenData}.
+     */
+    DATA_CONTAINER
 }

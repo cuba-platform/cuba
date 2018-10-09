@@ -41,7 +41,7 @@ public class CollectionContainerImpl<E extends Entity>
     protected List<E> collection = new ArrayList<>();
 
     protected Map<Object, Integer> idMap = new HashMap<>();
-    private Sorter sorter;
+    protected Sorter sorter;
 
     public CollectionContainerImpl(MetaClass metaClass) {
         super(metaClass);

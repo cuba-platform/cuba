@@ -46,9 +46,10 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     protected EventHub events = new EventHub();
     protected boolean listenersEnabled = true;
     protected Instance.PropertyChangeListener listener = new ItemListener();
-    private DataLoader loader;
-    private InstanceContainer master;
-    private String masterProperty;
+
+    protected DataLoader loader;
+    protected InstanceContainer master;
+    protected String masterProperty;
 
     public InstanceContainerImpl(MetaClass entityMetaClass) {
         this.entityMetaClass = entityMetaClass;
@@ -196,5 +197,4 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
             events.publish(ItemPropertyChangeEvent.class, itemPropertyChangeEvent);
         }
     }
-
 }
