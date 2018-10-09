@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasPresentations;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -124,15 +123,15 @@ public class PresentationEditor extends CubaWindow {
         commitButton.addClickListener(event -> {
             if (validate()) {
                 commit();
-                close();
+                forceClose();
             }
         });
         buttons.addComponent(commitButton);
 
         Button closeButton = new CubaButton(messages.getMainMessage("PresentationsEditor.close"));
-        closeButton.addClickListener(event -> {
-            close();
-        });
+        closeButton.addClickListener(event ->
+                forceClose()
+        );
         buttons.addComponent(closeButton);
 
         nameField.focus();

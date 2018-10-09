@@ -182,7 +182,7 @@ public class FolderEditWindow extends CubaWindow {
         cancelBtn.setIcon(iconResolver.getIconResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(event ->
-                close()
+                forceClose()
         );
 
         buttonsLayout.addComponent(cancelBtn);
@@ -263,7 +263,7 @@ public class FolderEditWindow extends CubaWindow {
 
         FolderEditWindow.this.commitHandler.run();
 
-        close();
+        forceClose();
     }
 
     protected void fillParentSelect() {
