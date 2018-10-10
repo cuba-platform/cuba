@@ -42,7 +42,8 @@ import java.sql.SQLException
 
 class EntityLogDynamicAttributesTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private UUID userId, categoryId, categoryAttributeId
@@ -54,34 +55,28 @@ class EntityLogDynamicAttributesTest extends Specification {
 
 
     void setup() {
-        _cleanup()
+
+        clearEntityLogTables()
 
         cont.persistence().runInTransaction { em ->
             clearTable(em, "SEC_ENTITY_LOG")
             clearTable(em, "SYS_ATTR_VALUE")
 
-            LoggedEntity le = new LoggedEntity(name: 'sec$User', auto: true)
-            em.persist(le)
-
-            createLoggedAttributeWithName(em, le, 'name')
-            createLoggedAttributeWithName(em, le, DYNAMIC_ATTRIBUTE_NAME)
-
-            Category category = new Category(name: 'user', entityType: 'sec$User')
-            categoryId = category.id
-            em.persist(category)
-
-            CategoryAttribute categoryAttribute = new CategoryAttribute(
-                    name: "userAttribute",
-                    code: "userAttribute",
-                    category: category,
-                    categoryEntityType: 'sec$User',
-                    dataType: PropertyType.STRING,
-                    defaultEntity: new ReferenceToEntity()   
-            )
-            categoryAttributeId = categoryAttribute.id
-            em.persist(categoryAttribute)
-
+            initEntityLogConfiguration(em)
+            initDynamicAttributeConfiguration(em)
         }
+        initBeans()
+    }
+
+    protected void initEntityLogConfiguration(EntityManager em) {
+        LoggedEntity le = new LoggedEntity(name: 'sec$User', auto: true)
+        em.persist(le)
+
+        em.persist(new LoggedAttribute(entity: le, name: 'name'))
+        em.persist(new LoggedAttribute(entity: le, name: DYNAMIC_ATTRIBUTE_NAME))
+    }
+
+    protected void initBeans() {
         entityLog = AppBeans.get(EntityLogAPI.class) as EntityLog
         entityLog.invalidateCache()
         dynamicAttributesManagerAPI = AppBeans.get(DynamicAttributesManagerAPI.class)
@@ -89,16 +84,32 @@ class EntityLogDynamicAttributesTest extends Specification {
         dataManager = AppBeans.get(DataManager.class)
     }
 
-    protected void createLoggedAttributeWithName(EntityManager em, LoggedEntity le, String name) {
-        em.persist(new LoggedAttribute(entity: le, name: name))
+    protected void initDynamicAttributeConfiguration(EntityManager em) {
+        Category category = new Category(name: 'user', entityType: 'sec$User')
+        categoryId = category.id
+        em.persist(category)
+
+        CategoryAttribute categoryAttribute = new CategoryAttribute(
+                name: "userAttribute",
+                code: "userAttribute",
+                category: category,
+                categoryEntityType: 'sec$User',
+                dataType: PropertyType.STRING,
+                defaultEntity: new ReferenceToEntity()
+        )
+        categoryAttributeId = categoryAttribute.id
+        em.persist(categoryAttribute)
     }
+
 
     protected void clearTable(EntityManager em, String table) {
         em.createNativeQuery("delete from " + table).executeUpdate()
     }
 
     void cleanup() {
-        _cleanup()
+
+        clearEntityLogTables()
+
         if (userId != null)
             cont.deleteRecord("SEC_USER", userId)
 
@@ -106,12 +117,144 @@ class EntityLogDynamicAttributesTest extends Specification {
         cont.deleteRecord("SYS_CATEGORY", categoryId)
     }
 
-    private void _cleanup() throws SQLException {
+    private void clearEntityLogTables() throws SQLException {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource())
         runner.update("delete from SEC_LOGGED_ATTR")
         runner.update("delete from SEC_LOGGED_ENTITY")
         runner.update("delete from SYS_ATTR_VALUE")
     }
+
+
+
+
+    def "EntityLog logs the creation of a dynamic attribute"() {
+
+        given:
+
+        User user = createUser()
+
+        when:
+
+        saveUserWithDynamicAttributeValue(user, 'userName')
+
+        def log = latestEntityLogItem(user)
+
+        then:
+
+        isCreateType(log)
+
+        and:
+
+        loggedValueMatches(log, 'userName')
+
+    }
+
+    def "EntityLog logs the update of a dynamic attribute"() {
+
+        given:
+
+        User user = createAndSaveUser('oldUserName')
+
+        when:
+
+        saveUserWithDynamicAttributeValue(user, 'updatedUserName')
+
+        def log = latestEntityLogItem(user)
+
+        then:
+
+        isModifyType(log)
+
+        and:
+
+        loggedValueMatches(log, 'updatedUserName')
+        loggedOldValueMatches(log, 'oldUserName')
+
+    }
+
+    def "EntityLog logs the deletion of a dynamic attribute"() {
+
+        given:
+
+        User user = createAndSaveUser('oldUserName')
+
+        when:
+
+        saveUserWithDynamicAttributeValue(user, null)
+
+        def log = latestEntityLogItem(user)
+
+        then:
+
+        isModifyType(log)
+
+        and:
+
+        loggedValueMatches(log, '')
+        loggedOldValueMatches(log, 'oldUserName')
+
+    }
+
+    protected boolean isModifyType(EntityLogItem entityLogItem) {
+        entityLogItem.type == EntityLogItem.Type.MODIFY
+    }
+    protected boolean isCreateType(EntityLogItem entityLogItem) {
+        entityLogItem.type == EntityLogItem.Type.CREATE
+    }
+
+    boolean loggedOldValueMatches(EntityLogItem entityLogItem, String oldValue) {
+        dynamicAttributeEntityLog(entityLogItem).oldValue == oldValue
+    }
+    boolean loggedValueMatches(EntityLogItem entityLogItem, String value) {
+        dynamicAttributeEntityLog(entityLogItem).value == value
+    }
+
+    private EntityLogItem latestEntityLogItem(User user) {
+        getEntityLogItems(user).first()
+    }
+
+    private EntityLogAttr dynamicAttributeEntityLog(EntityLogItem entityLogItem) {
+        entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
+    }
+
+    private Group findCompanyGroup() {
+        cont.persistence().callInTransaction { em ->
+            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
+        }
+    }
+
+
+    private User createUser() {
+        User user = cont.metadata().create(User)
+        userId = user.id
+        user.group = findCompanyGroup()
+        user.login = "test"
+        user.name = 'test-name'
+
+        // the dynamic attribute has to be loaded explicitly in order to work with it further down the road
+        user.getValue(DYNAMIC_ATTRIBUTE_NAME)
+
+
+        user
+    }
+
+    private User saveUserWithDynamicAttributeValue(User user, String newDynamicAttributeValue) {
+        user.setValue(DYNAMIC_ATTRIBUTE_NAME, newDynamicAttributeValue)
+        dataManager.commit(user)
+    }
+
+    private User createAndSaveUser(String dynamicAttributeValue) {
+        User user = createUser()
+        saveUserWithDynamicAttributeValue(user, dynamicAttributeValue)
+
+        LoadContext loadContext = new LoadContext(User.class)
+                .setId(user)
+                .setView(View.LOCAL)
+                .setLoadDynamicAttributes(true)
+        dataManager.load(loadContext)
+
+    }
+
 
     private List<EntityLogItem> getEntityLogItems(User user) {
         Transaction tx = cont.persistence().createTransaction()
@@ -130,135 +273,5 @@ class EntityLogDynamicAttributesTest extends Specification {
         }
 
         items
-    }
-
-    private EntityLogItem getLatestEntityLogItem(User user) {
-        getEntityLogItems(user)[0]
-    }
-
-    def "EntityLog logs the creation of a dynamic attribute"() {
-
-        given:
-
-        def expectedDynamicAttributeValue = "userName"
-
-        and:
-
-        User user = createUser(expectedDynamicAttributeValue)
-
-        when:
-
-        dataManager.commit(user)
-
-        then:
-
-        def createdEntityLogItem = getLatestEntityLogItem(user)
-
-        createdEntityLogItem.type == EntityLogItem.Type.CREATE
-
-        and:
-
-        entityLogAttributeForDynamicAttribute(createdEntityLogItem).value == expectedDynamicAttributeValue
-
-    }
-
-    def "EntityLog logs the update of a dynamic attribute"() {
-
-        given:
-
-        def oldDynamicAttributeValue = 'oldUserName'
-
-        and:
-
-        User user = createAndSaveUser(oldDynamicAttributeValue)
-
-        when:
-
-        user = reloadUserFromDbWithDynamicAttributes(user)
-
-        def updatedDynamicAttributeValue = 'updatedUserName'
-
-        saveUserWithDynamicAttributeValue(user, updatedDynamicAttributeValue)
-
-        then:
-
-        def modifiedEntityLogItem = getLatestEntityLogItem(user)
-
-        modifiedEntityLogItem.type == EntityLogItem.Type.MODIFY
-
-        and:
-
-        entityLogAttributeForDynamicAttribute(modifiedEntityLogItem).oldValue == oldDynamicAttributeValue
-        entityLogAttributeForDynamicAttribute(modifiedEntityLogItem).value == updatedDynamicAttributeValue
-
-    }
-
-    def "EntityLog logs the deletion of a dynamic attribute"() {
-
-        given:
-
-        def oldDynamicAttributeValue = 'oldUserName'
-
-        and:
-
-        User user = createAndSaveUser(oldDynamicAttributeValue)
-
-        when:
-
-        user = reloadUserFromDbWithDynamicAttributes(user)
-        saveUserWithDynamicAttributeValue(user, null)
-
-        then:
-
-        def deletedEntityLogItem = getLatestEntityLogItem(user)
-
-        deletedEntityLogItem.type == EntityLogItem.Type.MODIFY
-
-        and:
-
-        entityLogAttributeForDynamicAttribute(deletedEntityLogItem).value == ""
-        entityLogAttributeForDynamicAttribute(deletedEntityLogItem).oldValue == oldDynamicAttributeValue
-    }
-
-    User saveUserWithDynamicAttributeValue(User user, String newDynamicAttributeValue) {
-        user.setValue(DYNAMIC_ATTRIBUTE_NAME, newDynamicAttributeValue)
-        dataManager.commit(user)
-    }
-
-    private User createAndSaveUser(String dynamicAttributeValue) {
-        User user = createUser(dynamicAttributeValue)
-        dataManager.commit(user)
-    }
-    protected EntityLogAttr entityLogAttributeForDynamicAttribute(EntityLogItem entityLogItem) {
-        entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
-    }
-
-    protected Group findCompanyGroup() {
-        cont.persistence().callInTransaction { em ->
-            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
-        }
-    }
-
-    private User createUser(String dynamicAttributeValue) {
-        User user = cont.metadata().create(User)
-        userId = user.id
-        user.group = findCompanyGroup()
-        user.login = "test"
-        user.name = 'test-name'
-
-        user.getValue(DYNAMIC_ATTRIBUTE_NAME)
-
-        user.setValue(DYNAMIC_ATTRIBUTE_NAME, dynamicAttributeValue)
-
-        user
-    }
-
-
-    protected User reloadUserFromDbWithDynamicAttributes(User user) {
-        LoadContext loadContext = new LoadContext(User.class)
-                .setId(user)
-                .setView(View.LOCAL)
-                .setLoadDynamicAttributes(true)
-        dataManager.load(loadContext)
     }
 }
