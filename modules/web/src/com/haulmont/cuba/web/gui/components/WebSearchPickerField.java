@@ -24,15 +24,16 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.haulmont.cuba.web.widgets.CubaSearchSelectPickerField;
 import com.vaadin.server.Resource;
@@ -71,6 +72,8 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     protected Mode mode = Mode.CASE_SENSITIVE;
     protected boolean escapeValueForLike = false;
 
+    protected IconResolver iconResolver;
+
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected SearchNotifications searchNotifications = createSearchNotifications();
@@ -99,8 +102,13 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         this.locale = userSessionSource.getLocale();
     }
 
+    @Inject
+    public void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         super.afterPropertiesSet();
 
         Configuration configuration = beanLocator.get(Configuration.NAME, Configuration.class);

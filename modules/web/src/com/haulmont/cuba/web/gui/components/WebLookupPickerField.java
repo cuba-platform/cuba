@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaComboBoxPickerField;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.event.ShortcutAction;
@@ -62,6 +63,8 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
 
     protected OptionsBinding<V> optionsBinding;
 
+    protected IconResolver iconResolver;
+
     protected boolean refreshOptionsOnLookupClose = false;
 
     protected Locale locale;
@@ -88,8 +91,13 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
         this.locale = userSessionSource.getLocale();
     }
 
+    @Inject
+    public void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         super.afterPropertiesSet();
 
         Configuration configuration = beanLocator.get(Configuration.NAME);

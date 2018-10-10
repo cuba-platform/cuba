@@ -18,54 +18,13 @@
 @mixin halo-cuba-contextmenu($primary-stylename: c-cm-container) {
   .#{$primary-stylename} {
     @include valo-selection-overlay-style;
-
-    .c-cm-button.v-button {
-      @include valo-button-borderless-style;
-      line-height: $v-selection-item-height;
-      padding: 0 $v-selection-item-padding-horizontal*2 0 $v-selection-item-padding-horizontal;
-      border-radius: $v-selection-item-border-radius;
-      font-weight: $v-selection-item-font-weight;
-      white-space: nowrap;
-      height: $v-selection-item-height;
-      display: block; // Firefox 24 needs this to make position: relative; work
-
-      text-decoration: none;
-      text-align: left;
-    }
-
-    .c-cm-button.v-button:focus {
-      &:after {
-        @include box-shadow(none);
-      }
-    }
-
-    .c-cm-button.c-cm-button-selected {
-      @include valo-selection-item-selected-style;
-    }
-
-    .c-cm-button-selected.v-disabled {
-       color: inherit;
-       background: transparent;
-    }
-
-    .v-ie9 & {
-      .c-cm-button.v-button:hover {
-        background: transparent;
-        color: inherit;
-        text-shadow: none;
-      }
-
-      .c-cm-button.v-button.ie9-hover:hover {
-        @include valo-selection-item-selected-style;
-      }
-    }
   }
 }
 
 @mixin halo-vaadin-contextmenu-addon($primary-stylename: c-cm-item) {
 
   .v-menubar-submenu .#{$primary-stylename}.v-menubar-menuitem {
-    padding-right: $v-selection-item-padding-horizontal*2;
+    padding-right: $v-selection-item-padding-horizontal * 2;
     padding-left: $v-selection-item-padding-horizontal;
   }
 

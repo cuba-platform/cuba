@@ -17,14 +17,22 @@
 
 package com.haulmont.cuba.web.widgets.client.popupbutton;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.addons.popupbutton.VPopupButton;
+import com.haulmont.cuba.web.widgets.client.jqueryfileupload.CubaFileUploadWidget;
+import com.vaadin.client.ui.VButton;
+import com.vaadin.client.ui.VUpload;
 
 public class CubaPopupButtonWidget extends VPopupButton {
 
     public static final String SELECTED_ITEM_STYLE = "c-cm-button-selected";
 
     protected boolean customLayout = false;
-    /* vaadin8 implement
+
     @Override
     protected void onPopupOpened() {
         super.onPopupOpened();
@@ -35,11 +43,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
 
         // find button, assign .v-selected style
         for (Widget popupChild : getPopup()) {
-            if (popupChild instanceof VAbstractOrderedLayout) {
-                VAbstractOrderedLayout content = (VAbstractOrderedLayout) popupChild;
-                for (Widget slot : content) {
-                    Widget contentChild = ((Slot) slot).getWidget();
-
+            if (popupChild instanceof FlowPanel) {
+                FlowPanel content = (FlowPanel) popupChild;
+                for (Widget contentChild : content) {
                     if (contentChild instanceof VButton) {
                         VButton button = (VButton) contentChild;
 
@@ -55,11 +61,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
 
         // add focus handler
         for (Widget popupChild : getPopup()) {
-            if (popupChild instanceof VAbstractOrderedLayout) {
-                VAbstractOrderedLayout content = (VAbstractOrderedLayout) popupChild;
-                for (Widget slot : content) {
-                    Widget contentChild = ((Slot) slot).getWidget();
-
+            if (popupChild instanceof FlowPanel) {
+                FlowPanel content = (FlowPanel) popupChild;
+                for (Widget contentChild : content) {
                     VButton button = null;
                     if (contentChild instanceof CubaFileUploadWidget) {
                         button = ((CubaFileUploadWidget) contentChild).getSubmitButton();
@@ -70,13 +74,8 @@ public class CubaPopupButtonWidget extends VPopupButton {
                     }
 
                     if (button != null) {
-                        final VButton finalButton = button;
-                        button.addFocusHandler(new FocusHandler() {
-                            @Override
-                            public void onFocus(FocusEvent event) {
-                                childWidgetFocused(finalButton);
-                            }
-                        });
+                        VButton finalButton = button;
+                        button.addFocusHandler(event -> childWidgetFocused(finalButton));
 
                         // sink mouse over
                         DOM.sinkEvents(button.getElement(), Event.ONMOUSEOVER | DOM.getEventsSunk(button.getElement()));
@@ -94,11 +93,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
 
     protected void resetSelectedItem() {
         for (Widget popupChild : getPopup()) {
-            if (popupChild instanceof VAbstractOrderedLayout) {
-                VAbstractOrderedLayout content = (VAbstractOrderedLayout) popupChild;
-                for (Widget slot : content) {
-                    Widget contentChild = ((Slot) slot).getWidget();
-
+            if (popupChild instanceof FlowPanel) {
+                FlowPanel content = (FlowPanel) popupChild;
+                for (Widget contentChild : content) {
                     VButton button = null;
                     if (contentChild instanceof CubaFileUploadWidget) {
                         button = ((CubaFileUploadWidget) contentChild).getSubmitButton();
@@ -192,5 +189,4 @@ public class CubaPopupButtonWidget extends VPopupButton {
     protected boolean isShortcut(Event event) {
         return event.getShiftKey() || event.getAltKey() || event.getCtrlKey() || event.getMetaKey();
     }
-*/
 }

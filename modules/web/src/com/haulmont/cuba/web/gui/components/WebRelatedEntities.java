@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -33,6 +32,7 @@ import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,8 +50,15 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
     protected ScreensHelper screensHelper;
 
     public WebRelatedEntities() {
-        screensHelper = AppBeans.get(ScreensHelper.NAME);
-        Messages messages = AppBeans.get(Messages.NAME);
+    }
+
+    @Inject
+    public void setScreensHelper(ScreensHelper screensHelper) {
+        this.screensHelper = screensHelper;
+    }
+
+    @Inject
+    public void setMessages(Messages messages) {
         setCaption(messages.getMainMessage("actions.Related"));
     }
 
@@ -137,7 +144,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
             }
 
             if (actionContainer.getComponentCount() == 0) {
-                Messages messages = AppBeans.get(Messages.NAME);
+                Messages messages = beanLocator.get(Messages.NAME);
                 actionContainer.addComponent(new Label(messages.getMainMessage("actions.Related.Empty")));
             }
         }

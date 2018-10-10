@@ -16,12 +16,6 @@
  */
 
 @mixin halo-filterselect($primary-stylename: v-filterselect) {
-  // fix scrollbar in suggestion menu
-  .v-ie9 & .#{$primary-stylename}-suggestmenu {
-    padding-left: 4px;
-    padding-right: 4px;
-  }
-
   .#{$primary-stylename}.v-readonly {
     .#{$primary-stylename}-button {
       display: none;

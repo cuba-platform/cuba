@@ -17,17 +17,19 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
-import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
+import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang3.StringUtils;
@@ -35,17 +37,13 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
-public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
-        implements PopupButton, SecuredActionsHolder {
+public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implements PopupButton, SecuredActionsHolder {
 
     protected final static String CONTEXT_MENU_BUTTON_STYLENAME = "c-cm-button";
 
@@ -56,34 +54,31 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     protected boolean showActionIcons;
 
     protected List<Action> actionOrder = new ArrayList<>(4);
-    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+    protected Map<Action, Button> actionButtons = new HashMap<>(4);
+
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected Registration popupVisibilityListenerRegistration;
+    protected Consumer<PropertyChangeEvent> actionPropertyChangeListener = this::actionPropertyChanged;
 
     public WebPopupButton() {
-        component = new CubaPopupButton() {
-            @Override
-            public void setPopupVisible(boolean popupVisible) {
-                if (vPopupComponent == vActionsContainer
-                        && popupVisible && !hasVisibleActions()) {
-                    return;
-                }
-
-                super.setPopupVisible(popupVisible);
-            }
-        };
+        component = createComponent();
+        // do not show empty tooltip
+        component.setDescription(null);
 
         this.vActionsContainer = createActionsContainer();
         this.vPopupComponent = vActionsContainer;
         component.setContent(vPopupComponent);
-
-        component.setDescription(null);
     }
 
     @Inject
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
         ThemeConstants theme = themeConstantsManager.getConstants();
         this.showActionIcons = theme.getBoolean("cuba.gui.showIconsForPopupMenuActions", false);
+    }
+
+    protected CubaPopupButton createComponent() {
+        return new PopupMenuButton();
     }
 
     protected CubaPopupButtonLayout createActionsContainer() {
@@ -262,83 +257,136 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         vActionsContainer.addComponent(vButton, index);
         component.markAsDirty();
         actionOrder.add(index, action);
+        actionButtons.put(action, vButton);
 
         actionsPermissions.apply(action);
     }
 
     protected void updateActionsIcons() {
-        for (Action action : actionOrder) {
-            for (ActionOwner actionOwner : action.getOwners()) {
-                if (actionOwner instanceof PopupButtonActionButton) {
-                    PopupButtonActionButton button = (PopupButtonActionButton) actionOwner;
-
-                    if (showActionIcons) {
-                        button.setIcon(action.getIcon());
-                    } else {
-                        button.setIcon(null);
-                    }
-                }
+        for (Map.Entry<Action, Button> entry : actionButtons.entrySet()) {
+            if (showActionIcons) {
+                setPopupButtonIcon(entry.getValue(), entry.getKey().getIcon());
+            } else {
+                setPopupButtonIcon(entry.getValue(), null);
             }
         }
     }
 
-    protected Button createActionButton(Action action) {
-        // todo replace with vaadin Button !
-        WebButton button = new PopupButtonActionButton();
-        button.beanLocator = beanLocator;
-        button.setAction(new PopupActionWrapper(action));
+    protected CubaButton createActionButton(Action action) {
+        CubaButton button = new CubaButton();
 
-        button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
+        button.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        button.setPrimaryStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
 
-        Button vButton = (Button) button.getComposition();
-        vButton.setSizeFull();
-        vButton.setStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
+        setPopupButtonAction(button, action);
 
         AppUI ui = AppUI.getCurrent();
         if (ui != null) {
             if (ui.isTestMode()) {
-                button.setId(action.getId());
+                button.setCubaId(action.getId());
             }
 
             if (ui.isPerformanceTestMode()) {
                 String debugId = getDebugId();
                 if (debugId != null) {
                     TestIdManager testIdManager = ui.getTestIdManager();
-                    button.setDebugId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                    button.setId(testIdManager.getTestId(debugId + "_" + action.getId()));
                 }
             }
         }
 
-        return vButton;
+        return button;
+    }
+
+    protected void setPopupButtonAction(CubaButton button, Action action) {
+        button.setCaption(action.getCaption());
+
+        String description = action.getDescription();
+        if (description == null && action.getShortcutCombination() != null) {
+            description = action.getShortcutCombination().format();
+        }
+        if (description != null) {
+            button.setDescription(description);
+        }
+
+        button.setEnabled(action.isEnabled());
+        button.setVisible(action.isVisible());
+
+        if (action.getIcon() != null) {
+            setPopupButtonIcon(button, action.getIcon());
+        }
+
+        action.addPropertyChangeListener(actionPropertyChangeListener);
+        button.setClickHandler(mouseEventDetails -> {
+            this.focus();
+
+            if (isAutoClose()) {
+                this.component.setPopupVisible(false);
+            }
+
+            action.actionPerform(this);
+        });
+    }
+
+    protected void setPopupButtonIcon(Button button, String icon) {
+        if (!StringUtils.isEmpty(icon)) {
+            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
+
+            Resource iconResource = iconResolver.getIconResource(icon);
+            button.setIcon(iconResource);
+            button.addStyleName(ICON_STYLE);
+        } else {
+            button.setIcon(null);
+            button.removeStyleName(ICON_STYLE);
+        }
+    }
+
+    protected void actionPropertyChanged(PropertyChangeEvent evt) {
+        Action action = (Action) evt.getSource();
+        Button button = actionButtons.get(action);
+
+        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+            if (showActionIcons) {
+                setPopupButtonIcon(button, action.getIcon());
+            } else {
+                setPopupButtonIcon(button, null);
+            }
+        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+            button.setCaption(action.getCaption());
+        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+            button.setDescription(action.getDescription());
+        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+            button.setEnabled(action.isEnabled());
+        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+            button.setVisible(action.isVisible());
+        }
     }
 
     @Override
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        if (id != null) {
-            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+        AppUI ui = AppUI.getCurrent();
+        if (id != null && ui != null && ui.isPerformanceTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
 
-            for (Action action : getActions()) {
-                WebButton button = (WebButton) action.getOwner();
-                if (StringUtils.isEmpty(button.getDebugId())) {
-                    button.setDebugId(testIdManager.getTestId(id + "_" + action.getId()));
-                }
+            for (Map.Entry<Action, Button> entry : actionButtons.entrySet()) {
+                Button button = entry.getValue();
+                Action action = entry.getKey();
+
+                button.setId(testIdManager.getTestId(id + "_" + action.getId()));
             }
         }
     }
 
     @Override
     public void removeAction(@Nullable Action action) {
-        if (actionOrder.remove(action)) {
-            //noinspection ConstantConditions
-            for (ActionOwner owner : action.getOwners()) {
-                if (owner instanceof PopupButtonActionButton) {
-                    owner.setAction(null);
-                    PopupButtonActionButton button = (PopupButtonActionButton) owner;
-                    com.vaadin.ui.Component vButton = button.unwrap(com.vaadin.ui.Component.class);
-                    vActionsContainer.removeComponent(vButton);
-                }
+        if (action != null && actionOrder.remove(action)) {
+            action.removePropertyChangeListener(actionPropertyChangeListener);
+            Button button = actionButtons.remove(action);
+
+            if (button != null) {
+                vActionsContainer.removeComponent(button);
             }
         }
     }
@@ -379,141 +427,16 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         return actionsPermissions;
     }
 
-    protected class PopupActionWrapper implements Action {
-
-        protected Action action;
-
-        public PopupActionWrapper(Action action) {
-            this.action = action;
-        }
-
-        protected Action getAction() {
-            return action;
-        }
-
+    protected class PopupMenuButton extends CubaPopupButton {
         @Override
-        public void actionPerform(Component component) {
-            WebPopupButton.this.focus();
-
-            if (isAutoClose()) {
-                WebPopupButton.this.component.setPopupVisible(false);
+        public void setPopupVisible(boolean popupVisible) {
+            if (vPopupComponent == vActionsContainer
+                    && popupVisible && !hasVisibleActions()) {
+                // do not show empty menu
+                return;
             }
 
-            action.actionPerform(component);
+            super.setPopupVisible(popupVisible);
         }
-
-        @Override
-        public void addOwner(ActionOwner actionOwner) {
-            action.addOwner(actionOwner);
-        }
-
-        @Override
-        public void addPropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
-            action.addPropertyChangeListener(listener);
-        }
-
-        @Override
-        public String getCaption() {
-            return action.getCaption();
-        }
-
-        @Override
-        public String getIcon() {
-            return action.getIcon();
-        }
-
-        @Override
-        public String getId() {
-            return action.getId();
-        }
-
-        @Override
-        public ActionOwner getOwner() {
-            return action.getOwner();
-        }
-
-        @Override
-        public Collection<ActionOwner> getOwners() {
-            return action.getOwners();
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return action.isEnabled();
-        }
-
-        @Override
-        public boolean isVisible() {
-            return action.isVisible();
-        }
-
-        @Override
-        public void removeOwner(ActionOwner actionOwner) {
-            action.removeOwner(actionOwner);
-        }
-
-        @Override
-        public void removePropertyChangeListener(Consumer<PropertyChangeEvent> listener) {
-            action.removePropertyChangeListener(listener);
-        }
-
-        @Override
-        public void setCaption(String caption) {
-            action.setCaption(caption);
-        }
-
-        @Override
-        public String getDescription() {
-            return action.getDescription();
-        }
-
-        @Override
-        public void setDescription(String description) {
-            action.setDescription(description);
-        }
-
-        @Override
-        public KeyCombination getShortcutCombination() {
-            return null;
-        }
-
-        @Override
-        public void setShortcutCombination(KeyCombination shortcut) {
-        }
-
-        @Override
-        public void setShortcut(String shortcut) {
-        }
-
-        @Override
-        public void setEnabled(boolean enabled) {
-            action.setEnabled(enabled);
-        }
-
-        @Override
-        public void setIcon(String icon) {
-            action.setIcon(icon);
-        }
-
-        @Override
-        public void setIconFromSet(Icons.Icon icon) {
-            String iconName = AppBeans.get(Icons.class)
-                    .get(icon);
-            setIcon(iconName);
-        }
-
-        @Override
-        public void setVisible(boolean visible) {
-            action.setVisible(visible);
-        }
-
-        @Override
-        public void refreshState() {
-            action.refreshState();
-        }
-    }
-
-    protected static class PopupButtonActionButton extends WebButton {
-
     }
 }

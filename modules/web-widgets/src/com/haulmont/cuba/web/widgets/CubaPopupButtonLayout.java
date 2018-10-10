@@ -16,9 +16,7 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.ui.VerticalLayout;
-
-public class CubaPopupButtonLayout extends VerticalLayout {
+public class CubaPopupButtonLayout extends CubaCssActionsLayout {
     public CubaPopupButtonLayout() {
         setStyleName("c-popupbutton-container");
         setWidthUndefined();

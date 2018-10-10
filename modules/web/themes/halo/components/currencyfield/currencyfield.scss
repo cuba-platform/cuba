@@ -112,10 +112,6 @@
     vertical-align: middle;
 
     min-width: $v-unit-size;
-
-    .v-ie9 & {
-      background-clip: padding-box;
-    }
   }
 
   .v-sa & .#{$primary-stylename} > .#{$primary-stylename}-layout > .ie9-input-wrap {

@@ -143,11 +143,13 @@ public class VPopupButton extends VButton {
                     popup.addStyleName("fixed");
                     popup.setVisible(true);
                 }
+                onPopupOpened();
             }
         });
     }
 
-    void hidePopup() {
+    // Haulmont API
+    public void hidePopup() {
         popup.setVisible(false);
         popup.hide();
     }
@@ -174,7 +176,8 @@ public class VPopupButton extends VButton {
         this.direction = new AlignmentInfo(direction);
     }
 
-    class LayoutPopup extends VOverlay {
+    // Haulmont API
+    public class LayoutPopup extends VOverlay {
 
         public static final String CLASSNAME = VPopupButton.CLASSNAME
                 + "-popup";
@@ -357,5 +360,23 @@ public class VPopupButton extends VButton {
 
     public void addToActiveChildren(Element e) {
         activeChildren.add(e);
+    }
+
+    /**
+     * Simply check if popup has child equal to passed element <br/>
+     *
+     * Haulmont API
+     */
+    public boolean popupHasChild(Element element) {
+        return popup.getElement().isOrHasChild(element);
+    }
+
+    // Haulmont API
+    public LayoutPopup getPopup() {
+        return popup;
+    }
+
+    // Haulmont API
+    protected void onPopupOpened() {
     }
 }

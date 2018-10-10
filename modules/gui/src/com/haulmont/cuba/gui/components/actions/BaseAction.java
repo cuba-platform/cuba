@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.haulmont.bali.util.BitUtils.readBit;
-import static com.haulmont.bali.util.BitUtils.writeBit;
-
 /**
  * Action that can change its enabled and visible properties depending on the user permissions and current context.
  * <p> The BaseAction is visible if the following conditions are met:
@@ -63,12 +60,11 @@ import static com.haulmont.bali.util.BitUtils.writeBit;
  */
 public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
-    private static final int ENABLED_EXPLICITLY_BIT = 0;
-    private static final int VISIBLE_EXPLICITLY_BIT = 1;
-    private static final int ENABLED_UIPERMISSION_BIT = 2;
-    private static final int VISIBLE_UIPERMISSION_BIT = 3;
+    private boolean enabledByUiPermissions = true;
+    private boolean visibleByUiPermissions = true;
 
-    private byte uiSecurityState = 0x0f;    // all flags true
+    private boolean enabledExplicitly = true;
+    private boolean visibleExplicitly = true;
 
     private List<EnabledRule> enabledRules; // lazy initialized list
 
@@ -120,9 +116,8 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
     @Override
     public void setVisible(boolean visible) {
-        boolean visibleExplicitly = readBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT);
-        if (visibleExplicitly != visible) {
-            this.uiSecurityState = writeBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT, visible);
+        if (this.visibleExplicitly != visible) {
+            this.visibleExplicitly = visible;
 
             refreshState();
         }
@@ -130,10 +125,8 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
     @Override
     public void setEnabled(boolean enabled) {
-        boolean enabledExplicitly = readBit(uiSecurityState, ENABLED_EXPLICITLY_BIT);
-
-        if (enabledExplicitly != enabled) {
-            this.uiSecurityState = writeBit(uiSecurityState, ENABLED_EXPLICITLY_BIT, enabled);
+        if (this.enabledExplicitly != enabled) {
+            this.enabledExplicitly = enabled;
 
             refreshState();
         }
@@ -151,12 +144,6 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
     public void refreshState() {
         super.refreshState();
 
-        boolean visibleExplicitly = readBit(uiSecurityState, VISIBLE_EXPLICITLY_BIT);
-        boolean enabledExplicitly = readBit(uiSecurityState, ENABLED_EXPLICITLY_BIT);
-
-        boolean enabledByUiPermissions = readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
-        boolean visibleByUiPermissions = readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
-
         setVisibleInternal(visibleExplicitly && visibleByUiPermissions);
 
         setEnabledInternal(enabledExplicitly && enabledByUiPermissions && visibleByUiPermissions
@@ -165,14 +152,13 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
     @Override
     public boolean isEnabledByUiPermissions() {
-        return readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
+        return enabledByUiPermissions;
     }
 
     @Override
-    public void setEnabledByUiPermissions(boolean enable) {
-        boolean enabledByUiPermissions = readBit(uiSecurityState, ENABLED_UIPERMISSION_BIT);
-        if (enabledByUiPermissions != enable) {
-            this.uiSecurityState = writeBit(uiSecurityState, ENABLED_UIPERMISSION_BIT, enable);
+    public void setEnabledByUiPermissions(boolean enabledByUiPermissions) {
+        if (this.enabledByUiPermissions != enabledByUiPermissions) {
+            this.enabledByUiPermissions = enabledByUiPermissions;
 
             refreshState();
         }
@@ -180,14 +166,13 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
 
     @Override
     public boolean isVisibleByUiPermissions() {
-        return readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
+        return visibleByUiPermissions;
     }
 
     @Override
-    public void setVisibleByUiPermissions(boolean visible) {
-        boolean visibleByUiPermissions = readBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT);
-        if (visibleByUiPermissions != visible) {
-            this.uiSecurityState = writeBit(uiSecurityState, VISIBLE_UIPERMISSION_BIT, visible);
+    public void setVisibleByUiPermissions(boolean visibleByUiPermissions) {
+        if (this.visibleByUiPermissions != visibleByUiPermissions) {
+            this.visibleByUiPermissions = visibleByUiPermissions;
 
             refreshState();
         }
