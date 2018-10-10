@@ -109,9 +109,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     @Inject
     protected LookupField<Locale> localesSelect;
 
-    @Inject
-    protected HBoxLayout rememberLocalesBox;
-
     protected boolean loginByRememberMe = false;
 
     protected Consumer<HasValue.ValueChangeEvent<String>> loginChangeListener;
@@ -148,6 +145,13 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         boolean localeSelectVisible = globalConfig.getLocaleSelectVisible();
         localesSelect.setVisible(localeSelectVisible);
+
+        // if old layout is used
+        Component localesSelectLabel = getComponent("localesSelectLabel");
+        if (localesSelectLabel != null) {
+            localesSelectLabel.setVisible(localeSelectVisible);
+        }
+
         localesSelect.addValueChangeListener(e -> {
             Locale selectedLocale = (Locale) e.getValue();
 
@@ -201,7 +205,10 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     }
 
     protected void initRememberMeLocalesBox() {
-        rememberLocalesBox.setVisible(rememberMeCheckBox.isVisible() || localesSelect.isVisible());
+        Component rememberLocalesBox = getComponent("rememberLocalesBox");
+        if (rememberLocalesBox != null) {
+            rememberLocalesBox.setVisible(rememberMeCheckBox.isVisible() || localesSelect.isVisible());
+        }
     }
 
     protected void initDefaultCredentials() {
