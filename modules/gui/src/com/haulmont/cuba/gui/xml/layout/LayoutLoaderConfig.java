@@ -111,6 +111,8 @@ public class LayoutLoaderConfig {
         loaders.put(BulkEditor.NAME, BulkEditorLoader.class);
         loaders.put(CapsLockIndicator.NAME, CapsLockIndicatorLoader.class);
 
+        loaders.put(Form.NAME, FormLoader.class);
+
         /* Main window components */
 
         loaders.put(AppMenu.NAME, AppMenuLoader.class);

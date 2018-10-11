@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.Form;
 import com.haulmont.cuba.web.widgets.CubaCheckBox;
 
 public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Boolean, Boolean> implements CheckBox {
@@ -62,7 +63,8 @@ public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Bool
     public void setParent(Component parent) {
         super.setParent(parent);
 
-        if (parent instanceof FieldGroup) {
+        if (parent instanceof FieldGroup
+                || parent instanceof Form) {
             ((CubaCheckBox) component).setCaptionManagedByLayout(true);
         }
     }

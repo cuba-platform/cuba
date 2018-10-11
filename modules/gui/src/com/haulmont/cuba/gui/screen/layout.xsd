@@ -284,6 +284,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="formCaptionAlignment">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP"/>
+            <xs:enumeration value="LEFT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="maskedFieldValueMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="masked"/>
@@ -2358,6 +2365,37 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- Form -->
+    <xs:complexType name="formComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                    <xs:group ref="layoutOrComponent"/>
+                    <xs:element name="column">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:group ref="layoutOrComponent"/>
+                            </xs:sequence>
+
+                            <xs:attribute name="id" type="xs:string"/>
+                            <xs:attribute name="width" type="xs:string"/>
+                            <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
+
+                            <xs:anyAttribute namespace="##other" processContents="lax"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+
+                <xs:attributeGroup ref="hasEditState"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
+
+                <xs:attribute name="dataContainer" type="xs:string"/>
+                <xs:attribute name="captionAlignment" type="formCaptionAlignment"/>
+                <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- TokenList -->
     <xs:complexType name="tokenListComponent">
         <xs:complexContent>
@@ -2965,6 +3003,8 @@
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
                 <xs:element name="relatedEntities" type="relatedComponent"/>
                 <xs:element name="bulkEditor" type="bulkEditorComponent"/>
+
+                <xs:element name="form" type="formComponent"/>
 
                 <xs:element name="capsLockIndicator" type="capsLockIndicatorComponent"/>
 

@@ -24,20 +24,45 @@ import java.util.Collection;
  * Component which can contain other components.
  */
 public interface ComponentContainer extends Component {
+    /**
+     * Adds a component to this container.
+     *
+     * @param childComponent a component to add
+     */
     void add(Component childComponent);
+
+    /**
+     * Sequentially adds components to this container.
+     *
+     * @param childComponents components to add
+     */
     default void add(Component... childComponents) {
         for (Component component : childComponents) {
             add(component);
         }
     }
 
+    /**
+     * Removes a component from this container.
+     *
+     * @param childComponent a component to remove
+     */
     void remove(Component childComponent);
+
+    /**
+     * Sequentially removes components from this container.
+     *
+     * @param childComponents components to remove
+     */
     default void remove(Component... childComponents) {
         for (Component component : childComponents) {
             remove(component);
         }
     }
 
+    /**
+     * Removes all components from this container.
+     */
     void removeAll();
 
     /**

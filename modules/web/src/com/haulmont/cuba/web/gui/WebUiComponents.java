@@ -123,6 +123,8 @@ public class WebUiComponents implements UiComponents {
         classes.put(ListEditor.NAME, WebListEditor.class);
         classes.put(CapsLockIndicator.NAME, WebCapsLockIndicator.class);
 
+        classes.put(Form.NAME, WebForm.class);
+
         classes.put(EntityLinkField.NAME, WebEntityLinkField.class);
 
         /* Main window components */
