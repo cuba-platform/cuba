@@ -175,7 +175,7 @@ public final class BaseEntityInternalAccess {
         }
     }
 
-    public static boolean isEntitySupportSecurityState(Entity entity) {
+    public static boolean supportsSecurityState(Entity entity) {
         return entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity;
     }
 

@@ -44,7 +44,7 @@ public class EntityCopyUtils {
         }
         copyCompositions(source, dest);
 
-        if (BaseEntityInternalAccess.isEntitySupportSecurityState(source)) {
+        if (BaseEntityInternalAccess.supportsSecurityState(source)) {
             BaseEntityInternalAccess.setSecurityState(dest, BaseEntityInternalAccess.getSecurityState(source));
         }
 
