@@ -16,9 +16,6 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetadataObject;
@@ -35,6 +32,7 @@ import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.ArrayUtils;
@@ -360,10 +358,24 @@ public abstract class ComponentsHelper {
         Window window = getWindow(component);
 
         if (window == null) {
-            throw new IllegalStateException("Unable to find window for component");
+            throw new IllegalStateException("Unable to find window for component " +
+                    (component.getId() != null ? component.getId() : component.getClass()));
         }
 
         return window;
+    }
+
+    /**
+     * Get screen context for UI component.
+     *
+     * @param component component
+     * @return screen context
+     * @throws IllegalStateException in case window cannot be inferred
+     */
+    public static ScreenContext getScreenContext(Component.BelongToFrame component) {
+        Window window = getWindowNN(component);
+
+        return window.getFrameOwner().getScreenContext();
     }
 
     @Nullable
@@ -582,23 +594,6 @@ public abstract class ComponentsHelper {
         } else {
             errors.add((Component) component, e.getMessage());
         }
-    }
-
-    /**
-     * @deprecated Use guava {@link Iterables#indexOf(Iterable, Predicate)}
-     */
-    @Deprecated
-    public static int indexOf(Iterable<Component> components, Component component) {
-        Preconditions.checkNotNullArgument(components);
-
-        Iterator<Component> iterator = components.iterator();
-        for (int i = 0; iterator.hasNext(); i++) {
-            Component current = iterator.next();
-            if (current == component) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     /**

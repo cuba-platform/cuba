@@ -19,20 +19,23 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
-import com.haulmont.cuba.web.widgets.UploadComponent;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.io.IOUtils;
@@ -50,9 +53,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.haulmont.cuba.gui.components.Frame.NotificationType;
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
+import static com.haulmont.cuba.web.gui.FileUploadTypesHelper.convertToMIME;
 
-public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField, InitializingBean {
+public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper>
+        implements FileUploadField, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
@@ -62,7 +67,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     protected Supplier<InputStream> contentProvider;
 
-    protected UploadComponent uploadButton;
+    protected CubaFileUpload uploadButton;
     protected String fileName;
     protected FileStoragePutMode mode = FileStoragePutMode.MANUAL;
 
@@ -72,10 +77,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected UUID tempFileId;
 
     /*
-    * This flag is used only for MANUAL mode to register that
-    * file was uploaded with the upload button rather then setValue calling
-    * or changed property in the datasource
-    */
+     * This flag is used only for MANUAL mode to register that file was uploaded with the upload button rather then
+     * setValue calling or changed property in the datasource.
+     */
     protected boolean internalValueChangedOnUpload = false;
 
     public WebFileUploadField() {
@@ -102,6 +106,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Inject
     public void setMessages(Messages messages) {
         this.messages = messages;
+
+        component.setClearButtonCaption(messages.getMainMessage("FileUploadField.clearButtonCaption"));
+        component.setFileNotSelectedMessage(messages.getMainMessage("FileUploadField.fileNotSelected"));
     }
 
     protected void initComponent() {
@@ -114,8 +121,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
         component.addFileNameClickListener(e -> {
             FileDescriptor value = getValue();
-            if (value == null)
+            if (value == null) {
                 return;
+            }
 
             switch (mode) {
                 case MANUAL:
@@ -125,6 +133,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     break;
                 case IMMEDIATE:
                     exportDisplay.show(value);
+                    break;
             }
         });
         component.setClearButtonListener(this::clearButtonClicked);
@@ -175,20 +184,32 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected FileDescriptor commitFileDescriptor(FileDescriptor fileDescriptor) {
+        DataSupplier dataSupplier = getDataSupplier();
+        if (dataSupplier != null) {
+            dataSupplier.commit(fileDescriptor);
+        }
+
+        DataManager dataManager = beanLocator.get(DataManager.NAME);
+        return dataManager.commit(fileDescriptor);
+    }
+
+    protected DataSupplier getDataSupplier() {
         if (getDatasource() != null) {
-            return getDatasource().getDataSupplier().commit(fileDescriptor);
+            return getDatasource().getDataSupplier();
+        }
+        Window window = ComponentsHelper.getWindowNN(this);
+        if (window.getFrameOwner() instanceof LegacyFrame) {
+            DsContext dsContext = ((LegacyFrame) window.getFrameOwner()).getDsContext();
+            if (dsContext != null && dsContext.getDataSupplier() != null) {
+                return dsContext.getDataSupplier();
+            }
         }
 
-        if (LegacyFrame.of(this).getDsContext().getDataSupplier() != null) {
-            return LegacyFrame.of(this).getDsContext().getDataSupplier().commit(fileDescriptor);
-        }
-
-        return AppBeans.get(DataManager.class).commit(fileDescriptor);
+        return null;
     }
 
     protected void initUploadButton() {
-        uploadButton = createComponent();
-        CubaFileUpload impl = (CubaFileUpload) uploadButton;
+        CubaFileUpload impl = createComponent();
 
         impl.setProgressWindowCaption(messages.getMainMessage("upload.uploadingProgressTitle"));
         impl.setUnableToUploadFileMessage(messages.getMainMessage("upload.unableToUploadFile"));
@@ -199,22 +220,15 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
         impl.setFileSizeLimit(getActualFileSizeLimit());
 
-        impl.setReceiver((fileName1, MIMEType) -> {
-            FileOutputStream outputStream;
-            try {
-                FileUploadingAPI.FileInfo fileInfo = fileUploading.createFile();
-                tempFileId = fileInfo.getId();
-                File tmpFile = fileInfo.getFile();
-                outputStream = new FileOutputStream(tmpFile);
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to receive file", e);
-            }
-            return outputStream;
-        });
+        impl.setReceiver(this::receiveUpload);
 
-        impl.addStartedListener(event -> fireFileUploadStart(event.getFileName(), event.getContentLength()));
+        impl.addStartedListener(event ->
+                fireFileUploadStart(event.getFileName(), event.getContentLength())
+        );
 
-        impl.addFinishedListener(event -> fireFileUploadFinish(event.getFileName(), event.getContentLength()));
+        impl.addFinishedListener(event ->
+                fireFileUploadFinish(event.getFileName(), event.getContentLength())
+        );
 
         impl.addSucceededListener(event -> {
             fileName = event.getFileName();
@@ -243,13 +257,35 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
             fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
         });
         impl.addFileSizeLimitExceededListener(e -> {
-            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString());
-            LegacyFrame.of(this).showNotification(warningMsg, NotificationType.WARNING);
+            Notifications notifications = getScreenContext(this).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString()))
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         });
         impl.addFileExtensionNotAllowedListener(e -> {
-            String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
-            LegacyFrame.of(this).showNotification(warningMsg, NotificationType.WARNING);
+            Notifications notifications = getScreenContext(this).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         });
+
+        this.uploadButton = impl;
+    }
+
+    protected OutputStream receiveUpload(String fileName, String MIMEType) {
+        try {
+            FileUploadingAPI.FileInfo fileInfo = fileUploading.createFile();
+            tempFileId = fileInfo.getId();
+            File tmpFile = fileInfo.getFile();
+
+            return new FileOutputStream(tmpFile);
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Unable to receive file '%s' of MIME type: %s", fileName, MIMEType), e);
+        }
     }
 
     protected CubaFileUpload createComponent() {
@@ -293,12 +329,12 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-        return null;
+        return getEventHub().subscribe(FileUploadSucceedEvent.class, listener);
     }
 
     @Override
     public void removeFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener) {
-
+        unsubscribe(FileUploadSucceedEvent.class, listener);
     }
 
     /**
@@ -327,7 +363,8 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     public void setAccept(String accept) {
         if (!Objects.equals(accept, getAccept())) {
             this.accept = accept;
-            uploadButton.setAccept(FileUploadTypesHelper.convertToMIME(accept));
+
+            uploadButton.setAccept(convertToMIME(accept));
         }
     }
 
@@ -335,61 +372,47 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     public void setDropZone(DropZone dropZone) {
         super.setDropZone(dropZone);
 
-        if (uploadButton instanceof CubaFileUpload) {
-            if (dropZone == null) {
-                ((CubaFileUpload) uploadButton).setDropZone(null);
-            } else {
-                com.haulmont.cuba.gui.components.Component target = dropZone.getTarget();
-                if (target instanceof Window.Wrapper) {
-                    target = ((Window.Wrapper) target).getWrappedWindow();
-                }
-
-                Component vComponent = target.unwrapComposition(Component.class);
-                ((CubaFileUpload) uploadButton).setDropZone(vComponent);
+        if (dropZone == null) {
+            uploadButton.setDropZone(null);
+        } else {
+            com.haulmont.cuba.gui.components.Component target = dropZone.getTarget();
+            if (target instanceof Window.Wrapper) {
+                target = ((Window.Wrapper) target).getWrappedWindow();
             }
+
+            Component vComponent = target.unwrapComposition(Component.class);
+            uploadButton.setDropZone(vComponent);
         }
     }
 
     @Override
     public void setPasteZone(ComponentContainer pasteZone) {
         super.setPasteZone(pasteZone);
-        if (uploadButton instanceof CubaFileUpload) {
-            if (pasteZone == null) {
-                ((CubaFileUpload) uploadButton).setPasteZone(null);
-            } else {
-                Component vComponent = pasteZone.unwrapComposition(Component.class);
-                ((CubaFileUpload) uploadButton).setPasteZone(vComponent);
-            }
-        }
+
+        uploadButton.setPasteZone(pasteZone != null ? pasteZone.unwrapComposition(Component.class) : null);
     }
 
     @Override
     public void setDropZonePrompt(String dropZonePrompt) {
         super.setDropZonePrompt(dropZonePrompt);
 
-        if (uploadButton instanceof CubaFileUpload) {
-            ((CubaFileUpload) uploadButton).setDropZonePrompt(dropZonePrompt);
-        }
+        uploadButton.setDropZonePrompt(dropZonePrompt);
     }
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
-        FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
-        publish(FileUploadStartEvent.class, e);
+        publish(FileUploadStartEvent.class, new FileUploadStartEvent(fileName, contentLength));
     }
 
     protected void fireFileUploadFinish(String fileName, long contentLength) {
-        FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
-        publish(FileUploadFinishEvent.class, e);
+        publish(FileUploadFinishEvent.class, new FileUploadFinishEvent(fileName, contentLength));
     }
 
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
-        FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
-        publish(FileUploadErrorEvent.class, e);
+        publish(FileUploadErrorEvent.class, new FileUploadErrorEvent(fileName, contentLength, cause));
     }
 
     protected void fireFileUploadSucceed(String fileName, long contentLength) {
-        FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
-        publish(FileUploadSucceedEvent.class, e);
+        publish(FileUploadSucceedEvent.class, new FileUploadSucceedEvent(fileName, contentLength));
     }
 
     @Override
@@ -415,7 +438,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     return null;
                 }
 
-                FileStorageService fileStorageService = AppBeans.get(FileStorageService.NAME);
+                FileStorageService fileStorageService = beanLocator.get(FileStorageService.NAME);
                 try {
                     if (fileStorageService.fileExists(fileDescriptor)) {
                         return new FileDataProvider(fileDescriptor).provide();
@@ -476,9 +499,8 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
-        if (uploadButton instanceof CubaFileUpload) {
-            ((CubaFileUpload) uploadButton).setFileSizeLimit(fileSizeLimit);
-        }
+
+        uploadButton.setFileSizeLimit(fileSizeLimit);
     }
 
     @Override
@@ -507,13 +529,13 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public void setPermittedExtensions(Set<String> permittedExtensions) {
         if (permittedExtensions != null) {
-            this.permittedExtensions = permittedExtensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+            this.permittedExtensions = permittedExtensions.stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
         } else {
             this.permittedExtensions = null;
         }
-        if (uploadButton instanceof CubaFileUpload) {
-            ((CubaFileUpload) uploadButton).setPermittedExtensions(this.permittedExtensions);
-        }
+        uploadButton.setPermittedExtensions(this.permittedExtensions);
     }
 
     @Override
@@ -538,7 +560,13 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public void setClearButtonIcon(String icon) {
-        component.setClearButtonIcon(icon);
+        if (icon != null) {
+            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
+            Resource iconResource = iconResolver.getIconResource(icon);
+            component.setClearButtonIcon(iconResource);
+        } else {
+            component.setClearButtonIcon(null);
+        }
     }
 
     @Override
@@ -589,7 +617,8 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public void setUploadButtonIcon(String icon) {
         if (!StringUtils.isEmpty(icon)) {
-            component.setUploadButtonIcon(icon);
+            IconResolver iconResolver = beanLocator.get(IconResolver.class);
+            component.setUploadButtonIcon(iconResolver.getIconResource(icon));
         } else {
             component.setUploadButtonIcon(null);
         }

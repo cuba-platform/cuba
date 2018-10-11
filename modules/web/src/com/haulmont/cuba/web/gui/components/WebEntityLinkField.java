@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -256,8 +257,15 @@ public class WebEntityLinkField<V> extends WebAbstractField<CubaButtonField, V> 
             return;
         }
 
-        DataSupplier dataSupplier = LegacyFrame.of(window).getDsContext().getDataSupplier();
-        entity = dataSupplier.reload(entity, View.MINIMAL);
+        if (window.getFrameOwner() instanceof LegacyFrame) {
+            LegacyFrame frameOwner = (LegacyFrame) window.getFrameOwner();
+
+            DataSupplier dataSupplier = frameOwner.getDsContext().getDataSupplier();
+            entity = dataSupplier.reload(entity, View.MINIMAL);
+        } else {
+            DataManager dataManager = beanLocator.get(DataManager.NAME);
+            entity = dataManager.reload(entity, View.MINIMAL);
+        }
 
         String windowAlias = screen;
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);

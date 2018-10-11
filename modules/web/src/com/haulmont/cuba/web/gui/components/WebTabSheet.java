@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -535,7 +536,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
 
                 Window window = ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {
-                    ((DsContextImplementation) LegacyFrame.of(window).getDsContext()).resumeSuspended();
+                    if (window.getFrameOwner() instanceof LegacyFrame) {
+                        DsContext dsContext = ((LegacyFrame) window.getFrameOwner()).getDsContext();
+                        if (dsContext != null) {
+                            ((DsContextImplementation) dsContext).resumeSuspended();
+                        }
+                    }
                 } else {
                     LoggerFactory.getLogger(WebTabSheet.class).warn("Please specify Frame for TabSheet");
                 }

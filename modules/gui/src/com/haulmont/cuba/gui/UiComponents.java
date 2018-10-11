@@ -22,8 +22,8 @@ import com.haulmont.cuba.gui.components.Component;
 
 /**
  * Factory to create UI components in client independent manner.
- *
- * <br> An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
+ * <br>
+ * An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
  */
 public interface UiComponents {
 

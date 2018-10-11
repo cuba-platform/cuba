@@ -17,22 +17,21 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CustomField;
-import com.vaadin.v7.ui.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.vaadin.v7.ui.themes.BaseTheme.BUTTON_LINK;
-
+// todo CssLayout
 public class CubaFileUploadWrapper extends CustomField {
     protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLENAME = "c-fileupload-empty";
@@ -46,41 +45,7 @@ public class CubaFileUploadWrapper extends CustomField {
     protected boolean showClearButton = false;
 
     protected String fileName;
-
-    public CubaFileUploadWrapper(UploadComponent uploadButton) {
-        setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
-        initLayout(uploadButton);
-
-        setValidationVisible(false);
-    }
-
-    protected void initLayout(UploadComponent uploadComponent) {
-        this.uploadButton = uploadComponent;
-
-        container = new HorizontalLayout();
-        container.setSpacing(true);
-        container.addStyleName("c-fileupload-container");
-
-        fileNameButton = new Button();
-        fileNameButton.setWidth(100, Unit.PERCENTAGE);
-        fileNameButton.addStyleName(BUTTON_LINK);
-        fileNameButton.addStyleName("c-fileupload-filename");
-        setFileNameButtonCaption(null);
-        container.addComponent(fileNameButton);
-        container.setComponentAlignment(fileNameButton, Alignment.MIDDLE_LEFT);
-
-        container.addComponent(uploadComponent);
-
-        Messages messages = AppBeans.get(Messages.NAME);
-        clearButton = new Button(messages.getMainMessage("FileUploadField.clearButtonCaption"));
-        clearButton.setStyleName("c-fileupload-clear");
-        container.addComponent(clearButton);
-        setShowClearButton(showClearButton);
-
-        setShowFileName(false);
-        setWidthUndefined();
-    }
-
+    protected String fileNotSelectedMessage = "";
     @Override
     protected Component initContent() {
         return container;
@@ -89,6 +54,14 @@ public class CubaFileUploadWrapper extends CustomField {
     @Override
     public Class getType() {
         return FileDescriptor.class;
+    }
+
+    public String getFileNotSelectedMessage() {
+        return fileNotSelectedMessage;
+    }
+
+    public void setFileNotSelectedMessage(String fileNotSelectedMessage) {
+        this.fileNotSelectedMessage = fileNotSelectedMessage;
     }
 
     @Override
@@ -203,6 +176,39 @@ public class CubaFileUploadWrapper extends CustomField {
         }
     }
 
+    public CubaFileUploadWrapper(UploadComponent uploadButton) {
+        setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
+        initLayout(uploadButton);
+
+        setValidationVisible(false);
+    }
+
+    protected void initLayout(UploadComponent uploadComponent) {
+        this.uploadButton = uploadComponent;
+
+        container = new HorizontalLayout();
+        container.setSpacing(true);
+        container.addStyleName("c-fileupload-container");
+
+        fileNameButton = new CubaButton();
+        fileNameButton.setWidth(100, Unit.PERCENTAGE);
+        fileNameButton.addStyleName(ValoTheme.BUTTON_LINK);
+        fileNameButton.addStyleName("c-fileupload-filename");
+        setFileNameButtonCaption(null);
+        container.addComponent(fileNameButton);
+        container.setComponentAlignment(fileNameButton, Alignment.MIDDLE_LEFT);
+
+        container.addComponent(uploadComponent);
+
+        clearButton = new CubaButton("");
+        clearButton.setStyleName("c-fileupload-clear");
+        container.addComponent(clearButton);
+        setShowClearButton(showClearButton);
+
+        setShowFileName(false);
+        setWidthUndefined();
+    }
+
     public boolean isShowFileName() {
         return showFileName;
     }
@@ -221,8 +227,7 @@ public class CubaFileUploadWrapper extends CustomField {
             fileNameButton.setCaption(title);
             fileNameButton.removeStyleName(EMPTY_VALUE_STYLENAME);
         } else {
-            Messages messages = AppBeans.get(Messages.NAME);
-            fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
+            fileNameButton.setCaption(fileNotSelectedMessage);
             fileNameButton.addStyleName(EMPTY_VALUE_STYLENAME);
         }
     }
@@ -251,8 +256,8 @@ public class CubaFileUploadWrapper extends CustomField {
         return uploadButton.getCaption();
     }
 
-    public void setUploadButtonIcon(String icon) {
-        uploadButton.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
+    public void setUploadButtonIcon(Resource icon) {
+        uploadButton.setIcon(icon);
     }
 
     public String getUploadButtonIcon() {
@@ -278,8 +283,8 @@ public class CubaFileUploadWrapper extends CustomField {
         return clearButton.getCaption();
     }
 
-    public void setClearButtonIcon(String icon) {
-        clearButton.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
+    public void setClearButtonIcon(Resource icon) {
+        clearButton.setIcon(icon);
     }
 
     public String getClearButtonIcon() {

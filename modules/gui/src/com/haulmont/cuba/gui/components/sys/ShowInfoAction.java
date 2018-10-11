@@ -20,11 +20,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 
 public class ShowInfoAction extends BaseAction {
 
@@ -51,9 +54,12 @@ public class ShowInfoAction extends BaseAction {
     }
 
     public void showInfo(Entity entity, MetaClass metaClass, Component.BelongToFrame component) {
-        LegacyFrame.of(component).openWindow("sysInfoWindow", OpenType.DIALOG,
-                ParamsMap.of(
-                        "metaClass", metaClass,
-                        "item", entity));
+        WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(component).getScreens();
+
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("sysInfoWindow");
+
+        wm.openWindow(windowInfo, OpenType.DIALOG, ParamsMap.of(
+                "metaClass", metaClass,
+                "item", entity));
     }
 }

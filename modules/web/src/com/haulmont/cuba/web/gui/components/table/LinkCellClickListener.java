@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components.table;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -87,8 +88,15 @@ public class LinkCellClickListener implements Table.CellClickListener {
             return;
         }
 
-        DataSupplier dataSupplier = LegacyFrame.of(window).getDsContext().getDataSupplier();
-        entity = dataSupplier.reload(entity, View.MINIMAL);
+        if (window.getFrameOwner() instanceof LegacyFrame) {
+            LegacyFrame frameOwner = (LegacyFrame) window.getFrameOwner();
+
+            DataSupplier dataSupplier = frameOwner.getDsContext().getDataSupplier();
+            entity = dataSupplier.reload(entity, View.MINIMAL);
+        } else {
+            DataManager dataManager = applicationContext.getBean(DataManager.NAME, DataManager.class);
+            entity = dataManager.reload(entity, View.MINIMAL);
+        }
 
         WindowConfig windowConfig = applicationContext.getBean(WindowConfig.NAME, WindowConfig.class);
 

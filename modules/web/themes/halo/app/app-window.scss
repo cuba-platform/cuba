@@ -223,4 +223,8 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
     overflow: hidden;
     text-align: right;
   }
+
+  .c-user-select-combobox {
+    width: 200px;
+  }
 }

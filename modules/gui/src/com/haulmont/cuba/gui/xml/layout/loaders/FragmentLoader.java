@@ -141,8 +141,9 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         loadResponsive(resultComponent, layoutElement);
 
         if (dsContext != null) {
-            LegacyFrame frame = LegacyFrame.of(resultComponent);
-            if (frame != null) {
+            FrameOwner frameOwner = getContext().getFrame().getFrameOwner();
+            if (frameOwner instanceof LegacyFrame) {
+                LegacyFrame frame = (LegacyFrame) frameOwner;
                 frame.setDsContext(dsContext);
 
                 for (Datasource ds : dsContext.getAll()) {

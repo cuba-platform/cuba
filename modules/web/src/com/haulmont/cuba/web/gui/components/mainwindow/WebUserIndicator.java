@@ -19,30 +19,26 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.widgets.CubaComboBox;
+import com.haulmont.cuba.web.widgets.CComboBox;
+import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.Field;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 import static com.vaadin.server.Sizeable.Unit;
 
 public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayout> implements UserIndicator {
@@ -50,7 +46,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
     protected Label userNameLabel;
-    protected CubaComboBox userComboBox;
+    protected CComboBox<User> userComboBox;
 
     protected Function<? super User, String> userNameFormatter;
 
@@ -85,7 +81,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             userNameLabel.setStyleName("c-user-select-label");
             userNameLabel.setSizeUndefined();
 
-            if (ui.isTestMode()) {
+            if (ui != null && ui.isTestMode()) {
                 userNameLabel.setCubaId("currentUserLabel");
             }
 
@@ -94,31 +90,32 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         } else {
             userNameLabel = null;
 
-            userComboBox = new CubaComboBox();
-            userComboBox.setFilteringMode(FilteringMode.CONTAINS);
-
-            userComboBox.setNullSelectionAllowed(false);
-            if (ui.isTestMode()) {
-                userComboBox.setCubaId("substitutedUserSelect");
-            }
-
-            if (ui.isPerformanceTestMode()) {
-                userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));
-            }
-
+            userComboBox = new CComboBox<>();
+            userComboBox.setEmptySelectionAllowed(false);
+            userComboBox.setItemCaptionGenerator(this::getSubstitutedUserCaption);
             userComboBox.setStyleName("c-user-select-combobox");
-            userComboBox.addItem(user);
-            userComboBox.setItemCaption(user, substitutedUserCaption);
+
+            if (ui != null) {
+                if (ui.isTestMode()) {
+                    userComboBox.setCubaId("substitutedUserSelect");
+                }
+                if (ui.isPerformanceTestMode()) {
+                    userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));
+                }
+            }
+            List<User> options = new ArrayList<>();
+            options.add(user);
 
             for (UserSubstitution substitution : substitutions) {
                 User substitutedUser = substitution.getSubstitutedUser();
-                userComboBox.addItem(substitutedUser);
-                userComboBox.setItemCaption(substitutedUser, getSubstitutedUserCaption(substitutedUser));
+                options.add(substitutedUser);
             }
 
+            userComboBox.setItems(options);
+
             UserSession session = uss.getUserSession();
-            userComboBox.select(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
-            userComboBox.addValueChangeListener(new SubstitutedUserChangeListener(userComboBox));
+            userComboBox.setValue(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
+            userComboBox.addValueChangeListener(this::substitutedUserChanged);
 
             component.addComponent(userComboBox);
             component.setDescription(null);
@@ -126,6 +123,48 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
         adjustWidth();
         adjustHeight();
+    }
+
+    protected void substitutedUserChanged(ValueChangeEvent<User> event) {
+        UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
+
+        User newUser = event.getValue();
+        UserSession userSession = uss.getUserSession();
+        if (userSession == null) {
+            throw new RuntimeException("No user session found");
+        }
+
+        User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
+
+        if (!oldUser.equals(newUser)) {
+            String newUserName = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
+
+            Messages messages = beanLocator.get(Messages.NAME);
+
+            Dialogs dialogs = getScreenContext(this).getDialogs();
+
+            dialogs.createOptionDialog()
+                    .setCaption(messages.getMainMessage("substUserSelectDialog.title"))
+                    .setMessage(messages.formatMainMessage("substUserSelectDialog.msg", newUserName))
+                    .setType(Dialogs.MessageType.WARNING)
+                    .setActions(
+                            new ChangeSubstUserAction(userComboBox.getValue()) {
+                                @Override
+                                public void doRevert() {
+                                    super.doRevert();
+
+                                    revertToCurrentUser();
+                                }
+                            }, new DoNotChangeSubstUserAction() {
+                                @Override
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    super.actionPerform(component);
+
+                                    revertToCurrentUser();
+                                }
+                            })
+                    .show();
+        }
     }
 
     protected String getSubstitutedUserCaption(User user) {
@@ -156,7 +195,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         UserSession us = uss.getUserSession();
 
-        userComboBox.select(us.getCurrentOrSubstitutedUser());
+        userComboBox.setValue(us.getCurrentOrSubstitutedUser());
     }
 
     @Override
@@ -178,8 +217,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             if (userNameLabel != null) {
                 userNameLabel.setWidth(-1, Unit.PIXELS);
             } else if (userComboBox != null) {
-                ThemeConstants theme = App.getInstance().getThemeConstants();
-                userComboBox.setWidth(theme.get("cuba.web.AppWindow.substUserSelect.width"));
+                userComboBox.setWidthUndefined();
             }
         } else {
             if (userNameLabel != null) {
@@ -216,54 +254,5 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     @Override
     public Function<User, String> getUserNameFormatter() {
         return (Function<User, String>) userNameFormatter;
-    }
-
-    protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
-
-        protected final Field userComboBox;
-
-        public SubstitutedUserChangeListener(Field userComboBox) {
-            this.userComboBox = userComboBox;
-        }
-
-        @Override
-        public void valueChange(Property.ValueChangeEvent event) {
-            UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
-
-            User newUser = (User) event.getProperty().getValue();
-            UserSession userSession = uss.getUserSession();
-            if (userSession == null) {
-                throw new RuntimeException("No user session found");
-            }
-
-            User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
-
-            if (!oldUser.equals(newUser)) {
-                String newUserName = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
-
-                Messages messages = beanLocator.get(Messages.NAME);
-
-                LegacyFrame.of(WebUserIndicator.this).showOptionDialog(
-                        messages.getMainMessage("substUserSelectDialog.title"),
-                        messages.formatMainMessage("substUserSelectDialog.msg", newUserName),
-                        Frame.MessageType.WARNING,
-                        new Action[]{new ChangeSubstUserAction((User) userComboBox.getValue()) {
-                            @Override
-                            public void doRevert() {
-                                super.doRevert();
-
-                                revertToCurrentUser();
-                            }
-                        }, new DoNotChangeSubstUserAction() {
-                            @Override
-                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                super.actionPerform(component);
-
-                                revertToCurrentUser();
-                            }
-                        }}
-                );
-            }
-        }
     }
 }

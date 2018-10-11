@@ -294,7 +294,8 @@ public class CreateAction extends ListAction implements Action.HasOpenType, Acti
     @SuppressWarnings("unchecked")
     protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs,
                                       Map<String, Object> params) {
-        AbstractEditor window = LegacyFrame.of(target.getFrame()).openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
+        LegacyFrame frameOwner = (LegacyFrame) target.getFrame().getFrameOwner();
+        AbstractEditor window = frameOwner.openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
 
         if (editorCloseListener == null) {
             window.addCloseListener(actionId -> {

@@ -18,10 +18,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.UploadField;
@@ -48,16 +47,14 @@ public abstract class WebAbstractUploadField<T extends com.vaadin.v7.ui.Abstract
     }
 
     protected long getActualFileSizeLimit() {
-        final long maxSize;
         if (fileSizeLimit > 0) {
-            maxSize = fileSizeLimit;
+            return fileSizeLimit;
         } else {
-            // todo use AppContextAware
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-            maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+            Configuration configuration = beanLocator.get(Configuration.NAME);
+            long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+
+            return maxUploadSizeMb * BYTES_IN_MEGABYTE;
         }
-        return maxSize;
     }
 
     @Override
@@ -76,12 +73,13 @@ public abstract class WebAbstractUploadField<T extends com.vaadin.v7.ui.Abstract
             if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
                 fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
             } else {
-                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                DatatypeRegistry datatypeRegistry = beanLocator.get(DatatypeRegistry.NAME);
+                Datatype<Double> doubleDatatype = datatypeRegistry.getNN(Double.class);
                 double fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
                 fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
             }
         } else {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
+            Configuration configuration = beanLocator.get(Configuration.NAME);
             fileSizeLimitString = String.valueOf(configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb());
         }
         return fileSizeLimitString;

@@ -16,12 +16,12 @@
 
 package com.haulmont.cuba.gui.dynamicattributes;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -40,6 +39,9 @@ import org.dom4j.Element;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 
 /**
  * Extended PickerField.LookupAction. This action requires "join" and "where" clauses. When the lookup screen is
@@ -56,9 +58,12 @@ public class FilteringLookupAction extends PickerField.LookupAction {
 
     public FilteringLookupAction(PickerField pickerField, String joinClause, String whereClause) {
         super(pickerField);
+
+        checkNotNullArgument(pickerField.getMetaClass(), "MetaClass for PickerField is not set");
+
         this.joinClause = joinClause;
         this.whereClause = whereClause;
-        Preconditions.checkNotNull(pickerField.getMetaClass(), "MetaClass for PickerField is not set");
+
         extendedEntities = AppBeans.get(ExtendedEntities.class);
     }
 
@@ -78,7 +83,12 @@ public class FilteringLookupAction extends PickerField.LookupAction {
             }
         });
         if (!found) {
-            LegacyFrame.of(pickerField).showNotification(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"), Frame.NotificationType.WARNING);
+            Notifications notifications = getScreenContext(pickerField).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"))
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         }
         AbstractWindow controller = (AbstractWindow) (lookupWindow).getFrameOwner();
         ((DsContextImplementation) controller.getDsContext()).resumeSuspended();

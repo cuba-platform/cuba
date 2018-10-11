@@ -21,19 +21,21 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.springframework.context.annotation.Scope;
 
@@ -203,13 +205,15 @@ public class AddAction extends ListAction implements Action.HasOpenType, Action.
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.
+     *
      * @param component component invoking action
      */
     @Override
     public void actionPerform(Component component) {
         if (beforeActionPerformedHandler != null) {
-            if (!beforeActionPerformedHandler.beforeActionPerformed())
+            if (!beforeActionPerformedHandler.beforeActionPerformed()) {
                 return;
+            }
         }
 
         Map<String, Object> params = prepareWindowParams();
@@ -217,7 +221,10 @@ public class AddAction extends ListAction implements Action.HasOpenType, Action.
         Window.Lookup.Handler handler = getHandler();
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
-        Window lookupWindow = LegacyFrame.of(target.getFrame()).openLookup(getWindowId(), itemsHandler, getOpenType(), params);
+        WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(target.getFrame()).getScreens();
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(getWindowId());
+
+        Window lookupWindow = wm.openLookup(windowInfo, itemsHandler, getOpenType(), params);
         if (target instanceof Component.Focusable) {
             lookupWindow.addCloseListener(actionId -> {
                 // move focus to owner

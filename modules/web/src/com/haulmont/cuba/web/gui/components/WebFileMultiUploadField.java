@@ -23,13 +23,11 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.gui.FileUploadTypesHelper;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +39,9 @@ import java.io.FileOutputStream;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
+import static com.haulmont.cuba.web.gui.FileUploadTypesHelper.convertToMIME;
 
 public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFileUpload> implements FileMultiUploadField {
 
@@ -122,12 +123,23 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
             fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
         });
         impl.addFileSizeLimitExceededListener(e -> {
-            String warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), getFileSizeLimitString());
-            LegacyFrame.of(this).showNotification(warningMsg, Frame.NotificationType.WARNING);
+            Notifications notifications = getScreenContext(this).getNotifications();
+
+            notifications.create()
+                    .setCaption(
+                            messages.formatMainMessage("multiupload.filesizeLimitExceed",
+                                    e.getFileName(), getFileSizeLimitString())
+                    )
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         });
         impl.addFileExtensionNotAllowedListener(e -> {
-            String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
-            LegacyFrame.of(this).showNotification(warningMsg, Frame.NotificationType.WARNING);
+            Notifications notifications = getScreenContext(this).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         });
 
         component = impl;
@@ -182,7 +194,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     public void setAccept(String accept) {
         if (!Objects.equals(accept, getAccept())) {
             this.accept = accept;
-            component.setAccept(FileUploadTypesHelper.convertToMIME(accept));
+            component.setAccept(convertToMIME(accept));
         }
     }
 
@@ -252,7 +264,9 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     @Override
     public void setPermittedExtensions(Set<String> permittedExtensions) {
         if (permittedExtensions != null) {
-            this.permittedExtensions = permittedExtensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+            this.permittedExtensions = permittedExtensions.stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
         } else {
             this.permittedExtensions = null;
         }

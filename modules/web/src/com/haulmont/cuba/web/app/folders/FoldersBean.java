@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -115,6 +116,11 @@ public class FoldersBean implements Folders {
             }
         }
 
-        ((DsContextImplementation) LegacyFrame.of(window).getDsContext()).resumeSuspended();
+        if (window.getFrameOwner() instanceof LegacyFrame) {
+            DsContext dsContext = ((LegacyFrame) window.getFrameOwner()).getDsContext();
+            if (dsContext != null) {
+                ((DsContextImplementation) dsContext).resumeSuspended();
+            }
+        }
     }
 }

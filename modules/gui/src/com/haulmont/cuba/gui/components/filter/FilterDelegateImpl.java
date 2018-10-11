@@ -56,7 +56,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -2566,20 +2565,22 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             if (!ownerSelection.isEmpty()) {
                 String entityType = target.getDatasource().getMetaClass().getName();
+
+                String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
+                String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+
                 Map<String, Object> params = new HashMap<>();
                 params.put("entityType", entityType);
                 params.put("items", ownerSelection);
                 params.put("componentPath", ComponentsHelper.getFilterComponentPath(filter));
-                String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
-                String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
                 params.put("componentId", componentId);
                 params.put("foldersPane", filterHelper.getFoldersPane());
                 params.put("entityClass", adapter.getMetaClass().getJavaClass().getName());
                 params.put("query", adapter.getQuery());
 
-                LegacyFrame.of(filter).openWindow("saveSetInFolder",
-                        OpenType.DIALOG,
-                        params);
+                WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(filter).getScreens();
+                WindowInfo windowInfo = windowConfig.getWindowInfo("saveSetInFolder");
+                wm.openWindow(windowInfo, OpenType.DIALOG, params);
             }
         }
     }
@@ -2648,16 +2649,16 @@ public class FilterDelegateImpl implements FilterDelegate {
                 lookupAlias.delete(index, lookupAlias.length());
                 lookupAlias.append(Window.LOOKUP_WINDOW_SUFFIX);
             }
-            LegacyFrame.of(frame).openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
 
-                @Override
-                public void handleLookup(Collection items) {
-                    String filterXml = filterEntity.getXml();
-                    filterEntity.setXml(UserSetHelper.addEntities(filterXml, items));
-                    filterEntity.getFolder().setFilterXml(filterEntity.getXml());
-                    filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
-                    setFilterEntity(filterEntity);
-                }
+            WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(frame).getScreens();
+            WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(lookupAlias.toString());
+
+            wm.openLookup(windowInfo, items -> {
+                String filterXml = filterEntity.getXml();
+                filterEntity.setXml(UserSetHelper.addEntities(filterXml, items));
+                filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+                filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
+                setFilterEntity(filterEntity);
             }, OpenType.THIS_TAB);
         }
     }

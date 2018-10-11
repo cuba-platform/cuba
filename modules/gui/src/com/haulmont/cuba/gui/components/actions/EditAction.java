@@ -243,8 +243,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                         "modelValidators", bulkEditorIntegration.getModelValidators()
                 );
 
-                Window bulkEditor = LegacyFrame.of(target.getFrame())
-                        .openWindow("bulkEditor", bulkEditorIntegration.getOpenType(), params);
+                LegacyFrame frameOwner = (LegacyFrame) target.getFrame().getFrameOwner();
+
+                Window bulkEditor = frameOwner.openWindow("bulkEditor", bulkEditorIntegration.getOpenType(), params);
                 bulkEditor.addCloseListener(actionId -> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         target.getDatasource().refresh();
@@ -281,8 +282,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     protected void internalOpenEditor(CollectionDatasource datasource, Entity existingItem,
                                       Datasource parentDs, Map<String, Object> params) {
+        LegacyFrame frameOwner = (LegacyFrame) target.getFrame().getFrameOwner();
 
-        AbstractEditor window = LegacyFrame.of(target.getFrame()).openEditor(getWindowId(), existingItem, getOpenType(), params, parentDs);
+        AbstractEditor window = frameOwner.openEditor(getWindowId(), existingItem, getOpenType(), params, parentDs);
         if (editorCloseListener == null) {
             window.addCloseListener(actionId -> {
                 // move focus to owner

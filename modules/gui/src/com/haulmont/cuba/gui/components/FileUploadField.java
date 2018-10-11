@@ -48,6 +48,12 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     UUID getFileId();
     String getFileName();
+
+    /**
+     * JavaDoc
+     *
+     * @return
+     */
     FileDescriptor getFileDescriptor();
 
     /**
@@ -55,14 +61,24 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      * @return Bytes for uploaded file.
      * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}.
      */
+    @Deprecated
     byte[] getBytes();
 
+    /**
+     * JavaDoc
+     */
     class FileUploadSucceedEvent extends FileUploadEvent {
         public FileUploadSucceedEvent(String fileName, long contentLength) {
             super(fileName, contentLength);
         }
     }
 
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
     Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener);
 
     /**
@@ -245,6 +261,9 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     Supplier<InputStream> getContentProvider();
 
+    /**
+     * @deprecated Use {@link Supplier} of {@link InputStream} instead.
+     */
     @Deprecated
     interface FileContentProvider extends Supplier<InputStream> {
         @Override

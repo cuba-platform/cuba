@@ -39,8 +39,8 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default Datasource getDatasource() {
         ValueSource<V> valueSource = getValueSource();
-        return !(valueSource instanceof DatasourceValueSource) ?
-                null : ((DatasourceValueSource) valueSource).getDatasource();
+        return valueSource instanceof DatasourceValueSource ?
+                ((DatasourceValueSource) valueSource).getDatasource() : null;
     }
 
     /**
@@ -52,10 +52,12 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default MetaProperty getMetaProperty() {
         ValueSource<V> valueSource = getValueSource();
-        if (valueSource instanceof DatasourceValueSource)
+        if (valueSource instanceof DatasourceValueSource) {
             return ((DatasourceValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
-        if (valueSource instanceof ContainerValueSource)
+        }
+        if (valueSource instanceof ContainerValueSource) {
             return ((ContainerValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+        }
         return null;
     }
 
@@ -67,10 +69,12 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     @Deprecated
     default MetaPropertyPath getMetaPropertyPath() {
         ValueSource<V> valueSource = getValueSource();
-        if (valueSource instanceof DatasourceValueSource)
+        if (valueSource instanceof DatasourceValueSource) {
             return ((DatasourceValueSource) valueSource).getMetaPropertyPath();
-        if (valueSource instanceof ContainerValueSource)
+        }
+        if (valueSource instanceof ContainerValueSource) {
             return ((ContainerValueSource) valueSource).getMetaPropertyPath();
+        }
         return null;
     }
 

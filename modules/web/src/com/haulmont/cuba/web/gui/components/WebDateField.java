@@ -24,12 +24,13 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -159,7 +160,8 @@ public class WebDateField<V extends Comparable<V>>
                 LocalDateTime presentationValue = convertToPresentation(value);
                 setValueToPresentation(presentationValue);
             } catch (ConversionException ce) {
-                LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
+                LoggerFactory.getLogger(WebDateField.class)
+                        .trace("Unable to convert presentation value to model", ce);
 
                 setValidationError(ce.getLocalizedMessage());
                 return;
@@ -256,9 +258,13 @@ public class WebDateField<V extends Comparable<V>>
 
     protected void handleDateOutOfRange(V value) {
         if (getFrame() != null) {
-            Messages messages = beanLocator.get(Messages.NAME, Messages.class);
-            LegacyFrame.of(this).showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                    Frame.NotificationType.TRAY);
+            Messages messages = beanLocator.get(Messages.NAME);
+            Notifications notifications = ComponentsHelper.getScreenContext(this).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.getMainMessage("datePicker.dateOutOfRangeMessage"))
+                    .setType(Notifications.NotificationType.TRAY)
+                    .show();
         }
 
         setValueToPresentation(convertToLocalDateTime(value, zoneId));
@@ -607,7 +613,7 @@ public class WebDateField<V extends Comparable<V>>
             return Collections.emptyList();
         }
 
-        return (Collection) Collections.unmodifiableList(validators);
+        return (Collection) Collections.unmodifiableCollection(validators);
     }
 
     @Override

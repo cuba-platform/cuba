@@ -20,19 +20,20 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.context.annotation.Scope;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
 
 /**
@@ -206,13 +207,18 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
             };
             exportAllAction.setCaption(messages.getMainMessage(exportAllAction.getId()));
 
-            Action[] actions = new Action[]{
-                    exportSelectedAction,
-                    exportAllAction,
-                    new DialogAction(Type.CANCEL)
-            };
-            Frame frame = listComponent.getFrame();
-            LegacyFrame.of(frame).showOptionDialog(title, caption, MessageType.CONFIRMATION, actions);
+            Dialogs dialogs = getScreenContext(listComponent).getDialogs();
+
+            dialogs.createOptionDialog()
+                    .setCaption(title)
+                    .setMessage(caption)
+                    .setType(Dialogs.MessageType.CONFIRMATION)
+                    .setActions(
+                            exportSelectedAction,
+                            exportAllAction,
+                            new DialogAction(Type.CANCEL)
+                    )
+                    .show();
         }
     }
 
@@ -237,10 +243,13 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
         }
 
         if (exporter.isXlsMaxRowNumberExceeded()) {
-            LegacyFrame.of(listComponent).showNotification(
-                    messages.getMainMessage("actions.warningExport.title"),
-                    messages.getMainMessage("actions.warningExport.message"),
-                    Frame.NotificationType.WARNING);
+            Notifications notifications = getScreenContext(listComponent).getNotifications();
+
+            notifications.create()
+                    .setCaption(messages.getMainMessage("actions.warningExport.title"))
+                    .setDescription(messages.getMainMessage("actions.warningExport.message"))
+                    .setType(Notifications.NotificationType.WARNING)
+                    .show();
         }
     }
 
