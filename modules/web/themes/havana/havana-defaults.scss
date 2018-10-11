@@ -48,8 +48,9 @@ $v-unit-size: 25px;
 $v-caption-font-size: $v-font-size;
 $v-tabsheet-caption-font-size: $v-font-size;
 
+$c-border-color: #9bb3d3 !default;
 $v-border-radius: 0px;
-$v-border: 1px solid #9bb3d3 !default;
+$v-border: 1px solid $c-border-color;
 
 $v-app-background-color: #ffffff;
 $v-panel-background-color: #ffffff;
@@ -72,7 +73,7 @@ $cuba-window-modal-header-buttons-line-height: $cuba-window-modal-header-height;
 
 $cuba-maintabsheet-tabcontainer-background-color: $v-app-background-color;
 
-$cuba-hover-color: #f5f4b9 !default;
+$cuba-hover-color: #f5f4b9;
 
 $v-layout-spacing-vertical: 6px;
 $v-layout-spacing-horizontal: 6px;

@@ -20,7 +20,6 @@
 @import "app/main-window";
 @import "app/menubar";
 @import "app/generic-filter";
-@import "app/tree";
 @import "app/window";
 @import "app/login-window";
 @import "app/notifications";
@@ -30,6 +29,8 @@
 @import "components/table/table-paging";
 @import "components/table/table-presentations";
 @import "components/datagrid/datagrid";
+@import "components/treedatagrid/treedatagrid";
+@import "components/resizabletextarea/resizabletextarea";
 
 @mixin havana {
   @include halo;
@@ -38,9 +39,10 @@
   @include havana-table-paging;
   @include havana-table-presentations;
   @include havana-datagrid;
-  @include havana-tree;
+  @include havana-treedatagrid;
   @include havana-app-menu;
   @include havana-menubar;
+  @include havana-cuba-resizabletextarea;
   @include havana-notification;
   @include havana-vaadin-contextmenu-addon;
 
