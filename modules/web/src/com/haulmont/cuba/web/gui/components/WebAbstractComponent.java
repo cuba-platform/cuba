@@ -113,7 +113,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setFrame(Frame frame) {
         this.frame = frame;
 
-        if (frame instanceof FrameImplementation) {
+        if (frame != null) {
             ((FrameImplementation) frame).registerComponent(this);
         }
     }
