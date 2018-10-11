@@ -119,11 +119,9 @@ public class StandardDataContext implements DataContext {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean contains(@Nullable Entity entity) {
-        if (entity == null)
-            return false;
-        else
-            return find(entity.getClass(), entity.getId()) != null;
+    public boolean contains(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        return find(entity.getClass(), entity.getId()) != null;
     }
 
     @Override

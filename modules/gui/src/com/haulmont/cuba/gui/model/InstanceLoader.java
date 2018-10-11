@@ -24,31 +24,62 @@ import com.haulmont.cuba.gui.screen.InstallSubject;
 import java.util.Collection;
 import java.util.function.Function;
 
+/**
+ * Loader of a single entity instance.
+ */
 @InstallSubject("loadDelegate")
 public interface InstanceLoader<E extends Entity> extends DataLoader {
 
+    /**
+     * Returns the container which accepts the loaded entity.
+     */
     InstanceContainer<E> getContainer();
 
+    /**
+     * Sets the container which accepts the loaded entity.
+     */
     void setContainer(InstanceContainer<E> container);
 
+    /**
+     * Returns id of the entity to load.
+     */
     Object getEntityId();
 
+    /**
+     * Sets the id of the entity to load.
+     */
     void setEntityId(Object entityId);
 
+    /**
+     * Returns the view which is used when loading.
+     */
     View getView();
 
+    /**
+     * Sets the view which is used when loading.
+     */
     void setView(View view);
 
+    /**
+     * Sets the name of the view which is used when loading.
+     * @throws IllegalStateException if the view has already been set by {@link #setView(View)}
+     */
     void setView(String viewName);
 
+    /**
+     * Returns true if the entity's dynamic attributes are loaded.
+     */
     boolean isLoadDynamicAttributes();
 
+    /**
+     * Set to true to load the entity's dynamic attributes. Dynamic attributes are not loaded by default.
+     */
     void setLoadDynamicAttributes(boolean loadDynamicAttributes);
 
     /**
      * Returns a function which will be used to load data instead of standard implementation.
      */
-    Function<LoadContext<E>, E> getDelegate();
+    Function<LoadContext<E>, E> getLoadDelegate();
 
     /**
      * Sets a function which will be used to load data instead of standard implementation.

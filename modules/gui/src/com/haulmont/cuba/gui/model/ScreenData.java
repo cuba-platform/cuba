@@ -16,25 +16,58 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.cuba.gui.screen.Screen;
+
 import java.util.Set;
 
+/**
+ * Interface defining methods for interacting with data API elements of a screen.
+ *
+ * @see Screen#getScreenData()
+ */
 public interface ScreenData {
 
     String NAME = "cuba_ScreenData";
 
+    /**
+     * Returns screen's {@code DataContext}.
+     */
     DataContext getDataContext();
 
+    /**
+     * Performs {@link DataLoader#load()} for all loaders registered in the screen.
+     */
     void loadAll();
 
+    /**
+     * Returns a container by its id.
+     * @throws IllegalArgumentException if there is no such container in the screen
+     */
     <T extends InstanceContainer> T getContainer(String id);
 
+    /**
+     * Returns a loader by its id.
+     * @throws IllegalArgumentException if there is no such loader in the screen
+     */
     <T extends DataLoader> T getLoader(String id);
 
+    /**
+     * Returns ids of all registered containers.
+     */
     Set<String> getContainerIds();
 
+    /**
+     * Returns ids of all registered loaders.
+     */
     Set<String> getLoaderIds();
 
+    /**
+     * Registers the given container in the screen.
+     */
     void registerContainer(String id, InstanceContainer container);
 
+    /**
+     * Registers the given loader in the screen.
+     */
     void registerLoader(String id, DataLoader loader);
 }

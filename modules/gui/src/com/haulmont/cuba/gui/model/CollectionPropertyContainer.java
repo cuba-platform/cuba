@@ -20,6 +20,9 @@ import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.List;
 
+/**
+ * Container that holds a collection of entity instances which is a collection property of another entity.
+ */
 public interface CollectionPropertyContainer<E extends Entity> extends CollectionContainer<E>, Nested {
 
     /**

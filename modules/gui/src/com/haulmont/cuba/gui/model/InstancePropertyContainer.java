@@ -18,5 +18,8 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+/**
+ * Container that holds a single instance which is loaded as a property of another entity.
+ */
 public interface InstancePropertyContainer<E extends Entity> extends InstanceContainer<E>, Nested {
 }

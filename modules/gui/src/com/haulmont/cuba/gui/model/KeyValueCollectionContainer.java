@@ -18,5 +18,8 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 
+/**
+ * Container for a collection of {@code KeyValueEntity} instances.
+ */
 public interface KeyValueCollectionContainer extends KeyValueContainer, CollectionContainer<KeyValueEntity> {
 }

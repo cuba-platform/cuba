@@ -16,9 +16,18 @@
 
 package com.haulmont.cuba.gui.model;
 
+/**
+ * Interface to be implemented by containers that work with entities that are properties of other entities.
+ */
 public interface Nested {
 
+    /**
+     * Returns the container holding the parent entity.
+     */
     InstanceContainer getParent();
 
+    /**
+     * Returns the name of the parent entity property.
+     */
     String getProperty();
 }

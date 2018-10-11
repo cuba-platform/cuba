@@ -24,19 +24,35 @@ import java.util.Collection;
 import java.util.function.Function;
 
 /**
- *
+ * Loader of {@link KeyValueEntity} collections.
  */
 @InstallSubject("loadDelegate")
 public interface KeyValueCollectionLoader extends BaseCollectionLoader {
 
+    /**
+     * Returns the container which accepts loaded entities.
+     */
     KeyValueCollectionContainer getContainer();
 
+    /**
+     * Sets the container which accepts loaded entities.
+     */
     void setContainer(KeyValueCollectionContainer container);
 
+    /**
+     * Returns {@code ValueLoadContext} which is created by the parameters of this loader. The {@code ValueLoadContext}
+     * can be used with {@code DataManager} to load data by the same conditions.
+     */
     ValueLoadContext createLoadContext();
 
+    /**
+     * Returns data store name.
+     */
     String getStoreName();
 
+    /**
+     * Sets the data store name. By default, the main data store is used.
+     */
     void setStoreName(String name);
 
     /**
