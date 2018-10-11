@@ -20,6 +20,7 @@ package com.haulmont.cuba.security.listener;
 import com.google.common.collect.Ordering;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
@@ -42,6 +43,9 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected EntityStates entityStates;
+
     protected final String[] skipNames = new String[]{VALUE_ID_SUFFIX,
             MP_SUFFIX, OLD_VALUE_SUFFIX, OLD_VALUE_ID_SUFFIX};
 
@@ -56,6 +60,11 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
     protected void fillAttributesFromChangesField(EntityLogItem item) {
         log.trace("fillAttributesFromChangesField for {}", item);
         List<EntityLogAttr> attributes = new ArrayList<>();
+
+        if (!entityStates.isLoaded(item, "changes")) {
+            item.setAttributes(new LinkedHashSet<>(attributes));
+            return;
+        }
 
         StringReader reader = new StringReader(item.getChanges());
         Properties properties = new Properties();
