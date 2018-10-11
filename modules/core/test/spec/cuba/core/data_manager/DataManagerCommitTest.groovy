@@ -36,91 +36,120 @@ class DataManagerCommitTest extends Specification {
 
     private DataManager dataManager
     private EntityStates entityStates
+    private Customer customer
 
     void setup() {
+        initBeans()
+
+        customer = new Customer(name: 'Smith')
+    }
+
+    protected void initBeans() {
         dataManager = AppBeans.get(DataManager)
         entityStates = AppBeans.get(EntityStates)
     }
 
-    def "usage of returned entities"() {
+    def "commited, returned entities allow to get entity by its ID"() {
 
-        Customer customer = new Customer(name: 'Smith')
+        given:
         Order order = new Order(number: '111', customer: customer)
 
-        def cc = new CommitContext().addInstanceToCommit(customer).addInstanceToCommit(order)
-        expect:
+        and:
+        EntitySet committedEntities = dataManager.commit(commitContextFor(customer, order))
 
-        EntitySet committed = dataManager.commit(cc)
+        when:
+        def committedCustomer = committedEntities.get(Customer, customer.id)
 
-        def customer1 = committed.get(Customer, customer.id)
-        customer1 == customer
-
-        def customer2 = dataManager.commit(cc).get(customer)
-        customer2 == customer
+        then:
+        committedCustomer == customer
 
         cleanup:
-
         cont.deleteRecord(order, customer)
     }
 
-    def "usage of patch object as reference"() {
+    def "commited, returned entities allow to get commited entity by reference"() {
 
-        Customer customer = new Customer(name: 'Smith')
+        given:
+        Order order = new Order(number: '111', customer: customer)
+
+        and:
+        EntitySet committedEntities = dataManager.commit(commitContextFor(customer, order))
+
+        when:
+        def committedCustomer = committedEntities.get(customer)
+
+        then:
+        committedCustomer == customer
+
+        cleanup:
+        cont.deleteRecord(order, customer)
+    }
+
+    def "an updated object with a reference through getReference will store the correct reference"() {
+
+        given:
         Order order = new Order(number: '111')
 
-        Order order1 = dataManager.commit(customer, order).get(order)
+        and:
+        Order committedOrder = dataManager.commit(customer, order).get(order)
+
+        and:
+        committedOrder.customer = dataManager.getReference(Customer, customer.id)
 
         when:
-
-        order1.customer = dataManager.getReference(Customer, customer.id)
-        Order order2 = dataManager.commit(order1)
+        Order recommittedOrder = dataManager.commit(committedOrder)
 
         then:
-
-        order2.customer == customer
-        order2.customer.version > 0
-        order2.customer.name == customer.name
+        recommittedOrder.customer == customer
+        recommittedOrder.customer.version > 0
+        recommittedOrder.customer.name == customer.name
 
         cleanup:
-
         cont.deleteRecord(order, customer)
     }
 
-    def "usage of patch object to remove by id"() {
+    def "an object can be removed by its reference (getReference)"() {
 
-        Customer customer = new Customer(name: 'Smith')
+        given: 'there is a persisted customer'
         dataManager.commit(customer)
 
-        when:
-
+        when: 'customer is removed (soft deleted) by its reference'
         dataManager.remove(dataManager.getReference(Customer, customer.id))
 
-        Customer customer2 = dataManager.load(Customer).id(customer.id).softDeletion(false).one()
+        and: 'the customer is reloaded'
+        Customer reloadedCustomer = dataManager.load(Customer).id(customer.id).softDeletion(false).one()
 
-        then:
+        then: 'the reloaded customer is marked as soft deleted'
+        reloadedCustomer.isDeleted()
 
-        customer2.isDeleted()
-        customer2.name == customer.name
+        and: 'the attributes still match with the original customer'
+        reloadedCustomer.name == customer.name
 
         cleanup:
-
         cont.deleteRecord(customer)
     }
 
     def "KeyValueEntity can be committed to NullStore"() {
 
-        KeyValueEntity entity = new KeyValueEntity()
-        entity.setValue('foo', 'val1')
-        entity.setValue('bar', 'val2')
+        given:
+        KeyValueEntity kvEntity = new KeyValueEntity()
+        kvEntity.setValue('foo', 'val1')
+        kvEntity.setValue('bar', 'val2')
 
-        when:
-
-        KeyValueEntity entity1 = dataManager.commit(entity)
+        when: 'a KV entity is commited the NullStore is used'
+        KeyValueEntity committedKvEntity = dataManager.commit(kvEntity)
 
         then:
-
-        entity1 == entity
-        entity1.getValue('foo') == 'val1'
-        entity1.getValue('bar') == 'val2'
+        committedKvEntity == kvEntity
+        committedKvEntity.getValue('foo') == 'val1'
+        committedKvEntity.getValue('bar') == 'val2'
     }
+
+
+    protected CommitContext commitContextFor(Customer customer, Order order) {
+        new CommitContext()
+                .addInstanceToCommit(customer)
+                .addInstanceToCommit(order)
+    }
+
 }
