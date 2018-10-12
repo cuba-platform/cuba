@@ -117,8 +117,6 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
     }
 
 
-
-
     def "EntityLog logs the creation of a dynamic attribute"() {
 
         given:
@@ -190,6 +188,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
     protected boolean isModifyType(EntityLogItem entityLogItem) {
         entityLogItem.type == EntityLogItem.Type.MODIFY
     }
+
     protected boolean isCreateType(EntityLogItem entityLogItem) {
         entityLogItem.type == EntityLogItem.Type.CREATE
     }
@@ -197,22 +196,17 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
     boolean loggedOldValueMatches(EntityLogItem entityLogItem, String oldValue) {
         dynamicAttributeEntityLog(entityLogItem).oldValue == oldValue
     }
+
     boolean loggedValueMatches(EntityLogItem entityLogItem, String value) {
         dynamicAttributeEntityLog(entityLogItem).value == value
     }
 
     private EntityLogItem latestEntityLogItem(User user) {
-        getEntityLogItems(user).first()
+        getLatestEntityLogItem('sec$User', user.id)
     }
 
     private EntityLogAttr dynamicAttributeEntityLog(EntityLogItem entityLogItem) {
         entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
-    }
-
-    private Group findCompanyGroup() {
-        cont.persistence().callInTransaction { em ->
-            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
-        }
     }
 
 
@@ -248,22 +242,4 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
     }
 
 
-    private List<EntityLogItem> getEntityLogItems(User user) {
-        Transaction tx = cont.persistence().createTransaction()
-        List<EntityLogItem> items
-        try {
-            EntityManager em = cont.persistence().getEntityManager()
-            TypedQuery<EntityLogItem> query = em.createQuery(
-                    'select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2 order by i.eventTs desc', EntityLogItem.class)
-            query.setParameter(1, 'sec$User')
-            query.setParameter(2, user.id)
-            items = query.getResultList()
-
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        items
-    }
 }

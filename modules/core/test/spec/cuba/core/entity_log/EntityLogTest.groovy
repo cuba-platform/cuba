@@ -85,43 +85,15 @@ class EntityLogTest extends AbstractEntityLogTest {
         runner.update("delete from SEC_LOGGED_ENTITY")
     }
 
-    private List<EntityLogItem> getEntityLogItems(String entityName, def entityId) {
-
-        List<EntityLogItem> items
-
-        Transaction tx = cont.persistence().createTransaction()
-
-        try {
-            EntityManager em = cont.persistence().getEntityManager()
-            String entityIdField
-            if (entityId instanceof Integer) entityIdField = 'intEntityId'
-            else if (entityId instanceof Long) entityIdField = 'longEntityId'
-            else if (entityId instanceof String) entityIdField = 'stringEntityId'
-            else entityIdField = 'entityId'
-
-            TypedQuery<EntityLogItem> query = em.createQuery(
-                    "select i from sec\$EntityLog i where i.entity = ?1 and i.entityRef.$entityIdField = ?2 order by i.eventTs desc", EntityLogItem.class)
-            query.setParameter(1, entityName)
-            query.setParameter(2, entityId)
-            items = query.getResultList()
-
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        items
-    }
-
     def "PL-10005 missed Entity Log items because of implicit flush"() {
 
-        Group group = cont.persistence().callInTransaction({ em ->
-            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
-        })
+        given:
+
+        Group group = findCompanyGroup()
 
         when:
 
-        cont.persistence().runInTransaction({ em ->
+        withTransaction { EntityManager em ->
             User user1 = cont.metadata().create(User)
             user1Id = user1.getId()
             user1.setGroup(group)
@@ -135,7 +107,7 @@ class EntityLogTest extends AbstractEntityLogTest {
             user2.setLogin("test2")
             user2.setName("test2-name")
             em.persist(user2)
-        })
+        }
 
         then:
 
@@ -144,7 +116,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         when:
 
-        cont.persistence().runInTransaction({ em ->
+        withTransaction{ EntityManager em ->
             def user1 = em.find(User, user1Id)
             user1.setEmail('email1')
 
@@ -152,7 +124,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
             def user2 = em.find(User, user2Id)
             user2.setEmail('email1')
-        })
+        }
 
         then:
 
@@ -161,11 +133,14 @@ class EntityLogTest extends AbstractEntityLogTest {
     }
 
     def "correct old value in case of flush in the middle"() {
-        Group group = cont.persistence().callInTransaction({ em ->
-            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
-        })
 
-        cont.persistence().runInTransaction({ em ->
+        given:
+
+        Group group = findCompanyGroup()
+
+        and:
+
+        withTransaction { EntityManager em ->
             User user1 = cont.metadata().create(User)
             user1Id = user1.getId()
             user1.setGroup(group)
@@ -173,11 +148,11 @@ class EntityLogTest extends AbstractEntityLogTest {
             user1.setName("name1")
             user1.setEmail('email1')
             em.persist(user1)
-        })
+        }
 
         when:
 
-        cont.persistence().runInTransaction({ em ->
+        withTransaction { EntityManager em ->
             def user1 = em.find(User, user1Id)
             user1.setEmail('email11')
             user1.setName('name11')
@@ -188,7 +163,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
             user1 = em.find(User, user1Id)
             user1.setEmail('email111')
-        })
+        }
 
         then:
 
@@ -272,7 +247,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         when:
 
-        cont.persistence().runInTransaction { em ->
+        withTransaction { EntityManager em ->
             def e = em.find(IntIdentityEntity, entity.id)
             e.name = 'test2'
         }

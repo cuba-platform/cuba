@@ -24,9 +24,11 @@ import com.haulmont.cuba.core.TypedQuery
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.EntityLogItem
+import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.LoggedAttribute
 import com.haulmont.cuba.security.entity.LoggedEntity
 import com.haulmont.cuba.testsupport.TestContainer
+import com.haulmont.cuba.testsupport.TestSupport
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -70,7 +72,7 @@ abstract class AbstractEntityLogTest extends Specification {
         entityLog.invalidateCache()
     }
 
-    private List<EntityLogItem> getEntityLogItems(String entityName, def entityId) {
+    protected List<EntityLogItem> getEntityLogItems(String entityName, def entityId) {
         Transaction tx
         List<EntityLogItem> items
         tx = cont.persistence().createTransaction()
@@ -95,6 +97,10 @@ abstract class AbstractEntityLogTest extends Specification {
         return items
     }
 
+    protected EntityLogItem getLatestEntityLogItem(String entityName, def entityId) {
+        getEntityLogItems(entityName, entityId).first()
+    }
+
     protected void clearTable(EntityManager em, String tableName) {
         em.createNativeQuery("delete from " + tableName).executeUpdate()
     }
@@ -104,6 +110,12 @@ abstract class AbstractEntityLogTest extends Specification {
 
         cont.persistence().runInTransaction { em ->
             run.call(em)
+        }
+    }
+
+    protected Group findCompanyGroup() {
+        cont.persistence().callInTransaction { em ->
+            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
         }
     }
 }
