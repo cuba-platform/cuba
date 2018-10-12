@@ -18,8 +18,6 @@ package spec.cuba.core.entity_log
 
 import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.Transaction
-import com.haulmont.cuba.core.TypedQuery
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType
 import com.haulmont.cuba.core.entity.Category
@@ -31,12 +29,10 @@ import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.app.EntityLog
 import com.haulmont.cuba.security.app.EntityLogAPI
-import com.haulmont.cuba.security.entity.*
-import com.haulmont.cuba.testsupport.TestContainer
-import com.haulmont.cuba.testsupport.TestSupport
-import org.junit.ClassRule
-import spock.lang.Shared
-import spock.lang.Specification
+import com.haulmont.cuba.security.entity.EntityLogItem
+import com.haulmont.cuba.security.entity.LoggedAttribute
+import com.haulmont.cuba.security.entity.LoggedEntity
+import com.haulmont.cuba.security.entity.User
 
 import java.sql.SQLException
 
@@ -194,19 +190,15 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
     }
 
     boolean loggedOldValueMatches(EntityLogItem entityLogItem, String oldValue) {
-        dynamicAttributeEntityLog(entityLogItem).oldValue == oldValue
+        loggedOldValueMatches(entityLogItem, DYNAMIC_ATTRIBUTE_NAME, oldValue)
     }
 
     boolean loggedValueMatches(EntityLogItem entityLogItem, String value) {
-        dynamicAttributeEntityLog(entityLogItem).value == value
+        loggedValueMatches(entityLogItem, DYNAMIC_ATTRIBUTE_NAME, value)
     }
 
     private EntityLogItem latestEntityLogItem(User user) {
         getLatestEntityLogItem('sec$User', user.id)
-    }
-
-    private EntityLogAttr dynamicAttributeEntityLog(EntityLogItem entityLogItem) {
-        entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
     }
 
 

@@ -127,7 +127,6 @@ class EntityLogTest extends AbstractEntityLogTest {
         }
 
         then:
-
         getEntityLogItems('sec$User', user1Id).size() == 2
         getEntityLogItems('sec$User', user2Id).size() == 2
     }
@@ -168,13 +167,14 @@ class EntityLogTest extends AbstractEntityLogTest {
         then:
 
         getEntityLogItems('sec$User', user1Id).size() == 2
-        def item = getEntityLogItems('sec$User', user1Id)[0] // latest
+        def item = getLatestEntityLogItem('sec$User', user1Id) // latest
 
-        item.attributes.find({ it.name == 'email' }).value == 'email111'
-        item.attributes.find({ it.name == 'email' }).oldValue == 'email1'
+        loggedValueMatches(item, 'email', 'email111')
+        loggedOldValueMatches(item, 'email', 'email1')
 
-        item.attributes.find({ it.name == 'name' }).value == 'name11'
-        item.attributes.find({ it.name == 'name' }).oldValue == 'name1'
+        loggedValueMatches(item, 'name', 'name11')
+        loggedOldValueMatches(item, 'name', 'name1')
+
     }
 
     def "works for BaseIdentityIdEntity"() {
@@ -195,9 +195,13 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         noExceptionThrown()
 
-        def item1 = getEntityLogItems('test$IdentityEntity', entity.id.get())[0]
-        item1.attributes.find({ it.name == 'name' }).value == 'test1'
-        item1.attributes.find({ it.name == 'name' }).oldValue == null
+        def item1 = getLatestEntityLogItem('test$IdentityEntity', entity.id.get())
+
+
+
+        loggedValueMatches(item1, 'name', 'test1')
+        loggedOldValueMatches(item1, 'name', null)
+
 
         when:
 
@@ -212,9 +216,10 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         then:
 
-        def item2 = getEntityLogItems('test$IdentityEntity', entity.id.get())[0]
-        item2.attributes.find({ it.name == 'name' }).value == 'test2'
-        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
+        def item2 = getLatestEntityLogItem('test$IdentityEntity', entity.id.get())
+
+        loggedValueMatches(item2, 'name', 'test2')
+        loggedOldValueMatches(item2, 'name', 'test1')
 
         cleanup:
 
@@ -241,9 +246,12 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         noExceptionThrown()
 
-        def item1 = getEntityLogItems('test$IntIdentityEntity', entity.id.get())[0]
-        item1.attributes.find({ it.name == 'name' }).value == 'test1'
-        item1.attributes.find({ it.name == 'name' }).oldValue == null
+        def item1 = getLatestEntityLogItem('test$IntIdentityEntity', entity.id.get())
+
+
+        loggedValueMatches(item1, 'name', 'test1')
+        loggedOldValueMatches(item1, 'name', null)
+
 
         when:
 
@@ -263,9 +271,11 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         then:
 
-        def item2 = getEntityLogItems('test$IntIdentityEntity', entity.id.get())[0]
-        item2.attributes.find({ it.name == 'name' }).value == 'test2'
-        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
+        def item2 = getLatestEntityLogItem('test$IntIdentityEntity', entity.id.get())
+
+        loggedValueMatches(item2, 'name', 'test2')
+        loggedOldValueMatches(item2, 'name', 'test1')
+
 
         cleanup:
 
@@ -311,11 +321,14 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         then:
 
-        def item2 = getEntityLogItems('test$StringKeyEntity', entity.id)[0]
-        item2.attributes.find({ it.name == 'name' }).value == 'test2'
-        item2.attributes.find({ it.name == 'name' }).oldValue == 'test1'
-        item2.attributes.find({ it.name == 'description' }).value == 'description2'
-        item2.attributes.find({ it.name == 'description' }).oldValue == 'description1'
+        def item2 = getLatestEntityLogItem('test$StringKeyEntity', entity.id)
+
+        loggedValueMatches(item2, 'name', 'test2')
+        loggedOldValueMatches(item2, 'name', 'test1')
+
+        loggedValueMatches(item2, 'description', 'description2')
+        loggedOldValueMatches(item2, 'description', 'description1')
+
 
         cleanup:
 

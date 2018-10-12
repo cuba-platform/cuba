@@ -97,6 +97,14 @@ abstract class AbstractEntityLogTest extends Specification {
         return items
     }
 
+    protected boolean loggedValueMatches(EntityLogItem entityLogItem, String attributeName, String value) {
+        entityLogItem.attributes.find { it.name == attributeName }.value == value
+    }
+
+    protected boolean loggedOldValueMatches(EntityLogItem entityLogItem, String attributeName, String oldValue) {
+        entityLogItem.attributes.find { it.name == attributeName }.oldValue == oldValue
+    }
+
     protected EntityLogItem getLatestEntityLogItem(String entityName, def entityId) {
         getEntityLogItems(entityName, entityId).first()
     }
