@@ -91,7 +91,7 @@ public class CommonLookupController extends AbstractLookup {
 
     protected void initFilter() {
         filter = componentsFactory.createComponent(Filter.class);
-        filter.setFrame(this);
+        filter.setFrame(frame);
         filter.setId("filter");
         filter.setApplyTo(entitiesTable);
         filter.setDatasource(entitiesDs);

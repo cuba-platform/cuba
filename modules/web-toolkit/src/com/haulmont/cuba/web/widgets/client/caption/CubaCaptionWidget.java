@@ -29,13 +29,13 @@ import com.vaadin.client.StyleConstants;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.HasContextHelpConnector;
+import com.vaadin.client.ui.HasErrorIndicator;
+import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.client.ui.ImageIcon;
 import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.ComponentConstants;
 import com.vaadin.shared.ui.ComponentStateUtil;
-import com.vaadin.v7.client.ui.AbstractFieldConnector;
-import com.vaadin.v7.shared.AbstractFieldState;
 
 public class CubaCaptionWidget extends VCaption implements ClickHandler {
 
@@ -87,13 +87,12 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
                 .containsKey(ComponentConstants.ICON_RESOURCE);
         boolean showRequired = false;
         boolean showError = owner.getState().errorMessage != null;
-        if (owner.getState() instanceof AbstractFieldState) {
-            AbstractFieldState abstractFieldState = (AbstractFieldState) owner
-                    .getState();
-            showError = showError && !abstractFieldState.hideErrors;
+        if (owner instanceof HasRequiredIndicator) {
+            showRequired = ((HasRequiredIndicator) owner)
+                    .isRequiredIndicatorVisible();
         }
-        if (owner instanceof AbstractFieldConnector) {
-            showRequired = ((AbstractFieldConnector) owner).isRequired();
+        if (owner instanceof HasErrorIndicator) {
+            showError = ((HasErrorIndicator) owner).isErrorIndicatorVisible();
         }
 
         if (icon != null) {
@@ -136,7 +135,7 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
             String c = owner.getState().caption;
             // A text forces the caption to be above the component.
             placedAfterComponent = false;
-            if (c == null || c.trim().equals("")) {
+            if (c == null || c.trim().isEmpty()) {
                 // Not sure if c even can be null. Should not.
 
                 // This is required to ensure that the caption uses space in all

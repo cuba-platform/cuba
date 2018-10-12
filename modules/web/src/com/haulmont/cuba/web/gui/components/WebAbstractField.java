@@ -20,8 +20,8 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 

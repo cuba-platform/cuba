@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanValidation;
@@ -38,7 +39,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 import javax.validation.Validator;
+import java.util.Collection;
 import java.util.EventObject;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -106,12 +109,47 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected boolean doNotReloadEditedEntity() {
-        DataContext parentDc = getScreenData().getDataContext().getParent();
-        if (parentDc != null
-                && (parentDc.isModified(entityToEdit) || parentDc.isRemoved(entityToEdit))) {
+        if (isEntityModifiedInParentContext()) {
             InstanceContainer<Entity> container = getEditedEntityContainer();
             if (getEntityStates().isLoadedWithView(entityToEdit, container.getView())) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean isEntityModifiedInParentContext() {
+        DataContext parentDc = getScreenData().getDataContext().getParent();
+        if (parentDc == null)
+            return false;
+
+        return isEntityModifiedRecursive(entityToEdit, parentDc, new HashSet<>());
+    }
+
+    protected boolean isEntityModifiedRecursive(Entity entity, DataContext dataContext, HashSet<Object> visited) {
+        if (visited.contains(entity))
+            return false;
+        visited.add(entity);
+
+        if (dataContext.isModified(entity) || dataContext.isRemoved(entity))
+            return true;
+
+        for (MetaProperty property : entity.getMetaClass().getProperties()) {
+            if (property.getRange().isClass()) {
+                if (getEntityStates().isLoaded(entity, property.getName())) {
+                    Object value = entity.getValue(property.getName());
+                    if (value != null) {
+                        if (value instanceof Collection) {
+                            for (Object item : ((Collection) value)) {
+                                if (isEntityModifiedRecursive((Entity) item, dataContext, visited))
+                                    return true;
+                            }
+                        } else {
+                            if (isEntityModifiedRecursive((Entity) value, dataContext, visited))
+                                return true;
+                        }
+                    }
+                }
             }
         }
         return false;

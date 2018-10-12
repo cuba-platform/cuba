@@ -361,8 +361,8 @@ create table SEC_LOCALIZED_CONSTRAINT_MSG (
     DELETED_BY varchar(50),
     DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     --
-    ENTITY_NAME varchar(255) not null,
-    OPERATION_TYPE varchar(50) not null,
+    ENTITY_NAME varchar(150) not null,
+    OPERATION_TYPE varchar(40) not null,
     VALUES_ text,
     --
     primary key (ID)

@@ -208,7 +208,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      */
     @Deprecated
     default boolean close(String actionId, boolean force) {
-        OperationResult result = getFrameOwner().close(new StandardCloseAction(actionId, force));
+        OperationResult result = getFrameOwner().close(new StandardCloseAction(actionId, !force));
         return result.getStatus() == OperationResult.Status.SUCCESS;
     }
 

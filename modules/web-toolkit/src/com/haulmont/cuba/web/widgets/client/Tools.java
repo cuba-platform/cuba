@@ -24,6 +24,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.button.CubaButtonWidget;
@@ -234,37 +235,37 @@ public class Tools {
         return element;
     }
 
-    public static Widget findPrevWidget(VAbstractOrderedLayout layout, int widgetIndex) {
+    public static Widget findPrevWidget(FlowPanel layout, int widgetIndex) {
         for (int i = widgetIndex - 1; i >= 0; i--) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
+            Widget widget = layout.getWidget(i);
+            if (isSuitableWidget(widget)) {
+                return widget;
             }
         }
 
         // try to find button from last
         for (int i = layout.getWidgetCount() - 1; i > widgetIndex; i--) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
+            Widget widget = layout.getWidget(i);
+            if (isSuitableWidget(widget)) {
+                return widget;
             }
         }
         return null;
     }
 
-    public static Widget findNextWidget(VAbstractOrderedLayout layout, int widgetIndex) {
+    public static Widget findNextWidget(FlowPanel layout, int widgetIndex) {
         for (int i = widgetIndex + 1; i < layout.getWidgetCount(); i++) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
+            Widget widget = layout.getWidget(i);
+            if (isSuitableWidget(widget)) {
+                return widget;
             }
         }
 
         // try to find button from first
         for (int i = 0; i < widgetIndex; i++) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
+            Widget widget = layout.getWidget(i);
+            if (isSuitableWidget(widget)) {
+                return widget;
             }
         }
 

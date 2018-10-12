@@ -150,7 +150,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
         AppFolderEditWindow.this.commitHandler.run();
 
-        close();
+        forceClose();
     }
 
     @Override

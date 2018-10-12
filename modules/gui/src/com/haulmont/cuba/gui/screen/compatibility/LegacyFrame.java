@@ -35,20 +35,8 @@ public interface LegacyFrame extends Component.HasXmlDescriptor,
         Component.HasCaption, Component.HasIcon, Component.Wrapper, Component.BelongToFrame, Frame.Wrapper,
         ActionsHolder, HasSpacing, HasMargin,
         OrderedContainer, ExpandingLayout {
-    
-    // todo refactor !
-    static LegacyFrame of(BelongToFrame frameComponent) {
-        Frame frame = frameComponent.getFrame();
-        return ((LegacyFrame) frame.getFrameOwner());
-    }
-
-    // todo refactor !
-    static LegacyFrame of(Frame frame) {
-        return ((LegacyFrame) frame.getFrameOwner());
-    }
-
     /**
-     * JavaDoc
+     * @return window manager of the screen
      */
     WindowManager getWindowManager();
 

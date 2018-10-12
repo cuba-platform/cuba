@@ -38,10 +38,6 @@ $c-default-datefield-width: 120px;
     .c-timefield {
       display: table-cell;
     }
-
-    .v-ie9 & .c-timefield {
-      float: right;
-    }
   }
 
   .#{$primary-stylename}-layout {

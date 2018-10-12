@@ -524,14 +524,6 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .c-app-icon {
       height: 64px;
-
-      .v-ie9 > & {
-        width: 100%;
-
-        img {
-          width: 64px;
-        }
-      }
     }
 
     .v-button.c-ftsfield-button,
@@ -544,10 +536,6 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .c-ftsfield {
       padding-left: $v-layout-margin-left;
       padding-right: $v-layout-margin-right + $v-unit-size;
-    }
-
-    .v-ie9 & {
-      width: 250px;
     }
 
     .#{$primary-stylename} {

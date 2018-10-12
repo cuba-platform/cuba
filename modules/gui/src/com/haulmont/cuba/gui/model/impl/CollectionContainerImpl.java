@@ -106,6 +106,7 @@ public class CollectionContainerImpl<E extends Entity>
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Object id = entity.getId();
         int idx = getItemIndex(id);
+        CollectionChangeType changeType;
         if (idx > -1) {
             E prev = collection.get(idx);
             detachListener(prev);
@@ -114,12 +115,14 @@ public class CollectionContainerImpl<E extends Entity>
                 fireItemChanged(prev);
             }
             collection.set(idx, entity);
+            changeType = CollectionChangeType.SET_ITEM;
         } else {
             collection.add(entity);
+            changeType = CollectionChangeType.ADD_ITEMS;
         }
         attachListener(entity);
         buildIdMap();
-        fireCollectionChanged(CollectionChangeType.SET_ITEM, Collections.singletonList(entity));
+        fireCollectionChanged(changeType, Collections.singletonList(entity));
     }
 
     @Override

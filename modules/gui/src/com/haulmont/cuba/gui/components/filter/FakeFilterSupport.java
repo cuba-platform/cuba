@@ -41,7 +41,7 @@ public class FakeFilterSupport {
     public FakeFilterSupport(Frame frame, MetaClass metaClass) {
         this.metaClass = metaClass;
         this.frame = frame;
-        filterParser =  AppBeans.get(FilterParser.class);
+        filterParser = AppBeans.get(FilterParser.class);
     }
 
     public Filter createFakeFilter() {
@@ -52,7 +52,10 @@ public class FakeFilterSupport {
         Filter fakeFilter = AppBeans.get(ComponentsFactory.NAME, ComponentsFactory.class).createComponent(Filter.class);
         fakeFilter.setXmlDescriptor(Dom4j.readDocument("<filter/>").getRootElement());
         CollectionDatasourceImpl fakeDatasource = new CollectionDatasourceImpl();
-        DsContextImpl fakeDsContext = new DsContextImpl(LegacyFrame.of(frame).getDsContext().getDataSupplier());
+
+        LegacyFrame frameOwner = (LegacyFrame) frame.getFrameOwner();
+
+        DsContextImpl fakeDsContext = new DsContextImpl(frameOwner.getDsContext().getDataSupplier());
         FrameContextImpl fakeFrameContext = new FrameContextImpl(frame);
         fakeDsContext.setFrameContext(fakeFrameContext);
         fakeDatasource.setDsContext(fakeDsContext);

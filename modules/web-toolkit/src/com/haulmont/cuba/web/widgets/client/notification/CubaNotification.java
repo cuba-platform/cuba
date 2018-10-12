@@ -23,6 +23,8 @@ import com.google.gwt.user.client.Event;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VNotification;
 
+import java.util.List;
+
 import static com.haulmont.cuba.web.widgets.client.appui.CubaUIConnector.CUBA_NOTIFICATION_MODALITY_CURTAIN;
 
 public class CubaNotification extends VNotification {
@@ -55,13 +57,16 @@ public class CubaNotification extends VNotification {
 
     @Override
     protected void beforeAddNotificationToCollection() {
-        if (!isTrayNotification(getElement())) {
+        if (!isTrayNotification(this)) {
             return;
         }
 
-        for (int i = NOTIFICATIONS.size() - 1; i >= 0; i--) {
-            final Element el = NOTIFICATIONS.get(i).getElement();
-            if (isTrayNotification(el)) {
+        List<VNotification> trayList = getCurrentTrayList();
+
+        for (int i = trayList.size() - 1; i >= 0; i--) {
+            VNotification notification = trayList.get(i);
+            final Element el = notification.getElement();
+            if (isTrayNotification(notification)) {
                 int notificationPosition = 0;
                 try {
                     notificationPosition = Integer.valueOf(el.getStyle()
@@ -76,6 +81,8 @@ public class CubaNotification extends VNotification {
                 el.getStyle().setPropertyPx("bottom", notificationPosition);
             }
         }
+
+        trayList.add(this);
     }
 
     @Override
@@ -84,17 +91,22 @@ public class CubaNotification extends VNotification {
             return;
         }
 
-        Element removedElement = removedNotification.getElement();
-        if (!isTrayNotification(removedElement)) {
+        if (!isTrayNotification(removedNotification)) {
             return;
         }
 
+        List<VNotification> trayList = getCurrentTrayList();
+        trayList.remove(removedNotification);
+
+        Element removedElement = removedNotification.getElement();
         int removedElementHeight = WidgetUtil.getRequiredHeight(removedElement);
+
         for (int i = removedIdx - 1; i >= 0; i--) {
-            Element el = NOTIFICATIONS.get(i).getElement();
-            if (isTrayNotification(el)) {
+            VNotification notification = trayList.get(i);
+            Element el = notification.getElement();
+            if (isTrayNotification(notification)) {
                 int notificationPosition = 0;
-                if (i == NOTIFICATIONS.size() - 1) {
+                if (i == trayList.size() - 1) {
                     notificationPosition = MARGIN_SIZE;
                 } else {
                     try {
@@ -110,14 +122,17 @@ public class CubaNotification extends VNotification {
         }
     }
 
-    protected boolean isTrayNotification(Element element) {
-        return element.hasClassName("v-position-bottom") && element.hasClassName(TRAY_STYLE);
+    protected boolean isTrayNotification(VNotification notification) {
+        return notification.getElement().hasClassName("v-position-bottom")
+                && TRAY_STYLE.equals(notification.getTypeStyle());
     }
 
     protected boolean isLastTrayNotification(int index) {
+        List<VNotification> trayList = getCurrentTrayList();
+
         int lastTrayIndex = 0;
-        for (int i = NOTIFICATIONS.size() - 1; i > 0; i--) {
-            Element notification = NOTIFICATIONS.get(i).getElement();
+        for (int i = trayList.size() - 1; i > 0; i--) {
+            VNotification notification = trayList.get(i);
             if (isTrayNotification(notification)) {
                 lastTrayIndex = i;
                 break;
@@ -125,5 +140,17 @@ public class CubaNotification extends VNotification {
         }
 
         return lastTrayIndex == index;
+    }
+
+    protected List<VNotification> getCurrentTrayList() {
+        switch (getPosition()) {
+            case BOTTOM_LEFT:
+                return TRAY_BOTTOM_LEFT_NOTIFICATIONS;
+            case BOTTOM_CENTER:
+                return TRAY_BOTTOM_CENTER_NOTIFICATIONS;
+            case BOTTOM_RIGHT:
+                return TRAY_BOTTOM_RIGHT_NOTIFICATIONS;
+        }
+        return null;
     }
 }

@@ -162,7 +162,7 @@ public class MbeanInspectWindow extends AbstractEditor {
                     Label ptypeLbl = componentsFactory.createComponent(Label.class);
                     ptypeLbl.setValue(AttributeHelper.convertTypeToReadableName(param.getType()));
 
-                    AttributeEditor prov = new AttributeEditor(this, param.getType());
+                    AttributeEditor prov = new AttributeEditor(frame, param.getType());
                     attrProviders.add(prov);
                     Component editField = prov.getComponent();
 

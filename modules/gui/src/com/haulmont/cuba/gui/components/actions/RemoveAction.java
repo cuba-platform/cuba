@@ -24,18 +24,18 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
@@ -218,11 +218,12 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     }
 
     protected void confirmAndRemove(Set<Entity> selected) {
-        LegacyFrame.of(target.getFrame()).showOptionDialog(
-                getConfirmationTitle(),
-                getConfirmationMessage(),
-                MessageType.CONFIRMATION,
-                new Action[]{
+        Dialogs dialogs = ComponentsHelper.getScreenContext(target.getFrame()).getDialogs();
+
+        dialogs.createOptionDialog()
+                .setCaption(getConfirmationTitle())
+                .setMessage(getConfirmationMessage())
+                .setActions(
                         new DialogAction(Type.OK, Status.PRIMARY).withHandler(event -> {
                             try {
                                 remove(selected);
@@ -242,9 +243,8 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                             if (target instanceof Component.Focusable) {
                                 ((Component.Focusable) target).focus();
                             }
-                        })
-                }
-        );
+                        }))
+                .show();
     }
 
     protected void remove(Set<Entity> selected) {

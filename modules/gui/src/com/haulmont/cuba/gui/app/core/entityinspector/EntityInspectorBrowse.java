@@ -20,7 +20,10 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
@@ -348,7 +351,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         exportPopupButton.addAction(new ExportAction("exportZIP", ZIP));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
-        importUpload.setFrame(this);
+        importUpload.setFrame(frame);
         importUpload.setPermittedExtensions(Sets.newHashSet(".json", ".zip"));
         importUpload.setUploadButtonIcon(icons.get(CubaIcon.UPLOAD));
         importUpload.setUploadButtonCaption(getMessage("import"));

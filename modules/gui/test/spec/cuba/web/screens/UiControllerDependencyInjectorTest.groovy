@@ -71,6 +71,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         window.getComponent("fieldGroup.name") >> textField
         window.getComponent("button") >> button
         window.getAction(_) >> commitAction
+        window.getFrameOwner() >> screen
 
         usersTable.getAction(_) >> createAction
 

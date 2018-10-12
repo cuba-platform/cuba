@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.*;
  * Factory to create UI components in client independent manner.
  * <br> An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
  *
- * @deprecated Use {@link UiComponents instead}.
+ * @deprecated Use {@link UiComponents} instead.
  */
 @Deprecated
 public interface ComponentsFactory {
@@ -67,9 +67,12 @@ public interface ComponentsFactory {
     Component createComponent(ComponentGenerationContext context);
 
     /**
-     * @return client-specific implementation of the timer
-     * @deprecated todo
      * Create a timer instance.
+     *
+     * @return client-specific implementation of the timer
+     * @deprecated JavaDoc
+     *
+     * todo move to Window
      */
     @Deprecated
     Timer createTimer();

@@ -102,11 +102,20 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @Subscribe
     protected void onCloseTriggered(CloseTriggeredEvent event) {
-        String actionId = event.getCloseAction() instanceof StandardCloseAction ?
-            ((StandardCloseAction) event.getCloseAction()).getActionId() : UNKNOWN_CLOSE_ACTION_ID;
+        CloseAction closeAction = event.getCloseAction();
 
-        if (!preClose(actionId)) {
-            event.preventWindowClose();
+        boolean checkSavedChanges = !(closeAction instanceof CloseAction.Command)
+                || ((CloseAction.Command) closeAction).isCheckForUnsavedChanges();
+
+        if (checkSavedChanges) {
+            String actionId = closeAction instanceof StandardCloseAction ?
+                    ((StandardCloseAction) closeAction).getActionId() : UNKNOWN_CLOSE_ACTION_ID;
+
+            boolean close = preClose(actionId);
+
+            if (!close) {
+                event.preventWindowClose();
+            }
         }
     }
 

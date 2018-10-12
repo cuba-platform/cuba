@@ -278,7 +278,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public Function<LoadContext<E>, Collection<E>> getDelegate() {
+    public Function<LoadContext<E>, Collection<E>> getLoadDelegate() {
         return delegate;
     }
 

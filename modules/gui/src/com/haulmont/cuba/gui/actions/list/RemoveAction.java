@@ -35,7 +35,7 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.Nestable;
+import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -123,8 +123,8 @@ public class RemoveAction extends SecuredListAction {
                 throw new IllegalStateException("Target is not bound to entity");
             }
 
-            Entity entityForRemove = target.getSingleSelected();
-            if (entityForRemove == null) {
+            Entity entityToRemove = target.getSingleSelected();
+            if (entityToRemove == null) {
                 throw new IllegalStateException("There is not selected item in EditAction target");
             }
 
@@ -137,8 +137,8 @@ public class RemoveAction extends SecuredListAction {
                     .setMessage(messages.getMainMessage("dialogs.Confirmation.Remove"))
                     .setActions(
                             new DialogAction(Type.YES).withHandler(e -> {
-                                container.getMutableItems().remove(entityForRemove);
-                                screenData.getDataContext().remove(entityForRemove);
+                                container.getMutableItems().remove(entityToRemove);
+                                screenData.getDataContext().remove(entityToRemove);
                                 commitIfNeeded(container, screenData);
 
                                 if (target instanceof Component.Focusable) {
@@ -159,14 +159,14 @@ public class RemoveAction extends SecuredListAction {
 
     protected void commitIfNeeded(CollectionContainer container, ScreenData screenData) {
         boolean needCommit = true;
-        if (container instanceof Nestable && ((Nestable) container).isNested()) {
-            InstanceContainer masterContainer = ((Nestable) container).getMaster();
-            String masterProperty = ((Nestable) container).getMasterProperty();
+        if (container instanceof Nested) {
+            InstanceContainer parentContainer = ((Nested) container).getParent();
+            String property = ((Nested) container).getProperty();
 
-            MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
-            MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+            MetaClass parentMetaClass = parentContainer.getEntityMetaClass();
+            MetaProperty metaProperty = parentMetaClass.getPropertyNN(property);
 
-            needCommit = masterMetaProperty.getType() != MetaProperty.Type.COMPOSITION;
+            needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
         }
         if (needCommit) {
             screenData.getDataContext().commit();

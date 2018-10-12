@@ -22,14 +22,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.widgets.HasTabSheetBehaviour;
@@ -144,9 +146,17 @@ public class MainTabSheetActionHandler implements Action.Handler {
             List<LayoutTip> tipsList = analyzer.analyze(window);
 
             if (tipsList.isEmpty()) {
-                LegacyFrame.of(window).showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
+                Notifications notifications = ComponentsHelper.getScreenContext(window).getNotifications();
+
+                notifications.create()
+                        .setCaption("No layout problems found")
+                        .setType(Notifications.NotificationType.HUMANIZED)
+                        .show();
             } else {
-                LegacyFrame.of(window).openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(window).getScreens();
+                WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("layoutAnalyzer");
+
+                wm.openWindow(windowInfo, WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
             }
         }
     }

@@ -180,6 +180,10 @@ public final class BaseEntityInternalAccess {
         }
     }
 
+    public static boolean supportsSecurityState(Entity entity) {
+        return entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity;
+    }
+
     public static SecurityState getSecurityState(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
         SecurityState securityState;

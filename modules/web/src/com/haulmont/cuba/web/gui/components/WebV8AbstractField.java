@@ -68,7 +68,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     }
 
     protected ErrorMessage getErrorMessage() {
-        return (isEditable() && isRequired() && isEmpty())
+        return (isEditableWithParent() && isRequired() && isEmpty())
                 ? new UserError(getRequiredMessage())
                 : null;
     }

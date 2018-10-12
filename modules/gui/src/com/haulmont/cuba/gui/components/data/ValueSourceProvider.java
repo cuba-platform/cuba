@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.model;
+package com.haulmont.cuba.gui.components.data;
 
-public interface Nestable {
+/**
+ * Provides instances of {@link ValueSource}, for instance, for child components.
+ */
+public interface ValueSourceProvider {
 
-    boolean isNested();
-
-    InstanceContainer getMaster();
-
-    void setMaster(InstanceContainer master);
-
-    String getMasterProperty();
-
-    void setMasterProperty(String masterProperty);
+    /**
+     * @param property a property to get a {@link ValueSource}
+     * @return an instance of {@link ValueSource} for a given property
+     */
+    ValueSource<?> getValueSource(String property);
 }

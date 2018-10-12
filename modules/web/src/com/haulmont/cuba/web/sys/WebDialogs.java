@@ -129,13 +129,14 @@ public class WebDialogs implements Dialogs {
         protected Action[] actions;
 
         public OptionDialogImpl() {
-            this.window = new CubaWindow();
+            window = new CubaWindow();
 
             window.setModal(true);
             window.setClosable(false);
             window.setResizable(false);
 
-            this.messageLabel = new CubaLabel();
+            messageLabel = new CubaLabel();
+            messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
             layout = new VerticalLayout();
             layout.setStyleName("c-app-option-dialog");
@@ -374,7 +375,8 @@ public class WebDialogs implements Dialogs {
             window.setModal(true);
             window.setResizable(false);
 
-            this.messageLabel = new CubaLabel();
+            messageLabel = new CubaLabel();
+            messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
             layout = new VerticalLayout();
             layout.setStyleName("c-app-message-dialog");

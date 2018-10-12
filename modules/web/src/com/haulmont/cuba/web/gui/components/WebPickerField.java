@@ -26,8 +26,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
@@ -38,7 +38,6 @@ import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Resource;
-import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.Registration;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -58,7 +57,6 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     /* Beans */
     protected Metadata metadata;
     protected MetadataTools metadataTools;
-    protected IconResolver iconResolver;
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -100,13 +98,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         this.metadataTools = metadataTools;
     }
 
-    @Inject
-    public void setIconResolver(IconResolver iconResolver) {
-        this.iconResolver = iconResolver;
-    }
-
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -262,12 +255,15 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         }
 
         action.addPropertyChangeListener(actionPropertyChangeListener);
-
-        button.setClickHandler(createPickerButtonClickHandler(action));
+        button.setClickHandler(event -> {
+            this.focus();
+            action.actionPerform(this);
+        });
     }
 
     protected void setPickerButtonIcon(CubaButton button, String icon) {
         if (!StringUtils.isEmpty(icon)) {
+            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
             Resource iconResource = iconResolver.getIconResource(icon);
             button.setIcon(iconResource);
             button.addStyleName(ICON_STYLE);
@@ -295,13 +291,6 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
                 && PickerFieldAction.PROP_EDITABLE.equals(evt.getPropertyName())) {
             button.setVisible(((PickerFieldAction) action).isEditable());
         }
-    }
-
-    protected Consumer<MouseEventDetails> createPickerButtonClickHandler(Action action) {
-        return event -> {
-            WebPickerField.this.focus();
-            action.actionPerform(null);
-        };
     }
 
     @Override
@@ -426,8 +415,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
 
         for (Action action : getActions()) {
             if (action instanceof PickerFieldAction) {

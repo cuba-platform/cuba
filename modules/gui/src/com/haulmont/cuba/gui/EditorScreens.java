@@ -73,14 +73,12 @@ public class EditorScreens {
         ListComponent<E> listComponent = builder.getListComponent();
 
         CollectionContainer<E> container = null;
-        boolean nested = false;
 
         if (listComponent != null) {
             DataUnit<E> dataSource = listComponent.getItems();
             CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataUnit ?
                     ((ContainerDataUnit) dataSource).getContainer() : null;
             container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
-            nested = container instanceof Nestable && ((Nestable) container).isNested();
         }
 
 
@@ -90,8 +88,8 @@ public class EditorScreens {
             }
             if (builder.getInitializer() != null) {
                 builder.getInitializer().accept(entity);
-            } else if (container != null && nested) {
-                initializeNestedEntity(entity, (Nestable) container);
+            } else if (container instanceof Nested) {
+                initializeNestedEntity(entity, (Nested) container);
             }
         }
 
@@ -131,8 +129,8 @@ public class EditorScreens {
         DataContext parentDataContext = builder.getParentDataContext();
         if (parentDataContext != null) {
             UiControllerUtils.getScreenData(screen).getDataContext().setParent(parentDataContext);
-        } else if (container != null && nested) {
-            setupParentDataContextForComposition(origin, screen, (Nestable) container);
+        } else if (container instanceof Nested) {
+            setupParentDataContextForComposition(origin, screen, (Nested) container);
         }
 
         if (container != null) {
@@ -171,31 +169,31 @@ public class EditorScreens {
         return (S) screen;
     }
 
-    protected  <E extends Entity> void initializeNestedEntity(E entity, Nestable container) {
-        InstanceContainer masterContainer = container.getMaster();
-        String masterProperty = container.getMasterProperty();
+    protected  <E extends Entity> void initializeNestedEntity(E entity, Nested container) {
+        InstanceContainer parentContainer = container.getParent();
+        String property = container.getProperty();
 
-        MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
-        MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+        MetaClass parentMetaClass = parentContainer.getEntityMetaClass();
+        MetaProperty metaProperty = parentMetaClass.getPropertyNN(property);
 
-        MetaProperty inverseProp = masterMetaProperty.getInverse();
+        MetaProperty inverseProp = metaProperty.getInverse();
         if (inverseProp != null) {
             Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
             Class<?> containerEntityClass = extendedEntities.getEffectiveClass(((CollectionContainer) container).getEntityMetaClass());
             if (inversePropClass.isAssignableFrom(containerEntityClass)) {
-                entity.setValue(inverseProp.getName(), masterContainer.getItem());
+                entity.setValue(inverseProp.getName(), parentContainer.getItem());
             }
         }
     }
 
-    protected void setupParentDataContextForComposition(FrameOwner origin, Screen screen, Nestable container) {
-        InstanceContainer masterContainer = container.getMaster();
-        String masterProperty = container.getMasterProperty();
+    protected void setupParentDataContextForComposition(FrameOwner origin, Screen screen, Nested container) {
+        InstanceContainer parentContainer = container.getParent();
+        String property = container.getProperty();
 
-        MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
-        MetaProperty masterMetaProperty = masterMetaClass.getPropertyNN(masterProperty);
+        MetaClass parentMetaClass = parentContainer.getEntityMetaClass();
+        MetaProperty metaProperty = parentMetaClass.getPropertyNN(property);
 
-        if (masterMetaProperty.getType() == MetaProperty.Type.COMPOSITION) {
+        if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
             ScreenData screenData = UiControllerUtils.getScreenData(origin);
             UiControllerUtils.getScreenData(screen).getDataContext().setParent(screenData.getDataContext());
         }

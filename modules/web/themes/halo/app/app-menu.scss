@@ -244,6 +244,10 @@ $cuba-menubar-submenu-item-font-weight: $v-font-weight !default;
     }
   }
 
+  .c-ftsfield-text {
+    width: 120px;
+  }
+
   .c-ftsfield-button {
     width: $v-unit-size;
     margin-right: -$v-unit-size;

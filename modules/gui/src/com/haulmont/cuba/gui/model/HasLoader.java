@@ -23,8 +23,14 @@ import javax.annotation.Nullable;
  */
 public interface HasLoader {
 
+    /**
+     * Returns the loader of this container.
+     */
     @Nullable
     DataLoader getLoader();
 
+    /**
+     * Sets the loader for this container.
+     */
     void setLoader(DataLoader loader);
 }

@@ -60,6 +60,7 @@
 @import "components/listeditor/listeditor";
 @import "components/dateintervaleditor/dateintervaleditor";
 @import "components/contextmenu/contextmenu";
+@import "components/contextmenu/contextmenu-button";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
 @import "components/optiongroup/optiongroup";
@@ -174,6 +175,7 @@
   @include halo-cuba-listeditor;
   @include halo-cuba-dateintervaleditor;
   @include halo-cuba-contextmenu;
+  @include halo-cuba-contextmenu-button;
   @include halo-cuba-searchselect;
   @include halo-cuba-sidemenu;
   @include halo-cuba-multiupload;

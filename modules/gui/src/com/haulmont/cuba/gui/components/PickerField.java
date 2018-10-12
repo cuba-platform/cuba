@@ -31,9 +31,9 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.compatibility.PickerFieldFieldListenerWrapper;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -712,7 +712,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
 
             if (!composition) {
-                DsContext dsContext = LegacyFrame.of(window).getDsContext();
+                DsContext dsContext = ((LegacyFrame) window.getFrameOwner()).getDsContext();
                 entity = dsContext.getDataSupplier().reload(entity, View.MINIMAL);
             }
 

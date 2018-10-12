@@ -391,7 +391,8 @@ class CompositionTest extends WebSpec {
 
         then:
 
-        committed.upd.isEmpty()
+        committed.upd.size() == 1
+        committed.upd.contains(order1)
         committed.rem.size() == 1
         committed.rem.contains(orderLine11)
     }

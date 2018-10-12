@@ -640,15 +640,8 @@ public class UiControllerDependencyInjector {
     protected MessageBundle createMessageBundle(AnnotatedElement element, Frame frame) {
         MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
 
-        String packageName;
-        if (element instanceof Field) {
-            packageName = ((Field) element).getDeclaringClass().getPackage().getName();
-        } else if (element instanceof Method) {
-            packageName = ((Method) element).getDeclaringClass().getPackage().getName();
-        } else {
-            throw new UnsupportedOperationException("Unsupported annotated element for MessageBundle");
-        }
-
+        Class<? extends FrameOwner> screenClass = frame.getFrameOwner().getClass();
+        String packageName = screenClass.getPackage().getName();
         messageBundle.setMessagesPack(packageName);
 
         if (frame instanceof Component.HasXmlDescriptor) {

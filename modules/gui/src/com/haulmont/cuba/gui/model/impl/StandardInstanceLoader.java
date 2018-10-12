@@ -228,7 +228,7 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     }
 
     @Override
-    public Function<LoadContext<E>, E> getDelegate() {
+    public Function<LoadContext<E>, E> getLoadDelegate() {
         return delegate;
     }
 

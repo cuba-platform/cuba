@@ -18,8 +18,17 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.global.Sort;
 
+/**
+ * Root interface of collection loaders.
+ *
+ * @see CollectionLoader
+ * @see KeyValueCollectionLoader
+ */
 public interface BaseCollectionLoader extends DataLoader {
 
+    /**
+     * Returns the container which accepts loaded entities.
+     */
     CollectionContainer getContainer();
 
     /**
@@ -44,7 +53,13 @@ public interface BaseCollectionLoader extends DataLoader {
      */
     void setMaxResults(int maxResults);
 
+    /**
+     * Returns the sort object which is used when loading.
+     */
     Sort getSort();
 
+    /**
+     * Sets the sort object which is used when loading.
+     */
     void setSort(Sort sort);
 }

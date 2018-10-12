@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -488,9 +489,15 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
 
                 Window window = ComponentsHelper.getWindow(WebAccordion.this);
                 if (window != null) {
-                    ((DsContextImplementation) LegacyFrame.of(window).getDsContext()).resumeSuspended();
+                    if (window.getFrameOwner() instanceof LegacyFrame) {
+                        DsContext dsContext = ((LegacyFrame) window.getFrameOwner()).getDsContext();
+                        if (dsContext != null) {
+                            ((DsContextImplementation) dsContext).resumeSuspended();
+                        }
+                    }
                 } else {
-                    LoggerFactory.getLogger(WebAccordion.class).warn("Please specify Frame for Accordion");
+                    LoggerFactory.getLogger(WebAccordion.class)
+                            .warn("Please specify Frame for Accordion");
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -498,8 +505,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     }
 
     protected void fireTabChanged() {
-        SelectedTabChangeEvent event = new SelectedTabChangeEvent(this, getSelectedTab());
-        publish(SelectedTabChangeEvent.class, event);
+        publish(SelectedTabChangeEvent.class, new SelectedTabChangeEvent(this, getSelectedTab()));
     }
 
     @Override

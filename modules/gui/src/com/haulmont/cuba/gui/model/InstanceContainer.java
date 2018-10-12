@@ -26,24 +26,52 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
+ * The root interface in the <i>data containers</i> hierarchy. Data containers represent a thin layer between
+ * visual components and entity instances and collections.
+ * <p>
+ * {@code InstanceContainer} holds a single entity instance.
  *
+ * @see CollectionContainer
  */
 public interface InstanceContainer<E extends Entity> {
 
+    /**
+     * Returns the contained entity instance.
+     * @throws IllegalStateException if there is no entity in the container
+     */
     E getItem();
 
+    /**
+     * Returns the contained entity instance or null if there is no entity in the container.
+     */
     @Nullable
     E getItemOrNull();
 
+    /**
+     * Sets the given entity instance to the container.
+     */
     void setItem(@Nullable E entity);
 
+    /**
+     * Returns the meta-class of entities that can be stored in the container.
+     */
     MetaClass getEntityMetaClass();
 
+    /**
+     * Returns the view which was set by previous call to {@link #setView(View)}.
+     * The view is normally used when loading entities for this container.
+     */
     @Nullable
     View getView();
 
+    /**
+     * Sets a view to be used when loading entities for this container.
+     */
     void setView(View view);
 
+    /**
+     * Event sent on changing a property value of the contained entity instance.
+     */
     class ItemPropertyChangeEvent<T extends Entity> extends EventObject {
         private final T item;
         private final String property;
@@ -58,6 +86,9 @@ public interface InstanceContainer<E extends Entity> {
             this.value = value;
         }
 
+        /**
+         * Returns the container which sent the event.
+         */
         @SuppressWarnings("unchecked")
         @Override
         public InstanceContainer<T> getSource() {
@@ -65,21 +96,21 @@ public interface InstanceContainer<E extends Entity> {
         }
 
         /**
-         * @return item, which property value is changed
+         * Returns an entity instance which property value was changed.
          */
         public T getItem() {
             return item;
         }
 
         /**
-         * @return property name
+         * Returns the property name.
          */
         public String getProperty() {
             return property;
         }
 
         /**
-         * @return previous value of item property
+         * Returns the previous value of the entity property.
          */
         @Nullable
         public Object getPrevValue() {
@@ -87,7 +118,7 @@ public interface InstanceContainer<E extends Entity> {
         }
 
         /**
-         * @return current value of item property
+         * Returns the current value of the entity property.
          */
         @Nullable
         public Object getValue() {
@@ -107,12 +138,12 @@ public interface InstanceContainer<E extends Entity> {
     }
 
     /**
-     * Listener to container item property value change events.
+     * Adds listener to {@link ItemPropertyChangeEvent}s.
      */
     Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<E>> listener);
 
     /**
-     * Container item change event.
+     * Event sent when the entity instance selected in the container is replaced with another instance or null.
      */
     class ItemChangeEvent<T extends Entity> extends EventObject {
 
@@ -125,6 +156,9 @@ public interface InstanceContainer<E extends Entity> {
             this.item = item;
         }
 
+        /**
+         * Returns the container which sent the event.
+         */
         @SuppressWarnings("unchecked")
         @Override
         public InstanceContainer<T> getSource() {
@@ -132,7 +166,7 @@ public interface InstanceContainer<E extends Entity> {
         }
 
         /**
-         * @return current item
+         * Returns the currently selected entity instance.
          */
         @Nullable
         public T getItem() {
@@ -140,7 +174,7 @@ public interface InstanceContainer<E extends Entity> {
         }
 
         /**
-         * @return previously selected item
+         * Returns the previously selected entity instance.
          */
         @Nullable
         public T getPrevItem() {
@@ -158,7 +192,7 @@ public interface InstanceContainer<E extends Entity> {
     }
 
     /**
-     * Listener to container item change events.
+     * Adds listener to {@link ItemChangeEvent}s.
      */
     Subscription addItemChangeListener(Consumer<ItemChangeEvent<E>> listener);
 

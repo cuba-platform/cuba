@@ -21,6 +21,9 @@ import com.haulmont.cuba.core.entity.KeyValueEntity;
 
 import javax.annotation.Nullable;
 
+/**
+ * Container for a single {@code KeyValueEntity} instance.
+ */
 public interface KeyValueContainer extends InstanceContainer<KeyValueEntity> {
 
     /**
@@ -29,6 +32,9 @@ public interface KeyValueContainer extends InstanceContainer<KeyValueEntity> {
      */
     KeyValueContainer setIdName(String name);
 
+    /**
+     * Returns the name of a property that represents the entity id.
+     */
     @Nullable
     String getIdName();
 

@@ -95,9 +95,10 @@ public class UserBrowser extends AbstractLookup {
         final boolean hasPermissionsToCreateSettings =
                 security.isEntityOpPermitted(UserSetting.class, EntityOp.CREATE);
 
-        changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
-        changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
-        copySettingsAction.setEnabled(hasPermissionsToCreateSettings);
+        // no selection
+        copySettingsAction.setEnabled(false);
+        changePasswAction.setEnabled(false);
+        changePasswAtLogonAction.setEnabled(false);
 
         resetRememberMeAction.setEnabled(security.isEntityOpPermitted(RememberMeToken.class, EntityOp.DELETE));
 

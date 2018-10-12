@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
- *
+ * Factory bean for data API elements.
  */
 @Component("cuba_DataContextFactory")
 public class DataContextFactory implements ApplicationContextAware {
@@ -42,34 +42,74 @@ public class DataContextFactory implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
+    /**
+     * Creates {@code DataContext}.
+     */
     public DataContext createDataContext() {
         return new StandardDataContext(applicationContext);
     }
 
+    /**
+     * Creates {@code InstanceContainer}.
+     */
     public <E extends Entity> InstanceContainer<E> createInstanceContainer(Class<E> entityClass) {
         return new InstanceContainerImpl<>(metadata.getClassNN(entityClass));
     }
 
+    /**
+     * Creates {@code InstancePropertyContainer}.
+     */
+    public <E extends Entity> InstancePropertyContainer<E> createInstanceContainer(Class<E> entityClass,
+                                                                                   InstanceContainer parent, String property) {
+        return new InstancePropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
+    }
+
+    /**
+     * Creates {@code CollectionContainer}.
+     */
     public <E extends Entity> CollectionContainer<E> createCollectionContainer(Class<E> entityClass) {
         return new CollectionContainerImpl<>(metadata.getClassNN(entityClass));
     }
 
+    /**
+     * Creates {@code CollectionPropertyContainer}.
+     */
+    public <E extends Entity> CollectionPropertyContainer<E> createCollectionContainer(Class<E> entityClass,
+                                                                               InstanceContainer parent, String property) {
+        return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
+    }
+
+    /**
+     * Creates {@code KeyValueContainer}.
+     */
     public KeyValueContainer createKeyValueContainer() {
         return new KeyValueContainerImpl();
     }
 
+    /**
+     * Creates {@code KeyValueCollectionContainer}.
+     */
     public KeyValueCollectionContainer createKeyValueCollectionContainer() {
         return new KeyValueCollectionContainerImpl();
     }
 
+    /**
+     * Creates {@code InstanceLoader}.
+     */
     public <E extends Entity> InstanceLoader<E> createInstanceLoader() {
         return new StandardInstanceLoader<>(applicationContext);
     }
 
+    /**
+     * Creates {@code CollectionLoader}.
+     */
     public <E extends Entity> CollectionLoader<E> createCollectionLoader() {
         return new StandardCollectionLoader<>(applicationContext);
     }
 
+    /**
+     * Creates {@code KeyValueCollectionLoader}.
+     */
     public KeyValueCollectionLoader createKeyValueCollectionLoader() {
         return new StandardKeyValueCollectionLoader(applicationContext);
     }

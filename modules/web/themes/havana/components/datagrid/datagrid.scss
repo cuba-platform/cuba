@@ -19,6 +19,16 @@
  */
 $c-datagrid-selected-row-cell-border-color: #9bb3d3 !default;
 
+/*
+ * Header cell background color
+ */
+$c-datagrid-header-cell-background-color: #e6eaef !default;
+
+/*
+ * Header cell hover background color
+ */
+$c-datagrid-header-cell-hover-background-color: #f2f5f7 !default;
+
 @mixin havana-datagrid($primary-stylename: v-grid) {
 
   .#{$primary-stylename}-row-selected > .#{$primary-stylename}-cell {
@@ -34,6 +44,16 @@ $c-datagrid-selected-row-cell-border-color: #9bb3d3 !default;
     color: $c-row-selection-text-color;
 
     @include linear-gradient(to bottom, $c-row-selection-background-color 0%, $c-row-selection-background-color 100%);
+  }
+
+  .#{$primary-stylename}-header .#{$primary-stylename}-cell {
+    @include linear-gradient(to bottom, $c-datagrid-header-cell-background-color 0%, $c-datagrid-header-cell-background-color 100%);
+  }
+
+  .#{$primary-stylename}-header:hover {
+    .#{$primary-stylename}-cell:hover {
+      background: $c-datagrid-header-cell-hover-background-color;
+    }
   }
 
   .#{$primary-stylename}-cell .boolean-value-true {

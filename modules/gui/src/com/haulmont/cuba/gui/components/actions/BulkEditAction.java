@@ -21,11 +21,14 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -36,6 +39,8 @@ import org.springframework.context.annotation.Scope;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 
 /**
  * Action used in {@link BulkEditor} visual component.
@@ -142,22 +147,32 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
 
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            if (!beforeActionPerformedHandler.beforeActionPerformed())
-                return;
+        if (beforeActionPerformedHandler != null
+                && !beforeActionPerformedHandler.beforeActionPerformed()) {
+            return;
         }
 
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
             Messages messages = AppBeans.get(Messages.NAME);
-            LegacyFrame.of(target.getFrame()).showNotification(messages.getMainMessage("accessDenied.message"), Frame.NotificationType.ERROR);
+
+            Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
+            notifications.create()
+                    .setCaption(messages.getMainMessage("accessDenied.message"))
+                    .setType(Notifications.NotificationType.ERROR)
+                    .show();
             return;
         }
 
         if (target.getSelected().isEmpty()) {
             Messages messages = AppBeans.get(Messages.NAME);
-            LegacyFrame.of(target.getFrame()).showNotification(messages.getMainMessage("actions.BulkEdit.emptySelection"),
-                    Frame.NotificationType.HUMANIZED);
+
+            Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
+            notifications.create()
+                    .setCaption(messages.getMainMessage("actions.BulkEdit.emptySelection"))
+                    .setType(Notifications.NotificationType.HUMANIZED)
+                    .show();
+
             return;
         }
 
@@ -184,7 +199,10 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                 .pair("useConfirmDialog", useConfirmDialog)
                 .create();
 
-        Window bulkEditor = LegacyFrame.of(target.getFrame()).openWindow("bulkEditor", openType, params);
+        WindowManager wm = ((WindowManager) getScreenContext(target.getFrame()).getScreens());
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("bulkEditor");
+
+        Window bulkEditor = wm.openWindow(windowInfo, openType, params);
         bulkEditor.addCloseListener(actionId -> {
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 target.getDatasource().refresh();
