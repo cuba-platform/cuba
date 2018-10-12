@@ -50,9 +50,9 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
     @Override
     protected void postInit() {
         ManagedBeanAttribute mba = getItem();
-        final String type = mba.getType();
+        String type = mba.getType();
 
-        valueHolder = new AttributeEditor(this, type, mba.getValue(), true, true);
+        valueHolder = new AttributeEditor(frame, type, mba.getValue(), true, true);
 
         valueContainer.add(valueHolder.getComponent(), 1, 0);
 
