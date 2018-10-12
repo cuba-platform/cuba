@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.config.Config
 import com.haulmont.cuba.core.global.Configuration
 import com.haulmont.cuba.core.global.MessageTools
 import com.haulmont.cuba.core.global.Messages
-import com.haulmont.cuba.gui.components.Window
+import com.haulmont.cuba.gui.components.sys.WindowImplementation
 import spock.lang.Specification
 
 abstract class AbstractMenuBuilderSpecification extends Specification {
@@ -40,7 +40,7 @@ abstract class AbstractMenuBuilderSpecification extends Specification {
     }
 
     def messages = Mock(Messages.class)
-    def mainWindow = Mock(Window.class)
+    def mainWindow = Mock(WindowImplementation.class)
     def menuConfig = new TestMenuConfig()
     def userSession = new TestUserSessionSource().getUserSession()
 
