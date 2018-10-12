@@ -54,71 +54,48 @@ class EntityLogTest extends Specification {
             q = em.createNativeQuery("delete from SEC_ENTITY_LOG")
             q.executeUpdate()
 
-            LoggedEntity le = new LoggedEntity()
-            le.setName('sec$User')
-            le.setAuto(true)
-            em.persist(le)
-
-            LoggedAttribute la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('name')
-            em.persist(la)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('email')
-            em.persist(la)
-
-            le = new LoggedEntity()
-            le.setName('sec$Role')
-            le.setAuto(true)
-            em.persist(le)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('type')
-            em.persist(la)
-
-            le = new LoggedEntity()
-            le.setName('test$IntIdentityEntity')
-            le.setAuto(true)
-            em.persist(le)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('name')
-            em.persist(la)
-
-            le = new LoggedEntity()
-            le.setName('test$IdentityEntity')
-            le.setAuto(true)
-            em.persist(le)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('name')
-            em.persist(la)
-
-            le = new LoggedEntity()
-            le.setName('test$StringKeyEntity')
-            le.setAuto(false)
-            le.setManual(true)
-            em.persist(le)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('name')
-            em.persist(la)
-
-            la = new LoggedAttribute()
-            la.setEntity(le)
-            la.setName('description')
-            em.persist(la)
+            initEntityLogConfiguration(em)
 
         }
         entityLog = AppBeans.get(EntityLogAPI.class)
         entityLog.invalidateCache()
         persistenceTools = AppBeans.get(PersistenceTools.class)
+    }
+
+    protected void initEntityLogConfiguration(EntityManager em) {
+
+        saveEntityLogAutoConfFor(em, 'sec$User', 'name', 'email')
+
+        saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
+
+        saveEntityLogAutoConfFor(em, 'test$IntIdentityEntity', 'name')
+
+        saveEntityLogAutoConfFor(em, 'test$IdentityEntity', 'name')
+
+        saveManualEntityLogAutoConfFor(em, 'test$StringKeyEntity', 'name', 'description')
+    }
+
+    protected void saveEntityLogAutoConfFor(EntityManager em, String entityName, String... attributes) {
+
+        LoggedEntity le = new LoggedEntity(name: entityName, auto: true)
+        em.persist(le)
+
+        attributes.each {
+            LoggedAttribute la = new LoggedAttribute(entity: le, name: it)
+            em.persist(la)
+        }
+
+    }
+    protected void saveManualEntityLogAutoConfFor(EntityManager em, String entityName, String... attributes) {
+
+        LoggedEntity le = new LoggedEntity(name: entityName, auto: false, manual: true)
+        em.persist(le)
+
+        attributes.each {
+            LoggedAttribute la = new LoggedAttribute(entity: le, name: it)
+            em.persist(la)
+        }
+
     }
 
     void cleanup() {
