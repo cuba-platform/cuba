@@ -213,20 +213,25 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
         AriaHelper.handleInputInvalid(owner.getWidget(), showError);
 
         if (showError) {
-            setErrorIndicatorElementVisible(true);
+            if (errorIndicatorElement == null) {
+                errorIndicatorElement = DOM.createDiv();
 
-            // Hide error indicator from assistive devices
-            Roles.getTextboxRole().setAriaHiddenState(errorIndicatorElement,
-                    true);
+                errorIndicatorElement.setInnerHTML("&nbsp;");
+                errorIndicatorElement.setClassName("v-errorindicator");
 
-            WidgetUtil.ErrorUtil.setErrorLevelStyle(errorIndicatorElement,
-                    StyleConstants.STYLE_NAME_ERROR_INDICATOR,
-                    owner.getState().errorLevel);
-        } else {
-            setErrorIndicatorElementVisible(false);
+                DOM.insertChild(getElement(), errorIndicatorElement,
+                        getInsertPosition(InsertPosition.ERROR));
+
+                // Hide error indicator from assistive devices
+                Roles.getTextboxRole().setAriaHiddenState(
+                        errorIndicatorElement, true);
+            }
+        } else if (errorIndicatorElement != null) {
+            // Remove existing
+            errorIndicatorElement.removeFromParent();
+            errorIndicatorElement = null;
         }
 
-        // TODO: gg, do we need this code?
         addStyleName(CLASSNAME);
 
         if (captionHolder != null) {
