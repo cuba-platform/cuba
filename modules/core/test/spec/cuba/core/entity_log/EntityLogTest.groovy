@@ -21,12 +21,10 @@ import com.haulmont.cuba.core.*
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.app.EntityAttributeChanges
-import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.*
 import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
-import com.haulmont.cuba.testsupport.TestSupport
 
 import java.sql.SQLException
 
@@ -87,26 +85,11 @@ class EntityLogTest extends AbstractEntityLogTest {
 
     def "PL-10005 missed Entity Log items because of implicit flush"() {
 
-        given:
-
-        Group group = findCompanyGroup()
-
         when:
 
         withTransaction { EntityManager em ->
-            User user1 = cont.metadata().create(User)
-            user1Id = user1.getId()
-            user1.setGroup(group)
-            user1.setLogin("test")
-            user1.setName("test-name")
-            em.persist(user1)
-
-            User user2 = cont.metadata().create(User)
-            user2Id = user2.getId()
-            user2.setGroup(group)
-            user2.setLogin("test2")
-            user2.setName("test2-name")
-            em.persist(user2)
+            user1Id = createAndSaveUser(em, [login: "test", name : 'test-name'])
+            user2Id = createAndSaveUser(em, [login: "test2", name: 'test2-name'])
         }
 
         then:
@@ -120,15 +103,27 @@ class EntityLogTest extends AbstractEntityLogTest {
             def user1 = em.find(User, user1Id)
             user1.setEmail('email1')
 
-            em.reload(group, View.BASE)
+            em.reload(findCompanyGroup(), View.BASE)
 
             def user2 = em.find(User, user2Id)
             user2.setEmail('email1')
         }
 
         then:
+
         getEntityLogItems('sec$User', user1Id).size() == 2
         getEntityLogItems('sec$User', user2Id).size() == 2
+    }
+
+    protected def createAndSaveUser(EntityManager em, Map params) {
+        User user = cont.metadata().create(User)
+
+        params.each {k,v ->
+            user[k] = v
+        }
+        user.setGroup(findCompanyGroup())
+        em.persist(user)
+        user.getId()
     }
 
     def "correct old value in case of flush in the middle"() {
@@ -140,13 +135,7 @@ class EntityLogTest extends AbstractEntityLogTest {
         and:
 
         withTransaction { EntityManager em ->
-            User user1 = cont.metadata().create(User)
-            user1Id = user1.getId()
-            user1.setGroup(group)
-            user1.setLogin("test")
-            user1.setName("name1")
-            user1.setEmail('email1')
-            em.persist(user1)
+            user1Id = createAndSaveUser(em, [login: 'test', name: 'name1', email: 'email1'])
         }
 
         when:
