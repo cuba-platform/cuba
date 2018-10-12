@@ -26,41 +26,32 @@ import com.haulmont.cuba.security.entity.*
 import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
-import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
-import org.junit.ClassRule
-import spock.lang.Shared
-import spock.lang.Specification
 
 import java.sql.SQLException
 
-class EntityLogTest extends Specification {
-
-    @Shared
-    @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+class EntityLogTest extends AbstractEntityLogTest {
 
     private UUID user1Id, user2Id
     private UUID roleId
 
-    private EntityLogAPI entityLog
-    private PersistenceTools persistenceTools
 
     void setup() {
         _cleanup()
 
-        cont.persistence().runInTransaction { em ->
-            Query q
-            q = em.createNativeQuery("delete from SEC_ENTITY_LOG")
-            q.executeUpdate()
-
+        withTransaction { EntityManager em ->
+            clearTable(em, "SEC_ENTITY_LOG")
             initEntityLogConfiguration(em)
-
         }
-        entityLog = AppBeans.get(EntityLogAPI.class)
-        entityLog.invalidateCache()
+
+        initBeans()
+    }
+
+    protected void initBeans() {
+        initEntityLogAPI()
         persistenceTools = AppBeans.get(PersistenceTools.class)
     }
+
 
     protected void initEntityLogConfiguration(EntityManager em) {
 
@@ -75,28 +66,6 @@ class EntityLogTest extends Specification {
         saveManualEntityLogAutoConfFor(em, 'test$StringKeyEntity', 'name', 'description')
     }
 
-    protected void saveEntityLogAutoConfFor(EntityManager em, String entityName, String... attributes) {
-
-        LoggedEntity le = new LoggedEntity(name: entityName, auto: true)
-        em.persist(le)
-
-        attributes.each {
-            LoggedAttribute la = new LoggedAttribute(entity: le, name: it)
-            em.persist(la)
-        }
-
-    }
-    protected void saveManualEntityLogAutoConfFor(EntityManager em, String entityName, String... attributes) {
-
-        LoggedEntity le = new LoggedEntity(name: entityName, auto: false, manual: true)
-        em.persist(le)
-
-        attributes.each {
-            LoggedAttribute la = new LoggedAttribute(entity: le, name: it)
-            em.persist(la)
-        }
-
-    }
 
     void cleanup() {
         _cleanup()
@@ -117,9 +86,11 @@ class EntityLogTest extends Specification {
     }
 
     private List<EntityLogItem> getEntityLogItems(String entityName, def entityId) {
-        Transaction tx
+
         List<EntityLogItem> items
-        tx = cont.persistence().createTransaction()
+
+        Transaction tx = cont.persistence().createTransaction()
+
         try {
             EntityManager em = cont.persistence().getEntityManager()
             String entityIdField
@@ -138,7 +109,8 @@ class EntityLogTest extends Specification {
         } finally {
             tx.end()
         }
-        return items
+
+        items
     }
 
     def "PL-10005 missed Entity Log items because of implicit flush"() {
