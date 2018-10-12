@@ -83,11 +83,22 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected boolean internalValueChangedOnUpload = false;
 
     public WebFileUploadField() {
+        uploadButton = createComponent();
+        component = createWrapper();
+    }
+
+    protected CubaFileUploadWrapper createWrapper() {
+        return new CubaFileUploadWrapper(uploadButton) {
+            @Override
+            protected void onSetInternalValue(Object newValue) {
+                internalValueChanged(newValue);
+            }
+        };
     }
 
     @Override
     public void afterPropertiesSet() {
-        initUploadButton();
+        initUploadButton(uploadButton);
 
         initComponent();
         attachListener(component);
@@ -112,13 +123,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected void initComponent() {
-        component = new CubaFileUploadWrapper(uploadButton) {
-            @Override
-            protected void onSetInternalValue(Object newValue) {
-                internalValueChanged(newValue);
-            }
-        };
-
         component.addFileNameClickListener(e -> {
             FileDescriptor value = getValue();
             if (value == null) {
@@ -208,9 +212,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         return null;
     }
 
-    protected void initUploadButton() {
-        CubaFileUpload impl = createComponent();
-
+    protected void initUploadButton(CubaFileUpload impl) {
         impl.setProgressWindowCaption(messages.getMainMessage("upload.uploadingProgressTitle"));
         impl.setUnableToUploadFileMessage(messages.getMainMessage("upload.unableToUploadFile"));
         impl.setCancelButtonCaption(messages.getMainMessage("upload.cancel"));
@@ -272,8 +274,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     .setType(Notifications.NotificationType.WARNING)
                     .show();
         });
-
-        this.uploadButton = impl;
     }
 
     protected OutputStream receiveUpload(String fileName, String MIMEType) {

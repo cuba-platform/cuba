@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
@@ -32,6 +31,7 @@ import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -43,7 +43,8 @@ import java.util.stream.Collectors;
 import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 import static com.haulmont.cuba.web.gui.FileUploadTypesHelper.convertToMIME;
 
-public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFileUpload> implements FileMultiUploadField {
+public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFileUpload>
+        implements FileMultiUploadField, InitializingBean {
 
     protected final Map<UUID, String> files = new LinkedHashMap<>();
 
@@ -51,20 +52,21 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
     protected UUID tempFileId;
     protected String accept;
 
+    public WebFileMultiUploadField() {
+        component = createComponent();
+    }
+
     @Inject
     public void setFileUploading(FileUploadingAPI fileUploading) {
         this.fileUploading = fileUploading;
     }
 
     @Override
-    public void setBeanLocator(BeanLocator beanLocator) {
-        super.setBeanLocator(beanLocator);
-
-        initComponent();
+    public void afterPropertiesSet() {
+        initComponent(component);
     }
 
-    protected void initComponent() {
-        CubaFileUpload impl = createComponent();
+    protected void initComponent(CubaFileUpload impl) {
         impl.setMultiSelect(true);
 
         Messages messages = beanLocator.get(Messages.NAME);
@@ -141,8 +143,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
                     .setType(Notifications.NotificationType.WARNING)
                     .show();
         });
-
-        component = impl;
     }
 
     protected CubaFileUpload createComponent() {
