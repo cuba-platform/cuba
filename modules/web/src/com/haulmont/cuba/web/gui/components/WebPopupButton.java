@@ -312,8 +312,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implem
         button.setEnabled(action.isEnabled());
         button.setVisible(action.isVisible());
 
-        if (action.getIcon() != null) {
+        if (showActionIcons) {
             setPopupButtonIcon(button, action.getIcon());
+        } else {
+            setPopupButtonIcon(button, null);
         }
 
         action.addPropertyChangeListener(actionPropertyChangeListener);
