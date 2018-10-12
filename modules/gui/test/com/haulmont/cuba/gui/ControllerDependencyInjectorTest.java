@@ -23,6 +23,7 @@ import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.MessageBundle;
 import com.haulmont.cuba.gui.screen.ScreenContext;
@@ -31,6 +32,7 @@ import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -119,12 +121,32 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
         @Inject
         protected Messages messages;
+
+        @Override
+        public Window getWindow() {
+            return this;
+        }
+
+        @Override
+        public Element getXmlDescriptor() {
+            return null;
+        }
     }
 
     private class WindowParamTestController extends AbstractWindow {
 
         @WindowParam(name = "someObj", required = true)
         public Object someObj;
+
+        @Override
+        public Window getWindow() {
+            return this;
+        }
+
+        @Override
+        public Element getXmlDescriptor() {
+            return null;
+        }
     }
 
     private interface TestWindowManager extends Screens, WindowManager {
