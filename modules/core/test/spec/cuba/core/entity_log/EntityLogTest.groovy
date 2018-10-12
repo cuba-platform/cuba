@@ -16,17 +16,14 @@
 
 package spec.cuba.core.entity_log
 
-import com.haulmont.bali.db.QueryRunner
-import com.haulmont.cuba.core.*
+
+import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.View
-import com.haulmont.cuba.security.app.EntityAttributeChanges
-import com.haulmont.cuba.security.entity.*
-import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
-import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
-import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
-
-import java.sql.SQLException
+import com.haulmont.cuba.security.entity.Group
+import com.haulmont.cuba.security.entity.User
+import spock.lang.Issue
 
 class EntityLogTest extends AbstractEntityLogTest {
 
@@ -35,7 +32,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
 
     void setup() {
-        _cleanup()
+        clearTables("SEC_LOGGED_ATTR", "SEC_LOGGED_ENTITY")
 
         withTransaction { EntityManager em ->
             clearTable(em, "SEC_ENTITY_LOG")
@@ -57,16 +54,11 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
 
-        saveEntityLogAutoConfFor(em, 'test$IntIdentityEntity', 'name')
-
-        saveEntityLogAutoConfFor(em, 'test$IdentityEntity', 'name')
-
-        saveManualEntityLogAutoConfFor(em, 'test$StringKeyEntity', 'name', 'description')
     }
 
 
     void cleanup() {
-        _cleanup()
+        clearTables("SEC_LOGGED_ATTR", "SEC_LOGGED_ENTITY")
 
         if (user1Id != null)
             cont.deleteRecord("SEC_USER", user1Id)
@@ -77,29 +69,26 @@ class EntityLogTest extends AbstractEntityLogTest {
             cont.deleteRecord("SEC_ROLE", roleId)
     }
 
-    private void _cleanup() throws SQLException {
-        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource())
-        runner.update("delete from SEC_LOGGED_ATTR")
-        runner.update("delete from SEC_LOGGED_ENTITY")
-    }
 
-    def "PL-10005 missed Entity Log items because of implicit flush"() {
+    @Issue("PL-10005")
+    def "missed Entity Log items because of implicit flush"() {
 
-        when:
+        given:
 
         withTransaction { EntityManager em ->
-            user1Id = createAndSaveUser(em, [login: "test", name : 'test-name'])
+            user1Id = createAndSaveUser(em, [login: "test", name: 'test-name'])
             user2Id = createAndSaveUser(em, [login: "test2", name: 'test2-name'])
         }
 
-        then:
+        and:
 
         getEntityLogItems('sec$User', user1Id).size() == 1
         getEntityLogItems('sec$User', user2Id).size() == 1
 
-        when:
 
-        withTransaction{ EntityManager em ->
+        when: 'instance attributes are changed an implicit flush is executed'
+
+        withTransaction { EntityManager em ->
             def user1 = em.find(User, user1Id)
             user1.setEmail('email1')
 
@@ -109,21 +98,10 @@ class EntityLogTest extends AbstractEntityLogTest {
             user2.setEmail('email1')
         }
 
-        then:
+        then: 'those attribute changes result in Entity log items'
 
         getEntityLogItems('sec$User', user1Id).size() == 2
         getEntityLogItems('sec$User', user2Id).size() == 2
-    }
-
-    protected def createAndSaveUser(EntityManager em, Map params) {
-        User user = cont.metadata().create(User)
-
-        params.each {k,v ->
-            user[k] = v
-        }
-        user.setGroup(findCompanyGroup())
-        em.persist(user)
-        user.getId()
     }
 
     def "correct old value in case of flush in the middle"() {
@@ -133,196 +111,56 @@ class EntityLogTest extends AbstractEntityLogTest {
         Group group = findCompanyGroup()
 
         and:
+        def firstEmail = 'email1'
+        def firstName = 'name1'
+
+        and:
 
         withTransaction { EntityManager em ->
-            user1Id = createAndSaveUser(em, [login: 'test', name: 'name1', email: 'email1'])
+            user1Id = createAndSaveUser(em, [login: 'test', name: firstName, email: firstEmail])
         }
 
         when:
+        def secondEmail = 'email11'
+        def secondName = 'name11'
+        def thirdEmail = 'email111'
 
         withTransaction { EntityManager em ->
             def user1 = em.find(User, user1Id)
-            user1.setEmail('email11')
-            user1.setName('name11')
+
+            user1.setEmail(secondEmail)
+            user1.setName(secondName)
 
             persistenceTools.getDirtyFields(user1)
 
             em.reload(group, View.BASE)
 
             user1 = em.find(User, user1Id)
-            user1.setEmail('email111')
+            user1.setEmail(thirdEmail)
         }
 
         then:
 
         getEntityLogItems('sec$User', user1Id).size() == 2
-        def item = getLatestEntityLogItem('sec$User', user1Id) // latest
+        def item = getLatestEntityLogItem('sec$User', user1Id)
 
-        loggedValueMatches(item, 'email', 'email111')
-        loggedOldValueMatches(item, 'email', 'email1')
+        loggedValueMatches(item, 'email', thirdEmail)
+        loggedOldValueMatches(item, 'email', firstEmail)
 
-        loggedValueMatches(item, 'name', 'name11')
-        loggedOldValueMatches(item, 'name', 'name1')
+        loggedValueMatches(item, 'name', secondName)
+        loggedOldValueMatches(item, 'name', firstName)
 
     }
 
-    def "works for BaseIdentityIdEntity"() {
+    protected def createAndSaveUser(EntityManager em, Map params) {
+        User user = cont.metadata().create(User)
 
-        when:
-
-        IdentityEntity entity = null
-        Transaction tx = cont.persistence().createTransaction()
-        try {
-            entity = new IdentityEntity(name: 'test1')
-            cont.persistence().entityManager.persist(entity)
-            tx.commit()
-        } finally {
-            tx.end()
+        params.each { k, v ->
+            user[k] = v
         }
-
-        then:
-
-        noExceptionThrown()
-
-        def item1 = getLatestEntityLogItem('test$IdentityEntity', entity.id.get())
-
-
-
-        loggedValueMatches(item1, 'name', 'test1')
-        loggedOldValueMatches(item1, 'name', null)
-
-
-        when:
-
-        tx = cont.persistence().createTransaction()
-        try {
-            IdentityEntity e = cont.persistence().entityManager.find(IdentityEntity, entity.id)
-            e.name = 'test2'
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        then:
-
-        def item2 = getLatestEntityLogItem('test$IdentityEntity', entity.id.get())
-
-        loggedValueMatches(item2, 'name', 'test2')
-        loggedOldValueMatches(item2, 'name', 'test1')
-
-        cleanup:
-
-        if (entity != null && entity.getId().get() != null) {
-            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_IDENTITY where id = ${entity.getId().get()}")
-        }
+        user.setGroup(findCompanyGroup())
+        em.persist(user)
+        user.getId()
     }
 
-    def "works for BaseIntIdentityIdEntity"() {
-
-        when:
-
-        IntIdentityEntity entity = null
-        Transaction tx = cont.persistence().createTransaction()
-        try {
-            entity = new IntIdentityEntity(name: 'test1')
-            cont.persistence().entityManager.persist(entity)
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        then:
-
-        noExceptionThrown()
-
-        def item1 = getLatestEntityLogItem('test$IntIdentityEntity', entity.id.get())
-
-
-        loggedValueMatches(item1, 'name', 'test1')
-        loggedOldValueMatches(item1, 'name', null)
-
-
-        when:
-
-        withTransaction { EntityManager em ->
-            def e = em.find(IntIdentityEntity, entity.id)
-            e.name = 'test2'
-        }
-
-        tx = cont.persistence().createTransaction()
-        try {
-            IntIdentityEntity e = cont.persistence().entityManager.find(IntIdentityEntity, entity.id)
-            e.name = 'test2'
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        then:
-
-        def item2 = getLatestEntityLogItem('test$IntIdentityEntity', entity.id.get())
-
-        loggedValueMatches(item2, 'name', 'test2')
-        loggedOldValueMatches(item2, 'name', 'test1')
-
-
-        cleanup:
-
-        if (entity != null && entity.getId().get() != null) {
-            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_INT_IDENTITY where id = ${entity.getId().get()}")
-        }
-    }
-
-    def "works with MetaProperty"() {
-
-        when:
-
-        Transaction tx = cont.persistence().createTransaction()
-        StringKeyEntity entity = null
-        try {
-            entity = new StringKeyEntity(code: 'code1', name: 'test1')
-            cont.persistence().entityManager.persist(entity)
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        then:
-
-        noExceptionThrown()
-
-        when:
-
-        tx = cont.persistence().createTransaction()
-        try {
-            StringKeyEntity e = cont.persistence().entityManager.find(StringKeyEntity, entity.id)
-            e.name = 'test2'
-            e.description = 'description2'
-
-            EntityAttributeChanges changes = new EntityAttributeChanges()
-            changes.addChanges(e)
-            changes.addChange('description', 'description1')
-            entityLog.registerModify(e, false, changes)
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        then:
-
-        def item2 = getLatestEntityLogItem('test$StringKeyEntity', entity.id)
-
-        loggedValueMatches(item2, 'name', 'test2')
-        loggedOldValueMatches(item2, 'name', 'test1')
-
-        loggedValueMatches(item2, 'description', 'description2')
-        loggedOldValueMatches(item2, 'description', 'description1')
-
-
-        cleanup:
-
-        if (entity != null && entity.getId() != null) {
-            new QueryRunner(cont.persistence().dataSource).update("delete from TEST_STRING_KEY where code = '${entity.getId()}'")
-        }
-    }
 }

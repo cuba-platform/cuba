@@ -16,7 +16,7 @@
 
 package spec.cuba.core.entity_log
 
-
+import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.Transaction
@@ -34,6 +34,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 abstract class AbstractEntityLogTest extends Specification {
+
 
     @Shared
     @ClassRule
@@ -125,5 +126,19 @@ abstract class AbstractEntityLogTest extends Specification {
         cont.persistence().callInTransaction { em ->
             em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
         }
+    }
+
+    protected int runSqlUpdate(String sqlUpdateString) {
+        new QueryRunner(cont.persistence().dataSource).update(sqlUpdateString)
+    }
+
+    void clearTables(String... tableNames) {
+        tableNames.each {
+            clearTable(it)
+        }
+    }
+
+    protected void clearTable(String tableName) {
+        runSqlUpdate("delete from $tableName")
     }
 }
