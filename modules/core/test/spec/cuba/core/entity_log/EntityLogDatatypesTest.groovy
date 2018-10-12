@@ -19,6 +19,7 @@ package spec.cuba.core.entity_log
 
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.security.app.EntityAttributeChanges
@@ -27,9 +28,6 @@ import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
 
 class EntityLogDatatypesTest extends AbstractEntityLogTest {
-
-    Entity entity
-    def entityId
 
 
     void setup() {
@@ -66,47 +64,51 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
     def "Logging is working for a creation of a BaseIdentityIdEntity"() {
 
-        when:
+        given:
 
         def identityEntity = new IdentityEntity(name: 'test1')
-        saveEntity(identityEntity, identityEntity.id.get())
+
+        when:
+
+        saveEntity(identityEntity)
 
         then:
 
-        def entityLogItem = getLatestEntityLogItem('test$IdentityEntity', entityId)
+        def entityLogItem = getLatestEntityLogItem('test$IdentityEntity', identityEntity)
 
         loggedValueMatches(entityLogItem, 'name', 'test1')
         loggedOldValueMatches(entityLogItem, 'name', null)
 
         cleanup:
 
-        clearEntityById(entity, entityId, 'TEST_IDENTITY')
+        clearEntityById(identityEntity, 'TEST_IDENTITY')
     }
 
 
     def "Logging is working for an update of a BaseIdentityIdEntity"() {
 
         given:
+
         def identityEntity = new IdentityEntity(name: 'test1')
-        saveEntity(identityEntity, identityEntity.id.get())
+
+        and:
+
+        saveEntity(identityEntity)
 
         when:
 
-        withTransaction {EntityManager em ->
-            IdentityEntity e = em.find(IdentityEntity, entity.id)
-            e.name = 'test2'
-        }
+        findEntityAndUpdateNameInTransaction(identityEntity, 'test2')
 
         then:
 
-        def item2 = getLatestEntityLogItem('test$IdentityEntity', entityId)
+        def logItem = getLatestEntityLogItem('test$IdentityEntity', identityEntity)
 
-        loggedValueMatches(item2, 'name', 'test2')
-        loggedOldValueMatches(item2, 'name', 'test1')
+        loggedValueMatches(logItem, 'name', 'test2')
+        loggedOldValueMatches(logItem, 'name', 'test1')
 
         cleanup:
 
-        clearEntityById(entity, entityId, 'TEST_IDENTITY')
+        clearEntityById(identityEntity, 'TEST_IDENTITY')
     }
 
 
@@ -114,72 +116,70 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
         when:
         def intIdentityEntity = new IntIdentityEntity(name: 'test1')
-        saveEntity(intIdentityEntity, intIdentityEntity.id.get())
+        saveEntity(intIdentityEntity)
 
         then:
 
         noExceptionThrown()
 
-        def item1 = getLatestEntityLogItem('test$IntIdentityEntity', entityId)
+        and:
+
+        def logItem = getLatestEntityLogItem('test$IntIdentityEntity', intIdentityEntity)
 
 
-        loggedValueMatches(item1, 'name', 'test1')
-        loggedOldValueMatches(item1, 'name', null)
+        loggedValueMatches(logItem, 'name', 'test1')
+        loggedOldValueMatches(logItem, 'name', null)
 
         cleanup:
 
-        clearEntityById(entity, entityId, 'TEST_INT_IDENTITY')
+        clearEntityById(intIdentityEntity, 'TEST_INT_IDENTITY')
     }
 
     def "Logging is working for an update of a BaseIntIdentityIdEntity"() {
 
         given:
-        def intIdentityEntity = new IntIdentityEntity(name: 'test1')
-        saveEntity(intIdentityEntity, intIdentityEntity.id.get())
 
+        def intIdentityEntity = new IntIdentityEntity(name: 'test1')
+
+        and:
+
+        saveEntity(intIdentityEntity)
 
         when:
 
-        withTransaction { EntityManager em ->
-            def e = em.find(IntIdentityEntity, entity.id)
-            e.name = 'test2'
-        }
+        findEntityAndUpdateNameInTransaction(intIdentityEntity, 'test2')
 
         then:
 
-        def item2 = getLatestEntityLogItem('test$IntIdentityEntity', entityId)
+        def logItem = getLatestEntityLogItem('test$IntIdentityEntity', intIdentityEntity)
 
-        loggedValueMatches(item2, 'name', 'test2')
-        loggedOldValueMatches(item2, 'name', 'test1')
+        loggedValueMatches(logItem, 'name', 'test2')
+        loggedOldValueMatches(logItem, 'name', 'test1')
 
 
         cleanup:
 
-        clearEntityById(entity, entityId, 'TEST_INT_IDENTITY')
+        clearEntityById(intIdentityEntity, 'TEST_INT_IDENTITY')
     }
 
-    protected saveEntity(Entity entity, def entityId) {
-        withTransaction { EntityManager em ->
-            this.entity = entity
-            this.entityId = entityId
-            em.persist(entity)
-        }
-    }
 
     def "Logging is working for a creation of a MetaProperty"() {
 
-        when:
+        given:
 
         def stringKeyEntity = new StringKeyEntity(code: 'code1', name: 'test1')
-        saveEntity(stringKeyEntity, stringKeyEntity.id)
+
+        when:
+
+        saveEntity(stringKeyEntity)
 
         then:
 
         noExceptionThrown()
 
-
         cleanup:
-        clearEntityByCode(entity, entityId, 'TEST_STRING_KEY')
+
+        clearEntityByCode(stringKeyEntity, 'TEST_STRING_KEY')
 
     }
 
@@ -187,16 +187,16 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
         given:
 
-        withTransaction {EntityManager em ->
-            entity = new StringKeyEntity(code: 'code1', name: 'test1')
-            entityId = entity.id
-            em.persist(entity)
-        }
+        def stringKeyEntity = new StringKeyEntity(code: 'code1', name: 'test1')
+
+        and:
+
+        saveEntity(stringKeyEntity)
 
         when:
 
         withTransaction { EntityManager em ->
-            StringKeyEntity e = em.find(StringKeyEntity, entity.id)
+            StringKeyEntity e = em.find(StringKeyEntity, stringKeyEntity.id)
             e.name = 'test2'
             e.description = 'description2'
 
@@ -208,7 +208,7 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
         then:
 
-        def item2 = getLatestEntityLogItem('test$StringKeyEntity', entity.id)
+        def item2 = getLatestEntityLogItem('test$StringKeyEntity', stringKeyEntity)
 
         loggedValueMatches(item2, 'name', 'test2')
         loggedOldValueMatches(item2, 'name', 'test1')
@@ -218,20 +218,41 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
 
         cleanup:
-        clearEntityByCode(entity, entityId, 'TEST_STRING_KEY')
+
+        clearEntityByCode(stringKeyEntity, 'TEST_STRING_KEY')
 
     }
 
-
-    private clearEntityById(Entity  entity, def entityId, String tableName) {
-        if (entity && entityId) {
-            runSqlUpdate("delete from $tableName where id = ${entityId}")
+    protected saveEntity(Entity entity) {
+        withTransaction { EntityManager em ->
+            em.persist(entity)
         }
     }
 
-    private clearEntityByCode(Entity  entity, def entityCode, String tableName) {
-        if (entity && entityCode) {
-            runSqlUpdate("delete from $tableName where code = '${entityCode}'")
+    private clearEntityById(BaseDbGeneratedIdEntity entity, String tableName) {
+        if (entity && entity.id.get()) {
+            runSqlUpdate("delete from $tableName where id = ${entity.id.get()}")
+        }
+    }
+
+    private clearEntityByCode(StringKeyEntity  entity, String tableName) {
+        if (entity && entity.id) {
+            runSqlUpdate("delete from $tableName where code = '${entity.id}'")
+        }
+    }
+
+
+    protected findEntityAndUpdateNameInTransaction(IdentityEntity identityEntity, String name) {
+        withTransaction { EntityManager em ->
+            IdentityEntity e = em.find(IdentityEntity, identityEntity.id)
+            e.name = name
+        }
+    }
+
+    protected findEntityAndUpdateNameInTransaction(IntIdentityEntity identityEntity, String name) {
+        withTransaction { EntityManager em ->
+            IntIdentityEntity e = em.find(IntIdentityEntity, identityEntity.id)
+            e.name = name
         }
     }
 

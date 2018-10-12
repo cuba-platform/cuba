@@ -21,6 +21,8 @@ import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.TypedQuery
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity
+import com.haulmont.cuba.core.entity.BaseStringIdEntity
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.EntityLogItem
@@ -33,7 +35,7 @@ import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-abstract class AbstractEntityLogTest extends Specification {
+class AbstractEntityLogTest extends Specification {
 
 
     @Shared
@@ -108,6 +110,13 @@ abstract class AbstractEntityLogTest extends Specification {
 
     protected EntityLogItem getLatestEntityLogItem(String entityName, def entityId) {
         getEntityLogItems(entityName, entityId).first()
+    }
+
+    protected EntityLogItem getLatestEntityLogItem(String entityName, BaseDbGeneratedIdEntity entity) {
+        getEntityLogItems(entityName, entity.id.get()).first()
+    }
+    protected EntityLogItem getLatestEntityLogItem(String entityName, BaseStringIdEntity entity) {
+        getEntityLogItems(entityName, entity.id).first()
     }
 
     protected void clearTable(EntityManager em, String tableName) {
