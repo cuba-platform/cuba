@@ -201,13 +201,4 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     public boolean getUseConfirmDialog() {
         return useConfirmDialog;
     }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-
-        if (bulkEditAction != null) {
-            bulkEditAction.setEnabled(enabled);
-        }
-    }
 }
