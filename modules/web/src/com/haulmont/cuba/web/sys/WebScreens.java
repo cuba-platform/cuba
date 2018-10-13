@@ -53,6 +53,7 @@ import com.haulmont.cuba.gui.screen.compatibility.*;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.sys.*;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -162,35 +163,38 @@ public class WebScreens implements Screens, WindowManager {
             );
         }
 
-        checkPermissions(launchMode, windowInfo);
+        boolean forceDialog = false;
+        if (hasModalWindow()
+                && launchMode != OpenMode.DIALOG
+                && launchMode != OpenMode.ROOT) {
+            launchMode = OpenMode.DIALOG;
+            forceDialog = true;
+        }
 
-        // todo change launchMode
-        // todo support forciblyDialog
+        checkPermissions(launchMode, windowInfo);
 
         // todo perf4j stop watches for lifecycle
 
         @SuppressWarnings("unchecked")
         Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
 
-        Window window = createWindow(windowInfo, resolvedScreenClass, launchMode);
+        Window window = createWindow(windowInfo, resolvedScreenClass, launchMode, forceDialog);
 
-        T controller = createController(windowInfo, window, resolvedScreenClass, launchMode);
+        T controller = createController(windowInfo, window, resolvedScreenClass);
 
         // setup screen and controller
 
         UiControllerUtils.setWindowId(controller, windowInfo.getId());
         UiControllerUtils.setFrame(controller, window);
         UiControllerUtils.setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, options, this, ui.getDialogs(), ui.getNotifications(), ui.getFragments())
+                new ScreenContextImpl(windowInfo, options, this,
+                        ui.getDialogs(), ui.getNotifications(), ui.getFragments())
         );
         UiControllerUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
 
         WindowImplementation windowImpl = (WindowImplementation) window;
         windowImpl.setFrameOwner(controller);
         windowImpl.setId(controller.getId());
-
-        WindowContextImpl windowContext = new WindowContextImpl(window, launchMode);
-        ((WindowImplementation) window).setContext(windowContext);
 
         // load from XML
 
@@ -914,8 +918,7 @@ public class WebScreens implements Screens, WindowManager {
         throw new UnsupportedOperationException(); // todo
     }
 
-    protected <T extends Screen> T createController(WindowInfo windowInfo, Window window,
-                                                    Class<T> screenClass, LaunchMode launchMode) {
+    protected <T extends Screen> T createController(WindowInfo windowInfo, Window window, Class<T> screenClass) {
         Constructor<T> constructor;
         try {
             constructor = screenClass.getConstructor();
@@ -933,16 +936,16 @@ public class WebScreens implements Screens, WindowManager {
         return controller;
     }
 
-    protected Window createWindow(WindowInfo windowInfo, Class<? extends Screen> screenClass, LaunchMode launchMode) {
-        // todo forcibly dialog support
-        // todo support forceDialog defined in XML / controller
+    protected Window createWindow(WindowInfo windowInfo, Class<? extends Screen> screenClass,
+                                  LaunchMode launchMode, boolean forceDialog) {
+        // todo support forceDialog defined in XML / controller annotation
 
         Window window;
         if (launchMode instanceof OpenMode) {
             OpenMode openMode = (OpenMode) launchMode;
             switch (openMode) {
                 case ROOT:
-                    // should be changed
+                    // todo should be changed
                     ui.beforeTopLevelWindowInit();
 
                     window = uiComponents.create(RootWindow.NAME);
@@ -955,6 +958,16 @@ public class WebScreens implements Screens, WindowManager {
 
                 case DIALOG:
                     window = uiComponents.create(DialogWindow.NAME);
+                    if (forceDialog) {
+                        DialogWindow dialogWindow = (DialogWindow) window;
+
+                        ThemeConstants theme = ui.getApp().getThemeConstants();
+
+                        dialogWindow.setDialogWidth(theme.get("cuba.web.WebWindowManager.forciblyDialog.width"));
+                        dialogWindow.setDialogHeight(theme.get("cuba.web.WebWindowManager.forciblyDialog.height"));
+                        dialogWindow.setResizable(true);
+                    }
+
                     break;
 
                 default:
@@ -963,6 +976,9 @@ public class WebScreens implements Screens, WindowManager {
         } else {
             throw new UnsupportedOperationException("Unsupported launch mode");
         }
+
+        WindowContextImpl windowContext = new WindowContextImpl(window, launchMode);
+        ((WindowImplementation) window).setContext(windowContext);
 
         return window;
     }

@@ -561,8 +561,10 @@ public class AppUI extends CubaUI
     public void beforeTopLevelWindowInit() {
         updateUiTheme();
 
+        // todo move to login handling
         updateClientSystemMessages(app.getLocale());
 
+        // todo move test id manager into RootWindow
         getTestIdManager().reset();
     }
 
