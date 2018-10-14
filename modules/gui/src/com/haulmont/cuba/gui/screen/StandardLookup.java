@@ -67,7 +67,9 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     }
 
     protected void setupLookupComponent(@SuppressWarnings("unused") BeforeShowEvent event) {
-        getLookupComponent().setLookupSelectHandler(this::select);
+        if (this.selectHandler != null) {
+            getLookupComponent().setLookupSelectHandler(this::select);
+        }
     }
 
     @Override
