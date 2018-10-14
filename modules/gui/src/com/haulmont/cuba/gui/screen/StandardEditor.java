@@ -20,29 +20,27 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.BeanValidation;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.EntityStates;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 import javax.validation.Validator;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -104,8 +102,64 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             loader.setEntityId(entityToEdit.getId());
         }
 
-        // todo pessimistic locking
-        // todo security
+        setupLock();
+    }
+
+    protected void setupLock() {
+        InstanceContainer<Entity> container = getEditedEntityContainer();
+        Security security = getBeanLocator().get(Security.class);
+
+        if (!getEntityStates().isNew(entityToEdit)
+                && security.isEntityOpPermitted(container.getEntityMetaClass(), EntityOp.UPDATE)) {
+            readOnly = false;
+
+            LockService lockService = getBeanLocator().get(LockService.class);
+
+            LockInfo lockInfo = lockService.lock(getLockName(), entityToEdit.getId().toString());
+            if (lockInfo == null) {
+                justLocked = true;
+                addAfterCloseListener(afterCloseEvent -> {
+                    releaseLock();
+                });
+            } else if (!(lockInfo instanceof LockNotSupported)) {
+                UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.class);
+
+                Messages messages = getBeanLocator().get(Messages.class);
+                getScreenContext().getNotifications().create()
+                        .setCaption(messages.getMainMessage("entityLocked.msg"))
+                        .setDescription(
+                        String.format(messages.getMainMessage("entityLocked.desc"),
+                                lockInfo.getUser().getLogin(),
+                                Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
+                        ))
+                        .setType(Notifications.NotificationType.HUMANIZED)
+                        .show();
+
+                Action action = getWindow().getAction(WINDOW_COMMIT);
+                if (action != null)
+                    action.setEnabled(false);
+                action = getWindow().getAction(WINDOW_COMMIT_AND_CLOSE);
+                if (action != null)
+                    action.setEnabled(false);
+                readOnly = true;
+            }
+        }
+    }
+
+    public void releaseLock() {
+        if (justLocked) {
+            Entity entity = getEditedEntityContainer().getItem();
+            if (entity != null) {
+                getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
+            }
+        }
+    }
+
+    protected String getLockName() {
+        InstanceContainer<Entity> container = getEditedEntityContainer();
+        return getBeanLocator().get(ExtendedEntities.class)
+                .getOriginalOrThisMetaClass(container.getEntityMetaClass())
+                .getName();
     }
 
     protected boolean doNotReloadEditedEntity() {

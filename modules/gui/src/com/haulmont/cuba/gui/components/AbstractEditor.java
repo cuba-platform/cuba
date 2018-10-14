@@ -247,6 +247,9 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
             if (lockInfo == null) {
                 justLocked = true;
+                addAfterCloseListener(afterCloseEvent -> {
+                    releaseLock();
+                });
             } else if (!(lockInfo instanceof LockNotSupported)) {
                 UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.NAME);
 
@@ -265,6 +268,16 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
                 if (action != null)
                     action.setEnabled(false);
                 readOnly = true;
+            }
+        }
+    }
+
+    public void releaseLock() {
+        if (justLocked) {
+            Datasource ds = getDatasourceInternal();
+            Entity entity = ds.getItem();
+            if (entity != null) {
+                getBeanLocator().get(LockService.class).unlock(getMetaClassForLocking(ds).getName(), entity.getId().toString());
             }
         }
     }
