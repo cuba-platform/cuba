@@ -1192,6 +1192,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attributeGroup ref="hasDataContainer"/>
         <xs:attributeGroup ref="hasContextHelp"/>
 
         <xs:attribute name="stylename" type="labelStylename"/>
@@ -1245,6 +1246,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasContextHelp"/>
                 <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
@@ -1773,6 +1775,7 @@
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="isUploadComponent"/>
@@ -1902,6 +1905,7 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasDataContainer"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
