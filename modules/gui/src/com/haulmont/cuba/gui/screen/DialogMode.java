@@ -16,16 +16,29 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.haulmont.cuba.gui.components.DialogWindow;
+import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
+
 import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
+/**
+ * Specifies parameters of {@link DialogWindow} if window is opened as {@link OpenMode#DIALOG}.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Inherited
 public @interface DialogMode {
-    // todo width
-    // todo height
-    // todo maximized
-    // todo modal
-    // todo forceDialog
+    String width() default "";
+    String height() default "";
+
+    WindowMode windowMode() default WindowMode.NORMAL;
+
+    boolean modal() default true;
+    boolean closeable() default true;
+    boolean closeOnClickOutside() default false;
+    boolean resizable() default false;
+
+    boolean forceDialog() default false;
 }

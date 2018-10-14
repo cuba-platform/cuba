@@ -31,7 +31,10 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
@@ -54,6 +57,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 @Scope(UIScope.NAME)
 @Component(Fragments.NAME)
@@ -109,27 +113,33 @@ public class WebFragments implements Fragments {
 
     protected <T extends ScreenFragment> T createFragment(FrameOwner parent, WindowInfo windowInfo,
                                                           ScreenOptions options) {
+        if (windowInfo.getType() != WindowInfo.Type.FRAGMENT) {
+            throw new IllegalArgumentException(
+                    String.format("Unable to create fragment %s with type %s", windowInfo.getId(), windowInfo.getType())
+            );
+        }
+
         Fragment fragment = uiComponents.create(Fragment.NAME);
         ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
 
         // setup screen and controller
 
-        UiControllerUtils.setWindowId(controller, windowInfo.getId());
-        UiControllerUtils.setFrame(controller, fragment);
-        UiControllerUtils.setScreenContext(controller,
+        setWindowId(controller, windowInfo.getId());
+        setFrame(controller, fragment);
+        setScreenContext(controller,
                 new ScreenContextImpl(windowInfo, options,
                         ui.getScreens(),
                         ui.getDialogs(),
                         ui.getNotifications(),
                         this)
         );
-        UiControllerUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        setScreenData(controller, beanLocator.get(ScreenData.NAME));
 
         FragmentImplementation fragmentImpl = (FragmentImplementation) fragment;
         fragmentImpl.setFrameOwner(controller);
         fragmentImpl.setId(controller.getId());
 
-        Frame parentFrame = UiControllerUtils.getFrame(parent);
+        Frame parentFrame = getFrame(parent);
 
         // fake parent loader context
         ComponentLoaderContext loaderContext = new ComponentLoaderContext(options);

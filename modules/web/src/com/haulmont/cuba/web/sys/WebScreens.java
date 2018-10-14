@@ -91,6 +91,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 import static com.haulmont.cuba.gui.components.Window.CLOSE_ACTION_ID;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 @Scope(UIScope.NAME)
 @Component(Screens.NAME)
@@ -163,20 +164,39 @@ public class WebScreens implements Screens, WindowManager {
             );
         }
 
+        @SuppressWarnings("unchecked")
+        Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
+
+        // load XML document here in order to get metadata before Window creation, e.g. forceDialog from <dialogMode>
+        Element element = loadScreenXml(windowInfo, options);
+
+        // check if we need to change launchMode to DIALOG
         boolean forceDialog = false;
-        if (hasModalWindow()
-                && launchMode != OpenMode.DIALOG
+        if (launchMode != OpenMode.DIALOG
                 && launchMode != OpenMode.ROOT) {
-            launchMode = OpenMode.DIALOG;
-            forceDialog = true;
+
+            if (hasModalWindow()) {
+                launchMode = OpenMode.DIALOG;
+                forceDialog = true;
+            }
+
+            if (element != null && element.element("dialogMode") != null) {
+                String forceDialogAttr = element.element("dialogMode").attributeValue("forceDialog");
+                if (StringUtils.isNotEmpty(forceDialogAttr)
+                        && Boolean.parseBoolean(forceDialogAttr)) {
+                    launchMode = OpenMode.DIALOG;
+                }
+            }
+
+            DialogMode dialogMode = resolvedScreenClass.getAnnotation(DialogMode.class);
+            if (dialogMode != null && dialogMode.forceDialog()) {
+                launchMode = OpenMode.DIALOG;
+            }
         }
 
         checkPermissions(launchMode, windowInfo);
 
         // todo perf4j stop watches for lifecycle
-
-        @SuppressWarnings("unchecked")
-        Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
 
         Window window = createWindow(windowInfo, resolvedScreenClass, launchMode, forceDialog);
 
@@ -184,29 +204,30 @@ public class WebScreens implements Screens, WindowManager {
 
         // setup screen and controller
 
-        UiControllerUtils.setWindowId(controller, windowInfo.getId());
-        UiControllerUtils.setFrame(controller, window);
-        UiControllerUtils.setScreenContext(controller,
+        setWindowId(controller, windowInfo.getId());
+        setFrame(controller, window);
+        setScreenContext(controller,
                 new ScreenContextImpl(windowInfo, options, this,
                         ui.getDialogs(), ui.getNotifications(), ui.getFragments())
         );
-        UiControllerUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        setScreenData(controller, beanLocator.get(ScreenData.NAME));
 
         WindowImplementation windowImpl = (WindowImplementation) window;
         windowImpl.setFrameOwner(controller);
         windowImpl.setId(controller.getId());
 
-        // load from XML
+        // load UI from XML
 
         ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(options);
         componentLoaderContext.setFullFrameId(windowInfo.getId());
         componentLoaderContext.setCurrentFrameId(windowInfo.getId());
         componentLoaderContext.setFrame(window);
 
-        loadScreenXml(windowInfo, window, controller, componentLoaderContext);
+        if (element != null) {
+            loadWindowFromXml(element, windowInfo, window, controller, componentLoaderContext);
+        }
 
         // inject top level screen dependencies
-
         StopWatch injectStopWatch = createStopWatch(LifeCycle.INJECTION, windowInfo.getId());
 
         UiControllerDependencyInjector dependencyInjector =
@@ -215,49 +236,58 @@ public class WebScreens implements Screens, WindowManager {
 
         injectStopWatch.stop();
 
-        // injection in fragments
+        // perform injection in nested fragments
         componentLoaderContext.executeInjectTasks();
 
         // run init
 
         InitEvent initEvent = new InitEvent(controller, options);
-        UiControllerUtils.fireEvent(controller, InitEvent.class, initEvent);
+        fireEvent(controller, InitEvent.class, initEvent);
 
         componentLoaderContext.executeInitTasks();
         componentLoaderContext.executePostInitTasks();
 
         AfterInitEvent afterInitEvent = new AfterInitEvent(controller, options);
-        UiControllerUtils.fireEvent(controller, AfterInitEvent.class, afterInitEvent);
+        fireEvent(controller, AfterInitEvent.class, afterInitEvent);
 
         return controller;
     }
 
-    protected <T extends Screen> void loadScreenXml(WindowInfo windowInfo, Window window, T controller,
-                                                    ComponentLoaderContext componentLoaderContext) {
+    @Nullable
+    protected Element loadScreenXml(WindowInfo windowInfo, ScreenOptions options) {
         String templatePath = windowInfo.getTemplate();
 
         if (StringUtils.isNotEmpty(templatePath)) {
-            Element element = screenXmlLoader.load(templatePath, windowInfo.getId(), componentLoaderContext.getParams());
-
-            LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
-            layoutLoader.setLocale(getLocale());
-            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
-
-            ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element, windowInfo.getId());
-
-            if (controller instanceof LegacyFrame) {
-                screenViewsLoader.deployViews(element);
-
-                initDsContext(window, element, componentLoaderContext);
-
-                DsContext dsContext = ((LegacyFrame) controller).getDsContext();
-                if (dsContext != null) {
-                    dsContext.setFrameContext(window.getContext());
-                }
+            Map<String, Object> params = Collections.emptyMap();
+            if (options instanceof MapScreenOptions) {
+                params = ((MapScreenOptions) options).getParams();
             }
-
-            windowLoader.loadComponent();
+            return screenXmlLoader.load(templatePath, windowInfo.getId(), params);
         }
+
+        return null;
+    }
+
+    protected <T extends Screen> void loadWindowFromXml(Element element, WindowInfo windowInfo, Window window, T controller,
+                                                        ComponentLoaderContext componentLoaderContext) {
+        LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
+        layoutLoader.setLocale(getLocale());
+        layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+
+        ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element, windowInfo.getId());
+
+        if (controller instanceof LegacyFrame) {
+            screenViewsLoader.deployViews(element);
+
+            initDsContext(window, element, componentLoaderContext);
+
+            DsContext dsContext = ((LegacyFrame) controller).getDsContext();
+            if (dsContext != null) {
+                dsContext.setFrameContext(window.getContext());
+            }
+        }
+
+        windowLoader.loadComponent();
     }
 
     protected void initDsContext(Window window, Element element, ComponentLoaderContext componentLoaderContext) {
@@ -325,7 +355,7 @@ public class WebScreens implements Screens, WindowManager {
         uiPermissionsWatch.stop();
 
         BeforeShowEvent beforeShowEvent = new BeforeShowEvent(screen);
-        UiControllerUtils.fireEvent(screen, BeforeShowEvent.class, beforeShowEvent);
+        fireEvent(screen, BeforeShowEvent.class, beforeShowEvent);
 
         LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
 
@@ -358,14 +388,14 @@ public class WebScreens implements Screens, WindowManager {
         afterShowWindow(screen);
 
         AfterShowEvent afterShowEvent = new AfterShowEvent(screen);
-        UiControllerUtils.fireEvent(screen, AfterShowEvent.class, afterShowEvent);
+        fireEvent(screen, AfterShowEvent.class, afterShowEvent);
     }
 
     protected void afterShowWindow(Screen screen) {
         WindowContext windowContext = screen.getWindow().getContext();
 
         if (!WindowParams.DISABLE_APPLY_SETTINGS.getBool(windowContext)) {
-            UiControllerUtils.applySettings(screen, getSettingsImpl(screen.getId()));
+            applySettings(screen, getSettingsImpl(screen.getId()));
         }
 
         if (screen instanceof LegacyFrame) {
@@ -938,8 +968,6 @@ public class WebScreens implements Screens, WindowManager {
 
     protected Window createWindow(WindowInfo windowInfo, Class<? extends Screen> screenClass,
                                   LaunchMode launchMode, boolean forceDialog) {
-        // todo support forceDialog defined in XML / controller annotation
-
         Window window;
         if (launchMode instanceof OpenMode) {
             OpenMode openMode = (OpenMode) launchMode;
@@ -957,24 +985,43 @@ public class WebScreens implements Screens, WindowManager {
                     break;
 
                 case DIALOG:
-                    window = uiComponents.create(DialogWindow.NAME);
-                    if (forceDialog) {
-                        DialogWindow dialogWindow = (DialogWindow) window;
+                    DialogWindow dialogWindow = uiComponents.create(DialogWindow.NAME);
 
+                    if (forceDialog) {
                         ThemeConstants theme = ui.getApp().getThemeConstants();
 
                         dialogWindow.setDialogWidth(theme.get("cuba.web.WebWindowManager.forciblyDialog.width"));
                         dialogWindow.setDialogHeight(theme.get("cuba.web.WebWindowManager.forciblyDialog.height"));
                         dialogWindow.setResizable(true);
+                    } else {
+                        DialogMode dialogMode = screenClass.getAnnotation(DialogMode.class);
+
+                        if (dialogMode != null) {
+                            dialogWindow.setModal(dialogMode.modal());
+                            dialogWindow.setCloseable(dialogMode.closeable());
+                            dialogWindow.setResizable(dialogMode.resizable());
+                            dialogWindow.setCloseOnClickOutside(dialogMode.closeOnClickOutside());
+
+                            if (StringUtils.isNotEmpty(dialogMode.width())) {
+                                dialogWindow.setDialogWidth(dialogMode.width());
+                            }
+                            if (StringUtils.isNotEmpty(dialogMode.height())) {
+                                dialogWindow.setDialogHeight(dialogMode.height());
+                            }
+
+                            dialogWindow.setWindowMode(dialogMode.windowMode());
+                        }
                     }
+
+                    window = dialogWindow;
 
                     break;
 
                 default:
-                    throw new UnsupportedOperationException("Unsupported launch mode");
+                    throw new UnsupportedOperationException("Unsupported launch mode " + launchMode);
             }
         } else {
-            throw new UnsupportedOperationException("Unsupported launch mode");
+            throw new UnsupportedOperationException("Unsupported launch mode " + launchMode);
         }
 
         WindowContextImpl windowContext = new WindowContextImpl(window, launchMode);
@@ -1472,8 +1519,6 @@ public class WebScreens implements Screens, WindowManager {
             // force modal
             window.setModal(true);
         }
-
-        // todo forciblyDialog
 
         ui.addWindow(vWindow);
     }
