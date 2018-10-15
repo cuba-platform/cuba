@@ -25,7 +25,7 @@ import com.vaadin.client.ui.VNotification;
 
 import java.util.List;
 
-import static com.haulmont.cuba.web.widgets.client.appui.CubaUIConnector.CUBA_NOTIFICATION_MODALITY_CURTAIN;
+import static com.haulmont.cuba.web.widgets.client.notification.CubaNotificationConnector.CUBA_NOTIFICATION_MODALITY_CURTAIN;
 
 public class CubaNotification extends VNotification {
     public static final String TRAY_STYLE = "tray";
