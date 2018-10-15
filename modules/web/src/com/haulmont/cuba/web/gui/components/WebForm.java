@@ -286,15 +286,15 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
     }
 
     @Override
-    public CaptionAlignment getCaptionAlignment() {
+    public CaptionPosition getCaptionPosition() {
         return component.isUseInlineCaption()
-                ? CaptionAlignment.LEFT
-                : CaptionAlignment.TOP;
+                ? CaptionPosition.LEFT
+                : CaptionPosition.TOP;
     }
 
     @Override
-    public void setCaptionAlignment(CaptionAlignment captionAlignment) {
-        component.setUseInlineCaption(CaptionAlignment.LEFT.equals(captionAlignment));
+    public void setCaptionPosition(CaptionPosition captionAlignment) {
+        component.setUseInlineCaption(CaptionPosition.LEFT.equals(captionAlignment));
     }
 
     @Override

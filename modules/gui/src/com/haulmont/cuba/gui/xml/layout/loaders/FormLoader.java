@@ -76,7 +76,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
 
         loadAlign(resultComponent, element);
 
-        loadCaptionAlignment(resultComponent, element);
+        loadCaptionPosition(resultComponent, element);
         loadChildrenCaptionWidth(resultComponent, element);
 
         loadDataContainer(resultComponent, element);
@@ -263,10 +263,10 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         return beanLocator.get(UiComponentsGenerator.NAME);
     }
 
-    protected void loadCaptionAlignment(Form resultComponent, Element element) {
-        String captionAlignment = element.attributeValue("captionAlignment");
+    protected void loadCaptionPosition(Form resultComponent, Element element) {
+        String captionAlignment = element.attributeValue("captionPosition");
         if (!Strings.isNullOrEmpty(captionAlignment)) {
-            resultComponent.setCaptionAlignment(Form.CaptionAlignment.valueOf(captionAlignment));
+            resultComponent.setCaptionPosition(Form.CaptionPosition.valueOf(captionAlignment));
         }
     }
 

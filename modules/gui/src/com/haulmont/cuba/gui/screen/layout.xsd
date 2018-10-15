@@ -284,7 +284,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="formCaptionAlignment">
+    <xs:simpleType name="formCaptionPosition">
         <xs:restriction base="xs:string">
             <xs:enumeration value="TOP"/>
             <xs:enumeration value="LEFT"/>
@@ -2395,7 +2395,7 @@
                 <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="dataContainer" type="xs:string"/>
-                <xs:attribute name="captionAlignment" type="formCaptionAlignment"/>
+                <xs:attribute name="captionPosition" type="formCaptionPosition"/>
                 <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>

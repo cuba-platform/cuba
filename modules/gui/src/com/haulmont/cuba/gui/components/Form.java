@@ -80,14 +80,14 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     /**
      * @return alignment of component captions
      */
-    CaptionAlignment getCaptionAlignment();
+    CaptionPosition getCaptionPosition();
 
     /**
      * Sets alignment of component captions.
      *
      * @param captionAlignment component captions alignment
      */
-    void setCaptionAlignment(CaptionAlignment captionAlignment);
+    void setCaptionPosition(CaptionPosition captionAlignment);
 
     /**
      * @return columns fixed caption width
@@ -133,7 +133,7 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     /**
      * Caption alignment.
      */
-    enum CaptionAlignment {
+    enum CaptionPosition {
         /**
          * Component captions will be placed in a separate column on the left side of the components.
          */
