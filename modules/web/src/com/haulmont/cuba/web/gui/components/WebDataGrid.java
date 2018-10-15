@@ -1343,9 +1343,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Nullable
     @Override
     public E getSingleSelected() {
-        final Collection selected = component.getSelectedRows();
-        return selected == null || selected.isEmpty() ?
-                null : (E) datasource.getItem(selected.iterator().next());
+        if (getSelectionMode() == SelectionMode.SINGLE) {
+            // do not create new array list with copied selected Ids for simple case with 1 row
+            Object selectedRow = component.getSelectedRow();
+
+            return selectedRow == null ? null : (E) datasource.getItem(selectedRow);
+        } else {
+            Collection selected = component.getSelectedRows();
+            return selected == null || selected.isEmpty() ?
+                    null : (E) datasource.getItem(selected.iterator().next());
+        }
     }
 
     @SuppressWarnings("unchecked")
