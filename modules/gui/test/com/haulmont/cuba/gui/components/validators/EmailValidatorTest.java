@@ -18,14 +18,10 @@
 package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ValidationException;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import org.hibernate.validator.HibernateValidator;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -35,19 +31,9 @@ import static junit.framework.TestCase.assertTrue;
 
 public class EmailValidatorTest extends CubaClientTestCase {
 
-    @Mocked
-    ApplicationContext applicationContext;
-
     @Before
     public void setUp() {
         setupInfrastructure();
-        new NonStrictExpectations() {
-            {
-                //noinspection ResultOfMethodCallIgnored
-                AppContext.getApplicationContext();
-                result = applicationContext;
-            }
-        };
     }
 
     @Test
