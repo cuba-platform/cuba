@@ -17,17 +17,43 @@
 
 package com.haulmont.cuba.gui.components.validators;
 
-import junit.framework.TestCase;
+import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.ValidationException;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
+import org.hibernate.validator.HibernateValidator;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
-public class EmailValidatorTest extends TestCase {
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
-    private Pattern pattern = Pattern.compile(EmailValidator.EMAIL_PATTERN);
+public class EmailValidatorTest extends CubaClientTestCase {
 
-    public void testValidate() throws Exception {
+    @Mocked
+    ApplicationContext applicationContext;
+
+    @Before
+    public void setUp() {
+        setupInfrastructure();
+        new NonStrictExpectations() {
+            {
+                //noinspection ResultOfMethodCallIgnored
+                AppContext.getApplicationContext();
+                result = applicationContext;
+            }
+        };
+    }
+
+    @Test
+    public void testValidate() {
         String[] validEmails = {
+                "",
                 "selenium@google.com",
                 "a@mail.ru",
                 "test@pegas.travel",
@@ -52,43 +78,64 @@ public class EmailValidatorTest extends TestCase {
                 "admin@tes-t.mg.gov.com",
                 "admin@tes-t.mg.g-o-v.com",
                 "admin@te-st.m-g.gov.com",
-                "admin@t-est.m-g.go-v.com"
+                "admin@t-est.m-g.go-v.com",
+                "qwe@mail.com, asd@mail.com",
+                "qwe@mail.com; asd@mail.com; zxc@mail.com",
+                "qwe@mail.com;asd@mail.com;zxc@mail.com",
+                "qwe@mail.com; asd@mail.com, zxc@mail.com",
+                "qwe@mail.com; asd@mail.com, zxc@mail.com,",
+                "qwe@mail.com; asd@mail.com, zxc@mail.com, ",
         };
 
+        EmailValidator emailValidator = new EmailValidator(messages, createValidator());
+
         for (String validEmail : validEmails) {
-            assertTrue("Invalid: " + validEmail, pattern.matcher(validEmail).matches());
+            boolean valid = true;
+            try {
+                emailValidator.validate(validEmail);
+            } catch (ValidationException e) {
+                valid = false;
+            }
+            assertTrue("Should be valid: " + validEmail, valid);
         }
     }
 
-    public void testValidateFail() throws Exception {
+    @Test
+    public void testValidateFail() {
         String[] invalidEmails = {
-                "selenium#@google.com",
                 "@mail.ru",
-                "test@pegas.travelersessolong",
                 "yuriy.@mail.ru",
-                "yuriy-@mail.ru",
-                "_pavlov@mail.ru",
                 "Abc.example.com",
                 "just\"not\"right@example.com",
-                "_pavlov@-mail.ru",
-                "pavlov@mail-.ru",
-                "pavlov@-mail-.ru",
-                "test@-i.com",
-                "test@i-.ru",
-                "test@-i-.com",
-                "test@i--i.ru",
                 ".email@test.com",
                 "email.@test.com",
                 ".email.@test.com",
-                "admin@test-.mg.gov.com",
-                "admin@tes-t.-mg.g--ov.com",
-                "admin@te-st.m-g.-gov-.com",
-                "admin@t-est.m-g-.go-v.com"
+                "qwe@mail.com, ,zxc@mail.com",
+                "qwe@mail.com; ;zxc@mail.com",
+                "qwe@mail.com; ;zxc@mail.com,",
+                "qwe@mail.com zxc@mail.com",
+                "qwe@mail.com zxc@mail.com,"
         };
 
+        EmailValidator emailValidator = new EmailValidator(messages, createValidator());
+
         for (String invalidEmail : invalidEmails) {
-            Matcher m = pattern.matcher(invalidEmail);
-            assertFalse("Valid: " + invalidEmail, m.matches());
+            boolean valid = false;
+            try {
+                emailValidator.validate(invalidEmail);
+                valid = true;
+            } catch (ValidationException ignored) {
+            }
+
+            assertFalse("Should be not valid: " + invalidEmail, valid);
         }
+    }
+
+    protected Validator createValidator() {
+        return Validation
+                .byProvider(HibernateValidator.class)
+                .configure()
+                .buildValidatorFactory()
+                .getValidator();
     }
 }
