@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -297,7 +298,9 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
         com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
 
-        tab.setCaption(name);
+        if (Strings.isNullOrEmpty(tab.getCaption())) {
+            tab.setCaption(name);
+        }
 
         if (getDebugId() != null) {
             this.component.setTestId(tabControl,
