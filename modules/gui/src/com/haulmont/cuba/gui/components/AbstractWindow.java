@@ -47,7 +47,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     public static final String UNKNOWN_CLOSE_ACTION_ID = "unknown";
 
-    protected Frame frame;
+    protected Window frame;
     private Object _companion;
 
     private Component parent;
@@ -504,12 +504,52 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setCloseable(boolean closeable) {
-        ((Window)this.frame).setCloseable(closeable);
+        this.frame.setCloseable(closeable);
     }
 
     @Override
     public boolean isCloseable() {
-        return ((Window)this.frame).isCloseable();
+        return this.frame.isCloseable();
+    }
+
+    @Override
+    public void setMinWidth(String minWidth) {
+        frame.setMinWidth(minWidth);
+    }
+
+    @Override
+    public String getMinWidth() {
+        return frame.getMinWidth();
+    }
+
+    @Override
+    public void setMaxWidth(String maxWidth) {
+        frame.setMaxWidth(maxWidth);
+    }
+
+    @Override
+    public String getMaxWidth() {
+        return frame.getMaxWidth();
+    }
+
+    @Override
+    public void setMinHeight(String minHeight) {
+        frame.setMinHeight(minHeight);
+    }
+
+    @Override
+    public String getMinHeight() {
+        return frame.getMinHeight();
+    }
+
+    @Override
+    public void setMaxHeight(String maxHeight) {
+        frame.setMaxHeight(maxHeight);
+    }
+
+    @Override
+    public String getMaxHeight() {
+        return frame.getMaxHeight();
     }
 
     @Override
@@ -519,7 +559,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public WindowContext getContext() {
-        return (WindowContext) frame.getContext();
+        return frame.getContext();
     }
 
     @Override
@@ -570,7 +610,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     /** INTERNAL. Don't call from application code. */
     @Override
     public Window getWrappedWindow() {
-        return (Window) frame;
+        return frame;
     }
 
     /**
@@ -612,22 +652,22 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setFocusComponent(String componentId) {
-        ((Window) frame).setFocusComponent(componentId);
+        frame.setFocusComponent(componentId);
     }
 
     @Override
     public String getFocusComponent() {
-        return ((Window) frame).getFocusComponent();
+        return frame.getFocusComponent();
     }
 
     @Override
     public void addTimer(Timer timer) {
-        ((Window) frame).addTimer(timer);
+        frame.addTimer(timer);
     }
 
     @Override
     public Timer getTimer(String id) {
-        return ((Window) frame).getTimer(id);
+        return frame.getTimer(id);
     }
 
     @Override
@@ -637,7 +677,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public DialogOptions getDialogOptions() {
-        return ((Window) frame).getDialogOptions();
+        return frame.getDialogOptions();
     }
 
     /**
@@ -735,11 +775,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public Subscription addBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
-        return ((Window) frame).addBeforeWindowCloseListener(listener);
+        return frame.addBeforeWindowCloseListener(listener);
     }
 
     @Override
     public void removeBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
-        ((Window) frame).removeBeforeWindowCloseListener(listener);
+        frame.removeBeforeWindowCloseListener(listener);
     }
 }

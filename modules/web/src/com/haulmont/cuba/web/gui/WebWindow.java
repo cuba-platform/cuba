@@ -20,6 +20,7 @@ import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.HtmlAttributes.CSS;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
@@ -236,6 +238,54 @@ public abstract class WebWindow implements Window, Component.Wrapper,
                     marginInfo.hasLeft());
             ((Layout.MarginHandler) getContainer()).setMargin(vMargin);
         }
+    }
+
+    @Override
+    public void setMinWidth(String minWidth) {
+        HtmlAttributesExtension.get(component)
+                .setCssProperty(CSS.MIN_WIDTH, minWidth);
+    }
+
+    @Override
+    public String getMinWidth() {
+        return HtmlAttributesExtension.get(component)
+                .getCssProperty(CSS.MIN_WIDTH);
+    }
+
+    @Override
+    public void setMaxWidth(String maxWidth) {
+        HtmlAttributesExtension.get(component)
+                .setCssProperty(CSS.MAX_WIDTH, maxWidth);
+    }
+
+    @Override
+    public String getMaxWidth() {
+        return HtmlAttributesExtension.get(component)
+                        .getCssProperty(CSS.MAX_WIDTH);
+    }
+
+    @Override
+    public void setMinHeight(String minHeight) {
+        HtmlAttributesExtension.get(component)
+                .setCssProperty(CSS.MIN_HEIGHT, minHeight);
+    }
+
+    @Override
+    public String getMinHeight() {
+        return HtmlAttributesExtension.get(component)
+                        .getCssProperty(CSS.MIN_HEIGHT);
+    }
+
+    @Override
+    public void setMaxHeight(String maxHeight) {
+        HtmlAttributesExtension.get(component)
+                .setCssProperty(CSS.MAX_HEIGHT, maxHeight);
+    }
+
+    @Override
+    public String getMaxHeight() {
+        return HtmlAttributesExtension.get(component)
+                .getCssProperty(CSS.MAX_HEIGHT);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -580,6 +630,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Deprecated
     @Override
     public WindowManager getWindowManager() {
         return (WindowManager) UiControllerUtils.getScreenContext(getFrameOwner()).getScreens();

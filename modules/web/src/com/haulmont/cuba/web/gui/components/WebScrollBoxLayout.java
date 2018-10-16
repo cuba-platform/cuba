@@ -19,10 +19,12 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.HtmlAttributes.CSS;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.web.widgets.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
@@ -236,6 +238,84 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
             applyScrollBarsPolicy(scrollBarPolicy);
         }
         this.scrollBarPolicy = scrollBarPolicy;
+    }
+
+    @Override
+    public void setContentWidth(String width) {
+        getContent().setWidth(width);
+    }
+
+    @Override
+    public float getContentWidth() {
+        return getContent().getWidth();
+    }
+
+    @Override
+    public SizeUnit getContentWidthSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(getContent().getWidthUnits());
+    }
+
+    @Override
+    public void setContentHeight(String height) {
+        getContent().setHeight(height);
+    }
+
+    @Override
+    public float getContentHeight() {
+        return getContent().getHeight();
+    }
+
+    @Override
+    public SizeUnit getContentHeightSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(getContent().getHeightUnits());
+    }
+
+    @Override
+    public void setContentMinWidth(String minWidth) {
+        HtmlAttributesExtension.get(getContent())
+                .setCssProperty(CSS.MIN_WIDTH, minWidth);
+    }
+
+    @Override
+    public String getContentMinWidth() {
+        return HtmlAttributesExtension.get(getContent())
+                .getCssProperty(CSS.MIN_WIDTH);
+    }
+
+    @Override
+    public void setContentMaxWidth(String maxWidth) {
+        HtmlAttributesExtension.get(getContent())
+                .setCssProperty(CSS.MAX_WIDTH, maxWidth);
+    }
+
+    @Override
+    public String getContentMaxWidth() {
+        return HtmlAttributesExtension.get(getContent())
+                .getCssProperty(CSS.MAX_WIDTH);
+    }
+
+    @Override
+    public void setContentMinHeight(String minHeight) {
+        HtmlAttributesExtension.get(getContent())
+                .setCssProperty(CSS.MIN_HEIGHT, minHeight);
+    }
+
+    @Override
+    public String getContentMinHeight() {
+        return HtmlAttributesExtension.get(getContent())
+                .getCssProperty(CSS.MIN_HEIGHT);
+    }
+
+    @Override
+    public void setContentMaxHeight(String maxHeight) {
+        HtmlAttributesExtension.get(getContent())
+                .setCssProperty(CSS.MAX_HEIGHT, maxHeight);
+    }
+
+    @Override
+    public String getContentMaxHeight() {
+        return HtmlAttributesExtension.get(getContent())
+                .getCssProperty(CSS.MAX_HEIGHT);
     }
 
     protected void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {

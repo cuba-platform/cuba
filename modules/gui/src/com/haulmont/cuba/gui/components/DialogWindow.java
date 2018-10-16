@@ -25,10 +25,6 @@ public interface DialogWindow extends Window {
      */
     String NAME = "dialogWindow";
 
-//    todo new feature
-//    void setScrollable(boolean scrollable);
-//    boolean isScrollable();
-
     void setDialogWidth(String dialogWidth);
     float getDialogWidth();
     SizeUnit getDialogWidthUnit();

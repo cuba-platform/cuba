@@ -74,6 +74,50 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     void setCloseable(boolean closeable);
     boolean isCloseable();
 
+    /**
+     * Sets minimum CSS width for window layout. Examples: "640px", "auto".
+     *
+     * @param minWidth minimum width
+     */
+    void setMinWidth(String minWidth);
+    /**
+     * @return previously set minimal CSS width or null
+     */
+    String getMinWidth();
+
+    /**
+     * Sets maximum CSS width for window layout. Examples: "640px", "100%".
+     *
+     * @param maxWidth maximum width
+     */
+    void setMaxWidth(String maxWidth);
+    /**
+     * @return previously set maximum CSS width or null
+     */
+    String getMaxWidth();
+
+    /**
+     * Sets minimum CSS height for window layout. Examples: "640px", "auto".
+     *
+     * @param minHeight minimum height
+     */
+    void setMinHeight(String minHeight);
+    /**
+     * @return previously set minimum CSS height or null
+     */
+    String getMinHeight();
+
+    /**
+     * Sets maximum CSS height for window layout. Examples: "640px", "100%".
+     *
+     * @param maxHeight maximum height
+     */
+    void setMaxHeight(String maxHeight);
+    /**
+     * @return previously set maximum CSS height or null
+     */
+    String getMaxHeight();
+
     @Override
     Screen getFrameOwner();
 

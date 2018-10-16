@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class WindowLoader extends ContainerLoader<Window> implements ComponentRootLoader<Window> {
 
@@ -91,6 +92,8 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         loadCss(resultComponent, element);
         loadVisible(resultComponent, layoutElement);
 
+        loadMinMaxSizes(resultComponent, layoutElement);
+
         loadTimers(factory, resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
@@ -111,12 +114,35 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
                 if (companion != null) {
                     getContext().addInjectTask((c, w) -> {
-                        CompanionDependencyInjector cdi = new CompanionDependencyInjector((LegacyFrame) controller, companion);
+                        CompanionDependencyInjector cdi =
+                                new CompanionDependencyInjector((LegacyFrame) controller, companion);
                         cdi.setBeanLocator(beanLocator);
                         cdi.inject();
                     });
                 }
             }
+        }
+    }
+
+    protected void loadMinMaxSizes(Window resultComponent, Element layoutElement) {
+        String minHeight = layoutElement.attributeValue("minHeight");
+        if (isNotEmpty(minHeight)) {
+            resultComponent.setMinHeight(minHeight);
+        }
+
+        String minWidth = layoutElement.attributeValue("minWidth");
+        if (isNotEmpty(minWidth)) {
+            resultComponent.setMinWidth(minWidth);
+        }
+
+        String maxHeight = layoutElement.attributeValue("maxHeight");
+        if (isNotEmpty(maxHeight)) {
+            resultComponent.setMaxHeight(maxHeight);
+        }
+
+        String maxWidth = layoutElement.attributeValue("maxWidth");
+        if (isNotEmpty(maxWidth)) {
+            resultComponent.setMaxWidth(maxWidth);
         }
     }
 
@@ -166,37 +192,37 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             }
 
             String closeable = dialogModeElement.attributeValue("closeable");
-            if (StringUtils.isNotEmpty(closeable)) {
+            if (isNotEmpty(closeable)) {
                 dialogOptions.setCloseable(Boolean.parseBoolean(closeable));
             }
 
             String resizable = dialogModeElement.attributeValue("resizable");
-            if (StringUtils.isNotEmpty(resizable)) {
+            if (isNotEmpty(resizable)) {
                 dialogOptions.setResizable(Boolean.parseBoolean(resizable));
             }
 
             String modal = dialogModeElement.attributeValue("modal");
-            if (StringUtils.isNotEmpty(modal)) {
+            if (isNotEmpty(modal)) {
                 dialogOptions.setModal(Boolean.parseBoolean(modal));
             }
 
             String closeOnClickOutside = dialogModeElement.attributeValue("closeOnClickOutside");
-            if (StringUtils.isNotEmpty(closeOnClickOutside)) {
+            if (isNotEmpty(closeOnClickOutside)) {
                 dialogOptions.setCloseOnClickOutside(Boolean.parseBoolean(closeOnClickOutside));
             }
 
             String maximized = dialogModeElement.attributeValue("maximized");
-            if (StringUtils.isNotEmpty(maximized)) {
+            if (isNotEmpty(maximized)) {
                 dialogOptions.setMaximized(Boolean.parseBoolean(maximized));
             }
 
             String positionX = dialogModeElement.attributeValue("positionX");
-            if (StringUtils.isNotEmpty(positionX)) {
+            if (isNotEmpty(positionX)) {
                 dialogOptions.setPositionX(Integer.parseInt(positionX));
             }
 
             String positionY = dialogModeElement.attributeValue("positionY");
-            if (StringUtils.isNotEmpty(positionY)) {
+            if (isNotEmpty(positionY)) {
                 dialogOptions.setPositionY(Integer.parseInt(positionY));
             }
         }
@@ -251,7 +277,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         timer.setRepeating(Boolean.parseBoolean(element.attributeValue("repeating")));
 
         String onTimer = element.attributeValue("onTimer");
-        if (StringUtils.isNotEmpty(onTimer)) {
+        if (isNotEmpty(onTimer)) {
             String timerMethodName = onTimer;
             if (StringUtils.startsWith(onTimer, "invoke:")) {
                 timerMethodName = StringUtils.substring(onTimer, "invoke:".length());
@@ -262,7 +288,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
 
         String autostart = element.attributeValue("autostart");
-        if (StringUtils.isNotEmpty(autostart)
+        if (isNotEmpty(autostart)
                 && Boolean.parseBoolean(autostart)) {
             timer.start();
         }
@@ -279,7 +305,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
     protected void loadCrossFieldValidate(Window window, Element element) {
         String crossFieldValidate = element.attributeValue("crossFieldValidate");
-        if (StringUtils.isNotEmpty(crossFieldValidate)) {
+        if (isNotEmpty(crossFieldValidate)) {
             // todo lookupComponent
             if (window.getFrameOwner() instanceof Window.Editor) {
                 Window.Editor editor = (Window.Editor) window.getFrameOwner();
@@ -314,5 +340,4 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             }
         });
     }
-
 }

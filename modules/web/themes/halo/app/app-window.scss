@@ -198,7 +198,12 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
 
   .c-app-window-wrap {
     @include box-defaults;
+    overflow: auto;
     padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
+  }
+
+  .v-scrollable > .v-widget.c-app-window-wrap {
+    overflow: auto;
   }
 
   .c-app-window-wrap.c-breadcrumbs-visible {

@@ -22,13 +22,87 @@ public interface ScrollBoxLayout
 
     String NAME = "scrollBox";
 
+    ScrollBarPolicy getScrollBarPolicy();
+    void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);
+
+    /**
+     * Sets content width.
+     *
+     * @param width width
+     */
+    void setContentWidth(String width);
+    /**
+     * @return content width value
+     */
+    float getContentWidth();
+    /**
+     * @return content width size unit
+     */
+    SizeUnit getContentWidthSizeUnit();
+
+    /**
+     * Sets content height.
+     *
+     * @param height height
+     */
+    void setContentHeight(String height);
+    /**
+     * @return content height value
+     */
+    float getContentHeight();
+    /**
+     * @return content height size unit
+     */
+    SizeUnit getContentHeightSizeUnit();
+
+    /**
+     * Sets minimum CSS width for content. Examples: "640px", "auto".
+     *
+     * @param minWidth minimum width
+     */
+    void setContentMinWidth(String minWidth);
+    /**
+     * @return minimal content width
+     */
+    String getContentMinWidth();
+
+    /**
+     * Sets maximum CSS width for content. Examples: "640px", "100%".
+     *
+     * @param maxWidth maximum width
+     */
+    void setContentMaxWidth(String maxWidth);
+    /**
+     * @return maximum content width
+     */
+    String getContentMaxWidth();
+
+    /**
+     * Sets minimum CSS height for content. Examples: "640px", "auto".
+     *
+     * @param minHeight minimum height
+     */
+    void setContentMinHeight(String minHeight);
+    /**
+     * @return minimum content width
+     */
+    String getContentMinHeight();
+
+    /**
+     * Sets maximum CSS height for content. Examples: "640px", "100%".
+     *
+     * @param maxHeight maximum height
+     */
+    void setContentMaxHeight(String maxHeight);
+    /**
+     * @return maximum content width
+     */
+    String getContentMaxHeight();
+
     enum ScrollBarPolicy {
         VERTICAL,
         HORIZONTAL,
         BOTH,
         NONE
     }
-
-    ScrollBarPolicy getScrollBarPolicy();
-    void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);
 }

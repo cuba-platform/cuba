@@ -44,7 +44,19 @@
 
                 <xs:element name="dialogMode" minOccurs="0" type="layout:dialogMode"/>
 
-                <xs:element name="layout" type="layout:rootLayout"/>
+                <xs:element name="layout">
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="layout:rootLayout">
+                                <xs:attribute name="minHeight" type="layout:componentSize"/>
+                                <xs:attribute name="minWidth" type="layout:componentSize"/>
+
+                                <xs:attribute name="maxHeight" type="layout:componentSize"/>
+                                <xs:attribute name="maxWidth" type="layout:componentSize"/>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
 
             <xs:attribute name="extends" type="xs:string"/>

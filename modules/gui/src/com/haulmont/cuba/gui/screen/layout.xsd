@@ -820,12 +820,12 @@
     <xs:attributeGroup name="hasId">
         <xs:attribute name="id" type="xs:string"/>
 
+        <!-- additional in-place attributes for containers -->
         <xs:attribute name="box.expandRatio" type="xs:float"/>
         <xs:attribute name="colspan" type="xs:integer"/>
         <xs:attribute name="rowspan" type="xs:integer"/>
 
-        <!-- todo grid.colspan and grid.rowspan attributes -->
-
+        <!-- enable XSD extension here -->
         <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
@@ -2559,6 +2559,15 @@
                 <xs:attribute name="stylename" type="layoutStylename"/>
                 <xs:attribute name="orientation" type="orientation"/>
                 <xs:attribute name="scrollBars" type="scrollBars"/>
+
+                <xs:attribute name="contentWidth" type="componentSize"/>
+                <xs:attribute name="contentHeight" type="componentSize"/>
+
+                <xs:attribute name="contentMinHeight" type="componentSize"/>
+                <xs:attribute name="contentMinWidth" type="componentSize"/>
+
+                <xs:attribute name="contentMaxHeight" type="componentSize"/>
+                <xs:attribute name="contentMaxWidth" type="componentSize"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
