@@ -376,7 +376,7 @@ public class EntityManagerImpl implements EntityManager {
                     if (!equal) {
                         dstCollection.clear();
                         for (Entity srcRef : srcCollection) {
-                            Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
+                            Entity reloadedRef = findOrCreate(srcRef.getClass(), srcRef.getId());
                             dstCollection.add(reloadedRef);
                             deepCopyIgnoringNulls(srcRef, reloadedRef, visited);
                         }
@@ -387,7 +387,7 @@ public class EntityManagerImpl implements EntityManager {
                     if (srcRef.equals(destRef)) {
                         deepCopyIgnoringNulls(srcRef, destRef, visited);
                     } else {
-                        Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
+                        Entity reloadedRef = findOrCreate(srcRef.getClass(), srcRef.getId());
                         dest.setValue(name, reloadedRef);
                         deepCopyIgnoringNulls(srcRef, reloadedRef, visited);
                     }
