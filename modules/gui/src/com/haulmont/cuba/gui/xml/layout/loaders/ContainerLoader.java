@@ -90,27 +90,36 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         loadSubComponents();
 
         String expand = element.attributeValue("expand");
-        if (!StringUtils.isEmpty(expand)) {
-            String[] parts = expand.split(";");
-            String targetId = parts[0];
-            Component componentToExpand = layout.getOwnComponent(targetId);
-
-            if (componentToExpand != null) {
-                String height = find(parts, "height");
-                String width = find(parts, "width");
-                layout.expand(componentToExpand, height, width);
+        if (StringUtils.isNotEmpty(expand)) {
+            if (!expand.contains(";")) {
+                Component componentToExpand = layout.getOwnComponent(expand);
+                layout.expand(componentToExpand);
             } else {
-                throw new GuiDevelopmentException(
-                        "Illegal expand target '" + targetId + "' for container",
-                        context.getFullFrameId(), "component", targetId);
+                // legacy behaviour
+
+                String[] parts = expand.split(";");
+                String targetId = parts[0];
+                Component componentToExpand = layout.getOwnComponent(targetId);
+
+                if (componentToExpand != null) {
+                    String height = find(parts, "height");
+                    String width = find(parts, "width");
+                    layout.expand(componentToExpand, height, width);
+                } else {
+                    throw new GuiDevelopmentException(
+                            String.format("Illegal expand target '%s' for container", targetId),
+                            context.getFullFrameId(), "component", targetId);
+                }
             }
         }
     }
 
-    protected final String find(String[] parts, String name) {
+    protected String find(String[] parts, String name) {
+        String prefix = name + "=";
+
         for (String part : parts) {
-            if (part.trim().startsWith(name + "=")) {
-                return part.trim().substring((name + "=").length()).trim();
+            if (part.trim().startsWith(prefix)) {
+                return part.trim().substring((prefix).length()).trim();
             }
         }
         return null;

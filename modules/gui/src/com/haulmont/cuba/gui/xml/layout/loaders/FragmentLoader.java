@@ -157,13 +157,14 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             }
         }
 
-        loadSubComponentsAndExpand(resultComponent, layoutElement);
-
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext().getParent();
         ScreenOptions options = parentContext.getOptions();
 
+        // add inject / init tasks before nested fragments
         parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options));
         parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options));
+
+        loadSubComponentsAndExpand(resultComponent, layoutElement);
     }
 
     public String getFrameId() {
@@ -172,10 +173,6 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
     public void setFrameId(String frameId) {
         this.frameId = frameId;
-    }
-
-    protected WindowCreationHelper getWindowCreationHelper() {
-        return beanLocator.get(WindowCreationHelper.NAME);
     }
 
     protected class FragmentLoaderInjectTask implements InjectTask {
