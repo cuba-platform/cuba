@@ -49,7 +49,7 @@ class DataManagerCommitTest extends Specification {
         entityStates = AppBeans.get(EntityStates)
     }
 
-    def "commited, returned entities allow to get entity by its ID"() {
+    def "committed, returned entities allow you to get entity by its ID"() {
 
         given:
         Order order = new Order(number: '111', customer: customer)
@@ -67,7 +67,7 @@ class DataManagerCommitTest extends Specification {
         cont.deleteRecord(order, customer)
     }
 
-    def "commited, returned entities allow to get commited entity by reference"() {
+    def "committed, returned entities allow you to get commited entity by reference"() {
 
         given:
         Order order = new Order(number: '111', customer: customer)
