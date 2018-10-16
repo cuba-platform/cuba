@@ -20,7 +20,9 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
@@ -165,6 +167,23 @@ public class EntityManagerTest {
         } finally {
             tx.end();
             cont.deleteRecord("SEC_USER", newUserId);
+        }
+    }
+
+    @Test
+    public void testMergeWithRefToNewSubclassedEntityOfOriginalAttributeClass() {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            Folder folder = cont.metadata().create(Folder.class);
+            AppFolder appFolder = cont.metadata().create(AppFolder.class);
+            //folder can have any other folders as a parent, let's set appFolder as a parent
+            folder.setParent(appFolder);
+            em.merge(folder);
+            assertTrue(folder.getParent() instanceof AppFolder);
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 
