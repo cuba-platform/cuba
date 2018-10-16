@@ -23,7 +23,9 @@ import com.vaadin.client.renderers.Renderer;
 import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
+import com.vaadin.client.widget.grid.AutoScroller;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
+import com.vaadin.client.widget.grid.selection.SelectionModel;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
@@ -174,6 +176,35 @@ public class CubaGridWidget extends Grid<JsonObject> {
         @Override
         protected void onHeaderClickEvent(GridClickEvent event) {
             // do nothing, as we want to trigger select/deselect all only by clicking on the checkbox
+        }
+    }
+
+    @Override
+    protected boolean hasSelectionColumn(SelectionModel<JsonObject> selectionModel) {
+        return super.hasSelectionColumn(selectionModel)
+                && getSelectionColumn().isPresent();
+    }
+
+    @Override
+    protected AutoScroller createAutoScroller() {
+        return new CubaAutoScroller(this);
+    }
+
+    public static class CubaAutoScroller extends AutoScroller {
+
+        /**
+         * Creates a new instance for scrolling the given grid.
+         *
+         * @param grid the grid to auto scroll
+         */
+        public CubaAutoScroller(Grid<?> grid) {
+            super(grid);
+        }
+
+        @Override
+        protected boolean hasSelectionColumn() {
+            return super.hasSelectionColumn()
+                    && grid.getSelectionColumn().isPresent();
         }
     }
 }
