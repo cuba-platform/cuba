@@ -21,7 +21,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,18 +30,15 @@ import java.util.Set;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ScreenDataImpl implements ScreenData {
 
-    @Inject
-    protected DataContextFactory factory;
-
     protected DataContext dataContext;
 
     protected Map<String, InstanceContainer> containers = new HashMap<>();
 
     protected Map<String, DataLoader> loaders = new HashMap<>();
 
-    @PostConstruct
-    protected void init() {
-        dataContext = factory.createDataContext();
+    @Inject
+    public void setFactory(DataContextFactory factory) {
+        this.dataContext = factory.createDataContext();
     }
 
     @Override

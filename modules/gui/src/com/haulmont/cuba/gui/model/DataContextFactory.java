@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
@@ -38,7 +39,7 @@ public class DataContextFactory implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -75,7 +76,7 @@ public class DataContextFactory implements ApplicationContextAware {
      * Creates {@code CollectionPropertyContainer}.
      */
     public <E extends Entity> CollectionPropertyContainer<E> createCollectionContainer(Class<E> entityClass,
-                                                                               InstanceContainer parent, String property) {
+                                                                                       InstanceContainer parent, String property) {
         return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
     }
 
