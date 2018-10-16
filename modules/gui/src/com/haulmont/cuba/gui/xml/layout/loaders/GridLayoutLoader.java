@@ -130,6 +130,8 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadSpacing(resultComponent, element);
         loadMargin(resultComponent, element);

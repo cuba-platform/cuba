@@ -86,6 +86,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
 

@@ -46,6 +46,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
         loadAlign(resultComponent, element);
+        loadCss(resultComponent, element);
 
         String openType = element.attributeValue("openType");
         if (StringUtils.isNotEmpty(openType)) {

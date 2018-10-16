@@ -38,6 +38,9 @@ public class LinkLoader extends AbstractComponentLoader<Link> {
         loadDescription(resultComponent, element);
         loadCaption(resultComponent, element);
 
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
+
         String url = element.attributeValue("url");
         if (StringUtils.isNotEmpty(url)) {
             resultComponent.setUrl(url);

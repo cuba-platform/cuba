@@ -62,6 +62,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
+        loadCss(resultComponent, element);
         loadMargin(resultComponent, element);
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);

@@ -52,6 +52,8 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadCollapsible(resultComponent, element, false);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);

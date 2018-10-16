@@ -51,6 +51,7 @@ public abstract class AbstractBoxLoader<T extends BoxLayout> extends ContainerLo
 
         loadSubComponentsAndExpand(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         setComponentsRatio(resultComponent, element);
     }

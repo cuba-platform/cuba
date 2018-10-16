@@ -67,6 +67,8 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
         loadAlign(resultComponent, element);
 
         loadHeight(resultComponent, element);

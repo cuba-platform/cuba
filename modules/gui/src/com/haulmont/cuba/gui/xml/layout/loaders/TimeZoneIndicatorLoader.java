@@ -31,6 +31,8 @@ public class TimeZoneIndicatorLoader extends AbstractComponentLoader<TimeZoneInd
         assignFrame(resultComponent);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
         loadAlign(resultComponent, element);
 
         loadIcon(resultComponent, element);

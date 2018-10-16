@@ -80,6 +80,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadFocusable(resultComponent, element);
         loadDisableOnClick(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
         loadPrimary(resultComponent, element);
     }
 

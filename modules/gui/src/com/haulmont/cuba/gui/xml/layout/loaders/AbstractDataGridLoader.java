@@ -110,6 +110,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadColumnResizeMode(resultComponent, element);
         loadSortable(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
         loadReorderingAllowed(resultComponent, element);
         loadHeaderVisible(resultComponent, element);
         loadFooterVisible(resultComponent, element);

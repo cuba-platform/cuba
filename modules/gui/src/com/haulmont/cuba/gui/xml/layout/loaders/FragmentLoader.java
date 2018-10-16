@@ -139,6 +139,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         loadHeight(resultComponent, layoutElement);
         loadStyleName(resultComponent, layoutElement);
         loadResponsive(resultComponent, layoutElement);
+        loadCss(resultComponent, element);
 
         if (dsContext != null) {
             FrameOwner frameOwner = getContext().getFrame().getFrameOwner();

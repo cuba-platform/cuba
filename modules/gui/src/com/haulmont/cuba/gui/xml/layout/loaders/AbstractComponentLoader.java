@@ -204,6 +204,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
+    protected void loadCss(Component component, Element element) {
+        String css = element.attributeValue("css");
+        if (StringUtils.isNotEmpty(css)) {
+            HtmlAttributes htmlAttributes = beanLocator.get(HtmlAttributes.NAME);
+            htmlAttributes.applyCss(component, css);
+        }
+    }
+
     protected void loadResponsive(Component component, Element element) {
         String responsive = element.attributeValue("responsive");
         if (StringUtils.isNotEmpty(responsive)) {

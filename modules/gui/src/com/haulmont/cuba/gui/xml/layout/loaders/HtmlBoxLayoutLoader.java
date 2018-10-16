@@ -45,6 +45,7 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
         loadEnable(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadAlign(resultComponent, element);
 

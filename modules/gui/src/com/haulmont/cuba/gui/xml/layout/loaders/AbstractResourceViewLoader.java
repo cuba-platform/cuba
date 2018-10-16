@@ -43,6 +43,7 @@ public abstract class AbstractResourceViewLoader<T extends ResourceView> extends
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
         loadAlign(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadResource(resultComponent, element);
 

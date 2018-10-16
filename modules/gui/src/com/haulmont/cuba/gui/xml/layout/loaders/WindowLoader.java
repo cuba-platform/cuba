@@ -88,6 +88,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         loadHeight(resultComponent, layoutElement);
         loadStyleName(resultComponent, layoutElement);
         loadResponsive(resultComponent, layoutElement);
+        loadCss(resultComponent, element);
         loadVisible(resultComponent, layoutElement);
 
         loadTimers(factory, resultComponent, element);

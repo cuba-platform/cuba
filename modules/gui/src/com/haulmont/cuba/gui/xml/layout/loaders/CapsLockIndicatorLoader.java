@@ -38,6 +38,10 @@ public class CapsLockIndicatorLoader extends AbstractComponentLoader<CapsLockInd
         loadWidth(resultComponent, element, Component.AUTO_SIZE);
         loadHeight(resultComponent, element, Component.AUTO_SIZE);
 
+        loadResponsive(resultComponent, element);
+        loadStyleName(resultComponent, element);
+        loadCss(resultComponent, element);
+
         String capsLockOnMessage = element.attributeValue("capsLockOnMessage");
         if (capsLockOnMessage != null) {
             capsLockOnMessage = loadResourceString(capsLockOnMessage);

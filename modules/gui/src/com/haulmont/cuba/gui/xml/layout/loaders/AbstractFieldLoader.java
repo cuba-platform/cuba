@@ -62,6 +62,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
     }
 
     @SuppressWarnings("unchecked")

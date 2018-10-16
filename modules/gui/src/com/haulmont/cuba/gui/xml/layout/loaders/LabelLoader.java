@@ -56,6 +56,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
         loadHeight(resultComponent, element);
 
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         resultComponent.setFormatter(loadFormatter(element));
     }

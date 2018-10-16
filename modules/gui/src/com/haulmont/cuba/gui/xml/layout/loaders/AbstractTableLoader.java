@@ -96,6 +96,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadShowSelection(resultComponent, element);
         loadTextSelectionEnabled(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");

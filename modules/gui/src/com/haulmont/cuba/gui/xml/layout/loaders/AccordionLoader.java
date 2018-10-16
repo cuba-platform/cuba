@@ -77,6 +77,7 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadTabCaptionsAsHtml(resultComponent, element);
 

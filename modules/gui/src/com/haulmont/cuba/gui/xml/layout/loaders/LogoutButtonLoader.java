@@ -35,6 +35,9 @@ public class LogoutButtonLoader extends AbstractComponentLoader<LogoutButton> {
         loadDescription(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
+
         loadAlign(resultComponent, element);
         loadIcon(resultComponent, element);
 

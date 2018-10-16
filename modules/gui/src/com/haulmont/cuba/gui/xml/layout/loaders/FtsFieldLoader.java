@@ -43,5 +43,7 @@ public class FtsFieldLoader extends AbstractComponentLoader<FtsField> {
 
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
     }
 }

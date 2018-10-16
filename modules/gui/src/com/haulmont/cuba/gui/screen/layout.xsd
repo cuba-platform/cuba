@@ -876,6 +876,10 @@
         <xs:attribute name="stylename" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasCss">
+        <xs:attribute name="css" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasSettings">
         <xs:attribute name="settingsEnabled" type="xs:boolean"/>
     </xs:attributeGroup>
@@ -1195,6 +1199,8 @@
         <xs:attributeGroup ref="hasDataContainer"/>
         <xs:attributeGroup ref="hasContextHelp"/>
 
+        <xs:attributeGroup ref="hasCss"/>
+
         <xs:attribute name="stylename" type="labelStylename"/>
         <xs:attribute name="value" type="resourceString"/>
         <xs:attribute name="description" type="resourceString"/>
@@ -1264,6 +1270,8 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasResponsiveProp"/>
+
+        <xs:attributeGroup ref="hasCss"/>
     </xs:complexType>
 
     <!-- BaseField -->

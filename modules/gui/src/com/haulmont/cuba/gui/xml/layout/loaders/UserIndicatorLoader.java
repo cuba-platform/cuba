@@ -31,6 +31,8 @@ public class UserIndicatorLoader extends AbstractComponentLoader<UserIndicator> 
         assignFrame(resultComponent);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
         loadAlign(resultComponent, element);
 
         loadWidth(resultComponent, element);

@@ -55,6 +55,8 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
         loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
         loadIcon(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
     }
 
     protected void loadCaptionAsHtml(PopupView component, Element element) {

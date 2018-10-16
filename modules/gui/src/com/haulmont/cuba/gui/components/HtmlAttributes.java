@@ -78,6 +78,14 @@ public interface HtmlAttributes {
     void removeCssProperty(Component component, String propertyName);
 
     /**
+     * Apply CSS properties from CSS string;
+     *
+     * @param component UI component
+     * @param css CSS string
+     */
+    void applyCss(Component component, String css);
+
+    /**
      * Common CSS property names.
      */
     final class CSS {

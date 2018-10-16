@@ -62,6 +62,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadAlign(resultComponent, element);
         loadScrollBars(resultComponent, element);

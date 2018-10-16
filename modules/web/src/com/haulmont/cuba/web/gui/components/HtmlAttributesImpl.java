@@ -19,11 +19,18 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlAttributes;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
+import org.apache.commons.lang3.StringUtils;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 @org.springframework.stereotype.Component(HtmlAttributes.NAME)
 public class HtmlAttributesImpl implements HtmlAttributes {
     @Override
     public void setDomAttribute(Component component, String attributeName, String value) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(attributeName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
                 .setDomAttribute(attributeName, value);
@@ -31,6 +38,9 @@ public class HtmlAttributesImpl implements HtmlAttributes {
 
     @Override
     public String getDomAttribute(Component component, String attributeName) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(attributeName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         return HtmlAttributesExtension.get(vComponent)
                 .getDomAttribute(attributeName);
@@ -38,6 +48,9 @@ public class HtmlAttributesImpl implements HtmlAttributes {
 
     @Override
     public void removeDomAttribute(Component component, String attributeName) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(attributeName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
                 .removeDomAttribute(attributeName);
@@ -45,6 +58,9 @@ public class HtmlAttributesImpl implements HtmlAttributes {
 
     @Override
     public void setCssProperty(Component component, String propertyName, String value) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(propertyName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
                 .setCssProperty(propertyName, value);
@@ -52,6 +68,9 @@ public class HtmlAttributesImpl implements HtmlAttributes {
 
     @Override
     public String getCssProperty(Component component, String propertyName) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(propertyName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         return HtmlAttributesExtension.get(vComponent)
                 .getCssProperty(propertyName);
@@ -59,8 +78,35 @@ public class HtmlAttributesImpl implements HtmlAttributes {
 
     @Override
     public void removeCssProperty(Component component, String propertyName) {
+        checkNotNullArgument(component);
+        checkNotNullArgument(propertyName);
+
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
                 .removeCssProperty(propertyName);
+    }
+
+    @Override
+    public void applyCss(Component component, String css) {
+        String[] propertyStatements = StringUtils.split(css, ';');
+        for (String propertyStatement : propertyStatements) {
+            if (StringUtils.isBlank(propertyStatement)) {
+                continue;
+            }
+
+            int separatorIndex = propertyStatement.indexOf(':');
+            if (separatorIndex < 0) {
+                throw new IllegalArgumentException("Incorrect CSS string: " + css);
+            }
+
+            String propertyName = trimToEmpty(propertyStatement.substring(0, separatorIndex));
+            String propertyValue = trimToEmpty(propertyStatement.substring(separatorIndex + 1));
+
+            if (StringUtils.isBlank(propertyName)) {
+                throw new IllegalArgumentException("Incorrect CSS string, empty property name: " + css);
+            }
+
+            setCssProperty(component, propertyName, propertyValue);
+        }
     }
 }

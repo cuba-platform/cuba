@@ -62,6 +62,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadTabIndex(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadActions(resultComponent, element);
 

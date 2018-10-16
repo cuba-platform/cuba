@@ -50,6 +50,8 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         loadAlign(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);

@@ -55,6 +55,7 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         if (!element.elements().isEmpty()) {
             loadSubComponents();

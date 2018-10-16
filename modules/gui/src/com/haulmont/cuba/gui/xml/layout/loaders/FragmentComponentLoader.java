@@ -254,6 +254,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         loadStyleName(resultComponent, element);
         loadResponsive(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadAlign(resultComponent, element);
 

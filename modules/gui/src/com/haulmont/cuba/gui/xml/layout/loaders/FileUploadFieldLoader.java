@@ -40,6 +40,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadStyleName(resultComponent, element);
         loadAlign(resultComponent, element);
+        loadCss(resultComponent, element);
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
