@@ -72,6 +72,17 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
         out.defaultWriteObject();
     }
 
+    /**
+     * Copies the state which is not related to attributes registered in metadata.
+     * Override this method in subclasses that have additional state which must be preserved when creating copies.
+     */
+    @SuppressWarnings("unchecked")
+    protected void copySystemState(BaseGenericIdEntity src) {
+        __state = src.__state;
+        __securityState = src.__securityState;
+        dynamicAttributes = src.dynamicAttributes;
+    }
+
     @Override
     public MetaClass getMetaClass() {
         Metadata metadata = AppBeans.get(Metadata.NAME);

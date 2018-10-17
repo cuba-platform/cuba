@@ -105,12 +105,6 @@ public class Order extends StandardEntity {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", version=" + version +
-                ", number='" + number + '\'' +
-                ", date=" + date +
-                ", amount=" + amount +
-                "}@" + Integer.toHexString(System.identityHashCode(this));
+        return super.toString() + "@" + Integer.toHexString(System.identityHashCode(this));
     }
 }

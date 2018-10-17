@@ -27,9 +27,12 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.persistence.FetchGroupUtils;
 import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.DataContext;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -40,7 +43,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- *
+ * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
  */
 public class StandardDataContext implements DataContext {
 
@@ -265,9 +268,7 @@ public class StandardDataContext implements DataContext {
                 }
             }
         }
-        if (!srcNew && dstNew) {
-            copySystemState(srcEntity, dstEntity);
-        }
+        copySystemState(srcEntity, dstEntity);
     }
 
     /**
@@ -347,8 +348,17 @@ public class StandardDataContext implements DataContext {
 
     protected void copySystemState(Entity srcEntity, Entity dstEntity) {
         if (dstEntity instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
-            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) dstEntity, BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) srcEntity));
+            BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+
+            if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
+                FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();
+                FetchGroup dstFetchGroup = ((FetchGroupTracker) dstEntity)._persistence_getFetchGroup();
+                if (srcFetchGroup == null || dstFetchGroup == null) {
+                    ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(null);
+                } else {
+                    ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(FetchGroupUtils.mergeFetchGroups(srcFetchGroup, dstFetchGroup));
+                }
+            }
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
             BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
         }

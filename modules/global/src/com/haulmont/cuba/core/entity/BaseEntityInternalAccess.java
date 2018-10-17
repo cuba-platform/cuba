@@ -283,4 +283,8 @@ public final class BaseEntityInternalAccess {
             throw new RuntimeException(String.format("Unable to set value to %s.%s", entity.getClass().getSimpleName(), attribute), e);
         }
     }
+
+    public static void copySystemState(BaseGenericIdEntity src, BaseGenericIdEntity dst) {
+        dst.copySystemState(src);
+    }
 }

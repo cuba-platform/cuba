@@ -23,18 +23,19 @@ import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
+import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.gui.model.DataContextFactory
 import com.haulmont.cuba.gui.model.impl.DataContextAccessor
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
-import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -796,6 +797,32 @@ class DataContextTest extends Specification {
 
         order1_1.orderLines.size() == 1
         !order1_1.orderLines.contains(orderLine12_1)
+    }
+
+    def "system fields are preserved on merge"() {
+
+        def dataContext = factory.createDataContext()
+
+        Order order1 = makeSaved(new Order(number: "111"))
+        ((FetchGroupTracker) order1)._persistence_setFetchGroup(new CubaEntityFetchGroup(['id', 'version', 'number']))
+
+        Order order2 = makeSaved(new Order(id: order1.id, number: "111", orderLines: []))
+        OrderLine orderLine21 = makeSaved(new OrderLine(quantity: 10))
+        orderLine21.order = order2
+        order2.orderLines.add(orderLine21)
+        ((FetchGroupTracker) order2)._persistence_setFetchGroup(new CubaEntityFetchGroup(['id', 'version', 'number', 'orderLines']))
+
+        when:
+
+        Order order1_1 = dataContext.merge(order1)
+        Order order2_1 = dataContext.merge(order2)
+
+        then:
+
+        order2_1.is(order1)
+        order2_1.orderLines.size() == 1
+        ((FetchGroupTracker) order2_1)._persistence_getFetchGroup().attributeNames.containsAll(['id', 'version', 'number', 'orderLines'])
+
     }
 
     private <T> T createDetached(Class<T> entityClass) {
