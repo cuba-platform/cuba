@@ -535,8 +535,19 @@ public class UiControllerDependencyInjector {
             return ((Fragment) fragment).getFrameOwner();
 
         } else if (Component.class.isAssignableFrom(type)) {
+            /// if legacy frame - inject controller
+            Component component = frame.getComponent(name);
+            if (component instanceof Fragment
+                && ((Fragment) component).getFrameOwner() instanceof LegacyFrame) {
+
+                ScreenFragment frameOwner = ((Fragment) component).getFrameOwner();
+                if (type.isAssignableFrom(frameOwner.getClass())) {
+                    return frameOwner;
+                }
+            }
+
             // Injecting a UI component
-            return frame.getComponent(name);
+            return component;
 
         } else if (InstanceContainer.class.isAssignableFrom(type)) {
             // Injecting a container
