@@ -730,7 +730,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
      */
     @Override
     public boolean validateAll() {
-        ValidationErrors errors = getValidationErrors();
+        ValidationErrors errors = validateScreen();
 
         validateAdditionalRules(errors);
 

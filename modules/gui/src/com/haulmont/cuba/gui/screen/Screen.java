@@ -40,7 +40,6 @@ import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
@@ -471,35 +470,13 @@ public abstract class Screen implements FrameOwner {
      *
      * @return validation errors
      */
-    protected ValidationErrors getValidationErrors() {
-        return getUiValidationErrors();
+    protected ValidationErrors validateScreen() {
+        return validateUiComponents();
     }
 
-    protected ValidationErrors getUiValidationErrors() {
-        ValidationErrors errors = new ValidationErrors();
-
+    protected ValidationErrors validateUiComponents() {
         Collection<Component> components = ComponentsHelper.getComponents(getWindow());
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    try {
-                        validatable.validate();
-                    } catch (ValidationException e) {
-                        Logger log = LoggerFactory.getLogger(Screen.class);
-
-                        if (log.isTraceEnabled()) {
-                            log.trace("Validation failed", e);
-                        } else if (log.isDebugEnabled()) {
-                            log.debug("Validation failed: " + e);
-                        }
-
-                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
-                    }
-                }
-            }
-        }
-        return errors;
+        return ComponentsHelper.validateUiComponents(components);
     }
 
     /**

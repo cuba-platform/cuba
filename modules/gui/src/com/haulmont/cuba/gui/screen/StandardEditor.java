@@ -261,7 +261,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     @Override
     protected OperationResult commitChanges() {
-        ValidationErrors validationErrors = getValidationErrors();
+        ValidationErrors validationErrors = validateScreen();
         if (!validationErrors.isEmpty()) {
             showValidationErrors(validationErrors);
 
@@ -289,8 +289,8 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     @Override
-    protected ValidationErrors getValidationErrors() {
-        ValidationErrors validationErrors = super.getValidationErrors();
+    protected ValidationErrors validateScreen() {
+        ValidationErrors validationErrors = super.validateScreen();
 
         validateAdditionalRules(validationErrors);
 

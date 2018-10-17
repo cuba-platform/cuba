@@ -37,6 +37,8 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -594,6 +596,37 @@ public abstract class ComponentsHelper {
         } else {
             errors.add((Component) component, e.getMessage());
         }
+    }
+
+    /**
+     * Validates UI components by invoking their {@link Validatable#validate()}.
+     *
+     * @param components components collection
+     * @return  validation errors
+     */
+    public static ValidationErrors validateUiComponents(Collection<Component> components) {
+        ValidationErrors errors = new ValidationErrors();
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
+                if (validatable.isValidateOnCommit()) {
+                    try {
+                        validatable.validate();
+                    } catch (ValidationException e) {
+                        Logger log = LoggerFactory.getLogger(Screen.class);
+
+                        if (log.isTraceEnabled()) {
+                            log.trace("Validation failed", e);
+                        } else if (log.isDebugEnabled()) {
+                            log.debug("Validation failed: " + e);
+                        }
+
+                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                    }
+                }
+            }
+        }
+        return errors;
     }
 
     /**
