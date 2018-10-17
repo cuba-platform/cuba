@@ -22,8 +22,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.AppUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +86,12 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     @Override
     public Component getRegisteredComponent(String id) {
         return allComponents.get(id);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return ComponentsHelper.getFrameComponent(this, id);
     }
 
     @Override
@@ -170,6 +176,7 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
         return false;
     }
 
+    @Deprecated
     @Override
     public WindowManager getWindowManager() {
         return (WindowManager) UiControllerUtils.getScreenContext(getFrameOwner()).getScreens();
