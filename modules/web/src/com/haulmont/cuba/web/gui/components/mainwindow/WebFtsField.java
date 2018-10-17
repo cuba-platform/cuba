@@ -17,14 +17,10 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -98,10 +94,10 @@ public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsF
             return;
         }
 
-        WindowInfo windowInfo = beanLocator.get(WindowConfig.class).getWindowInfo("ftsSearch");
+        FtsSearchLauncher searchLauncher = beanLocator.get(FtsSearchLauncher.NAME);
 
-        WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(this).getScreens();
-        wm.openWindow(windowInfo, OpenType.NEW_TAB, ParamsMap.of("searchTerm", searchTerm));
+        Screen frameOwner = ComponentsHelper.getWindowNN(this).getFrameOwner();
+        searchLauncher.search(frameOwner, searchTerm);
     }
 
     @Override
