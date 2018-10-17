@@ -22,9 +22,6 @@
     <screen id="settings"
             template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
 
-    <screen id="logWindow"
-            class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
-
     <screen id="saveSetInFolder" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
     <!-- JMX control -->

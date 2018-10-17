@@ -16,14 +16,13 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 
 public class LogWindowLauncher implements Runnable {
-
     @Override
     public void run() {
         LogWindow logWindow = new LogWindow();
-        App.getInstance().getAppUI().addWindow(logWindow);
+        AppUI.getCurrent().addWindow(logWindow);
         logWindow.focus();
     }
 }

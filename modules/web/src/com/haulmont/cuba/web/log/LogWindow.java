@@ -27,9 +27,9 @@ import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.List;
 import java.util.Objects;
