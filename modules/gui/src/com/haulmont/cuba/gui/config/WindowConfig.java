@@ -207,7 +207,7 @@ public class WindowConfig {
             }
             String template = UiDescriptorUtils.getInferredTemplate(annotation, screenClass);
             if (!template.startsWith("/")) {
-                String packageName = screenClass.getPackage().getName();
+                String packageName = UiControllerUtils.getPackage(screenClass);
                 if (StringUtils.isNotEmpty(packageName)) {
                     String relativePath = packageName.replace('.', '/');
                     template = "/" + relativePath + "/" + template;

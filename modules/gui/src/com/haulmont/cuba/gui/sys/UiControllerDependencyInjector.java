@@ -652,7 +652,7 @@ public class UiControllerDependencyInjector {
         MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
 
         Class<? extends FrameOwner> screenClass = frame.getFrameOwner().getClass();
-        String packageName = screenClass.getPackage().getName();
+        String packageName = UiControllerUtils.getPackage(screenClass);
         messageBundle.setMessagesPack(packageName);
 
         if (frame instanceof Component.HasXmlDescriptor) {

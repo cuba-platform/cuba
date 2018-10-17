@@ -137,4 +137,23 @@ public final class UiControllerUtils {
         }
         return Collections.emptyList();
     }
+
+    public static String getPackage(Class controllerClass) {
+        Package javaPackage = controllerClass.getPackage();
+        if (javaPackage != null) {
+            return javaPackage.getName();
+        }
+
+        // infer from FQN, hot-deployed classes do not have package
+        // see JDK-8189231
+
+        String canonicalName = controllerClass.getCanonicalName();
+        int dotIndex = canonicalName.lastIndexOf('.');
+
+        if (dotIndex >= 0) {
+            return canonicalName.substring(0, dotIndex);
+        }
+
+        return "";
+    }
 }

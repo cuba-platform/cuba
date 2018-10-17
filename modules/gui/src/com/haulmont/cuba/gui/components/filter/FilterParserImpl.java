@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -89,7 +90,7 @@ public class FilterParserImpl implements FilterParser {
         String filterComponentName = filter.getId();
 
         Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
-        String messagesPack = controllerClass.getPackage().getName(); // todo rework
+        String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
         CollectionDatasource datasource = filter.getDatasource();
         switch (type) {
             case GROUP:

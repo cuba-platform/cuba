@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -102,7 +103,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         Messages messages = AppBeans.get(Messages.class);
 
         Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
-        String messagesPack = controllerClass.getPackage().getName(); // todo rework
+        String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
         CollectionDatasource datasource = filter.getDatasource();
 
@@ -227,7 +228,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                     }
 
                     Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
-                    String messagesPack = controllerClass.getPackage().getName(); // todo rework
+                    String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
                     PropertyConditionDescriptor childPropertyConditionDescriptor =
                             new PropertyConditionDescriptor(propertyPath, null, messagesPack,
@@ -298,7 +299,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         for (String prop : includedProps) {
             if (exclPattern == null || !exclPattern.matcher(prop).matches()) {
                 Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
-                String messagesPack = controllerClass.getPackage().getName(); // todo rework
+                String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
                 AbstractConditionDescriptor conditionDescriptor =
                         new PropertyConditionDescriptor(prop, null, messagesPack,
