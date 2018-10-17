@@ -49,7 +49,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     private View view;
     private String viewName;
     private Sort sort;
-    private Function<LoadContext<E>, Collection<E>> delegate;
+    private Function<LoadContext<E>, List<E>> delegate;
 
     public StandardCollectionLoader(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -83,19 +83,22 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
 
         LoadContext<E> loadContext = createLoadContext();
 
-        Collection<E> collection;
+        List<E> list;
         if (delegate == null) {
-            collection = getDataManager().loadList(loadContext);
+            list = getDataManager().loadList(loadContext);
         } else {
-            collection = delegate.apply(loadContext);
+            list = delegate.apply(loadContext);
         }
 
         if (dataContext != null) {
-            for (E entity : collection) {
-                dataContext.merge(entity);
+            List<E> mergedList = new ArrayList<>(list.size());
+            for (E entity : list) {
+                mergedList.add(dataContext.merge(entity));
             }
+            container.setItems(mergedList);
+        } else {
+            container.setItems(list);
         }
-        container.setItems(collection);
     }
 
     @Override
@@ -278,12 +281,12 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public Function<LoadContext<E>, Collection<E>> getLoadDelegate() {
+    public Function<LoadContext<E>, List<E>> getLoadDelegate() {
         return delegate;
     }
 
     @Override
-    public void setLoadDelegate(Function<LoadContext<E>, Collection<E>> delegate) {
+    public void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate) {
         this.delegate = delegate;
     }
 }

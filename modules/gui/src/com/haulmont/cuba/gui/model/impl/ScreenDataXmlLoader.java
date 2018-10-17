@@ -167,7 +167,8 @@ public class ScreenDataXmlLoader {
                     metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
             parentContainer.addItemChangeListener(e -> {
-                container.setItems(parentContainer.getItem().getValue(property));
+                Entity item = parentContainer.getItemOrNull();
+                container.setItems(item != null ? item.getValue(property) : null);
             });
             nestedContainer = container;
 
@@ -180,7 +181,8 @@ public class ScreenDataXmlLoader {
                     metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
             parentContainer.addItemChangeListener(e -> {
-                container.setItem(parentContainer.getItem().getValue(property));
+                Entity item = parentContainer.getItemOrNull();
+                container.setItem(item != null ? item.getValue(property) : null);
             });
 
             nestedContainer = container;

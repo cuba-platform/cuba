@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -85,10 +85,10 @@ public interface CollectionLoader<E extends Entity> extends BaseCollectionLoader
     /**
      * Returns a function which will be used to load data instead of standard implementation.
      */
-    Function<LoadContext<E>, Collection<E>> getLoadDelegate();
+    Function<LoadContext<E>, List<E>> getLoadDelegate();
 
     /**
      * Sets a function which will be used to load data instead of standard implementation.
      */
-    void setLoadDelegate(Function<LoadContext<E>, Collection<E>> delegate);
+    void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate);
 }
