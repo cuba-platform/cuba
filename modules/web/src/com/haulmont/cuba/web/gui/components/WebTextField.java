@@ -19,12 +19,15 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -33,9 +36,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
@@ -82,6 +87,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
         // Vaadin TextField does not permit `null` value
@@ -98,13 +104,28 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Range range = entityValueSource.getMetaPropertyPath().getRange();
-            if (!range.isDatatype()) {
-                throw new IllegalStateException(String.format(
-                        "Property '%s' has %s. TextField can be bound only to a simple data type",
-                        entityValueSource.getMetaPropertyPath().getMetaProperty().getName(), range));
+            if (range.isDatatype()) {
+                Datatype<V> propertyDataType = range.asDatatype();
+                return nullToEmpty(propertyDataType.format(modelValue));
+            } else {
+                setEditable(false);
+                if (modelValue == null)
+                    return "";
+
+                if (range.isClass()) {
+                    MetadataTools metadataTools = beanLocator.get(MetadataTools.class);
+                    if (range.getCardinality().isMany()) {
+                        return ((Collection<Entity>) modelValue).stream()
+                                .map(metadataTools::getInstanceName)
+                                .collect(Collectors.joining(", "));
+                    } else {
+                        return metadataTools.getInstanceName((Entity) modelValue);
+                    }
+                } else if (range.isEnum()) {
+                    Messages messages = beanLocator.get(Messages.class);
+                    return messages.getMessage((Enum) modelValue);
+                }
             }
-            Datatype<V> propertyDataType = range.asDatatype();
-            return nullToEmpty(propertyDataType.format(modelValue));
         }
 
         return nullToEmpty(super.convertToPresentation(modelValue));

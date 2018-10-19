@@ -19,6 +19,7 @@ package spec.cuba.web
 import com.haulmont.cuba.core.app.ConfigStorageService
 import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.gui.UiComponents
 import com.haulmont.cuba.gui.model.DataContextFactory
 import com.haulmont.cuba.gui.theme.ThemeConstants
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
@@ -48,6 +49,7 @@ class WebSpec extends Specification {
     DataManager dataManager
     DataContextFactory dataContextFactory
     ComponentsFactory componentsFactory
+    UiComponents uiComponents
 
     AppUI vaadinUi
 
@@ -59,6 +61,7 @@ class WebSpec extends Specification {
         dataManager = cont.getBean(DataManager)
         dataContextFactory = cont.getBean(DataContextFactory)
         componentsFactory = cont.getBean(ComponentsFactory)
+        uiComponents = cont.getBean(UiComponents)
 
         // all the rest is required for web components
 
