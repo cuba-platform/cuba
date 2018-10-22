@@ -17,17 +17,11 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.Datasource;
-
-import javax.annotation.Nullable;
 
 /**
- * JavaDoc
+ * Interface for editor screen controllers.
  *
- * @param <T>
+ * @param <T> type of entity
  */
 public interface EditorScreen<T extends Entity> {
     /**
@@ -48,16 +42,14 @@ public interface EditorScreen<T extends Entity> {
     String WINDOW_CLOSE = "windowClose";
 
     /**
-     * JavaDoc
+     * Sets entity instance to editor.
      *
-     * @param entity
+     * @param entity entity
      */
     void setEntityToEdit(T entity);
 
     /**
-     * JavaDoc
-     *
-     * @return
+     * @return currently edited entity instance
      */
     T getEditedEntity();
 

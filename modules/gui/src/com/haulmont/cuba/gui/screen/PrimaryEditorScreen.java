@@ -23,9 +23,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for {@link EditorScreen} controllers that sets this controller as default editor screen for entity type.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrimaryEditorScreen {
 
+    /**
+     * @return entity class
+     */
     Class<? extends Entity> value();
 }

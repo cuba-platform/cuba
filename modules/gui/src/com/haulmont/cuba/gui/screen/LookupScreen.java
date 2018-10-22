@@ -25,9 +25,9 @@ import java.util.function.Predicate;
 import static com.haulmont.cuba.gui.components.Window.SELECT_ACTION_ID;
 
 /**
- * JavaDoc
+ * Interface for lookup screen controllers.
  *
- * @param <E>
+ * @param <E> type of entity
  */
 public interface LookupScreen<E extends Entity> {
     String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
@@ -35,12 +35,33 @@ public interface LookupScreen<E extends Entity> {
 
     CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
 
+    /**
+     * @return selection handler
+     */
     Consumer<Collection<E>> getSelectHandler();
+    /**
+     * Sets selection handler for screen.
+     *
+     * @param selectHandler selection handler
+     */
     void setSelectHandler(Consumer<Collection<E>> selectHandler);
 
+    /**
+     * @return selection validator
+     */
     Predicate<ValidationContext<E>> getSelectValidator();
+    /**
+     * Sets selection validator.
+     *
+     * @param selectValidator selection validator
+     */
     void setSelectValidator(Predicate<ValidationContext<E>> selectValidator);
 
+    /**
+     * Validation data context.
+     *
+     * @param <T> type of entity
+     */
     class ValidationContext<T extends Entity> {
         private Screen screen;
         private Collection<T> selectedItems;
