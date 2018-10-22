@@ -71,7 +71,7 @@
 
     <xs:complexType name="collectionLoaderType">
         <xs:sequence>
-            <xs:element name="query" type="queryType"/>
+            <xs:element name="query" type="queryType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
@@ -116,7 +116,7 @@
 
     <xs:complexType name="queryType">
         <xs:sequence>
-            <xs:element name="condition" type="conditionType"/>
+            <xs:element name="condition" type="conditionType" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
