@@ -41,6 +41,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
@@ -62,6 +63,8 @@ public class StandardDataContext implements DataContext {
     protected boolean disableListeners;
 
     protected StandardDataContext parentContext;
+
+    protected Function<CommitContext, Set<Entity>> commitDelegate;
 
     public StandardDataContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -484,6 +487,16 @@ public class StandardDataContext implements DataContext {
         return events.subscribe(PostCommitEvent.class, listener);
     }
 
+    @Override
+    public Function<CommitContext, Set<Entity>> getCommitDelegate() {
+        return commitDelegate;
+    }
+
+    @Override
+    public void setCommitDelegate(Function<CommitContext, Set<Entity>> delegate) {
+        this.commitDelegate = delegate;
+    }
+
     protected Set<Entity> performCommit() {
         if (!hasChanges())
             return Collections.emptySet();
@@ -497,7 +510,11 @@ public class StandardDataContext implements DataContext {
 
     protected Set<Entity> commitToDataManager() {
         CommitContext commitContext = new CommitContext(modifiedInstances, removedInstances);
-        return getDataManager().commit(commitContext);
+        if (commitDelegate == null) {
+            return getDataManager().commit(commitContext);
+        } else {
+            return commitDelegate.apply(commitContext);
+        }
     }
 
     protected Set<Entity> commitToParentContext() {

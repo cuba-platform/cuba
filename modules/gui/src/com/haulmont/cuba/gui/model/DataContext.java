@@ -18,11 +18,15 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.gui.screen.InstallSubject;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Interface for tracking changes in entities loaded to the client tier.
@@ -30,6 +34,7 @@ import java.util.function.Consumer;
  * Within {@code DataContext}, an entity with the given identifier is represented by a single object instance, no matter
  * where and how many times it is used in object graphs.
  */
+@InstallSubject("commitDelegate")
 public interface DataContext {
 
     /**
@@ -242,4 +247,15 @@ public interface DataContext {
      * Adds a listener to {@link PostCommitEvent}.
      */
     Subscription addPostCommitListener(Consumer<PostCommitEvent> listener);
+
+    /**
+     * Returns a function which will be used to commit data instead of standard implementation.
+     */
+    Function<CommitContext, Set<Entity>> getCommitDelegate();
+
+    /**
+     * Sets a function which will be used to commit data instead of standard implementation.
+     */
+    void setCommitDelegate(Function<CommitContext, Set<Entity>> delegate);
+
 }

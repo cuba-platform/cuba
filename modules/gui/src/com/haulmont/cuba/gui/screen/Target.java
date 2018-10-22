@@ -34,6 +34,7 @@ public enum Target {
      * UI controller
      */
     CONTROLLER,
+
     /**
      * Parent UI controller
      */
@@ -48,8 +49,14 @@ public enum Target {
      * {@link DataLoader} defined in {@link ScreenData}.
      */
     DATA_LOADER,
+
     /**
      * Data container defined in {@link ScreenData}.
      */
-    DATA_CONTAINER
+    DATA_CONTAINER,
+
+    /**
+     * {@code DataContext} provided by {@link ScreenData}.
+     */
+    DATA_CONTEXT
 }

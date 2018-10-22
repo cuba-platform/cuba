@@ -210,6 +210,10 @@ public class UiControllerDependencyInjector {
                     targetInstance = ((ScreenFragment) frameOwner).getParentController();
                     break;
 
+                case DATA_CONTEXT:
+                    targetInstance = UiControllerUtils.getScreenData(frameOwner).getDataContext();
+                    break;
+
                 default:
                     throw new UnsupportedOperationException("Unsupported @Install target " + annotation.target());
             }

@@ -825,6 +825,27 @@ class DataContextTest extends Specification {
 
     }
 
+    def "commit delegate"() {
+
+        Order order1 = makeSaved(new Order(number: "111"))
+
+        def dataContext = factory.createDataContext()
+        dataContext.setCommitDelegate { CommitContext cc ->
+            [makeSaved(new Order(id: order1.id, number: 'committed through delegate'))].toSet()
+        }
+
+        dataContext.merge(order1)
+
+        when:
+
+        order1.number = '222'
+        dataContext.commit()
+
+        then:
+
+        dataContext.find(Order, order1.id).number == 'committed through delegate'
+    }
+
     private <T> T createDetached(Class<T> entityClass) {
         def entity = metadata.create(entityClass)
         entityStates.makeDetached(entity)
