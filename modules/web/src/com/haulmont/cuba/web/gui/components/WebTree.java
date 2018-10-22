@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -58,6 +59,7 @@ import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -96,7 +98,7 @@ public class WebTree<E extends Entity>
 
     protected ButtonsPanel buttonsPanel;
     protected HorizontalLayout topPanel;
-    protected CubaCssActionsLayout componentComposition;
+    protected TreeComposition componentComposition;
     protected Action enterPressAction;
     protected Function<? super E, String> iconProvider;
 
@@ -174,24 +176,26 @@ public class WebTree<E extends Entity>
         initContextMenu();
     }
 
-    protected void initComponentComposition(CubaCssActionsLayout componentComposition) {
-        componentComposition.addShortcutListener(createEnterShortcutListener());
+    protected void initComponentComposition(TreeComposition composition) {
+        composition.setPrimaryStyleName("c-tree-composition");
+        composition.setTree(component);
+        composition.addComponent(component);
+        composition.setWidthUndefined();
+
+        composition.addShortcutListener(createEnterShortcutListener());
     }
 
     protected void initComponent(CubaTree<E> component) {
-        component.setSizeFull();
         component.setItemCaptionGenerator(this::generateItemCaption);
+
+        component.setSizeUndefined();
+        component.getCompositionRoot().setHeightMode(HeightMode.UNDEFINED);
 
         setSelectionMode(SelectionMode.SINGLE);
     }
 
-    protected CubaCssActionsLayout createComponentComposition() {
-        CubaCssActionsLayout composition = new CubaCssActionsLayout();
-        composition.setPrimaryStyleName("c-tree-composition");
-        composition.setWidthUndefined();
-        composition.addComponent(component);
-
-        return composition;
+    protected TreeComposition createComponentComposition() {
+        return new TreeComposition();
     }
 
     protected ShortcutListenerDelegate createEnterShortcutListener() {
@@ -366,8 +370,12 @@ public class WebTree<E extends Entity>
     public void setCaptionMode(CaptionMode captionMode) {
         if (this.captionMode != captionMode) {
             switch (captionMode) {
-                case ITEM:
                 case PROPERTY:
+                    if (Strings.isNullOrEmpty(getCaptionProperty())) {
+                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
+                                " if the captionProperty is null");
+                    }
+                case ITEM:
                     this.captionMode = captionMode;
                     component.repaint();
                     break;
@@ -1064,6 +1072,42 @@ public class WebTree<E extends Entity>
         @Override
         public T getParent(T item) {
             return null;
+        }
+    }
+
+    protected class TreeComposition extends CubaCssActionsLayout {
+        protected CubaTree<?> tree;
+
+        public CubaTree<?> getTree() {
+            return tree;
+        }
+
+        public void setTree(CubaTree<?> tree) {
+            this.tree = tree;
+        }
+
+        @Override
+        public void setHeight(float height, Unit unit) {
+            super.setHeight(height, unit);
+
+            if (getHeight() < 0) {
+                tree.setHeightUndefined();
+                tree.getCompositionRoot().setHeightMode(HeightMode.UNDEFINED);
+            } else {
+                tree.setHeight(100, Unit.PERCENTAGE);
+                tree.getCompositionRoot().setHeightMode(HeightMode.CSS);
+            }
+        }
+
+        @Override
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
+
+            if (getWidth() < 0) {
+                tree.setWidthUndefined();
+            } else {
+                tree.setWidth(100, Unit.PERCENTAGE);
+            }
         }
     }
 }
