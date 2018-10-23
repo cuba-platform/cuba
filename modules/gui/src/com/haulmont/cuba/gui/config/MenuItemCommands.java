@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -142,7 +143,7 @@ public class MenuItemCommands {
             this.item = item;
             this.screen = screen;
             this.descriptor = descriptor;
-            this.params = params;
+            this.params = new HashMap<>(params); // only for compatibility with legacy screens
         }
 
         @Override
