@@ -40,9 +40,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Class is used for working with default permission values.
- * Default permission values is used when no role define an explicit value for permissions from
- * {@code cuba.defaultPermissionValuesConfig} files.
+ * Class used for working with default permissions.
+ * Default permission values are used when no role defines an explicit value for permission target.
+ * Default permissions are loaded from the set of files defined by the {@code cuba.defaultPermissionValuesConfig} app property.
  */
 @Component("cuba_DefaultPermissionValuesConfig")
 public class DefaultPermissionValuesConfig {
