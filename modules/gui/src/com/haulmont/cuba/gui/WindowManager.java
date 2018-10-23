@@ -498,10 +498,10 @@ public interface WindowManager extends Screens {
      * Opens default screen. Implemented only for the web module.
      * <p>
      * Default screen can be defined with the {@code cuba.web.defaultScreenId} application property.
-     *
-     * todo move to ScreenTools bean
      */
-    void openDefaultScreen();
+    default void openDefaultScreen() {
+        // todo move to ScreenTools bean
+    }
 
     /**
      * Show notification with {@link Frame.NotificationType#HUMANIZED}. <br>

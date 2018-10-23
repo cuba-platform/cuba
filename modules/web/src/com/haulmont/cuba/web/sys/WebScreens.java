@@ -170,35 +170,14 @@ public class WebScreens implements Screens, WindowManager {
         // load XML document here in order to get metadata before Window creation, e.g. forceDialog from <dialogMode>
         Element element = loadScreenXml(windowInfo, options);
 
-        // check if we need to change launchMode to DIALOG
-        boolean forceDialog = false;
-        if (launchMode != OpenMode.DIALOG
-                && launchMode != OpenMode.ROOT) {
+        ScreenOpenDetails openDetails = prepareScreenOpenDetails(resolvedScreenClass, element, launchMode);
 
-            if (hasModalWindow()) {
-                launchMode = OpenMode.DIALOG;
-                forceDialog = true;
-            }
-
-            if (element != null && element.element("dialogMode") != null) {
-                String forceDialogAttr = element.element("dialogMode").attributeValue("forceDialog");
-                if (StringUtils.isNotEmpty(forceDialogAttr)
-                        && Boolean.parseBoolean(forceDialogAttr)) {
-                    launchMode = OpenMode.DIALOG;
-                }
-            }
-
-            DialogMode dialogMode = resolvedScreenClass.getAnnotation(DialogMode.class);
-            if (dialogMode != null && dialogMode.forceDialog()) {
-                launchMode = OpenMode.DIALOG;
-            }
-        }
-
-        checkPermissions(launchMode, windowInfo);
+        checkPermissions(openDetails.getOpenMode(), windowInfo);
 
         // todo perf4j stop watches for lifecycle
 
-        Window window = createWindow(windowInfo, resolvedScreenClass, launchMode, forceDialog);
+        Window window = createWindow(windowInfo, resolvedScreenClass,
+                openDetails.getOpenMode(), openDetails.isForceDialog());
 
         T controller = createController(windowInfo, window, resolvedScreenClass);
 
@@ -251,6 +230,66 @@ public class WebScreens implements Screens, WindowManager {
         fireEvent(controller, AfterInitEvent.class, afterInitEvent);
 
         return controller;
+    }
+
+    protected ScreenOpenDetails prepareScreenOpenDetails(Class<? extends Screen> resolvedScreenClass, @Nullable Element element,
+                                                         LaunchMode requiredLaunchMode) {
+        if (!(requiredLaunchMode instanceof OpenMode)) {
+            throw new UnsupportedOperationException("Unsupported LaunchMode " + requiredLaunchMode);
+        }
+
+        // check if we need to change launchMode to DIALOG
+        boolean forceDialog = false;
+        OpenMode launchMode = (OpenMode) requiredLaunchMode;
+
+        if (launchMode != OpenMode.DIALOG
+                && launchMode != OpenMode.ROOT) {
+
+            if (hasModalWindow()) {
+                launchMode = OpenMode.DIALOG;
+                forceDialog = true;
+            } else {
+                if (element != null && element.element("dialogMode") != null) {
+                    String forceDialogAttr = element.element("dialogMode").attributeValue("forceDialog");
+                    if (StringUtils.isNotEmpty(forceDialogAttr)
+                            && Boolean.parseBoolean(forceDialogAttr)) {
+                        launchMode = OpenMode.DIALOG;
+                    }
+                }
+
+                DialogMode dialogMode = resolvedScreenClass.getAnnotation(DialogMode.class);
+                if (dialogMode != null && dialogMode.forceDialog()) {
+                    launchMode = OpenMode.DIALOG;
+                }
+            }
+        }
+
+        if (launchMode == OpenMode.THIS_TAB) {
+            WebAppWorkArea workArea = getConfiguredWorkArea();
+
+            switch (workArea.getMode()) {
+                case SINGLE:
+                    if (workArea.getSingleWindowContainer().getComponentCount() == 0) {
+                        launchMode = OpenMode.NEW_TAB;
+                    }
+                    break;
+
+                case TABBED:
+                    TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+                    if (tabSheetBehaviour.getComponentCount() == 0) {
+                        launchMode = OpenMode.NEW_TAB;
+                    }
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException("Unsupported AppWorkArea mode");
+            }
+        } else if (launchMode == OpenMode.NEW_WINDOW) {
+            launchMode = OpenMode.NEW_TAB;
+        }
+
+        return new ScreenOpenDetails(forceDialog, launchMode);
     }
 
     @Nullable
@@ -759,11 +798,6 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void close(Window window) {
         throw new UnsupportedOperationException(); // todo
-    }
-
-    @Override
-    public void openDefaultScreen() {
-        // todo move to separate bean
     }
 
     @Override
@@ -1686,6 +1720,24 @@ public class WebScreens implements Screens, WindowManager {
         @Override
         public void setBreadCrumbs(WindowBreadCrumbs breadCrumbs) {
             this.breadCrumbs = breadCrumbs;
+        }
+    }
+
+    protected static class ScreenOpenDetails {
+        private boolean forceDialog;
+        private OpenMode openMode;
+
+        public ScreenOpenDetails(boolean forceDialog, OpenMode openMode) {
+            this.forceDialog = forceDialog;
+            this.openMode = openMode;
+        }
+
+        public boolean isForceDialog() {
+            return forceDialog;
+        }
+
+        public OpenMode getOpenMode() {
+            return openMode;
         }
     }
 }
