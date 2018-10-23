@@ -190,7 +190,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected FileDescriptor commitFileDescriptor(FileDescriptor fileDescriptor) {
         DataSupplier dataSupplier = getDataSupplier();
         if (dataSupplier != null) {
-            dataSupplier.commit(fileDescriptor);
+            return dataSupplier.commit(fileDescriptor);
         }
 
         DataManager dataManager = beanLocator.get(DataManager.NAME);
