@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.model;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
@@ -49,6 +50,7 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
      * Returns entity by its id.
      * @throws IllegalArgumentException if the container doesn't have an entity with the given id
      */
+    @Nonnull
     E getItem(Object entityId);
 
     /**

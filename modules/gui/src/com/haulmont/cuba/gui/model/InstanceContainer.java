@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -39,6 +40,7 @@ public interface InstanceContainer<E extends Entity> {
      * Returns the contained entity instance.
      * @throws IllegalStateException if there is no entity in the container
      */
+    @Nonnull
     E getItem();
 
     /**

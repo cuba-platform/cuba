@@ -378,7 +378,7 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
         View view = getEditContainer().getView();
         boolean loadDynamicAttributes = getEditLoader().isLoadDynamicAttributes();
 
-        T selectedItem = getBrowseContainer().getItem();
+        T selectedItem = getBrowseContainer().getItemOrNull();
         if (selectedItem != null) {
             T reloadedItem = getBeanLocator().get(DataManager.class)
                     .reload(selectedItem, view, null, loadDynamicAttributes);

@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.model.Sorter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
@@ -125,6 +126,7 @@ public class CollectionContainerImpl<E extends Entity>
         fireCollectionChanged(changeType, Collections.singletonList(entity));
     }
 
+    @Nonnull
     @Override
     public E getItem(Object entityId) {
         E item = getItemOrNull(entityId);
