@@ -150,7 +150,7 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
     /**
      * Method invoked on the screen initialization.
      */
-    protected void initMasterDetailScreen(InitEvent event) {
+    protected void initMasterDetailScreen(@SuppressWarnings("unused") InitEvent event) {
         initOkCancelActions();
         initBrowseItemChangeListener();
         initBrowseCreateAction();
@@ -326,7 +326,7 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
      */
     public void releaseLock() {
         if (justLocked) {
-            Entity entity = getEditContainer().getItem();
+            Entity entity = getEditContainer().getItemOrNull();
             if (entity != null) {
                 getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
             }
@@ -344,7 +344,7 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
     }
 
     /**
-     * Method that is invoked by clicking Ok button after editing an existing or creating a new record.
+     * Method invoked when clicking on the Ok button after editing an existing or creating a new record.
      */
     public void saveChanges() {
         if (!editing)
@@ -372,22 +372,22 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
     }
 
     /**
-     * Method that is invoked by clicking Cancel button, discards changes and disables controls for editing.
+     * Method invoked when clicking the Cancel button, discards changes and disables controls for editing.
      */
     public void discardChanges() {
-        View view = getEditContainer().getView();
-        boolean loadDynamicAttributes = getEditLoader().isLoadDynamicAttributes();
+        releaseLock();
+        getScreenData().getDataContext().evict(getEditContainer().getItem());
+        getEditContainer().setItem(null);
 
         T selectedItem = getBrowseContainer().getItemOrNull();
         if (selectedItem != null) {
+            View view = getEditContainer().getView();
+            boolean loadDynamicAttributes = getEditLoader().isLoadDynamicAttributes();
             T reloadedItem = getBeanLocator().get(DataManager.class)
                     .reload(selectedItem, view, null, loadDynamicAttributes);
             getBrowseContainer().setItem(reloadedItem);
-        } else {
-            getEditContainer().setItem(null);
         }
 
-        releaseLock();
         disableEditControls();
     }
 

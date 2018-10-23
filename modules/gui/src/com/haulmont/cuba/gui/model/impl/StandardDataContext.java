@@ -442,6 +442,8 @@ public class StandardDataContext implements DataContext {
                 entityMap.remove(entity.getId());
                 entity.removePropertyChangeListener(propertyChangeListener);
             }
+            modifiedInstances.remove(entity);
+            removedInstances.remove(entity);
         }
     }
 
