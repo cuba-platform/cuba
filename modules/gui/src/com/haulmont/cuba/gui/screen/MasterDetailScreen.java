@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -28,9 +27,10 @@ import com.haulmont.cuba.gui.actions.list.CreateAction;
 import com.haulmont.cuba.gui.actions.list.EditAction;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
-import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -40,7 +40,10 @@ import java.util.Collections;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> {
+/**
+ * Displays a list of entities on the left and details of the currently selected instance on the right.
+ */
+public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
 
     /**
      * Indicates that the screen is in editing mode.
@@ -57,8 +60,8 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
      */
     protected boolean justLocked;
 
-    public StandardCombinedScreen() {
-        addInitListener(this::initCombinedScreen);
+    public MasterDetailScreen() {
+        addInitListener(this::initMasterDetailScreen);
     }
 
     /**
@@ -69,7 +72,7 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
     }
 
     /**
-     * Returns the browse table. Override if the table id differs from "table".
+     * Returns the browse {@link Table} or {@link DataGrid}. Override the method if the table id differs from "table".
      */
     @SuppressWarnings("unchecked")
     protected ListComponent<T> getTable() {
@@ -106,16 +109,28 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         return (ComponentContainer) getWindow().getComponentNN("actionsPane");
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Returns the table's data container.
+     */
     protected CollectionContainer<T> getBrowseContainer() {
-        return ((ContainerTableItems) getTable().getItems()).getContainer();
+        DataUnit<T> items = getTable().getItems();
+        if (items instanceof ContainerDataUnit)
+            return ((ContainerDataUnit<T>) items).getContainer();
+        else
+            throw new UnsupportedOperationException("Unsupported items: " + items);
     }
 
+    /**
+     * Returns the edit form's data container.
+     */
     @SuppressWarnings("unchecked")
     protected InstanceContainer<T> getEditContainer() {
         return ((ContainerValueSourceProvider) getForm().getValueSourceProvider()).getContainer();
     }
 
+    /**
+     * Returns the loader of the edit form's data container.
+     */
     @SuppressWarnings("unchecked")
     protected InstanceLoader<T> getEditLoader() {
         DataLoader loader = ((HasLoader) getEditContainer()).getLoader();
@@ -124,12 +139,18 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         return (InstanceLoader<T>) loader;
     }
 
+    /**
+     * Returns the entity meta-class.
+     */
     @SuppressWarnings("unchecked")
     protected Class<T> getEntityClass() {
         return getBrowseContainer().getEntityMetaClass().getJavaClass();
     }
 
-    protected void initCombinedScreen(InitEvent event) {
+    /**
+     * Method invoked on the screen initialization.
+     */
+    protected void initMasterDetailScreen(InitEvent event) {
         initOkCancelActions();
         initBrowseItemChangeListener();
         initBrowseCreateAction();
@@ -139,6 +160,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         disableEditControls();
     }
 
+    /**
+     * Initializes OK/Cancel editor buttons.
+     */
     protected void initOkCancelActions() {
         ((BaseAction) getWindow().getActionNN("save")).withHandler(actionPerformedEvent -> saveChanges());
         ((BaseAction) getWindow().getActionNN("cancel")).withHandler(actionPerformedEvent -> discardChanges());
@@ -212,6 +236,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         }
     }
 
+    /**
+     * Loads options of LookupFields if any.
+     */
     protected void refreshOptionsForLookupFields() {
         for (Component component : getForm().getOwnComponents()) {
             if (component instanceof LookupField) {
@@ -294,6 +321,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         return true;
     }
 
+    /**
+     * Releases pessimistic lock if the entity was locked.
+     */
     public void releaseLock() {
         if (justLocked) {
             Entity entity = getEditContainer().getItem();
@@ -303,6 +333,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         }
     }
 
+    /**
+     * Returns the name of the pessimistic lock.
+     */
     protected String getLockName() {
         InstanceContainer<T> container = getEditContainer();
         return getBeanLocator().get(ExtendedEntities.class)
@@ -358,6 +391,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         disableEditControls();
     }
 
+    /**
+     * Event sent when a new entity instance is created.
+     */
     @TriggerOnce
     public static class InitEntityEvent<E> extends EventObject {
         private final E entity;
@@ -377,6 +413,9 @@ public class StandardCombinedScreen<T extends Entity> extends StandardLookup<T> 
         }
     }
 
+    /**
+     * Adds a listener to {@link InitEntityEvent}.
+     */
     protected Subscription addInitEntityListener(Consumer<StandardEditor.InitEntityEvent> listener) {
         return getEventHub().subscribe(StandardEditor.InitEntityEvent.class, listener);
     }
