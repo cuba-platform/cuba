@@ -23,8 +23,7 @@ public class StandardCloseAction implements CloseAction, CloseAction.Command {
     private final boolean checkForUnsavedChanges;
 
     public StandardCloseAction(String actionId) {
-        this.actionId = actionId;
-        this.checkForUnsavedChanges = true;
+        this(actionId, true);
     }
 
     public StandardCloseAction(String actionId, boolean checkForUnsavedChanges) {

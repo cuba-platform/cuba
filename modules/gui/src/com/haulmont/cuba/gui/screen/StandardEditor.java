@@ -331,7 +331,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
         close(commitActionPerformed ?
-                WINDOW_COMMIT_AND_CLOSE_ACTION : WINDOW_DISCARD_AND_CLOSE_ACTION);
+                WINDOW_COMMIT_AND_CLOSE_ACTION : WINDOW_CLOSE_ACTION);
     }
 
     @TriggerOnce
