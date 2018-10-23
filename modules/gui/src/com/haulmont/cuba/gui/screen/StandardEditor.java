@@ -148,7 +148,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     public void releaseLock() {
         if (justLocked) {
-            Entity entity = getEditedEntityContainer().getItem();
+            Entity entity = getEditedEntityContainer().getItemOrNull();
             if (entity != null) {
                 getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
             }
