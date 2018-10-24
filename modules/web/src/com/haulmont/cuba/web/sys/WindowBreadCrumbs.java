@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -63,8 +64,14 @@ public class WindowBreadCrumbs extends CssLayout {
 
     protected WindowNavigateHandler windowNavigateHandler = null;
 
+    protected AppUI ui;
+
     public WindowBreadCrumbs(Mode workAreaMode) {
         this.workAreaMode = workAreaMode;
+    }
+
+    public void setUI(AppUI ui) {
+        this.ui = ui;
     }
 
     public void setBeanLocator(BeanLocator beanLocator) {
@@ -125,7 +132,8 @@ public class WindowBreadCrumbs extends CssLayout {
         }
 
         if (!isCloseWithCloseButtonPrevented(window)) {
-            window.close(Window.CLOSE_ACTION_ID);
+            window.getFrameOwner()
+                    .close(FrameOwner.WINDOW_CLOSE_ACTION);
         }
     }
 
@@ -224,7 +232,6 @@ public class WindowBreadCrumbs extends CssLayout {
     }
 
     public void update() {
-        AppUI ui = AppUI.getCurrent();
         boolean isTestMode = ui.isTestMode();
 
         linksLayout.removeAllComponents();
@@ -273,8 +280,6 @@ public class WindowBreadCrumbs extends CssLayout {
     protected void componentAttachedToUI(@SuppressWarnings("unused") AttachEvent event) {
         adjustParentStyles();
 
-        AppUI ui = (AppUI) getUI();
-        TestIdManager testIdManager = ui.getTestIdManager();
         if (ui.isTestMode()) {
             linksLayout.setCubaId("breadCrumbs");
 
@@ -284,6 +289,7 @@ public class WindowBreadCrumbs extends CssLayout {
         }
 
         if (ui.isPerformanceTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
             linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
 
             if (closeBtn != null) {

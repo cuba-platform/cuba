@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.haulmont.cuba.web.widgets.ContentSwitchMode.HIDE;
 import static com.haulmont.cuba.web.widgets.ContentSwitchMode.UNLOAD;
@@ -685,6 +686,11 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         @Override
         public Iterator<Component> getTabComponents() {
             return tabSheet.tabComponents.iterator();
+        }
+
+        @Override
+        public Stream<Component> getTabComponentsStream() {
+            return tabSheet.tabComponents.stream();
         }
 
         @Override

@@ -57,15 +57,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
     protected BeanLocator beanLocator;
 
     public WebDialogWindow() {
-        this.dialogWindow = new CubaWindow();
-        this.dialogWindow.setStyleName("c-app-dialog-window");
-
+        this.dialogWindow = new GuiDialogWindow(this);
         this.dialogWindow.setContent(component);
-
-        this.dialogWindow.center();
-        this.dialogWindow.setModal(true);
-        dialogWindow.setResizable(false);
-
         this.dialogWindow.addPreCloseListener(this::onCloseButtonClick);
     }
 
@@ -526,6 +519,23 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
                     }
                 }
             }
+        }
+    }
+
+    public static class GuiDialogWindow extends CubaWindow {
+        protected DialogWindow dialogWindow;
+
+        public GuiDialogWindow(DialogWindow dialogWindow) {
+            this.dialogWindow = dialogWindow;
+
+            setStyleName("c-app-dialog-window");
+            setModal(true);
+            setResizable(false);
+            center();
+        }
+
+        public DialogWindow getDialogWindow() {
+            return dialogWindow;
         }
     }
 }

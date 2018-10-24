@@ -65,6 +65,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.WebDialogWindow;
 import com.haulmont.cuba.web.gui.components.WebTabWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -81,16 +82,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
-import static com.haulmont.cuba.gui.components.Window.CLOSE_ACTION_ID;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 @Scope(UIScope.NAME)
@@ -176,8 +180,7 @@ public class WebScreens implements Screens, WindowManager {
 
         // todo perf4j stop watches for lifecycle
 
-        Window window = createWindow(windowInfo, resolvedScreenClass,
-                openDetails.getOpenMode(), openDetails.isForceDialog());
+        Window window = createWindow(windowInfo, resolvedScreenClass, openDetails);
 
         T controller = createController(windowInfo, window, resolvedScreenClass);
 
@@ -232,7 +235,8 @@ public class WebScreens implements Screens, WindowManager {
         return controller;
     }
 
-    protected ScreenOpenDetails prepareScreenOpenDetails(Class<? extends Screen> resolvedScreenClass, @Nullable Element element,
+    protected ScreenOpenDetails prepareScreenOpenDetails(Class<? extends Screen> resolvedScreenClass,
+                                                         @Nullable Element element,
                                                          LaunchMode requiredLaunchMode) {
         if (!(requiredLaunchMode instanceof OpenMode)) {
             throw new UnsupportedOperationException("Unsupported LaunchMode " + requiredLaunchMode);
@@ -269,7 +273,7 @@ public class WebScreens implements Screens, WindowManager {
 
             switch (workArea.getMode()) {
                 case SINGLE:
-                    if (workArea.getSingleWindowContainer().getComponentCount() == 0) {
+                    if (workArea.getSingleWindowContainer().getWindowContainer() == null) {
                         launchMode = OpenMode.NEW_TAB;
                     }
                     break;
@@ -384,6 +388,7 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void show(Screen screen) {
         checkNotNullArgument(screen);
+        checkAlreadyOpened(screen);
 
         checkMultiOpen(screen);
 
@@ -430,6 +435,22 @@ public class WebScreens implements Screens, WindowManager {
         fireEvent(screen, AfterShowEvent.class, afterShowEvent);
     }
 
+    protected void checkAlreadyOpened(Screen screen) {
+        com.vaadin.ui.Component uiComponent = screen.getWindow()
+                .unwrapComposition(com.vaadin.ui.Component.class);
+        if (uiComponent.isAttached()) {
+            throw new IllegalStateException("Screen is already opened " + screen.getId());
+        }
+    }
+
+    protected void checkNotOpened(Screen screen) {
+        com.vaadin.ui.Component uiComponent = screen.getWindow()
+                .unwrapComposition(com.vaadin.ui.Component.class);
+        if (!uiComponent.isAttached()) {
+            throw new IllegalStateException("Screen is not opened " + screen.getId());
+        }
+    }
+
     protected void afterShowWindow(Screen screen) {
         WindowContext windowContext = screen.getWindow().getContext();
 
@@ -462,6 +483,7 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void remove(Screen screen) {
         checkNotNullArgument(screen);
+        checkNotOpened(screen);
 
         WindowImplementation windowImpl = (WindowImplementation) screen.getWindow();
         if (windowImpl instanceof Disposable) {
@@ -495,7 +517,7 @@ public class WebScreens implements Screens, WindowManager {
             }
         }
 
-        // todo remove event ?
+        fireEvent(screen, Screen.AfterDetachEvent.class, new Screen.AfterDetachEvent(screen));
     }
 
     protected void removeThisTabWindow(Screen screen) {
@@ -539,6 +561,8 @@ public class WebScreens implements Screens, WindowManager {
             ContentSwitchMode contentSwitchMode =
                     ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
+        } else {
+            // todo single window mode
         }
     }
 
@@ -590,27 +614,256 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void removeAll() {
-        // todo implement
+        for (Screen dialogScreen : getDialogScreens()) {
+            remove(dialogScreen);
+        }
+
+        // todo remove screens from WorkArea in the reverse order
     }
 
     @Override
     public boolean hasUnsavedChanges() {
-        // todo
-        return false;
+        Screen rootScreen = getRootScreenOrNull();
+        if (rootScreen != null &&
+                rootScreen.hasUnsavedChanges()) {
+            return true;
+        }
+
+        return getOpenedScreens().stream()
+                .anyMatch(Screen::hasUnsavedChanges);
     }
 
     @Override
+    public Collection<Screen> getOpenedScreens() {
+        List<Screen> screens = new ArrayList<>();
+
+        getOpenedWorkAreaScreensStream()
+                .forEach(screens::add);
+
+        getDialogScreensStream()
+                .forEach(screens::add);
+
+        return screens;
+    }
+
+    @Override
+    public Collection<Screen> getOpenedWorkAreaScreens() {
+        return getOpenedWorkAreaScreensStream()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Screen> getActiveScreens() {
+        List<Screen> screens = new ArrayList<>();
+
+        getActiveWorkAreaScreensStream()
+                .forEach(screens::add);
+
+        getDialogScreensStream()
+                .forEach(screens::add);
+
+        return screens;
+    }
+
+    @Override
+    public Collection<Screen> getActiveWorkAreaScreens() {
+        return getActiveWorkAreaScreensStream()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Screen> getDialogScreens() {
+        Collection<com.vaadin.ui.Window> windows = ui.getWindows();
+        if (windows.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return getDialogScreensStream()
+                .collect(Collectors.toList());
+    }
+
+    protected Stream<Screen> getOpenedWorkAreaScreensStream() {
+        Screen rootScreen = getRootScreenOrNull();
+
+        if (rootScreen == null) {
+            throw new IllegalStateException("There is no root screen in UI");
+        }
+
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
+        if (workArea.getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+            return tabSheetBehaviour.getTabComponentsStream()
+                    .flatMap(c -> {
+                        TabWindowContainer windowContainer = (TabWindowContainer) c;
+
+                        Deque<Window> windows = windowContainer.getBreadCrumbs().getWindows();
+
+                        return windows.stream()
+                                .map(Window::getFrameOwner);
+                    });
+        } else {
+            CubaSingleModeContainer singleWindowContainer = workArea.getSingleWindowContainer();
+            TabWindowContainer windowContainer = (TabWindowContainer) singleWindowContainer.getWindowContainer();
+
+            if (windowContainer != null) {
+                Deque<Window> windows = windowContainer.getBreadCrumbs().getWindows();
+
+                return windows.stream()
+                        .map(Window::getFrameOwner);
+            }
+        }
+
+        return Stream.empty();
+    }
+
+    protected Stream<Screen> getActiveWorkAreaScreensStream() {
+        Screen rootScreen = getRootScreenOrNull();
+
+        if (rootScreen == null) {
+            throw new IllegalStateException("There is no root screen in UI");
+        }
+
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
+        if (workArea.getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+            return tabSheetBehaviour.getTabComponentsStream()
+                    .map(c -> {
+                        TabWindowContainer windowContainer = (TabWindowContainer) c;
+
+                        Window currentWindow = windowContainer.getBreadCrumbs().getCurrentWindow();
+
+                        return currentWindow.getFrameOwner();
+                    });
+        } else {
+            CubaSingleModeContainer singleWindowContainer = workArea.getSingleWindowContainer();
+            TabWindowContainer windowContainer = (TabWindowContainer) singleWindowContainer.getWindowContainer();
+
+            if (windowContainer != null) {
+                Window currentWindow = windowContainer.getBreadCrumbs().getCurrentWindow();
+
+                return Stream.of(currentWindow.getFrameOwner());
+            }
+        }
+
+        return Stream.empty();
+    }
+
+    protected Stream<Screen> getDialogScreensStream() {
+        Collection<com.vaadin.ui.Window> windows = ui.getWindows();
+        if (windows.isEmpty()) {
+            return Stream.empty();
+        }
+
+        return windows.stream()
+                .filter(w -> w instanceof WebDialogWindow.GuiDialogWindow)
+                .map(w -> ((WebDialogWindow.GuiDialogWindow) w).getDialogWindow().getFrameOwner());
+    }
+
+    @Override
+    public Collection<Screen> getCurrentBreadcrumbs() {
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
+        TabWindowContainer layout = getCurrentWindowContainer(workArea);
+
+        if (layout != null) {
+            WindowBreadCrumbs breadCrumbs = layout.getBreadCrumbs();
+
+            List<Screen> screens = new ArrayList<>(breadCrumbs.getWindows().size());
+            Iterator<Window> windowIterator = breadCrumbs.getWindows().descendingIterator();
+            while (windowIterator.hasNext()) {
+                Screen frameOwner = windowIterator.next().getFrameOwner();
+                screens.add(frameOwner);
+            }
+
+            return screens;
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    protected TabWindowContainer getCurrentWindowContainer(WebAppWorkArea workArea) {
+        TabWindowContainer layout;
+        if (workArea.getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+            layout = (TabWindowContainer) tabSheetBehaviour.getSelectedTab();
+        } else {
+            CubaSingleModeContainer singleWindowContainer = workArea.getSingleWindowContainer();
+
+            layout = (TabWindowContainer) singleWindowContainer.getWindowContainer();
+        }
+        return layout;
+    }
+
+    @Nonnull
+    @Override
+    public Screen getRootScreen() {
+        RootWindow window = ui.getTopLevelWindow();
+        if (window == null) {
+            throw new IllegalStateException("There is no root screen in UI");
+        }
+
+        return window.getFrameOwner();
+    }
+
+    @Override
+    public Screen getRootScreenOrNull() {
+        RootWindow window = ui.getTopLevelWindow();
+        if (window == null) {
+            return null;
+        }
+
+        return window.getFrameOwner();
+    }
+
+    @Override
+    public Collection<WindowStack> getWorkAreaStacks() {
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
+        if (workArea.getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+            return tabSheetBehaviour.getTabComponentsStream()
+                    .map(c -> ((TabWindowContainer) c))
+                    .map(WindowStackImpl::new)
+                    .collect(Collectors.toList());
+        } else {
+            TabWindowContainer windowContainer = (TabWindowContainer) workArea.getSingleWindowContainer().getWindowContainer();
+            if (windowContainer != null) {
+                return Collections.singleton(new WindowStackImpl(windowContainer));
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /*
+     * Legacy APIs
+     */
+
+    @Override
     public Collection<Window> getOpenWindows() {
-        throw new UnsupportedOperationException();
+        return getOpenedScreens().stream()
+                .map(Screen::getWindow)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void selectWindowTab(Window window) {
+        // todo
+
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean windowExist(WindowInfo windowInfo, Map<String, Object> params) {
+        // todo
+
         throw new UnsupportedOperationException();
     }
 
@@ -793,11 +1046,6 @@ public class WebScreens implements Screens, WindowManager {
         fragments.init(screenFragment);
 
         return screenFragment instanceof Frame ? (Frame) screenFragment : new ScreenFragmentWrapper(screenFragment);
-    }
-
-    @Override
-    public void close(Window window) {
-        throw new UnsupportedOperationException(); // todo
     }
 
     @Override
@@ -1001,64 +1249,61 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected Window createWindow(WindowInfo windowInfo, Class<? extends Screen> screenClass,
-                                  LaunchMode launchMode, boolean forceDialog) {
+                                  ScreenOpenDetails openDetails) {
         Window window;
-        if (launchMode instanceof OpenMode) {
-            OpenMode openMode = (OpenMode) launchMode;
-            switch (openMode) {
-                case ROOT:
-                    // todo should be changed
-                    ui.beforeTopLevelWindowInit();
 
-                    window = uiComponents.create(RootWindow.NAME);
-                    break;
+        OpenMode openMode = openDetails.getOpenMode();
+        switch (openMode) {
+            case ROOT:
+                // todo should be changed
+                ui.beforeTopLevelWindowInit();
 
-                case THIS_TAB:
-                case NEW_TAB:
-                    window = uiComponents.create(TabWindow.NAME);
-                    break;
+                window = uiComponents.create(RootWindow.NAME);
+                break;
 
-                case DIALOG:
-                    DialogWindow dialogWindow = uiComponents.create(DialogWindow.NAME);
+            case THIS_TAB:
+            case NEW_TAB:
+                window = uiComponents.create(TabWindow.NAME);
+                break;
 
-                    if (forceDialog) {
-                        ThemeConstants theme = ui.getApp().getThemeConstants();
+            case DIALOG:
+                DialogWindow dialogWindow = uiComponents.create(DialogWindow.NAME);
 
-                        dialogWindow.setDialogWidth(theme.get("cuba.web.WebWindowManager.forciblyDialog.width"));
-                        dialogWindow.setDialogHeight(theme.get("cuba.web.WebWindowManager.forciblyDialog.height"));
-                        dialogWindow.setResizable(true);
-                    } else {
-                        DialogMode dialogMode = screenClass.getAnnotation(DialogMode.class);
+                if (openDetails.isForceDialog()) {
+                    ThemeConstants theme = ui.getApp().getThemeConstants();
 
-                        if (dialogMode != null) {
-                            dialogWindow.setModal(dialogMode.modal());
-                            dialogWindow.setCloseable(dialogMode.closeable());
-                            dialogWindow.setResizable(dialogMode.resizable());
-                            dialogWindow.setCloseOnClickOutside(dialogMode.closeOnClickOutside());
+                    dialogWindow.setDialogWidth(theme.get("cuba.web.WebWindowManager.forciblyDialog.width"));
+                    dialogWindow.setDialogHeight(theme.get("cuba.web.WebWindowManager.forciblyDialog.height"));
+                    dialogWindow.setResizable(true);
+                } else {
+                    DialogMode dialogMode = screenClass.getAnnotation(DialogMode.class);
 
-                            if (StringUtils.isNotEmpty(dialogMode.width())) {
-                                dialogWindow.setDialogWidth(dialogMode.width());
-                            }
-                            if (StringUtils.isNotEmpty(dialogMode.height())) {
-                                dialogWindow.setDialogHeight(dialogMode.height());
-                            }
+                    if (dialogMode != null) {
+                        dialogWindow.setModal(dialogMode.modal());
+                        dialogWindow.setCloseable(dialogMode.closeable());
+                        dialogWindow.setResizable(dialogMode.resizable());
+                        dialogWindow.setCloseOnClickOutside(dialogMode.closeOnClickOutside());
 
-                            dialogWindow.setWindowMode(dialogMode.windowMode());
+                        if (StringUtils.isNotEmpty(dialogMode.width())) {
+                            dialogWindow.setDialogWidth(dialogMode.width());
                         }
+                        if (StringUtils.isNotEmpty(dialogMode.height())) {
+                            dialogWindow.setDialogHeight(dialogMode.height());
+                        }
+
+                        dialogWindow.setWindowMode(dialogMode.windowMode());
                     }
+                }
 
-                    window = dialogWindow;
+                window = dialogWindow;
 
-                    break;
+                break;
 
-                default:
-                    throw new UnsupportedOperationException("Unsupported launch mode " + launchMode);
-            }
-        } else {
-            throw new UnsupportedOperationException("Unsupported launch mode " + launchMode);
+            default:
+                throw new UnsupportedOperationException("Unsupported launch mode " + openMode);
         }
 
-        WindowContextImpl windowContext = new WindowContextImpl(window, launchMode);
+        WindowContextImpl windowContext = new WindowContextImpl(window, openDetails.getOpenMode());
         ((WindowImplementation) window).setContext(windowContext);
 
         return window;
@@ -1252,25 +1497,29 @@ public class WebScreens implements Screens, WindowManager {
 
                     WindowBreadCrumbs breadCrumbs = layout.getBreadCrumbs();
 
-                    if (!canWindowBeClosed(breadCrumbs.getCurrentWindow())) {
+                    Window currentWindow = breadCrumbs.getCurrentWindow();
+
+                    if (!canWindowBeClosed(currentWindow)) {
                         return;
                     }
 
-                    if (isWindowClosePrevented(breadCrumbs.getCurrentWindow(), CloseOriginType.SHORTCUT)) {
+                    if (isWindowClosePrevented(currentWindow, CloseOriginType.SHORTCUT)) {
                         return;
                     }
 
                     if (breadCrumbs.getWindows().isEmpty()) {
                         com.vaadin.ui.Component previousTab = tabSheet.getPreviousTab(layout);
                         if (previousTab != null) {
-                            breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, () ->
-                                    tabSheet.setSelectedTab(previousTab)
-                            );
+                            currentWindow.getFrameOwner()
+                                    .close(FrameOwner.WINDOW_CLOSE_ACTION)
+                                    .then(() -> tabSheet.setSelectedTab(previousTab));
                         } else {
-                            breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                            currentWindow.getFrameOwner()
+                                    .close(FrameOwner.WINDOW_CLOSE_ACTION);
                         }
                     } else {
-                        breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                        currentWindow.getFrameOwner()
+                                .close(FrameOwner.WINDOW_CLOSE_ACTION);
                     }
                 }
             }
@@ -1280,7 +1529,9 @@ public class WebScreens implements Screens, WindowManager {
                 Window currentWindow = it.next().getCurrentWindow();
                 if (!isWindowClosePrevented(currentWindow, CloseOriginType.SHORTCUT)) {
                     ui.focus();
-                    currentWindow.close(Window.CLOSE_ACTION_ID);
+
+                    currentWindow.getFrameOwner()
+                            .close(FrameOwner.WINDOW_CLOSE_ACTION);
                 }
             }
         }
@@ -1395,6 +1646,7 @@ public class WebScreens implements Screens, WindowManager {
         WebAppWorkArea appWorkArea = getConfiguredWorkArea();
 
         WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(appWorkArea.getMode());
+        windowBreadCrumbs.setUI(ui);
         windowBreadCrumbs.setBeanLocator(beanLocator);
         windowBreadCrumbs.afterPropertiesSet();
 
@@ -1476,9 +1728,8 @@ public class WebScreens implements Screens, WindowManager {
         } else {
             windowContainer.addStyleName("c-app-single-window");
 
-            Layout mainLayout = workArea.getSingleWindowContainer();
-            mainLayout.removeAllComponents();
-            mainLayout.addComponent(windowContainer);
+            CubaSingleModeContainer mainLayout = workArea.getSingleWindowContainer();
+            mainLayout.setWindowContainer(windowContainer);
         }
     }
 
@@ -1491,14 +1742,14 @@ public class WebScreens implements Screens, WindowManager {
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
             windowContainer = (TabWindowContainer) tabSheet.getSelectedTab();
         } else {
-            windowContainer = (TabWindowContainer) workArea.getSingleWindowContainer().getComponent(0);
+            windowContainer = (TabWindowContainer) workArea.getSingleWindowContainer().getWindowContainer();
         }
 
-        WindowBreadCrumbs breadCrumbs = windowContainer.getBreadCrumbs();
-        if (breadCrumbs == null) {
+        if (windowContainer == null || windowContainer.getBreadCrumbs() == null) {
             throw new IllegalStateException("BreadCrumbs not found");
         }
 
+        WindowBreadCrumbs breadCrumbs = windowContainer.getBreadCrumbs();
         Window currentWindow = breadCrumbs.getCurrentWindow();
 
         windowContainer.removeComponent(currentWindow.unwrapComposition(com.vaadin.ui.Layout.class));
@@ -1557,8 +1808,16 @@ public class WebScreens implements Screens, WindowManager {
         ui.addWindow(vWindow);
     }
 
+    /**
+     * @return workarea instance of the root screen
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    @Nonnull
     protected WebAppWorkArea getConfiguredWorkArea() {
         RootWindow topLevelWindow = ui.getTopLevelWindow();
+        if (topLevelWindow == null) {
+            throw new IllegalStateException("There is no root screen opened");
+        }
 
         Screen controller = topLevelWindow.getFrameOwner();
 
@@ -1583,8 +1842,9 @@ public class WebScreens implements Screens, WindowManager {
 
                 if (window != currentWindow) {
                     if (!isWindowClosePrevented(currentWindow, CloseOriginType.BREADCRUMBS)) {
-                        // todo call controller instead
-                        currentWindow.closeAndRun(CLOSE_ACTION_ID, this);
+                        currentWindow.getFrameOwner()
+                                .close(WINDOW_CLOSE_ACTION)
+                                .then(this);
                     }
                 }
             }
@@ -1618,8 +1878,9 @@ public class WebScreens implements Screens, WindowManager {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
                 if (!isWindowClosePrevented(windowToClose, CloseOriginType.CLOSE_BUTTON)) {
-                    // todo call controller method
-                    windowToClose.closeAndRun(CLOSE_ACTION_ID, new TabCloseTask(breadCrumbs));
+                    windowToClose.getFrameOwner()
+                            .close(WINDOW_CLOSE_ACTION)
+                            .then(new TabCloseTask(breadCrumbs));
                 }
             }
         }
@@ -1738,6 +1999,30 @@ public class WebScreens implements Screens, WindowManager {
 
         public OpenMode getOpenMode() {
             return openMode;
+        }
+    }
+
+    protected class WindowStackImpl implements WindowStack {
+
+        protected final TabWindowContainer windowContainer;
+
+        public WindowStackImpl(TabWindowContainer windowContainer) {
+            this.windowContainer = windowContainer;
+        }
+
+        @Override
+        public Collection<Screen> getBreadcrumbs() {
+            Deque<Window> windows = windowContainer.getBreadCrumbs().getWindows();
+            Iterator<Window> windowIterator = windows.descendingIterator();
+
+            List<Screen> screens = new ArrayList<>(windows.size());
+
+            while (windowIterator.hasNext()) {
+                Screen screen = windowIterator.next().getFrameOwner();
+                screens.add(screen);
+            }
+
+            return screens;
         }
     }
 }

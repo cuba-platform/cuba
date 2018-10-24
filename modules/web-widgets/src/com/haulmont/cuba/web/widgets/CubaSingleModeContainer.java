@@ -16,7 +16,22 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.Nullable;
+
 public class CubaSingleModeContainer extends VerticalLayout {
+
+    @Nullable
+    public Component getWindowContainer() {
+        return getComponentCount() > 0 ? getComponent(0) : null;
+    }
+
+    public void setWindowContainer(@Nullable Component component) {
+        removeAllComponents();
+        if (component != null) {
+            addComponent(component);
+        }
+    }
 }

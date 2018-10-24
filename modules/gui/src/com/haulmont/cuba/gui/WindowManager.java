@@ -492,7 +492,9 @@ public interface WindowManager extends Screens {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void close(Window window);
+    default void close(Window window) {
+        remove(window.getFrameOwner());
+    }
 
     /**
      * Opens default screen. Implemented only for the web module.

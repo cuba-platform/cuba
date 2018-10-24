@@ -230,6 +230,16 @@ public abstract class Screen implements FrameOwner {
         return eventHub.subscribe(AfterCloseEvent.class, listener);
     }
 
+    /**
+     * JavaDoc
+     *
+     * @param listener
+     * @return
+     */
+    protected Subscription addDetachListener(Consumer<AfterDetachEvent> listener) {
+        return eventHub.subscribe(AfterDetachEvent.class, listener);
+    }
+
     protected OperationResult showUnsavedChangesDialog(CloseAction closeAction) {
         UnknownOperationResult result = new UnknownOperationResult();
         Messages messages = beanLocator.get(Messages.NAME);
@@ -688,6 +698,21 @@ public abstract class Screen implements FrameOwner {
 
         public CloseAction getCloseAction() {
             return closeAction;
+        }
+    }
+
+    /**
+     * Event that is fired after the screen is removed from UI. Usually this event is used for resource cleanup.
+     */
+    public static class AfterDetachEvent extends EventObject {
+
+        public AfterDetachEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
         }
     }
 }

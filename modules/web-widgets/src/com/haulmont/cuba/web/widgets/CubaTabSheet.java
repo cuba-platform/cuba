@@ -33,6 +33,7 @@ import com.vaadin.ui.TabSheet;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTabSheetBehaviour {
 
@@ -462,6 +463,11 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         @Override
         public Iterator<Component> getTabComponents() {
             return tabSheet.iterator();
+        }
+
+        @Override
+        public Stream<Component> getTabComponentsStream() {
+            return tabSheet._components().stream();
         }
 
         @Override

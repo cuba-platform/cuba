@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -420,6 +421,7 @@ public class AppUI extends CubaUI
     /**
      * @return currently displayed top-level window
      */
+    @Nullable
     public RootWindow getTopLevelWindow() {
         return topLevelWindow;
     }

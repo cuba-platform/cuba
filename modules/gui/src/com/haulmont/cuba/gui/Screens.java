@@ -17,10 +17,15 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * JavaDoc
@@ -53,27 +58,89 @@ public interface Screens {
     void show(Screen screen);
 
     /**
-     * Removes window from UI and releases all the resources of screen.
+     * Removes screen from UI and releases all the resources of screen.
      *
      * @param screen screen
      */
     void remove(Screen screen);
 
     /**
-     * JavaDoc
+     * Removes all child screens (screens of work area and dialog screens) from the root screen and releases their resources.
      */
     void removeAll();
 
     /**
-     * JavaDoc
+     * Check if there are screens that have unsaved changes.
      *
-     * @return true if there are windows with unsaved changes
+     * @return true if there are screens with unsaved changes
      */
     boolean hasUnsavedChanges();
 
     /**
-     * JavaDoc
+     * @return all opened screens excluding the root screen
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    Collection<Screen> getOpenedScreens();
+
+    /**
+     * @return all opened screens excluding the root screen
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    Collection<Screen> getOpenedWorkAreaScreens();
+
+    /**
+     * @return top screens from work area tabs and all dialog windows
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    Collection<Screen> getActiveScreens();
+
+    /**
+     * @return top screens from work area tabs
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    Collection<Screen> getActiveWorkAreaScreens();
+
+    /**
+     * @return all dialog screens
+     */
+    Collection<Screen> getDialogScreens();
+
+    /**
+     * @return screens of the currently opened tab of work area in descending order, first element is active screen
+     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     */
+    Collection<Screen> getCurrentBreadcrumbs();
+
+    /**
+     * @return tab containers or single window container with access to breadcrumbs
+     */
+    Collection<WindowStack> getWorkAreaStacks();
+
+    /**
+     * @return the root screen of UI
+     * @throws IllegalStateException in case there is no root screen in UI
+     */
+    @Nonnull
+    Screen getRootScreen();
+
+    /**
+     * @return the root screen or null
+     */
+    @Nullable
+    Screen getRootScreenOrNull();
+
+    /**
+     * Marker interface for screen launch modes.
+     *
+     * @see com.haulmont.cuba.gui.screen.OpenMode
      */
     interface LaunchMode {
+    }
+
+    interface WindowStack {
+        /**
+         * @return screens of the container in descending order, first element is active screen
+         */
+        Collection<Screen> getBreadcrumbs();
     }
 }

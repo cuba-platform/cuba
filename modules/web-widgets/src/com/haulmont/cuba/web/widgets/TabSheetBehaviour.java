@@ -21,6 +21,7 @@ import com.vaadin.ui.Component;
 
 import java.util.Iterator;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 public interface TabSheetBehaviour {
 
@@ -69,6 +70,8 @@ public interface TabSheetBehaviour {
     Component getSelectedTab();
 
     Iterator<Component> getTabComponents();
+
+    Stream<Component> getTabComponentsStream();
 
     void closeTab(Component target);
 
