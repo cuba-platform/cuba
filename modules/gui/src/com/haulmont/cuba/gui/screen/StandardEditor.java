@@ -353,7 +353,11 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         }
     }
 
-    protected Subscription addInitEntityListener(Consumer<InitEntityEvent> listener) {
-        return getEventHub().subscribe(InitEntityEvent.class, listener);
+    /**
+     * Adds a listener to {@link InitEntityEvent}.
+     */
+    @SuppressWarnings("unchecked")
+    protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {
+        return getEventHub().subscribe(InitEntityEvent.class, (Consumer) listener);
     }
 }

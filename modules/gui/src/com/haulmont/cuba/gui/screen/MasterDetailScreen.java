@@ -416,7 +416,8 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
     /**
      * Adds a listener to {@link InitEntityEvent}.
      */
-    protected Subscription addInitEntityListener(Consumer<InitEntityEvent> listener) {
-        return getEventHub().subscribe(InitEntityEvent.class, listener);
+    @SuppressWarnings("unchecked")
+    protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {
+        return getEventHub().subscribe(InitEntityEvent.class, (Consumer) listener);
     }
 }
