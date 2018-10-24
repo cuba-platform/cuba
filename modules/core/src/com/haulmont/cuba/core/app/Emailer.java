@@ -170,7 +170,7 @@ public class Emailer implements EmailerAPI {
             for (String address : splitAddresses) {
                 address = address.trim();
                 if (StringUtils.isNotBlank(address)) {
-                    SendingMessage sendingMessage = convertToSendingMessage(info.getAddresses(), info.getFrom(), null,
+                    SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), null,
                             null, info.getCaption(), info.getBody(), info.getBodyContentType(), info.getHeaders(),
                             info.getAttachments(), attemptsCount, deadline);
 
