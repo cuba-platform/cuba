@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.text.ParseException;
+import java.util.Collection;
 
 @Component(ScreenDataXmlLoader.NAME)
 public class ScreenDataXmlLoader {
@@ -170,6 +171,13 @@ public class ScreenDataXmlLoader {
                 Entity item = parentContainer.getItemOrNull();
                 container.setItems(item != null ? item.getValue(property) : null);
             });
+
+            parentContainer.addItemPropertyChangeListener(e -> {
+                if (e.getProperty().equals(property)) {
+                    container.setItems((Collection<Entity>) e.getValue());
+                }
+            });
+
             nestedContainer = container;
 
         } else if (element.getName().equals("instance")) {
@@ -183,6 +191,12 @@ public class ScreenDataXmlLoader {
             parentContainer.addItemChangeListener(e -> {
                 Entity item = parentContainer.getItemOrNull();
                 container.setItem(item != null ? item.getValue(property) : null);
+            });
+
+            parentContainer.addItemPropertyChangeListener(e -> {
+                if (e.getProperty().equals(property)) {
+                    container.setItem((Entity) e.getValue());
+                }
             });
 
             nestedContainer = container;

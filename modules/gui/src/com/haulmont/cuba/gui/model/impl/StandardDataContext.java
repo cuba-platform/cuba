@@ -252,26 +252,47 @@ public class StandardDataContext implements DataContext {
             String name = property.getName();
             if ((!property.getRange().isClass() || property.getRange().getCardinality().isMany()) // local and collections
                     && !property.isReadOnly()                                                     // read-write
-                    && (srcNew || entityStates.isLoaded(srcEntity, name))) {                      // loaded
-                AnnotatedElement annotatedElement = property.getAnnotatedElement();
-                if (annotatedElement instanceof Field) {
-                    Field field = (Field) annotatedElement;
-                    field.setAccessible(true);
-                    try {
-                        Object value = field.get(srcEntity);
-                        if (srcNew || property.getRange().getCardinality().isMany()) {
-                            if (value != null)
-                                copyValue(dstEntity, field, value);
-                        } else {
-                            copyValue(dstEntity, field, value);
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Error copying state of attribute " + name, e);
-                    }
+                    && (srcNew || entityStates.isLoaded(srcEntity, name))                         // loaded src
+                    && (dstNew || entityStates.isLoaded(dstEntity, name))) {                      // loaded dst
+                Object value = srcEntity.getValue(name);
+
+                // ignore null values in new source entities
+                if (srcNew && value == null) {
+                    continue;
                 }
+
+                // copy only non-null collections
+                if (property.getRange().getCardinality().isMany()) {
+                    if (value != null) {
+                        Collection copy = createObservableCollection((Collection) value, dstEntity.getValue(name), dstEntity);
+                        dstEntity.setValue(name, copy);
+                    }
+                    continue;
+                }
+
+                // all other cases
+                dstEntity.setValue(name, value);
             }
         }
         copySystemState(srcEntity, dstEntity);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Collection createObservableCollection(Collection srcCollection, Collection dstCollection, Entity dstEntity) {
+        Collection newDstCollection = srcCollection instanceof List ? new ArrayList() : new LinkedHashSet();
+        if (dstCollection == null) {
+            newDstCollection.addAll(srcCollection);
+        } else {
+            newDstCollection.addAll(dstCollection);
+            for (Object o : srcCollection) {
+                if (!newDstCollection.contains(o))
+                    newDstCollection.add(o);
+            }
+        }
+        BiConsumer<CollectionChangeType, Collection> onChanged = (changeType, changed) -> modified(dstEntity);
+        return newDstCollection instanceof List ?
+                new ObservableList(((List) newDstCollection), onChanged) :
+                new ObservableSet(((Set) newDstCollection), onChanged);
     }
 
     /**

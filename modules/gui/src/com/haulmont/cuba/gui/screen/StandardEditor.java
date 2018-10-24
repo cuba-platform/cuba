@@ -181,11 +181,13 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected boolean isEntityModifiedInParentContext() {
+        boolean result = false;
         DataContext parentDc = getScreenData().getDataContext().getParent();
-        if (parentDc == null)
-            return false;
-
-        return isEntityModifiedRecursive(entityToEdit, parentDc, new HashSet<>());
+        while (!result && parentDc != null) {
+            result = isEntityModifiedRecursive(entityToEdit, parentDc, new HashSet<>());
+            parentDc = parentDc.getParent();
+        }
+        return result;
     }
 
     protected boolean isEntityModifiedRecursive(Entity entity, DataContext dataContext, HashSet<Object> visited) {
