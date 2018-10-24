@@ -236,7 +236,7 @@ public abstract class Screen implements FrameOwner {
      * @param listener
      * @return
      */
-    protected Subscription addDetachListener(Consumer<AfterDetachEvent> listener) {
+    protected Subscription addAfterDetachListener(Consumer<AfterDetachEvent> listener) {
         return eventHub.subscribe(AfterDetachEvent.class, listener);
     }
 
@@ -702,7 +702,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * Event that is fired after the screen is removed from UI. Usually this event is used for resource cleanup.
+     * Event that is fired after the screen has been removed from UI. Usually this event is used for resource cleanup.
      */
     public static class AfterDetachEvent extends EventObject {
 
