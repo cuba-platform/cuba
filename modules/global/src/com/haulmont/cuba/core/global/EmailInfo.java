@@ -38,8 +38,13 @@ public class EmailInfo implements Serializable {
 
     /**
      * Recipient email addresses separated with "," or ";" symbol.
+     * flag <pre>sendInOneMessage</pre> created to have backward compatibility with CUBA 6.10.2 version and lower
+     * if <pre>sendInOneMessage = true</pre> then one message will be sent for all recipients includes cc and bcc
      */
     private String addresses;
+    private String cc;
+    private String bcc;
+    private boolean sendInOneMessage = false;
     private String caption;
     private String from;
     private String templatePath;
@@ -60,18 +65,18 @@ public class EmailInfo implements Serializable {
      *          Collections.singletonMap("some_var", some_value)
      *     );
      * }</pre>
-     *
+     * <p>
      * If you want to set content body type you can use
      * {@link #EmailInfo(String, String, String, String, String, Map, EmailAttachment...)} instead or use {@code
      * setBodyContentType()} method.
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
-     * @param templatePath          path to a Freemarker template which is used to create the message body. The template
-     *                              is loaded through {@link Resources} in the <b>core</b> module.
-     * @param templateParameters    map of parameters to be passed to the template
-     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     * @param addresses          comma or semicolon separated list of addresses
+     * @param caption            email subject
+     * @param from               "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param templatePath       path to a Freemarker template which is used to create the message body. The template
+     *                           is loaded through {@link Resources} in the <b>core</b> module.
+     * @param templateParameters map of parameters to be passed to the template
+     * @param attachments        email attachments. Omit this parameter if there are no attachments.
      */
     public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
                      Map<String, Serializable> templateParameters, EmailAttachment... attachments) {
@@ -96,14 +101,14 @@ public class EmailInfo implements Serializable {
      *     );
      * }</pre>
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
-     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
-     * @param templatePath          path to a Freemarker template which is used to create the message body. The template
-     *                              is loaded through {@link Resources} in the <b>core</b> module.
-     * @param templateParameters    map of parameters to be passed to the template
-     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     * @param addresses          comma or semicolon separated list of addresses
+     * @param caption            email subject
+     * @param from               "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param bodyContentType    email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param templatePath       path to a Freemarker template which is used to create the message body. The template
+     *                           is loaded through {@link Resources} in the <b>core</b> module.
+     * @param templateParameters map of parameters to be passed to the template
+     * @param attachments        email attachments. Omit this parameter if there are no attachments.
      */
     public EmailInfo(String addresses, String caption, @Nullable String from, String bodyContentType,
                      String templatePath, Map<String, Serializable> templateParameters,
@@ -127,16 +132,16 @@ public class EmailInfo implements Serializable {
      *          "Some content"
      *     );
      * }</pre>
-     *
+     * <p>
      * If you want to set content body type you can use
      * {@link #EmailInfo(String, String, String, String, String, EmailAttachment...)} instead or use {@code
      * setBodyContentType()} method.
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
-     * @param body                  email body
-     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     * @param addresses   comma or semicolon separated list of addresses
+     * @param caption     email subject
+     * @param from        "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param body        email body
+     * @param attachments email attachments. Omit this parameter if there are no attachments.
      */
     public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachments) {
         this.addresses = addresses;
@@ -158,12 +163,12 @@ public class EmailInfo implements Serializable {
      *     );
      * }</pre>
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
-     * @param body                  email body
-     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
-     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     * @param addresses       comma or semicolon separated list of addresses
+     * @param caption         email subject
+     * @param from            "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param body            email body
+     * @param bodyContentType email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param attachments     email attachments. Omit this parameter if there are no attachments.
      */
     public EmailInfo(String addresses, String caption, @Nullable String from, String body, String bodyContentType,
                      EmailAttachment... attachments) {
@@ -184,13 +189,13 @@ public class EmailInfo implements Serializable {
      *          "Some content"
      *     );
      * }</pre>
-     *
+     * <p>
      * If you want to set content body type you can use {@link #EmailInfo(String, String, String, String)} instead or
      * use {@code setBodyContentType()} method.
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param body                  email body
+     * @param addresses comma or semicolon separated list of addresses
+     * @param caption   email subject
+     * @param body      email body
      */
     public EmailInfo(String addresses, String caption, String body) {
         this.addresses = addresses;
@@ -209,10 +214,10 @@ public class EmailInfo implements Serializable {
      *     );
      * }</pre>
      *
-     * @param addresses             comma or semicolon separated list of addresses
-     * @param caption               email subject
-     * @param body                  email body
-     * @param bodyContentType       email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
+     * @param addresses       comma or semicolon separated list of addresses
+     * @param caption         email subject
+     * @param body            email body
+     * @param bodyContentType email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
      */
     public EmailInfo(String addresses, String caption, String body, String bodyContentType) {
         this.addresses = addresses;
@@ -297,5 +302,29 @@ public class EmailInfo implements Serializable {
 
     public void setBodyContentType(String bodyContentType) {
         this.bodyContentType = bodyContentType;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getBcc() {
+        return bcc;
+    }
+
+    public void setBcc(String bcc) {
+        this.bcc = bcc;
+    }
+
+    public boolean isSendInOneMessage() {
+        return sendInOneMessage;
+    }
+
+    public void setSendInOneMessage(boolean sendInOneMessage) {
+        this.sendInOneMessage = sendInOneMessage;
     }
 }

@@ -47,6 +47,12 @@ public class SendingMessage extends StandardEntity {
     @Column(name = "ADDRESS_FROM")
     protected String from;
 
+    @Column(name = "ADDRESS_CC")
+    protected String cc;
+
+    @Column(name = "ADDRESS_BCC")
+    protected String bcc;
+
     @Column(name = "CAPTION", length = CAPTION_LENGTH)
     protected String caption;
 
@@ -197,5 +203,21 @@ public class SendingMessage extends StandardEntity {
 
     public void setBodyContentType(String bodyContentType) {
         this.bodyContentType = bodyContentType;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getBcc() {
+        return bcc;
+    }
+
+    public void setBcc(String bcc) {
+        this.bcc = bcc;
     }
 }

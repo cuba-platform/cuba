@@ -201,6 +201,8 @@
 
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse">
         <property name="address"/>
+        <property name="cc"/>
+        <property name="bcc"/>
         <property name="attachmentsName"/>
         <property name="attemptsCount"/>
         <property name="attemptsMade"/>

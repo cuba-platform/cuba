@@ -615,6 +615,8 @@ create table SYS_SENDING_MESSAGE (
     DELETED_BY varchar(50),
     --
     ADDRESS_TO text,
+    ADDRESS_CC text,
+    ADDRESS_BCC text,
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
     EMAIL_HEADERS varchar(500),

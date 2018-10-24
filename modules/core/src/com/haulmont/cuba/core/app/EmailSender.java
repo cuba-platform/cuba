@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailHeader;
@@ -73,7 +72,9 @@ public class EmailSender implements EmailSenderAPI {
 
     protected MimeMessage createMimeMessage(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = mailSender.createMimeMessage();
-        assignRecipient(sendingMessage, msg);
+        assignRecipient(Message.RecipientType.TO, sendingMessage.getAddress(), msg);
+        assignRecipient(Message.RecipientType.CC, sendingMessage.getCc(), msg);
+        assignRecipient(Message.RecipientType.BCC, sendingMessage.getBcc(), msg);
         msg.setSubject(sendingMessage.getCaption(), StandardCharsets.UTF_8.name());
         msg.setSentDate(timeSource.currentTimestamp());
 
@@ -110,9 +111,15 @@ public class EmailSender implements EmailSenderAPI {
         content.addBodyPart(textBodyPart);
     }
 
-    protected void assignRecipient(SendingMessage sendingMessage, MimeMessage message) throws MessagingException {
-        InternetAddress internetAddress = new InternetAddress(sendingMessage.getAddress().trim());
-        message.setRecipient(Message.RecipientType.TO, internetAddress);
+    protected void assignRecipient(Message.RecipientType type, String addresses, MimeMessage message) throws MessagingException {
+        if (StringUtils.isNotBlank(addresses)) {
+            String[] splitAddresses = addresses.split("[,;]");
+            for (String address : splitAddresses) {
+                if (StringUtils.isNotBlank(address)) {
+                    message.addRecipient(type, new InternetAddress(address.trim()));
+                }
+            }
+        }
     }
 
     protected void assignFromAddress(SendingMessage sendingMessage, MimeMessage msg) throws MessagingException {

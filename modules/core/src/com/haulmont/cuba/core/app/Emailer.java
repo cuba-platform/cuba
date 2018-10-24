@@ -157,15 +157,25 @@ public class Emailer implements EmailerAPI {
 
     protected List<SendingMessage> splitEmail(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline) {
         List<SendingMessage> sendingMessageList = new ArrayList<>();
-        String[] splitAddresses = info.getAddresses().split("[,;]");
-        for (String address : splitAddresses) {
-            address = address.trim();
-            if (StringUtils.isNotBlank(address)) {
-                SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
-                        info.getBody(), info.getBodyContentType(), info.getHeaders(), info.getAttachments(), attemptsCount,
-                        deadline);
+        if (info.isSendInOneMessage()) {
+            if (StringUtils.isNotBlank(info.getAddresses())) {
+                SendingMessage sendingMessage = convertToSendingMessage(info.getAddresses(), info.getFrom(), info.getCc(),
+                        info.getBcc(), info.getCaption(), info.getBody(), info.getBodyContentType(), info.getHeaders(),
+                        info.getAttachments(), attemptsCount, deadline);
 
                 sendingMessageList.add(sendingMessage);
+            }
+        } else {
+            String[] splitAddresses = info.getAddresses().split("[,;]");
+            for (String address : splitAddresses) {
+                address = address.trim();
+                if (StringUtils.isNotBlank(address)) {
+                    SendingMessage sendingMessage = convertToSendingMessage(info.getAddresses(), info.getFrom(), null,
+                            null, info.getCaption(), info.getBody(), info.getBodyContentType(), info.getHeaders(),
+                            info.getAttachments(), attemptsCount, deadline);
+
+                    sendingMessageList.add(sendingMessage);
+                }
             }
         }
         return sendingMessageList;
@@ -553,7 +563,7 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body,
+    protected SendingMessage convertToSendingMessage(String address, String from, String cc, String bcc, String caption, String body,
                                                      String bodyContentType,
                                                      @Nullable List<EmailHeader> headers,
                                                      @Nullable EmailAttachment[] attachments,
@@ -561,6 +571,8 @@ public class Emailer implements EmailerAPI {
         SendingMessage sendingMessage = metadata.create(SendingMessage.class);
 
         sendingMessage.setAddress(address);
+        sendingMessage.setCc(cc);
+        sendingMessage.setBcc(bcc);
         sendingMessage.setFrom(from);
         sendingMessage.setContentText(body);
         sendingMessage.setCaption(caption);

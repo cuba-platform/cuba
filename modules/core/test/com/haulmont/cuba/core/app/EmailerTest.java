@@ -31,6 +31,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import javax.mail.Address;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
@@ -77,6 +78,11 @@ public class EmailerTest {
     }
 
     @Test
+    public void testSynchronousWithMultipleRecipients() throws Exception {
+        doTestWithMultipleRecipientsSynchronous(false);
+    }
+
+    @Test
     public void testSynchronousFS() throws Exception {
         doTestSynchronous(true);
     }
@@ -96,6 +102,39 @@ public class EmailerTest {
 
         assertEquals(1, msg.getAllRecipients().length);
         assertEquals("testemail@example.com", msg.getAllRecipients()[0].toString());
+
+        assertEquals("Test Email", msg.getSubject());
+        assertEquals("Test Body", getBody(msg));
+        assertTrue(getBodyContentType(msg).startsWith("text/plain;"));
+    }
+
+    /*
+     * Test single recipient, text body, subject.
+     */
+    private void doTestWithMultipleRecipientsSynchronous(boolean useFs) throws Exception {
+        emailerConfig.setFileStorageUsed(useFs);
+        testMailSender.clearBuffer();
+
+        EmailInfo myInfo = new EmailInfo("testemail@example.com,testemail2@example.com", "Test Email", "Test Body");
+        myInfo.setSendInOneMessage(true);
+        myInfo.setCc("testemail3@example.com,testemail4@example.com");
+        myInfo.setBcc("testemail5@example.com,testemail6@example.com");
+        emailer.sendEmail(myInfo);
+
+        assertEquals(1, testMailSender.getBufferSize());
+        MimeMessage msg = testMailSender.fetchSentEmail();
+
+        assertEquals(2, msg.getRecipients(Message.RecipientType.TO).length);
+        assertEquals("testemail@example.com", msg.getRecipients(Message.RecipientType.TO)[0].toString());
+        assertEquals("testemail2@example.com", msg.getRecipients(Message.RecipientType.TO)[1].toString());
+
+        assertEquals(2, msg.getRecipients(Message.RecipientType.CC).length);
+        assertEquals("testemail3@example.com", msg.getRecipients(Message.RecipientType.CC)[0].toString());
+        assertEquals("testemail4@example.com", msg.getRecipients(Message.RecipientType.CC)[1].toString());
+
+        assertEquals(2, msg.getRecipients(Message.RecipientType.BCC).length);
+        assertEquals("testemail5@example.com", msg.getRecipients(Message.RecipientType.BCC)[0].toString());
+        assertEquals("testemail6@example.com", msg.getRecipients(Message.RecipientType.BCC)[1].toString());
 
         assertEquals("Test Email", msg.getSubject());
         assertEquals("Test Body", getBody(msg));
