@@ -57,7 +57,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     protected StandardEditor() {
         addInitListener(this::initActions);
-        addBeforeShowListener(this::setupEntityToEdit);
+        addBeforeShowListener(this::beforeShow);
     }
 
     protected void initActions(@SuppressWarnings("unused") InitEvent event) {
@@ -89,7 +89,13 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         window.addAction(closeAction);
     }
 
-    protected void setupEntityToEdit(@SuppressWarnings("unused") BeforeShowEvent event) {
+    private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
+        setupEntityToEdit();
+        loadData();
+        setupLock();
+    }
+
+    protected void setupEntityToEdit() {
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
 
@@ -101,8 +107,10 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             InstanceLoader loader = getEditedEntityLoader();
             loader.setEntityId(entityToEdit.getId());
         }
+    }
 
-        setupLock();
+    protected void loadData() {
+        getScreenData().loadAll();
     }
 
     protected void setupLock() {

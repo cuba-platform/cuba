@@ -17,16 +17,10 @@
 package com.haulmont.cuba.web.tmp;
 
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
 
 @UiController("tmpGroupTreeDataGrid")
 @UiDescriptor("tmp-group-treedatagrid.xml")
 public class TmpGroupTreeDataGrid extends Screen {
-
-    @Subscribe
-    protected void beforeShow(BeforeShowEvent event) {
-        getScreenData().loadAll();
-    }
 }

@@ -54,11 +54,6 @@ public class DcScreen5 extends StandardLookup<User> implements DemoMixin {
     @Inject
     private Table<User> usersTable;
 
-    @Subscribe
-    private void beforeShow(BeforeShowEvent event) {
-        getScreenData().loadAll();
-    }
-
     @Install(target = Target.DATA_LOADER, to = "usersLoader")
     private List<User> loadUsers(LoadContext<User> loadContext) {
         List<User> users = dataManager.loadList(loadContext);

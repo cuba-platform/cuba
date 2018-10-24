@@ -24,10 +24,6 @@ import com.haulmont.cuba.security.entity.UserRole;
 @UiDescriptor("tmp-user-role-edit.xml")
 @EditedEntityContainer("userRoleCont")
 public class TmpUserRoleEdit extends StandardEditor<UserRole> {
-    @Subscribe
-    protected void beforeShow(BeforeShowEvent event) {
-        getScreenData().loadAll();
-    }
 
     @Subscribe("okBtn")
     protected void onOkClick(Button.ClickEvent event) {

@@ -40,7 +40,7 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
 
     public StandardLookup() {
         addInitListener(this::initActions);
-        addBeforeShowListener(this::setupLookupComponent);
+        addBeforeShowListener(this::beforeShow);
     }
 
     protected void initActions(@SuppressWarnings("unused") InitEvent event) {
@@ -66,7 +66,16 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
         window.addAction(closeAction);
     }
 
-    protected void setupLookupComponent(@SuppressWarnings("unused") BeforeShowEvent event) {
+    private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
+        loadData();
+        setupLookupComponent();
+    }
+
+    protected void loadData() {
+        getScreenData().loadAll();
+    }
+
+    protected void setupLookupComponent() {
         if (this.selectHandler != null) {
             getLookupComponent().setLookupSelectHandler(this::select);
         }

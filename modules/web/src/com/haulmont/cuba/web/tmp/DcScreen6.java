@@ -54,11 +54,6 @@ public class DcScreen6 extends StandardEditor<User> {
         }
     }
 
-    @Subscribe
-    protected void beforeShow(BeforeShowEvent event) {
-        getScreenData().loadAll();
-    }
-
     @Subscribe("editBtn")
     protected void onEditClick(Button.ClickEvent event) {
         TmpUserRoleEdit tmpUserRoleEdit = editorScreens.builder(UserRole.class, this)
