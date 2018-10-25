@@ -487,4 +487,13 @@ public class TestTextField implements TextField<String> {
     public void removeEnterPressListener(Consumer<EnterPressEvent> listener) {
 
     }
+
+    @Override
+    public void setHtmlName(String htmlName) {
+    }
+
+    @Override
+    public String getHtmlName() {
+        return null;
+    }
 }
