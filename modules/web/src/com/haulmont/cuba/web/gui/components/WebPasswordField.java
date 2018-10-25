@@ -151,4 +151,14 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
     public void setInputPrompt(String inputPrompt) {
         component.setPlaceholder(inputPrompt);
     }
+
+    @Override
+    public void setHtmlName(String htmlName) {
+        component.setHtmlName(htmlName);
+    }
+
+    @Override
+    public String getHtmlName() {
+        return component.getHtmlName();
+    }
 }

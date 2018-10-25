@@ -119,4 +119,15 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
             getState(true).caseConversion = caseConversion.name();
         }
     }
+
+    public void setHtmlName(String htmlName) {
+        String oldHtmlName = getState(false).htmlName;
+        if (!Objects.equals(htmlName, oldHtmlName)) {
+            getState().htmlName = htmlName;
+        }
+    }
+
+    public String getHtmlName() {
+        return getState(false).htmlName;
+    }
 }

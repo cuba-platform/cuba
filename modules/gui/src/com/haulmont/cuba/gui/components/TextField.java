@@ -35,7 +35,8 @@ public interface TextField<V>
             TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
-            HasInputPrompt {
+            HasInputPrompt,
+            TextInputField.HtmlNameSupported {
 
     String NAME = "textField";
 

@@ -1354,6 +1354,7 @@
                 <xs:attribute name="caseConversion" type="caseConversion"/>
                 <xs:attribute name="textChangeEventMode" type="textChangeEventMode"/>
                 <xs:attribute name="textChangeTimeout" type="xs:int"/>
+                <xs:attribute name="htmlName" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1446,6 +1447,7 @@
                 <xs:attribute name="autocomplete" type="xs:boolean"/>
                 <xs:attribute name="capsLockIndicator" type="xs:string"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
+                <xs:attribute name="htmlName" type="xs:string"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>

@@ -19,7 +19,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 
 public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
     @Override
@@ -40,11 +42,19 @@ public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
         loadInputPrompt(resultComponent, element);
         loadCaseConversion(resultComponent, element);
         loadTextChangeEventProperties(resultComponent, element);
+        loadHtmlName(resultComponent, element);
     }
 
     @Override
     public void createComponent() {
         resultComponent = factory.create(TextField.NAME);
         loadId(resultComponent, element);
+    }
+
+    protected void loadHtmlName(TextInputField.HtmlNameSupported component, Element element) {
+        String htmlName = element.attributeValue("htmlName");
+        if (htmlName != null && !htmlName.isEmpty()) {
+            component.setHtmlName(htmlName);
+        }
     }
 }

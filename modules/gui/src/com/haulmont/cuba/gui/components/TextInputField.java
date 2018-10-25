@@ -111,6 +111,21 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
         void setTextChangeEventMode(TextChangeEventMode mode);
     }
 
+    interface HtmlNameSupported {
+
+        /**
+         * Sets the given {@code htmlName} as a value of "name" HTML attribute.
+         *
+         * @param htmlName name
+         */
+        void setHtmlName(String htmlName);
+
+        /**
+         * @return a value of "name" HTML attribute
+         */
+        String getHtmlName();
+    }
+
     /**
      * TextChangeEvents are fired when the user is editing the text content of a field. Most commonly text change events
      * are triggered by typing text with keyboard, but e.g. pasting content from clip board to a text field also

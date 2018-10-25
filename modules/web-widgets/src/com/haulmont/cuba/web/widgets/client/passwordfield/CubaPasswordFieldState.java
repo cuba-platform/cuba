@@ -28,4 +28,7 @@ public class CubaPasswordFieldState extends PasswordFieldState {
 
     @NoLayout
     public Connector capsLockIndicator;
+
+    @NoLayout
+    public String htmlName = null;
 }

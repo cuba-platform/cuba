@@ -27,4 +27,7 @@ public class CubaTextFieldState extends TextFieldState {
 
     @NoLayout
     public String caseConversion = "NONE";
+
+    @NoLayout
+    public String htmlName = null;
 }

@@ -20,6 +20,8 @@ import com.haulmont.cuba.web.widgets.client.passwordfield.CubaPasswordFieldState
 import com.vaadin.shared.Connector;
 import com.vaadin.ui.PasswordField;
 
+import java.util.Objects;
+
 public class CubaPasswordField extends PasswordField {
 
     public CubaPasswordField() {
@@ -52,5 +54,16 @@ public class CubaPasswordField extends PasswordField {
 
     public void setCapsLockIndicator(Connector capsLockIndicator) {
         getState().capsLockIndicator = capsLockIndicator;
+    }
+
+    public void setHtmlName(String htmlName) {
+        String oldHtmlName = getState(false).htmlName;
+        if (!Objects.equals(htmlName, oldHtmlName)) {
+            getState().htmlName = htmlName;
+        }
+    }
+
+    public String getHtmlName() {
+        return getState(false).htmlName;
     }
 }

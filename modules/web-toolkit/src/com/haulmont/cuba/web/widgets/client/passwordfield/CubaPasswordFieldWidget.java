@@ -119,4 +119,12 @@ public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressH
             ((CapsLockChangeHandler) capslockIndicator).showCapsLockStatus(isCapsLock);
         }
     }
+
+    protected void setHtmlName(String htmlName) {
+        if (htmlName != null) {
+            getElement().setAttribute("name", htmlName);
+        } else {
+            getElement().removeAttribute("name");
+        }
+    }
 }

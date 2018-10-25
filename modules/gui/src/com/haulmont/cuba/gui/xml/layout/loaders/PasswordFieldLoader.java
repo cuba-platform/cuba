@@ -14,13 +14,16 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PasswordField;
+import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
     @Override
@@ -36,22 +39,37 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
         loadMaxLength(resultComponent, element);
         loadInputPrompt(resultComponent, element);
 
-        String autocomplete = element.attributeValue("autocomplete");
-        if (StringUtils.isNotEmpty(autocomplete)) {
-            resultComponent.setAutocomplete(Boolean.parseBoolean(autocomplete));
-        }
+        loadAutoComplete(resultComponent, element);
+        loadCapsLockIndicator(resultComponent, element);
+        loadHtmlName(resultComponent, element);
+    }
 
+    protected void loadCapsLockIndicator(PasswordField component, Element element) {
         String capsLockIndicator = element.attributeValue("capsLockIndicator");
         if (StringUtils.isNotEmpty(capsLockIndicator)) {
-            if (resultComponent.getCapsLockIndicator() == null) {
-                Component bindComponent = resultComponent.getFrame().getComponent(capsLockIndicator);
+            if (component.getCapsLockIndicator() == null) {
+                Component bindComponent = component.getFrame().getComponent(capsLockIndicator);
                 if (!(bindComponent instanceof CapsLockIndicator)) {
                     throw new GuiDevelopmentException("Specify 'capsLockIndicator' attribute: id of " +
-                            "CapsLockIndicator component", context.getFullFrameId(), "componentId", resultComponent
+                            "CapsLockIndicator component", context.getFullFrameId(), "componentId", component
                             .getId());
                 }
-                resultComponent.setCapsLockIndicator((CapsLockIndicator) bindComponent);
+                component.setCapsLockIndicator((CapsLockIndicator) bindComponent);
             }
+        }
+    }
+
+    protected void loadAutoComplete(PasswordField component, Element element) {
+        String autocomplete = element.attributeValue("autocomplete");
+        if (StringUtils.isNotEmpty(autocomplete)) {
+            component.setAutocomplete(Boolean.parseBoolean(autocomplete));
+        }
+    }
+
+    protected void loadHtmlName(TextInputField.HtmlNameSupported component, Element element) {
+        String htmlName = element.attributeValue("htmlName");
+        if (htmlName != null && !htmlName.isEmpty()) {
+            component.setHtmlName(htmlName);
         }
     }
 }

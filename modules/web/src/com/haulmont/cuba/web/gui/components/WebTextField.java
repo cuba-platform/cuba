@@ -360,4 +360,14 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     public boolean isModified() {
         return super.isModified();
     }
+
+    @Override
+    public void setHtmlName(String htmlName) {
+        component.setHtmlName(htmlName);
+    }
+
+    @Override
+    public String getHtmlName() {
+        return component.getHtmlName();
+    }
 }

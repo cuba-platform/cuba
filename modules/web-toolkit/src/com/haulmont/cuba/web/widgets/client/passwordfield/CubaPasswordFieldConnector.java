@@ -47,5 +47,9 @@ public class CubaPasswordFieldConnector extends PasswordFieldConnector {
 
             getWidget().setIndicateCapsLock(capsLockIndicator == null ? null : capsLockIndicator.getWidget());
         }
+
+        if (stateChangeEvent.hasPropertyChanged("htmlName")) {
+            getWidget().setHtmlName(getState().htmlName);
+        }
     }
 }

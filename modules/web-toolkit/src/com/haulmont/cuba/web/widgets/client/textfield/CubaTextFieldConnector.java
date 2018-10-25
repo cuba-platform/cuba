@@ -65,4 +65,9 @@ public class CubaTextFieldConnector extends TextFieldConnector implements Painta
     void updateCaseConversion() {
         getWidget().setCaseConversion(getState().caseConversion);
     }
+
+    @OnStateChange("htmlName")
+    void updateHtmlName() {
+        getWidget().setHtmlName(getState().htmlName);
+    }
 }

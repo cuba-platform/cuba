@@ -195,4 +195,12 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     public void setCaseConversion(String caseConversion) {
         this.caseConversion = caseConversion;
     }
+
+    protected void setHtmlName(String htmlName) {
+        if (htmlName != null) {
+            getElement().setAttribute("name", htmlName);
+        } else {
+            getElement().removeAttribute("name");
+        }
+    }
 }
