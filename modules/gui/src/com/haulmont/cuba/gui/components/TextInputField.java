@@ -99,6 +99,21 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         void setTextChangeEventMode(TextChangeEventMode mode);
     }
 
+    interface HtmlNameSupported extends TextInputField {
+
+        /**
+         * Sets the given {@code htmlName} as a value of "name" HTML attribute.
+         *
+         * @param htmlName name
+         */
+        void setHtmlName(String htmlName);
+
+        /**
+         * @return a value of "name" HTML attribute
+         */
+        String getHtmlName();
+    }
+
     @FunctionalInterface
     interface TextChangeListener {
         void textChange(TextChangeEvent event);

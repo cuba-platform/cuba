@@ -77,4 +77,14 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> im
     public void setInputPrompt(String inputPrompt) {
         component.setInputPrompt(inputPrompt);
     }
+
+    @Override
+    public void setHtmlName(String htmlName) {
+        component.setHtmlName(htmlName);
+    }
+
+    @Override
+    public String getHtmlName() {
+        return component.getHtmlName();
+    }
 }

@@ -58,9 +58,12 @@
                     <cssLayout id="loginCredentials"
                                stylename="c-login-credentials">
                         <textField id="loginField"
+                                   htmlName="loginField"
                                    inputPrompt="mainMsg://loginWindow.loginPlaceholder"
                                    stylename="c-login-username"/>
                         <passwordField id="passwordField"
+                                       autocomplete="true"
+                                       htmlName="passwordField"
                                        inputPrompt="mainMsg://loginWindow.passwordPlaceholder"
                                        capsLockIndicator="capsLockIndicator"
                                        stylename="c-login-password"/>

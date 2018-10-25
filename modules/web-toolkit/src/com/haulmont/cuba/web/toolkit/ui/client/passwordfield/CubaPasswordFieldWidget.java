@@ -156,4 +156,12 @@ public class CubaPasswordFieldWidget extends VPasswordField implements KeyPressH
             getElement().removeAttribute("placeholder");
         }
     }
+
+    protected void setHtmlName(String htmlName) {
+        if (htmlName != null) {
+            getElement().setAttribute("name", htmlName);
+        } else {
+            getElement().removeAttribute("name");
+        }
+    }
 }

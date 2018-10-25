@@ -66,4 +66,9 @@ public class CubaTextFieldConnector extends TextFieldConnector {
     void updateCaseConversion() {
         getWidget().setCaseConversion(getState().caseConversion);
     }
+
+    @OnStateChange("htmlName")
+    void updateHtmlName() {
+        getWidget().setHtmlName(getState().htmlName);
+    }
 }

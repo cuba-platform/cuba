@@ -45,6 +45,8 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     protected java.util.List<EnterPressListener> enterPressListeners = new ArrayList<>();
 
     protected boolean enterPressInitialized = false;
+    // just stub
+    protected String htmlName;
 
     @Override
     protected JTextField createTextComponentImpl() {
@@ -266,6 +268,18 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     public boolean isModified() {
         // do nothing
         return false;
+    }
+
+    // just stub
+    @Override
+    public void setHtmlName(String htmlName) {
+        this.htmlName = htmlName;
+    }
+
+    // just stub
+    @Override
+    public String getHtmlName() {
+        return htmlName;
     }
 
     protected class FlushableTextField extends JTextField implements Flushable {

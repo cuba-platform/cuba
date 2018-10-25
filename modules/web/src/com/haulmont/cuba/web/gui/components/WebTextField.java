@@ -208,4 +208,14 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
             component.removeShortcutListener(enterShortcutListener);
         }
     }
+
+    @Override
+    public void setHtmlName(String htmlName) {
+        component.setHtmlName(htmlName);
+    }
+
+    @Override
+    public String getHtmlName() {
+        return component.getHtmlName();
+    }
 }

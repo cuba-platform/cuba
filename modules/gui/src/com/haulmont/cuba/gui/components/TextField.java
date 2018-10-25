@@ -28,6 +28,7 @@ public interface TextField
             TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
+            TextInputField.HtmlNameSupported,
             Component.HasFormatter,
             Component.HasInputPrompt {
 

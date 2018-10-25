@@ -17,7 +17,11 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface PasswordField extends TextInputField, TextInputField.MaxLengthLimited, TextInputField.HasInputPrompt {
+public interface PasswordField
+        extends TextInputField,
+                TextInputField.MaxLengthLimited,
+                TextInputField.HasInputPrompt,
+                TextInputField.HtmlNameSupported {
 
     String NAME = "passwordField";
 

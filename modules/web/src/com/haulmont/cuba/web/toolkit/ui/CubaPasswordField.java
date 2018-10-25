@@ -25,6 +25,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.PasswordField;
 import com.haulmont.cuba.web.toolkit.ui.client.passwordfield.CubaPasswordFieldState;
 
+import java.util.Objects;
+
 public class CubaPasswordField extends PasswordField {
 
     public CubaPasswordField() {
@@ -72,5 +74,16 @@ public class CubaPasswordField extends PasswordField {
     public void setCapsLockIndicator(CapsLockIndicator capsLockIndicator) {
         getState().capsLockIndicator = capsLockIndicator == null ? null
                 : capsLockIndicator.unwrapComposition(Component.class);
+    }
+
+    public void setHtmlName(String htmlName) {
+        String oldHtmlName = getState(false).htmlName;
+        if (!Objects.equals(htmlName, oldHtmlName)) {
+            getState().htmlName = htmlName;
+        }
+    }
+
+    public String getHtmlName() {
+        return getState(false).htmlName;
     }
 }

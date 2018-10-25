@@ -32,6 +32,8 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
     protected CapsLockIndicator capsLockIndicator;
 
     protected JTextFieldCapsLockSubscriber capsLockSubscriber = new JTextFieldCapsLockSubscriber();
+    // just stub
+    protected String htmlName;
 
     @Override
     protected JPasswordField createTextComponentImpl() {
@@ -119,6 +121,18 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
     @Override
     public void setInputPrompt(String inputPrompt) {
         // do nothing
+    }
+
+    // just stub
+    @Override
+    public void setHtmlName(String htmlName) {
+        this.htmlName = htmlName;
+    }
+
+    // just stub
+    @Override
+    public String getHtmlName() {
+        return htmlName;
     }
 
     protected class PasswordFlushableField extends JPasswordField implements Flushable {
