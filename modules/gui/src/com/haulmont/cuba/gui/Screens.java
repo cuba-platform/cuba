@@ -77,57 +77,9 @@ public interface Screens {
     boolean hasUnsavedChanges();
 
     /**
-     * @return all opened screens excluding the root screen
-     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+     * @return living UI state object that provides information about opened screens
      */
-    Collection<Screen> getOpenedScreens();
-
-    /**
-     * @return all opened screens excluding the root screen
-     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
-     */
-    Collection<Screen> getOpenedWorkAreaScreens();
-
-    /**
-     * @return top screens from work area tabs and all dialog windows
-     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
-     */
-    Collection<Screen> getActiveScreens();
-
-    /**
-     * @return top screens from work area tabs
-     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
-     */
-    Collection<Screen> getActiveWorkAreaScreens();
-
-    /**
-     * @return all dialog screens
-     */
-    Collection<Screen> getDialogScreens();
-
-    /**
-     * @return screens of the currently opened tab of work area in descending order, first element is active screen
-     * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
-     */
-    Collection<Screen> getCurrentBreadcrumbs();
-
-    /**
-     * @return tab containers or single window container with access to breadcrumbs
-     */
-    Collection<WindowStack> getWorkAreaStacks();
-
-    /**
-     * @return the root screen of UI
-     * @throws IllegalStateException in case there is no root screen in UI
-     */
-    @Nonnull
-    Screen getRootScreen();
-
-    /**
-     * @return the root screen or null
-     */
-    @Nullable
-    Screen getRootScreenOrNull();
+    UiState getUiState();
 
     /**
      * Marker interface for screen launch modes.
@@ -142,5 +94,65 @@ public interface Screens {
          * @return screens of the container in descending order, first element is active screen
          */
         Collection<Screen> getBreadcrumbs();
+    }
+
+    /**
+     * UI state object. Provides information about opened screens, does not store state.
+     * <br>
+     * Each method obtains current info from UI components tree.
+     */
+    interface UiState {
+        /**
+         * @return the root screen of UI
+         * @throws IllegalStateException in case there is no root screen in UI
+         */
+        @Nonnull
+        Screen getRootScreen();
+
+        /**
+         * @return the root screen or null
+         */
+        @Nullable
+        Screen getRootScreenOrNull();
+
+        /**
+         * @return all opened screens excluding the root screen
+         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         */
+        Collection<Screen> getOpenedScreens();
+
+        /**
+         * @return all opened screens excluding the root screen
+         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         */
+        Collection<Screen> getOpenedWorkAreaScreens();
+
+        /**
+         * @return top screens from work area tabs and all dialog windows
+         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         */
+        Collection<Screen> getActiveScreens();
+
+        /**
+         * @return top screens from work area tabs
+         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         */
+        Collection<Screen> getActiveWorkAreaScreens();
+
+        /**
+         * @return all dialog screens
+         */
+        Collection<Screen> getDialogScreens();
+
+        /**
+         * @return screens of the currently opened tab of work area in descending order, first element is active screen
+         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         */
+        Collection<Screen> getCurrentBreadcrumbs();
+
+        /**
+         * @return tab containers or single window container with access to breadcrumbs
+         */
+        Collection<WindowStack> getWorkAreaStacks();
     }
 }

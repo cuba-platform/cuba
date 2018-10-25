@@ -31,7 +31,7 @@ public final class FailedOperationResult implements OperationResult {
     }
 
     @Override
-    public OperationResult compose(Supplier<OperationResult> result) {
+    public OperationResult compose(Supplier<OperationResult> nextStep) {
         return this;
     }
 

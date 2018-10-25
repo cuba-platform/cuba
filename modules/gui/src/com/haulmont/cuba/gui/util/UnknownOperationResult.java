@@ -34,14 +34,13 @@ public class UnknownOperationResult implements OperationResult {
     }
 
     @Override
-    public OperationResult compose(Supplier<OperationResult> result) {
+    public OperationResult compose(Supplier<OperationResult> nextStep) {
         UnknownOperationResult operationResult = new UnknownOperationResult();
 
         then(() -> {
-            OperationResult resultNested = result.get();
-            resultNested
-                .then(operationResult::success)
-                .otherwise(operationResult::fail);
+            OperationResult resultNested = nextStep.get();
+
+            operationResult.resolveWith(resultNested);
         });
         otherwise(operationResult::fail);
 
@@ -80,6 +79,11 @@ public class UnknownOperationResult implements OperationResult {
             thenListener.run();
         }
         thenListeners.clear();
+    }
+
+    public void resolveWith(OperationResult result) {
+        result.then(this::success)
+                .otherwise(this::fail);
     }
 
     @Override

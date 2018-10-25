@@ -31,8 +31,8 @@ public final class SuccessOperationResult implements OperationResult {
     }
 
     @Override
-    public OperationResult compose(Supplier<OperationResult> result) {
-        return result.get();
+    public OperationResult compose(Supplier<OperationResult> nextStep) {
+        return nextStep.get();
     }
 
     @Override

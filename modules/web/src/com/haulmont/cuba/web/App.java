@@ -17,17 +17,19 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.Events;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.settings.SettingsClient;
@@ -52,6 +54,7 @@ import com.haulmont.cuba.web.sys.WebScreens;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -474,24 +477,31 @@ public abstract class App {
         backgroundTaskManager.cleanupTasks();
     }
 
+    /**
+     * Removes all windows from all UIs.
+     */
     public void closeAllWindows() {
         log.debug("Closing all windows");
         try {
             for (AppUI ui : getAppUIs()) {
-                ui.accessSynchronously(() -> {
-                    WindowManager wm = ui.getWindowManager();
-                    if (wm != null) {
-                        //  todo implement
-                        wm.removeAll();
-                    }
+                Screens screens = ui.getScreens();
+                if (screens != null) {
+                    Screen rootScreen = screens.getUiState().getRootScreenOrNull();
+                    if (rootScreen != null) {
+                        screens.removeAll();
 
-                    // also remove all native Vaadin windows, that is not under CUBA control
-                    for (com.vaadin.ui.Window win : ui.getWindows().toArray(new com.vaadin.ui.Window[0])) {
-                        ui.removeWindow(win);
+                        screens.remove(rootScreen);
                     }
+                }
 
-                    // todo also remove all notifications
-                });
+                // also remove all native Vaadin windows, that is not under CUBA control
+                Window[] windows = ui.getWindows().toArray(new Window[0]);
+
+                for (com.vaadin.ui.Window win : windows) {
+                    ui.removeWindow(win);
+                }
+
+                // todo also remove all notifications
             }
         } catch (Throwable e) {
             log.error("Error closing all windows", e);
@@ -525,23 +535,47 @@ public abstract class App {
         try {
             RootWindow topLevelWindow = getTopLevelWindow();
             if (topLevelWindow != null) {
+                // todo save settings for all active/opened screens ?
                 topLevelWindow.saveSettings();
 
-                WebScreens windowManager = (WebScreens) topLevelWindow.getWindowManager();
+                Screens screens = topLevelWindow.getScreenContext().getScreens();
 
-                if (!windowManager.hasUnsavedChanges()) {
-                    closeAllWindows();
-
-                    Connection connection = getConnection();
-                    connection.logout();
+                if (!screens.hasUnsavedChanges()) {
+                    forceLogout();
 
                     return OperationResult.success();
                 }
 
+                UnknownOperationResult result = new UnknownOperationResult();
+
+                Messages messages = beanLocator.get(Messages.NAME);
+                Icons icons = beanLocator.get(Icons.NAME);
+
+                Dialogs dialogs = topLevelWindow.getScreenContext().getDialogs();
+
+                dialogs.createOptionDialog()
+                        .setCaption(messages.getMainMessage("closeUnsaved.caption"))
+                        .setMessage(messages.getMainMessage("discardChangesOnClose"))
+                        .setActions(
+                                new BaseAction("closeApplication")
+                                        .withCaption(messages.getMainMessage("closeApplication"))
+                                        .withIcon(icons.get(CubaIcon.DIALOG_OK))
+                                        .withHandler(event -> {
+                                            forceLogout();
+
+                                            result.success();
+                                        }),
+                                new DialogAction(DialogAction.Type.CANCEL, Action.Status.PRIMARY)
+                                        .withHandler(event -> {
+
+                                            result.fail();
+                                        })
+                        )
+                        .show();
+
                 return OperationResult.fail();
             } else {
-                Connection connection = getConnection();
-                connection.logout();
+                forceLogout();
 
                 return OperationResult.success();
             }
@@ -555,5 +589,12 @@ public abstract class App {
             }
             return new UnknownOperationResult();
         }
+    }
+
+    protected void forceLogout() {
+        closeAllWindows();
+
+        Connection connection = getConnection();
+        connection.logout();
     }
 }

@@ -19,27 +19,47 @@ package com.haulmont.cuba.gui.util;
 import java.util.function.Supplier;
 
 /**
- * Operation result object
+ * Operation result object.
  */
 public interface OperationResult {
-    Status getStatus();
-
-    OperationResult compose(Supplier<OperationResult> result);
-
-    OperationResult then(Runnable runnable);
-    OperationResult otherwise(Runnable runnable);
-
-    enum Status {
-        UNKNOWN,
-        SUCCESS,
-        FAIL
-    }
-
     static OperationResult fail() {
         return FailedOperationResult.INSTANCE;
     }
 
     static OperationResult success() {
         return SuccessOperationResult.INSTANCE;
+    }
+
+    Status getStatus();
+
+    /**
+     * Creates new operation result that represents composition of two operation results. If this result is resolved as
+     * successful then the second result will be obtained from the passed supplier.
+     *
+     * @param nextStep the next operation result supplier
+     * @return new composite operation result
+     */
+    OperationResult compose(Supplier<OperationResult> nextStep);
+
+    /**
+     * Adds success callback to the operation result.
+     *
+     * @param runnable callback
+     * @return this
+     */
+    OperationResult then(Runnable runnable);
+
+    /**
+     * Adds fail callback to the operation result.
+     *
+     * @param runnable callback
+     * @return this
+     */
+    OperationResult otherwise(Runnable runnable);
+
+    enum Status {
+        UNKNOWN,
+        SUCCESS,
+        FAIL
     }
 }

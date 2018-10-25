@@ -43,7 +43,6 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
-import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.Screen.AfterInitEvent;
@@ -89,6 +88,7 @@ import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -389,7 +389,7 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void show(Screen screen) {
         checkNotNullArgument(screen);
-        checkAlreadyOpened(screen);
+        checkNotYetOpened(screen);
 
         checkMultiOpen(screen);
 
@@ -436,7 +436,7 @@ public class WebScreens implements Screens, WindowManager {
         fireEvent(screen, AfterShowEvent.class, afterShowEvent);
     }
 
-    protected void checkAlreadyOpened(Screen screen) {
+    protected void checkNotYetOpened(Screen screen) {
         com.vaadin.ui.Component uiComponent = screen.getWindow()
                 .unwrapComposition(com.vaadin.ui.Component.class);
         if (uiComponent.isAttached()) {
@@ -444,7 +444,7 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    protected void checkNotOpened(Screen screen) {
+    protected void checkOpened(Screen screen) {
         com.vaadin.ui.Component uiComponent = screen.getWindow()
                 .unwrapComposition(com.vaadin.ui.Component.class);
         if (!uiComponent.isAttached()) {
@@ -484,7 +484,7 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void remove(Screen screen) {
         checkNotNullArgument(screen);
-        checkNotOpened(screen);
+        checkOpened(screen);
 
         WindowImplementation windowImpl = (WindowImplementation) screen.getWindow();
         if (windowImpl instanceof Disposable) {
@@ -615,11 +615,26 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public void removeAll() {
-        for (Screen dialogScreen : getDialogScreens()) {
+        List<Screen> dialogScreens =
+                getDialogScreensStream().collect(Collectors.toList());
+
+        for (Screen dialogScreen : dialogScreens) {
             remove(dialogScreen);
         }
 
-        // todo remove screens from WorkArea in the reverse order
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+
+        if (workArea != null) {
+            Collection<WindowStack> workAreaStacks = getWorkAreaStacks(workArea);
+
+            for (WindowStack workAreaStack : workAreaStacks) {
+                Collection<Screen> tabScreens = workAreaStack.getBreadcrumbs();
+
+                for (Screen screen : tabScreens) {
+                    remove(screen);
+                }
+            }
+        }
     }
 
     @Override
@@ -630,57 +645,15 @@ public class WebScreens implements Screens, WindowManager {
             return true;
         }
 
-        return getOpenedScreens().stream()
-                .anyMatch(Screen::hasUnsavedChanges);
+        Predicate<Screen> hasUnsavedChanges = Screen::hasUnsavedChanges;
+
+        return getDialogScreensStream().anyMatch(hasUnsavedChanges)
+                || getOpenedWorkAreaScreensStream().anyMatch(hasUnsavedChanges);
     }
 
     @Override
-    public Collection<Screen> getOpenedScreens() {
-        List<Screen> screens = new ArrayList<>();
-
-        getOpenedWorkAreaScreensStream()
-                .forEach(screens::add);
-
-        getDialogScreensStream()
-                .forEach(screens::add);
-
-        return screens;
-    }
-
-    @Override
-    public Collection<Screen> getOpenedWorkAreaScreens() {
-        return getOpenedWorkAreaScreensStream()
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<Screen> getActiveScreens() {
-        List<Screen> screens = new ArrayList<>();
-
-        getActiveWorkAreaScreensStream()
-                .forEach(screens::add);
-
-        getDialogScreensStream()
-                .forEach(screens::add);
-
-        return screens;
-    }
-
-    @Override
-    public Collection<Screen> getActiveWorkAreaScreens() {
-        return getActiveWorkAreaScreensStream()
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<Screen> getDialogScreens() {
-        Collection<com.vaadin.ui.Window> windows = ui.getWindows();
-        if (windows.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return getDialogScreensStream()
-                .collect(Collectors.toList());
+    public UiState getUiState() {
+        return new UiStateImpl();
     }
 
     protected Stream<Screen> getOpenedWorkAreaScreensStream() {
@@ -764,8 +737,7 @@ public class WebScreens implements Screens, WindowManager {
                 .map(w -> ((WebDialogWindow.GuiDialogWindow) w).getDialogWindow().getFrameOwner());
     }
 
-    @Override
-    public Collection<Screen> getCurrentBreadcrumbs() {
+    protected Collection<Screen> getCurrentBreadcrumbs() {
         WebAppWorkArea workArea = getConfiguredWorkArea();
 
         TabWindowContainer layout = getCurrentWindowContainer(workArea);
@@ -801,19 +773,7 @@ public class WebScreens implements Screens, WindowManager {
         return layout;
     }
 
-    @Nonnull
-    @Override
-    public Screen getRootScreen() {
-        RootWindow window = ui.getTopLevelWindow();
-        if (window == null) {
-            throw new IllegalStateException("There is no root screen in UI");
-        }
-
-        return window.getFrameOwner();
-    }
-
-    @Override
-    public Screen getRootScreenOrNull() {
+    protected Screen getRootScreenOrNull() {
         RootWindow window = ui.getTopLevelWindow();
         if (window == null) {
             return null;
@@ -822,10 +782,7 @@ public class WebScreens implements Screens, WindowManager {
         return window.getFrameOwner();
     }
 
-    @Override
-    public Collection<WindowStack> getWorkAreaStacks() {
-        WebAppWorkArea workArea = getConfiguredWorkArea();
-
+    protected Collection<WindowStack> getWorkAreaStacks(WebAppWorkArea workArea) {
         if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
@@ -849,7 +806,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return getOpenedScreens().stream()
+        return getUiState().getOpenedScreens().stream()
                 .map(Screen::getWindow)
                 .collect(Collectors.toList());
     }
@@ -1219,16 +1176,22 @@ public class WebScreens implements Screens, WindowManager {
 
     /**
      * Close all screens in all main windows (browser tabs).
+     *
+     * @deprecated JavaDoc
      */
+    @Deprecated
     public void closeAllWindows() {
-        throw new UnsupportedOperationException(); // todo
+        ui.getApp().closeAllWindows();
     }
 
     /**
      * Close all screens in the main window (browser tab) this WindowManagerImpl belongs to.
+     *
+     * @deprecated JavaDoc
      */
+    @Deprecated
     public void closeAll() {
-        throw new UnsupportedOperationException(); // todo
+        removeAll();
     }
 
     protected <T extends Screen> T createController(WindowInfo windowInfo, Window window, Class<T> screenClass) {
@@ -1832,6 +1795,25 @@ public class WebScreens implements Screens, WindowManager {
         throw new IllegalStateException("RootWindow does not have any configured work area");
     }
 
+    @Nullable
+    protected WebAppWorkArea getConfiguredWorkAreaOrNull() {
+        RootWindow topLevelWindow = ui.getTopLevelWindow();
+        if (topLevelWindow == null) {
+            throw new IllegalStateException("There is no root screen opened");
+        }
+
+        Screen controller = topLevelWindow.getFrameOwner();
+
+        if (controller instanceof HasWorkArea) {
+            AppWorkArea workArea = ((HasWorkArea) controller).getWorkArea();
+            if (workArea != null) {
+                return (WebAppWorkArea) workArea;
+            }
+        }
+
+        return null;
+    }
+
     protected void handleWindowBreadCrumbsNavigate(WindowBreadCrumbs breadCrumbs, Window window) {
         Runnable op = new Runnable() {
             @Override
@@ -2024,6 +2006,82 @@ public class WebScreens implements Screens, WindowManager {
             }
 
             return screens;
+        }
+    }
+
+    protected class UiStateImpl implements UiState {
+
+        @Nonnull
+        @Override
+        public Screen getRootScreen() {
+            RootWindow window = ui.getTopLevelWindow();
+            if (window == null) {
+                throw new IllegalStateException("There is no root screen in UI");
+            }
+
+            return window.getFrameOwner();
+        }
+
+        @Nullable
+        @Override
+        public Screen getRootScreenOrNull() {
+            return WebScreens.this.getRootScreenOrNull();
+        }
+
+        @Override
+        public Collection<Screen> getOpenedScreens() {
+            List<Screen> screens = new ArrayList<>();
+
+            getOpenedWorkAreaScreensStream()
+                    .forEach(screens::add);
+
+            getDialogScreensStream()
+                    .forEach(screens::add);
+
+            return screens;
+        }
+
+        @Override
+        public Collection<Screen> getOpenedWorkAreaScreens() {
+            return getOpenedWorkAreaScreensStream()
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public Collection<Screen> getActiveScreens() {
+            List<Screen> screens = new ArrayList<>();
+
+            getActiveWorkAreaScreensStream()
+                    .forEach(screens::add);
+
+            getDialogScreensStream()
+                    .forEach(screens::add);
+
+            return screens;
+        }
+
+        @Override
+        public Collection<Screen> getActiveWorkAreaScreens() {
+            return getActiveWorkAreaScreensStream()
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public Collection<Screen> getDialogScreens() {
+            return getDialogScreensStream()
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public Collection<Screen> getCurrentBreadcrumbs() {
+            return WebScreens.this.getCurrentBreadcrumbs();
+        }
+
+        @Override
+        public Collection<WindowStack> getWorkAreaStacks() {
+            WebAppWorkArea workArea = getConfiguredWorkArea();
+
+            return WebScreens.this.getWorkAreaStacks(workArea);
         }
     }
 }

@@ -251,9 +251,8 @@ public abstract class Screen implements FrameOwner {
                 .setActions(
                         new DialogAction(DialogAction.Type.YES)
                                 .withHandler(e -> {
-                                    closeWithDiscard()
-                                            .then(result::success)
-                                            .otherwise(result::fail);
+
+                                    result.resolveWith(closeWithDiscard());
                                 }),
                         new DialogAction(DialogAction.Type.NO, Action.Status.PRIMARY)
                                 .withHandler(e -> {
@@ -280,17 +279,15 @@ public abstract class Screen implements FrameOwner {
                         new DialogAction(DialogAction.Type.OK, Action.Status.PRIMARY)
                                 .withCaption(messages.getMainMessage("closeUnsaved.save"))
                                 .withHandler(e -> {
-                                    closeWithCommit()
-                                            .then(result::success)
-                                            .otherwise(result::fail);
+
+                                    result.resolveWith(closeWithCommit());
                                 }),
                         new BaseAction("discard")
                                 .withIcon(icons.get(CubaIcon.DIALOG_CANCEL))
                                 .withCaption(messages.getMainMessage("closeUnsaved.discard"))
                                 .withHandler(e -> {
-                                    closeWithDiscard()
-                                            .then(result::success)
-                                            .otherwise(result::fail);
+
+                                    result.resolveWith(closeWithDiscard());
                                 }),
                         new DialogAction(DialogAction.Type.CANCEL)
                                 .withIcon(null)
