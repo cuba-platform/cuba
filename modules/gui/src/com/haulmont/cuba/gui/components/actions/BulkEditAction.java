@@ -83,10 +83,10 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
         this.constraintOperationType = ConstraintOperationType.UPDATE;
 
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-        boolean permitted = userSession.isSpecificPermitted(BulkEditor.PERMISSION);
-
-        setVisible(permitted);
-        setEnabled(permitted);
+        if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
+            setVisible(false);
+            setEnabled(false);
+        }
     }
 
     public OpenType getOpenType() {

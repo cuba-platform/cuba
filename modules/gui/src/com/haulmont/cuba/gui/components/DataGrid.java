@@ -174,7 +174,9 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     @Deprecated
     default CollectionDatasource getDatasource() {
         DataGridItems<E> dataGridItems = getItems();
-        return dataGridItems != null ? ((DatasourceDataGridItems) dataGridItems).getDatasource() : null;
+        return dataGridItems instanceof DatasourceDataGridItems
+                ? ((DatasourceDataGridItems) dataGridItems).getDatasource()
+                : null;
     }
 
     /**

@@ -49,8 +49,12 @@ public interface GroupTable<E extends Entity> extends Table<E> {
             return null;
         }
 
-        DatasourceTableItems adapter = (DatasourceTableItems) tableItems;
-        return (GroupDatasource) adapter.getDatasource();
+        if (tableItems instanceof DatasourceTableItems) {
+            DatasourceTableItems adapter = (DatasourceTableItems) tableItems;
+            return (GroupDatasource) adapter.getDatasource();
+        }
+
+        return null;
     }
 
     /**

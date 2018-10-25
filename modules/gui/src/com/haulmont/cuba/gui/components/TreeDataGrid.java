@@ -33,7 +33,7 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
     @Override
     default HierarchicalDatasource getDatasource() {
         DataGridItems<E> dataGridItems = getItems();
-        return dataGridItems != null
+        return dataGridItems instanceof DatasourceTreeDataGridItems
                 ? (HierarchicalDatasource) ((DatasourceTreeDataGridItems) dataGridItems).getDatasource()
                 : null;
     }

@@ -57,8 +57,12 @@ public interface TreeTable<E extends Entity> extends Table<E> {
             return null;
         }
 
-        DatasourceTreeTableItems adapter = (DatasourceTreeTableItems) tableItems;
-        return (HierarchicalDatasource) adapter.getDatasource();
+        if (tableItems instanceof DatasourceTreeTableItems) {
+            DatasourceTreeTableItems adapter = (DatasourceTreeTableItems) tableItems;
+            return (HierarchicalDatasource) adapter.getDatasource();
+        }
+
+        return null;
     }
 
     @Deprecated

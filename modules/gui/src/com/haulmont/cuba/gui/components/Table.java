@@ -86,7 +86,9 @@ public interface Table<E extends Entity>
     @Override
     default CollectionDatasource getDatasource() {
         TableItems<E> tableItems = getItems();
-        return tableItems != null ? ((DatasourceTableItems) tableItems).getDatasource() : null;
+        return tableItems instanceof DatasourceTableItems
+                ? ((DatasourceTableItems) tableItems).getDatasource()
+                : null;
     }
 
     void setRequired(Column<E> column, boolean required, String message);
