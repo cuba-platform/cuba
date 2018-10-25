@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets;
+package com.haulmont.cuba.web.widgets.client.grid;
 
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
-import com.vaadin.ui.Grid;
+import com.vaadin.client.ui.customfield.CustomFieldConnector;
+import com.vaadin.shared.ui.Connect;
 
-import javax.annotation.Nullable;
+@Connect(CubaEditorField.class)
+public class CubaEditorFieldConnector extends CustomFieldConnector {
 
-/**
- * Factory that generates components for {@link CubaGrid} editor.
- */
-public interface CubaGridEditorFieldFactory<T> {
-
-    /**
-     * Generates component for {@link CubaGrid} editor.
-     *
-     * @param bean   the editing item
-     * @param column the column for which the field is being created
-     * @return generated component or {@code null}
-     */
-    @Nullable
-    CubaEditorField<?> createField(T bean, Grid.Column<T, ?> column);
+    @Override
+    public CubaEditorFieldWidget getWidget() {
+        return (CubaEditorFieldWidget) super.getWidget();
+    }
 }

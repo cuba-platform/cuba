@@ -418,27 +418,35 @@ public class WebDateField<V extends Comparable<V>>
 
     @Override
     public void commit() {
-        valueBinding.write();
+        if (valueBinding != null) {
+            valueBinding.write();
+        }
     }
 
     @Override
     public void discard() {
-        valueBinding.discard();
+        if (valueBinding != null) {
+            valueBinding.discard();
+        }
     }
 
     @Override
     public boolean isBuffered() {
-        return valueBinding.isBuffered();
+        return valueBinding != null
+                && valueBinding.isBuffered();
     }
 
     @Override
     public void setBuffered(boolean buffered) {
-        valueBinding.setBuffered(buffered);
+        if (valueBinding != null) {
+            valueBinding.setBuffered(buffered);
+        }
     }
 
     @Override
     public boolean isModified() {
-        return valueBinding.isModified();
+        return valueBinding != null
+                && valueBinding.isModified();
     }
 
     @Override

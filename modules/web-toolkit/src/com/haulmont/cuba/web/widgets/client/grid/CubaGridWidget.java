@@ -61,13 +61,12 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
     }
 
-//    @Override
-//    protected Editor<JsonObject> createEditor() {
-//        Editor<JsonObject> editor = super.createEditor();
-//        editor.setEventHandler(new CubaEditorEventHandler<>());
-//        return editor;
-//    }
-//
+    @Override
+    protected Editor<JsonObject> createEditor() {
+        Editor<JsonObject> editor = super.createEditor();
+        editor.setEventHandler(new CubaEditorEventHandler<>());
+        return editor;
+    }
 
     @Override
     protected boolean isWidgetAllowsClickHandling(Element targetElement) {

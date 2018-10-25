@@ -150,22 +150,30 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
     }
 
     protected void commit() {
-        valueBinding.write();
+        if (valueBinding != null) {
+            valueBinding.write();
+        }
     }
 
     protected void discard() {
-        valueBinding.discard();
+        if (valueBinding != null) {
+            valueBinding.discard();
+        }
     }
 
     protected boolean isBuffered() {
-        return valueBinding.isBuffered();
+        return valueBinding != null
+                && valueBinding.isBuffered();
     }
 
     protected void setBuffered(boolean buffered) {
-        valueBinding.setBuffered(buffered);
+        if (valueBinding != null) {
+            valueBinding.setBuffered(buffered);
+        }
     }
 
     protected boolean isModified() {
-        return valueBinding.isModified();
+        return valueBinding != null
+                && valueBinding.isModified();
     }
 }

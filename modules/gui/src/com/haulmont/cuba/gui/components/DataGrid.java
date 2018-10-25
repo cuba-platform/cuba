@@ -21,6 +21,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.datagrid.DatasourceDataGridItems;
 import com.haulmont.cuba.gui.components.data.datagrid.SortableDatasourceDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -563,6 +564,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * Field generator that generates component for column in {@link DataGrid} editor.
      */
+    @Deprecated
     interface ColumnEditorFieldGenerator {
         /**
          * Generates component for {@link DataGrid} editor.
@@ -572,6 +574,37 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @return generated component
          */
         Field createField(Datasource datasource, String property);
+    }
+
+    /**
+     * class which stores information that can be used
+     * when creating a component for a {@link DataGrid} editor.
+     *
+     * @param <T> the bean type
+     */
+    class EditorFieldGenerationContext<T> {
+
+        protected T item;
+        protected ValueSourceProvider valueSourceProvider;
+
+        public EditorFieldGenerationContext(T item, ValueSourceProvider valueSourceProvider) {
+            this.item = item;
+            this.valueSourceProvider = valueSourceProvider;
+        }
+
+        /**
+         * @return an item that is being edited
+         */
+        public T getItem() {
+            return item;
+        }
+
+        /**
+         * @return a value source provider in order to obtain value sources
+         */
+        public ValueSourceProvider getValueSourceProvider() {
+            return valueSourceProvider;
+        }
     }
 
     /**
@@ -2801,13 +2834,28 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @return field generator that generates component for
          * this column in {@link DataGrid} editor.
          */
+        @Deprecated
         ColumnEditorFieldGenerator getEditorFieldGenerator();
 
         /**
-         * @param fieldFactory field generator that generates component
+         * @param fieldFactory field generator that generates a component
          *                     for this column in {@link DataGrid} editor.
+         * @deprecated Use {{@link #setEditFieldGenerator(Function)}} instead
          */
+        @Deprecated
         void setEditorFieldGenerator(ColumnEditorFieldGenerator fieldFactory);
+
+        /**
+         * @return field generator that generates a component
+         * for this column in {@link DataGrid} editor
+         */
+        Function<EditorFieldGenerationContext<E>, Field<?>> getEditFieldGenerator();
+
+        /**
+         * @param generator field generator that generates a component
+         *                  for this column in {@link DataGrid} editor.
+         */
+        void setEditFieldGenerator(Function<EditorFieldGenerationContext<E>, Field<?>> generator);
 
         /**
          * @return the style provider that is used for generating styles for cells

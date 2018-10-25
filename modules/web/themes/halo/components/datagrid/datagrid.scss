@@ -150,6 +150,8 @@ $cuba-datagrid-highlight-hover-row: false !default;
   .#{$primary-stylename}-editor-cells > div {
     .c-maskedfield,
     .c-maskedfield-focus,
+    .c-timefield,
+    .c-timefield-focus,
     .c-fileupload .v-button,
     .c-fileupload-clear.v-button,
     .v-button.c-pickerfield-button,
@@ -179,7 +181,8 @@ $cuba-datagrid-highlight-hover-row: false !default;
       }
     }
 
-    .c-maskedfield-focus {
+    .c-maskedfield-focus,
+    .c-timefield-focus {
       position: relative;
     }
 
@@ -261,13 +264,13 @@ $cuba-datagrid-highlight-hover-row: false !default;
       right: auto;
     }
 
-    .c-datefield-layout .c-maskedfield {
+    .c-datefield-layout .c-timefield {
       border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
       margin-left: 0;
     }
 
     .c-datefield-composition-error {
-      .c-maskedfield {
+      .c-timefield {
         // we need to set up border again because border-color is calculated inside `valo-border` function
         // and set style as !important to prevent error color
         border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5) !important;

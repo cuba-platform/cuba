@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets;
+package com.haulmont.cuba.web.widgets.grid;
 
-import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.vaadin.ui.Grid;
 
-import javax.annotation.Nullable;
-
 /**
- * Factory that generates components for {@link CubaGrid} editor.
+ * An event listener for a {@link Grid} editor before save events.
+ *
+ * @param <T> the bean type
  */
-public interface CubaGridEditorFieldFactory<T> {
+public interface CubaEditorBeforeSaveListener<T> {
 
-    /**
-     * Generates component for {@link CubaGrid} editor.
-     *
-     * @param bean   the editing item
-     * @param column the column for which the field is being created
-     * @return generated component or {@code null}
-     */
-    @Nullable
-    CubaEditorField<?> createField(T bean, Grid.Column<T, ?> column);
+    void onEditorBeforeSave(CubaEditorBeforeSaveEvent<T> event);
 }
