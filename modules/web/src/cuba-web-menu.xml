@@ -18,21 +18,6 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
 
     <menu id="administration">
-        <!-- todo demo -->
-        <item screen="user-list"/>
-
-        <item screen="tableApiScreen1"/>
-        <item id="dcScreen1"/>
-        <item id="dcScreen2"/>
-        <item id="dcScreen3"/>
-        <item id="dcScreen4"/>
-        <item id="dcScreen5"/>
-        <item id="tmpGroupBrowse"/>
-        <item id="tmpUserDataGrid"/>
-        <item id="tmpGroupTreeDataGrid"/>
-        <item id="tmpGroupTree"/>
-        <item id="tmpUserInfoBrowse"/>
-        <separator/>
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
