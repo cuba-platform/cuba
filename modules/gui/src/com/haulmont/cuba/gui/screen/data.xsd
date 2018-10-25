@@ -28,6 +28,7 @@
                 <xs:element name="keyValueCollection" type="keyValueCollectionContainerType"/>
             </xs:choice>
         </xs:sequence>
+        <xs:attribute name="readOnly" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="instanceContainerType">

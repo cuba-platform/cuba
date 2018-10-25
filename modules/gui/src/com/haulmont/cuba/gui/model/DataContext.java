@@ -117,6 +117,7 @@ public interface DataContext {
      * Returns a parent context, if any. If the parent context is set, {@link #commit()} method merges the changed instances
      * to it instead of sending to the middleware.
      */
+    @Nullable
     DataContext getParent();
 
     /**

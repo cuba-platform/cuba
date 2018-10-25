@@ -30,7 +30,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
@@ -133,7 +133,7 @@ public class WebFragments implements Fragments {
                         ui.getNotifications(),
                         this)
         );
-        setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        setScreenData(controller, new ScreenDataImpl());
 
         FragmentImplementation fragmentImpl = (FragmentImplementation) fragment;
         fragmentImpl.setFrameOwner(controller);

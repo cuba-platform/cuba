@@ -44,6 +44,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.Screen.AfterInitEvent;
 import com.haulmont.cuba.gui.screen.Screen.AfterShowEvent;
@@ -192,7 +193,7 @@ public class WebScreens implements Screens, WindowManager {
                 new ScreenContextImpl(windowInfo, options, this,
                         ui.getDialogs(), ui.getNotifications(), ui.getFragments())
         );
-        setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        setScreenData(controller, new ScreenDataImpl());
 
         WindowImplementation windowImpl = (WindowImplementation) window;
         windowImpl.setFrameOwner(controller);

@@ -46,8 +46,8 @@ class ContainerBindingToPathTest extends WebSpec {
         line1 = new OrderLine(order: order1, quantity: 10)
         line2 = new OrderLine(order: order2, quantity: 20)
 
-        orderCont = dataContextFactory.createInstanceContainer(Order)
-        lineCont = dataContextFactory.createInstanceContainer(OrderLine)
+        orderCont = dataElementsFactory.createInstanceContainer(Order)
+        lineCont = dataElementsFactory.createInstanceContainer(OrderLine)
 
         field1 = componentsFactory.createComponent(TextField)
         field2 = componentsFactory.createComponent(TextField)

@@ -31,8 +31,8 @@ class SortingTest extends WebSpec {
 
     @Override
     void setup() {
-        container = dataContextFactory.createCollectionContainer(Product)
-        loader = dataContextFactory.createCollectionLoader()
+        container = dataElementsFactory.createCollectionContainer(Product)
+        loader = dataElementsFactory.createCollectionLoader()
         loader.setContainer(container)
     }
 

@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -105,7 +105,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
                         beanLocator.get(Notifications.NAME),
                         beanLocator.get(Fragments.NAME))
         );
-        UiControllerUtils.setScreenData(controller, beanLocator.get(ScreenData.NAME));
+        UiControllerUtils.setScreenData(controller, new ScreenDataImpl());
 
         FragmentImplementation fragmentImpl = (FragmentImplementation) fragment;
         fragmentImpl.setFrameOwner(controller);

@@ -25,8 +25,9 @@ import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup
 import com.haulmont.cuba.gui.model.DataContext
-import com.haulmont.cuba.gui.model.DataContextFactory
+import com.haulmont.cuba.gui.model.DataElementsFactory
 import com.haulmont.cuba.gui.model.impl.DataContextAccessor
+import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
@@ -45,12 +46,12 @@ class DataContextTest extends Specification {
     @Shared @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
-    private DataContextFactory factory
+    private DataElementsFactory factory
     private EntityStates entityStates
     private Metadata metadata
 
     void setup() {
-        factory = cont.getBean(DataContextFactory)
+        factory = cont.getBean(DataElementsFactory)
         metadata = cont.getBean(Metadata)
         entityStates = cont.getBean(EntityStates)
     }
@@ -844,6 +845,21 @@ class DataContextTest extends Specification {
         then:
 
         dataContext.find(Order, order1.id).number == 'committed through delegate'
+    }
+
+    def "read-only context"() {
+        def dataContext = new NoopDataContext()
+        def order1 = new Order(number: "111")
+
+        when:
+
+        def order = dataContext.merge(order1)
+
+        then:
+
+        order.is(order1)
+        !dataContext.hasChanges()
+        !dataContext.isModified(order1)
     }
 
     private <T> T createDetached(Class<T> entityClass) {

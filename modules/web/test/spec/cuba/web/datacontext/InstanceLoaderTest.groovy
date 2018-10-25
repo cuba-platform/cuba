@@ -19,7 +19,7 @@ package spec.cuba.web.datacontext
 import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
-import com.haulmont.cuba.gui.model.DataContextFactory
+import com.haulmont.cuba.gui.model.DataElementsFactory
 import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.gui.model.InstanceLoader
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
@@ -38,12 +38,12 @@ class InstanceLoaderTest extends Specification {
 
     private Metadata metadata
     private DataManager dataManager
-    private DataContextFactory factory
+    private DataElementsFactory factory
 
     void setup() {
         metadata = cont.getBean(Metadata)
         dataManager = cont.getBean(DataManager)
-        factory = cont.getBean(DataContextFactory)
+        factory = cont.getBean(DataElementsFactory)
     }
 
     void cleanup() {

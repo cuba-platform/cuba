@@ -16,18 +16,15 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.cuba.gui.model.*;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Component(ScreenData.NAME)
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ScreenDataImpl implements ScreenData {
 
     protected DataContext dataContext;
@@ -36,14 +33,13 @@ public class ScreenDataImpl implements ScreenData {
 
     protected Map<String, DataLoader> loaders = new HashMap<>();
 
-    @Inject
-    public void setFactory(DataContextFactory factory) {
-        this.dataContext = factory.createDataContext();
-    }
-
     @Override
     public DataContext getDataContext() {
         return dataContext;
+    }
+
+    public void setDataContext(DataContext dataContext) {
+        this.dataContext = dataContext;
     }
 
     @SuppressWarnings("unchecked")

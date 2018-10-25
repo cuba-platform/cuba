@@ -30,8 +30,8 @@ import javax.inject.Inject;
 /**
  * Factory bean for data API elements.
  */
-@Component("cuba_DataContextFactory")
-public class DataContextFactory implements ApplicationContextAware {
+@Component("cuba_DataElementsFactory")
+public class DataElementsFactory implements ApplicationContextAware {
 
     @Inject
     protected Metadata metadata;

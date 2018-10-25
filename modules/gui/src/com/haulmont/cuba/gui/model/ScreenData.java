@@ -27,8 +27,6 @@ import java.util.Set;
  */
 public interface ScreenData {
 
-    String NAME = "cuba_ScreenData";
-
     /**
      * Returns screen's {@code DataContext}.
      */

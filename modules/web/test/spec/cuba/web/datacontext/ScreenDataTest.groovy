@@ -19,6 +19,8 @@ package spec.cuba.web.datacontext
 import com.haulmont.bali.util.Dom4j
 import com.haulmont.cuba.core.global.ViewRepository
 import com.haulmont.cuba.gui.model.*
+import com.haulmont.cuba.gui.model.impl.NoopDataContext
+import com.haulmont.cuba.gui.model.impl.ScreenDataImpl
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader
 import com.haulmont.cuba.gui.model.impl.StandardCollectionLoader
 import com.haulmont.cuba.gui.model.impl.StandardInstanceLoader
@@ -47,7 +49,7 @@ class ScreenDataTest extends WebSpec {
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
-        ScreenData screenData = cont.getBean(ScreenData)
+        ScreenData screenData = new ScreenDataImpl()
         ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
@@ -115,7 +117,7 @@ class ScreenDataTest extends WebSpec {
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
-        ScreenData screenData = cont.getBean(ScreenData)
+        ScreenData screenData = new ScreenDataImpl()
         ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
@@ -192,7 +194,7 @@ class ScreenDataTest extends WebSpec {
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
-        ScreenData screenData = cont.getBean(ScreenData)
+        ScreenData screenData = new ScreenDataImpl()
         ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
@@ -250,7 +252,7 @@ class ScreenDataTest extends WebSpec {
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
-        ScreenData screenData = cont.getBean(ScreenData)
+        ScreenData screenData = new ScreenDataImpl()
         ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
 
         when:
@@ -291,5 +293,28 @@ class ScreenDataTest extends WebSpec {
         then:
 
         linesCont.items == [line3, line2]
+    }
+
+    def "read-only data context"() {
+        def xml = '''
+            <data readOnly="true">
+                <instance id="userCont"
+                          class="com.haulmont.cuba.security.entity.User" view="user.edit">
+                    <loader/>
+                </instance>
+            </data>
+            '''
+        Document document = Dom4j.readDocument(xml)
+        ScreenData screenData = new ScreenDataImpl()
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
+
+        when:
+
+        screenDataLoader.load(screenData, document.rootElement)
+        DataContext dataContext = screenData.dataContext
+
+        then:
+
+        dataContext instanceof NoopDataContext
     }
 }
