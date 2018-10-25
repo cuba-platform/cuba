@@ -39,7 +39,7 @@ public class CubaEditorOpenEvent<T> extends EditorOpenEvent<T> {
     }
 
     /**
-     * @returna a mapping of field to columns
+     * @return a mapping of field to columns
      */
     public Map<Grid.Column<T, ?>, Component> getColumnFieldMap() {
         return columnFieldMap;
