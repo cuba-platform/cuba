@@ -144,7 +144,7 @@ public class AppPropertiesLocator {
             }
             Method[] declaredMethods = configInterface.getDeclaredMethods();
             for (Method method : declaredMethods) {
-                if (method.getName().startsWith("get")) {
+                if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
                     Source methodSourceAnn = method.getAnnotation(Source.class);
                     if ((methodSourceAnn == null && interfaceSourceIsDb)
                             || (methodSourceAnn != null && methodSourceAnn.type() == SourceType.DATABASE)) {
