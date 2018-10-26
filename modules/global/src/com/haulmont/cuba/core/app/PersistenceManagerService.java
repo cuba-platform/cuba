@@ -58,4 +58,11 @@ public interface PersistenceManagerService {
      * @return true if the DBMS supports equals conditions in the filter and sort for LOB columns
      */
     boolean supportsLobSortingAndFiltering(String storeName);
+
+    /**
+     * @param storeName - data store name
+     * @return true if equals for string properties in the property conditions of filter
+     *         are emulated as like expressions
+     */
+    boolean isEmulatesEqualAsLike(String storeName);
 }

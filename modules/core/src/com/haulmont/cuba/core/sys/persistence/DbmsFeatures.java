@@ -80,4 +80,27 @@ public interface DbmsFeatures {
      * @return true if the DBMS supports equals conditions in the filter and sort for LOB columns
      */
     boolean supportsLobSortingAndFiltering();
+
+    /**
+     * @return true if equals for string properties in the property conditions of filter
+     * are emulated as like expressions
+     */
+    default boolean isEmulatesEqualsAsLike() {
+        return false;
+    }
+
+    /**
+     * @return true if equals for string properties in the property conditions of filter
+     * are handled as like expressions
+     */
+    default boolean equalsAsLike() {
+        return false;
+    }
+
+    /**
+     * @return true if the DBMS supports paging only with order by
+     */
+    default boolean useOrderByForPaging() {
+        return false;
+    }
 }

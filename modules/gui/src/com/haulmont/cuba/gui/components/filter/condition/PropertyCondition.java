@@ -19,7 +19,9 @@ package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.ConditionType;
@@ -93,9 +95,11 @@ public class PropertyCondition extends AbstractCondition {
 
         String nameToUse = name;
         boolean useCrossDataStoreRefId = false;
+        boolean stringType = false;
         String thisStore = metadataTools.getStoreName(datasource.getMetaClass());
         MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(name);
         if (propertyPath != null) {
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
             String refIdProperty = metadataTools.getCrossDataStoreReferenceIdProperty(thisStore, propertyPath.getMetaProperty());
             if (refIdProperty != null) {
                 useCrossDataStoreRefId = true;
@@ -106,6 +110,7 @@ public class PropertyCondition extends AbstractCondition {
                     nameToUse = nameToUse.substring(0, lastdDot + 1) + refIdProperty;
                 }
             }
+            stringType = String.class.equals(metaProperty.getJavaType());
         }
 
         if (operator == Op.DATE_INTERVAL) {
@@ -125,8 +130,16 @@ public class PropertyCondition extends AbstractCondition {
             sb.append(".").append(primaryKeyName);
         }
 
-        if (operator != Op.NOT_EMPTY)
-            sb.append(" ").append(operator.forJpql());
+        if (operator != Op.NOT_EMPTY) {
+            PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.class);
+            if (operator == Op.EQUAL && stringType && persistenceManager.isEmulatesEqualAsLike(thisStore)) {
+                sb.append(" ").append(Op.CONTAINS.forJpql());
+            } else if (operator == Op.NOT_EQUAL && stringType && persistenceManager.isEmulatesEqualAsLike(thisStore)) {
+                sb.append(" ").append(Op.DOES_NOT_CONTAIN.forJpql());
+            } else {
+                sb.append(" ").append(operator.forJpql());
+            }
+        }
 
         if (!operator.isUnary()) {
             sb.append(" :").append(param.getName());

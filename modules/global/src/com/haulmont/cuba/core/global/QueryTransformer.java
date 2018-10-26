@@ -72,6 +72,9 @@ public interface QueryTransformer {
     /** Adds or replaces 'order by' clause */
     void replaceOrderBy(boolean desc, String... properties);
 
+    /** Adds 'order by' clause if it doesn't exists */
+    void addOrderByIdIfNonExists(String idProperty);
+
     /** Adds @param entityAlias to 'group by' clause */
     void addEntityInGroupBy(String entityAlias);
 
