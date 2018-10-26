@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.*;
@@ -59,16 +60,32 @@ public class EditorScreens {
     }
 
     @SuppressWarnings("unchecked")
+    public <E extends Entity> EditorBuilder<E> builder(ListComponent<E> listComponent) {
+        checkNotNullArgument(listComponent);
+
+        FrameOwner frameOwner = listComponent.getFrame().getFrameOwner();
+        Class<E> entityClass;
+        DataUnit<E> items = listComponent.getItems();
+        if (items instanceof EntityDataUnit<?>) {
+            entityClass = ((EntityDataUnit<E>) items).getEntityMetaClass().getJavaClass();
+        } else {
+            throw new IllegalStateException(String.format("Component %s is not bound to data", listComponent));
+        }
+        EditorBuilder<E> builder = new EditorBuilder<>(frameOwner, entityClass, this::buildEditor);
+        builder.withListComponent(listComponent);
+        builder.editEntity(listComponent.getSingleSelected());
+        return builder;
+    }
+
+    @SuppressWarnings("unchecked")
     protected <E extends Entity, S extends Screen> S buildEditor(EditorBuilder<E> builder) {
         FrameOwner origin = builder.getOrigin();
         Screens screens = origin.getScreenContext().getScreens();
 
-        if (builder.getMode() == Mode.EDIT && builder.getEntity() == null) {
+        if (builder.getMode() == Mode.EDIT && builder.getEditedEntity() == null) {
             throw new IllegalStateException(String.format("Editor of %s cannot be open with mode EDIT, entity is not set",
                     builder.getEntityClass()));
         }
-
-        E entity = builder.getEntity();
 
         ListComponent<E> listComponent = builder.getListComponent();
 
@@ -82,15 +99,20 @@ public class EditorScreens {
         }
 
 
+        E entity;
         if (builder.getMode() == Mode.CREATE) {
-            if (entity == null) {
+            if (builder.getNewEntity() == null) {
                 entity = metadata.create(builder.getEntityClass());
+            } else {
+                entity = builder.getNewEntity();
             }
             if (builder.getInitializer() != null) {
                 builder.getInitializer().accept(entity);
             } else if (container instanceof Nested) {
                 initializeNestedEntity(entity, (Nested) container);
             }
+        } else {
+            entity = builder.getEditedEntity();
         }
 
         Screen screen;
@@ -215,7 +237,8 @@ public class EditorScreens {
         protected final Class<E> entityClass;
         protected final Function<EditorBuilder<E>, Screen> handler;
 
-        protected E entity;
+        protected E newEntity;
+        protected E editedEntity;
         protected CollectionContainer<E> container;
         protected Consumer<E> initializer;
         protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
@@ -235,7 +258,8 @@ public class EditorScreens {
             // copy all properties
 
             this.mode = builder.mode;
-            this.entity = builder.entity;
+            this.newEntity = builder.newEntity;
+            this.editedEntity = builder.editedEntity;
             this.container = builder.container;
             this.initializer = builder.initializer;
             this.options = builder.options;
@@ -255,13 +279,13 @@ public class EditorScreens {
             return this;
         }
 
-        public EditorBuilder<E> withEntity(E entity) {
-            this.entity = entity;
+        public EditorBuilder<E> newEntity(E entity) {
+            this.newEntity = entity;
             return this;
         }
 
         public EditorBuilder<E> editEntity(E entity) {
-            this.entity = entity;
+            this.editedEntity = entity;
             this.mode = Mode.EDIT;
             return this;
         }
@@ -327,8 +351,12 @@ public class EditorScreens {
             return entityClass;
         }
 
-        public E getEntity() {
-            return entity;
+        public E getNewEntity() {
+            return newEntity;
+        }
+
+        public E getEditedEntity() {
+            return editedEntity;
         }
 
         public CollectionContainer<E> getContainer() {
@@ -388,8 +416,8 @@ public class EditorScreens {
         }
 
         @Override
-        public EditorClassBuilder<E, S> withEntity(E entity) {
-            super.withEntity(entity);
+        public EditorClassBuilder<E, S> newEntity(E entity) {
+            super.newEntity(entity);
             return this;
         }
 
