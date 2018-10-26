@@ -117,7 +117,7 @@ public class CreateAction extends ListAction {
             Screen editor = editorScreens.builder(entityClass, window.getFrameOwner())
                     .newEntity()
                     .withListComponent(target)
-                    .create();
+                    .build();
             editor.show();
         } else {
             super.actionPerform(component);

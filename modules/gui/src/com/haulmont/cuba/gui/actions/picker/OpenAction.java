@@ -141,7 +141,7 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
             Screen editorScreen = editorScreens.builder(entityClass, window.getFrameOwner())
                     .editEntity(entity)
                     .withField(pickerField)
-                    .create();
+                    .build();
 
             editorScreen.show();
         } else {

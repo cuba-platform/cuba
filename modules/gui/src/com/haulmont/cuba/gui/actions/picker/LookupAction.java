@@ -116,7 +116,7 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
 
             Screen lookupScreen = lookupScreens.builder(entityClass, window.getFrameOwner())
                     .withField(pickerField)
-                    .create();
+                    .build();
             lookupScreen.show();
         } else {
             // call action perform handlers from super, delegate execution

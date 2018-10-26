@@ -200,7 +200,7 @@ public class LookupScreens {
             return selectValidator;
         }
 
-        public Screen create() {
+        public Screen build() {
             return this.handler.apply(this);
         }
 
@@ -260,7 +260,7 @@ public class LookupScreens {
         }
 
         @SuppressWarnings("unchecked")
-        public S create() {
+        public S build() {
             return (S) this.handler.apply(this);
         }
     }

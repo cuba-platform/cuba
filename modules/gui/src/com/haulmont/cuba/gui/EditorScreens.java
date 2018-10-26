@@ -387,7 +387,7 @@ public class EditorScreens {
             return mode;
         }
 
-        public Screen create() {
+        public Screen build() {
             return handler.apply(this);
         }
     }
@@ -474,7 +474,7 @@ public class EditorScreens {
 
         @SuppressWarnings("unchecked")
         @Override
-        public S create() {
+        public S build() {
             return (S) handler.apply(this);
         }
     }

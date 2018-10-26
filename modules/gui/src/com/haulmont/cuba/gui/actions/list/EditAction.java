@@ -144,7 +144,7 @@ public class EditAction extends SecuredListAction {
             Screen editor = editorScreens.builder(entityClass, window.getFrameOwner())
                     .editEntity(editedEntity)
                     .withListComponent(target)
-                    .create();
+                    .build();
             editor.show();
         } else {
             super.actionPerform(component);
