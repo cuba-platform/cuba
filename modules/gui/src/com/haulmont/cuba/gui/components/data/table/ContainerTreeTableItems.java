@@ -124,4 +124,10 @@ public class ContainerTreeTableItems<E extends Entity>
 
         return false;
     }
+
+    @Override
+    public Object firstItemId() {
+        Collection<?> rootItemIds = getRootItemIds();
+        return rootItemIds.isEmpty() ? null : rootItemIds.iterator().next();
+    }
 }
