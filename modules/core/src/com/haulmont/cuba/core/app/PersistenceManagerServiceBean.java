@@ -72,4 +72,9 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     public boolean supportsLobSortingAndFiltering(String storeName) {
         return storeName == null || DbmsSpecificFactory.getDbmsFeatures(storeName).supportsLobSortingAndFiltering();
     }
+
+    @Override
+    public boolean isEmulatesEqualAsLike(String storeName) {
+        return storeName == null || DbmsSpecificFactory.getDbmsFeatures(storeName).isEmulatesEqualsAsLike();
+    }
 }

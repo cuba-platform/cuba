@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 /**
  * Implementation of {@link QueryTransformer} based on regular expressions.
- *
  */
 public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer {
 
@@ -298,6 +297,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void addDistinct() {
+        //not supported
+    }
+
+    @Override
+    public void addOrderByIdIfNonExists(String idProperty) {
         //not supported
     }
 

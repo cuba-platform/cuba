@@ -233,12 +233,24 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         String entityName = parser.getEntityName();
         Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(entityName);
-        String effectiveEntityName = metadata.getClassNN(effectiveClass).getName();
+        MetaClass effectiveMetaClass = metadata.getClassNN(effectiveClass);
+        String effectiveEntityName = effectiveMetaClass.getName();
         if (!effectiveEntityName.equals(entityName)) {
             QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceEntityName(effectiveEntityName);
             result = transformer.getResult();
             rebuildParser = true;
+        }
+
+        if (firstResult != null && firstResult > 0) {
+            String storeName = metadata.getTools().getStoreName(effectiveMetaClass);
+            DbmsFeatures dbmsFeatures = DbmsSpecificFactory.getDbmsFeatures(storeName);
+            if (dbmsFeatures.useOrderByForPaging()) {
+                QueryTransformer transformer = queryTransformerFactory.transformer(result);
+                transformer.addOrderByIdIfNonExists(metadata.getTools().getPrimaryKeyName(effectiveMetaClass));
+                result = transformer.getResult();
+                rebuildParser = true;
+            }
         }
 
         result = replaceParams(result, parser);

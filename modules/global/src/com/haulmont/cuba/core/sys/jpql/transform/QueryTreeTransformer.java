@@ -222,6 +222,28 @@ public class QueryTreeTransformer {
         }
     }
 
+    public void addOrderByIdIfNonExists(PathEntityReference idReference) {
+        Tree orderBy = queryTree.getAstTree().getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
+        if (orderBy != null) {
+            return;
+        }
+        orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
+        queryTree.getAstTree().addChild(orderBy);
+        queryTree.getAstTree().freshenParentAndChildIndexes();
+
+        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
+        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
+
+        OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
+        orderByField.addChild(idReference.createNode());
+        orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "asc")));
+        orderByField.freshenParentAndChildIndexes();
+
+        orderBy.addChild(orderByField);
+        orderBy.freshenParentAndChildIndexes();
+    }
+
+
     public void addEntityInGroupBy(String entityAlias) {
         Tree groupBy = queryTree.getAstGroupByNode();
         if (groupBy != null) {
