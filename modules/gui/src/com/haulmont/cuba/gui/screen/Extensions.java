@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.cuba.core.global.BeanLocator;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -154,5 +155,27 @@ public final class Extensions {
                 screen.setExtensions(ImmutableMap.copyOf(newExtensions));
             }
         }
+    }
+
+    /**
+     * Gets bean locator associated with the frame owner. Extensions can get various application beans from bean locator.
+     * <br>
+     * Example:
+     * <pre>{@code
+     *    BeanLocator beanLocator = Extensions.getBeanLocator(screen);
+     *    Messages messages = beanLocator.get(Messages.class);
+     * }</pre>
+     *
+     * @param frameOwner UI controller
+     * @return bean locator
+     */
+    public static BeanLocator getBeanLocator(FrameOwner frameOwner) {
+        if (frameOwner instanceof Screen) {
+            return ((Screen) frameOwner).getBeanLocator();
+        } else if (frameOwner instanceof ScreenFragment) {
+            return ((ScreenFragment) frameOwner).getBeanLocator();
+        }
+
+        throw new IllegalArgumentException("Unsupported type of screen " + frameOwner);
     }
 }

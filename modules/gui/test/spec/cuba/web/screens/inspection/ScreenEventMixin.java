@@ -16,6 +16,8 @@
 
 package spec.cuba.web.screens.inspection;
 
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.gui.screen.Extensions;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
@@ -23,6 +25,6 @@ public interface ScreenEventMixin {
 
     @Subscribe
     default void onInitMixin(Screen.InitEvent event) {
-
+        BeanLocator beanLocator = Extensions.getBeanLocator(event.getSource());
     }
 }
