@@ -28,32 +28,55 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * JavaDoc
+ * Interface defining methods for creation and displaying of UI screens.
+ *
+ * @see EditorScreens
+ * @see LookupScreens
  */
 public interface Screens {
 
     String NAME = "cuba_Screens";
 
+    /**
+     * Creates a screen by its controller class.
+     *
+     * @param screenClass   screen controller class
+     * @param launchMode    how the screen should be opened
+     */
     default <T extends Screen> T create(Class<T> screenClass, LaunchMode launchMode) {
         return create(screenClass, launchMode, FrameOwner.NO_OPTIONS);
     }
 
+    /**
+     * Creates a screen by its registration information.
+     *
+     * @param windowInfo    screen registration information
+     * @param launchMode    how the screen should be opened
+     */
     default Screen create(WindowInfo windowInfo, LaunchMode launchMode) {
         return create(windowInfo, launchMode, FrameOwner.NO_OPTIONS);
     }
 
     /**
-     * JavaDoc
+     * Creates a screen by its controller class.
+     *
+     * @param screenClass   screen controller class
+     * @param launchMode    how the screen should be opened
+     * @param options       screen parameters
      */
     <T extends Screen> T create(Class<T> screenClass, LaunchMode launchMode, ScreenOptions options);
 
     /**
-     * JavaDoc
+     * Creates a screen by its registration information.
+     *
+     * @param windowInfo    screen registration information
+     * @param launchMode    how the screen should be opened
+     * @param options       screen parameters
      */
     Screen create(WindowInfo windowInfo, LaunchMode launchMode, ScreenOptions options);
 
     /**
-     * JavaDoc
+     * Displays the given screen according to its {@link LaunchMode}.
      */
     void show(Screen screen);
 

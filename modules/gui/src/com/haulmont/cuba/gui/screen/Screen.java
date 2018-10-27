@@ -303,7 +303,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * Convenient method to show the screen.
+     * Shows this screen.
      *
      * @see Screens#show(Screen)
      */

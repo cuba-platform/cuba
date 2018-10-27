@@ -33,12 +33,34 @@ import java.util.function.Predicate;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Class that provides fluent interface for building entity lookup screens with various options.
+ * <p>
+ * Inject the class into your screen controller and use {@link #builder(Class, FrameOwner)} method as an entry point.
+ *
+ * @see Screens
+ * @see EditorScreens
+ */
 @Component("cuba_LookupScreens")
 public class LookupScreens {
 
     @Inject
     protected WindowConfig windowConfig;
 
+    /**
+     * Creates a screen builder.
+     * <p>
+     * Example of building a lookup screen:
+     * <pre>{@code
+     * SomeCustomerListScreen screen = lookupScreens.builder(Customer.class, this)
+     *         .withScreen(SomeCustomerListScreen.class)
+     *         .withLaunchMode(OpenMode.DIALOG)
+     *         .build();
+     * }</pre>
+     *
+     * @param entityClass   entity class
+     * @param origin        invoking screen
+     */
     public <E extends Entity> LookupBuilder<E> builder(Class<E> entityClass, FrameOwner origin) {
         checkNotNullArgument(entityClass);
         checkNotNullArgument(origin);
@@ -54,8 +76,8 @@ public class LookupScreens {
         Screen screen;
 
         if (builder instanceof LookupClassBuilder) {
-            Class sreenClass = ((LookupClassBuilder) builder).getSreenClass();
-            screen = screens.create(sreenClass, builder.getLaunchMode(), builder.getOptions());
+            Class screenClass = ((LookupClassBuilder) builder).getScreenClass();
+            screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
         } else {
             WindowInfo windowInfo;
             if (builder.getScreenId() != null) {
@@ -102,6 +124,9 @@ public class LookupScreens {
         return screen;
     }
 
+    /**
+     * Builder that is not aware of concrete screen class. It's {@link #build()} method returns {@link Screen}.
+     */
     public static class LookupBuilder<E extends Entity> {
 
         protected final FrameOwner origin;
@@ -134,94 +159,151 @@ public class LookupScreens {
             this.handler = handler;
         }
 
+        /**
+         * Sets {@link Screens.LaunchMode} for the lookup screen and returns the builder for chaining.
+         * <p>For example: {@code builder.withLaunchMode(OpenMode.DIALOG).build();}
+         */
         public LookupBuilder<E> withLaunchMode(LaunchMode launchMode) {
             this.launchMode = launchMode;
             return this;
         }
 
+        /**
+         * Sets {@link ScreenOptions} for the lookup screen and returns the builder for chaining.
+         */
         public LookupBuilder<E> withOptions(ScreenOptions options) {
             this.options = options;
             return this;
         }
 
+        /**
+         * Sets selection validator for the lookup screen and returns the builder for chaining.
+         */
         public LookupBuilder<E> withSelectValidator(Predicate<ValidationContext<E>> selectValidator) {
             this.selectValidator = selectValidator;
             return this;
         }
 
+        /**
+         * Sets selection handler for the lookup screen and returns the builder for chaining.
+         */
         public LookupBuilder<E> withSelectHandler(Consumer<Collection<E>> selectHandler) {
             this.selectHandler = selectHandler;
             return this;
         }
 
+        /**
+         * Sets the field component and returns the builder for chaining.
+         * <p>If the field is set, the framework sets the selected entity to the field after successful lookup.
+         */
         public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> LookupBuilder<E> withField(T field) {
             this.field = field;
             return this;
         }
 
+        /**
+         * Sets screen class and returns the {@link LookupClassBuilder} for chaining.
+         *
+         * @param screenClass class of the screen controller
+         */
         public <S extends Screen & LookupScreen<E>> LookupClassBuilder<E, S> withScreen(Class<S> screenClass) {
             return new LookupClassBuilder<>(this, screenClass);
         }
 
+        /**
+         * Sets screen id and returns the builder for chaining.
+         *
+         * @param screenId  identifier of the lookup screen as specified in the {@code UiController} annotation
+         *                  or {@code screens.xml}.
+         */
         public LookupBuilder<E> withScreen(String screenId) {
             this.screenId = screenId;
             return this;
         }
 
+        /**
+         * Returns screen id set by {@link #withScreen(String)}.
+         */
         public String getScreenId() {
             return screenId;
         }
 
+        /**
+         * Returns launch mode set by {@link #withLaunchMode(Screens.LaunchMode)}.
+         */
         public LaunchMode getLaunchMode() {
             return launchMode;
         }
 
+        /**
+         * Returns screen options set by {@link #withOptions(ScreenOptions)}.
+         */
         public ScreenOptions getOptions() {
             return options;
         }
 
+        /**
+         * Returns invoking screen.
+         */
         public FrameOwner getOrigin() {
             return origin;
         }
 
+        /**
+         * Returns class of the entity to lookup.
+         */
         public Class<E> getEntityClass() {
             return entityClass;
         }
 
-        public Function<LookupBuilder<E>, Screen> getHandler() {
-            return handler;
-        }
-
+        /**
+         * Returns selection handler set by {@link #withSelectHandler(Consumer)}.
+         */
         public Consumer<Collection<E>> getSelectHandler() {
             return selectHandler;
         }
 
+        /**
+         * Returns selection validator set by {@link #withSelectValidator(Predicate)}.
+         */
         public Predicate<ValidationContext<E>> getSelectValidator() {
             return selectValidator;
         }
 
-        public Screen build() {
-            return this.handler.apply(this);
-        }
-
+        /**
+         * Returns the field component set by {@link #withField(com.haulmont.cuba.gui.components.Component)}.
+         */
         public com.haulmont.cuba.gui.components.Component getField() {
             return field;
         }
+
+        /**
+         * Builds the lookup screen.
+         */
+        public Screen build() {
+            return this.handler.apply(this);
+        }
     }
 
+    /**
+     * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
+     */
     public static class LookupClassBuilder<E extends Entity, S extends Screen & LookupScreen<E>>
             extends LookupBuilder<E> {
 
-        protected final Class<S> sreenClass;
+        protected final Class<S> screenClass;
 
-        public LookupClassBuilder(LookupBuilder<E> builder, Class<S> sreenClass) {
+        public LookupClassBuilder(LookupBuilder<E> builder, Class<S> screenClass) {
             super(builder);
 
-            this.sreenClass = sreenClass;
+            this.screenClass = screenClass;
         }
 
-        public Class<S> getSreenClass() {
-            return sreenClass;
+        /**
+         * Returns lookup screen class.
+         */
+        public Class<S> getScreenClass() {
+            return screenClass;
         }
 
         @Override
