@@ -769,6 +769,7 @@ public class MetaModelLoader {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected MetadataObjectInfo<Range> loadRange(MetaProperty metaProperty, Class<?> type, Map<String, Object> map) {
         Datatype datatype = (Datatype) map.get("datatype");
         if (datatype != null) {
@@ -782,7 +783,7 @@ public class MetaModelLoader {
         }
         if (datatype != null) {
             MetaClass metaClass = metaProperty.getDomain();
-            Class javaClass = metaClass.getJavaClass();
+            Class<?> javaClass = metaClass.getJavaClass();
 
             try {
                 String name = "get" + StringUtils.capitalize(metaProperty.getName());

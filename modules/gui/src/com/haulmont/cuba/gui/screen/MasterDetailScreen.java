@@ -142,7 +142,6 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
     /**
      * Returns the entity meta-class.
      */
-    @SuppressWarnings("unchecked")
     protected Class<T> getEntityClass() {
         return getBrowseContainer().getEntityMetaClass().getJavaClass();
     }

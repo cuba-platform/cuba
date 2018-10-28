@@ -37,7 +37,7 @@ public interface MetaClass extends MetadataObject {
     /**
      * @return corresponding Java class
      */
-    Class getJavaClass();
+    <T> Class<T> getJavaClass();
 
     /**
      * Immediate ancestor of the object, or null if there is no one.

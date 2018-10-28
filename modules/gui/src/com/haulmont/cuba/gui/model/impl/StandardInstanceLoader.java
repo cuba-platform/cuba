@@ -107,8 +107,6 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     }
 
     public LoadContext<E> createLoadContext() {
-
-        @SuppressWarnings("unchecked")
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
         if (entityId != null) {

@@ -286,7 +286,6 @@ public class AbstractViewRepository implements ViewRepository {
         return getViewNames(metaClass);
     }
 
-    @SuppressWarnings("unchecked")
     protected View deployDefaultView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
 
@@ -629,7 +628,7 @@ public class AbstractViewRepository implements ViewRepository {
 
             if (inlineView) {
                 // try to import anonymous views
-                Class rangeClass = range.asClass().getJavaClass();
+                Class<? extends Entity> rangeClass = range.asClass().getJavaClass();
 
                 if (refView != null) {
                     refView = new View(refView, rangeClass, "", false); // system properties are already in the source view

@@ -1261,7 +1261,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
         MetaClass metaClass = items.getEntityMetaClass();
 
-        //noinspection unchecked
         InstanceContainer<E> instanceContainer = factory.createInstanceContainer(metaClass.getJavaClass());
         instanceContainer.setView(viewRepository.getView(metaClass, View.LOCAL));
         instanceContainer.setItem(item);

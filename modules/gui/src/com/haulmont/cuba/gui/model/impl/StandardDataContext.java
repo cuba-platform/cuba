@@ -431,7 +431,6 @@ public class StandardDataContext implements DataContext {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void removeFromCollections(Entity entityToRemove) {
         for (Class<?> entityClass : content.keySet()) {
             MetaClass metaClass = getMetadata().getClassNN(entityClass);

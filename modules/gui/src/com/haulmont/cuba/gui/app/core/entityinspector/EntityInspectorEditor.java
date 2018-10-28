@@ -974,7 +974,6 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param meta meta class
      * @return View instance
      */
-    @SuppressWarnings("unchecked")
     protected View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {

@@ -271,7 +271,6 @@ public class AttributeSecuritySupport {
      *
      * @param metaClass - entity metaClass
      */
-    @SuppressWarnings("unchecked")
     public boolean isAttributeAccessEnabled(MetaClass metaClass) {
         Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
         if (handlers != null) {

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
@@ -60,6 +61,8 @@ public class EditorScreens {
     protected ExtendedEntities extendedEntities;
     @Inject
     protected WindowConfig windowConfig;
+    @Inject
+    protected ClientConfig clientConfig;
 
     /**
      * Creates a screen builder.
@@ -116,7 +119,6 @@ public class EditorScreens {
      *
      * @see #builder(Class, FrameOwner)
      */
-    @SuppressWarnings("unchecked")
     public <E extends Entity> EditorBuilder<E> builder(ListComponent<E> listComponent) {
         checkNotNullArgument(listComponent);
 
@@ -163,10 +165,11 @@ public class EditorScreens {
             } else {
                 entity = builder.getNewEntity();
             }
+            if (container instanceof Nested) {
+                initializeNestedEntity(entity, (Nested) container);
+            }
             if (builder.getInitializer() != null) {
                 builder.getInitializer().accept(entity);
-            } else if (container instanceof Nested) {
-                initializeNestedEntity(entity, (Nested) container);
             }
         } else {
             entity = builder.getEditedEntity();
@@ -218,7 +221,11 @@ public class EditorScreens {
                 CloseAction closeAction = afterCloseEvent.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     if (builder.getMode() == Mode.CREATE) {
-                        ct.getMutableItems().add(0, editorScreen.getEditedEntity());
+                        if (ct instanceof Nested || !clientConfig.getCreateActionAddsFirst()) {
+                            ct.getMutableItems().add(editorScreen.getEditedEntity());
+                        } else {
+                            ct.getMutableItems().add(0, editorScreen.getEditedEntity());
+                        }
                     } else {
                         ct.replaceItem(editorScreen.getEditedEntity());
                     }

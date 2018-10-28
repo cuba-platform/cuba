@@ -358,7 +358,6 @@ public class BulkEditorWindow extends AbstractWindow {
      * @return View instance
      */
     protected View createView(MetaClass meta) {
-        @SuppressWarnings("unchecked")
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             if (!managedFields.containsKey(metaProperty.getName())
@@ -393,7 +392,6 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     protected View createEmbeddedView(MetaClass meta, String fqnPrefix) {
-        @SuppressWarnings("unchecked")
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             String fqn = fqnPrefix + "." + metaProperty.getName();

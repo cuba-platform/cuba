@@ -201,7 +201,7 @@ public class ViewSerialization implements ViewSerializationAPI {
                             continue;
                         }
                         MetaClass nestedViewMetaClass = metaProperty.getRange().asClass();
-                        Class nestedViewEntityClass = nestedViewMetaClass.getJavaClass();
+                        Class<? extends Entity> nestedViewEntityClass = nestedViewMetaClass.getJavaClass();
                         if (nestedViewElement.isJsonObject()) {
                             JsonObject nestedViewObject = nestedViewElement.getAsJsonObject();
                             View nestedView;

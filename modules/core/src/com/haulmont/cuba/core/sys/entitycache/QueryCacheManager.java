@@ -97,7 +97,7 @@ public class QueryCacheManager {
                 log.warn("Using cacheable query without entity cache for {}", queryResult.getType());
             }
             for (Object id : queryResult.getResult()) {
-                resultList.add((T) em.find(metaClass.getJavaClass(), id, views.toArray(new View[views.size()])));
+                resultList.add(em.find(metaClass.getJavaClass(), id, views.toArray(new View[views.size()])));
             }
         } else {
             log.debug("Query results are not found in cache: {}", queryKey.printDescription());

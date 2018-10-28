@@ -284,13 +284,11 @@ public class MetadataImpl implements Metadata {
         return __create(entityClass);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Entity create(MetaClass metaClass) {
         return (Entity) __create(metaClass.getJavaClass());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Entity create(String entityName) {
         MetaClass metaClass = getSession().getClassNN(entityName);

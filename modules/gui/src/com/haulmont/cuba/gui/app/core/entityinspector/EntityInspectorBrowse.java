@@ -427,7 +427,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected EntityImportView createEntityImportView(MetaClass metaClass) {
-        @SuppressWarnings("unchecked")
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
         EntityImportView entityImportView = new EntityImportView(javaClass);
 

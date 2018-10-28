@@ -131,7 +131,6 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
                         "for the PickerField", "action ID", getId());
             }
 
-            @SuppressWarnings("unchecked")
             Class<Entity> entityClass = metaClass.getJavaClass();
             Window window = ComponentsHelper.getWindowNN(pickerField);
 

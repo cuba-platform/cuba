@@ -88,7 +88,6 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
         return entity;
     }
 
-    @SuppressWarnings("unchecked")
     protected View createFullView(MetaClass metaClass) {
         View view = new View(metaClass.getJavaClass());
         for (MetaProperty metaProperty : metaClass.getProperties()) {

@@ -103,8 +103,6 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
 
     @Override
     public LoadContext<E> createLoadContext() {
-
-        @SuppressWarnings("unchecked")
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
         LoadContext.Query query = loadContext.setQueryString(this.query);

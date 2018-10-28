@@ -47,7 +47,6 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
     @Inject
     protected ExtendedEntities extendedEntities;
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<Object> getRelatedIds(List<Object> parentIds, String parentMetaClass, String relationProperty) {
         checkNotNullArgument(parentIds, "parents argument is null");
@@ -55,7 +54,7 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
         checkNotNullArgument(relationProperty, "relationProperty argument is null");
 
         MetaClass metaClass = extendedEntities.getEffectiveMetaClass(metadata.getClassNN(parentMetaClass));
-        Class parentClass = metaClass.getJavaClass();
+        Class<? extends Entity> parentClass = metaClass.getJavaClass();
 
         MetaProperty metaProperty = metaClass.getPropertyNN(relationProperty);
 
@@ -65,7 +64,7 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
         }
 
         MetaClass propertyMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
-        Class propertyClass = propertyMetaClass.getJavaClass();
+        Class<? extends Entity> propertyClass = propertyMetaClass.getJavaClass();
 
         List<Object> relatedIds = new ArrayList<>();
 
@@ -84,8 +83,9 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
             query.setView(view);
             query.setParameter("ids", parentIds);
 
-            List<Entity> resultList = query.getResultList();
-            for (Entity e : resultList) {
+            List resultList = query.getResultList();
+            for (Object obj : resultList) {
+                Entity e = (Entity) obj;
                 Object value = e.getValue(relationProperty);
                 if (value instanceof Entity) {
                     relatedIds.add(((Entity) value).getId());

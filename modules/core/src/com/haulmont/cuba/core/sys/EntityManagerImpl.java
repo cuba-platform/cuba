@@ -156,7 +156,6 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity<K>, K> T find(Class<T> entityClass, K id) {
         Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
