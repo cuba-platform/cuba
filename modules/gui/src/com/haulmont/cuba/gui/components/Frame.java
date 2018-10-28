@@ -18,17 +18,17 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenContext;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 
 import java.util.List;
 
 /**
- * Represents a reusable part of a screen.
- * <br> Has its own XML descriptor, but can be instantiated only inside a {@link Window}.
- * Includes functionality for work with datasources and other windows.
+ * Root class of UI components having controller.
+ *
+ * @see Window
+ * @see Fragment
  */
 public interface Frame
         extends ExpandingLayout,
@@ -38,12 +38,19 @@ public interface Frame
                 HasMargin,
                 ActionsHolder,
                 Component.HasIcon,
-                Component.HasCaption {
+                Component.HasCaption,
+                HasWindowManager {
 
     /** XML element name used to show a frame in an enclosing screen. */
     @Deprecated
     String NAME = "frame";
 
+    /**
+     * @return UI controller of the frame
+     *
+     * @see Screen
+     * @see ScreenFragment
+     */
     FrameOwner getFrameOwner();
 
     /**
@@ -76,12 +83,6 @@ public interface Frame
      * @return true if the validation was successful, false if there were any problems
      */
     boolean validateAll();
-
-    /**
-     * @deprecated Use {@link Screens} instead, it can be obtained from {@link ScreenContext} of {@link FrameOwner}.
-     */
-    @Deprecated
-    WindowManager getWindowManager();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
