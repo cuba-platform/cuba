@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -89,6 +90,15 @@ public class CollectionContainerImpl<E extends Entity>
         fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
     }
 
+    @Nonnull
+    @Override
+    public E getItem(Object entityId) {
+        E item = getItemOrNull(entityId);
+        if (item == null)
+            throw new IllegalArgumentException("Item with id='" + entityId + "' not found");
+        return item;
+    }
+
     @Nullable
     @Override
     public E getItemOrNull(Object entityId) {
@@ -98,6 +108,15 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public int getItemIndex(Object entityId) {
+        if (entityId instanceof Entity && !(entityId instanceof EmbeddableEntity)) {
+            // if an entity instance is passed instead of id, check if the entity is of valid class and extract id
+            Entity entity = (Entity) entityId;
+            if (!entityMetaClass.getJavaClass().isAssignableFrom(entity.getClass())) {
+                throw new IllegalArgumentException("Invalid entity class: " + entity.getClass());
+            } else {
+                entityId = entity.getId();
+            }
+        }
         Integer idx = idMap.get(entityId);
         return idx != null ? idx : -1;
     }
@@ -124,15 +143,6 @@ public class CollectionContainerImpl<E extends Entity>
         attachListener(entity);
         buildIdMap();
         fireCollectionChanged(changeType, Collections.singletonList(entity));
-    }
-
-    @Nonnull
-    @Override
-    public E getItem(Object entityId) {
-        E item = getItemOrNull(entityId);
-        if (item == null)
-            throw new IllegalArgumentException("Item with id='" + entityId + "' not found");
-        return item;
     }
 
     @SuppressWarnings("unchecked")
