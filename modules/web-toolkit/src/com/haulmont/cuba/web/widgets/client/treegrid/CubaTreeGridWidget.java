@@ -2,6 +2,7 @@ package com.haulmont.cuba.web.widgets.client.treegrid;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.widgets.client.grid.CubaEditorEventHandler;
 import com.haulmont.cuba.web.widgets.client.grid.HasClickSettings;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
@@ -43,13 +44,12 @@ public class CubaTreeGridWidget extends TreeGrid {
         }
     }
 
-//    @Override
-//    protected Editor<JsonObject> createEditor() {
-//        Editor<JsonObject> editor = super.createEditor();
-//        editor.setEventHandler(new CubaEditorEventHandler<>());
-//        return editor;
-//    }
-//
+    @Override
+    protected Editor<JsonObject> createEditor() {
+        Editor<JsonObject> editor = super.createEditor();
+        editor.setEventHandler(new CubaEditorEventHandler<>());
+        return editor;
+    }
 
     @Override
     protected boolean isWidgetAllowsClickHandling(Element targetElement) {
