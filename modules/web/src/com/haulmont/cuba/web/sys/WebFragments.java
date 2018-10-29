@@ -151,8 +151,8 @@ public class WebFragments implements Fragments {
         loaderContext.setFullFrameId(windowInfo.getId());
         loaderContext.setFrame(fragment);
         loaderContext.setParent(null);
-        if (parentFrame instanceof LegacyFrame) {
-            loaderContext.setDsContext(((LegacyFrame) parentFrame).getDsContext());
+        if (parent instanceof LegacyFrame) {
+            loaderContext.setDsContext(((LegacyFrame) parent).getDsContext());
         }
 
         // load XML if needed

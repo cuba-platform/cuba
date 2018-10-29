@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
 /**
- * JavaDoc
+ * Interface defining methods for creation and displaying of reusable screen parts that have their own UI controller.
  */
 public interface Fragments {
 
