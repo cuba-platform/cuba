@@ -70,4 +70,10 @@ public class DatasourceTreeTableItems<E extends Entity<K>, K>
     public boolean hasChildren(Object itemId) {
         return getTreeDatasource().hasChildren((K) itemId);
     }
+
+    @Override
+    public Object firstItemId() {
+        Collection<?> rootItemIds = getRootItemIds();
+        return rootItemIds.isEmpty() ? null : rootItemIds.iterator().next();
+    }
 }
