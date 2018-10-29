@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
@@ -30,9 +28,8 @@ public class LogItem {
     private String message;
     private Throwable throwable;
 
-    public LogItem(LogLevel level, String message, Throwable throwable) {
-        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-        this.timestamp = timeSource.currentTimestamp();
+    public LogItem(Date timestamp, LogLevel level, String message, Throwable throwable) {
+        this.timestamp = timestamp;
         this.level = level;
         this.message = message;
         this.throwable = throwable;

@@ -19,31 +19,21 @@ package com.haulmont.cuba.web.sys;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AppCookies implements Serializable {
-
-    private static final long serialVersionUID = 5958656635050664762L;
+public class AppCookies {
 
     public static final int COOKIE_MAX_AGE = 31536000; //1 year (in seconds)
 
-    private transient Map<String, Cookie> requestedCookies;
+    protected transient Map<String, Cookie> requestedCookies;
 
-    private String cookiePath = "/";
-    private boolean cookiesEnabled = true;
+    protected String cookiePath = "/";
+    protected boolean cookiesEnabled = true;
 
     private long lastRequestTimestamp = 0L;
 
     public AppCookies() {
-        requestedCookies = new HashMap<>();
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
         requestedCookies = new HashMap<>();
     }
 

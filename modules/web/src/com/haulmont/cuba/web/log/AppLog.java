@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.log;
 
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
-import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;
@@ -38,12 +38,14 @@ public class AppLog {
 
     private static final Logger log = LoggerFactory.getLogger(AppLog.class);
 
-    private transient Deque<LogItem> items = new ArrayDeque<>();
+    protected transient Deque<LogItem> items = new ArrayDeque<>();
 
-    private final int capacity;
+    protected final int capacity;
+    protected final TimeSource timeSource;
 
-    public AppLog(WebConfig webConfig) {
-        this.capacity = webConfig.getAppLogMaxItemsCount();
+    public AppLog(int capacity, TimeSource timeSource) {
+        this.capacity = capacity;
+        this.timeSource = timeSource;
     }
 
     public void log(LogItem item) {
@@ -68,23 +70,23 @@ public class AppLog {
     }
 
     public void log(LogLevel level, String message, Throwable throwable) {
-        log(new LogItem(level, message, throwable));
+        log(new LogItem(timeSource.currentTimestamp(), level, message, throwable));
     }
 
     public void debug(String message) {
-        log(new LogItem(LogLevel.DEBUG, message, null));
+        log(new LogItem(timeSource.currentTimestamp(), LogLevel.DEBUG, message, null));
     }
 
     public void info(String message) {
-        log(new LogItem(LogLevel.INFO, message, null));
+        log(new LogItem(timeSource.currentTimestamp(), LogLevel.INFO, message, null));
     }
 
     public void warning(String message) {
-        log(new LogItem(LogLevel.WARNING, message, null));
+        log(new LogItem(timeSource.currentTimestamp(), LogLevel.WARNING, message, null));
     }
 
     public void error(String message) {
-        log(new LogItem(LogLevel.ERROR, message, null));
+        log(new LogItem(timeSource.currentTimestamp(), LogLevel.ERROR, message, null));
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unchecked"})
@@ -100,7 +102,7 @@ public class AppLog {
         if (t instanceof SocketException
                 || ExceptionUtils.getRootCause(t) instanceof SocketException) {
             // Most likely client browser closed socket
-            LogItem item = new LogItem(LogLevel.WARNING,
+            LogItem item = new LogItem(timeSource.currentTimestamp(), LogLevel.WARNING,
                     "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
             log(item);
             return;
@@ -109,7 +111,7 @@ public class AppLog {
         // Support Tomcat 8 ClientAbortException
         if (StringUtils.contains(ExceptionUtils.getMessage(t), "ClientAbortException")) {
             // Most likely client browser closed socket
-            LogItem item = new LogItem(LogLevel.WARNING,
+            LogItem item = new LogItem(timeSource.currentTimestamp(), LogLevel.WARNING,
                     "ClientAbortException on write response to client. Most likely client (browser) closed socket.", null);
             log(item);
             return;
@@ -119,7 +121,7 @@ public class AppLog {
         if (ExceptionUtils.getThrowableList(t).stream()
                 .anyMatch(o -> o.getClass().getName().equals("org.eclipse.jetty.io.EofException"))) {
             // Most likely client browser closed socket
-            LogItem item = new LogItem(LogLevel.WARNING,
+            LogItem item = new LogItem(timeSource.currentTimestamp(), LogLevel.WARNING,
                     "org.eclipse.jetty.io.EofException on write response to client. Most likely client (browser) closed socket.", null);
             log(item);
             return;
@@ -145,7 +147,7 @@ public class AppLog {
         if (loggingType == Logging.Type.BRIEF) {
             error(msg + rootCause.toString());
         } else {
-            LogItem item = new LogItem(LogLevel.ERROR, msg.toString(), t);
+            LogItem item = new LogItem(timeSource.currentTimestamp(), LogLevel.ERROR, msg.toString(), t);
             log(item);
         }
     }

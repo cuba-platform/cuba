@@ -46,6 +46,7 @@ public class LinkHandler {
     @Inject
     protected List<LinkHandlerProcessor> processors;
 
+    // todo should be bound to AppUI
     protected App app;
     protected String action;
     protected Map<String, String> requestParams;
@@ -84,5 +85,4 @@ public class LinkHandler {
             wrappedSession.removeAttribute(AppUI.LAST_REQUEST_ACTION_ATTR);
         }
     }
-
 }

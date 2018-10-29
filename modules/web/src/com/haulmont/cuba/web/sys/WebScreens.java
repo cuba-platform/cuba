@@ -652,8 +652,8 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     @Override
-    public UiState getUiState() {
-        return new UiStateImpl();
+    public OpenedScreens getOpenedScreens() {
+        return new OpenedScreensImpl();
     }
 
     protected Stream<Screen> getOpenedWorkAreaScreensStream() {
@@ -806,7 +806,7 @@ public class WebScreens implements Screens, WindowManager {
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return getUiState().getOpenedScreens().stream()
+        return getOpenedScreens().getAll().stream()
                 .map(Screen::getWindow)
                 .collect(Collectors.toList());
     }
@@ -2009,7 +2009,7 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    protected class UiStateImpl implements UiState {
+    protected class OpenedScreensImpl implements OpenedScreens {
 
         @Nonnull
         @Override
@@ -2029,7 +2029,7 @@ public class WebScreens implements Screens, WindowManager {
         }
 
         @Override
-        public Collection<Screen> getOpenedScreens() {
+        public Collection<Screen> getAll() {
             List<Screen> screens = new ArrayList<>();
 
             getOpenedWorkAreaScreensStream()
@@ -2042,7 +2042,7 @@ public class WebScreens implements Screens, WindowManager {
         }
 
         @Override
-        public Collection<Screen> getOpenedWorkAreaScreens() {
+        public Collection<Screen> getWorkAreaScreens() {
             return getOpenedWorkAreaScreensStream()
                     .collect(Collectors.toList());
         }

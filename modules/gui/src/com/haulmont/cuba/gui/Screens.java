@@ -100,9 +100,9 @@ public interface Screens {
     boolean hasUnsavedChanges();
 
     /**
-     * @return living UI state object that provides information about opened screens
+     * @return object that provides information about opened screens
      */
-    UiState getUiState();
+    OpenedScreens getOpenedScreens();
 
     /**
      * Marker interface for screen launch modes.
@@ -112,6 +112,9 @@ public interface Screens {
     interface LaunchMode {
     }
 
+    /**
+     * Represents single tab / window stack in {@link AppWorkArea}.
+     */
     interface WindowStack {
         /**
          * @return screens of the container in descending order, first element is active screen
@@ -120,11 +123,10 @@ public interface Screens {
     }
 
     /**
-     * UI state object. Provides information about opened screens, does not store state.
-     * <br>
+     * Provides information about opened screens, does not store state. <br>
      * Each method obtains current info from UI components tree.
      */
-    interface UiState {
+    interface OpenedScreens {
         /**
          * @return the root screen of UI
          * @throws IllegalStateException in case there is no root screen in UI
@@ -142,13 +144,13 @@ public interface Screens {
          * @return all opened screens excluding the root screen
          * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
          */
-        Collection<Screen> getOpenedScreens();
+        Collection<Screen> getAll();
 
         /**
          * @return all opened screens excluding the root screen
          * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
          */
-        Collection<Screen> getOpenedWorkAreaScreens();
+        Collection<Screen> getWorkAreaScreens();
 
         /**
          * @return top screens from work area tabs and all dialog windows

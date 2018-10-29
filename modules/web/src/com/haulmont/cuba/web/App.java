@@ -186,6 +186,7 @@ public abstract class App {
     /**
      * @return current UI
      */
+    @Nullable
     public AppUI getAppUI() {
         return AppUI.getCurrent();
     }
@@ -233,15 +234,15 @@ public abstract class App {
             }
         });
 
-        appLog = new AppLog(webConfig);
+        log.debug("Initializing application");
+
+        appLog = new AppLog(webConfig.getAppLogMaxItemsCount(), beanLocator.get(TimeSource.NAME));
 
         connection = createConnection();
         exceptionHandlers = new ExceptionHandlers(this, beanLocator);
         cookies = new AppCookies();
 
         themeConstants = loadTheme();
-
-        log.debug("Initializing application");
 
         // get default locale from config
         Locale targetLocale = resolveLocale(requestLocale);
@@ -394,12 +395,12 @@ public abstract class App {
      * @return WindowManagerImpl instance or null if the current UI has no MainWindow
      */
     public WebScreens getWindowManager() {
-        if (getAppUI() == null) {
+        AppUI ui = getAppUI();
+        if (ui == null) {
             return null;
         }
 
-        // todo change this, WindowManager should be bound to UI
-        RootWindow topLevelWindow = getTopLevelWindow();
+        RootWindow topLevelWindow = ui.getTopLevelWindow();
 
         return topLevelWindow != null ? (WebScreens) topLevelWindow.getWindowManager() : null;
     }
@@ -486,7 +487,7 @@ public abstract class App {
             for (AppUI ui : getAppUIs()) {
                 Screens screens = ui.getScreens();
                 if (screens != null) {
-                    Screen rootScreen = screens.getUiState().getRootScreenOrNull();
+                    Screen rootScreen = screens.getOpenedScreens().getRootScreenOrNull();
                     if (rootScreen != null) {
                         screens.removeAll();
 
@@ -532,8 +533,10 @@ public abstract class App {
      * @return operation result object
      */
     public OperationResult logout() {
+        AppUI ui = getAppUI();
+
         try {
-            RootWindow topLevelWindow = getTopLevelWindow();
+            RootWindow topLevelWindow = ui != null ? ui.getTopLevelWindow() : null;
             if (topLevelWindow != null) {
                 // todo save settings for all active/opened screens ?
                 topLevelWindow.saveSettings();
@@ -583,7 +586,6 @@ public abstract class App {
             log.error("Error on logout", e);
 
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
-            AppUI ui = AppUI.getCurrent();
             if (ui != null) {
                 ui.getPage().open(url, "_self");
             }
