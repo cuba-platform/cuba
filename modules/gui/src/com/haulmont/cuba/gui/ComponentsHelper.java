@@ -293,10 +293,13 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     * Find first component by predicate
+     * Iterates over all components applying finder instance.
+     * Stops when the component is found and returns {@code true}.
+     * If no component is found returns {@code false}.
      *
      * @param container container to start from
      * @param finder    finder instance
+     * @return {@code true} if component has been found, {@code false} otherwise
      */
     public static boolean walkComponents(com.haulmont.cuba.gui.components.ComponentContainer container,
                                          ComponentFinder finder) {
