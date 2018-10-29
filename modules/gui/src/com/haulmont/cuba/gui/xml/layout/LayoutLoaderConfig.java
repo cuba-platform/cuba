@@ -77,6 +77,8 @@ public class LayoutLoaderConfig {
         loaders.put(LookupPickerField.NAME, LookupPickerFieldLoader.class);
         loaders.put(SearchPickerField.NAME, SearchPickerFieldLoader.class);
         loaders.put(OptionsGroup.NAME, OptionsGroupLoader.class);
+        loaders.put(CheckBoxGroup.NAME, CheckBoxGroupLoader.class);
+        loaders.put(RadioButtonGroup.NAME, RadioButtonGroupLoader.class);
         loaders.put(OptionsList.NAME, OptionsListLoader.class);
         loaders.put(FileUploadField.NAME, FileUploadFieldLoader.class);
         loaders.put(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
