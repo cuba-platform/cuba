@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
@@ -32,6 +33,9 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -101,6 +105,16 @@ public class ParamWrapper implements Component, HasValue<Object> {
             } else if (value instanceof EnumClass) {
                 value = ((EnumClass) value).getId();
             }
+        } else if (value instanceof Entity) {
+            value = ((Entity) value).getId();
+        } else if (value instanceof Collection) {
+            List<Object> list = new ArrayList<>(((Collection) value).size());
+            for (Object obj : ((Collection) value)) {
+                list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
+            }
+            value = list;
+        } else if (value instanceof EnumClass) {
+            value = ((EnumClass) value).getId();
         }
         return value;
     }
