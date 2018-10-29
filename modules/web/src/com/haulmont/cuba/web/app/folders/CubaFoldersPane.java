@@ -565,11 +565,20 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     protected <T extends Folder> void fillTree(CubaTree<T> tree, List<T> folders) {
+        folders.sort(Comparator.comparingInt(this::folderDepth));
         for (T folder : folders) {
             //noinspection unchecked
             tree.getTreeData().addItem((T) folder.getParent(), folder);
-
         }
+    }
+
+    protected int folderDepth(Folder folder) {
+        int depth = 0;
+        while (folder != null) {
+            depth++;
+            folder = folder.getParent();
+        }
+        return depth;
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
@@ -683,14 +692,14 @@ public class CubaFoldersPane extends VerticalLayout {
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
                 if (isGlobalAppFolderPermitted()) {
-                    return new Action[] {openAction, createAction, copyAction,
+                    return new Action[]{openAction, createAction, copyAction,
                             editAction, removeAction, exportAction, importAction};
                 } else {
-                    return new Action[] {openAction};
+                    return new Action[]{openAction};
                 }
             } else {
                 if (isGlobalAppFolderPermitted()) {
-                    return new Action[] {importAction};
+                    return new Action[]{importAction};
                 } else {
                     return null;
                 }
@@ -768,24 +777,24 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         protected Action[] createAllActions() {
-            return new Action[] {openAction, copyAction, searchFolderCreateAction,
+            return new Action[]{openAction, copyAction, searchFolderCreateAction,
                     editAction, removeAction, exportAction, importAction};
         }
 
         protected Action[] createWithoutOpenActions() {
-            return new Action[] {searchFolderCreateAction, editAction, removeAction};
+            return new Action[]{searchFolderCreateAction, editAction, removeAction};
         }
 
         protected Action[] createOnlyCreateAction() {
-            return new Action[] {searchFolderCreateAction};
+            return new Action[]{searchFolderCreateAction};
         }
 
         protected Action[] createImportCreateAction() {
-            return new Action[] {searchFolderCreateAction, importAction};
+            return new Action[]{searchFolderCreateAction, importAction};
         }
 
         protected Action[] createOpenCreateAction() {
-            return new Action[] {openAction, searchFolderCreateAction, copyAction};
+            return new Action[]{openAction, searchFolderCreateAction, copyAction};
         }
     }
 
