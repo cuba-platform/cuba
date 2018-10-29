@@ -1088,7 +1088,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public E getEditedItem() {
-        return component.getEditor().getBinder().getBean();
+        return component.getEditor() instanceof CubaEditorImpl
+                ? ((CubaEditorImpl<E>) component.getEditor()).getBean()
+                : component.getEditor().getBinder().getBean();
     }
 
     @Override

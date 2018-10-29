@@ -46,6 +46,10 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
         return (CubaEnhancedGrid<T>) super.getParent();
     }
 
+    public T getBean() {
+        return edited;
+    }
+
     @Override
     protected void doEdit(T bean) {
         Objects.requireNonNull(bean, "Editor can't edit null");
