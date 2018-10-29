@@ -28,12 +28,14 @@ import java.util.TimeZone;
 public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable, HasRange<V> {
     String NAME = "dateField";
 
-    TypeToken<TextField<Date>> TYPE_DATE = new TypeToken<TextField<java.sql.Date>>(){};
-    TypeToken<TextField<java.util.Date>> TYPE_DATETIME = new TypeToken<TextField<java.util.Date>>(){};
-    TypeToken<TextField<LocalDate>> TYPE_LOCALDATE = new TypeToken<TextField<LocalDate>>(){};
-    TypeToken<TextField<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<TextField<LocalDateTime>>(){};
-    TypeToken<TextField<java.sql.Time>> TYPE_TIME = new TypeToken<TextField<java.sql.Time>>(){};
-    TypeToken<TextField<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<TextField<OffsetTime>>(){};
+    TypeToken<DateField<Date>> TYPE_DEFAULT = new TypeToken<DateField<Date>>(){};
+
+    TypeToken<DateField<Date>> TYPE_DATE = new TypeToken<DateField<java.sql.Date>>(){};
+    TypeToken<DateField<java.util.Date>> TYPE_DATETIME = new TypeToken<DateField<java.util.Date>>(){};
+    TypeToken<DateField<LocalDate>> TYPE_LOCALDATE = new TypeToken<DateField<LocalDate>>(){};
+    TypeToken<DateField<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<DateField<LocalDateTime>>(){};
+    TypeToken<DateField<java.sql.Time>> TYPE_TIME = new TypeToken<DateField<java.sql.Time>>(){};
+    TypeToken<DateField<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<DateField<OffsetTime>>(){};
 
     enum Resolution {
         SEC,

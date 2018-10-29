@@ -16,8 +16,24 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetTime;
+
 public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V>, Buffered {
     String NAME = "datePicker";
+
+    TypeToken<DatePicker<Date>> TYPE_DEFAULT = new TypeToken<DatePicker<Date>>(){};
+
+    TypeToken<DatePicker<Date>> TYPE_DATE = new TypeToken<DatePicker<java.sql.Date>>(){};
+    TypeToken<DatePicker<java.util.Date>> TYPE_DATETIME = new TypeToken<DatePicker<java.util.Date>>(){};
+    TypeToken<DatePicker<LocalDate>> TYPE_LOCALDATE = new TypeToken<DatePicker<LocalDate>>(){};
+    TypeToken<DatePicker<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<DatePicker<LocalDateTime>>(){};
+    TypeToken<DatePicker<java.sql.Time>> TYPE_TIME = new TypeToken<DatePicker<java.sql.Time>>(){};
+    TypeToken<DatePicker<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<DatePicker<OffsetTime>>(){};
 
     enum Resolution {
         DAY,

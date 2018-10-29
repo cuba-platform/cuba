@@ -16,8 +16,16 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
+
+import java.sql.Date;
+
 public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable {
     String NAME = "timeField";
+
+    TypeToken<TimeField<Date>> TYPE_DEFAULT = new TypeToken<TimeField<Date>>(){};
+
+    TypeToken<TimeField<java.sql.Time>> TYPE_TIME = new TypeToken<TimeField<java.sql.Time>>(){};
 
     enum Resolution {
         SEC,
