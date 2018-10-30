@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.widgets.data.util.NullGroupTableContainer;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.event.Action;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Table;
@@ -36,6 +37,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected KeyMapper groupIdMap = new KeyMapper();
 
+    protected Map<Object, List<String>> cachedAggregatedValues;
+
     protected List<Object> groupDisallowedProperties;
 
     protected GroupPropertyValueFormatter groupPropertyValueFormatter;
@@ -43,6 +46,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected boolean fixedGrouping = false;
 
     protected boolean requestColumnReorderingAllowed = true;
+
+    protected boolean shouldPaintWithAggregations = true;
 
     /**
      * Attention: this method is copied from the parent class: {@link Table#setColumnOrder(java.lang.Object[])}
@@ -95,6 +100,128 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
             }
             target.addVariable(this, "groupColumns", groupColumns);
         }
+    }
+
+    @Override
+    protected void paintAdditionalData(PaintTarget target) throws PaintException {
+        super.paintAdditionalData(target);
+
+        // first call, we shouldn't update aggregation group rows
+        if (cachedAggregatedValues == null) {
+            cachedAggregatedValues = new HashMap<>();
+            // fill with initial values
+            for (Object itemId : getVisibleItemIds()) {
+                if (isGroup(itemId)) {
+                    cachedAggregatedValues.put(itemId, getAggregatedValuesForGroup(itemId));
+                }
+            }
+            return;
+        }
+
+        boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
+        boolean cacheIsEmpty = cachedAggregatedValues.isEmpty();
+        boolean isAddedToCache = false;
+
+        if (hasGroups() && hasAggregation) {
+            target.startTag("groupRows");
+            for (Object itemId : getVisibleItemIds()) {
+                if (isExpanded(itemId) && isAggregatedValuesChanged(itemId)) {
+                    target.startTag("tr");
+
+                    target.addAttribute("groupKey", groupIdMap.key(itemId));
+                    paintUpdatesForGroupRowWithAggregation(target, itemId);
+
+                    target.endTag("tr");
+
+                    isAddedToCache = true;
+                }
+            }
+            target.endTag("groupRows");
+        }
+
+        // if cachedAggregatedValues is empty, so rendered cells was refreshed
+        // and we need to paint visible columns and actions
+        shouldPaintWithAggregations = cacheIsEmpty || !isAddedToCache;
+    }
+
+    @Override
+    protected void paintVisibleColumns(PaintTarget target) throws PaintException {
+        if (shouldPaintWithAggregations) {
+            super.paintVisibleColumns(target);
+        }
+    }
+
+    @Override
+    protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
+        if (shouldPaintWithAggregations) {
+            super.paintActions(target, actionSet);
+        }
+    }
+
+    protected void paintUpdatesForGroupRowWithAggregation(PaintTarget target, Object groupId) throws PaintException {
+        target.startTag("updateAggregation");
+        List<String> values = getAggregatedValuesForGroup(groupId);
+        for (String value : values) {
+            target.addText(value);
+        }
+        target.endTag("updateAggregation");
+
+        cachedAggregatedValues.put(groupId, values);
+    }
+
+    protected boolean isAggregatedValuesChanged(Object itemId) {
+        if (itemId == null) {
+            return false;
+        }
+
+        List<String> cachedValues = cachedAggregatedValues.get(itemId);
+        if (cachedValues == null) {
+            return true;
+        }
+
+        List<String> aggregatedValues = getAggregatedValuesForGroup(itemId);
+        if (cachedValues.size() != aggregatedValues.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < cachedValues.size(); i++) {
+            if (!Objects.equals(cachedValues.get(i), aggregatedValues.get(i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected List<String> getAggregatedValuesForGroup(Object itemId) {
+        List<String> values = new ArrayList<>();
+
+        Map<Object, Object> aggregations = ((AggregationContainer) items).aggregate(
+                new GroupAggregationContext(this, itemId));
+
+        boolean paintGroupProperty = false;
+        final Collection groupProperties = getGroupProperties();
+        final Object groupProperty = getGroupProperty(itemId);
+        for (final Object columnId : getVisibleColumns()) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+            if (groupProperties.contains(columnId) && !paintGroupProperty) {
+                if (columnId.equals(groupProperty)) {
+                    paintGroupProperty = true;
+                }
+                continue;
+            }
+
+            String value = (String) aggregations.get(columnId);
+            if (value != null) {
+                values.add(value);
+            } else {
+                values.add("");
+            }
+        }
+        return values;
     }
 
     @Override
@@ -577,6 +704,14 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
             getState().clickableColumnKeys = clickableColumnKeys;
         }
+    }
+
+    @Override
+    protected void refreshRenderedCells() {
+        if (cachedAggregatedValues != null) {
+            cachedAggregatedValues.clear();
+        }
+        super.refreshRenderedCells();
     }
 
     public GroupPropertyValueFormatter getGroupPropertyValueFormatter() {

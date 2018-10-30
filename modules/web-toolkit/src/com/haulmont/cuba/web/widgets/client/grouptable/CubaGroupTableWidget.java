@@ -18,9 +18,7 @@
 package com.haulmont.cuba.web.widgets.client.grouptable;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -330,6 +328,41 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     protected boolean isColumnCollapsingEnabled() {
         return visibleColOrder.length > 2; // +1 for divider column
+    }
+
+    public void updateGroupRowsWithAggregation(UIDL uidl) {
+        for (int i = 0; i < uidl.getChildCount(); i++) {
+            UIDL child = uidl.getChildUIDL(i); // walk on rows
+            if (child != null) {
+
+                String groupKey = child.getStringAttribute("groupKey");
+                CubaGroupTableBody.CubaGroupTableGroupRow row = getRenderedGroupRowByKey(groupKey);
+
+                if (row == null) {
+                    continue;
+                }
+
+                TableRowElement rowElement = row.getElement().cast();
+                NodeList<TableCellElement> list = rowElement.getCells();
+                if (list.getLength() == 0) {
+                    continue;
+                }
+
+                int columnIndex = visibleColOrder.length - 1;
+                UIDL updateUIDL = child.getChildByTagName("updateAggregation");
+
+                // reverse walk on cells
+                for (int updInd = updateUIDL.getChildCount() - 1; updInd >= 0; updInd--, columnIndex--) {
+                    String columnId = visibleColOrder[columnIndex];
+                    if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
+                        continue;
+                    }
+
+                    Element divWrapper = list.getItem(columnIndex).getFirstChildElement();
+                    divWrapper.setInnerText(updateUIDL.getChildString(updInd));
+                }
+            }
+        }
     }
 
     protected class GroupTableHead extends CubaScrollTableHead {
