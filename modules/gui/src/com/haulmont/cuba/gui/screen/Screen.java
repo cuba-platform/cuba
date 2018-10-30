@@ -92,14 +92,17 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Called by the framework during screen init to assign screen id.
      *
-     * @param id
+     * @param id screen id
      */
     protected void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * @return screen context
+     */
     @Override
     public ScreenContext getScreenContext() {
         return screenContext;
@@ -273,7 +276,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Saves screen settings.
      */
     protected void saveSettings() {
         if (settings != null) {
@@ -283,9 +286,9 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Applies screen settings to UI components.
      *
-     * @param settings
+     * @param settings screen settings
      */
     protected void applySettings(Settings settings) {
         this.settings = settings;

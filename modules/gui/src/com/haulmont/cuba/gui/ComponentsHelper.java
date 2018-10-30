@@ -704,16 +704,6 @@ public abstract class ComponentsHelper {
         }
     }
 
-    public static void focusProblemComponent(ValidationErrors errors) {
-        com.haulmont.cuba.gui.components.Component component = null;
-        if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().get(0).component;
-        }
-        if (component != null) {
-            ComponentsHelper.focusComponent(component);
-        }
-    }
-
     /**
      * Focus component (or its nearest focusable parent) and activate all its parents,
      * for instance: select Tab, expand GroupBox.
