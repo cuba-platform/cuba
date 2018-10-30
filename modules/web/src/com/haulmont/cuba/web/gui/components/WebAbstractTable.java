@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNot
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
@@ -1456,9 +1457,107 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected TableDataContainer<E> createTableDataContainer(TableItems<E> tableItems) {
         if (tableItems instanceof TableItems.Sortable) {
-            return new SortableDataContainer<>((TableItems.Sortable<E>) tableItems, this);
+            return new AggregatableSortableDataContainer<>((TableItems.Sortable<E>) tableItems, this);
         }
-        return new TableDataContainer<>(tableItems, this);
+        return new AggregatableTableDataContainer<>(tableItems, this);
+    }
+
+    protected class AggregatableTableDataContainer<I> extends TableDataContainer<I> implements AggregationContainer{
+
+        protected Collection<Object> aggregationProperties = null;
+
+        public AggregatableTableDataContainer(TableItems<I> tableItems,
+                                              TableItemsEventsDelegate<I> dataEventsDelegate) {
+            super(tableItems, dataEventsDelegate);
+        }
+
+        @Override
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableCollection(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void addContainerPropertyAggregation(Object propertyId, Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new ArrayList<>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException(String.format("Aggregation property %s already exists", propertyId));
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        @Override
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        @Override
+        public Map<Object, Object> aggregate(Context context) {
+            return __aggregate(this, context);
+        }
+    }
+
+    protected class AggregatableSortableDataContainer<I> extends SortableDataContainer<I>
+            implements AggregationContainer {
+
+        protected Collection<Object> aggregationProperties = null;
+
+
+        public AggregatableSortableDataContainer(TableItems.Sortable<I> tableDataSource,
+                                                 TableItemsEventsDelegate<I> dataEventsDelegate) {
+            super(tableDataSource, dataEventsDelegate);
+        }
+
+        @Override
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableCollection(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        @Override
+        public AggregationContainer.Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void addContainerPropertyAggregation(Object propertyId, AggregationContainer.Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new ArrayList<>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException(String.format("Aggregation property %s already exists", propertyId));
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        @Override
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        @Override
+        public Map<Object, Object> aggregate(AggregationContainer.Context context) {
+            return __aggregate(this, context);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -2406,6 +2505,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
+        if (!(getItems() instanceof AggregatableTableItems)) {
+            throw new IllegalStateException("Table items must implement AggregatableTableItems in " +
+                    "order to use aggregation");
+        }
+
         List<AggregationInfo> aggregationInfos = new ArrayList<>();
         for (Object propertyId : container.getAggregationPropertyIds()) {
             Table.Column column = columns.get(propertyId);
@@ -2416,9 +2520,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
 
-        // vaadin8
-        @SuppressWarnings("unchecked")
-        Map<AggregationInfo, Object> results = ((CollectionDatasource.Aggregatable) getDatasource()).aggregate(
+        Map<AggregationInfo, String> results = ((AggregatableTableItems<E>) getItems()).aggregate(
                 aggregationInfos.toArray(new AggregationInfo[0]),
                 context.getItemIds()
         );

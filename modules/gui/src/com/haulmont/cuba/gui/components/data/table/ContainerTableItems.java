@@ -22,23 +22,29 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
+import com.haulmont.cuba.gui.data.impl.AggregatableDelegate;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ContainerTableItems<E extends Entity> implements EntityTableItems<E>, TableItems.Sortable<E>,
-        ContainerDataUnit<E> {
+        ContainerDataUnit<E>, AggregatableTableItems<E> {
 
     protected CollectionContainer<E> container;
+
+    protected AggregatableDelegate aggregatableDelegate;
 
     protected EventHub events = new EventHub();
 
@@ -47,6 +53,22 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addCollectionChangeListener(this::containerCollectionChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
+
+        this.aggregatableDelegate = createAggregatableDelegate();
+    }
+
+    public AggregatableDelegate createAggregatableDelegate() {
+        return new AggregatableDelegate() {
+            @Override
+            public Object getItem(Object itemId) {
+                return ContainerTableItems.this.getItem(itemId);
+            }
+
+            @Override
+            public Object getItemValue(MetaPropertyPath property, Object itemId) {
+                return ContainerTableItems.this.getItemValue(itemId, property);
+            }
+        };
     }
 
     public CollectionContainer<E> getContainer() {
@@ -215,5 +237,12 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public void resetSortOrder() {
         container.getSorter().sort(Sort.UNSORTED);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }
 }

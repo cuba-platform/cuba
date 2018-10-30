@@ -21,7 +21,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -30,10 +32,12 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
-public class DatasourceTableItems<E extends Entity<K>, K> implements EntityTableItems<E>, LegacyDataUnit<E> {
+public class DatasourceTableItems<E extends Entity<K>, K>
+        implements EntityTableItems<E>, LegacyDataUnit<E>, AggregatableTableItems<E> {
 
     protected CollectionDatasource datasource;
     protected EventHub events = new EventHub();
@@ -165,5 +169,10 @@ public class DatasourceTableItems<E extends Entity<K>, K> implements EntityTable
     @Override
     public MetaClass getEntityMetaClass() {
         return datasource.getMetaClass();
+    }
+
+    @Override
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return ((CollectionDatasource.Aggregatable) datasource).aggregate(aggregationInfos, itemIds);
     }
 }
