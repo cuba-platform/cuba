@@ -347,6 +347,8 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         if (closeAllTabsHandler == null) {
             throw new IllegalStateException("CubaTabSheet closeAllTabs is not set");
         }
+
+        closeAllTabsHandler.accept(null);
     }
 
     protected static class TabSheetBehaviourImpl implements TabSheetBehaviour {

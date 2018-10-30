@@ -1404,14 +1404,6 @@ public class WebScreens implements Screens, WindowManager {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public void closeAllTabbedWindows() {
-        closeAllTabbedWindowsExcept(null);
-    }
-
-    public void closeAllTabbedWindowsExcept(@Nullable com.vaadin.ui.ComponentContainer keepOpened) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Close all screens in all main windows (browser tabs).
      *

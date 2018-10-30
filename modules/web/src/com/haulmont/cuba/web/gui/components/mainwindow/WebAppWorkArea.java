@@ -20,20 +20,23 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.Screens.OpenedScreens;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasInnerComponents;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.sys.WebScreens;
 import com.haulmont.cuba.web.widgets.CubaManagedTabSheet;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaTabSheet;
@@ -44,6 +47,7 @@ import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +55,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.Screens.WindowStack;
 
 public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea, HasInnerComponents {
 
@@ -224,19 +230,12 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             Action.Handler actionHandler = createTabSheetActionHandler(cubaTabSheet);
             cubaTabSheet.addActionHandler(actionHandler);
 
-            cubaTabSheet.setCloseOthersHandler(container -> {
-                WebScreens windowManager = App.getInstance().getWindowManager();
-                windowManager.closeAllTabbedWindowsExcept(container);
-            });
-            cubaTabSheet.setCloseAllTabsHandler(container -> {
-                WebScreens windowManager = App.getInstance().getWindowManager();
-                windowManager.closeAllTabbedWindows();
-            });
+            cubaTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
+            cubaTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
         } else {
             CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
 
-            ManagedMainTabSheetMode tabSheetMode = configuration
-                    .getConfig(WebConfig.class)
+            ManagedMainTabSheetMode tabSheetMode = configuration.getConfig(WebConfig.class)
                     .getManagedMainTabSheetMode();
             cubaManagedTabSheet.setMode(CubaManagedTabSheet.Mode.valueOf(tabSheetMode.name()));
 
@@ -247,14 +246,8 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             Action.Handler actionHandler = createTabSheetActionHandler(cubaManagedTabSheet);
             cubaManagedTabSheet.addActionHandler(actionHandler);
 
-            cubaManagedTabSheet.setCloseOthersHandler(container -> {
-                WebScreens windowManager = App.getInstance().getWindowManager();
-                windowManager.closeAllTabbedWindowsExcept(container);
-            });
-            cubaManagedTabSheet.setCloseAllTabsHandler(container -> {
-                WebScreens windowManager = App.getInstance().getWindowManager();
-                windowManager.closeAllTabbedWindows();
-            });
+            cubaManagedTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
+            cubaManagedTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
         }
 
         tabbedContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
@@ -330,6 +323,62 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
             return Collections.singletonList(getInitialLayout());
         }
         return Collections.emptyList();
+    }
+
+    protected void closeAllTabWindows(ComponentContainer container) {
+        AppUI ui = (AppUI) component.getUI();
+
+        OpenedScreens openedScreens = ui.getScreens().getOpenedScreens();
+        for (WindowStack windowStack : openedScreens.getWorkAreaStacks()) {
+            boolean closed = true;
+
+            Collection<Screen> tabScreens = windowStack.getBreadcrumbs();
+
+            for (Screen screen : tabScreens) {
+                OperationResult closeResult = screen.close(FrameOwner.WINDOW_CLOSE_ACTION);
+                if (closeResult.getStatus() != OperationResult.Status.SUCCESS) {
+                    closed = false;
+
+                    // focus tab
+                    windowStack.select();
+
+                    break;
+                }
+            }
+
+            if (!closed) {
+                break;
+            }
+        }
+    }
+
+    protected void closeOtherTabWindows(ComponentContainer container) {
+        AppUI ui = (AppUI) component.getUI();
+
+        OpenedScreens openedScreens = ui.getScreens().getOpenedScreens();
+        for (WindowStack windowStack : openedScreens.getWorkAreaStacks()) {
+            if (!windowStack.isSelected()) {
+                boolean closed = true;
+
+                Collection<Screen> tabScreens = windowStack.getBreadcrumbs();
+
+                for (Screen screen : tabScreens) {
+                    OperationResult closeResult = screen.close(FrameOwner.WINDOW_CLOSE_ACTION);
+                    if (closeResult.getStatus() != OperationResult.Status.SUCCESS) {
+                        closed = false;
+
+                        // focus tab
+                        windowStack.select();
+
+                        break;
+                    }
+                }
+
+                if (!closed) {
+                    break;
+                }
+            }
+        }
     }
 
     // Allows Tabs reordering, do not support component / text drop to Tabs panel
