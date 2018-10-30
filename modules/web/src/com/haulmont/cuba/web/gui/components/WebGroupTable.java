@@ -104,6 +104,53 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         @Override
+        protected void doGroup(Object[] properties) {
+            super.doGroup(properties);
+
+            if (aggregationCells != null) {
+                if (hasGroups()) {
+                    if (groupAggregationCells == null) {
+                        groupAggregationCells = new HashMap<>();
+                    } else {
+                        groupAggregationCells.clear();
+                    }
+                    fillGroupAggregationCells(groupAggregationCells);
+                } else {
+                    groupAggregationCells = null;
+                }
+            }
+        }
+
+        protected void fillGroupAggregationCells(Map<Table.Column, GroupAggregationCells> cells) {
+            final Collection roots = rootGroups();
+            for (final Object rootGroup : roots) {
+                __fillGroupAggregationCells(rootGroup, cells);
+            }
+        }
+
+        protected void __fillGroupAggregationCells(Object groupId, Map<Table.Column, GroupAggregationCells> cells) {
+            final Set<Table.Column> aggregatableColumns = aggregationCells.keySet();
+
+            for (final Column column : aggregatableColumns) {
+                if (!columns.get(getGroupProperty(groupId)).equals(column)) {
+                    GroupAggregationCells groupCells = cells.get(column);
+                    if (groupCells == null) {
+                        groupCells = new GroupAggregationCells();
+                        cells.put(column, groupCells);
+                    }
+                    groupCells.addCell(groupId, "");
+                }
+            }
+
+            if (hasChildren(groupId)) {
+                final Collection children = getChildren(groupId);
+                for (final Object child : children) {
+                    __fillGroupAggregationCells(child, cells);
+                }
+            }
+        }
+
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);

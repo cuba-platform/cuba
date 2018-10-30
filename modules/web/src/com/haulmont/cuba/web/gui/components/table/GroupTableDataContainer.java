@@ -65,8 +65,6 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         getGroupTableSource().groupBy(properties);
         restoreState(expandState);
         resetCachedItems();
-
-        // todo aggregation
     }
 
     @Override
