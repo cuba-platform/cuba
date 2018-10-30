@@ -57,7 +57,8 @@ public class ItemTrackingAction extends ListAction implements Action.HasSecurity
 
     @Override
     protected boolean isApplicable() {
-        return target != null && !target.getSelected().isEmpty() && super.isApplicable();
+        return target != null
+                && target.getSingleSelected() != null;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ItemTrackingAction extends ListAction implements Action.HasSecurity
             }
         }
 
-        return super.isPermitted();
+        return true;
     }
 
     @Override

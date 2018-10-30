@@ -1536,18 +1536,14 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Nullable
     @Override
     public E getSingleSelected() {
-        final Set<E> selectedItems = component.getSelectedItems();
-        return CollectionUtils.isNotEmpty(selectedItems)
-                ? selectedItems.iterator().next()
-                : null;
+        return component.getSelectionModel()
+                .getFirstSelectedItem()
+                .orElse(null);
     }
 
     @Override
     public Set<E> getSelected() {
-        final Set<E> selectedItems = component.getSelectedItems();
-        return selectedItems != null
-                ? selectedItems
-                : Collections.emptySet();
+        return component.getSelectedItems();
     }
 
     @Override
