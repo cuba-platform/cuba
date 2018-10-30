@@ -26,8 +26,10 @@ import com.haulmont.cuba.gui.components.data.table.DatasourceTreeTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.components.table.TableDataContainer;
+import com.haulmont.cuba.web.gui.components.table.TableItemsEventsDelegate;
 import com.haulmont.cuba.web.gui.components.table.TreeTableDataContainer;
 import com.haulmont.cuba.web.widgets.CubaTreeTable;
+import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 
 import java.util.*;
 import java.util.function.Function;
@@ -74,7 +76,56 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @Override
     protected TableDataContainer<E> createTableDataContainer(TableItems<E> tableItems) {
-        return new TreeTableDataContainer<>((TreeTableItems<E>) tableItems, this);
+        return new AggregatableTreeTableDataContainer<>((TreeTableItems<E>) tableItems, this);
+    }
+
+    protected class AggregatableTreeTableDataContainer<I> extends TreeTableDataContainer<I>
+            implements AggregationContainer {
+
+        protected List<Object> aggregationProperties = null;
+
+        public AggregatableTreeTableDataContainer(TreeTableItems<I> tableDataSource,
+                                                  TableItemsEventsDelegate<I> dataEventsDelegate) {
+            super(tableDataSource, dataEventsDelegate);
+        }
+
+        @Override
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableList(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void addContainerPropertyAggregation(Object propertyId, Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new ArrayList<>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException(String.format("Aggregation property %s already exists", propertyId));
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        @Override
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        @Override
+        public Map<Object, Object> aggregate(Context context) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
