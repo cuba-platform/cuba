@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.BeanLocator
 import com.haulmont.cuba.core.global.GlobalConfig
 import com.haulmont.cuba.core.global.UserSessionSource
 import com.haulmont.cuba.gui.Screens
-import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.web.WebConfig
 import com.vaadin.server.VaadinRequest
@@ -29,6 +28,7 @@ import spec.cuba.web.WebSpec
 
 import java.util.function.Consumer
 
+@SuppressWarnings("GroovyAccessibility")
 class ScreenTest extends WebSpec {
     private sessionSource
 
@@ -51,16 +51,13 @@ class ScreenTest extends WebSpec {
     }
 
     def "Open login window"() {
-        def windowConfig = cont.getBean(WindowConfig)
-        def loginWindowInfo = windowConfig.getWindowInfo('loginWindow')
-
         Screens screens = cont.getBean(Screens.NAME, vaadinUi)
 
         def beforeShowListener = Mock(Consumer)
         def afterShowListener = Mock(Consumer)
 
         when:
-        def loginWindow = screens.create(loginWindowInfo, OpenMode.ROOT)
+        def loginWindow = screens.create('loginWindow', OpenMode.ROOT)
 
         then:
         loginWindow != null
