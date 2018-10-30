@@ -602,37 +602,6 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     * Validates UI components by invoking their {@link Validatable#validate()}.
-     *
-     * @param components components collection
-     * @return  validation errors
-     */
-    public static ValidationErrors validateUiComponents(Collection<Component> components) {
-        ValidationErrors errors = new ValidationErrors();
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    try {
-                        validatable.validate();
-                    } catch (ValidationException e) {
-                        Logger log = LoggerFactory.getLogger(Screen.class);
-
-                        if (log.isTraceEnabled()) {
-                            log.trace("Validation failed", e);
-                        } else if (log.isDebugEnabled()) {
-                            log.debug("Validation failed: " + e);
-                        }
-
-                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
-                    }
-                }
-            }
-        }
-        return errors;
-    }
-
-    /**
      * Set field's "required" flag to false if the value has been filtered by Row Level Security
      * This is necessary to allow user to submit form with filtered attribute even if attribute is required
      */
@@ -732,6 +701,16 @@ public abstract class ComponentsHelper {
                 return Component.UNITS_PERCENTAGE;
             default:
                 throw new IllegalArgumentException("Unsupported unit: " + unit);
+        }
+    }
+
+    public static void focusProblemComponent(ValidationErrors errors) {
+        com.haulmont.cuba.gui.components.Component component = null;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().get(0).component;
+        }
+        if (component != null) {
+            ComponentsHelper.focusComponent(component);
         }
     }
 

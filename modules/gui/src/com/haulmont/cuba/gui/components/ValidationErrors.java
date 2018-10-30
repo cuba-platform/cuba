@@ -56,6 +56,15 @@ public class ValidationErrors {
     }
 
     /**
+     * Add all errors.
+     *
+     * @param errors errors
+     */
+    public void addAll(ValidationErrors errors) {
+        items.addAll(errors.items);
+    }
+
+    /**
      * @return errors list
      */
     public List<Item> getAll() {

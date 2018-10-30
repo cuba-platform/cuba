@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -101,11 +102,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @Subscribe
-    protected void onCloseTriggered(CloseTriggeredEvent event) {
+    protected void beforeClose(Screen.BeforeCloseEvent event) {
         CloseAction closeAction = event.getCloseAction();
 
-        boolean checkSavedChanges = !(closeAction instanceof CloseAction.Command)
-                || ((CloseAction.Command) closeAction).isCheckForUnsavedChanges();
+        boolean checkSavedChanges = !(closeAction instanceof ChangeTrackerCloseAction)
+                || ((ChangeTrackerCloseAction) closeAction).isCheckForUnsavedChanges();
 
         if (checkSavedChanges) {
             String actionId = closeAction instanceof StandardCloseAction ?
@@ -719,6 +720,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     protected void validateAdditionalRules(ValidationErrors errors) {
     }
 
+    protected void showValidationErrors(ValidationErrors errors) {
+        ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+        screenValidation.showValidationErrors(this, errors);
+    }
+
     /**
      * Check validity by invoking validators on all components which support them
      * and show validation result notification. This method also calls {@link #postValidate(ValidationErrors)} hook to
@@ -730,7 +736,10 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
      */
     @Override
     public boolean validateAll() {
-        ValidationErrors errors = validateScreen();
+        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
+
+        ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+        ValidationErrors errors = screenValidation.validateUiComponents(components);
 
         validateAdditionalRules(errors);
 
@@ -743,9 +752,8 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         if (errors.isEmpty())
             return true;
 
-        showValidationErrors(errors);
-
-        focusProblemComponent(errors);
+        ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.class);
+        screenValidation.showValidationErrors(this, errors);
 
         return false;
     }

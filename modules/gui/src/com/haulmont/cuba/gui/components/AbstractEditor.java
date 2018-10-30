@@ -37,7 +37,12 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.ChangeTrackerCloseAction;
+import com.haulmont.cuba.gui.screen.CloseAction;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenValidation;
 import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -407,12 +412,6 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         }
     }
 
-    @Override
-    protected OperationResult commitChanges() {
-        boolean committed = commit(true);
-        return committed ? OperationResult.success() : OperationResult.fail();
-    }
-
     /**
      * JavaDoc
      *
@@ -426,6 +425,45 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             }
         }
         return OperationResult.fail();
+    }
+
+    /**
+     * JavaDoc
+     */
+    public OperationResult closeWithDiscard() {
+        return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
+    }
+
+    @Override
+    protected void beforeClose(Screen.BeforeCloseEvent event) {
+        super.beforeClose(event);
+
+        if (!event.isClosePrevented()) {
+            CloseAction closeAction = event.getCloseAction();
+            if (closeAction instanceof ChangeTrackerCloseAction
+                    && ((ChangeTrackerCloseAction) closeAction).isCheckForUnsavedChanges()
+                    && hasUnsavedChanges()) {
+                Configuration configuration = getBeanLocator().get(Configuration.NAME);
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+                ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+
+                UnknownOperationResult result = new UnknownOperationResult();
+
+                if (clientConfig.getUseSaveConfirmation()) {
+                    screenValidation.showSaveConfirmationDialog(this, closeAction)
+                            .onCommit(() -> result.resolveWith(closeWithCommit()))
+                            .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                            .onCancel(result::fail);
+                } else {
+                    screenValidation.showUnsavedChangesDialog(this, closeAction)
+                            .onYes(() -> result.resolveWith(closeWithCommit()))
+                            .onNo(result::fail);
+                }
+
+                event.preventWindowClose(result);
+            }
+        }
     }
 
     /**

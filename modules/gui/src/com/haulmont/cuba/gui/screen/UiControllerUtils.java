@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.cuba.gui.util.OperationResult;
 import org.springframework.context.ApplicationListener;
 
 import java.util.Collections;
@@ -115,10 +114,6 @@ public final class UiControllerUtils {
             return ((Screen) frameOwner).getWindow();
         }
         return ((ScreenFragment) frameOwner).getFragment();
-    }
-
-    public static OperationResult commitChanges(Screen screen) {
-        return screen.commitChanges();
     }
 
     public static void setUiEventListeners(FrameOwner frameOwner, List<ApplicationListener> listeners) {

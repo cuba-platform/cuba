@@ -22,33 +22,22 @@ import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.Dialogs.MessageType;
-import com.haulmont.cuba.gui.Notifications;
-import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
-import com.haulmont.cuba.gui.icons.CubaIcon;
-import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
-import com.haulmont.cuba.gui.util.UnknownOperationResult;
-import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Element;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
 /**
  * Base class for all screen controllers.
@@ -213,16 +202,6 @@ public abstract class Screen implements FrameOwner {
     /**
      * JavaDoc
      *
-     * @param listener
-     * @return
-     */
-    protected Subscription addCloseTriggeredEvent(Consumer<CloseTriggeredEvent> listener) {
-        return eventHub.subscribe(CloseTriggeredEvent.class, listener);
-    }
-
-    /**
-     * JavaDoc
-     *
      * @param listener listener
      * @return
      */
@@ -238,68 +217,6 @@ public abstract class Screen implements FrameOwner {
      */
     protected Subscription addAfterDetachListener(Consumer<AfterDetachEvent> listener) {
         return eventHub.subscribe(AfterDetachEvent.class, listener);
-    }
-
-    protected OperationResult showUnsavedChangesDialog(CloseAction closeAction) {
-        UnknownOperationResult result = new UnknownOperationResult();
-        Messages messages = beanLocator.get(Messages.NAME);
-
-        screenContext.getDialogs().createOptionDialog()
-                .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                .setMessage(messages.getMainMessage("closeUnsaved"))
-                .setType(MessageType.WARNING)
-                .setActions(
-                        new DialogAction(DialogAction.Type.YES)
-                                .withHandler(e -> {
-
-                                    result.resolveWith(closeWithDiscard());
-                                }),
-                        new DialogAction(DialogAction.Type.NO, Action.Status.PRIMARY)
-                                .withHandler(e -> {
-                                    ComponentsHelper.focusChildComponent(getWindow());
-
-                                    result.fail();
-                                })
-                )
-                .show();
-
-        return result;
-    }
-
-    protected OperationResult showSaveConfirmationDialog(CloseAction closeAction) {
-        UnknownOperationResult result = new UnknownOperationResult();
-        Messages messages = beanLocator.get(Messages.NAME);
-
-        Icons icons = beanLocator.get(Icons.NAME);
-
-        screenContext.getDialogs().createOptionDialog()
-                .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                .setMessage(messages.getMainMessage("saveUnsaved"))
-                .setActions(
-                        new DialogAction(DialogAction.Type.OK, Action.Status.PRIMARY)
-                                .withCaption(messages.getMainMessage("closeUnsaved.save"))
-                                .withHandler(e -> {
-
-                                    result.resolveWith(closeWithCommit());
-                                }),
-                        new BaseAction("discard")
-                                .withIcon(icons.get(CubaIcon.DIALOG_CANCEL))
-                                .withCaption(messages.getMainMessage("closeUnsaved.discard"))
-                                .withHandler(e -> {
-
-                                    result.resolveWith(closeWithDiscard());
-                                }),
-                        new DialogAction(DialogAction.Type.CANCEL)
-                                .withIcon(null)
-                                .withHandler(e -> {
-                                    ComponentsHelper.focusChildComponent(getWindow());
-
-                                    result.fail();
-                                })
-                )
-                .show();
-
-        return result;
     }
 
     /**
@@ -318,28 +235,13 @@ public abstract class Screen implements FrameOwner {
      * @return result of operation
      */
     public OperationResult close(CloseAction action) {
-        CloseTriggeredEvent closeTriggeredEvent = new CloseTriggeredEvent(this, action);
-        fireEvent(CloseTriggeredEvent.class, closeTriggeredEvent);
-        if (closeTriggeredEvent.isClosePrevented()) {
-            return OperationResult.fail();
-        }
-
-        if (action instanceof CloseAction.Command
-                && ((CloseAction.Command) action).isCheckForUnsavedChanges()
-                && hasUnsavedChanges()) {
-            Configuration configuration = beanLocator.get(Configuration.NAME);
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-            if (clientConfig.getUseSaveConfirmation()) {
-                return showSaveConfirmationDialog(action);
-            } else {
-                return showUnsavedChangesDialog(action);
-            }
-        }
-
         BeforeCloseEvent beforeCloseEvent = new BeforeCloseEvent(this, action);
         fireEvent(BeforeCloseEvent.class, beforeCloseEvent);
         if (beforeCloseEvent.isClosePrevented()) {
+            if (beforeCloseEvent.getCloseResult() != null) {
+                return beforeCloseEvent.getCloseResult();
+            }
+
             return OperationResult.fail();
         }
 
@@ -363,39 +265,9 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * @return if the screen has unsaved changes
+     * @return screen settings
      */
-    public boolean hasUnsavedChanges() {
-        return false;
-    }
-
-    /**
-     * JavaDoc
-     *
-     * @return
-     */
-    public OperationResult closeWithCommit() {
-        return commitChanges()
-                .compose(() -> close(WINDOW_COMMIT_AND_CLOSE_ACTION));
-    }
-
-    /**
-     * JavaDoc
-     */
-    protected OperationResult commitChanges() {
-        return OperationResult.success();
-    }
-
-    /**
-     * JavaDoc
-     */
-    public OperationResult closeWithDiscard() {
-        return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
-    }
-
-    /**
-     * JavaDoc
-     */
+    @Nullable
     protected Settings getSettings() {
         return settings;
     }
@@ -405,31 +277,8 @@ public abstract class Screen implements FrameOwner {
      */
     protected void saveSettings() {
         if (settings != null) {
-            walkComponents(
-                    window,
-                    (component, name) -> {
-                        if (component.getId() != null
-                                && component instanceof HasSettings) {
-                            LoggerFactory.getLogger(Screen.class)
-                                    .trace("Saving settings for {} : {}", name, component);
-
-                            Element e = settings.get(name);
-                            boolean modified = ((HasSettings) component).saveSettings(e);
-
-                            if (component instanceof HasPresentations
-                                    && ((HasPresentations) component).isUsePresentations()) {
-                                Object def = ((HasPresentations) component).getDefaultPresentationId();
-                                e.addAttribute("presentation", def != null ? def.toString() : "");
-                                Presentations presentations = ((HasPresentations) component).getPresentations();
-                                if (presentations != null) {
-                                    presentations.commit();
-                                }
-                            }
-                            settings.setModified(modified);
-                        }
-                    }
-            );
-            settings.commit();
+            ScreenSettings screenSettings = getBeanLocator().get(ScreenSettings.NAME);
+            screenSettings.saveSettings(this, settings);
         }
     }
 
@@ -441,28 +290,8 @@ public abstract class Screen implements FrameOwner {
     protected void applySettings(Settings settings) {
         this.settings = settings;
 
-        walkComponents(
-                window,
-                (component, name) -> {
-                    if (component.getId() != null
-                            && component instanceof HasSettings) {
-                        LoggerFactory.getLogger(Screen.class)
-                                .trace("Applying settings for {} : {} ", name, component);
-
-                        Element e = this.settings.get(name);
-                        ((HasSettings) component).applySettings(e);
-
-                        if (component instanceof HasPresentations
-                                && e.attributeValue("presentation") != null) {
-                            String def = e.attributeValue("presentation");
-                            if (!StringUtils.isEmpty(def)) {
-                                UUID defaultId = UUID.fromString(def);
-                                ((HasPresentations) component).applyPresentationAsDefault(defaultId);
-                            }
-                        }
-                    }
-                }
-        );
+        ScreenSettings screenSettings = getBeanLocator().get(ScreenSettings.NAME);
+        screenSettings.applySettings(this, settings);
     }
 
     /**
@@ -470,60 +299,6 @@ public abstract class Screen implements FrameOwner {
      */
     protected void deleteSettings() {
         settings.delete();
-    }
-
-    /**
-     * JavaDoc
-     *
-     * @return validation errors
-     */
-    protected ValidationErrors validateScreen() {
-        return validateUiComponents();
-    }
-
-    protected ValidationErrors validateUiComponents() {
-        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
-        return ComponentsHelper.validateUiComponents(components);
-    }
-
-    /**
-     * Show validation errors alert. Can be overridden in subclasses.
-     *
-     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
-     */
-    protected void showValidationErrors(ValidationErrors errors) {
-        StringBuilder buffer = new StringBuilder();
-        for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("\n");
-        }
-
-        Configuration configuration = getBeanLocator().get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-        String validationNotificationType = clientConfig.getValidationNotificationType();
-        if (validationNotificationType.endsWith("_HTML")) {
-            // HTML validation notification types are not supported
-            validationNotificationType = validationNotificationType.replace("_HTML", "");
-        }
-
-        Messages messages = getBeanLocator().get(Messages.NAME);
-        Notifications notifications = getScreenContext().getNotifications();
-
-        notifications.create()
-                .setType(NotificationType.valueOf(validationNotificationType))
-                .setCaption(messages.getMainMessage("validationFail.caption"))
-                .setDescription(buffer.toString())
-                .show();
-    }
-
-    protected void focusProblemComponent(ValidationErrors errors) {
-        com.haulmont.cuba.gui.components.Component component = null;
-        if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().get(0).component;
-        }
-        if (component != null) {
-            ComponentsHelper.focusComponent(component);
-        }
     }
 
     /**
@@ -550,7 +325,7 @@ public abstract class Screen implements FrameOwner {
 
     /**
      * JavaDoc
-     *
+     * <p>
      * Used by UI components to perform actions after UiController initialized
      */
     @TriggerOnce
@@ -569,41 +344,6 @@ public abstract class Screen implements FrameOwner {
 
         public ScreenOptions getOptions() {
             return options;
-        }
-    }
-
-    /**
-     * JavaDoc
-     */
-    public static class CloseTriggeredEvent extends EventObject {
-
-        protected final CloseAction closeAction;
-        protected boolean closePrevented = false;
-
-        public CloseTriggeredEvent(Screen screen, CloseAction closeAction) {
-            super(screen);
-            this.closeAction = closeAction;
-        }
-
-        @Override
-        public Screen getSource() {
-            return (Screen) super.getSource();
-        }
-
-        public Screen getScreen() {
-            return (Screen) super.getSource();
-        }
-
-        public CloseAction getCloseAction() {
-            return closeAction;
-        }
-
-        public void preventWindowClose() {
-            this.closePrevented = true;
-        }
-
-        public boolean isClosePrevented() {
-            return closePrevented;
         }
     }
 
@@ -645,6 +385,8 @@ public abstract class Screen implements FrameOwner {
         protected final CloseAction closeAction;
         protected boolean closePrevented = false;
 
+        protected OperationResult closeResult;
+
         public BeforeCloseEvent(Screen source, CloseAction closeAction) {
             super(source);
             this.closeAction = closeAction;
@@ -665,6 +407,16 @@ public abstract class Screen implements FrameOwner {
 
         public void preventWindowClose() {
             this.closePrevented = true;
+        }
+
+        public void preventWindowClose(OperationResult closeResult) {
+            this.closePrevented = true;
+            this.closeResult = closeResult;
+        }
+
+        @Nullable
+        public OperationResult getCloseResult() {
+            return closeResult;
         }
 
         public boolean isClosePrevented() {

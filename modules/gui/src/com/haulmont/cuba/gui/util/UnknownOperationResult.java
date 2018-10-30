@@ -81,6 +81,11 @@ public class UnknownOperationResult implements OperationResult {
         thenListeners.clear();
     }
 
+    /**
+     * JavaDoc
+     *
+     * @param result
+     */
     public void resolveWith(OperationResult result) {
         result.then(this::success)
                 .otherwise(this::fail);

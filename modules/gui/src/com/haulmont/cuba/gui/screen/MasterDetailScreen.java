@@ -349,10 +349,10 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
         if (!editing)
             return;
 
-        ValidationErrors validationErrors = ComponentsHelper.validateUiComponents(getForm().getComponents());
+        ValidationErrors validationErrors = validateEditorForm();
         if (!validationErrors.isEmpty()) {
-            showValidationErrors(validationErrors);
-            focusProblemComponent(validationErrors);
+            ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.class);
+            screenValidation.showValidationErrors(this, validationErrors);
             return;
         }
 
@@ -388,6 +388,17 @@ public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
         }
 
         disableEditControls();
+    }
+
+    /**
+     * Validates screen data. Default implementation validates visible and enabled UI components. <br>
+     * Can be overridden in subclasses.
+     *
+     * @return validation errors
+     */
+    protected ValidationErrors validateEditorForm() {
+        ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+        return screenValidation.validateUiComponents(getForm().getComponents());
     }
 
     /**

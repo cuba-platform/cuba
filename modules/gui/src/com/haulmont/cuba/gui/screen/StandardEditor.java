@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -27,21 +26,22 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ElementKind;
-import javax.validation.Path;
-import javax.validation.Validator;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 /**
@@ -59,6 +59,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     protected StandardEditor() {
         addInitListener(this::initActions);
         addBeforeShowListener(this::beforeShow);
+        addBeforeCloseListener(this::beforeClose);
     }
 
     protected void initActions(@SuppressWarnings("unused") InitEvent event) {
@@ -94,6 +95,38 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         setupEntityToEdit();
         loadData();
         setupLock();
+    }
+
+    private void beforeClose(BeforeCloseEvent event) {
+        preventUnsavedChanges(event);
+    }
+
+    protected void preventUnsavedChanges(BeforeCloseEvent event) {
+        CloseAction action = event.getCloseAction();
+
+        if (action instanceof ChangeTrackerCloseAction
+                && ((ChangeTrackerCloseAction) action).isCheckForUnsavedChanges()
+                && hasUnsavedChanges()) {
+            Configuration configuration = getBeanLocator().get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+            ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+
+            UnknownOperationResult result = new UnknownOperationResult();
+
+            if (clientConfig.getUseSaveConfirmation()) {
+                screenValidation.showSaveConfirmationDialog(this, action)
+                    .onCommit(() -> result.resolveWith(closeWithCommit()))
+                    .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                    .onCancel(result::fail);
+            } else {
+                screenValidation.showUnsavedChangesDialog(this, action)
+                        .onYes(() -> result.resolveWith(closeWithCommit()))
+                        .onNo(result::fail);
+            }
+
+            event.preventWindowClose(result);
+        }
     }
 
     protected void setupEntityToEdit() {
@@ -201,8 +234,9 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected boolean isEntityModifiedRecursive(Entity entity, DataContext dataContext, HashSet<Object> visited) {
-        if (visited.contains(entity))
+        if (visited.contains(entity)) {
             return false;
+        }
         visited.add(entity);
 
         if (dataContext.isModified(entity) || dataContext.isRemoved(entity))
@@ -281,13 +315,11 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         return getScreenData().getDataContext().hasChanges();
     }
 
-    @Override
     protected OperationResult commitChanges() {
         ValidationErrors validationErrors = validateScreen();
         if (!validationErrors.isEmpty()) {
-            showValidationErrors(validationErrors);
-
-            focusProblemComponent(validationErrors);
+            ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.class);
+            screenValidation.showValidationErrors(this, validationErrors);
 
             return OperationResult.fail();
         }
@@ -310,31 +342,41 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         this.crossFieldValidate = crossFieldValidate;
     }
 
-    @Override
+    /**
+     * Validates screen data. Default implementation validates visible and enabled UI components. <br>
+     * Can be overridden in subclasses.
+     *
+     * @return validation errors
+     */
     protected ValidationErrors validateScreen() {
-        ValidationErrors validationErrors = super.validateScreen();
+        ValidationErrors validationErrors = validateUiComponents();
 
         validateAdditionalRules(validationErrors);
 
         return validationErrors;
     }
 
-    public void validateAdditionalRules(ValidationErrors errors) {
+    /**
+     * Validates visible and enabled UI components. <br>
+     * Can be overridden in subclasses.
+     *
+     * @return validation errors
+     */
+    protected ValidationErrors validateUiComponents() {
+        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
+
+        ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+        return screenValidation.validateUiComponents(components);
+    }
+
+    protected void validateAdditionalRules(ValidationErrors errors) {
         // all previous validations return no errors
         if (isCrossFieldValidate() && errors.isEmpty()) {
-            BeanValidation beanValidation = getBeanLocator().get(BeanValidation.NAME);
+            ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
 
-            Validator validator = beanValidation.getValidator();
-            Set<ConstraintViolation<Entity>> violations = validator.validate(getEditedEntity(), UiCrossFieldChecks.class);
+            ValidationErrors validationErrors = screenValidation.validateCrossFieldRules(this, getEditedEntity());
 
-            violations.stream()
-                    .filter(violation -> {
-                        Path propertyPath = violation.getPropertyPath();
-
-                        Path.Node lastNode = Iterables.getLast(propertyPath);
-                        return lastNode.getKind() == ElementKind.BEAN;
-                    })
-                    .forEach(violation -> errors.add(violation.getMessage()));
+            errors.addAll(validationErrors);
         }
     }
 
@@ -354,6 +396,23 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
         close(commitActionPerformed ?
                 WINDOW_COMMIT_AND_CLOSE_ACTION : WINDOW_CLOSE_ACTION);
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @return
+     */
+    public OperationResult closeWithCommit() {
+        return commitChanges()
+                .compose(() -> close(WINDOW_COMMIT_AND_CLOSE_ACTION));
+    }
+
+    /**
+     * JavaDoc
+     */
+    public OperationResult closeWithDiscard() {
+        return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
     }
 
     @TriggerOnce

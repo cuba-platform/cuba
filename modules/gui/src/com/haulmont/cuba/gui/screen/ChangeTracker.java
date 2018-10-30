@@ -12,13 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.screen;
 
 /**
- * Result of {@link Screen} close. Can provide additional data for screen consumers.
+ * Screen that can contain unsaved changes.
  */
-public interface CloseAction {
+public interface ChangeTracker {
+    /**
+     * @return true if screen has unsaved changes
+     */
+    boolean hasUnsavedChanges();
 }

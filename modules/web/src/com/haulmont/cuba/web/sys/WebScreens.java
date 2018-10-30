@@ -643,12 +643,14 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public boolean hasUnsavedChanges() {
         Screen rootScreen = getRootScreenOrNull();
-        if (rootScreen != null &&
-                rootScreen.hasUnsavedChanges()) {
+        if (rootScreen instanceof ChangeTracker &&
+                ((ChangeTracker) rootScreen).hasUnsavedChanges()) {
             return true;
         }
 
-        Predicate<Screen> hasUnsavedChanges = Screen::hasUnsavedChanges;
+        Predicate<Screen> hasUnsavedChanges = screen ->
+                screen instanceof ChangeTracker
+                && ((ChangeTracker) screen).hasUnsavedChanges();
 
         return getDialogScreensStream().anyMatch(hasUnsavedChanges)
                 || getOpenedWorkAreaScreensStream().anyMatch(hasUnsavedChanges);

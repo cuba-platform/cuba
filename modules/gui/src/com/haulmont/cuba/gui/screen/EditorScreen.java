@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
  *
  * @param <T> type of entity
  */
-public interface EditorScreen<T extends Entity> {
+public interface EditorScreen<T extends Entity> extends ChangeTracker {
     /**
      * Name of action that commits changes.
      * <br> If the screen doesn't contain a component with {@link #WINDOW_COMMIT_AND_CLOSE} ID, this action also
