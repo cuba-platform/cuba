@@ -163,19 +163,18 @@ public class MenuItemCommands {
                 }
             }
 
-            WindowInfo windowInfo = windowConfig.getWindowInfo(screen);
 
-            String id = windowInfo.getId();
+            String screenId = this.screen;
 
             Screens screens = beanLocator.get(Screens.NAME);
 
-            if (id.endsWith(Window.CREATE_WINDOW_SUFFIX)
-                    || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+            if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
+                    || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
                 Entity entityItem;
                 if (params.containsKey("item")) {
                     entityItem = (Entity) params.get("item");
                 } else {
-                    String[] strings = id.split("[.]");
+                    String[] strings = screenId.split("[.]");
                     String metaClassName;
                     if (strings.length == 2) {
                         metaClassName = strings[0];
@@ -187,10 +186,12 @@ public class MenuItemCommands {
 
                     entityItem = metadata.create(metaClassName);
                 }
+
+                WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
                 ((WindowManager) screens).openEditor(windowInfo, entityItem, openType, params);
 
             } else {
-                Screen screen = screens.create(windowInfo, openType.getOpenMode(), new MapScreenOptions(params));
+                Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
                 screens.show(screen);
             }
 

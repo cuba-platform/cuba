@@ -17,29 +17,68 @@
 
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
 /**
  * Interface defining methods for creation and displaying of reusable screen parts that have their own UI controller.
+ * <br>
+ * Usage example (this - Screen controller):
+ * <pre>{@code
+ *    Fragment editorActions = fragments.create(this, EditorActionsFragment.class)
+ *             .init()
+ *             .getFragment();
+ *
+ *    this.getWindow().add(editorActions);
+ * }</pre>
  */
 public interface Fragments {
 
     String NAME = "cuba_Fragments";
 
-    default <T extends ScreenFragment> T create(FrameOwner parent, Class<T> fragmentClass) {
-        return create(parent, fragmentClass, FrameOwner.NO_OPTIONS);
+    /**
+     * Creates a screen fragment by its controller class.
+     *
+     * @param parent              parent UI controller
+     * @param screenFragmentClass screen controller class
+     */
+    default <T extends ScreenFragment> T create(FrameOwner parent, Class<T> screenFragmentClass) {
+        return create(parent, screenFragmentClass, FrameOwner.NO_OPTIONS);
     }
 
-    default ScreenFragment create(FrameOwner parent, WindowInfo windowInfo) {
-        return create(parent, windowInfo, FrameOwner.NO_OPTIONS);
+    /**
+     * Creates a screen fragment by its id.
+     *
+     * @param parent           parent UI controller
+     * @param screenFragmentId id of screen fragment
+     */
+    default ScreenFragment create(FrameOwner parent, String screenFragmentId) {
+        return create(parent, screenFragmentId, FrameOwner.NO_OPTIONS);
     }
 
-    <T extends ScreenFragment> T create(FrameOwner parent, Class<T> fragmentClass, ScreenOptions options);
+    /**
+     * Creates a screen fragment by its controller class.
+     *
+     * @param parent              parent UI controller
+     * @param screenFragmentClass screen controller class
+     * @param options             screen parameters
+     */
+    <T extends ScreenFragment> T create(FrameOwner parent, Class<T> screenFragmentClass, ScreenOptions options);
 
-    ScreenFragment create(FrameOwner parent, WindowInfo windowInfo, ScreenOptions options);
+    /**
+     * Creates a screen fragment by its id.
+     *
+     * @param parent           parent UI controller
+     * @param screenFragmentId id of screen fragment
+     * @param options          screen parameters
+     */
+    ScreenFragment create(FrameOwner parent, String screenFragmentId, ScreenOptions options);
 
+    /**
+     * Perform fragment initialization. Clients must always perform init.
+     *
+     * @param fragment fragment
+     */
     void init(ScreenFragment fragment);
 }

@@ -156,8 +156,9 @@ public abstract class ScreenFragment implements FrameOwner {
      *
      * @see Fragments#init(ScreenFragment)
      */
-    public void init() {
+    public ScreenFragment init() {
         getScreenContext().getFragments().init(this);
+        return this;
     }
 
     /**

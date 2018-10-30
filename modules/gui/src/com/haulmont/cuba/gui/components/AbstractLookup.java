@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.components.Window.Lookup;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.StringUtils;
@@ -78,10 +77,9 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
         Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
 
         if (selectAction != null && selectAction.getOwner() == null) {
-            WindowConfig windowConfig = getBeanLocator().get(WindowConfig.NAME);
             Fragments fragments = getBeanLocator().get(Fragments.NAME);
 
-            ScreenFragment lookupWindowActions = fragments.create(this, windowConfig.getWindowInfo("lookupWindowActions"));
+            ScreenFragment lookupWindowActions = fragments.create(this, "lookupWindowActions");
             lookupWindowActions.getFragment().setId("lookupWindowActions");
             lookupWindowActions.getFragment().setVisible(false);
 

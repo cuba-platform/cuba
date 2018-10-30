@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
@@ -40,40 +39,40 @@ public interface Screens {
     /**
      * Creates a screen by its controller class.
      *
-     * @param screenClass   screen controller class
-     * @param launchMode    how the screen should be opened
+     * @param screenClass screen controller class
+     * @param launchMode  how the screen should be opened
      */
     default <T extends Screen> T create(Class<T> screenClass, LaunchMode launchMode) {
         return create(screenClass, launchMode, FrameOwner.NO_OPTIONS);
     }
 
     /**
-     * Creates a screen by its registration information.
+     * Creates a screen by its screen id.
      *
-     * @param windowInfo    screen registration information
-     * @param launchMode    how the screen should be opened
+     * @param screenId   screen id
+     * @param launchMode how the screen should be opened
      */
-    default Screen create(WindowInfo windowInfo, LaunchMode launchMode) {
-        return create(windowInfo, launchMode, FrameOwner.NO_OPTIONS);
+    default Screen create(String screenId, LaunchMode launchMode) {
+        return create(screenId, launchMode, FrameOwner.NO_OPTIONS);
     }
 
     /**
      * Creates a screen by its controller class.
      *
-     * @param screenClass   screen controller class
-     * @param launchMode    how the screen should be opened
-     * @param options       screen parameters
+     * @param screenClass screen controller class
+     * @param launchMode  how the screen should be opened
+     * @param options     screen parameters
      */
     <T extends Screen> T create(Class<T> screenClass, LaunchMode launchMode, ScreenOptions options);
 
     /**
-     * Creates a screen by its registration information.
+     * Creates a screen by its screen id.
      *
-     * @param windowInfo    screen registration information
-     * @param launchMode    how the screen should be opened
-     * @param options       screen parameters
+     * @param screenId   screen id
+     * @param launchMode how the screen should be opened
+     * @param options    screen parameters
      */
-    Screen create(WindowInfo windowInfo, LaunchMode launchMode, ScreenOptions options);
+    Screen create(String screenId, LaunchMode launchMode, ScreenOptions options);
 
     /**
      * Displays the given screen according to its {@link LaunchMode}.

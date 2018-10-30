@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.Screens.LaunchMode;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.LookupScreen.ValidationContext;
 import org.springframework.stereotype.Component;
@@ -79,14 +78,14 @@ public class LookupScreens {
             Class screenClass = ((LookupClassBuilder) builder).getScreenClass();
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
         } else {
-            WindowInfo windowInfo;
+            String lookupScreenId;
             if (builder.getScreenId() != null) {
-                windowInfo = windowConfig.getWindowInfo(builder.getScreenId());
-            }else {
-                windowInfo = windowConfig.getLookupScreen(builder.getEntityClass());
+                lookupScreenId = builder.getScreenId();
+            } else {
+                lookupScreenId = windowConfig.getLookupScreen(builder.getEntityClass()).getId();
             }
 
-            screen = screens.create(windowInfo, builder.getLaunchMode(), builder.getOptions());
+            screen = screens.create(lookupScreenId, builder.getLaunchMode(), builder.getOptions());
         }
 
         if (!(screen instanceof LookupScreen)) {
@@ -151,6 +150,7 @@ public class LookupScreens {
             this.selectHandler = builder.selectHandler;
             this.selectValidator = builder.selectValidator;
             this.field = builder.field;
+            this.screenId = builder.screenId;
         }
 
         public LookupBuilder(FrameOwner origin, Class<E> entityClass, Function<LookupBuilder<E>, Screen> handler) {

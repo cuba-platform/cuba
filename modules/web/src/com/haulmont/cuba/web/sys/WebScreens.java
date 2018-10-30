@@ -155,10 +155,12 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     @Override
-    public Screen create(WindowInfo windowInfo, LaunchMode launchMode, ScreenOptions options) {
-        checkNotNullArgument(windowInfo);
+    public Screen create(String screenId, LaunchMode launchMode, ScreenOptions options) {
+        checkNotNullArgument(screenId);
         checkNotNullArgument(launchMode);
         checkNotNullArgument(options);
+
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
 
         return createScreen(windowInfo, launchMode, options);
     }
@@ -1054,7 +1056,7 @@ public class WebScreens implements Screens, WindowManager {
         params = createParametersMap(windowInfo, params);
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         show(screen);
@@ -1067,7 +1069,7 @@ public class WebScreens implements Screens, WindowManager {
         Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         show(screen);
@@ -1082,7 +1084,7 @@ public class WebScreens implements Screens, WindowManager {
         );
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         EditorScreen editorScreen = (EditorScreen) screen;
@@ -1103,7 +1105,7 @@ public class WebScreens implements Screens, WindowManager {
 
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         EditorScreen editorScreen = (EditorScreen) screen;
@@ -1120,7 +1122,7 @@ public class WebScreens implements Screens, WindowManager {
 
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         EditorScreen editorScreen = (EditorScreen) screen;
@@ -1138,7 +1140,7 @@ public class WebScreens implements Screens, WindowManager {
 
         MapScreenOptions options = new MapScreenOptions(params);
 
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         EditorScreen editorScreen = (EditorScreen) screen;
@@ -1157,7 +1159,7 @@ public class WebScreens implements Screens, WindowManager {
         params = createParametersMap(windowInfo, params);
 
         MapScreenOptions options = new MapScreenOptions(params);
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
@@ -1173,7 +1175,7 @@ public class WebScreens implements Screens, WindowManager {
         Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
 
         MapScreenOptions options = new MapScreenOptions(params);
-        Screen screen = create(windowInfo, openType.getOpenMode(), options);
+        Screen screen = createScreen(windowInfo, openType.getOpenMode(), options);
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         ((LookupScreen) screen).setSelectHandler(new SelectHandlerAdapter(handler));
@@ -1203,9 +1205,9 @@ public class WebScreens implements Screens, WindowManager {
         Fragments fragments = ui.getFragments();
 
         if (params != null && !params.isEmpty()) {
-            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo, new MapScreenOptions(params));
+            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo.getId(), new MapScreenOptions(params));
         } else {
-            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo);
+            screenFragment = fragments.create(parentFrame.getFrameOwner(), windowInfo.getId());
         }
 
         if (id != null) {

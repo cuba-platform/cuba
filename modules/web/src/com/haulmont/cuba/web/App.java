@@ -289,11 +289,10 @@ public abstract class App {
      */
     public void createTopLevelWindow(AppUI ui) {
         String topLevelWindowId = routeTopLevelWindowId();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(topLevelWindowId);
 
         Screens screens = ui.getScreens();
 
-        Screen screen = screens.create(windowInfo, OpenMode.ROOT);
+        Screen screen = screens.create(topLevelWindowId, OpenMode.ROOT);
         screens.show(screen);
     }
 

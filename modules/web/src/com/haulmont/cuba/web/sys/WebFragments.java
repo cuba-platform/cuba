@@ -103,10 +103,12 @@ public class WebFragments implements Fragments {
     }
 
     @Override
-    public ScreenFragment create(FrameOwner parent, WindowInfo windowInfo, ScreenOptions options) {
+    public ScreenFragment create(FrameOwner parent, String screenFragmentId, ScreenOptions options) {
         checkNotNullArgument(parent);
-        checkNotNullArgument(windowInfo);
+        checkNotNullArgument(screenFragmentId);
         checkNotNullArgument(options);
+
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenFragmentId);
 
         return createFragment(parent, windowInfo, options);
     }

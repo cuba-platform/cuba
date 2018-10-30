@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
@@ -87,8 +86,7 @@ public class BulkEditors {
                 .pair("useConfirmDialog", builder.isUseConfirmDialog())
                 .create());
 
-        WindowInfo windowInfo = windowConfig.getWindowInfo("bulkEditor");
-        BulkEditorWindow bulkEditorWindow = (BulkEditorWindow) screens.create(windowInfo, builder.launchMode, options);
+        BulkEditorWindow bulkEditorWindow = (BulkEditorWindow) screens.create("bulkEditor", builder.launchMode, options);
 
         bulkEditorWindow.addAfterCloseListener(afterCloseEvent -> {
             ListComponent<E> listComponent = builder.getListComponent();

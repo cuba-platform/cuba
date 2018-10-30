@@ -37,11 +37,11 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static java.util.Collections.singletonMap;
 
 /**
  * Class that provides fluent interface for building entity editor screens with various options.
@@ -181,22 +181,23 @@ public class EditorScreens {
             Class screenClass = ((EditorClassBuilder) builder).getScreenClass();
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
         } else {
-            WindowInfo windowInfo;
+            String editorScreenId;
 
             if (builder.getScreenId() != null) {
-                windowInfo = windowConfig.getWindowInfo(builder.getScreenId());
-            }else {
-                windowInfo = windowConfig.getEditorScreen(entity);
+                editorScreenId = builder.getScreenId();
+            } else {
+                editorScreenId = windowConfig.getEditorScreen(entity).getId();
             }
 
             // legacy screens support
+            WindowInfo windowInfo = windowConfig.getWindowInfo(editorScreenId);
             ScreenOptions options = builder.getOptions();
             if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())
                 && options == FrameOwner.NO_OPTIONS) {
-                options = new MapScreenOptions(Collections.singletonMap(WindowParams.ITEM.name(), entity));
+                options = new MapScreenOptions(singletonMap(WindowParams.ITEM.name(), entity));
             }
 
-            screen = screens.create(windowInfo, builder.getLaunchMode(), options);
+            screen = screens.create(editorScreenId, builder.getLaunchMode(), options);
         }
 
         if (!(screen instanceof EditorScreen)) {
@@ -336,6 +337,8 @@ public class EditorScreens {
             this.launchMode = builder.launchMode;
             this.parentDataContext = builder.parentDataContext;
             this.listComponent = builder.listComponent;
+            this.field = builder.field;
+            this.screenId = builder.screenId;
         }
 
         public EditorBuilder(FrameOwner origin, Class<E> entityClass, Function<EditorBuilder<E>, Screen> handler) {
