@@ -227,8 +227,9 @@ public abstract class Screen implements FrameOwner {
      *
      * @see Screens#show(Screen)
      */
-    public void show() {
+    public Screen show() {
         getScreenContext().getScreens().show(this);
+        return this;
     }
 
     /**
