@@ -121,7 +121,7 @@ public class DataAwareComponentsTools {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).plusDays(1);
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             //noinspection unchecked
-            component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
+            component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
         }
     }
 
