@@ -514,8 +514,10 @@ public class AppUI extends CubaUI
 
         clientManager.updateSystemMessagesLocale(msgs);
 
-        getReconnectDialogConfiguration().setDialogText(messages.getMainMessage("reconnectDialogText", locale));
-        getReconnectDialogConfiguration().setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
+        ReconnectDialogConfiguration reconnectDialogConfiguration = getReconnectDialogConfiguration();
+
+        reconnectDialogConfiguration.setDialogText(messages.getMainMessage("reconnectDialogText", locale));
+        reconnectDialogConfiguration.setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
     }
 
     @Override
@@ -566,7 +568,7 @@ public class AppUI extends CubaUI
         // todo move to login handling
         updateClientSystemMessages(app.getLocale());
 
-        // todo move test id manager into RootWindow
+        // todo move test id manager into RootWindow ?
         getTestIdManager().reset();
     }
 

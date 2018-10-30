@@ -28,8 +28,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * JavaDoc
+ * Legacy window manager.
+ *
+ * @deprecated Use {@link Screens} instead.
  */
+@Deprecated
 public interface WindowManager extends Screens {
 
     /*

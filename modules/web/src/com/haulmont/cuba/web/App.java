@@ -482,7 +482,7 @@ public abstract class App {
      * Removes all windows from all UIs.
      */
     public void closeAllWindows() {
-        log.debug("Closing all windows");
+        log.debug("Closing all windows in all UIs");
         try {
             for (AppUI ui : getAppUIs()) {
                 Screens screens = ui.getScreens();

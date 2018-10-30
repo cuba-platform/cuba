@@ -118,13 +118,26 @@ public interface Screens {
     interface WindowStack {
         /**
          * @return screens of the container in descending order, first element is active screen
+         * @throws IllegalStateException in case window stack has been closed
          */
         Collection<Screen> getBreadcrumbs();
+
+        /**
+         * @return true if either window stack tab is selected or if {@link AppWorkArea.Mode#SINGLE} mode is enabled.
+         */
+        boolean isSelected();
+
+        /**
+         * Select tab in tabbed UI.
+         */
+        void select();
     }
 
     /**
      * Provides information about opened screens, does not store state. <br>
      * Each method obtains current info from UI components tree.
+     *
+     * todo naming
      */
     interface OpenedScreens {
         /**
