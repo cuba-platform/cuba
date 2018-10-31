@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.tabsheet;
 
-import com.haulmont.cuba.web.widgets.CubaTabSheet;
+import com.haulmont.cuba.web.widgets.CubaMainTabSheet;
 import com.haulmont.cuba.web.widgets.client.action.RemoteAction;
 import com.haulmont.cuba.web.widgets.client.action.StaticActionOwner;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.DDTabsheetConnector;
@@ -27,17 +27,17 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(CubaTabSheet.class)
-public class CubaTabSheetConnector extends DDTabsheetConnector {
+@Connect(CubaMainTabSheet.class)
+public class CubaMainTabSheetConnector extends DDTabsheetConnector {
 
-    protected CubaTabSheetServerRpc rpc = RpcProxy.create(CubaTabSheetServerRpc.class, this);
+    protected CubaMainTabSheetServerRpc rpc = RpcProxy.create(CubaMainTabSheetServerRpc.class, this);
 
     protected int lastContextMenuX = -1;
     protected int lastContextMenuY = -1;
 
-    public CubaTabSheetConnector() {
+    public CubaMainTabSheetConnector() {
         //noinspection Convert2Lambda
-        registerRpc(CubaTabSheetClientRpc.class, new CubaTabSheetClientRpc() {
+        registerRpc(CubaMainTabSheetClientRpc.class, new CubaMainTabSheetClientRpc() {
             @Override
             public void showTabContextMenu(final int tabIndex, ClientAction[] actions) {
                 StaticActionOwner actionOwner = new StaticActionOwner(getConnection(), getConnectorId());
@@ -68,8 +68,8 @@ public class CubaTabSheetConnector extends DDTabsheetConnector {
     }
 
     @Override
-    public CubaTabSheetWidget getWidget() {
-        return (CubaTabSheetWidget) super.getWidget();
+    public CubaMainTabSheetWidget getWidget() {
+        return (CubaMainTabSheetWidget) super.getWidget();
     }
 
     @Override
@@ -90,8 +90,8 @@ public class CubaTabSheetConnector extends DDTabsheetConnector {
     }
 
     @Override
-    public CubaTabSheetState getState() {
-        return (CubaTabSheetState) super.getState();
+    public CubaMainTabSheetState getState() {
+        return (CubaMainTabSheetState) super.getState();
     }
 
     @Override

@@ -58,7 +58,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         }
     }
 
-    protected final CubaTabSheet tabbedHeader;
+    protected final CubaMainTabSheet tabbedHeader;
 
     protected final TabSheetBehaviour behaviour;
 
@@ -83,7 +83,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         closeHandler = (tabSheet1, tabContent) ->
                 _closeTab(tabContent);
 
-        tabbedHeader = new CubaTabSheet() {
+        tabbedHeader = new CubaMainTabSheet() {
             @Override
             protected Component getActionTarget(Tab tab) {
                 return getContentTab(tab.getComponent()).getComponent();

@@ -38,7 +38,7 @@ import com.vaadin.client.ui.dd.VDragAndDropManager;
 import com.vaadin.client.ui.dd.VDragEvent;
 import com.vaadin.shared.ui.tabsheet.TabState;
 
-public class CubaTabSheetWidget extends VDDTabSheet {
+public class CubaMainTabSheetWidget extends VDDTabSheet {
 
     protected TabContextMenuHandler tabContextMenuHandler;
     protected CubaTabBar tabBar;
@@ -47,7 +47,7 @@ public class CubaTabSheetWidget extends VDDTabSheet {
     protected HandlerRegistration dropHandler;
     protected HandlerRegistration dragLeaveHandler;
 
-    public CubaTabSheetWidget() {
+    public CubaMainTabSheetWidget() {
         RootPanel rootPanel = RootPanel.get();
 
         dragEndHandler = rootPanel.addBitlessDomHandler(event ->

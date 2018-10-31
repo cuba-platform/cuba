@@ -364,7 +364,7 @@ public interface WebConfig extends Config {
     String getPageInitialScale();
 
     /**
-     * Sets whether default {@link com.haulmont.cuba.web.widgets.CubaTabSheet} or
+     * Sets whether default {@link com.haulmont.cuba.web.widgets.CubaMainTabSheet} or
      * {@link com.haulmont.cuba.web.widgets.CubaManagedTabSheet} will be used in AppWorkArea.
      *
      * @return one of {@link MainTabSheetMode} values

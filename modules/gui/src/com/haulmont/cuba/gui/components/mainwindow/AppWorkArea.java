@@ -21,6 +21,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.screen.OpenMode;
 
+import java.util.EventObject;
+import java.util.function.Consumer;
+
 public interface AppWorkArea extends Component.BelongToFrame {
 
     String NAME = "workArea";
@@ -54,11 +57,41 @@ public interface AppWorkArea extends Component.BelongToFrame {
     VBoxLayout getInitialLayout();
     void setInitialLayout(VBoxLayout initialLayout);
 
-    void addStateChangeListener(StateChangeListener listener);
-    void removeStateChangeListener(StateChangeListener listener);
+    void addStateChangeListener(Consumer<StateChangeEvent> listener);
+    void removeStateChangeListener(Consumer<StateChangeEvent> listener);
 
-    // todo replace with Consumer<EventClass>
-    interface StateChangeListener {
+    /**
+     * @deprecated Use {@link Consumer} with {@link StateChangeEvent} type instead.
+     */
+    @Deprecated
+    interface StateChangeListener extends Consumer<StateChangeEvent> {
         void stateChanged(State newState);
+
+        @Override
+        default void accept(StateChangeEvent event) {
+            stateChanged(event.getState());
+        }
+    }
+
+    /**
+     * Event that is fired when work area changed its state.
+     */
+    class StateChangeEvent extends EventObject {
+
+        protected final State state;
+
+        public StateChangeEvent(AppWorkArea source, State state) {
+            super(source);
+            this.state = state;
+        }
+
+        @Override
+        public AppWorkArea getSource() {
+            return (AppWorkArea) super.getSource();
+        }
+
+        public State getState() {
+            return state;
+        }
     }
 }

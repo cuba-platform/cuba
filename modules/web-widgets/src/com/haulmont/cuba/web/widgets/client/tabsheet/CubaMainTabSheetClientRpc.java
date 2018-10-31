@@ -17,13 +17,9 @@
 
 package com.haulmont.cuba.web.widgets.client.tabsheet;
 
-import com.vaadin.shared.annotations.NoLayout;
-import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.DDTabSheetState;
+import com.vaadin.shared.communication.ClientRpc;
 
-public class CubaTabSheetState extends DDTabSheetState {
+public interface CubaMainTabSheetClientRpc extends ClientRpc {
 
-    private static final long serialVersionUID = 4132538424243246049L;
-
-    @NoLayout
-    public boolean hasActionsHandlers = false;
+    void showTabContextMenu(int tabIndex, ClientAction[] actions);
 }
