@@ -45,6 +45,7 @@ import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -305,7 +306,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
                         if (isCollectionDynamicAttribute(metaProperty) && fieldValue instanceof Collection) {
-                            jsonObject.add(metaProperty.getName() ,
+                            jsonObject.add(metaProperty.getName(),
                                     serializeSimpleCollection((Collection) fieldValue, metaProperty));
                         } else {
                             writeSimpleProperty(jsonObject, fieldValue, metaProperty);
@@ -438,7 +439,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                                 throw new EntitySerializationException(e);
                             }
                         }
-                    } else if (!"id".equals(primaryKeyProperty.getName())){
+                    } else if (!"id".equals(primaryKeyProperty.getName())) {
                         //pk may be in another field, not "id"
                         JsonElement pkElement = jsonObject.get(primaryKeyProperty.getName());
                         if (pkElement != null && pkElement.isJsonPrimitive()) {
@@ -561,7 +562,18 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected Object readSimpleProperty(JsonElement valueElement, Datatype propertyType) {
             String value = valueElement.getAsString();
+            if (value == null) return null;
             try {
+                Class javaClass = propertyType.getJavaClass();
+                if (BigDecimal.class.isAssignableFrom(javaClass)) {
+                    return valueElement.getAsBigDecimal();
+                } else if (Long.class.isAssignableFrom(javaClass)) {
+                    return valueElement.getAsLong();
+                } else if (Integer.class.isAssignableFrom(javaClass)) {
+                    return valueElement.getAsInt();
+                } else if (Double.class.isAssignableFrom(javaClass)) {
+                    return valueElement.getAsDouble();
+                }
                 return propertyType.parse(value);
             } catch (ParseException e) {
                 throw new EntitySerializationException(String.format("An error occurred while parsing property. Type [%s]. Value [%s].", propertyType, value), e);
