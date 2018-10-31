@@ -24,12 +24,18 @@ buildscript {
 
     repositories {
         mavenLocal()
-        maven {
-            credentials {
-                username System.getenv('HAULMONT_REPOSITORY_USER') ?: 'cuba'
-                password System.getenv('HAULMONT_REPOSITORY_PASSWORD') ?: 'cuba123'
+
+        if (System.getenv('HAULMONT_REPOSITORY_URL')) {
+            maven {
+                credentials {
+                    username System.getenv('HAULMONT_REPOSITORY_USER')
+                    password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+                }
+                url System.getenv('HAULMONT_REPOSITORY_URL')
             }
-            url System.getenv('HAULMONT_REPOSITORY_URL') ?: 'https://repo.cuba-platform.com/content/groups/work'
+        } else {
+            jcenter()
+            maven { url "https://dl.bintray.com/cuba-platform/main" }
         }
     }
     dependencies {
