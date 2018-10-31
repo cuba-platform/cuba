@@ -38,8 +38,10 @@ public class EmailInfo implements Serializable {
 
     /**
      * Recipient email addresses separated with "," or ";" symbol.
-     * flag <pre>sendInOneMessage</pre> created to have backward compatibility with CUBA 6.10.2 version and lower
-     * if <pre>sendInOneMessage = true</pre> then one message will be sent for all recipients includes cc and bcc
+     * <p>
+     * Flag {@code sendInOneMessage} is for backward compatibility with previous CUBA versions.
+     * If {@code sendInOneMessage = true} then one message will be sent for all recipients and it will include CC and BCC.
+     * Otherwise CC and BCC are ignored and multiple messages by the number of recipients in addresses will be sent.
      */
     private String addresses;
     private String cc;

@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailHeader;
@@ -113,13 +115,14 @@ public class EmailSender implements EmailSenderAPI {
 
     protected void assignRecipient(Message.RecipientType type, String addresses, MimeMessage message) throws MessagingException {
         if (StringUtils.isNotBlank(addresses)) {
-            String[] splitAddresses = addresses.split("[,;]");
-            for (String address : splitAddresses) {
-                if (StringUtils.isNotBlank(address)) {
-                    message.addRecipient(type, new InternetAddress(address.trim()));
-                }
+            for (String address : splitAddresses(addresses)) {
+                message.addRecipient(type, new InternetAddress(address.trim()));
             }
         }
+    }
+
+    protected Iterable<String> splitAddresses(String addresses) {
+        return Splitter.on(CharMatcher.anyOf(";,")).omitEmptyStrings().trimResults().split(addresses);
     }
 
     protected void assignFromAddress(SendingMessage sendingMessage, MimeMessage msg) throws MessagingException {
