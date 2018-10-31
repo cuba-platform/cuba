@@ -62,7 +62,7 @@ public interface PersistenceManagerService {
     /**
      * @param storeName - data store name
      * @return true if equals for string properties in the property conditions of filter
-     *         are emulated as like expressions
+     *         should be emulated by like expressions
      */
-    boolean isEmulatesEqualAsLike(String storeName);
+    boolean emulateEqualsByLike(String storeName);
 }

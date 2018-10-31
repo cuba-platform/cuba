@@ -301,7 +301,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
-    public void addOrderByIdIfNonExists(String idProperty) {
+    public void addOrderByIdIfNotExists(String idProperty) {
         //not supported
     }
 

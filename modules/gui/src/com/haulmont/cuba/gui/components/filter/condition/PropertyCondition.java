@@ -132,9 +132,9 @@ public class PropertyCondition extends AbstractCondition {
 
         if (operator != Op.NOT_EMPTY) {
             PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.class);
-            if (operator == Op.EQUAL && stringType && persistenceManager.isEmulatesEqualAsLike(thisStore)) {
+            if (operator == Op.EQUAL && stringType && persistenceManager.emulateEqualsByLike(thisStore)) {
                 sb.append(" ").append(Op.CONTAINS.forJpql());
-            } else if (operator == Op.NOT_EQUAL && stringType && persistenceManager.isEmulatesEqualAsLike(thisStore)) {
+            } else if (operator == Op.NOT_EQUAL && stringType && persistenceManager.emulateEqualsByLike(thisStore)) {
                 sb.append(" ").append(Op.DOES_NOT_CONTAIN.forJpql());
             } else {
                 sb.append(" ").append(operator.forJpql());
