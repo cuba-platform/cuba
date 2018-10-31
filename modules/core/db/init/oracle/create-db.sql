@@ -338,6 +338,8 @@ create table SYS_SENDING_MESSAGE (
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
     ADDRESS_TO clob,
+    ADDRESS_CC clob,
+    ADDRESS_BCC clob,
     ADDRESS_FROM varchar2(100),
     CAPTION varchar2(500),
     EMAIL_HEADERS varchar2(500),
