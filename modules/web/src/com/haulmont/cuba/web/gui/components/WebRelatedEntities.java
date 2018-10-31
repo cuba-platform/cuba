@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.components.security.RelatedEntitiesSecurity;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.sys.ScreensHelper;
@@ -129,7 +130,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         actionOrder.clear();
 
         if (listComponent != null) {
-            MetaClass metaClass = listComponent.getDatasource().getMetaClass();
+            MetaClass metaClass = getMetaClass(listComponent);
 
             Pattern excludePattern = null;
             if (excludeRegex != null) {
@@ -148,6 +149,19 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
                 actionContainer.addComponent(new Label(messages.getMainMessage("actions.Related.Empty")));
             }
         }
+    }
+
+    private MetaClass getMetaClass(ListComponent listComponent) {
+        if (!(listComponent.getItems() instanceof EntityDataUnit)) {
+            throw new IllegalStateException("ListComponent items is null or does not implement EntityDataUnit");
+        }
+
+        MetaClass metaClass = ((EntityDataUnit) listComponent.getItems()).getEntityMetaClass();
+        if (metaClass == null) {
+            throw new IllegalStateException("ListComponent is not bound to entity");
+        }
+
+        return metaClass;
     }
 
     protected void addNavigationAction(MetaClass metaClass, MetaProperty metaProperty) {

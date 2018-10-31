@@ -79,8 +79,14 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     }
 
     @Override
+    public boolean apply(FilterOptions options) {
+        return delegate.apply(options);
+    }
+
+    @Override
     public boolean apply(boolean notifyInvalidConditions) {
-        return delegate.apply(notifyInvalidConditions);
+        return apply(FilterOptions.create()
+                .setNotifyInvalidConditions(notifyInvalidConditions));
     }
 
     @Override

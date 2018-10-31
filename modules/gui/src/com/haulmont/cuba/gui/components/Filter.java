@@ -87,6 +87,14 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
      * Applies the filter. Before the filter is applied, conditions correctness is checked. If invalid conditions are
      * found (i.e. empty required conditions) then the filter will not be applied.
      *
+     * @param options an options object
+     */
+    boolean apply(FilterOptions options);
+
+    /**
+     * Applies the filter. Before the filter is applied, conditions correctness is checked. If invalid conditions are
+     * found (i.e. empty required conditions) then the filter will not be applied.
+     *
      * @param notifyInvalidConditions whether a notification about invalid conditions values should be displayed
      * @return true if the filter was applied, false otherwise
      */
@@ -227,5 +235,51 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
          * @return true if property with given {@code metaPropertyPath} should be available for filtering or false otherwise
          */
         boolean test(MetaPropertyPath metaPropertyPath);
+    }
+
+    class FilterOptions {
+
+        protected boolean notifyInvalidConditions;
+        protected boolean loadData = true;
+
+        public static FilterOptions create() {
+            return new FilterOptions();
+        }
+
+        /**
+         * @return whether a notification about invalid conditions values should be displayed
+         */
+        public boolean isNotifyInvalidConditions() {
+            return notifyInvalidConditions;
+        }
+
+        /**
+         * Sets whether a notification about invalid conditions values should be displayed.
+         *
+         * @param notifyInvalidConditions whether a notification about invalid conditions values should be displayed
+         * @return this object
+         */
+        public FilterOptions setNotifyInvalidConditions(boolean notifyInvalidConditions) {
+            this.notifyInvalidConditions = notifyInvalidConditions;
+            return this;
+        }
+
+        /**
+         * @return whether data needs to be loaded after filter is applied
+         */
+        public boolean isLoadData() {
+            return loadData;
+        }
+
+        /**
+         * Sets whether data needs to be loaded after filter is applied.
+         *
+         * @param loadData whether data needs to be loaded after filter is applied
+         * @return this object
+         */
+        public FilterOptions setLoadData(boolean loadData) {
+            this.loadData = loadData;
+            return this;
+        }
     }
 }

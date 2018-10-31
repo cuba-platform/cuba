@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterParser;
@@ -40,8 +39,10 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -113,14 +114,14 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 params.putAll(descriptor.getScreenParams());
             }
 
-            String screen;
+            String screenId;
             if (descriptor != null && StringUtils.isNotEmpty(descriptor.getScreenId())) {
-                screen = descriptor.getScreenId();
+                screenId = descriptor.getScreenId();
             } else {
-                screen = windowConfig.getBrowseScreenId(metaProperty.getRange().asClass());
+                screenId = windowConfig.getBrowseScreenId(metaProperty.getRange().asClass());
             }
 
-            if (StringUtils.isEmpty(screen)) {
+            if (StringUtils.isEmpty(screenId)) {
                 String message = String.format("Can't show related entities: passed screenId is null and " +
                         "there is no default browse screen for %s", metaClass.getName());
                 throw new IllegalStateException(message);
@@ -132,9 +133,11 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 openType = descriptor.getOpenType();
             }
 
-            Window window = windowManager.openWindow(windowConfig.getWindowInfo(screen), openType, params);
+            Screen screen = windowManager.create(screenId,
+                    openType.getOpenMode(),
+                    new MapScreenOptions(params));
 
-            boolean found = ComponentsHelper.walkComponents(window, screenComponent -> {
+            boolean found = ComponentsHelper.walkComponents(screen.getWindow(), screenComponent -> {
                 if (!(screenComponent instanceof Filter)) {
                     return false;
                 } else {
@@ -150,13 +153,20 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                     return false;
                 }
             });
+
+            screen.show();
+
             if (!found) {
-                windowManager.showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), Frame.NotificationType.WARNING);
+                windowManager.showNotification(messages.getMainMessage("actions.Related.FilterNotFound"),
+                        Frame.NotificationType.WARNING);
             }
-            LegacyFrame legacyFrame = (LegacyFrame) window;
-            ((DsContextImplementation) legacyFrame.getDsContext()).resumeSuspended();
+            if (screen instanceof LegacyFrame) {
+                LegacyFrame legacyFrame = (LegacyFrame) screen;
+                ((DsContextImplementation) legacyFrame.getDsContext()).resumeSuspended();
+            }
         } else {
-            windowManager.showNotification(messages.getMainMessage("actions.Related.NotSelected"), Frame.NotificationType.HUMANIZED);
+            windowManager.showNotification(messages.getMainMessage("actions.Related.NotSelected"),
+                    Frame.NotificationType.HUMANIZED);
         }
     }
 
@@ -197,7 +207,9 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
 
         component.setFilterEntity(filterEntity);
-        component.apply(true);
+        component.apply(Filter.FilterOptions.create()
+                .setNotifyInvalidConditions(true)
+                .setLoadData(false));
     }
 
     protected String getRelatedEntitiesFilterXml(MetaClass relatedMetaCLass, Collection<? extends Entity> selectedEntities, Filter component, MetaDataDescriptor descriptor) {
@@ -207,8 +219,9 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         String[] strings = ValuePathHelper.parse(filterComponentPath);
         String filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
 
+        MetaClass metaClass = getFilterMetaClass(component);
         String relatedPrimaryKey = metadataTools.getPrimaryKeyName(relatedMetaCLass);
-        AbstractCondition condition = getOptimizedCondition(getParentIds(selectedEntities), component.getDatasource(),
+        AbstractCondition condition = getOptimizedCondition(getParentIds(selectedEntities), metaClass,
                 filterComponentName, relatedPrimaryKey, descriptor);
 
         if (condition == null) {
@@ -221,34 +234,48 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         return filterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
+    protected MetaClass getFilterMetaClass(Filter filter) {
+        if (filter.getDataLoader() != null
+                && filter.getDataLoader().getContainer() != null) {
+            return filter.getDataLoader().getContainer().getEntityMetaClass();
+        }
+
+        if (filter.getDatasource() != null) {
+            return filter.getDatasource().getMetaClass();
+        }
+
+        throw new IllegalStateException("No MetaClass related to a filter");
+    }
+
     @Nullable
-    protected AbstractCondition getOptimizedCondition(List<Object> parentIds, CollectionDatasource datasource,
-                                                      String filterComponentName, String relatedPrimaryKey, MetaDataDescriptor descriptor) {
+    protected AbstractCondition getOptimizedCondition(List<Object> parentIds, MetaClass metaClass,
+                                                      String filterComponentName, String relatedPrimaryKey,
+                                                      MetaDataDescriptor descriptor) {
         Range.Cardinality cardinality = descriptor.getMetaProperty().getRange().getCardinality();
 
         if (cardinality == Range.Cardinality.MANY_TO_ONE) {
-            return getManyToOneCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey, descriptor);
+            return getManyToOneCondition(parentIds, metaClass, filterComponentName, relatedPrimaryKey, descriptor);
         } else if (cardinality == Range.Cardinality.ONE_TO_MANY || cardinality == Range.Cardinality.ONE_TO_ONE) {
-            return getOneToManyCondition(parentIds, datasource, filterComponentName, descriptor);
+            return getOneToManyCondition(parentIds, metaClass, filterComponentName, descriptor);
         } else if (cardinality == Range.Cardinality.MANY_TO_MANY) {
-            return getManyToManyCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey, descriptor);
+            return getManyToManyCondition(parentIds, metaClass, filterComponentName, relatedPrimaryKey, descriptor);
         }
 
         return null;
     }
 
     @Nullable
-    protected AbstractCondition getOneToManyCondition(List<Object> parentIds, CollectionDatasource datasource,
+    protected AbstractCondition getOneToManyCondition(List<Object> parentIds, MetaClass metaClass,
                                                       String filterComponentName, MetaDataDescriptor descriptor) {
         MetaProperty inverseField = descriptor.getMetaProperty().getInverse();
         if (inverseField == null) {
             return null;
         }
 
-        MetaClass metaClass = descriptor.getMetaClass();
-        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
-        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource,
-                filterComponentName, metaClass);
+        MetaClass parentMetaClass = descriptor.getMetaClass();
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(parentMetaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, metaClass,
+                filterComponentName, parentMetaClass);
 
         String whereString = String.format("{E}.%s.%s in :%s",
                 inverseField.getName(), parentPrimaryKey, customCondition.getParam().getName());
@@ -258,16 +285,17 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
     }
 
     @Nullable
-    protected AbstractCondition getManyToManyCondition(List<Object> parentIds, CollectionDatasource datasource,
-                                                       String filterComponentName, String relatedPrimaryKey, MetaDataDescriptor descriptor) {
-        MetaClass metaClass = descriptor.getMetaClass();
-        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
-        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource,
-                filterComponentName, metaClass);
+    protected AbstractCondition getManyToManyCondition(List<Object> parentIds, MetaClass metaClass,
+                                                       String filterComponentName, String relatedPrimaryKey,
+                                                       MetaDataDescriptor descriptor) {
+        MetaClass parentMetaClass = descriptor.getMetaClass();
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(parentMetaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, metaClass,
+                filterComponentName, parentMetaClass);
 
         String parentEntityAlias = RandomStringUtils.randomAlphabetic(6);
         String entityAlias = RandomStringUtils.randomAlphabetic(6);
-        String select = String.format("select %s.%s from %s %s ", entityAlias, relatedPrimaryKey, metaClass, parentEntityAlias);
+        String select = String.format("select %s.%s from %s %s ", entityAlias, relatedPrimaryKey, parentMetaClass, parentEntityAlias);
 
         String joinWhere = String.format("join %s.%s %s where %s.%s in :%s", parentEntityAlias, descriptor.getMetaProperty().getName(),
                 entityAlias, parentEntityAlias, parentPrimaryKey, customCondition.getParam().getName());
@@ -279,15 +307,17 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
     }
 
     @Nullable
-    protected AbstractCondition getManyToOneCondition(List<Object> parentIds, CollectionDatasource datasource,
-                                                      String filterComponentName, String relatedPrimaryKey, MetaDataDescriptor descriptor) {
-        MetaClass metaClass = descriptor.getMetaClass();
-        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
-        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource, filterComponentName, metaClass);
+    protected AbstractCondition getManyToOneCondition(List<Object> parentIds, MetaClass metaClass,
+                                                      String filterComponentName, String relatedPrimaryKey,
+                                                      MetaDataDescriptor descriptor) {
+        MetaClass parentMetaClass = descriptor.getMetaClass();
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(parentMetaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, metaClass,
+                filterComponentName, parentMetaClass);
 
         String entityAlias = RandomStringUtils.randomAlphabetic(6);
         String subQuery = String.format("select %s.%s.%s from %s %s where %s.%s in :%s", entityAlias,
-                descriptor.getMetaProperty().getName(), relatedPrimaryKey, metaClass.getName(), entityAlias,
+                descriptor.getMetaProperty().getName(), relatedPrimaryKey, parentMetaClass.getName(), entityAlias,
                 entityAlias, parentPrimaryKey, customCondition.getParam().getName());
 
         String whereString = String.format("{E}.%s in (%s)", relatedPrimaryKey, subQuery);
@@ -296,13 +326,13 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         return customCondition;
     }
 
-    protected Param getParentEntitiesParam(List<Object> parentIds, String parentPrimaryKey, CollectionDatasource datasource,
+    protected Param getParentEntitiesParam(List<Object> parentIds, String parentPrimaryKey, MetaClass metaClass,
                                            Class parentPrimaryKeyClass, String paramName, MetaClass parentMetaClass) {
         Param param = Param.Builder.getInstance().setName(paramName)
                 .setJavaClass(parentPrimaryKeyClass)
                 .setEntityWhere(StringUtils.EMPTY)
                 .setEntityView(StringUtils.EMPTY)
-                .setMetaClass(datasource.getMetaClass())
+                .setMetaClass(metaClass)
                 .setProperty(parentMetaClass.getPropertyNN(parentPrimaryKey))
                 .setInExpr(true)
                 .setRequired(true)
@@ -311,11 +341,12 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         return param;
     }
 
-    protected CustomCondition getParentEntitiesCondition(List<Object> parentIds, String parentPrimaryKey, CollectionDatasource datasource,
-                                                         String filterComponentName, MetaClass parentMetaClass) {
+    protected CustomCondition getParentEntitiesCondition(List<Object> parentIds, String parentPrimaryKey,
+                                                         MetaClass metaClass, String filterComponentName,
+                                                         MetaClass parentMetaClass) {
         String conditionName = String.format("related_%s", RandomStringUtils.randomAlphabetic(6));
-        CustomCondition condition = new CustomCondition(getConditionXmlElement(conditionName, parentMetaClass), AppConfig.getMessagesPack(),
-                filterComponentName, datasource.getMetaClass());
+        CustomCondition condition = new CustomCondition(getConditionXmlElement(conditionName, parentMetaClass),
+                AppConfig.getMessagesPack(), filterComponentName, metaClass);
 
 
         Class<?> parentPrimaryKeyClass = parentMetaClass.getPropertyNN(parentPrimaryKey).getJavaType();
@@ -326,7 +357,8 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         int randInt = new Random().nextInt((99999 - 11111) + 1) + 11111;
         String paramName = String.format("component$%s.%s%s", filterComponentName, conditionName, randInt);
 
-        condition.setParam(getParentEntitiesParam(parentIds, parentPrimaryKey, datasource, parentPrimaryKeyClass, paramName, parentMetaClass));
+        condition.setParam(getParentEntitiesParam(parentIds, parentPrimaryKey, metaClass,
+                parentPrimaryKeyClass, paramName, parentMetaClass));
 
         return condition;
     }

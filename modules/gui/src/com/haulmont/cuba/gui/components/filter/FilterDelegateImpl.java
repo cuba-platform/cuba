@@ -521,11 +521,11 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (!WindowParams.DISABLE_AUTO_REFRESH.getBool(window.getContext())) {
                 if (getResultingManualApplyRequired()) {
                     if (BooleanUtils.isTrue(defaultFilter.getApplyDefault())) {
-                        adapter.beforeApplyDefault();
+                        adapter.preventNextDataLoading();
                         apply(true);
                     }
                 } else {
-                    adapter.beforeApplyDefault();
+                    adapter.preventNextDataLoading();
                     apply(true);
                 }
                 if (filterEntity != null) {
@@ -1524,7 +1524,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public boolean apply(boolean notifyInvalidConditions) {
+    public boolean apply(Filter.FilterOptions options) {
         if (beforeFilterAppliedHandler != null) {
             if (!beforeFilterAppliedHandler.beforeFilterApplied()) return false;
         }
@@ -1532,7 +1532,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (filterEntity != null && conditions.getRoots().size() > 0) {
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
-                    if (!notifyInvalidConditions) {
+                    if (!options.isNotifyInvalidConditions()) {
                         windowManager.showNotification(messages.getMainMessage("filter.emptyConditions"),
                                 Frame.NotificationType.HUMANIZED);
                     }
@@ -1550,13 +1550,17 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterEntity != null) {
             boolean haveRequiredConditions = haveFilledRequiredConditions();
             if (!haveRequiredConditions) {
-                if (!notifyInvalidConditions) {
+                if (!options.isNotifyInvalidConditions()) {
                     windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
                             Frame.NotificationType.HUMANIZED);
                 }
                 return false;
             }
             setFilterActionsEnabled();
+        }
+
+        if (!options.isLoadData()) {
+            adapter.preventNextDataLoading();
         }
 
         applyDatasourceFilter();
@@ -1573,6 +1577,12 @@ public class FilterDelegateImpl implements FilterDelegate {
             afterFilterAppliedHandler.afterFilterApplied();
         }
         return true;
+    }
+
+    @Override
+    public boolean apply(boolean notifyInvalidConditions) {
+        return apply(Filter.FilterOptions.create()
+                .setNotifyInvalidConditions(notifyInvalidConditions));
     }
 
     protected Map<String, Object> prepareDatasourceCustomParams() {
@@ -2834,7 +2844,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         void pinQuery();
         void unpinAllQuery();
         String getQuery();
-        void beforeApplyDefault();
+        void preventNextDataLoading();
     }
 
     protected static class LoaderAdapter implements Adapter {
@@ -2842,7 +2852,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected CollectionLoader loader;
         protected Filter filter;
         protected QueryFilter queryFilter;
-        protected boolean applyingDefault;
+        protected boolean preventDataLoading;
 
         /**
          * Condition which was set on DataLoader before applying the filter
@@ -2941,8 +2951,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 loader.setCondition(dataLoaderCondition);
             }
 
-            if (applyingDefault) {
-                applyingDefault = false;
+            if (preventDataLoading) {
+                preventDataLoading = false;
             } else {
                 loader.load();
             }
@@ -2993,8 +3003,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         @Override
-        public void beforeApplyDefault() {
-            applyingDefault = true;
+        public void preventNextDataLoading() {
+            preventDataLoading = true;
         }
     }
 
@@ -3084,8 +3094,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         @Override
-        public void beforeApplyDefault() {
-
+        public void preventNextDataLoading() {
+            // do nothing
         }
     }
 }

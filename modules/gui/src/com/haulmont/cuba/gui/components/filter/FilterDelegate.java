@@ -72,6 +72,8 @@ public interface FilterDelegate {
 
     CollectionDatasource getDatasource();
 
+    boolean apply(Filter.FilterOptions options);
+
     boolean apply(boolean notifyInvalidConditions);
 
     String getCaption();
