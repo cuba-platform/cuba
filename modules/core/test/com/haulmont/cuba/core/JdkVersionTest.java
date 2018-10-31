@@ -24,11 +24,11 @@ public class JdkVersionTest {
     public void test() {
         if (SystemUtils.IS_JAVA_1_8) {
             System.out.println(
-                    "---------------test are running on JAVA 8---------------"
+                    "---------------tests are running on JAVA 8---------------"
             );
         } else if (SystemUtils.IS_JAVA_10) {
             System.out.println(
-                    "---------------test are running on JAVA 10---------------"
+                    "---------------tests are running on JAVA 10---------------"
             );
         }
     }
