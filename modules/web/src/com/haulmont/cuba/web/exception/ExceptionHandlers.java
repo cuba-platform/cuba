@@ -18,15 +18,18 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
+import com.haulmont.cuba.gui.exception.UiExceptionHandler;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.ErrorEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.OrderComparator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class that holds the collection of exception handlers and delegates unhandled exception processing to them. Handlers
@@ -45,9 +48,8 @@ public class ExceptionHandlers {
     protected App app;
     protected BeanLocator beanLocator;
 
-    protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
-
-    protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
+    protected List<ExceptionHandler> handlers = new ArrayList<>();
+    protected List<UiExceptionHandler> genericHandlers = new ArrayList<>();
 
     protected ExceptionHandler defaultHandler;
 
@@ -89,7 +91,7 @@ public class ExceptionHandlers {
      *
      * @param handler handler instance
      */
-    public void addHandler(GenericExceptionHandler handler) {
+    public void addHandler(UiExceptionHandler handler) {
         if (!genericHandlers.contains(handler)) {
             genericHandlers.add(handler);
         }
@@ -107,10 +109,10 @@ public class ExceptionHandlers {
             }
         }
 
-        WindowManager wm = app.getWindowManager();
-        if (wm != null) {
-            for (GenericExceptionHandler handler : genericHandlers) {
-                if (handler.handle(event.getThrowable(), wm)) {
+        AppUI ui = app.getAppUI();
+        if (ui != null) {
+            for (UiExceptionHandler handler : genericHandlers) {
+                if (handler.handle(event.getThrowable(), ui)) {
                     return;
                 }
             }
@@ -143,12 +145,12 @@ public class ExceptionHandlers {
         }
 
         // GUI handlers
-        Map<String, GenericExceptionHandler> handlerMap = beanLocator.getAll(GenericExceptionHandler.class);
+        Map<String, UiExceptionHandler> handlerMap = beanLocator.getAll(UiExceptionHandler.class);
 
-        List<GenericExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
+        List<UiExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
         handlers.sort(new OrderComparator());
 
-        for (GenericExceptionHandler handler : handlers) {
+        for (UiExceptionHandler handler : handlers) {
             addHandler(handler);
         }
     }

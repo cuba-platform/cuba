@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.exception;
 
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.WebBrowserTools;
 
 /**
  * Interface to be implemented by exception handlers defined on GUI level.
- *
- * @deprecated Use {@link UiExceptionHandler} instead.
  */
-@Deprecated
-public interface GenericExceptionHandler extends UiExceptionHandler {
-
+public interface UiExceptionHandler {
     /**
      * Defines the highest precedence for {@link org.springframework.core.Ordered} platform handlers.
      */
@@ -41,15 +39,34 @@ public interface GenericExceptionHandler extends UiExceptionHandler {
      * Handle an exception. Implementation class should either handle the exception and return true, or return false
      * to delegate execution to the next handler in the chain of responsibility.
      *
-     * @param exception     exception instance
-     * @param windowManager WindowManagerImpl instance
+     * @param exception exception instance
+     * @param context   UI context
      * @return true if the exception has been successfully handled, false if not
      */
-    @Deprecated
-    boolean handle(Throwable exception, WindowManager windowManager);
+    boolean handle(Throwable exception, UiContext context);
 
-    @Override
-    default boolean handle(Throwable exception, UiContext context) {
-        return handle(exception, ((WindowManager) context.getScreens()));
+    /**
+     * Exception handling context that provides UI beans.
+     */
+    interface UiContext {
+        /**
+         * @return screens manager
+         */
+        Screens getScreens();
+
+        /**
+         * @return dialogs API
+         */
+        Dialogs getDialogs();
+
+        /**
+         * @return notifications API
+         */
+        Notifications getNotifications();
+
+        /**
+         * @return web browser API
+         */
+        WebBrowserTools getWebBrowserTools();
     }
 }

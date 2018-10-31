@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
+import com.haulmont.cuba.gui.exception.UiExceptionHandler;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -61,7 +62,7 @@ import java.util.*;
 @Push(transport = Transport.WEBSOCKET_XHR)
 @PreserveOnRefresh
 public class AppUI extends CubaUI
-        implements ErrorHandler, EnhancedUI, CubaHistoryControl.HistoryBackHandler {
+        implements ErrorHandler, EnhancedUI, CubaHistoryControl.HistoryBackHandler, UiExceptionHandler.UiContext {
 
     public static final String NAME = "cuba_AppUI";
 
@@ -175,11 +176,15 @@ public class AppUI extends CubaUI
         return beanLocator.getPrototype(App.NAME);
     }
 
+    /**
+     * @return Use {@link #getScreens()} instead.
+     */
     @Deprecated
     public WindowManager getWindowManager() {
         return ((WindowManager) screens);
     }
 
+    @Override
     public Screens getScreens() {
         return screens;
     }
@@ -188,6 +193,7 @@ public class AppUI extends CubaUI
         this.screens = screens;
     }
 
+    @Override
     public Dialogs getDialogs() {
         return dialogs;
     }
@@ -196,6 +202,7 @@ public class AppUI extends CubaUI
         this.dialogs = dialogs;
     }
 
+    @Override
     public Notifications getNotifications() {
         return notifications;
     }
@@ -204,6 +211,7 @@ public class AppUI extends CubaUI
         this.notifications = notifications;
     }
 
+    @Override
     public WebBrowserTools getWebBrowserTools() {
         return webBrowserTools;
     }
@@ -482,7 +490,7 @@ public class AppUI extends CubaUI
             params = params != null ? params : Collections.emptyMap();
 
             try {
-                LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
+                LinkHandler linkHandler = beanLocator.getPrototype(LinkHandler.NAME, app, action, params);
                 if (app.connection.isConnected() && linkHandler.canHandleLink()) {
                     linkHandler.handle();
                 } else {

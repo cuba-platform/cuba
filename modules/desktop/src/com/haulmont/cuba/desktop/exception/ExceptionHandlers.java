@@ -20,13 +20,13 @@ package com.haulmont.cuba.desktop.exception;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
-import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
 import com.haulmont.cuba.gui.exception.SilentExceptionHandler;
+import com.haulmont.cuba.gui.exception.UiExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.OrderComparator;
-
 import org.springframework.stereotype.Component;
+
 import java.util.*;
 
 /**
@@ -44,7 +44,7 @@ public class ExceptionHandlers {
 
     protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
 
-    protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
+    protected LinkedList<UiExceptionHandler> genericHandlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
 
@@ -81,7 +81,7 @@ public class ExceptionHandlers {
      * Adds new GUI-level handler if it is not yet registered.
      * @param handler   handler instance
      */
-    private void addHandler(GenericExceptionHandler handler) {
+    private void addHandler(UiExceptionHandler handler) {
         if (!genericHandlers.contains(handler))
             genericHandlers.add(handler);
     }
@@ -97,9 +97,10 @@ public class ExceptionHandlers {
             if (handler.handle(thread, exception))
                 return;
         }
-        for (GenericExceptionHandler handler : genericHandlers) {
-            if (handler.handle(exception, windowManager))
-                return;
+        for (UiExceptionHandler handler : genericHandlers) {
+            // todo implement
+//            if (handler.handle(exception, windowManager))
+//                return;
         }
         defaultHandler.handle(thread, exception);
     }
@@ -129,12 +130,12 @@ public class ExceptionHandlers {
         }
 
         // GUI handlers
-        Map<String, GenericExceptionHandler> handlerMap = AppBeans.getAll(GenericExceptionHandler.class);
+        Map<String, UiExceptionHandler> handlerMap = AppBeans.getAll(UiExceptionHandler.class);
 
-        List<GenericExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
+        List<UiExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
         Collections.sort(handlers, new OrderComparator());
 
-        for (GenericExceptionHandler handler : handlers) {
+        for (UiExceptionHandler handler : handlers) {
             addHandler(handler);
         }
     }
