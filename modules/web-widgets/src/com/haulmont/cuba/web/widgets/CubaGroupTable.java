@@ -106,20 +106,23 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected void paintAdditionalData(PaintTarget target) throws PaintException {
         super.paintAdditionalData(target);
 
+        boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
+
         // first call, we shouldn't update aggregation group rows
         if (cachedAggregatedValues == null) {
             cachedAggregatedValues = new HashMap<>();
             // fill with initial values
-            for (Object itemId : getVisibleItemIds()) {
-                if (isGroup(itemId)) {
-                    cachedAggregatedValues.put(itemId, getAggregatedValuesForGroup(itemId));
+            if (hasAggregation) {
+                for (Object itemId : getVisibleItemIds()) {
+                    if (isGroup(itemId)) {
+                        cachedAggregatedValues.put(itemId, getAggregatedValuesForGroup(itemId));
+                    }
                 }
             }
             return;
         }
 
-        boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
-                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
         boolean cacheIsEmpty = cachedAggregatedValues.isEmpty();
         boolean isAddedToCache = false;
 
