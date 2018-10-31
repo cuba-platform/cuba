@@ -245,10 +245,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
-    public void addOrderByIdIfNonExists(String idProperty) {
+    public void addOrderByIdIfNotExists(String idProperty) {
         EntityReference entityReference = createMainSelectedPathNodeReference();
         PathEntityReference idReference = entityReference.addFieldPath(idProperty);
-        getTransformer().addOrderByIdIfNonExists(idReference);
+        getTransformer().addOrderByIdIfNotExists(idReference);
     }
 
     @Override

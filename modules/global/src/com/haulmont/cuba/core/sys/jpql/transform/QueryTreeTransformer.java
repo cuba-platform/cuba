@@ -222,7 +222,7 @@ public class QueryTreeTransformer {
         }
     }
 
-    public void addOrderByIdIfNonExists(PathEntityReference idReference) {
+    public void addOrderByIdIfNotExists(PathEntityReference idReference) {
         Tree orderBy = queryTree.getAstTree().getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
         if (orderBy != null) {
             return;

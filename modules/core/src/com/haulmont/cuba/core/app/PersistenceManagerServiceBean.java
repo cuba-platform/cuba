@@ -74,7 +74,7 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     }
 
     @Override
-    public boolean isEmulatesEqualAsLike(String storeName) {
-        return storeName == null || DbmsSpecificFactory.getDbmsFeatures(storeName).isEmulatesEqualsAsLike();
+    public boolean emulateEqualsByLike(String storeName) {
+        return storeName == null || DbmsSpecificFactory.getDbmsFeatures(storeName).emulateEqualsByLike();
     }
 }

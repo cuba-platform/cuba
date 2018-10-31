@@ -45,7 +45,7 @@ public class PersistenceManagerClient implements PersistenceManagerService {
 
     protected static class DbmsCacheEntry {
         boolean supportsLobSortingAndFiltering;
-        boolean emulatesEqualsAsLike;
+        boolean emulateEqualsByLike;
     }
 
     protected Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
@@ -138,15 +138,15 @@ public class PersistenceManagerClient implements PersistenceManagerService {
     }
 
     @Override
-    public boolean isEmulatesEqualAsLike(String storeName) {
-        return storeName == null || getDbmsCacheEntry(storeName).emulatesEqualsAsLike;
+    public boolean emulateEqualsByLike(String storeName) {
+        return storeName == null || getDbmsCacheEntry(storeName).emulateEqualsByLike;
     }
 
     protected DbmsCacheEntry getDbmsCacheEntry(String storeName) {
         return dbmsCache.computeIfAbsent(storeName, s -> {
             DbmsCacheEntry cacheEntry = new DbmsCacheEntry();
             cacheEntry.supportsLobSortingAndFiltering = service.supportsLobSortingAndFiltering(s);
-            cacheEntry.emulatesEqualsAsLike = service.isEmulatesEqualAsLike(s);
+            cacheEntry.emulateEqualsByLike = service.emulateEqualsByLike(s);
             return cacheEntry;
         });
     }

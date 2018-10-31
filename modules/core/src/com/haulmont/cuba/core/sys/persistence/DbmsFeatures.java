@@ -83,9 +83,9 @@ public interface DbmsFeatures {
 
     /**
      * @return true if equals for string properties in the property conditions of filter
-     * are emulated as like expressions
+     * should be emulated by like expressions
      */
-    default boolean isEmulatesEqualsAsLike() {
+    default boolean emulateEqualsByLike() {
         return false;
     }
 

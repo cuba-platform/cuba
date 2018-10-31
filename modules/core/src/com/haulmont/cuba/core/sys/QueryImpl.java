@@ -247,7 +247,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             DbmsFeatures dbmsFeatures = DbmsSpecificFactory.getDbmsFeatures(storeName);
             if (dbmsFeatures.useOrderByForPaging()) {
                 QueryTransformer transformer = queryTransformerFactory.transformer(result);
-                transformer.addOrderByIdIfNonExists(metadata.getTools().getPrimaryKeyName(effectiveMetaClass));
+                transformer.addOrderByIdIfNotExists(metadata.getTools().getPrimaryKeyName(effectiveMetaClass));
                 result = transformer.getResult();
                 rebuildParser = true;
             }
