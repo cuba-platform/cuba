@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
-import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
@@ -58,26 +57,11 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected BeanLocator beanLocator;
 
-    // todo remove
-    private EventRouter eventRouter = null;
-
     private EventHub eventHub = null;
 
     @Inject
     public void setBeanLocator(BeanLocator beanLocator) {
         this.beanLocator = beanLocator;
-    }
-
-    /**
-     * Use EventRouter for listeners instead of fields with listeners List.
-     *
-     * @see EventRouter
-     */
-    protected EventRouter getEventRouter() {
-        if (eventRouter == null) {
-            eventRouter = new EventRouter();
-        }
-        return eventRouter;
     }
 
     protected EventHub getEventHub() {
