@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -46,6 +45,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
@@ -96,16 +96,17 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         // setup screen and controller
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
-        UiControllerUtils.setWindowId(controller, windowInfo.getId());
-        UiControllerUtils.setFrame(controller, fragment);
-        UiControllerUtils.setScreenContext(controller,
+        setHostController(controller, parentContext.getFrame().getFrameOwner());
+        setWindowId(controller, windowInfo.getId());
+        setFrame(controller, fragment);
+        setScreenContext(controller,
                 new ScreenContextImpl(windowInfo, parentContext.getOptions(),
                         beanLocator.get(Screens.NAME),
                         beanLocator.get(Dialogs.NAME),
                         beanLocator.get(Notifications.NAME),
                         beanLocator.get(Fragments.NAME))
         );
-        UiControllerUtils.setScreenData(controller, new ScreenDataImpl());
+        setScreenData(controller, new ScreenDataImpl());
 
         FragmentImplementation fragmentImpl = (FragmentImplementation) fragment;
         fragmentImpl.setFrameOwner(controller);

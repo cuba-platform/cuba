@@ -20,7 +20,6 @@ import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
@@ -52,7 +51,7 @@ public abstract class ScreenFragment implements FrameOwner {
 
     private BeanLocator beanLocator;
 
-    private FrameOwner parentController;
+    private FrameOwner hostController;
 
     // Global event listeners
     private List<ApplicationListener> uiEventListeners;
@@ -93,20 +92,32 @@ public abstract class ScreenFragment implements FrameOwner {
         return fragment;
     }
 
-    public FrameOwner getParentController() {
-        return parentController;
+    public FrameOwner getHostController() {
+        return hostController;
     }
 
-    protected void setParentController(FrameOwner parentController) {
-        this.parentController = parentController;
+    protected void setHostController(FrameOwner hostController) {
+        this.hostController = hostController;
     }
 
-    protected Screen getParentScreen() {
-        Screen screen = ComponentsHelper.getScreen(this);
-        if (screen == null) {
+    /**
+     * @return host screen of the fragment
+     * @throws IllegalStateException if host screen cannot be found though hierarchy of fragments
+     */
+    protected Screen getHostScreen() {
+        FrameOwner parent = this.hostController;
+
+        while (parent != null
+            && !(parent instanceof Screen)) {
+
+            parent = ((ScreenFragment) parent).getHostController();
+        }
+
+        if (parent == null) {
             throw new IllegalStateException("Unable to get screen for Fragment");
         }
-        return screen;
+
+        return (Screen) parent;
     }
 
     /**

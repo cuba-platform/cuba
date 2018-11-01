@@ -151,4 +151,8 @@ public final class UiControllerUtils {
 
         return "";
     }
+
+    public static void setHostController(ScreenFragment fragment, FrameOwner hostController) {
+        fragment.setHostController(hostController);
+    }
 }

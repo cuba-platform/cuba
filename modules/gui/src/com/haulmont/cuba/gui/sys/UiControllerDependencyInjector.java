@@ -207,7 +207,7 @@ public class UiControllerDependencyInjector {
                                         frame.getId())
                         );
                     }
-                    targetInstance = ((ScreenFragment) frameOwner).getParentController();
+                    targetInstance = ((ScreenFragment) frameOwner).getHostController();
                     break;
 
                 case DATA_CONTEXT:
@@ -332,7 +332,7 @@ public class UiControllerDependencyInjector {
                                             frame.getId())
                             );
                         }
-                        eventTarget = ((ScreenFragment) frameOwner).getParentController();
+                        eventTarget = ((ScreenFragment) frameOwner).getHostController();
                         break;
 
                     default:

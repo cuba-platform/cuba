@@ -126,6 +126,7 @@ public class WebFragments implements Fragments {
 
         // setup screen and controller
 
+        setHostController(controller, parent);
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, fragment);
         setScreenContext(controller,
