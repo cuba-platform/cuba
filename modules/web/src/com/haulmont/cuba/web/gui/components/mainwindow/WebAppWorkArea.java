@@ -65,6 +65,7 @@ import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.Screens.WindowStack;
+import static java.util.Collections.singletonList;
 
 public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea, HasInnerComponents {
 
@@ -323,7 +324,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     @Override
     public Collection<com.haulmont.cuba.gui.components.Component> getInnerComponents() {
         if (state == State.INITIAL_LAYOUT) {
-            return Collections.singletonList(getInitialLayout());
+            return singletonList(getInitialLayout());
         }
         return Collections.emptyList();
     }
@@ -595,7 +596,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
                 }
             }
         } else {
-            Iterator<WindowBreadCrumbs> it = getTabs().iterator();
+            Iterator<WindowBreadCrumbs> it = getWindowStacks().iterator();
             if (it.hasNext()) {
                 Window currentWindow = it.next().getCurrentWindow();
                 if (!isWindowClosePrevented(currentWindow, CloseOriginType.SHORTCUT)) {
@@ -608,17 +609,27 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         }
     }
 
-    protected List<WindowBreadCrumbs> getTabs() {
-        TabSheetBehaviour tabSheet = getTabbedWindowContainer().getTabSheetBehaviour();
+    protected List<WindowBreadCrumbs> getWindowStacks() {
+        if (getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheet = getTabbedWindowContainer().getTabSheetBehaviour();
 
-        List<WindowBreadCrumbs> allBreadCrumbs = new ArrayList<>();
-        for (int i = 0; i < tabSheet.getComponentCount(); i++) {
-            String tabId = tabSheet.getTab(i);
+            List<WindowBreadCrumbs> allBreadCrumbs = new ArrayList<>();
+            for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+                String tabId = tabSheet.getTab(i);
 
-            TabWindowContainer tabComponent = (TabWindowContainer) tabSheet.getTabComponent(tabId);
-            allBreadCrumbs.add(tabComponent.getBreadCrumbs());
+                TabWindowContainer tabComponent = (TabWindowContainer) tabSheet.getTabComponent(tabId);
+                allBreadCrumbs.add(tabComponent.getBreadCrumbs());
+            }
+            return allBreadCrumbs;
+        } else {
+            TabWindowContainer windowContainer = (TabWindowContainer) getSingleWindowContainer().getWindowContainer();
+
+            if (windowContainer == null) {
+                return Collections.emptyList();
+            }
+
+            return singletonList(windowContainer.getBreadCrumbs());
         }
-        return allBreadCrumbs;
     }
 
     protected void moveFocus(TabSheetBehaviour tabSheet, String tabId) {

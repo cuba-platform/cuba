@@ -415,7 +415,7 @@ public interface WebConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getDefaultScreenCanBeClosed();
-    void setDefaultScreenCanBeClosed(boolean b);
+    void setDefaultScreenCanBeClosed(boolean value);
 
     /**
      * Defines the list of regular expression patterns that are applied to each row of the log in the Server Log window.

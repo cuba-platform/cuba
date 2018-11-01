@@ -69,7 +69,6 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
@@ -1359,63 +1358,6 @@ public class WebScreens implements Screens, WindowManager {
         WebAppWorkArea workArea = getConfiguredWorkArea();
         workArea.switchTo(AppWorkArea.State.WINDOW_CONTAINER);
 
-        // close previous windows
-        if (workArea.getMode() == Mode.SINGLE) {
-            VerticalLayout mainLayout = workArea.getSingleWindowContainer();
-            if (mainLayout.getComponentCount() > 0) {
-                TabWindowContainer oldLayout = (TabWindowContainer) mainLayout.getComponent(0);
-                WindowBreadCrumbs oldBreadCrumbs = oldLayout.getBreadCrumbs();
-                if (oldBreadCrumbs != null) {
-                    Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                    oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, () -> {
-                        // todo implement
-//                            showWindow(window, caption, message, WindowManager.OpenType.NEW_TAB, false)
-                    });
-                    return;
-                }
-            }
-        } else {
-            /* todo
-            Integer hashCode = getWindowHashCode(window);
-            com.vaadin.ui.ComponentContainer tab = null;
-            if (hashCode != null && !multipleOpen) {
-                tab = findTab(hashCode);
-            }
-
-            com.vaadin.ui.ComponentContainer oldLayout = tab;
-            final WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
-
-            if (oldBreadCrumbs != null
-                    && windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().getFrame())
-                    && !multipleOpen) {
-                Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                selectWindowTab(((Window.Wrapper) oldBreadCrumbs.getCurrentWindow()).getWrappedWindow());
-
-                int tabPosition = -1;
-                final TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
-                String tabId = tabSheet.getTab(tab);
-                if (tabId != null) {
-                    tabPosition = tabSheet.getTabPosition(tabId);
-                }
-
-                final int finalTabPosition = tabPosition;
-                oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, () -> {
-                    showWindow(window, caption, message, WindowManager.OpenType.NEW_TAB, false);
-
-                    Window wrappedWindow = window;
-                    if (window instanceof Window.Wrapper) {
-                        wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-                    }
-
-                    if (finalTabPosition >= 0 && finalTabPosition < tabSheet.getComponentCount() - 1) {
-                        moveWindowTab(workArea, wrappedWindow, finalTabPosition);
-                    }
-                });
-                return;
-            }
-            */
-        }
-
         // work with new window
         createNewTabLayout(screen);
     }
@@ -1458,31 +1400,15 @@ public class WebScreens implements Screens, WindowManager {
 
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
-            String tabId;
+            String tabId = "tab_" + uuidSource.createUuid();
 
-            ScreenContext screenContext = UiControllerUtils.getScreenContext(screen);
+            tabSheet.addTab(windowContainer, tabId);
 
-            ScreenOptions options = screenContext.getScreenOptions();
-            WindowInfo windowInfo = screenContext.getWindowInfo();
+            if (ui.isTestMode()) {
+                String id = "tab_" + window.getId();
 
-            com.vaadin.ui.ComponentContainer tab = findSameWindowTab(window, options);
-
-            // todo remove multiopen check from here
-            if (tab != null && !windowInfo.getMultipleOpen()) {
-                tabSheet.replaceComponent(tab, windowContainer);
-                tabSheet.removeComponent(tab);
-                tabId = tabSheet.getTab(windowContainer);
-            } else {
-                tabId = "tab_" + uuidSource.createUuid();
-
-                tabSheet.addTab(windowContainer, tabId);
-
-                if (ui.isTestMode()) {
-                    String id = "tab_" + window.getId();
-
-                    tabSheet.setTabTestId(tabId, ui.getTestIdManager().getTestId(id));
-                    tabSheet.setTabCubaId(tabId, id);
-                }
+                tabSheet.setTabTestId(tabId, ui.getTestIdManager().getTestId(id));
+                tabSheet.setTabCubaId(tabId, id);
             }
             TabWindow tabWindow = (TabWindow) window;
 
@@ -1508,6 +1434,21 @@ public class WebScreens implements Screens, WindowManager {
             windowContainer.addStyleName("c-app-single-window");
 
             CubaSingleModeContainer mainLayout = workArea.getSingleWindowContainer();
+
+            if (mainLayout.getWindowContainer() != null) {
+                // remove all windows from single stack
+
+                TabWindowContainer oldWindowContainer = (TabWindowContainer) mainLayout.getWindowContainer();
+
+                Deque<Window> windows = oldWindowContainer.getBreadCrumbs().getWindows();
+                Iterator<Window> iterator = windows.descendingIterator();
+
+                while (iterator.hasNext()) {
+                    Window oldWindow = iterator.next();
+                    remove(oldWindow.getFrameOwner());
+                }
+            }
+
             mainLayout.setWindowContainer(windowContainer);
         }
     }
@@ -1640,24 +1581,6 @@ public class WebScreens implements Screens, WindowManager {
                 }
             }
         }
-    }
-
-    protected com.vaadin.ui.ComponentContainer findSameWindowTab(Window window, ScreenOptions options) {
-        WebAppWorkArea workArea = getConfiguredWorkArea();
-
-        TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
-
-        Iterator<com.vaadin.ui.Component> componentIterator = tabSheetBehaviour.getTabComponents();
-        while (componentIterator.hasNext()) {
-            TabWindowContainer component = (TabWindowContainer) componentIterator.next();
-            Window currentWindow = component.getBreadCrumbs().getCurrentWindow();
-
-//            todo include options hash into Window instance
-//            if (hashCode.equals(getWindowHashCode(currentWindow))) {
-//                return entry.getKey();
-//            }
-        }
-        return null;
     }
 
     @Deprecated

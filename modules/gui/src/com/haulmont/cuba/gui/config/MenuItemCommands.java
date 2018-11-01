@@ -132,6 +132,10 @@ public class MenuItemCommands {
         return dataService.load(ctx);
     }
 
+    // todo implement max tab count in menu components
+    // todo check if mode SINGLE and close previous screens first
+    // todo check multi open
+
     protected class ScreenCommand implements MenuItemCommand {
         protected MenuItem item;
 
@@ -162,7 +166,6 @@ public class MenuItemCommands {
                     openType = openType.resizable(Boolean.parseBoolean(resizable));
                 }
             }
-
 
             String screenId = this.screen;
 
