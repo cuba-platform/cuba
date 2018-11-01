@@ -16,9 +16,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -33,11 +36,19 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Grid;
 import com.vaadin.util.ReflectTools;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ElementKind;
+import javax.validation.Path;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorCloseListener.EDITOR_CLOSE_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.BeforeEditorOpenListener.EDITOR_OPEN_METHOD;
+import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorCloseListener.EDITOR_CLOSE_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPostCommitListener.EDITOR_POST_COMMIT_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPreCommitListener.EDITOR_PRE_COMMIT_METHOD;
 
@@ -49,7 +60,10 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
     protected CollectionDatasource collectionDatasource;
 
+    protected boolean crossFieldValidate = true;
+
     protected Security security = AppBeans.get(Security.NAME);
+    protected BeanValidation beanValidation = AppBeans.get(BeanValidation .class);
 
     public CubaGrid(CubaGridEditorFieldFactory editorFieldFactory) {
         this(null, null, editorFieldFactory);
@@ -216,6 +230,26 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
             fireEditorPreCommitEvent();
 
             Map<Field<?>, Validator.InvalidValueException> invalidValueExceptions = commitFields();
+
+            if (isCrossFieldValidate()) {
+                @SuppressWarnings("unchecked") Entity entity = collectionDatasource.getItem(getEditedItemId());
+                javax.validation.Validator validator = beanValidation.getValidator();
+                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, UiCrossFieldChecks.class);
+
+                Validator.InvalidValueException[] validationExceptions = violations.stream()
+                        .filter(violation -> {
+                            Path propertyPath = violation.getPropertyPath();
+
+                            Path.Node lastNode = Iterables.getLast(propertyPath);
+                            return lastNode.getKind() == ElementKind.BEAN;
+                        })
+                        .map(violation -> new Validator.InvalidValueException(violation.getMessage()))
+                        .toArray(Validator.InvalidValueException[]::new);
+                if (validationExceptions.length > 0) {
+                    throw new Validator.InvalidValueException("Item validation failed", validationExceptions);
+                }
+            }
+
             if (invalidValueExceptions.isEmpty()) {
                 fireEditorPostCommitEvent();
             } else {
@@ -248,6 +282,14 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         } catch (Validator.InvalidValueException e) {
             return false;
         }
+    }
+
+    public boolean isCrossFieldValidate() {
+        return crossFieldValidate;
+    }
+
+    public void setCrossFieldValidate(boolean crossFieldValidate) {
+        this.crossFieldValidate = crossFieldValidate;
     }
 
     protected void fireEditorPreCommitEvent() {
@@ -351,9 +393,16 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         removeListener(EditorPostCommitEvent.class, listener, EDITOR_POST_COMMIT_METHOD);
     }
 
-    public class CubaDefaultEditorErrorHandler implements EditorErrorHandler {
+    public static class CubaDefaultEditorErrorHandler implements EditorErrorHandler {
         @Override
         public void commitError(CommitErrorEvent event) {
+            Grid grid = event.getComponent();
+            if (!event.isValidationFailure()) {
+                com.vaadin.server.ErrorEvent.findErrorHandler(grid)
+                        .error(new ConnectorErrorEvent(grid, event.getCause()));
+            }
+
+            Validator.InvalidValueException validationException = (Validator.InvalidValueException) event.getCause().getCause();
             Map<Field<?>, Validator.InvalidValueException> invalidFields = event
                     .getCause().getInvalidFields();
 
@@ -361,7 +410,7 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
                 Object firstErrorPropertyId = null;
                 Field<?> firstErrorField = null;
 
-                for (Column column : getColumns()) {
+                for (Column column : grid.getColumns()) {
                     Object propertyId = column.getPropertyId();
                     Field<?> field = (Field<?>) column.getState().editorConnector;
 
@@ -379,15 +428,18 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
                  * Validation error, show first failure as
                  * "<Column header>: <message>"
                  */
-                String caption = getColumn(firstErrorPropertyId)
+                String caption = grid.getColumn(firstErrorPropertyId)
                         .getHeaderCaption();
                 String message = invalidFields.get(firstErrorField)
                         .getLocalizedMessage();
 
                 event.setUserErrorMessage(caption + ": " + message);
+            } else if (validationException.getCauses().length > 0) {
+                // Show message of the first cause of validation exception
+                event.setUserErrorMessage(validationException.getCauses()[0].getLocalizedMessage());
             } else {
-                com.vaadin.server.ErrorEvent.findErrorHandler(CubaGrid.this)
-                        .error(new ConnectorErrorEvent(CubaGrid.this, event.getCause()));
+                // Show validation exception message itself
+                event.setUserErrorMessage(validationException.getLocalizedMessage());
             }
         }
     }

@@ -2086,6 +2086,7 @@
                 <xs:attribute name="editorBuffered" type="xs:boolean"/>
                 <xs:attribute name="editorSaveCaption" type="resourceString"/>
                 <xs:attribute name="editorCancelCaption" type="resourceString"/>
+                <xs:attribute name="crossFieldValidate" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

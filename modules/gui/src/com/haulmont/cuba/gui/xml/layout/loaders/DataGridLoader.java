@@ -147,6 +147,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadSelectionMode(resultComponent, element);
         loadFrozenColumnCount(resultComponent, element);
         loadTabIndex(resultComponent, element);
+        loadCrossFieldValidate(resultComponent, element);
     }
 
     protected void loadEditorEnabled(DataGrid component, Element element) {
@@ -444,6 +445,13 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         String frozenColumnCount = element.attributeValue("frozenColumnCount");
         if (StringUtils.isNotEmpty(frozenColumnCount)) {
             component.setFrozenColumnCount(Integer.parseInt(frozenColumnCount));
+        }
+    }
+
+    protected void loadCrossFieldValidate(DataGrid component, Element element) {
+        String crossFieldValidate = element.attributeValue("crossFieldValidate");
+        if (StringUtils.isNotEmpty(crossFieldValidate)) {
+            component.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
         }
     }
 }

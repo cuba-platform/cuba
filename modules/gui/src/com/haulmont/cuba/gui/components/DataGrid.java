@@ -2262,6 +2262,26 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     int getFooterRowCount();
 
     /**
+     * @return true if DataGrid will perform additional validation on editor commit
+     * call using {@link com.haulmont.cuba.core.global.BeanValidation}.
+     * @see com.haulmont.cuba.core.global.BeanValidation
+     */
+    boolean isCrossFieldValidate();
+
+    /**
+     * Enable/disable cross field validation on editor commit call. <br>
+     * Cross field validation is triggered for item of main datasource with
+     * {@link com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks} group only
+     * (without {@link javax.validation.groups.Default} group) when there are no other validation errors in UI components. <br>
+     * <p>
+     * Cross field validation is triggered before {@link EditorPostCommitEvent} hook.
+     *
+     * @param crossFieldValidate cross field validate flag
+     * @see com.haulmont.cuba.core.global.BeanValidation
+     */
+    void setCrossFieldValidate(boolean crossFieldValidate);
+
+    /**
      * A column in the DataGrid.
      */
     interface Column extends HasXmlDescriptor, HasFormatter, Serializable {
