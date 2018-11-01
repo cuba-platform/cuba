@@ -65,7 +65,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
 
     protected boolean readOnly = false;
     protected boolean justLocked = false;
-    protected boolean crossFieldValidate = false;
+    protected boolean crossFieldValidate = true;
 
     protected boolean commitActionPerformed = false;
 
