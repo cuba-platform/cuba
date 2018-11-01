@@ -2731,7 +2731,7 @@
     </xs:complexType>
 
     <!-- Frame -->
-    <xs:complexType name="fragmentContainer">
+    <xs:complexType name="frameContainer">
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:sequence>
@@ -2745,6 +2745,15 @@
                 <!-- src is here only for compatibility with the previous versions -->
                 <xs:attribute name="src" type="xs:string"/>
 
+                <xs:attribute name="screen" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Frame -->
+    <xs:complexType name="fragmentContainer">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
                 <xs:attribute name="screen" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
@@ -2963,7 +2972,7 @@
 
                 <xs:element name="fragment" type="fragmentContainer"/>
                 <!-- frame is here for compatibility with the previous versions -->
-                <xs:element name="frame" type="fragmentContainer"/>
+                <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
 
