@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import org.dom4j.Element;
 
@@ -34,6 +35,8 @@ public interface ComponentLoader<T extends Component> {
 
     interface Context {
         ScreenOptions getOptions();
+
+        ScreenData getScreenData();
 
         Map<String, Object> getParams();
         DsContext getDsContext();

@@ -33,6 +33,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.ParseException;
 import java.util.Collection;
@@ -54,78 +55,103 @@ public class ScreenDataXmlLoader {
     @Inject
     protected ConditionXmlLoader conditionXmlLoader;
 
-    public void load(ScreenData screenData, Element element) {
+    public void load(ScreenData screenData, Element element, @Nullable ScreenData hostScreenData) {
         Preconditions.checkNotNullArgument(screenData, "screenData is null");
         Preconditions.checkNotNullArgument(element, "element is null");
 
-        boolean readOnly = Boolean.valueOf(element.attributeValue("readOnly"));
-        DataContext dataContext = readOnly ? new NoopDataContext() : factory.createDataContext();
-        ((ScreenDataImpl) screenData).setDataContext(dataContext);
+        if (hostScreenData == null) {
+            boolean readOnly = Boolean.valueOf(element.attributeValue("readOnly"));
+            DataContext dataContext = readOnly ? new NoopDataContext() : factory.createDataContext();
+            ((ScreenDataImpl) screenData).setDataContext(dataContext);
+        } else {
+            ((ScreenDataImpl) screenData).setDataContext(hostScreenData.getDataContext());
+        }
 
         for (Element el : element.elements()) {
             if (el.getName().equals("collection")) {
-                loadCollectionContainer(screenData, el);
+                loadCollectionContainer(screenData, el, hostScreenData);
             } else if (el.getName().equals("instance")) {
-                loadInstanceContainer(screenData, el);
+                loadInstanceContainer(screenData, el, hostScreenData);
             } else if (el.getName().equals("keyValueCollection")) {
-                loadKeyValueCollectionContainer(screenData, el);
+                loadKeyValueCollectionContainer(screenData, el, hostScreenData);
             }
         }
     }
 
-    protected void loadInstanceContainer(ScreenData screenData, Element element) {
+    protected void loadInstanceContainer(ScreenData screenData, Element element, @Nullable ScreenData hostScreenData) {
         String containerId = getRequiredAttr(element, "id");
 
-        InstanceContainer<Entity> container = factory.createInstanceContainer(getEntityClass(element));
-        loadView(element, getEntityClass(element), container);
+        InstanceContainer<Entity> container;
 
-        Element loaderEl = element.element("loader");
-        if (loaderEl != null) {
-            loadInstanceLoader(screenData, loaderEl, container);
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            container = hostScreenData.getContainer(containerId);
+        } else {
+            container = factory.createInstanceContainer(getEntityClass(element));
+            loadView(element, getEntityClass(element), container);
         }
 
         screenData.registerContainer(containerId, container);
 
+        Element loaderEl = element.element("loader");
+        if (loaderEl != null) {
+            loadInstanceLoader(screenData, loaderEl, container, hostScreenData);
+        }
+
         for (Element collectionEl : element.elements()) {
-            loadNestedContainer(screenData, collectionEl, container);
+            loadNestedContainer(screenData, collectionEl, container, hostScreenData);
         }
     }
 
-    protected void loadCollectionContainer(ScreenData screenData, Element element) {
+    protected void loadCollectionContainer(ScreenData screenData, Element element, @Nullable ScreenData hostScreenData) {
         String containerId = getRequiredAttr(element, "id");
 
-        CollectionContainer<Entity> container = factory.createCollectionContainer(getEntityClass(element));
-        loadView(element, getEntityClass(element), container);
+        CollectionContainer<Entity> container;
 
-        Element loaderEl = element.element("loader");
-        if (loaderEl != null) {
-            loadCollectionLoader(screenData, loaderEl, container);
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            container = hostScreenData.getContainer(containerId);
+        } else {
+            container = factory.createCollectionContainer(getEntityClass(element));
+            loadView(element, getEntityClass(element), container);
         }
 
         screenData.registerContainer(containerId, container);
 
+        Element loaderEl = element.element("loader");
+        if (loaderEl != null) {
+            loadCollectionLoader(screenData, loaderEl, container, hostScreenData);
+        }
+
         for (Element collectionEl : element.elements()) {
-            loadNestedContainer(screenData, collectionEl, container);
+            loadNestedContainer(screenData, collectionEl, container, hostScreenData);
         }
     }
 
-    protected void loadKeyValueCollectionContainer(ScreenData screenData, Element element) {
+    protected void loadKeyValueCollectionContainer(ScreenData screenData, Element element, @Nullable ScreenData hostScreenData) {
         String containerId = getRequiredAttr(element, "id");
 
-        KeyValueCollectionContainer container = factory.createKeyValueCollectionContainer();
+        KeyValueCollectionContainer container;
 
-        loadProperties(element, container);
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            container = hostScreenData.getContainer(containerId);
+        } else {
+            container = factory.createKeyValueCollectionContainer();
 
-        String idName = element.attributeValue("idName");
-        if (!Strings.isNullOrEmpty(idName))
-            container.setIdName(idName);
+            loadProperties(element, container);
 
-        Element loaderEl = element.element("loader");
-        if (loaderEl != null) {
-            loadKeyValueCollectionLoader(screenData, loaderEl, container);
+            String idName = element.attributeValue("idName");
+            if (!Strings.isNullOrEmpty(idName))
+                container.setIdName(idName);
         }
 
         screenData.registerContainer(containerId, container);
+
+        Element loaderEl = element.element("loader");
+        if (loaderEl != null) {
+            loadKeyValueCollectionLoader(screenData, loaderEl, container, hostScreenData);
+        }
     }
 
     private void loadProperties(Element element, KeyValueCollectionContainer container) {
@@ -152,7 +178,8 @@ public class ScreenDataXmlLoader {
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadNestedContainer(ScreenData screenData, Element element, InstanceContainer<Entity> parentContainer) {
+    protected void loadNestedContainer(ScreenData screenData, Element element, InstanceContainer<Entity> parentContainer,
+                                       @Nullable ScreenData hostScreenData) {
         if (!element.getName().equals("collection") && !element.getName().equals("instance"))
             return;
 
@@ -163,111 +190,143 @@ public class ScreenDataXmlLoader {
 
         InstanceContainer nestedContainer = null;
 
-        if (element.getName().equals("collection")) {
-            if (!metaProperty.getRange().isClass() || !metaProperty.getRange().getCardinality().isMany()) {
-                throw new IllegalStateException(String.format(
-                        "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
-            }
-            CollectionContainer<Entity> container = factory.createCollectionContainer(
-                    metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
-
-            parentContainer.addItemChangeListener(e -> {
-                Entity item = parentContainer.getItemOrNull();
-                container.setItems(item != null ? item.getValue(property) : null);
-            });
-
-            parentContainer.addItemPropertyChangeListener(e -> {
-                if (e.getProperty().equals(property)) {
-                    container.setItems((Collection<Entity>) e.getValue());
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            nestedContainer = hostScreenData.getContainer(containerId);
+        } else {
+            if (element.getName().equals("collection")) {
+                if (!metaProperty.getRange().isClass() || !metaProperty.getRange().getCardinality().isMany()) {
+                    throw new IllegalStateException(String.format(
+                            "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
                 }
-            });
+                CollectionContainer<Entity> container = factory.createCollectionContainer(
+                        metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
-            nestedContainer = container;
+                parentContainer.addItemChangeListener(e -> {
+                    Entity item = parentContainer.getItemOrNull();
+                    container.setItems(item != null ? item.getValue(property) : null);
+                });
 
-        } else if (element.getName().equals("instance")) {
-            if (!metaProperty.getRange().isClass() || metaProperty.getRange().getCardinality().isMany()) {
-                throw new IllegalStateException(String.format(
-                        "Cannot bind instance container '%s' to a non-reference property '%s'", containerId, property));
-            }
-            InstanceContainer<Entity> container = factory.createInstanceContainer(
-                    metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
+                parentContainer.addItemPropertyChangeListener(e -> {
+                    if (e.getProperty().equals(property)) {
+                        container.setItems((Collection<Entity>) e.getValue());
+                    }
+                });
 
-            parentContainer.addItemChangeListener(e -> {
-                Entity item = parentContainer.getItemOrNull();
-                container.setItem(item != null ? item.getValue(property) : null);
-            });
+                nestedContainer = container;
 
-            parentContainer.addItemPropertyChangeListener(e -> {
-                if (e.getProperty().equals(property)) {
-                    container.setItem((Entity) e.getValue());
+            } else if (element.getName().equals("instance")) {
+                if (!metaProperty.getRange().isClass() || metaProperty.getRange().getCardinality().isMany()) {
+                    throw new IllegalStateException(String.format(
+                            "Cannot bind instance container '%s' to a non-reference property '%s'", containerId, property));
                 }
-            });
+                InstanceContainer<Entity> container = factory.createInstanceContainer(
+                        metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
-            nestedContainer = container;
+                parentContainer.addItemChangeListener(e -> {
+                    Entity item = parentContainer.getItemOrNull();
+                    container.setItem(item != null ? item.getValue(property) : null);
+                });
+
+                parentContainer.addItemPropertyChangeListener(e -> {
+                    if (e.getProperty().equals(property)) {
+                        container.setItem((Entity) e.getValue());
+                    }
+                });
+
+                nestedContainer = container;
+            }
         }
 
         if (nestedContainer != null) {
             screenData.registerContainer(containerId, nestedContainer);
 
             for (Element collectionEl : element.elements()) {
-                loadNestedContainer(screenData, collectionEl, nestedContainer);
+                loadNestedContainer(screenData, collectionEl, nestedContainer, hostScreenData);
             }
         }
     }
 
-    protected void loadInstanceLoader(ScreenData screenData, Element element, InstanceContainer<Entity> container) {
-        InstanceLoader<Entity> loader = factory.createInstanceLoader();
-        loader.setDataContext(screenData.getDataContext());
-        loader.setContainer(container);
-
-        loadSoftDeletion(element, loader);
-        loadDynamicAttributes(element, loader);
-        loadQuery(element, loader);
-        loadEntityId(element, loader);
+    protected void loadInstanceLoader(ScreenData screenData, Element element, InstanceContainer<Entity> container,
+                                      @Nullable ScreenData hostScreenData) {
+        InstanceLoader<Entity> loader;
 
         String loaderId = element.attributeValue("id");
         if (loaderId == null) {
             loaderId = generateId();
         }
+
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            loader = hostScreenData.getLoader(loaderId);
+        } else {
+            loader = factory.createInstanceLoader();
+            loader.setDataContext(screenData.getDataContext());
+            loader.setContainer(container);
+
+            loadSoftDeletion(element, loader);
+            loadDynamicAttributes(element, loader);
+            loadQuery(element, loader);
+            loadEntityId(element, loader);
+        }
+
         screenData.registerLoader(loaderId, loader);
     }
 
-    protected void loadCollectionLoader(ScreenData screenData, Element element, CollectionContainer<Entity> container) {
-        CollectionLoader<Entity> loader = factory.createCollectionLoader();
-        loader.setDataContext(screenData.getDataContext());
-        loader.setContainer(container);
-
-        loadQuery(element, loader);
-        loadSoftDeletion(element, loader);
-        loadDynamicAttributes(element, loader);
-        loadFirstResult(element, loader);
-        loadMaxResults(element, loader);
-        loadCacheable(element, loader);
+    protected void loadCollectionLoader(ScreenData screenData, Element element, CollectionContainer<Entity> container,
+                                        @Nullable ScreenData hostScreenData) {
+        CollectionLoader<Entity> loader;
 
         String loaderId = element.attributeValue("id");
         if (loaderId == null) {
             loaderId = generateId();
         }
+
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            loader = hostScreenData.getLoader(loaderId);
+        } else {
+            loader = factory.createCollectionLoader();
+            loader.setDataContext(screenData.getDataContext());
+            loader.setContainer(container);
+
+            loadQuery(element, loader);
+            loadSoftDeletion(element, loader);
+            loadDynamicAttributes(element, loader);
+            loadFirstResult(element, loader);
+            loadMaxResults(element, loader);
+            loadCacheable(element, loader);
+        }
+
         screenData.registerLoader(loaderId, loader);
     }
 
-    protected void loadKeyValueCollectionLoader(ScreenData screenData, Element element, KeyValueCollectionContainer container) {
-        KeyValueCollectionLoader loader = factory.createKeyValueCollectionLoader();
-        loader.setContainer(container);
-
-        loadQuery(element, loader);
-        loadSoftDeletion(element, loader);
-        loadFirstResult(element, loader);
-        loadMaxResults(element, loader);
-
-        String storeName = element.attributeValue("store");
-        if (!Strings.isNullOrEmpty(storeName))
-            loader.setStoreName(storeName);
+    protected void loadKeyValueCollectionLoader(ScreenData screenData, Element element, KeyValueCollectionContainer container,
+                                                @Nullable ScreenData hostScreenData) {
+        KeyValueCollectionLoader loader;
 
         String loaderId = element.attributeValue("id");
         if (loaderId == null) {
             loaderId = generateId();
         }
+
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            loader = hostScreenData.getLoader(loaderId);
+        } else {
+            loader = factory.createKeyValueCollectionLoader();
+            loader.setContainer(container);
+
+            loadQuery(element, loader);
+            loadSoftDeletion(element, loader);
+            loadFirstResult(element, loader);
+            loadMaxResults(element, loader);
+
+            String storeName = element.attributeValue("store");
+            if (!Strings.isNullOrEmpty(storeName))
+                loader.setStoreName(storeName);
+        }
+
         screenData.registerLoader(loaderId, loader);
     }
 
@@ -370,6 +429,14 @@ public class ScreenDataXmlLoader {
         if (id == null)
             throw new IllegalStateException("Required attribute '" + attributeName + "' not found in " + element);
         return id.trim();
+    }
+
+    protected boolean checkProvided(Element element, ScreenData hostScreenData) {
+        boolean provided = Boolean.parseBoolean(element.attributeValue("provided"));
+        if (provided && hostScreenData == null) {
+            throw new IllegalStateException("Host ScreenData is null");
+        }
+        return provided;
     }
 
     protected String generateId() {

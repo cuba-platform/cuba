@@ -170,7 +170,9 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         if (dataEl != null) {
             ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
             ScreenData screenData = UiControllerUtils.getScreenData(window.getFrameOwner());
-            screenDataXmlLoader.load(screenData, dataEl);
+            screenDataXmlLoader.load(screenData, dataEl, null);
+
+            ((ComponentLoaderContext) context).setScreenData(screenData);
         }
     }
 

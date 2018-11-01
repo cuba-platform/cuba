@@ -31,10 +31,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.screen.ScreenOptions;
-import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
@@ -154,6 +151,7 @@ public class WebFragments implements Fragments {
         loaderContext.setFullFrameId(windowInfo.getId());
         loaderContext.setFrame(fragment);
         loaderContext.setParent(null);
+        loaderContext.setScreenData(UiControllerUtils.getScreenData(parent));
         if (parent instanceof LegacyFrame) {
             loaderContext.setDsContext(((LegacyFrame) parent).getDsContext());
         }

@@ -28,6 +28,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
@@ -102,22 +104,6 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             throw new IllegalStateException("FragmentLoader is always called within parent ComponentLoaderContext");
         }
 
-        Element dsContextElement = element.element("dsContext");
-
-        DsContext dsContext = null;
-        if (resultComponent.getFrameOwner() instanceof LegacyFrame) {
-            DsContextLoader contextLoader;
-            DsContext parentDsContext = context.getParent().getDsContext();
-            if (parentDsContext != null){
-                contextLoader = new DsContextLoader(parentDsContext.getDataSupplier());
-            } else {
-                contextLoader = new DsContextLoader(new GenericDataSupplier());
-            }
-
-            dsContext = contextLoader.loadDatasources(dsContextElement, parentDsContext, getContext().getAliasesMap());
-            ((ComponentLoaderContext) context).setDsContext(dsContext);
-        }
-
         assignXmlDescriptor(resultComponent, element);
 
         Element layoutElement = element.element("layout");
@@ -141,6 +127,52 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         loadResponsive(resultComponent, layoutElement);
         loadCss(resultComponent, element);
 
+        Element dataEl = element.element("data");
+        if (dataEl != null) {
+            loadScreenData(dataEl);
+        } else {
+            Element dsContextElement = element.element("dsContext");
+            if (dsContextElement != null) {
+                loadDsContext(dsContextElement);
+            }
+        }
+
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext().getParent();
+        ScreenOptions options = parentContext.getOptions();
+
+        // add inject / init tasks before nested fragments
+        parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options));
+        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options));
+
+        loadSubComponentsAndExpand(resultComponent, layoutElement);
+    }
+
+    protected void loadScreenData(Element dataEl) {
+        ScreenData hostScreenData = null;
+        Context parent = context.getParent();
+        while (hostScreenData == null && parent != null) {
+            hostScreenData = parent.getScreenData();
+            parent = parent.getParent();
+        }
+        ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
+        ScreenData screenData = UiControllerUtils.getScreenData(resultComponent.getFrameOwner());
+        screenDataXmlLoader.load(screenData, dataEl, hostScreenData);
+    }
+
+    protected void loadDsContext(Element dsContextElement) {
+        DsContext dsContext = null;
+        if (resultComponent.getFrameOwner() instanceof LegacyFrame) {
+            DsContextLoader dsContextLoader;
+            DsContext parentDsContext = context.getParent().getDsContext();
+            if (parentDsContext != null){
+                dsContextLoader = new DsContextLoader(parentDsContext.getDataSupplier());
+            } else {
+                dsContextLoader = new DsContextLoader(new GenericDataSupplier());
+            }
+
+            dsContext = dsContextLoader.loadDatasources(dsContextElement, parentDsContext, getContext().getAliasesMap());
+            ((ComponentLoaderContext) context).setDsContext(dsContext);
+        }
         if (dsContext != null) {
             FrameOwner frameOwner = getContext().getFrame().getFrameOwner();
             if (frameOwner instanceof LegacyFrame) {
@@ -156,15 +188,6 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
                 dsContext.setFrameContext(resultComponent.getContext());
             }
         }
-
-        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext().getParent();
-        ScreenOptions options = parentContext.getOptions();
-
-        // add inject / init tasks before nested fragments
-        parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options));
-        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options));
-
-        loadSubComponentsAndExpand(resultComponent, layoutElement);
     }
 
     public String getFrameId() {

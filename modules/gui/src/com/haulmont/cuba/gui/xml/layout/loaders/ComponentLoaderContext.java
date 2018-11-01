@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -32,6 +33,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     protected ScreenOptions options;
 
+    protected ScreenData screenData;
     protected DsContext dsContext;
     protected Frame frame;
     protected String fullFrameId;
@@ -64,6 +66,14 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     @Override
     public Map<String, Object> getParams() {
         return parameters;
+    }
+
+    public ScreenData getScreenData() {
+        return screenData;
+    }
+
+    public void setScreenData(ScreenData screenData) {
+        this.screenData = screenData;
     }
 
     @Override

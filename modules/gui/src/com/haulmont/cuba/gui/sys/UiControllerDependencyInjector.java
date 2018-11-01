@@ -335,6 +335,10 @@ public class UiControllerDependencyInjector {
                         eventTarget = ((ScreenFragment) frameOwner).getHostController();
                         break;
 
+                    case DATA_CONTEXT:
+                        eventTarget = UiControllerUtils.getScreenData(frameOwner).getDataContext();
+                        break;
+
                     default:
                         throw new UnsupportedOperationException("Unsupported @Subscribe target " + annotation.target());
                 }

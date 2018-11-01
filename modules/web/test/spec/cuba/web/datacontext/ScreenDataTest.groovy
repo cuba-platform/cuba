@@ -54,7 +54,7 @@ class ScreenDataTest extends WebSpec {
 
         when:
 
-        screenDataLoader.load(screenData, document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement, null)
         DataContext dataContext = screenData.dataContext
         InstanceContainer<User> userCont = screenData.getContainer('userCont')
         CollectionContainer<User> usersCont = screenData.getContainer('usersCont')
@@ -122,7 +122,7 @@ class ScreenDataTest extends WebSpec {
 
         when:
 
-        screenDataLoader.load(screenData, document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement, null)
         DataContext dataContext = screenData.dataContext
         InstanceContainer<User> userCont = screenData.getContainer('userCont')
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
@@ -199,7 +199,7 @@ class ScreenDataTest extends WebSpec {
 
         when:
 
-        screenDataLoader.load(screenData, document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement, null)
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
         KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
@@ -257,7 +257,7 @@ class ScreenDataTest extends WebSpec {
 
         when:
 
-        screenDataLoader.load(screenData, document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement, null)
         InstanceContainer<Order> orderCont = screenData.getContainer('orderCont')
         CollectionContainer<OrderLine> linesCont = screenData.getContainer('linesCont')
         InstanceContainer<Product> productCont = screenData.getContainer('productCont')
@@ -310,11 +310,111 @@ class ScreenDataTest extends WebSpec {
 
         when:
 
-        screenDataLoader.load(screenData, document.rootElement)
+        screenDataLoader.load(screenData, document.rootElement, null)
         DataContext dataContext = screenData.dataContext
 
         then:
 
         dataContext instanceof NoopDataContext
+    }
+
+    def "containers in fragments"() {
+
+        def xml = '''
+            <data>
+                <instance id="orderCont"
+                          class="com.haulmont.cuba.web.testmodel.sales.Order">
+                          
+                    <collection id="linesCont" property="orderLines">
+                        <instance id="productCont" property="product">
+                            <collection id="tagsCont" property="tags"/>
+                        </instance>
+                    </collection>
+                </instance>
+                
+                <collection id="ordersCont" class="com.haulmont.cuba.web.testmodel.sales.Order" view="_local">
+                    <loader id="ordersLd"/>
+                </collection>
+            </data>
+            '''
+
+        def xmlA = '''
+            <data>
+                <instance id="orderCont" provided="true"
+                          class="com.haulmont.cuba.web.testmodel.sales.Order">
+                          
+                    <collection id="linesCont" property="orderLines" provided="true">
+                        <instance id="productCont" property="product" provided="true"/>
+                    </collection>
+                </instance>
+                
+                <collection id="tagsCont" class="com.haulmont.cuba.web.testmodel.sales.ProductTag" view="_local"/>
+                
+                <instance id="orderContA" class="com.haulmont.cuba.web.testmodel.sales.Order">
+                    <collection id="linesContA" class="" property="orderLines">
+                        <instance id="productContA" property="product">
+                            <collection id="tagsContA" property="tags"/>
+                        </instance>
+                    </collection>
+                </instance>
+
+                <collection id="ordersCont" class="com.haulmont.cuba.web.testmodel.sales.Order" view="_local"
+                            provided="true">
+                    <loader id="ordersLd" provided="true"/>
+                </collection>
+            </data>
+            '''
+
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
+
+        when:
+
+        ScreenData screenData = new ScreenDataImpl()
+        screenDataLoader.load(screenData, Dom4j.readDocument(xml).rootElement, null)
+        InstanceContainer<Order> orderCont = screenData.getContainer('orderCont')
+        CollectionContainer<OrderLine> linesCont = screenData.getContainer('linesCont')
+        InstanceContainer<Product> productCont = screenData.getContainer('productCont')
+        CollectionContainer<ProductTag> tagsCont = screenData.getContainer('tagsCont')
+        CollectionLoader<Order> ordersLd = screenData.getLoader("ordersLd")
+
+        then:
+
+        orderCont != null
+        linesCont != null
+        productCont != null
+        tagsCont != null
+        ordersLd != null
+
+        when:
+
+        ScreenData screenDataA = new ScreenDataImpl()
+        screenDataLoader.load(screenDataA, Dom4j.readDocument(xmlA).rootElement, screenData)
+
+        InstanceContainer<Order> orderCont1 = screenDataA.getContainer('orderCont')
+        CollectionContainer<OrderLine> linesCont1 = screenDataA.getContainer('linesCont')
+        InstanceContainer<Product> productCont1 = screenDataA.getContainer('productCont')
+
+        CollectionContainer<ProductTag> tagsCont1 = screenDataA.getContainer('tagsCont')
+
+        CollectionLoader<Order> ordersLd1 = screenDataA.getLoader("ordersLd")
+
+        InstanceContainer<Order> orderContA = screenDataA.getContainer('orderContA')
+        CollectionContainer<OrderLine> linesContA = screenDataA.getContainer('linesContA')
+        InstanceContainer<Product> productContA = screenDataA.getContainer('productContA')
+        CollectionContainer<ProductTag> tagsContA = screenDataA.getContainer('tagsContA')
+
+        then:
+
+        orderCont1.is(orderCont)
+        linesCont1.is(linesCont)
+        productCont1.is(productCont)
+        ordersLd1.is(ordersLd)
+
+        !tagsCont1.is(tagsCont)
+
+        !orderContA.is(orderCont)
+        !linesContA.is(linesCont)
+        !productContA.is(productCont)
+        !tagsContA.is(tagsCont)
     }
 }

@@ -33,31 +33,34 @@
 
     <xs:complexType name="instanceContainerType">
         <xs:sequence>
-            <xs:element name="loader" type="instanceLoaderType"/>
-            <xs:element name="instance" type="nestedContainerType"/>
-            <xs:element name="collection" type="nestedContainerType"/>
+            <xs:element name="loader" type="instanceLoaderType" minOccurs="0"/>
+            <xs:element name="instance" type="nestedContainerType" minOccurs="0"/>
+            <xs:element name="collection" type="nestedContainerType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="view" type="xs:string"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="collectionContainerType">
         <xs:sequence>
-            <xs:element name="loader" type="collectionLoaderType"/>
+            <xs:element name="loader" type="collectionLoaderType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="view" type="xs:string"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="nestedContainerType">
         <xs:sequence>
-            <xs:element name="instance" type="nestedContainerType"/>
-            <xs:element name="collection" type="nestedContainerType"/>
+            <xs:element name="instance" type="nestedContainerType" minOccurs="0"/>
+            <xs:element name="collection" type="nestedContainerType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="property" type="xs:string" use="required"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="instanceLoaderType">
@@ -68,6 +71,7 @@
         <xs:attribute name="softDeletion" type="xs:boolean"/>
         <xs:attribute name="dynamicAttributes" type="xs:boolean"/>
         <xs:attribute name="entityId" type="xs:string"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="collectionLoaderType">
@@ -80,25 +84,27 @@
         <xs:attribute name="firstResult" type="xs:integer"/>
         <xs:attribute name="maxResults" type="xs:integer"/>
         <xs:attribute name="cacheable" type="xs:boolean"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="keyValueCollectionContainerType">
         <xs:sequence>
             <xs:element name="properties" type="keyValueCollectionContainerProperties"/>
-            <xs:element name="loader" type="keyValueCollectionLoaderType"/>
+            <xs:element name="loader" type="keyValueCollectionLoaderType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
-
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="keyValueCollectionLoaderType">
         <xs:sequence>
-            <xs:element name="query" type="queryType"/>
+            <xs:element name="query" type="queryType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
         <xs:attribute name="firstResult" type="xs:integer"/>
         <xs:attribute name="maxResults" type="xs:integer"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="keyValueCollectionContainerProperties">
