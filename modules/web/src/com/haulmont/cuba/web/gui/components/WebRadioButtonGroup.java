@@ -59,7 +59,6 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
         return generateDefaultItemCaption(item);
     }
 
-    // TODO: gg, refactor, extract to some value provider?
     protected String generateDefaultItemCaption(V item) {
         if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
