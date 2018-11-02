@@ -67,6 +67,7 @@ import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.components.table.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
@@ -1115,19 +1116,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    protected ContextMenuButton createContextMenuButton() {
-        //noinspection IncorrectCreateGuiComponent
-        return new ContextMenuButton(showIconsForPopupMenuActions) {
-            @Override
-            protected void beforeActionPerformed() {
-                WebAbstractTable.this.component.hideContextMenuPopup();
-            }
+    protected CubaButton createContextMenuButton() {
+        return new CubaButton();
+    }
 
-            @Override
-            protected com.haulmont.cuba.gui.components.Component getActionEventTarget() {
-                return WebAbstractTable.this;
-            }
-        };
+    @Override
+    protected void beforeContextMenuButtonHandlerPerformed() {
+        WebAbstractTable.this.component.hideContextMenuPopup();
     }
 
     protected void handleClickAction() {
@@ -2749,8 +2744,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         checkNotNullArgument(getColumn(columnId), String.format("column with id '%s' not found", columnId));
 
         component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
-//            TableItemWrapper wrapper = (TableItemWrapper) component.getItem(itemId);
-//            Object itemId2 = wrapper.getItemId();
             TableItems<E> tableItems = getItems();
             if (tableItems == null) {
                 return;
@@ -2789,12 +2782,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         customContextMenu.setStyleName("c-cm-container");
 
         for (Action action : actions) {
-            ContextMenuButton contextMenuButton = createContextMenuButton();
-            contextMenuButton.setStyleName("c-cm-button");
-            contextMenuButton.setAction(action);
+            CubaButton contextMenuButton = createContextMenuButton();
+            initContextMenuButton(contextMenuButton, action);
 
-            Component vButton = contextMenuButton.unwrap(com.vaadin.ui.Component.class);
-            customContextMenu.addComponent(vButton);
+            customContextMenu.addComponent(contextMenuButton);
         }
 
         if (customContextMenu.getComponentCount() > 0) {

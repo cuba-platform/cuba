@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
@@ -24,14 +25,19 @@ import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Component;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
@@ -44,6 +50,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.SecuredActionsHolder {
 
     protected final List<Action> actionList = new ArrayList<>(5);
+    protected Map<Action, CubaButton> actionButtons = new HashMap<>(5);
 
     protected VerticalLayout contextMenuPopup;
 
@@ -51,6 +58,8 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected boolean showIconsForPopupMenuActions;
+
+    protected Consumer<PropertyChangeEvent> actionPropertyChangeListener = this::actionPropertyChanged;
 
     protected WebAbstractActionsHolderComponent() {
         contextMenuPopup = new VerticalLayout();
@@ -93,6 +102,65 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         };
     }
 
+    protected void actionPropertyChanged(PropertyChangeEvent evt) {
+        Action action = (Action) evt.getSource();
+        CubaButton button = actionButtons.get(action);
+
+        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+            setContextMenuButtonIcon(button, showIconsForPopupMenuActions
+                    ? action.getIcon()
+                    : null);
+        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+            setContextMenuButtonCaption(button, action.getCaption(), action.getShortcutCombination());
+        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+            button.setDescription(action.getDescription());
+        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+            button.setEnabled(action.isEnabled());
+        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+            button.setVisible(action.isVisible());
+        }
+    }
+
+    protected void setContextMenuButtonCaption(CubaButton button, String caption, KeyCombination shortcutCombination) {
+        if (!Strings.isNullOrEmpty(caption)
+                && shortcutCombination != null) {
+            caption = caption + " (" + shortcutCombination.format() + ")";
+        }
+
+        button.setCaption(caption);
+    }
+
+    protected void setContextMenuButtonIcon(CubaButton button, String icon) {
+        if (!StringUtils.isEmpty(icon)) {
+            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
+            Resource iconResource = iconResolver.getIconResource(icon);
+            button.setIcon(iconResource);
+            button.addStyleName(ICON_STYLE);
+        } else {
+            button.setIcon(null);
+            button.removeStyleName(ICON_STYLE);
+        }
+    }
+
+    protected void setContextMenuButtonAction(CubaButton button, Action action) {
+        setContextMenuButtonIcon(button, showIconsForPopupMenuActions
+                ? action.getIcon()
+                : null);
+        setContextMenuButtonCaption(button, action.getCaption(), action.getShortcutCombination());
+        button.setDescription(action.getDescription());
+        button.setEnabled(action.isEnabled());
+        button.setVisible(action.isVisible());
+
+        action.addPropertyChangeListener(actionPropertyChangeListener);
+        button.setClickHandler(event -> {
+            beforeContextMenuButtonHandlerPerformed();
+            action.actionPerform(WebAbstractActionsHolderComponent.this);
+        });
+    }
+
+    protected void beforeContextMenuButtonHandlerPerformed() {
+    }
+
     @Inject
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
         ThemeConstants theme = themeConstantsManager.getConstants();
@@ -122,11 +190,8 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         }
 
         if (StringUtils.isNotEmpty(action.getCaption())) {
-            ContextMenuButton contextMenuButton = createContextMenuButton();
-            contextMenuButton.setStyleName("c-cm-button");
-            contextMenuButton.setAction(action);
-
-            Component newVButton = contextMenuButton.unwrap(com.vaadin.ui.Component.class);
+            CubaButton contextMenuButton = createContextMenuButton();
+            initContextMenuButton(contextMenuButton, action);
 
             int visibleActionsIndex = 0;
             int i = 0;
@@ -138,11 +203,11 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
                 i++;
             }
 
-            contextMenuPopup.addComponent(newVButton, visibleActionsIndex);
+            contextMenuPopup.addComponent(contextMenuButton, visibleActionsIndex);
+            actionButtons.put(action, contextMenuButton);
         }
 
         actionList.add(index, action);
-
         shortcutsDelegate.addAction(null, action);
 
         attachAction(action);
@@ -150,34 +215,27 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         actionsPermissions.apply(action);
     }
 
+    protected void initContextMenuButton(CubaButton contextMenuButton, Action action) {
+        contextMenuButton.setStyleName("c-cm-button");
+        setContextMenuButtonAction(contextMenuButton, action);
+    }
+
     protected void attachAction(Action action) {
         action.refreshState();
     }
 
-    protected abstract ContextMenuButton createContextMenuButton();
+    protected abstract CubaButton createContextMenuButton();
 
     @Override
     public void removeAction(@Nullable Action action) {
         if (actionList.remove(action)) {
-            ContextMenuButton actionButton = null;
-
-            for (Component component : contextMenuPopup) {
-                if (component instanceof ContextMenuButton) {
-                    ContextMenuButton button = (ContextMenuButton) component;
-                    if (button.getAction() == action) {
-                        actionButton = button;
-                        break;
-                    }
-                }
-            }
-
-            if (actionButton != null) {
-                actionButton.setAction(null);
-
-                contextMenuPopup.removeComponent(actionButton.unwrap(com.vaadin.ui.Component.class));
-            }
-
             shortcutsDelegate.removeAction(action);
+
+            if (action != null) {
+                Button button = actionButtons.remove(action);
+                contextMenuPopup.removeComponent(button);
+                action.removePropertyChangeListener(actionPropertyChangeListener);
+            }
         }
     }
 
