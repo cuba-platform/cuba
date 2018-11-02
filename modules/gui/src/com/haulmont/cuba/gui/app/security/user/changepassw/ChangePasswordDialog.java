@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,7 +45,7 @@ public class ChangePasswordDialog extends AbstractWindow {
     protected PasswordField currentPasswordField;
 
     @Inject
-    protected Label currentPasswordLabel;
+    protected Label<String> currentPasswordLabel;
 
     @Named("windowClose")
     protected Button closeBtn;
@@ -95,6 +96,14 @@ public class ChangePasswordDialog extends AbstractWindow {
                 changePassword();
             }
         });
+
+        if (user != null) {
+            String userCaption = user.getCaption();
+
+            if (StringUtils.isNotEmpty(userCaption)) {
+                getWindow().setCaption(formatMessage("captionWithUserName", userCaption));
+            }
+        }
     }
 
     @Override
