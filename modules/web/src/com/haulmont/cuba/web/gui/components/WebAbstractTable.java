@@ -2001,6 +2001,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         List<Element> settingsColumnList = columnsElem.elements("columns");
+        if (settingsColumnList.size() != component.getVisibleColumns().length) {
+            return true;
+        }
 
         Object[] visibleColumns = component.getVisibleColumns();
         for (int i = 0; i < visibleColumns.length; i++) {
