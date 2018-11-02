@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Range;
@@ -170,6 +171,14 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         }
 
         super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        V value = getValue();
+        return value instanceof String
+                ? Strings.isNullOrEmpty((String) value)
+                : TextField.super.isEmpty();
     }
 
     @Override

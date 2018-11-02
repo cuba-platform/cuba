@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.CapsLockIndicator;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -50,7 +51,6 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
         }
     }
 
-    //    @Override
     protected CubaPasswordField createTextFieldImpl() {
         return new CubaPasswordField();
     }
@@ -64,6 +64,11 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
     protected String convertToModel(String componentRawValue) throws ConversionException {
         String value = emptyToNull(componentRawValue);
         return super.convertToModel(value);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return Strings.isNullOrEmpty(getValue());
     }
 
     @Override

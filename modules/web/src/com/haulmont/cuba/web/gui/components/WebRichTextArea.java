@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.RichTextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -94,6 +95,11 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     protected String convertToModel(String componentRawValue) throws ConversionException {
         String value = emptyToNull(componentRawValue);
         return super.convertToModel(value);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return Strings.isNullOrEmpty(getValue());
     }
 
     @Override

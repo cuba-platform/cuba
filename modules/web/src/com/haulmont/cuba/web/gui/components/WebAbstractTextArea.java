@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -96,6 +97,14 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         }
 
         return super.convertToModel(value);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        V value = getValue();
+        return value instanceof String
+                ? Strings.isNullOrEmpty((String) value)
+                : TextArea.super.isEmpty();
     }
 
     @Inject
