@@ -3076,7 +3076,7 @@
     </xs:group>
 
     <xs:complexType name="rootLayout">
-        <xs:group ref="standardComponent"/>
+        <xs:group ref="layoutOrComponent"/>
 
         <xs:attribute name="expand" type="xs:string"/>
 
