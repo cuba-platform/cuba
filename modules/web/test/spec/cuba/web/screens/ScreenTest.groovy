@@ -51,7 +51,7 @@ class ScreenTest extends WebSpec {
     }
 
     def "Open login window"() {
-        Screens screens = cont.getBean(Screens.NAME, vaadinUi)
+        def screens = vaadinUi.screens
 
         def beforeShowListener = Mock(Consumer)
         def afterShowListener = Mock(Consumer)

@@ -53,6 +53,7 @@ class WebSpec extends Specification {
 
     AppUI vaadinUi
 
+    @SuppressWarnings("GroovyAccessibility")
     void setup() {
         metadata = cont.getBean(Metadata)
         metadataTools = cont.getBean(MetadataTools)
@@ -98,6 +99,8 @@ class WebSpec extends Specification {
         vaadinUi.app = app
         vaadinUi.messages = cont.getBean(Messages)
         vaadinUi.getConnectorTracker() >> vaadinConnectorTracker
+
+        vaadinUi.applicationContext = cont.getApplicationContext()
 
         UI.setCurrent(vaadinUi)
     }
