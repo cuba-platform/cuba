@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.CloseOriginType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
@@ -40,27 +41,23 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
 
 public class WindowBreadCrumbs extends CssLayout {
 
     protected static final String BREADCRUMBS_VISIBLE_WRAP_STYLE = "c-breadcrumbs-visible";
     protected static final String C_HEADLINE_CONTAINER = "c-headline-container";
 
-    protected BeanLocator beanLocator;
-
     protected boolean visibleExplicitly = true;
-    protected Label label;
 
     protected Mode workAreaMode;
 
-    protected Deque<Window> windows = new ArrayDeque<>(2);
+    protected Deque<Window> windows = new ArrayDeque<>(8);
 
-    protected Layout logoLayout;
     protected Layout linksLayout;
     protected Button closeBtn;
-
-    protected Map<Button, Window> btn2win = new HashMap<>(4);
 
     protected WindowNavigateHandler windowNavigateHandler = null;
 
@@ -75,10 +72,6 @@ public class WindowBreadCrumbs extends CssLayout {
     }
 
     public void setBeanLocator(BeanLocator beanLocator) {
-        this.beanLocator = beanLocator;
-    }
-
-    public void afterPropertiesSet() {
         setWidth(100, Unit.PERCENTAGE);
         setHeightUndefined();
         setPrimaryStyleName(C_HEADLINE_CONTAINER);
@@ -87,15 +80,18 @@ public class WindowBreadCrumbs extends CssLayout {
             super.setVisible(false);
         }
 
-        logoLayout = createLogoLayout();
+        Layout logoLayout = createLogoLayout();
 
         linksLayout = createLinksLayout();
         linksLayout.setSizeUndefined();
 
-        if (workAreaMode != Mode.TABBED) {
+        if (workAreaMode == Mode.SINGLE) {
+            Messages messages = beanLocator.get(Messages.NAME);
+
             CubaButton closeBtn = new CubaButton("");
+            closeBtn.setDescription(messages.getMainMessage("windowBreadCrumbs.closeButton.description"));
             closeBtn.setClickHandler(this::onCloseWindowButtonClick);
-            closeBtn.setIcon(resolveIcon(CubaIcon.CLOSE));
+            closeBtn.setIcon(resolveIcon(beanLocator, CubaIcon.CLOSE));
             closeBtn.setStyleName("c-closetab-button");
 
             this.closeBtn = closeBtn;
@@ -116,11 +112,9 @@ public class WindowBreadCrumbs extends CssLayout {
         if (closeBtn != null) {
             addComponent(closeBtn);
         }
-
-        addAttachListener(this::componentAttachedToUI);
     }
 
-    protected Resource resolveIcon(CubaIcon icon) {
+    protected Resource resolveIcon(BeanLocator beanLocator, CubaIcon icon) {
         String iconName = beanLocator.get(Icons.class).get(icon);
         return beanLocator.get(IconResolver.class).getIconResource(iconName);
     }
@@ -168,10 +162,11 @@ public class WindowBreadCrumbs extends CssLayout {
     }
 
     public Window getCurrentWindow() {
-        if (windows.isEmpty())
+        if (windows.isEmpty()) {
             return null;
-        else
+        } else {
             return windows.getLast();
+        }
     }
 
     public void addWindow(Window window) {
@@ -235,11 +230,12 @@ public class WindowBreadCrumbs extends CssLayout {
         boolean isTestMode = ui.isTestMode();
 
         linksLayout.removeAllComponents();
-        btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
 
-            Button button = new CubaButton(StringUtils.trimToEmpty(window.getCaption()), this::navigationButtonClicked);
+            Button button = new NavigationButton(window);
+            button.setCaption(StringUtils.trimToEmpty(window.getCaption()));
+            button.addClickListener(this::navigationButtonClicked);
             button.setSizeUndefined();
             button.setStyleName(ValoTheme.BUTTON_LINK);
             button.setTabIndex(-1);
@@ -251,8 +247,6 @@ public class WindowBreadCrumbs extends CssLayout {
             if (ui.isPerformanceTestMode()) {
                 button.setId(ui.getTestIdManager().getTestId("breadCrubms_Button_" + window.getId()));
             }
-
-            btn2win.put(button, window);
 
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
@@ -267,17 +261,18 @@ public class WindowBreadCrumbs extends CssLayout {
                 captionLabel.setStyleName("c-breadcrumbs-win-caption");
                 captionLabel.setSizeUndefined();
                 linksLayout.addComponent(captionLabel);
-
-                this.label = captionLabel;
             }
         }
     }
 
-    public Label getLabel() {
-        return label;
+    @Override
+    public void attach() {
+        super.attach();
+
+        componentAttachedToUI();
     }
 
-    protected void componentAttachedToUI(@SuppressWarnings("unused") AttachEvent event) {
+    protected void componentAttachedToUI() {
         adjustParentStyles();
 
         if (ui.isTestMode()) {
@@ -303,7 +298,7 @@ public class WindowBreadCrumbs extends CssLayout {
     }
 
     protected void navigationButtonClicked(Button.ClickEvent event) {
-        Window win = btn2win.get(event.getButton());
+        Window win = ((NavigationButton) event.getButton()).getWindow();
         if (win != null) {
             fireListeners(win);
         }
@@ -312,5 +307,17 @@ public class WindowBreadCrumbs extends CssLayout {
     @FunctionalInterface
     public interface WindowNavigateHandler {
         void windowNavigate(WindowBreadCrumbs breadCrumbs, Window window);
+    }
+
+    public static class NavigationButton extends CubaButton {
+        protected final Window window;
+
+        public NavigationButton(Window window) {
+            this.window = window;
+        }
+
+        public Window getWindow() {
+            return window;
+        }
     }
 }

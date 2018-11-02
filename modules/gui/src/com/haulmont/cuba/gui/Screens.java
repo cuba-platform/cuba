@@ -77,6 +77,11 @@ public interface Screens {
      */
     void show(Screen screen);
 
+    // todo implement max tab count in menu components
+    // todo check if mode SINGLE and close previous screens first
+    // todo check multi open
+//    boolean show(Screen screen);
+
     /**
      * Removes screen from UI and releases all the resources of screen.
      *

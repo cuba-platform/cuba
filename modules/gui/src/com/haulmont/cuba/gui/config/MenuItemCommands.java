@@ -132,10 +132,6 @@ public class MenuItemCommands {
         return dataService.load(ctx);
     }
 
-    // todo implement max tab count in menu components
-    // todo check if mode SINGLE and close previous screens first
-    // todo check multi open
-
     protected class ScreenCommand implements MenuItemCommand {
         protected FrameOwner origin;
         protected MenuItem item;
@@ -214,6 +210,7 @@ public class MenuItemCommands {
 
     protected class BeanCommand implements MenuItemCommand {
 
+        protected FrameOwner origin;
         protected MenuItem item;
 
         protected String bean;
@@ -222,6 +219,7 @@ public class MenuItemCommands {
 
         protected BeanCommand(FrameOwner origin, MenuItem item,
                               String bean, String beanMethod, Map<String, Object> params) {
+            this.origin = origin;
             this.item = item;
             this.bean = bean;
             this.beanMethod = beanMethod;
@@ -232,13 +230,17 @@ public class MenuItemCommands {
         public void run() {
             StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
 
-            // todo ScreenContextAware
-
             Object beanInstance = beanLocator.get(bean);
             try {
                 Method methodWithParams = MethodUtils.getAccessibleMethod(beanInstance.getClass(), beanMethod, Map.class);
                 if (methodWithParams != null) {
                     methodWithParams.invoke(beanInstance, params);
+                    return;
+                }
+
+                Method methodWithScreen = MethodUtils.getAccessibleMethod(beanInstance.getClass(), beanMethod, FrameOwner.class);
+                if (methodWithScreen != null) {
+                    methodWithScreen.invoke(beanInstance, origin);
                     return;
                 }
 
@@ -258,6 +260,7 @@ public class MenuItemCommands {
 
     protected class RunnableClassCommand implements MenuItemCommand {
 
+        protected FrameOwner origin;
         protected MenuItem item;
 
         protected String runnableClass;
@@ -265,6 +268,7 @@ public class MenuItemCommands {
 
         protected RunnableClassCommand(FrameOwner origin, MenuItem item,
                                        String runnableClass, Map<String, Object> params) {
+            this.origin = origin;
             this.item = item;
             this.runnableClass = runnableClass;
             this.params = params;
@@ -294,10 +298,10 @@ public class MenuItemCommands {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
             }
 
-            // todo ScreenContextAware
-
             if (classInstance instanceof Consumer) {
                 ((Consumer) classInstance).accept(params);
+            } else if (classInstance instanceof MenuItemRunnable) {
+                ((MenuItemRunnable) classInstance).run(origin, item);
             } else {
                 ((Runnable) classInstance).run();
             }

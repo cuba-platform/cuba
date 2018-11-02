@@ -1364,7 +1364,6 @@ public class WebScreens implements Screens, WindowManager {
         WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(appWorkArea.getMode());
         windowBreadCrumbs.setUI(ui);
         windowBreadCrumbs.setBeanLocator(beanLocator);
-        windowBreadCrumbs.afterPropertiesSet();
 
         boolean showBreadCrumbs = webConfig.getShowBreadCrumbs() || appWorkArea.getMode() == Mode.SINGLE;
         windowBreadCrumbs.setVisible(showBreadCrumbs);
