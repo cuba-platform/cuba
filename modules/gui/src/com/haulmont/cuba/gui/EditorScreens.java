@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 import static java.util.Collections.singletonMap;
 
 /**
@@ -139,7 +140,7 @@ public class EditorScreens {
     @SuppressWarnings("unchecked")
     protected <E extends Entity, S extends Screen> S buildEditor(EditorBuilder<E> builder) {
         FrameOwner origin = builder.getOrigin();
-        Screens screens = origin.getScreenContext().getScreens();
+        Screens screens = getScreenContext(origin).getScreens();
 
         if (builder.getMode() == Mode.EDIT && builder.getEditedEntity() == null) {
             throw new IllegalStateException(String.format("Editor of %s cannot be open with mode EDIT, entity is not set",

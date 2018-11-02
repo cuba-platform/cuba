@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.config.MenuItemCommands;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.MenuItemCommand;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.vaadin.event.ShortcutListener;
@@ -256,7 +257,10 @@ public class SideMenuBuilder {
 
         @Override
         public void accept(SideMenu.MenuItem menuItem) {
-            MenuItemCommand command = menuItemCommands.create(item);
+            SideMenu menu = menuItem.getMenu();
+            FrameOwner frameOwner = menu.getFrame().getFrameOwner();
+
+            MenuItemCommand command = menuItemCommands.create(frameOwner, item);
             command.run();
         }
     }

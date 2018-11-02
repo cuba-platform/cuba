@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 /**
  * Class that provides fluent interface for building entity lookup screens with various options.
@@ -70,7 +71,7 @@ public class LookupScreens {
     @SuppressWarnings("unchecked")
     protected <E extends Entity> Screen buildLookup(LookupBuilder<E> builder) {
         FrameOwner origin = builder.getOrigin();
-        Screens screens = origin.getScreenContext().getScreens();
+        Screens screens = getScreenContext(origin).getScreens();
 
         Screen screen;
 

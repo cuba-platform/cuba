@@ -21,7 +21,11 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.MenuItemCommand;
+import com.haulmont.cuba.gui.config.MenuItemCommands;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -245,7 +249,10 @@ public class MenuBuilder {
 
         @Override
         public void accept(AppMenu.MenuItem menuItem) {
-            MenuItemCommand command = menuItemCommands.create(item);
+            AppMenu menu = menuItem.getMenu();
+            FrameOwner frameOwner = menu.getFrame().getFrameOwner();
+
+            MenuItemCommand command = menuItemCommands.create(frameOwner, item);
             command.run();
         }
     }

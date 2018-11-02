@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.ContentMode;
  */
 public interface Notifications {
 
-    String NAME = "cuba_Notifications";
-
     int DELAY_FOREVER = -1;
     int DELAY_NONE = 0;
     int DELAY_DEFAULT = Integer.MIN_VALUE;

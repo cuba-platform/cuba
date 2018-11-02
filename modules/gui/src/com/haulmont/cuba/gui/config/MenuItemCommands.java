@@ -25,9 +25,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.screen.MapScreenOptions;
-import com.haulmont.cuba.gui.screen.OpenMode;
-import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -42,6 +40,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component("cuba_MenuItemCommands")
 public class MenuItemCommands {
@@ -66,19 +66,19 @@ public class MenuItemCommands {
      * @param item menu item
      * @return command
      */
-    public MenuItemCommand create(MenuItem item) {
+    public MenuItemCommand create(FrameOwner origin, MenuItem item) {
         Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
 
         if (StringUtils.isNotEmpty(item.getScreen())) {
-            return new ScreenCommand(item, item.getScreen(), item.getDescriptor(), params);
+            return new ScreenCommand(origin, item, item.getScreen(), item.getDescriptor(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getRunnableClass())) {
-            return new RunnableClassCommand(item, item.getRunnableClass(), params);
+            return new RunnableClassCommand(origin, item, item.getRunnableClass(), params);
         }
 
         if (StringUtils.isNotEmpty(item.getBean())) {
-            return new BeanCommand(item, item.getBean(), item.getBeanMethod(), params);
+            return new BeanCommand(origin, item, item.getBean(), item.getBeanMethod(), params);
         }
 
         return null;
@@ -137,17 +137,20 @@ public class MenuItemCommands {
     // todo check multi open
 
     protected class ScreenCommand implements MenuItemCommand {
+        protected FrameOwner origin;
         protected MenuItem item;
 
         protected String screen;
         protected Element descriptor;
         protected Map<String, Object> params;
 
-        protected ScreenCommand(MenuItem item, String screen, Element descriptor, Map<String, Object> params) {
+        protected ScreenCommand(FrameOwner origin, MenuItem item,
+                                String screen, Element descriptor, Map<String, Object> params) {
+            this.origin = origin;
             this.item = item;
             this.screen = screen;
             this.descriptor = descriptor;
-            this.params = new HashMap<>(params); // only for compatibility with legacy screens
+            this.params = new HashMap<>(params); // copy map values only for compatibility with legacy screens
         }
 
         @Override
@@ -169,10 +172,12 @@ public class MenuItemCommands {
 
             String screenId = this.screen;
 
-            Screens screens = beanLocator.get(Screens.NAME);
+            Screens screens = getScreenContext(origin).getScreens();
 
             if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
                     || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+                // only for legacy screens
+
                 Entity entityItem;
                 if (params.containsKey("item")) {
                     entityItem = (Entity) params.get("item");
@@ -215,7 +220,8 @@ public class MenuItemCommands {
         protected String beanMethod;
         protected Map<String, Object> params;
 
-        protected BeanCommand(MenuItem item, String bean, String beanMethod, Map<String, Object> params) {
+        protected BeanCommand(FrameOwner origin, MenuItem item,
+                              String bean, String beanMethod, Map<String, Object> params) {
             this.item = item;
             this.bean = bean;
             this.beanMethod = beanMethod;
@@ -225,6 +231,8 @@ public class MenuItemCommands {
         @Override
         public void run() {
             StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+
+            // todo ScreenContextAware
 
             Object beanInstance = beanLocator.get(bean);
             try {
@@ -255,7 +263,8 @@ public class MenuItemCommands {
         protected String runnableClass;
         protected Map<String, Object> params;
 
-        protected RunnableClassCommand(MenuItem item, String runnableClass, Map<String, Object> params) {
+        protected RunnableClassCommand(FrameOwner origin, MenuItem item,
+                                       String runnableClass, Map<String, Object> params) {
             this.item = item;
             this.runnableClass = runnableClass;
             this.params = params;
@@ -284,6 +293,8 @@ public class MenuItemCommands {
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
             }
+
+            // todo ScreenContextAware
 
             if (classInstance instanceof Consumer) {
                 ((Consumer) classInstance).accept(params);

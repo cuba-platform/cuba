@@ -36,8 +36,7 @@ import com.haulmont.cuba.web.events.UIRefreshEvent;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
-import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.sys.WebJarResourceResolver;
+import com.haulmont.cuba.web.sys.*;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
@@ -47,7 +46,11 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
@@ -189,7 +192,7 @@ public class AppUI extends CubaUI
         return screens;
     }
 
-    public void setScreens(Screens screens) {
+    protected void setScreens(Screens screens) {
         this.screens = screens;
     }
 
@@ -198,7 +201,7 @@ public class AppUI extends CubaUI
         return dialogs;
     }
 
-    public void setDialogs(Dialogs dialogs) {
+    protected void setDialogs(Dialogs dialogs) {
         this.dialogs = dialogs;
     }
 
@@ -207,7 +210,7 @@ public class AppUI extends CubaUI
         return notifications;
     }
 
-    public void setNotifications(Notifications notifications) {
+    protected void setNotifications(Notifications notifications) {
         this.notifications = notifications;
     }
 
@@ -216,15 +219,16 @@ public class AppUI extends CubaUI
         return webBrowserTools;
     }
 
-    public void setWebBrowserTools(WebBrowserTools webBrowserTools) {
+    protected void setWebBrowserTools(WebBrowserTools webBrowserTools) {
         this.webBrowserTools = webBrowserTools;
     }
 
+    @Override
     public Fragments getFragments() {
         return fragments;
     }
 
-    public void setFragments(Fragments fragments) {
+    protected void setFragments(Fragments fragments) {
         this.fragments = fragments;
     }
 
@@ -233,8 +237,6 @@ public class AppUI extends CubaUI
         log.trace("Initializing UI {}", this);
 
         try {
-            initUiScope();
-
             this.testMode = globalConfig.getTestMode();
             this.performanceTestMode = globalConfig.getPerformanceTestMode();
             // init error handlers
@@ -280,22 +282,46 @@ public class AppUI extends CubaUI
         processExternalLink(request);
     }
 
-    protected void initUiScope() {
-        Dialogs dialogs = beanLocator.getPrototype(Dialogs.NAME, this);
+    @Inject
+    protected void setApplicationContext(ApplicationContext applicationContext) {
+        Dialogs dialogs = new WebDialogs(this);
+        autowireContext(dialogs, applicationContext);
         setDialogs(dialogs);
 
-        Notifications notifications = beanLocator.getPrototype(Notifications.NAME, this);
+        Notifications notifications = new WebNotifications(this);
+        autowireContext(notifications, applicationContext);
         setNotifications(notifications);
 
-        WebBrowserTools webBrowserTools = beanLocator.getPrototype(WebBrowserTools.NAME, this);
+        WebBrowserTools webBrowserTools = new WebBrowserToolsImpl(this);
+        autowireContext(webBrowserTools, applicationContext);
         setWebBrowserTools(webBrowserTools);
 
-        Fragments fragments = beanLocator.getPrototype(Fragments.NAME, this);
+        Fragments fragments = new WebFragments(this);
+        autowireContext(fragments, applicationContext);
         setFragments(fragments);
 
-        // screens initialized in the end since it implements legacy compatibility layer for WindowManager
-        Screens screens = beanLocator.getPrototype(Screens.NAME, this);
+        Screens screens = new WebScreens(this);
+        autowireContext(screens, applicationContext);
         setScreens(screens);
+    }
+
+    protected void autowireContext(Object instance, ApplicationContext applicationContext) {
+        AutowireCapableBeanFactory autowireBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+        autowireBeanFactory.autowireBean(instance);
+
+        if (instance instanceof ApplicationContextAware) {
+            ((ApplicationContextAware) instance).setApplicationContext(applicationContext);
+        }
+
+        if (instance instanceof InitializingBean) {
+            try {
+                ((InitializingBean) instance).afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "Unable to initialize UI Component - calling afterPropertiesSet for " +
+                                instance.getClass(), e);
+            }
+        }
     }
 
     protected boolean isUserSessionAlive(Connection connection) {

@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component(ScreenValidation.NAME)
 public class ScreenValidation {
@@ -116,7 +117,7 @@ public class ScreenValidation {
             validationNotificationType = validationNotificationType.replace("_HTML", "");
         }
 
-        Notifications notifications = origin.getScreenContext().getNotifications();
+        Notifications notifications = getScreenContext(origin).getNotifications();
 
         notifications.create()
                 .setType(Notifications.NotificationType.valueOf(validationNotificationType))
@@ -172,7 +173,7 @@ public class ScreenValidation {
     public UnsavedChangesDialogResult showUnsavedChangesDialog(FrameOwner origin, CloseAction closeAction) {
         UnsavedChangesDialogResult result = new UnsavedChangesDialogResult();
 
-        Dialogs dialogs = origin.getScreenContext().getDialogs();
+        Dialogs dialogs = getScreenContext(origin).getDialogs();
         dialogs.createOptionDialog()
                 .setCaption(messages.getMainMessage("closeUnsaved.caption"))
                 .setMessage(messages.getMainMessage("closeUnsaved"))
@@ -206,7 +207,7 @@ public class ScreenValidation {
     public SaveChangesDialogResult showSaveConfirmationDialog(FrameOwner origin, CloseAction closeAction) {
         SaveChangesDialogResult result = new SaveChangesDialogResult();
 
-        Dialogs dialogs = origin.getScreenContext().getDialogs();
+        Dialogs dialogs = getScreenContext(origin).getDialogs();
         dialogs.createOptionDialog()
                 .setCaption(messages.getMainMessage("closeUnsaved.caption"))
                 .setMessage(messages.getMainMessage("saveUnsaved"))

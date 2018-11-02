@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 /**
  * A bean that creates an instance of {@link EditorBuilder}.
@@ -66,7 +67,7 @@ public class BulkEditors {
 
     protected <E extends Entity> BulkEditorWindow buildEditor(EditorBuilder<E> builder) {
         FrameOwner origin = builder.getOrigin();
-        Screens screens = origin.getScreenContext().getScreens();
+        Screens screens = getScreenContext(origin).getScreens();
 
         if (CollectionUtils.isEmpty(builder.getEntities())) {
             throw new IllegalStateException(String.format("BulkEditor of %s cannot be open with no entities were set",

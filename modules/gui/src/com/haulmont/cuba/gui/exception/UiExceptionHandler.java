@@ -16,10 +16,7 @@
 
 package com.haulmont.cuba.gui.exception;
 
-import com.haulmont.cuba.gui.Dialogs;
-import com.haulmont.cuba.gui.Notifications;
-import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WebBrowserTools;
+import com.haulmont.cuba.gui.*;
 
 /**
  * Interface to be implemented by exception handlers defined on GUI level.
@@ -68,5 +65,10 @@ public interface UiExceptionHandler {
          * @return web browser API
          */
         WebBrowserTools getWebBrowserTools();
+
+        /**
+         * @return fragments API
+         */
+        Fragments getFragments();
     }
 }

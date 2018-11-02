@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.components.SizeUnit;
  */
 public interface Dialogs {
 
-    String NAME = "cuba_Dialogs";
-
     OptionDialog createOptionDialog();
 
     MessageDialog createMessageDialog();

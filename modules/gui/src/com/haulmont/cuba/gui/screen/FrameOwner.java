@@ -38,6 +38,4 @@ public interface FrameOwner {
             return "{NO OPTIONS}";
         }
     };
-
-    ScreenContext getScreenContext();
 }

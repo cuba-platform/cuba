@@ -72,8 +72,6 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -91,8 +89,6 @@ import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
-@Scope(UIScope.NAME)
-@Component(Screens.NAME)
 public class WebScreens implements Screens, WindowManager {
     @Inject
     protected BeanLocator beanLocator;

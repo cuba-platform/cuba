@@ -38,14 +38,12 @@
     </context:component-scan>
 
     <bean id="vaadinSessionScope" class="com.haulmont.cuba.web.sys.VaadinSessionScope"/>
-    <bean id="uiScope" class="com.haulmont.cuba.web.sys.UIScope"/>
 
     <!-- Various beans with non-standard configuration -->
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
         <property name="scopes">
             <map>
                 <entry key="vaadin" value-ref="vaadinSessionScope"/>
-                <entry key="ui" value-ref="uiScope"/>
             </map>
         </property>
     </bean>

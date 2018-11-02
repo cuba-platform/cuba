@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 
 import javax.inject.Inject;
 
@@ -114,8 +115,8 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
             }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
-                Window window = ComponentsHelper.getWindowNN(pickerField);
-                Notifications notifications = window.getScreenContext().getNotifications();
+                ScreenContext screenContext = ComponentsHelper.getScreenContext(pickerField);
+                Notifications notifications = screenContext.getNotifications();
 
                 notifications.create()
                         .setDescription(messages.getMainMessage("OpenAction.objectIsDeleted"))

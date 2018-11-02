@@ -26,8 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-@Component(Notifications.NAME)
-@Scope(UIScope.NAME)
 public class WebNotifications implements Notifications {
 
     protected static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;

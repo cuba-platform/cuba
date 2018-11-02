@@ -18,9 +18,9 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.web.AppUI;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -33,6 +33,7 @@ public class WebWindowManagerProvider implements WindowManagerProvider {
 
     @Override
     public WindowManager get() {
-        return beanLocator.get(Screens.NAME);
+        AppUI ui = AppUI.getCurrent();
+        return (WindowManager) ui.getScreens();
     }
 }

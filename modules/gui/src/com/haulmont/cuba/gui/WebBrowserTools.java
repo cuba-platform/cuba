@@ -24,8 +24,6 @@ import java.util.Map;
  */
 public interface WebBrowserTools {
 
-    String NAME = "cuba_WebBrowserTools";
-
     /**
      * Open a web page in browser.
      *

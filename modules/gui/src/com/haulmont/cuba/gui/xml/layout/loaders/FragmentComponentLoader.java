@@ -17,7 +17,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
@@ -96,15 +98,19 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         // setup screen and controller
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
-        setHostController(controller, parentContext.getFrame().getFrameOwner());
+        FrameOwner hostController = parentContext.getFrame().getFrameOwner();
+
+        ScreenContext hostScreenContext = getScreenContext(hostController);
+
+        setHostController(controller, hostController);
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, fragment);
         setScreenContext(controller,
                 new ScreenContextImpl(windowInfo, parentContext.getOptions(),
-                        beanLocator.get(Screens.NAME),
-                        beanLocator.get(Dialogs.NAME),
-                        beanLocator.get(Notifications.NAME),
-                        beanLocator.get(Fragments.NAME))
+                        hostScreenContext.getScreens(),
+                        hostScreenContext.getDialogs(),
+                        hostScreenContext.getNotifications(),
+                        hostScreenContext.getFragments())
         );
         setScreenData(controller, new ScreenDataImpl());
 

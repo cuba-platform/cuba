@@ -56,8 +56,6 @@ import java.util.Locale;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
-@Scope(UIScope.NAME)
-@Component(Fragments.NAME)
 public class WebFragments implements Fragments {
 
     @Inject

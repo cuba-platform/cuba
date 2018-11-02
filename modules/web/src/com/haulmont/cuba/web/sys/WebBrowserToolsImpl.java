@@ -19,14 +19,10 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.gui.WebBrowserTools;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.shared.ui.BorderStyle;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.util.Map;
 
-@Scope(UIScope.NAME)
-@Component(WebBrowserTools.NAME)
 public class WebBrowserToolsImpl implements WebBrowserTools {
 
     protected AppUI ui;

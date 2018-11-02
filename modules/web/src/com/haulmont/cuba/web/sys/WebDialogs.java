@@ -48,8 +48,6 @@ import java.util.EnumSet;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.setClickShortcut;
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.*;
 
-@Component(Dialogs.NAME)
-@Scope(UIScope.NAME)
 public class WebDialogs implements Dialogs {
 
     protected AppUI ui;

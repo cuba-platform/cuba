@@ -540,7 +540,7 @@ public abstract class App {
                 // todo save settings for all active/opened screens ?
                 topLevelWindow.saveSettings();
 
-                Screens screens = topLevelWindow.getScreenContext().getScreens();
+                Screens screens = ui.getScreens();
 
                 if (!screens.hasUnsavedChanges()) {
                     forceLogout();
@@ -553,7 +553,7 @@ public abstract class App {
                 Messages messages = beanLocator.get(Messages.NAME);
                 Icons icons = beanLocator.get(Icons.NAME);
 
-                Dialogs dialogs = topLevelWindow.getScreenContext().getDialogs();
+                Dialogs dialogs = ui.getDialogs();
 
                 dialogs.createOptionDialog()
                         .setCaption(messages.getMainMessage("closeUnsaved.caption"))

@@ -34,8 +34,6 @@ import java.util.Collection;
  */
 public interface Screens {
 
-    String NAME = "cuba_Screens";
-
     /**
      * Creates a screen by its controller class.
      *

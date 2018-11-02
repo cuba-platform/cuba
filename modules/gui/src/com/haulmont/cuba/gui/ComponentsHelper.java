@@ -30,15 +30,10 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.ScreenContext;
-import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.*;
 import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -380,7 +375,7 @@ public abstract class ComponentsHelper {
     public static ScreenContext getScreenContext(Component.BelongToFrame component) {
         Window window = getWindowNN(component);
 
-        return window.getFrameOwner().getScreenContext();
+        return UiControllerUtils.getScreenContext(window.getFrameOwner());
     }
 
     @Nullable

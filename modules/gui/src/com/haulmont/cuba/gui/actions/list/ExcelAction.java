@@ -102,8 +102,7 @@ public class ExcelAction extends ListAction {
                         new DialogAction(DialogAction.Type.CANCEL)
                 };
 
-                Window window = ComponentsHelper.getWindowNN(target);
-                Dialogs dialogs = window.getScreenContext().getDialogs();
+                Dialogs dialogs = ComponentsHelper.getScreenContext(target).getDialogs();
 
                 dialogs.createOptionDialog()
                         .setCaption(messages.getMainMessage("actions.exportSelectedTitle"))
@@ -169,7 +168,7 @@ public class ExcelAction extends ListAction {
         }
 
         if (exporter.isXlsMaxRowNumberExceeded()) {
-            Notifications notifications = window.getScreenContext().getNotifications();
+            Notifications notifications = ComponentsHelper.getScreenContext(target).getNotifications();
 
             notifications.create()
                     .setCaption(messages.getMainMessage("actions.warningExport.title"))

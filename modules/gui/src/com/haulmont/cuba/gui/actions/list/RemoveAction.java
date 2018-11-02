@@ -37,10 +37,13 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
+
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenData;
 
 @ActionType(RemoveAction.ID)
 public class RemoveAction extends SecuredListAction {
@@ -129,8 +132,10 @@ public class RemoveAction extends SecuredListAction {
             }
 
             Window window = ComponentsHelper.getWindowNN(target);
-            ScreenData screenData = UiControllerUtils.getScreenData(window.getFrameOwner());
-            Dialogs dialogs = window.getScreenContext().getDialogs();
+            ScreenData screenData = getScreenData(window.getFrameOwner());
+            ScreenContext screenContext = getScreenContext(window.getFrameOwner());
+
+            Dialogs dialogs = screenContext.getDialogs();
 
             dialogs.createOptionDialog()
                     .setCaption(messages.getMainMessage("dialogs.Confirmation"))

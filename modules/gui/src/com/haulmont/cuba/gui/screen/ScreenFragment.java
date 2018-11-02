@@ -133,12 +133,16 @@ public abstract class ScreenFragment implements FrameOwner {
         return id;
     }
 
-    protected void setScreenContext(ScreenContext screenContext) {
+    void setScreenContext(ScreenContext screenContext) {
         this.screenContext = screenContext;
     }
 
-    @Override
-    public ScreenContext getScreenContext() {
+    /**
+     * Use {@link UiControllerUtils#getScreenContext(FrameOwner)} to obtain Screen services from external code.
+     *
+     * @return screen context
+     */
+    ScreenContext getScreenContext() {
         return screenContext;
     }
 

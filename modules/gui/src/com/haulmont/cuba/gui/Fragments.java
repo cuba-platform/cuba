@@ -35,8 +35,6 @@ import com.haulmont.cuba.gui.screen.ScreenOptions;
  */
 public interface Fragments {
 
-    String NAME = "cuba_Fragments";
-
     /**
      * Creates a screen fragment by its controller class.
      *

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 
 /**
@@ -27,14 +26,10 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 public interface Fragment extends Frame {
     /**
      * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+     * {@link com.haulmont.cuba.gui.UiComponents}
      */
     String NAME = "fragment";
 
     @Override
     ScreenFragment getFrameOwner();
-
-    default ScreenContext getScreenContext() {
-        return getFrameOwner().getScreenContext();
-    }
 }
