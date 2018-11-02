@@ -50,12 +50,17 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.haulmont.cuba.web.widgets.CubaTree;
+import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.Menu;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
+import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
 import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.event.Action;
+import com.vaadin.event.ContextClickEvent;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Resource;
 import com.vaadin.server.SerializableFunction;
@@ -193,40 +198,54 @@ public class CubaFoldersPane extends VerticalLayout {
             vertSplit = new VerticalSplitPanel();
             vertSplit.setSplitPosition(verticalSplitPos);
 
-            VerticalLayout afLayout = new VerticalLayout();
-            afLayout.setMargin(false);
-            afLayout.setSpacing(true);
-            afLayout.setSizeFull();
-            if (appFoldersLabel != null)
-                addFoldersLabel(afLayout, appFoldersLabel);
-            afLayout.addComponent(appFoldersPane);
-            afLayout.setExpandRatio(appFoldersPane, 1);
+            CubaVerticalActionsLayout afLayout = createFoldersPaneLayout(appFoldersPane, appFoldersLabel);
             vertSplit.setFirstComponent(afLayout);
 
-            VerticalLayout sfLayout = new VerticalLayout();
-            sfLayout.setMargin(false);
-            sfLayout.setSpacing(true);
-            sfLayout.setSizeFull();
-            if (searchFoldersLabel != null)
-                addFoldersLabel(sfLayout, searchFoldersLabel);
-            sfLayout.addComponent(searchFoldersPane);
-            sfLayout.setExpandRatio(searchFoldersPane, 1);
+            CubaVerticalActionsLayout sfLayout = createFoldersPaneLayout(searchFoldersPane, searchFoldersLabel);
             vertSplit.setSecondComponent(sfLayout);
 
             addComponent(vertSplit);
         } else {
             if (appFoldersPane != null) {
-                if (appFoldersLabel != null)
-                    addFoldersLabel(this, appFoldersLabel);
-                addComponent(appFoldersPane);
-                setExpandRatio(appFoldersPane, 1);
+                // we need to wrap the folders tree with a layout in order to provide margins
+                CubaVerticalActionsLayout afLayout = createFoldersPaneLayout(appFoldersPane, appFoldersLabel);
+                addComponent(afLayout);
             }
+
             if (searchFoldersPane != null) {
-                if (searchFoldersLabel != null)
-                    addFoldersLabel(this, searchFoldersLabel);
-                addComponent(searchFoldersPane);
-                setExpandRatio(searchFoldersPane, 1);
+                // we need to wrap the folders tree with a layout in order to provide margins
+                CubaVerticalActionsLayout sfLayout = createFoldersPaneLayout(searchFoldersPane, searchFoldersLabel);
+                addComponent(sfLayout);
             }
+        }
+    }
+
+    protected CubaVerticalActionsLayout createFoldersPaneLayout(Component foldersPane, Label foldersLabel) {
+        CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
+        layout.setMargin(true);
+        layout.setSpacing(true);
+        layout.setSizeFull();
+        if (foldersLabel != null)
+            addFoldersLabel(layout, foldersLabel);
+        layout.addComponent(foldersPane);
+        layout.setExpandRatio(foldersPane, 1);
+
+        layout.addShortcutListener(
+                new ShortcutListenerDelegate("apply" + foldersPane.getCubaId(), ShortcutAction.KeyCode.ENTER, null)
+                        .withHandler((sender, target) -> {
+                            if (sender == layout) {
+                                handleFoldersPaneShortcutAction(foldersPane);
+                            }
+                        }));
+
+        return layout;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void handleFoldersPaneShortcutAction(Component foldersPane) {
+        AbstractSearchFolder folder = ((CubaTree<AbstractSearchFolder>) foldersPane).asSingleSelect().getValue();
+        if (folder != null) {
+            openFolder(folder);
         }
     }
 
@@ -471,16 +490,6 @@ public class CubaFoldersPane extends VerticalLayout {
         appFoldersTree.setDataProvider(createTreeDataProvider());
         appFoldersTree.setGridSelectionModel(new CubaSingleSelectionModel<>());
         appFoldersTree.setStyleGenerator(new FolderTreeStyleProvider<>());
-        appFoldersTree.addShortcutListener(
-                new ShortcutListenerDelegate("applyAppFolder", ShortcutAction.KeyCode.ENTER, null)
-                        .withHandler((sender, target) -> {
-                            if (target == appFoldersTree) {
-                                AbstractSearchFolder folder = appFoldersTree.asSingleSelect().getValue();
-                                if (folder != null) {
-                                    openFolder(folder);
-                                }
-                            }
-                        }));
 
         appFoldersTree.addExpandListener(event -> {
             AppFolder folder = event.getExpandedItem();
@@ -502,12 +511,16 @@ public class CubaFoldersPane extends VerticalLayout {
             appFoldersTree.setItemIconGenerator(this::getAppFolderIcon);
         }
         appFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
-        // TODO: gg, fix
-//        appFoldersTree.addActionHandler(new AppFolderActionsHandler());
+
+        initAppFoldersContextMenu();
 
         appFoldersTree.expand(appFoldersTree.getItems().collect(Collectors.toList()));
 
         return appFoldersTree;
+    }
+
+    protected void initAppFoldersContextMenu() {
+        new AppFolderGridContextMenu<>(appFoldersTree.getCompositionRoot());
     }
 
     protected Resource getAppFolderIcon(AppFolder item) {
@@ -520,16 +533,6 @@ public class CubaFoldersPane extends VerticalLayout {
         searchFoldersTree.setDataProvider(createTreeDataProvider());
         searchFoldersTree.setGridSelectionModel(new CubaSingleSelectionModel<>());
         searchFoldersTree.setStyleGenerator(new FolderTreeStyleProvider<>());
-        searchFoldersTree.addShortcutListener(
-                new ShortcutListenerDelegate("applySearchFolder", ShortcutAction.KeyCode.ENTER, null)
-                        .withHandler((sender, target) -> {
-                            if (target == searchFoldersTree) {
-                                AbstractSearchFolder folder = searchFoldersTree.asSingleSelect().getValue();
-                                if (folder != null) {
-                                    openFolder(folder);
-                                }
-                            }
-                        }));
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
 
@@ -538,8 +541,9 @@ public class CubaFoldersPane extends VerticalLayout {
             searchFoldersTree.setItemIconGenerator(this::getSearchFolderIcon);
         }
         searchFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
-        // TODO: gg, fix
-//        searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
+
+        initSearchFoldersContextMenu();
+
         if (!searchFolders.isEmpty()) {
             fillTree(searchFoldersTree, searchFolders);
         }
@@ -547,6 +551,10 @@ public class CubaFoldersPane extends VerticalLayout {
         searchFoldersTree.expand(searchFoldersTree.getItems().collect(Collectors.toList()));
 
         return searchFoldersTree;
+    }
+
+    protected void initSearchFoldersContextMenu() {
+        new SearchFolderGridContextMenu<>(searchFoldersTree.getCompositionRoot());
     }
 
     private <T extends Folder> FoldersDataProvider<T> createTreeDataProvider() {
@@ -568,7 +576,7 @@ public class CubaFoldersPane extends VerticalLayout {
         folders.sort(Comparator.comparingInt(this::folderDepth));
         for (T folder : folders) {
             //noinspection unchecked
-            tree.getTreeData().addItem((T) folder.getParent(), folder);
+            tree.getTreeData().addItem((T) getFolderParent(folder), folder);
         }
     }
 
@@ -576,9 +584,26 @@ public class CubaFoldersPane extends VerticalLayout {
         int depth = 0;
         while (folder != null) {
             depth++;
-            folder = folder.getParent();
+            folder = getFolderParent(folder);
         }
         return depth;
+    }
+
+    /**
+     * Returns a given folder's parent only if it's not marked as deleted,
+     * otherwise there will be an exception, because a folder returns a not null parent,
+     * but there is no such item in tree as it's not loaded as separate folder as it's marked as deleted.
+     *
+     * @param folder a folder to obtain a parent
+     * @return a parent folder
+     */
+    protected Folder getFolderParent(Folder folder) {
+        Folder parent = folder.getParent();
+        return parent == null
+                ? null
+                : PersistenceHelper.isDeleted(parent)
+                ? null
+                : parent;
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
@@ -676,125 +701,6 @@ public class CubaFoldersPane extends VerticalLayout {
                     }
                 }
             }
-        }
-    }
-
-    protected class AppFolderActionsHandler implements Action.Handler {
-        protected OpenAction openAction = new OpenAction();
-        protected CreateAction createAction = new CreateAction(true);
-        protected CopyAction copyAction = new CopyAction();
-        protected EditAction editAction = new EditAction();
-        protected RemoveAction removeAction = new RemoveAction();
-        protected ExportAction exportAction = new ExportAction();
-        protected ImportAction importAction = new ImportAction();
-
-        @Override
-        public Action[] getActions(Object target, Object sender) {
-            if (target instanceof Folder) {
-                if (isGlobalAppFolderPermitted()) {
-                    return new Action[]{openAction, createAction, copyAction,
-                            editAction, removeAction, exportAction, importAction};
-                } else {
-                    return new Action[]{openAction};
-                }
-            } else {
-                if (isGlobalAppFolderPermitted()) {
-                    return new Action[]{importAction};
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        @Override
-        public void handleAction(Action action, Object sender, Object target) {
-            if (target instanceof Folder)
-                ((FolderAction) action).perform((Folder) target);
-            else
-                ((FolderAction) action).perform(null);
-        }
-
-        protected boolean isGlobalAppFolderPermitted() {
-            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global");
-        }
-    }
-
-    protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
-
-        protected CreateAction searchFolderCreateAction = new CreateAction(false);
-
-        @Override
-        public Action[] getActions(Object target, Object sender) {
-            if (target instanceof SearchFolder) {
-                if (isGlobalFolder((SearchFolder) target)) {
-                    if (isFilterFolder((SearchFolder) target)) {
-                        if (isGlobalSearchFolderPermitted()) {
-                            return createAllActions();
-                        } else {
-                            return createOpenCreateAction();
-                        }
-                    } else {
-                        if (isGlobalSearchFolderPermitted()) {
-                            return createWithoutOpenActions();
-                        } else {
-                            return createOnlyCreateAction();
-                        }
-                    }
-                } else {
-                    if (isFilterFolder((SearchFolder) target)) {
-                        if (isOwner((SearchFolder) target)) {
-                            return createAllActions();
-                        } else {
-                            return createOpenCreateAction();
-                        }
-                    } else {
-                        if (isOwner((SearchFolder) target)) {
-                            return createWithoutOpenActions();
-                        } else {
-                            return createOnlyCreateAction();
-                        }
-                    }
-                }
-            } else {
-                return createImportCreateAction();
-            }
-        }
-
-        protected boolean isGlobalFolder(SearchFolder folder) {
-            return (folder.getUser() == null);
-        }
-
-        protected boolean isFilterFolder(SearchFolder folder) {
-            return (folder.getFilterComponentId() != null);
-        }
-
-        protected boolean isOwner(SearchFolder folder) {
-            return userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(folder.getUser());
-        }
-
-        protected boolean isGlobalSearchFolderPermitted() {
-            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global");
-        }
-
-        protected Action[] createAllActions() {
-            return new Action[]{openAction, copyAction, searchFolderCreateAction,
-                    editAction, removeAction, exportAction, importAction};
-        }
-
-        protected Action[] createWithoutOpenActions() {
-            return new Action[]{searchFolderCreateAction, editAction, removeAction};
-        }
-
-        protected Action[] createOnlyCreateAction() {
-            return new Action[]{searchFolderCreateAction};
-        }
-
-        protected Action[] createImportCreateAction() {
-            return new Action[]{searchFolderCreateAction, importAction};
-        }
-
-        protected Action[] createOpenCreateAction() {
-            return new Action[]{openAction, searchFolderCreateAction, copyAction};
         }
     }
 
@@ -1018,6 +924,256 @@ public class CubaFoldersPane extends VerticalLayout {
         @Override
         public T getParent(T item) {
             return (T) item.getParent();
+        }
+    }
+
+    protected class FolderGridContextMenu<T extends Folder> extends CubaGridContextMenu<T> {
+
+        protected OpenAction openAction = createOpenAction();
+        protected CreateAction createAction = createCreateAction();
+        protected CopyAction copyAction = createCopyAction();
+        protected EditAction editAction = createEditAction();
+        protected RemoveAction removeAction = createRemoveAction();
+        protected ExportAction exportAction = createExportAction();
+        protected ImportAction importAction = createImportAction();
+
+        public FolderGridContextMenu(Grid<T> parentComponent) {
+            super(parentComponent);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Grid<T> getParent() {
+            return (Grid<T>) super.getParent();
+        }
+
+        protected OpenAction createOpenAction() {
+            return new OpenAction();
+        }
+
+        protected CreateAction createCreateAction() {
+            return new CreateAction(true);
+        }
+
+        protected CopyAction createCopyAction() {
+            return new CopyAction();
+        }
+
+        protected EditAction createEditAction() {
+            return new EditAction();
+        }
+
+        protected RemoveAction createRemoveAction() {
+            return new RemoveAction();
+        }
+
+        protected ExportAction createExportAction() {
+            return new ExportAction();
+        }
+
+        protected ImportAction createImportAction() {
+            return new ImportAction();
+        }
+
+        protected Command createCommand(FolderAction action) {
+            return new CommandFolderActionAdapter(action, this::getSelectedFolder);
+        }
+
+        protected T getSelectedFolder() {
+            return getParent().asSingleSelect().getValue();
+        }
+
+        public FolderGridContextMenu<T> addOpenAction() {
+            addItem(openAction.getCaption(), createCommand(openAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addCreateAction() {
+            addItem(createAction.getCaption(), createCommand(createAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addCopyAction() {
+            addItem(copyAction.getCaption(), createCommand(copyAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addEditAction() {
+            addItem(editAction.getCaption(), createCommand(editAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addRemoveAction() {
+            addItem(removeAction.getCaption(), createCommand(removeAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addExportAction() {
+            addItem(exportAction.getCaption(), createCommand(exportAction));
+            return this;
+        }
+
+        public FolderGridContextMenu<T> addImportAction() {
+            addItem(importAction.getCaption(), createCommand(importAction));
+            return this;
+        }
+
+        protected void createAllActions() {
+            addOpenAction();
+            addCopyAction();
+            addEditAction();
+            addCreateAction();
+            addRemoveAction();
+            addExportAction();
+            addImportAction();
+        }
+    }
+
+    protected class  AppFolderGridContextMenu<T extends AppFolder> extends FolderGridContextMenu<T> {
+
+        public AppFolderGridContextMenu(Grid<T> parentComponent) {
+            super(parentComponent);
+        }
+
+        @Override
+        protected void onContextClick(ContextClickEvent event) {
+            removeItems();
+
+            if (event instanceof Grid.GridContextClickEvent
+                    && ((Grid.GridContextClickEvent) event).getItem() != null) {
+                //noinspection unchecked
+                T item = ((Grid.GridContextClickEvent<T>) event).getItem();
+                // Context Click doesn't trigger selection, so we do it programmatically.
+                getParent().select(item);
+
+                if (isGlobalAppFolderPermitted()) {
+                    createAllActions();
+                } else {
+                    addOpenAction();
+                }
+            } else if (isGlobalAppFolderPermitted()) {
+                addImportAction();
+            }
+
+            super.onContextClick(event);
+        }
+
+        protected boolean isGlobalAppFolderPermitted() {
+            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global");
+        }
+    }
+
+    protected class SearchFolderGridContextMenu<T extends SearchFolder> extends FolderGridContextMenu<T> {
+
+        public SearchFolderGridContextMenu(Grid<T> grid) {
+            super(grid);
+        }
+
+        @Override
+        protected CreateAction createCreateAction() {
+            return new CreateAction(false);
+        }
+
+        @Override
+        protected void onContextClick(ContextClickEvent event) {
+            removeItems();
+
+            if (event instanceof Grid.GridContextClickEvent
+                    && ((Grid.GridContextClickEvent) event).getItem() != null) {
+                //noinspection unchecked
+                T item = ((Grid.GridContextClickEvent<T>) event).getItem();
+                // Context Click doesn't trigger selection, so we do it programmatically.
+                getParent().select(item);
+
+                if (isGlobalFolder(item)) {
+                    if (isFilterFolder(item)) {
+                        if (isGlobalSearchFolderPermitted()) {
+                            createAllActions();
+                        } else {
+                            createOpenCreateActions();
+                        }
+                    } else {
+                        if (isGlobalSearchFolderPermitted()) {
+                            createWithoutOpenActions();
+                        } else {
+                            createOnlyCreateAction();
+                        }
+                    }
+                } else {
+                    if (isFilterFolder(item)) {
+                        if (isOwner(item)) {
+                            createAllActions();
+                        } else {
+                            createOpenCreateActions();
+                        }
+                    } else {
+                        if (isOwner(item)) {
+                            createWithoutOpenActions();
+                        } else {
+                            createOnlyCreateAction();
+                        }
+                    }
+                }
+            } else {
+                createImportCreateActions();
+            }
+
+            super.onContextClick(event);
+        }
+
+        protected boolean isGlobalFolder(SearchFolder folder) {
+            return (folder.getUser() == null);
+        }
+
+        protected boolean isFilterFolder(SearchFolder folder) {
+            return (folder.getFilterComponentId() != null);
+        }
+
+        protected boolean isOwner(SearchFolder folder) {
+            return userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(folder.getUser());
+        }
+
+        protected boolean isGlobalSearchFolderPermitted() {
+            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global");
+        }
+
+        protected void createOnlyCreateAction() {
+            addCreateAction();
+        }
+
+        protected void createOpenCreateActions() {
+            addOpenAction();
+            addCreateAction();
+            addCopyAction();
+        }
+
+        protected void createWithoutOpenActions() {
+            addCreateAction();
+            addEditAction();
+            addRemoveAction();
+        }
+
+        protected void createImportCreateActions() {
+            addCreateAction();
+            addImportAction();
+        }
+    }
+
+    protected static class CommandFolderActionAdapter implements Menu.Command {
+
+        protected final FolderAction action;
+        protected final Supplier<Folder> selectedFolderProvider;
+
+        public CommandFolderActionAdapter(FolderAction action,
+                                          Supplier<Folder> selectedFolderProvider) {
+            this.action = action;
+            this.selectedFolderProvider = selectedFolderProvider;
+        }
+
+        @Override
+        public void menuSelected(MenuItem selectedItem) {
+            Folder folder = selectedFolderProvider.get();
+            action.perform(folder);
         }
     }
 }

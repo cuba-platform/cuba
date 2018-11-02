@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.grid;
 
 import com.haulmont.cuba.web.widgets.addons.contextmenu.GridContextMenu;
+import com.vaadin.event.ContextClickEvent;
 import com.vaadin.event.ContextClickEvent.ContextClickListener;
 import com.vaadin.shared.ui.grid.GridConstants;
 import com.vaadin.ui.Grid;
@@ -37,29 +38,27 @@ public class CubaGridContextMenu<T> extends GridContextMenu<T> {
     @Override
     public void setAsContextMenuOf(ContextClickNotifier component) {
         if (contextClickListener == null) {
-            initContextClickListener();
+            contextClickListener = this::onContextClick;
         }
         component.addContextClickListener(contextClickListener);
     }
 
-    protected void initContextClickListener() {
-        contextClickListener = (ContextClickListener) event -> {
-            if (!isEnabled()) {
+    protected void onContextClick(ContextClickEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
+
+        // prevent opening context menu in non BODY sections
+        if (event instanceof GridContextClickEvent) {
+            GridContextClickEvent gridEvent = (GridContextClickEvent) event;
+            if (!gridEvent.getSection().equals(GridConstants.Section.BODY)) {
                 return;
             }
+        }
 
-            fireEvent(new ContextMenuOpenListener.ContextMenuOpenEvent(CubaGridContextMenu.this, event));
+        fireEvent(new ContextMenuOpenListener.ContextMenuOpenEvent(CubaGridContextMenu.this, event));
 
-            // prevent opening context menu in non BODY sections
-            if (event instanceof GridContextClickEvent) {
-                GridContextClickEvent gridEvent = (GridContextClickEvent) event;
-                if (!gridEvent.getSection().equals(GridConstants.Section.BODY)) {
-                    return;
-                }
-            }
-
-            open(event.getClientX(), event.getClientY());
-        };
+        open(event.getClientX(), event.getClientY());
     }
 
     public boolean isEnabled() {
