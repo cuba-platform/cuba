@@ -232,9 +232,12 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             shortcutsDelegate.removeAction(action);
 
             if (action != null) {
-                Button button = actionButtons.remove(action);
-                contextMenuPopup.removeComponent(button);
                 action.removePropertyChangeListener(actionPropertyChangeListener);
+
+                Button button = actionButtons.remove(action);
+                if (button != null) {
+                    contextMenuPopup.removeComponent(button);
+                }
             }
         }
     }
