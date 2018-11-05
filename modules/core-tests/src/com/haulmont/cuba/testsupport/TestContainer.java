@@ -65,7 +65,7 @@ import java.util.*;
  * <pre>
  *    {@literal @}ClassRule
  *     public static TestContainer cont = new TestContainer()
- *              .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "com/company/sample/core/my-test-app.properties"));
+ *              .setAppPropertiesFiles(Arrays.asList("com/haulmont/cuba/app.properties", "com/company/sample/core/my-test-app.properties"));
  *
  *    {@literal @}Test
  *     public void testSomething() {
@@ -117,13 +117,16 @@ public class TestContainer extends ExternalResource {
     public TestContainer() {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", "test-logback.xml");
+            System.setProperty("logback.configurationFile", "com/haulmont/cuba/testsupport/test-logback.xml");
         }
         log = LoggerFactory.getLogger(TestContainer.class);
 
-        springConfig = "test-spring.xml";
+        springConfig = "com/haulmont/cuba/testsupport/test-spring.xml";
         appComponents = Collections.emptyList();
-        appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties");
+        appPropertiesFiles = Arrays.asList(
+                "com/haulmont/cuba/app.properties",
+                "com/haulmont/cuba/testsupport/test-app.properties",
+                "com/haulmont/cuba/test-app.properties");
         dbDriver = "org.hsqldb.jdbc.JDBCDriver";
         dbUrl = "jdbc:hsqldb:hsql://localhost:9111/cubadb";
         dbUser = "sa";

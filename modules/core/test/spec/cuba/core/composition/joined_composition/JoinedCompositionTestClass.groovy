@@ -32,7 +32,11 @@ class JoinedCompositionTestClass extends Specification {
     @Shared
     @ClassRule
     public TestContainer cont = new TestContainer()
-            .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties", "/spec/cuba/core/composition/test-composition-app.properties"))
+            .setAppPropertiesFiles(Arrays.asList(
+                "com/haulmont/cuba/app.properties",
+                "com/haulmont/cuba/testsupport/test-app.properties",
+                "com/haulmont/cuba/test-app.properties",
+                "spec/cuba/core/composition/test-composition-app.properties"))
 
     private Persistence persistence = cont.persistence()
     private Metadata metadata = cont.metadata()

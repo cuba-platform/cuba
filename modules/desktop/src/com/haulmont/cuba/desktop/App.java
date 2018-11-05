@@ -207,7 +207,7 @@ public class App implements ConnectionListener {
     }
 
     protected String getDefaultAppPropertiesConfig() {
-        return "/cuba-desktop-app.properties";
+        return "/com/haulmont/cuba/desktop-app.properties";
     }
 
     protected String getDefaultHomeDir() {
@@ -215,7 +215,7 @@ public class App implements ConnectionListener {
     }
 
     protected String getDefaultLogConfig() {
-        return "cuba-logback.xml";
+        return "com/haulmont/cuba/logback.xml";
     }
 
     protected void initHomeDir() {

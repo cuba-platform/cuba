@@ -38,7 +38,7 @@ class PersistenceXmlPostProcessorTest extends Specification {
 
         persistenceConfigProcessor = new PersistenceConfigProcessor()
         this.persistenceConfigProcessor.setStorageName(Stores.MAIN)
-        this.persistenceConfigProcessor.setSourceFiles(['base-persistence.xml', 'cuba-persistence.xml'])
+        this.persistenceConfigProcessor.setSourceFiles(['com/haulmont/cuba/base-persistence.xml', 'com/haulmont/cuba/persistence.xml'])
         this.persistenceConfigProcessor.setOutputFile(workDir + '/persistence.xml')
     }
 

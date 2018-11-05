@@ -54,9 +54,9 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
         List<String> files = Splitter.on(AppProperties.SEPARATOR_PATTERN).omitEmptyStrings().trimResults()
                 .splitToList(configProperty);
-        if (!Stores.isMain(storeName) && !files.contains("base-persistence.xml")) {
+        if (!Stores.isMain(storeName) && !files.contains("com/haulmont/cuba/base-persistence.xml")) {
             files = new ArrayList<>(files);
-            files.add(0, "base-persistence.xml");
+            files.add(0, "com/haulmont/cuba/base-persistence.xml");
         }
 
         PersistenceConfigProcessor processor = new PersistenceConfigProcessor();

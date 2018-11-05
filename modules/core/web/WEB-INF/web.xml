@@ -26,7 +26,7 @@
     <context-param>
         <param-name>appPropertiesConfig</param-name>
         <param-value>
-            classpath:cuba-app.properties
+            classpath:com/haulmont/cuba/app.properties
             "file:${catalina.base}/conf/cuba-core/local.app.properties"
         </param-value>
     </context-param>

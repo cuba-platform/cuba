@@ -104,7 +104,7 @@ public class CubaClientTestCase {
     static {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", "test-logback.xml");
+            System.setProperty("logback.configurationFile", "com/haulmont/cuba/testsupport/test-logback.xml");
         }
     }
 

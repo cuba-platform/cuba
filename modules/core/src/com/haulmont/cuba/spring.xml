@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2008-2016 Haulmont.
+  ~ Copyright (c) 2008-2018 Haulmont.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  ~
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -59,7 +58,7 @@
     <!-- Annotation-based beans -->
 
     <context:component-scan base-package="com.haulmont.cuba">
-        <!-- Exclude controllers that are used in cuba-remoting-spring.xml context -->
+        <!-- Exclude controllers that are used in remoting-spring.xml context -->
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.core\.controllers\..*"/>
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.sys\.AppFront*"/>
     </context:component-scan>

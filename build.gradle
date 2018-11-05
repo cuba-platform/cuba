@@ -353,11 +353,11 @@ configure(globalModule) {
     }
 
     task filterDummyEntities {
-        ext.srcFile1 = file('src/base-persistence.xml')
-        ext.srcFile2 = file('src/cuba-persistence.xml')
+        ext.srcFile1 = file('src/com/haulmont/cuba/base-persistence.xml')
+        ext.srcFile2 = file('src/com/haulmont/cuba/persistence.xml')
         ext.dstDir = file("$buildDir/tmp/filtered")
-        ext.dstFile1 = new File(ext.dstDir, "base-persistence.xml")
-        ext.dstFile2 = new File(ext.dstDir, "cuba-persistence.xml")
+        ext.dstFile1 = new File(ext.dstDir, "com/haulmont/cuba/base-persistence.xml")
+        ext.dstFile2 = new File(ext.dstDir, "com/haulmont/cuba/persistence.xml")
         inputs.file srcFile1
         inputs.file srcFile2
         outputs.file dstFile1
@@ -371,8 +371,8 @@ configure(globalModule) {
 
     jar {
         exclude '**/entity/dummy/*'
-        exclude { it.file == file("$buildDir/resources/main/base-persistence.xml") }
-        exclude { it.file == file("$buildDir/resources/main/cuba-persistence.xml") }
+        exclude { it.file == file("$buildDir/resources/main/com/haulmont/cuba/base-persistence.xml") }
+        exclude { it.file == file("$buildDir/resources/main/com/haulmont/cuba/persistence.xml") }
         from "$buildDir/tmp/filtered"
 
         manifest {
@@ -385,7 +385,7 @@ configure(globalModule) {
     sourceJar {
         exclude '**/entity/dummy/*'
         exclude {
-            (it.file.name == 'base-persistence.xml' || it.file.name == 'cuba-persistence.xml') && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
+            (it.file.name == 'base-persistence.xml' || it.file.name == 'persistence.xml') && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
         }
         from "$buildDir/tmp/filtered"
     }

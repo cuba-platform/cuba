@@ -88,13 +88,16 @@ public class TestContainer extends ExternalResource {
     public TestContainer() {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", "test-web-logback.xml");
+            System.setProperty("logback.configurationFile", "com/haulmont/cuba/web/testsupport/test-web-logback.xml");
         }
         log = LoggerFactory.getLogger(TestContainer.class);
 
-        springConfig = "test-web-spring.xml";
+        springConfig = "com/haulmont/cuba/web/testsupport/test-web-spring.xml";
         appComponents = Collections.emptyList();
-        appPropertiesFiles = Arrays.asList("cuba-web-app.properties", "test-web-app.properties", "cuba-test-web-app.properties");
+        appPropertiesFiles = Arrays.asList(
+                "com/haulmont/cuba/web-app.properties",
+                "com/haulmont/cuba/web/testsupport/test-web-app.properties",
+                "com/haulmont/cuba/test-web-app.properties");
     }
 
     public void setupLogging(String logger, Level level) {

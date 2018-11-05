@@ -49,7 +49,7 @@ public abstract class CubaTestCase extends TestCase {
     static {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", "test-logback.xml");
+            System.setProperty("logback.configurationFile", "com/haulmont/cuba/testsupport/test-logback.xml");
         }
     }
 
@@ -134,14 +134,14 @@ public abstract class CubaTestCase extends TestCase {
 
     protected List<String> getTestAppProperties() {
         String[] files = {
-                "cuba-app.properties",
-                "test-app.properties",
+                "com/haulmont/cuba/app.properties",
+                "com/haulmont/cuba/testsupport/test-app.properties",
         };
         return Arrays.asList(files);
     }
 
     protected String getTestSpringConfig() {
-        return "test-spring.xml";
+        return "com/haulmont/cuba/testsupport/test-spring.xml";
     }
 
     protected void deleteRecord(String table, UUID... ids) {
