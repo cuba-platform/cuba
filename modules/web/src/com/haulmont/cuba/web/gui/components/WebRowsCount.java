@@ -17,16 +17,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.DataGridItems;
-import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.datagrid.ContainerDataGridItems;
-import com.haulmont.cuba.gui.components.data.datagrid.DatasourceDataGridItems;
-import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
-import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
+import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.RowsCount;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
+import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -39,10 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
@@ -71,8 +71,6 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected Consumer<CollectionContainer.CollectionChangeEvent> containerCollectionChangeListener;
     protected com.haulmont.cuba.gui.model.impl.WeakCollectionChangeListener weakContainerCollectionChangeListener;
-
-    protected List<BeforeRefreshListener> beforeRefreshListeners;
 
     protected RowsCountTarget target;
 
@@ -107,7 +105,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+        checkNotNullArgument(datasource, "datasource is null");
 
         if (adapter != null) {
             adapter.cleanup();
@@ -141,23 +139,14 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected Adapter createAdapter(RowsCountTarget target) {
-        if (target instanceof Table) {
-            TableItems tableItems = ((Table) target).getItems();
-            if (tableItems instanceof DatasourceTableItems) {
-                return createDatasourceAdapter(((DatasourceTableItems) tableItems).getDatasource());
-            } else if (tableItems instanceof ContainerTableItems) {
-                return createLoaderAdapter(((ContainerTableItems) tableItems).getContainer());
+        if (target instanceof ListComponent) {
+            DataUnit items = ((ListComponent) target).getItems();
+            if (items instanceof LegacyDataUnit) {
+                return createDatasourceAdapter(((LegacyDataUnit) items).getDatasource());
+            } else if (items instanceof ContainerDataUnit) {
+                return createLoaderAdapter(((ContainerDataUnit) items).getContainer());
             } else {
-                throw new IllegalStateException("Unsupported TableItems: " + tableItems);
-            }
-        } else if (target instanceof DataGrid) {
-            DataGridItems dataGridItems = ((DataGrid) target).getItems();
-            if (dataGridItems instanceof DatasourceDataGridItems) {
-                return createDatasourceAdapter(((DatasourceDataGridItems) dataGridItems).getDatasource());
-            } else if (dataGridItems instanceof ContainerDataGridItems) {
-                return createLoaderAdapter(((ContainerDataGridItems) dataGridItems).getContainer());
-            } else {
-                throw new IllegalStateException("Unsupported DataGridItems: " + dataGridItems);
+                throw new IllegalStateException("Unsupported data unit type: " + items);
             }
         } else {
             throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
@@ -182,13 +171,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             return new DatasourceAdapter((CollectionDatasource.SupportsPaging) datasource);
         } else {
-            throw new UnsupportedOperationException("Datasource must support paging");
+            throw new UnsupportedOperationException("Datasource class does not support paging: " + datasource.getClass());
         }
     }
 
     @Override
     public void setRowsCountTarget(RowsCountTarget target) {
-        Preconditions.checkNotNullArgument(target, "target is null");
+        checkNotNullArgument(target, "target is null");
         this.target = target;
 
         if (adapter != null) {
@@ -200,17 +189,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     @Override
-    public void addBeforeRefreshListener(BeforeRefreshListener listener) {
-        if (beforeRefreshListeners == null)
-            beforeRefreshListeners = new ArrayList<>(1);
-        if (!beforeRefreshListeners.contains(listener))
-            beforeRefreshListeners.add(listener);
+    public void addBeforeRefreshListener(Consumer<BeforeRefreshEvent> listener) {
+        getEventHub().subscribe(BeforeRefreshEvent.class, listener);
     }
 
     @Override
-    public void removeBeforeRefreshListener(BeforeRefreshListener listener) {
-        if (beforeRefreshListeners != null)
-            beforeRefreshListeners.remove(listener);
+    public void removeBeforeRefreshListener(Consumer<BeforeRefreshEvent> listener) {
+        unsubscribe(BeforeRefreshEvent.class, listener);
     }
 
     protected void onPrevClick() {
@@ -219,8 +204,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         adapter.setFirstResult(newStart < 0 ? 0 : newStart);
         if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
-                com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
-                vTable.setCurrentPageFirstItemIndex(0);
+                resetCurrentDataPage((Table) owner);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -239,8 +223,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 adapter.setMaxResults(maxResults);
             }
             if (owner instanceof WebAbstractTable) {
-                com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
-                vTable.setCurrentPageFirstItemIndex(0);
+                resetCurrentDataPage((Table) owner);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -252,8 +235,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         adapter.setFirstResult(0);
         if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
-                com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
-                vTable.setCurrentPageFirstItemIndex(0);
+                resetCurrentDataPage((Table) owner);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -269,37 +251,43 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         adapter.setFirstResult(count - itemsToDisplay);
         if (refreshData()) {
             if (owner instanceof WebAbstractTable) {
-                com.vaadin.v7.ui.Table vTable = (com.vaadin.v7.ui.Table) ((WebAbstractTable) owner).getComponent();
-                vTable.setCurrentPageFirstItemIndex(0);
+                resetCurrentDataPage((Table) owner);
             }
         } else {
             adapter.setFirstResult(firstResult);
         }
     }
 
+    @SuppressWarnings("deprecation")
+    protected void resetCurrentDataPage(Table table) {
+        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
+        vTable.setCurrentPageFirstItemIndex(0);
+    }
+
     protected boolean refreshData() {
-        if (beforeRefreshListeners != null) {
-            boolean refreshPrevented = false;
-            for (BeforeRefreshListener listener : beforeRefreshListeners) {
-                BeforeRefreshEvent event = new BeforeRefreshEvent(this);
-                listener.beforeDatasourceRefresh(event);
-                refreshPrevented = refreshPrevented || event.isRefreshPrevented();
-            }
-            if (refreshPrevented)
+        if (hasSubscriptions(BeforeRefreshEvent.class)) {
+            BeforeRefreshEvent event = new BeforeRefreshEvent(this);
+
+            publish(BeforeRefreshEvent.class, event);
+
+            if (event.isRefreshPrevented()) {
                 return false;
+            }
         }
+
         refreshing = true;
         try {
             adapter.refresh();
         } finally {
             refreshing = false;
         }
+
         return true;
     }
 
     protected void onLinkClick() {
         int count = adapter.getCount();
-        component.getCountButton().setCaption(String.valueOf(count));
+        component.getCountButton().setCaption(String.valueOf(count)); // todo rework with datatype
         component.getCountButton().addStyleName("c-paging-count-number");
         component.getCountButton().setEnabled(false);
     }
@@ -518,6 +506,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             loader.load();
         }
     }
+
     protected class DatasourceAdapter implements Adapter {
 
         private CollectionDatasource.SupportsPaging datasource;

@@ -19,9 +19,10 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
- * Component that makes a {@link CollectionDatasource} to load data by pages. Usually used inside {@link Table}.
+ * Component that makes a data binding to load data by pages. Usually used with {@link Table} or {@link DataGrid}.
  */
 public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDescriptor {
 
@@ -57,8 +58,22 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
         // todo
     }
 
+    /**
+     * Event that is fired before refreshing the datasource when the user clicks next, previous, etc.
+     * <br>
+     * You can prevent the datasource refresh by invoking {@link BeforeRefreshEvent#preventRefresh()},
+     * for example:
+     * <pre>{@code
+     * table.getRowsCount().addBeforeDatasourceRefreshListener(event -> {
+     *     if (event.getDatasource().isModified()) {
+     *         showNotification("Save changes before going to another page");
+     *         event.preventRefresh();
+     *     }
+     * });
+     * }</pre>
+     */
     class BeforeRefreshEvent extends EventObject {
-        private boolean refreshPrevented;
+        protected boolean refreshPrevented = false;
 
         public BeforeRefreshEvent(RowsCount source) {
             super(source);
@@ -76,28 +91,22 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
         }
     }
 
-    /**
-     * A listener to be notified before refreshing the datasource when the user clicks next, previous, etc.
-     * <p>
-     * You can prevent the datasource refresh by invoking {@link BeforeRefreshEvent#preventRefresh()},
-     * for example:
-     * <pre>{@code
-     * table.getRowsCount().addBeforeDatasourceRefreshListener(event -> {
-     *     if (event.getDatasource().isModified()) {
-     *         showNotification("Save changes before going to another page");
-     *         event.preventRefresh();
-     *     }
-     * });
-     * }</pre>
-     */
-    @FunctionalInterface
-    interface BeforeRefreshListener {
-        void beforeDatasourceRefresh(BeforeRefreshEvent event);
-    }
+    void addBeforeRefreshListener(Consumer<BeforeRefreshEvent> listener);
+    void removeBeforeRefreshListener(Consumer<BeforeRefreshEvent> listener);
 
     /**
-     * Adds a {@link BeforeRefreshListener}.
+     * A listener to be notified before refreshing the datasource when the user clicks next, previous, etc.
+     *
+     * @deprecated Use {@link Consumer} with {@link BeforeRefreshEvent} instead.
      */
-    void addBeforeRefreshListener(BeforeRefreshListener listener);
-    void removeBeforeRefreshListener(BeforeRefreshListener listener);
+    @FunctionalInterface
+    @Deprecated
+    interface BeforeRefreshListener extends Consumer<BeforeRefreshEvent> {
+        void beforeDatasourceRefresh(BeforeRefreshEvent event);
+
+        @Override
+        default void accept(BeforeRefreshEvent beforeRefreshEvent) {
+            beforeDatasourceRefresh(beforeRefreshEvent);
+        }
+    }
 }

@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
@@ -38,7 +39,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.dom4j.DocumentHelper;
@@ -85,7 +85,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected TabSheet tablesTabSheet;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected Configuration configuration;
@@ -143,8 +143,9 @@ public class EntityInspectorEditor extends AbstractWindow {
         autocommit = params.get("autocommit") != null ? (Boolean) params.get("autocommit") : true;
         showSystemFields = params.get("showSystemFields") != null ? (Boolean) params.get("showSystemFields") : false;
 
-        if (meta == null)
+        if (meta == null) {
             throw new IllegalStateException("Entity or entity's MetaClass must be specified");
+        }
 
         setCaption(meta.getName());
         initShortcuts();
@@ -337,7 +338,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param metaClass item meta class
      */
     protected void createDataComponents(MetaClass metaClass, Entity item) {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
         fieldGroup.setBorderVisible(true);
 
         contentPane.add(fieldGroup);
@@ -412,7 +413,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             throw new IllegalStateException(String.format("Datasource %s for property %s not found", fqn,
                     embeddedMetaProperty.getName()));
         }
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
         fieldGroup.setBorderVisible(true);
         fieldGroup.setCaption(getPropertyCaption(embedDs.getMetaClass(), embeddedMetaProperty));
 
@@ -546,12 +547,12 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected void createCommitButtons() {
-        buttonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
-        commitButton = componentsFactory.createComponent(Button.class);
+        buttonsPanel = uiComponents.create(ButtonsPanel.class);
+        commitButton = uiComponents.create(Button.class);
         commitButton.setIcon("icons/ok.png");
         commitButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "commit"));
         commitButton.setAction(new CommitAction());
-        cancelButton = componentsFactory.createComponent(Button.class);
+        cancelButton = uiComponents.create(Button.class);
         cancelButton.setIcon("icons/cancel.png");
         cancelButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "cancel"));
         cancelButton.setAction(new CancelAction());
@@ -626,7 +627,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             return;
         }
 
-        LookupField field = componentsFactory.createComponent(LookupField.class);
+        LookupField field = uiComponents.create(LookupField.NAME);
         String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
         field.setCaption(caption);
         field.setEditable(!readOnly);
@@ -690,38 +691,36 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected void createCustomFields(FieldGroup fieldGroup, Collection<FieldGroup.FieldConfig> customFields) {
         for (FieldGroup.FieldConfig field : customFields) {
             //custom field generator creates an pickerField
-            fieldGroup.addCustomField(field, new FieldGroup.CustomFieldGenerator() {
-                @Override
-                public Component generateField(Datasource datasource, String propertyId) {
-                    MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
-                    MetaClass propertyMeta = metaProperty.getRange().asClass();
-                    PickerField field = componentsFactory.createComponent(PickerField.class);
-                    String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
-                    field.setCaption(caption);
-                    field.setMetaClass(propertyMeta);
-                    field.setWidth("400px");
+            fieldGroup.addCustomField(field, (datasource, propertyId) -> {
+                MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
+                MetaClass propertyMeta = metaProperty.getRange().asClass();
 
-                    PickerField.LookupAction lookupAction = field.addLookupAction();
-                    //forwards lookup to the EntityInspectorBrowse window
-                    lookupAction.setLookupScreen(EntityInspectorBrowse.SCREEN_NAME);
-                    lookupAction.setLookupScreenOpenType(OPEN_TYPE);
-                    lookupAction.setLookupScreenParams(ParamsMap.of("entity", propertyMeta.getName()));
+                PickerField pickerField = uiComponents.create(PickerField.class);
+                String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
+                pickerField.setCaption(caption);
+                pickerField.setMetaClass(propertyMeta);
+                pickerField.setWidth("400px");
 
-                    field.addClearAction();
-                    //don't lets user to change parent
-                    if (isParentProperty(metaProperty)) {
-                        //set parent item if it has been retrieved
-                        if (parent != null) {
-                            if (parent.toString() == null) {
-                                initNamePatternFields(parent);
-                            }
-                            field.setValue(parent);
+                PickerField.LookupAction lookupAction = pickerField.addLookupAction();
+                //forwards lookup to the EntityInspectorBrowse window
+                lookupAction.setLookupScreen(EntityInspectorBrowse.SCREEN_NAME);
+                lookupAction.setLookupScreenOpenType(OPEN_TYPE);
+                lookupAction.setLookupScreenParams(ParamsMap.of("entity", propertyMeta.getName()));
+
+                pickerField.addClearAction();
+                //don't lets user to change parent
+                if (isParentProperty(metaProperty)) {
+                    //set parent item if it has been retrieved
+                    if (parent != null) {
+                        if (parent.toString() == null) {
+                            initNamePatternFields(parent);
                         }
-                        field.setEditable(false);
+                        pickerField.setValue(parent);
                     }
-                    field.setDatasource(datasource, propertyId);
-                    return field;
+                    pickerField.setEditable(false);
                 }
+                pickerField.setDatasource(datasource, propertyId);
+                return pickerField;
             });
         }
     }
@@ -771,16 +770,16 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
 
         //vertical box for the table and its label
-        BoxLayout vbox = componentsFactory.createComponent(VBoxLayout.class);
+        BoxLayout vbox = uiComponents.create(VBoxLayout.class);
         vbox.setWidth("100%");
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
-        Table table = componentsFactory.createComponent(Table.class);
+        Table<?> table = uiComponents.create(Table.NAME);
         table.setMultiSelect(true);
         table.setFrame(frame);
         //place non-system properties columns first
-        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
-        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
+        List<Table.Column> nonSystemPropertyColumns = new ArrayList<>();
+        List<Table.Column> systemPropertyColumns = new ArrayList<>();
         for (MetaProperty metaProperty : meta.getProperties()) {
             if (metaProperty.getRange().isClass() || isRelatedToNonLocalProperty(metaProperty))
                 continue; // because we use local views
@@ -796,11 +795,13 @@ public class EntityInspectorEditor extends AbstractWindow {
                 column.setMaxTextLength(MAX_TEXT_LENGTH);
             }
         }
-        for (Table.Column column : nonSystemPropertyColumns)
+        for (Table.Column column : nonSystemPropertyColumns) {
             table.addColumn(column);
+        }
 
-        for (Table.Column column : systemPropertyColumns)
+        for (Table.Column column : systemPropertyColumns) {
             table.addColumn(column);
+        }
 
         //set datasource so we could create a buttons panel
         table.setDatasource(propertyDs);
@@ -810,14 +811,19 @@ public class EntityInspectorEditor extends AbstractWindow {
         ButtonsPanel propertyButtonsPanel = createButtonsPanel(childMeta, propertyDs, table);
         table.setButtonsPanel(propertyButtonsPanel);
 
-        RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
-        rowsCount.setDatasource(propertyDs);
-        table.setRowsCount(rowsCount);
+        if (propertyDs instanceof CollectionDatasource.SupportsPaging) {
+            RowsCount rowsCount = uiComponents.create(RowsCount.class);
+            rowsCount.setDatasource(propertyDs);
+            table.setRowsCount(rowsCount);
+        }
+
         table.setWidth("100%");
+
         vbox.setHeight(themeConstants.get("cuba.gui.EntityInspectorEditor.tableContainer.height"));
         vbox.add(table);
         vbox.expand(table);
         vbox.setMargin(true);
+
         TabSheet.Tab tab = tablesTabSheet.addTab(childMeta.toString(), vbox);
         tab.setCaption(getPropertyCaption(metaClass, childMeta));
         tables.add(table);
@@ -846,26 +852,26 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @return buttons panel
      */
     @SuppressWarnings("unchecked")
-    protected ButtonsPanel createButtonsPanel(final MetaProperty metaProperty,
-                                              final CollectionDatasource propertyDs, Table table) {
+    protected ButtonsPanel createButtonsPanel(MetaProperty metaProperty,
+                                              CollectionDatasource propertyDs, Table table) {
         MetaClass propertyMetaClass = metaProperty.getRange().asClass();
-        ButtonsPanel propertyButtonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
+        ButtonsPanel propertyButtonsPanel = uiComponents.create(ButtonsPanel.class);
 
-        Button createButton = componentsFactory.createComponent(Button.class);
+        Button createButton = uiComponents.create(Button.class);
         CreateAction createAction = new CreateAction(metaProperty, propertyDs, propertyMetaClass);
         createButton.setAction(createAction);
         table.addAction(createAction);
         createButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "create"));
         createButton.setIcon("icons/create.png");
 
-        Button addButton = componentsFactory.createComponent(Button.class);
+        Button addButton = uiComponents.create(Button.class);
         AddAction addAction = createAddAction(metaProperty, propertyDs, table, propertyMetaClass);
         table.addAction(addAction);
         addButton.setAction(addAction);
         addButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "add"));
         addButton.setIcon("icons/add.png");
 
-        Button editButton = componentsFactory.createComponent(Button.class);
+        Button editButton = uiComponents.create(Button.class);
         EditAction editAction = new EditAction(metaProperty, table, propertyDs);
         editButton.setAction(editAction);
         editButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "edit"));
@@ -875,7 +881,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         table.setEnterPressAction(editAction);
 
         RemoveAction removeAction = createRemoveAction(metaProperty, table);
-        Button removeButton = componentsFactory.createComponent(Button.class);
+        Button removeButton = uiComponents.create(Button.class);
         removeButton.setAction(removeAction);
         table.addAction(removeAction);
         removeButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "remove"));
@@ -906,30 +912,27 @@ public class EntityInspectorEditor extends AbstractWindow {
 
     @SuppressWarnings("unchecked")
     protected Lookup.Handler createAddHandler(final MetaProperty metaProperty, final CollectionDatasource propertyDs) {
-        Lookup.Handler result = new Lookup.Handler() {
-            @Override
-            public void handleLookup(Collection items) {
-                for (Object item : items) {
-                    Entity entity = (Entity) item;
-                    if (!propertyDs.getItems().contains(entity)) {
-                        MetaProperty inverseProperty = metaProperty.getInverse();
-                        if (inverseProperty != null) {
-                            if (!inverseProperty.getRange().getCardinality().isMany()) {
-                                //set currently editing item to the child's parent property
-                                entity.setValue(inverseProperty.getName(), datasource.getItem());
+        Lookup.Handler result = items -> {
+            for (Object item : items) {
+                Entity entity = (Entity) item;
+                if (!propertyDs.getItems().contains(entity)) {
+                    MetaProperty inverseProperty = metaProperty.getInverse();
+                    if (inverseProperty != null) {
+                        if (!inverseProperty.getRange().getCardinality().isMany()) {
+                            //set currently editing item to the child's parent property
+                            entity.setValue(inverseProperty.getName(), datasource.getItem());
+                            propertyDs.addItem(entity);
+                        } else {
+                            Collection properties = entity.getValue(inverseProperty.getName());
+                            if (properties != null) {
+                                properties.add(datasource.getItem());
                                 propertyDs.addItem(entity);
-                            } else {
-                                Collection properties = entity.getValue(inverseProperty.getName());
-                                if (properties != null) {
-                                    properties.add(datasource.getItem());
-                                    propertyDs.addItem(entity);
-                                }
                             }
                         }
                     }
-
-                    propertyDs.addItem(entity);
                 }
+
+                propertyDs.addItem(entity);
             }
         };
 
@@ -1075,12 +1078,15 @@ public class EntityInspectorEditor extends AbstractWindow {
             editorParams.put("metaClass", entityMeta.getName());
             editorParams.put("autocommit", Boolean.FALSE);
             MetaProperty inverseProperty = metaProperty.getInverse();
-            if (inverseProperty != null)
+            if (inverseProperty != null) {
                 editorParams.put("parentProperty", inverseProperty.getName());
+            }
             editorParams.put("parent", item);
-            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION)
+            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
                 editorParams.put("parentDs", entitiesDs);
-            EntityInspectorEditor editor = (EntityInspectorEditor) openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
+            }
+
+            Editor editor = (Editor) openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             editor.addCloseListener(actionId -> {
                 if (COMMIT_ACTION_ID.equals(actionId) && metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
                     boolean modified = entitiesDs.isModified();
@@ -1089,6 +1095,10 @@ public class EntityInspectorEditor extends AbstractWindow {
                 }
             });
         }
+    }
+
+    protected boolean attrViewPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
     }
 
     protected class EditAction extends ItemTrackingAction {
@@ -1108,8 +1118,9 @@ public class EntityInspectorEditor extends AbstractWindow {
         public void actionPerform(Component component) {
             Set selected = entitiesTable.getSelected();
 
-            if (selected.size() != 1)
+            if (selected.size() != 1) {
                 return;
+            }
 
             Entity editItem = (Entity) selected.toArray()[0];
             Map<String, Object> editorParams = new HashMap<>();
@@ -1118,18 +1129,16 @@ public class EntityInspectorEditor extends AbstractWindow {
             editorParams.put("parent", item);
             editorParams.put("autocommit", Boolean.FALSE);
             MetaProperty inverseProperty = metaProperty.getInverse();
-            if (inverseProperty != null)
+            if (inverseProperty != null) {
                 editorParams.put("parentProperty", inverseProperty.getName());
-            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION)
+            }
+            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
                 editorParams.put("parentDs", entitiesDs);
+            }
 
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             window.addCloseListener(actionId -> entitiesDs.refresh());
         }
-    }
-
-    protected boolean attrViewPermitted(MetaClass metaClass, String property) {
-        return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
     }
 
     protected boolean attrViewPermitted(MetaClass metaClass, MetaProperty metaProperty) {

@@ -58,6 +58,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Strings.nullToEmpty;
@@ -144,15 +145,25 @@ public class EntityInspectorBrowse extends AbstractLookup {
             Session session = metadata.getSession();
             selectedMeta = session.getClass(entityName);
             createEntitiesTable(selectedMeta);
-            if (frame instanceof Lookup) {
-                setLookupComponent(entitiesTable);
-            }
+
             lookupBox.setVisible(false);
         } else {
             entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
             entitiesLookup.addValueChangeListener(e -> showEntities());
             removedRecords.addValueChangeListener(e -> showEntities());
         }
+    }
+
+    @Override
+    public void setSelectHandler(Consumer lookupHandler) {
+        super.setSelectHandler(lookupHandler);
+
+        setLookupComponent(entitiesTable);
+
+        Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
+        entitiesTable.setLookupSelectHandler(items ->
+                selectAction.actionPerform(entitiesTable)
+        );
     }
 
     protected Map<String, MetaClass> getEntitiesLookupFieldOptions() {
@@ -203,7 +214,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             textSelection.addValueChangeListener(e -> changeTableTextSelectionEnabled());
         }
 
-        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
         Function<?, String> dateTimeFormatter = value -> {
             if (value == null) {
                 return StringUtils.EMPTY;
@@ -217,12 +228,14 @@ public class EntityInspectorBrowse extends AbstractLookup {
         List<Table.Column> systemPropertyColumns = new ArrayList<>(10);
         for (MetaProperty metaProperty : meta.getProperties()) {
             //don't show embedded, transient & multiple referred entities
-            if (isEmbedded(metaProperty) || metadata.getTools().isNotPersistent(metaProperty))
+            if (isEmbedded(metaProperty) || metadata.getTools().isNotPersistent(metaProperty)) {
                 continue;
+            }
 
             Range range = metaProperty.getRange();
-            if (range.getCardinality().isMany())
+            if (range.getCardinality().isMany()) {
                 continue;
+            }
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
 
@@ -431,8 +444,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
         EntityImportView entityImportView = new EntityImportView(javaClass);
 
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            if (!metadata.getTools().isPersistent(metaProperty))
+            if (!metadata.getTools().isPersistent(metaProperty)) {
                 continue;
+            }
 
             switch (metaProperty.getType()) {
                 case DATATYPE:

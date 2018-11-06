@@ -95,6 +95,8 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
             if (StringUtils.isNotEmpty(lookupComponent)) {
                 Component component = getFrame().getComponent(lookupComponent);
                 setLookupComponent(component);
+
+                // todo setLookupSelectHandler for lookupComponent
             }
         }
     }
