@@ -38,10 +38,12 @@ import java.util.Map;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, String, V> implements CurrencyField<V> {
+public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaCurrencyField, String, V>
+        implements CurrencyField<V> {
 
     protected Locale locale;
     protected Datatype<V> datatype;
+    protected Datatype<V> defaultDatatype;
 
     public WebCurrencyField() {
         component = new CubaCurrencyField();
@@ -50,18 +52,17 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
         attachValueChangeListener(component);
     }
 
-    @SuppressWarnings("unchecked")
     @Inject
     public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
-        this.datatype = (Datatype) datatypeRegistry.get(BigDecimal.class);
+        //noinspection unchecked
+        this.defaultDatatype = (Datatype<V>) datatypeRegistry.get(BigDecimal.class);
     }
 
     @Override
     protected void attachValueChangeListener(CubaCurrencyField component) {
         component.getInternalComponent()
                 .addValueChangeListener(event ->
-                        componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated())
-                );
+                        componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated()));
     }
 
     @Inject
@@ -71,6 +72,7 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
 
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
+        Datatype<V> datatype = getDatatypeInternal();
         // Vaadin TextField does not permit `null` value
         if (datatype != null) {
             return nullToEmpty(datatype.format(modelValue, locale));
@@ -88,10 +90,9 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
 
     @Override
     protected V convertToModel(String componentRawValue) throws ConversionException {
-        String value = emptyToNull(componentRawValue);
+        String value = StringUtils.trimToNull(emptyToNull(componentRawValue));
 
-        value = StringUtils.trimToNull(value);
-
+        Datatype<V> datatype = getDatatypeInternal();
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
@@ -180,6 +181,13 @@ public class WebCurrencyField<V> extends WebV8AbstractField<CubaCurrencyField, S
     @Override
     public Datatype<V> getDatatype() {
         return datatype;
+    }
+
+    protected Datatype<V> getDatatypeInternal() {
+        if (datatype != null) {
+            return datatype;
+        }
+        return valueBinding == null ? defaultDatatype : null;
     }
 
     @Override
