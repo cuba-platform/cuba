@@ -735,6 +735,22 @@ configure(webModule) {
         exclude '**/web.xml'
     }
 
+    def vaadinThemesDir = "$buildDir/vaadin-themes"
+    task unpackVaadinThemes() {
+        doLast {
+            project.copy {
+                from zipTree(configurations.themes.resolvedConfiguration.resolvedArtifacts.find { artifact ->
+                    artifact.name == 'vaadin-themes' }.getFile())
+                into vaadinThemesDir
+
+                include 'VAADIN/themes/valo/**'
+                exclude '**/favicon.ico'
+                exclude '**/styles.css.gz'
+            }
+        }
+        outputs.dir(file(vaadinThemesDir))
+    }
+
     def webOutDir = file("$buildDir/web")
     task webArchive(dependsOn: buildScssThemes, type: Zip) {
         from file('web')
@@ -743,7 +759,8 @@ configure(webModule) {
         classifier = 'web'
     }
 
-    task themesJar(dependsOn: buildScssThemes, type: Jar) {
+    task themesJar(dependsOn: unpackVaadinThemes, type: Jar) {
+        from "$vaadinThemesDir/VAADIN/themes"
         from file('themes')
         classifier = 'themes'
     }
