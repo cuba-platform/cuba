@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
+
 /**
- * Provides current client specific WindowManagerImpl.
+ * Provides current client specific WindowManager.
  *
- * @deprecated Use {@link com.haulmont.cuba.core.global.BeanLocator} with {@link Screens#NAME} instead.
+ * @deprecated Pass {@link FrameOwner} explicitly instead. Use {@link UiControllerUtils} to get {@link Screens} API.
  */
 @Deprecated
 public interface WindowManagerProvider {
@@ -28,7 +31,7 @@ public interface WindowManagerProvider {
     String NAME = "cuba_WindowManagerProvider";
 
     /**
-     * @deprecated Use {@link com.haulmont.cuba.core.global.BeanLocator} with {@link Screens#NAME} instead.
+     * @deprecated Pass {@link FrameOwner} explicitly instead.
      */
     @Deprecated
     WindowManager get();

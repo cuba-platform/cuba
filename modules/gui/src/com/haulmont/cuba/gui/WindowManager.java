@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Legacy window manager.
  *
- * @deprecated Use {@link Screens} instead.
+ * @deprecated Use {@link Screens}, {@link Dialogs} and {@link Notifications} APIs instead.
  */
 @Deprecated
 public interface WindowManager extends Screens {
