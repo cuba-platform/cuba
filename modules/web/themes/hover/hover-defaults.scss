@@ -23,6 +23,7 @@ $v-border-radius: 2px;
 $v-font-color: valo-font-color($v-background-color, 0.85);
 $v-font-size: 14px;
 $v-unit-size: 28px;
+$v-default-field-width: floor($v-unit-size * 8.6);
 
 $v-bevel: none;
 $v-button-font-color: $v-font-color;
