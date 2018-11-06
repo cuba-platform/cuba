@@ -19,7 +19,6 @@ package com.haulmont.cuba.desktop.gui;
 
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.desktop.gui.components.*;
-import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -98,7 +97,6 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(TabSheet.NAME, DesktopTabSheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(Image.NAME, DesktopImage.class);
-        classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBoxLayout.NAME, DesktopGroupBox.class);
         classes.put(ProgressBar.NAME, DesktopProgressBar.class);
         classes.put(TimeField.NAME, DesktopTimeField.class);
@@ -110,15 +108,6 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
         classes.put(element, componentClass);
-    }
-
-    public static void registerComponents(ComponentPalette... palettes) {
-        for (ComponentPalette palette : palettes) {
-            Map<String, Class<? extends Component>> loaders = palette.getComponents();
-            for (Map.Entry<String, Class<? extends Component>> loaderEntry : loaders.entrySet()) {
-                classes.put(loaderEntry.getKey(), loaderEntry.getValue());
-            }
-        }
     }
 
     protected void autowireContext(Component instance) {
