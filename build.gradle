@@ -412,8 +412,6 @@ configure(coreModule) {
         compile(bom['org.jgroups:jgroups'])
         compile(bom['org.aspectj:aspectjrt'])
         compile(bom['org.aspectj:aspectjweaver'])
-        compile(bom['org.mybatis:mybatis'])
-        compile(bom['org.mybatis:mybatis-spring'])
 
         compile(bom['org.springframework:spring-context-support'])
         compile(bom['org.springframework:spring-orm'])
