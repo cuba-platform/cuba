@@ -99,7 +99,7 @@ public class FileUploadController {
             return createFileInfoResponseEntity(request, fd);
         } catch (Exception e) {
             log.error("File upload failed", e);
-            throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -125,7 +125,7 @@ public class FileUploadController {
             return createFileInfoResponseEntity(request, fd);
         } catch (Exception e) {
             log.error("File upload failed", e);
-            throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -164,7 +164,8 @@ public class FileUploadController {
         } catch (FileStorageException e) {
             throw new RestAPIException("Unable to upload file to FileStorage",
                     "Unable to upload file to FileStorage: " + fd.getId(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    e);
         }
     }
 }

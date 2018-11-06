@@ -126,7 +126,8 @@ public class ServicesControllerManager {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
                         "Invalid parameter value for " + paramNames.get(idx),
-                        HttpStatus.BAD_REQUEST);
+                        HttpStatus.BAD_REQUEST,
+                        e);
             }
         }
 
@@ -137,8 +138,10 @@ public class ServicesControllerManager {
             if (ex.getCause() instanceof ValidationException) {
                 throw (ValidationException) ex.getCause();
             } else {
-                log.error("Error on service method invoke", ex.getCause());
-                throw new RestAPIException("Error on service method invoke", "", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new RestAPIException("Error on service method invocation",
+                        ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ex.getCause());
             }
         }
 

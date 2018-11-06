@@ -59,7 +59,7 @@ public class DatatypesControllerManager {
             }
         } catch (Exception e) {
             log.error("Fail to get datatype settings", e);
-            throw new RestAPIException("Fail to get datatype settings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestAPIException("Fail to get datatype settings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
         return jsonArray.toString();
