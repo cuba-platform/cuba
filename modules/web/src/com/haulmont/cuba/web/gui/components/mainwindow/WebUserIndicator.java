@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.widgets.CComboBox;
+import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +46,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
     protected Label userNameLabel;
-    protected CComboBox<User> userComboBox;
+    protected CubaComboBox<User> userComboBox;
 
     protected Function<? super User, String> userNameFormatter;
 
@@ -90,7 +90,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         } else {
             userNameLabel = null;
 
-            userComboBox = new CComboBox<>();
+            userComboBox = new CubaComboBox<>();
             userComboBox.setEmptySelectionAllowed(false);
             userComboBox.setItemCaptionGenerator(this::getSubstitutedUserCaption);
             userComboBox.setStyleName("c-user-select-combobox");

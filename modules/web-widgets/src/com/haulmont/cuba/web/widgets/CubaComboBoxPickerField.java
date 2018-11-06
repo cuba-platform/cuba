@@ -39,7 +39,7 @@ public class CubaComboBoxPickerField<T> extends CubaPickerField<T> {
 
     @Override
     protected void initField() {
-        CComboBox<T> field = new CComboBox<>();
+        CubaComboBox<T> field = new CubaComboBox<>();
         field.addStyleName(COMBOBOX_FIELD_STYLENAME);
 
         this.field = field;
@@ -47,9 +47,9 @@ public class CubaComboBoxPickerField<T> extends CubaPickerField<T> {
         (getFieldInternal()).addValueChangeListener(this::onFieldValueChange);
     }
 
-    protected CComboBox<T> getFieldInternal() {
+    protected CubaComboBox<T> getFieldInternal() {
         //noinspection unchecked
-        return (CComboBox<T>) field;
+        return (CubaComboBox<T>) field;
     }
 
     @Override

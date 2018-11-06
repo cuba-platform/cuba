@@ -19,14 +19,15 @@ package com.haulmont.cuba.web.widgets.client.combobox;
 
 import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
-import com.vaadin.v7.client.ui.combobox.ComboBoxConnector;
+import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaComboBox.class, loadStyle = Connect.LoadStyle.EAGER)
-public class CubaComboBoxConnector extends ComboBoxConnector {
+public class CubaComboBoxConnector extends ComboBoxConnector implements Paintable {
 
     @Override
     public CubaComboBoxWidget getWidget() {
@@ -35,8 +36,6 @@ public class CubaComboBoxConnector extends ComboBoxConnector {
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
         // We may have actions attached to this text field
         if (uidl.getChildCount() > 0) {
             final int cnt = uidl.getChildCount();

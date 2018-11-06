@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.widgets.client.combobox;
 
-import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
@@ -25,12 +24,12 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.ShortcutActionHandler;
-import com.vaadin.v7.client.ui.VFilterSelect;
+import com.vaadin.client.ui.VComboBox;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
+public class CubaComboBoxWidget extends VComboBox implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     private static final String READONLY_STYLE_SUFFIX = "readonly";
     private static final String PROMPT_STYLE = "prompt";
@@ -90,17 +89,6 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
         }
     }
 
-    @Override
-    public void setPromptingOff(String text) {
-        // copied from com.vaadin.client.ui.VFilterSelect.setPromptingOff
-        // condition operator and calling method were s
-        if (prompting) {
-            prompting = false;
-            removeStyleDependentName(PROMPT_STYLE);
-        }
-        setTextboxText(text);
-    }
-
     public void setShortcutActionHandler(ShortcutActionHandler handler) {
         this.shortcutHandler = handler;
     }
@@ -112,21 +100,6 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
 
     @Override
     public void add(Widget w) {
-    }
-
-    @Override
-    public void setTextboxText(String text) {
-        super.setTextboxText(text);
-
-        if ("".equals(text) || text == null) {
-            addStyleName(CUBA_EMPTY_VALUE);
-        } else {
-            if (getStyleName().contains(PROMPT_STYLE)) {
-                addStyleName(CUBA_EMPTY_VALUE);
-            } else {
-                removeStyleName(CUBA_EMPTY_VALUE);
-            }
-        }
     }
 
     @Override
@@ -153,10 +126,6 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
         this.enabled = enabled;
 
         refreshEnabledOrReadonly();
-
-        if (getStyleName().contains(CUBA_EMPTY_VALUE)) {
-            setPromptingOn();
-        }
     }
 
     protected boolean isReadonly() {
@@ -181,24 +150,4 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
     public void setTabIndex(int tabIndex) {
         this.tabIndex = tabIndex;
     }
-
-    @Override
-    public void onBlur(BlurEvent event) {
-        super.onBlur(event);
-
-        if (!readonly && !"".equals(inputPrompt)
-                && ("".equals(selectedOptionKey) || null == selectedOptionKey)) {
-            setPromptingOn();
-        }
-    }
-
-    /*
-    todo vaadin8
-    @Override
-    protected boolean isDoSelectedItemActionOnBlur() {
-        return super.isDoSelectedItemActionOnBlur()
-                // We need to create a new item if suggestionPopup is closed
-                // by clicking outside the component
-                && suggestionPopup.isJustClosed();
-    }*/
 }

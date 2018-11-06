@@ -19,6 +19,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -33,7 +36,7 @@ import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.widgets.CComboBox;
+import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.ItemCaptionGenerator;
@@ -45,6 +48,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,7 +57,7 @@ import java.util.stream.Stream;
 import static com.vaadin.event.ShortcutAction.KeyCode;
 import static com.vaadin.event.ShortcutAction.ModifierKey;
 
-public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
+public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         implements LookupField<V>, InitializingBean {
 
     protected FilterMode filterMode = FilterMode.CONTAINS;
@@ -63,6 +67,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
 
     protected Consumer<String> newOptionHandler;
 
+    // todo
     protected Consumer<ErrorMessage> componentErrorHandler;
 
     protected OptionsStyleProvider optionsStyleProvider;
@@ -107,8 +112,8 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
                         }));
     }
 
-    protected CComboBox<V> createComponent() {
-        return new CComboBox<>();
+    protected CubaComboBox<V> createComponent() {
+        return new CubaComboBox<>();
     }
 
     @Override
@@ -172,28 +177,19 @@ public class WebLookupField<V> extends WebV8AbstractField<CComboBox<V>, V, V>
                 setOptions(new EnumOptions(metaProperty.getJavaType()));
             }
 
-            // vaadin8 dynamic attributes
-            /*
             if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                 CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
                 if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
-                    setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
+                    // todo separate options class
+                    setOptionsMap((Map<String, V>) categoryAttribute.getLocalizedEnumerationMap());
                 }
-            }*/
+            }
         }
     }
 
     // vaadin8
     /*protected void createComponent() {
         this.component = new CubaComboBox() {
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null)
-                    super.setPropertyDataSource(null);
-                else
-                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource));
-            }
-
             @Override
             public void setComponentError(ErrorMessage componentError) {
                 boolean handled = false;

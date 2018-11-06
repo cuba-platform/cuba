@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.widgets.CComboBox;
+import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +48,7 @@ public class WebSearchField<V extends Entity> extends WebLookupField<V> implemen
     protected SearchNotifications searchNotifications = createSearchNotifications();
 
     @Override
-    protected CComboBox<V> createComponent() {
+    protected CubaComboBox<V> createComponent() {
         return new CubaSearchSelect<>();
 
         /* vaadin8

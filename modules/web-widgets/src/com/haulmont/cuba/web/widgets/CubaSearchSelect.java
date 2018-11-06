@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.widgets.client.searchselect.CubaSearchSelectState;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class CubaSearchSelect<V> extends CComboBox<V> {
+public class CubaSearchSelect<V> extends CubaComboBox<V> {
 
     protected Consumer<String> filterHandler = null;
 
@@ -37,11 +37,6 @@ public class CubaSearchSelect<V> extends CComboBox<V> {
     @Override
     protected CubaSearchSelectState getState(boolean markAsDirty) {
         return (CubaSearchSelectState) super.getState(markAsDirty);
-    }
-
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
     }
 
     @Override

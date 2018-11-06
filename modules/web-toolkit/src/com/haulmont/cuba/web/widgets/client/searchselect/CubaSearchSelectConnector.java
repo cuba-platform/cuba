@@ -18,12 +18,12 @@
 package com.haulmont.cuba.web.widgets.client.searchselect;
 
 import com.haulmont.cuba.web.widgets.CubaSearchSelect;
+import com.haulmont.cuba.web.widgets.client.combobox.CubaComboBoxConnector;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaSearchSelect.class, loadStyle = Connect.LoadStyle.LAZY)
-public class CubaSearchSelectConnector extends ComboBoxConnector {
+public class CubaSearchSelectConnector extends CubaComboBoxConnector {
 
     @Override
     public CubaSearchSelectState getState() {
