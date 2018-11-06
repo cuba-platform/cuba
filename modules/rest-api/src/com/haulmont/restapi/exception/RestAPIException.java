@@ -30,7 +30,7 @@ public class RestAPIException extends RuntimeException {
         this(message, details, httpStatus, null);
     }
 
-    public RestAPIException(String message, String details, HttpStatus httpStatus, Exception cause) {
+    public RestAPIException(String message, String details, HttpStatus httpStatus, Throwable cause) {
         super(message, cause);
         this.details = details;
         this.httpStatus = httpStatus;

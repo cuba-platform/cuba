@@ -62,7 +62,7 @@ public class DocumentationController {
             ObjectMapper jsonWriter = new ObjectMapper();
             return jsonWriter.writeValueAsString(obj);
         } catch (IOException e) {
-            throw new RestAPIException("Internal server error", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestAPIException("Internal server error", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -83,7 +83,7 @@ public class DocumentationController {
             return yamlMapper.writeValueAsString(jsonNode);
         } catch (IOException e) {
             throw new RestAPIException("An error occurred while generating Swagger documentation", e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -97,7 +97,7 @@ public class DocumentationController {
             return jsonWriter.writeValueAsString(swagger);
         } catch (JsonProcessingException e) {
             throw new RestAPIException("An error occurred while generating Swagger documentation", e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 }

@@ -70,7 +70,8 @@ public class FileDownloadController {
         } catch (IllegalArgumentException e) {
             throw new RestAPIException("Invalid entity ID",
                     String.format("Cannot convert %s into valid entity ID", fileDescriptorId),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST,
+                    e);
         }
         LoadContext<FileDescriptor> ctx = LoadContext.create(FileDescriptor.class).setId(uuid);
         FileDescriptor fd = dataService.load(ctx);
@@ -89,7 +90,7 @@ public class FileDownloadController {
             downloadFromMiddlewareAndWriteResponse(fd, response);
         } catch (Exception e) {
             log.error("Error on downloading the file {}", fileDescriptorId, e);
-            throw new RestAPIException("Error on downloading the file", "", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestAPIException("Error on downloading the file", "", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -101,7 +102,8 @@ public class FileDownloadController {
         } catch (FileStorageException e) {
             throw new RestAPIException("Unable to download file from FileStorage",
                     "Unable to download file from FileStorage: " + fd.getId(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    e);
         }
     }
 
