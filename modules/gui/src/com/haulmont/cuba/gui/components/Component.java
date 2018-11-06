@@ -74,39 +74,66 @@ public interface Component {
 
     /**
      * Is the component enabled?
-     * vaadin8 add JavaDoc
+     * <br>
+     * Note that this method only returns the status of the component and does not take parents into account.
+     * Even though this method returns true the component can be disabled to the user if a parent is disabled.
+     *
+     * @return true if the component enabled flag is set to true
      */
     boolean isEnabled();
-    /** Set component enabled state */
+    /**
+     * Sets the component enabled state.
+     * <br>
+     * The user can not interact with disabled components, which are shown with a style that indicates the status.
+     * Components are enabled by default.
+     *
+     * @param enabled enabled flag
+     */
     void setEnabled(boolean enabled);
 
     /**
      * Is the component responsive?
+     *
+     * @return true if the component applies conditional CSS rules for width / height sizes.
      */
     boolean isResponsive();
     /**
-     * Set component to be responsive by width and height.
-     *
+     * Sets component to be responsive by width and height.
+     * <br>
      * If responsive flag is true then you can use conditional CSS rules that respond to size changes in the browser.
      * You can set specific rules using "width-range" or "height-range" properties in CSS files.
+     *
+     * @param responsive responsive flag
      */
     void setResponsive(boolean responsive);
 
     /**
      * Is the component visible?
-     * vaadin8 add JavaDoc
+     * <br>
+     * A component is visible only if all its parents are also visible. This is not checked by this method though,
+     * so even if this method returns true, the component can be hidden from the user because a parent is set to invisible.
+     *
+     * @return true if the component visibility is set to true
      */
     boolean isVisible();
-    /** Set component visibility */
+    /**
+     * Sets visibility value for the component.
+     * <br>
+     * Visible components are drawn in the user interface, while invisible ones are not. The effect is not a cosmetic
+     * CSS change - no information about an invisible component will be sent to the client. The effect is thus the same
+     * as removing the component from its parent.
+     *
+     * @param visible visible flag
+     */
     void setVisible(boolean visible);
 
     /**
-     * @return
+     * @return true if the component and all its parent components are visible
      */
     boolean isVisibleRecursive();
 
     /**
-     * @return
+     * @return true if the component and all its parent components are enabled
      */
     boolean isEnabledRecursive();
 
