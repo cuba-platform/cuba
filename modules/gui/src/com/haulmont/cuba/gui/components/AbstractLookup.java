@@ -96,9 +96,16 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
                 Component component = getFrame().getComponent(lookupComponent);
                 setLookupComponent(component);
 
-                // todo setLookupSelectHandler for lookupComponent
+                if (component instanceof LookupComponent) {
+                    ((LookupComponent<?>) component).setLookupSelectHandler(this::selectItemsOnClick);
+                }
             }
         }
+    }
+
+    protected void selectItemsOnClick(Collection collection) {
+        Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
+        selectAction.actionPerform(getLookupComponent());
     }
 
     @Override
