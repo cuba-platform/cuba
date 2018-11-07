@@ -576,7 +576,13 @@ public class CubaFoldersPane extends VerticalLayout {
         folders.sort(Comparator.comparingInt(this::folderDepth));
         for (T folder : folders) {
             //noinspection unchecked
-            tree.getTreeData().addItem((T) getFolderParent(folder), folder);
+            T parent = (T) getFolderParent(folder);
+            if (tree.getTreeData().contains(parent)) {
+                tree.getTreeData().addItem(parent, folder);
+            } else {
+                //noinspection unchecked
+                tree.getTreeData().addItem(parent, folder);
+            }
         }
     }
 
