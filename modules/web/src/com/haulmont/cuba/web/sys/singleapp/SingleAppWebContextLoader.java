@@ -29,7 +29,10 @@ import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
 import com.haulmont.restapi.sys.CubaRestApiServlet;
 import com.haulmont.restapi.sys.SingleAppRestApiServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -43,10 +46,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static com.vaadin.server.communication.JSR356WebsocketInitializer.initAtmosphereForVaadinServlet;
+
 /**
  * {@link AppContext} loader of the web application block packed in a WAR together with the middleware block.
  */
 public class SingleAppWebContextLoader extends WebAppContextLoader {
+
+    private final Logger log = LoggerFactory.getLogger(SingleAppWebContextLoader.class);
 
     private Set<String> dependencyJars;
     private ServletContextListener webServletContextListener;
@@ -70,21 +77,36 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         super.contextInitialized(servletContextEvent);
 
-        ServletContext servletContext = servletContextEvent.getServletContext();
+        try {
+            ServletContext servletContext = servletContextEvent.getServletContext();
 
-        registerAppServlet(servletContext);
+            registerAppServlet(servletContext);
 
-        registerDispatchServlet(servletContext);
+            registerDispatchServlet(servletContext);
 
-        registerRestApiServlet(servletContext);
+            registerRestApiServlet(servletContext);
 
-        registerCubaHttpFilter(servletContext);
+            registerCubaHttpFilter(servletContext);
 
-        registerFrontAppServlet(servletContext);
+            registerFrontAppServlet(servletContext);
 
-        registerClassLoaderFilter(servletContext);
+            registerClassLoaderFilter(servletContext);
 
-        initWebServletContextListener(servletContextEvent, servletContext);
+            initWebServletContextListener(servletContextEvent, servletContext);
+        } catch (RuntimeException e) {
+            log.error("Error initializing web servlets", e);
+
+            try {
+                ApplicationContext springContext = AppContext.getApplicationContext();
+                if (springContext != null) {
+                    ((ConfigurableApplicationContext) springContext).close();
+                }
+            } catch (Exception e1) {
+                log.debug("Error closing application context: {}", e1.toString());
+            }
+
+            throw e;
+        }
     }
 
     @Override
@@ -98,15 +120,21 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     protected void registerAppServlet(ServletContext servletContext) {
         CubaApplicationServlet cubaServlet = new CubaApplicationServlet();
         cubaServlet.setClassLoader(Thread.currentThread().getContextClassLoader());
+
+        // we need to register servlet first in order to initialize Atmosphere Framework
+        ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_servlet", cubaServlet);
+        cubaServletReg.setLoadOnStartup(0);
+        cubaServletReg.setAsyncSupported(true);
+        cubaServletReg.addMapping("/*");
+
+        // init JSR 356 explicitly
+        initAtmosphereForVaadinServlet(cubaServletReg, servletContext);
+
         try {
             cubaServlet.init(new CubaServletConfig("app_servlet", servletContext));
         } catch (ServletException e) {
             throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
         }
-        ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_servlet", cubaServlet);
-        cubaServletReg.setLoadOnStartup(0);
-        cubaServletReg.setAsyncSupported(true);
-        cubaServletReg.addMapping("/*");
     }
 
     protected void registerDispatchServlet(ServletContext servletContext) {

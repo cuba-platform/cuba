@@ -23,9 +23,14 @@ import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
 import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
 import com.haulmont.cuba.core.sys.remoting.RemotingServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import javax.annotation.Nonnull;
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.EnumSet;
@@ -37,11 +42,14 @@ import java.util.Set;
  */
 public class SingleAppCoreContextLoader extends AppContextLoader {
 
+    private final Logger log = LoggerFactory.getLogger(SingleAppCoreContextLoader.class);
+
     private Set<String> dependencyJars;
 
     /**
      * Invoked reflectively by {@link SingleAppCoreServletListener}.
-     * @param jarNames  JARs of the core block
+     *
+     * @param jarNames JARs of the core block
      */
     @SuppressWarnings("unused")
     public void setJarNames(String jarNames) {
@@ -55,19 +63,35 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         super.contextInitialized(servletContextEvent);
 
-        ServletContext servletContext = servletContextEvent.getServletContext();
-        RemotingServlet remotingServlet = new RemotingServlet();
         try {
-            remotingServlet.init(new CubaServletConfig("remoting", servletContext));
-        } catch (ServletException e) {
-            throw new RuntimeException("An error occurred while initializing remoting servlet", e);
-        }
-        ServletRegistration.Dynamic remotingReg = servletContext.addServlet("remoting", remotingServlet);
-        remotingReg.addMapping("/remoting/*");
-        remotingReg.setLoadOnStartup(0);
+            ServletContext servletContext = servletContextEvent.getServletContext();
+            RemotingServlet remotingServlet = new RemotingServlet();
+            try {
+                remotingServlet.init(new CubaServletConfig("remoting", servletContext));
+            } catch (ServletException e) {
+                throw new RuntimeException("An error occurred while initializing remoting servlet", e);
+            }
+            ServletRegistration.Dynamic remotingReg = servletContext.addServlet("remoting", remotingServlet);
+            remotingReg.addMapping("/remoting/*");
+            remotingReg.setLoadOnStartup(0);
 
-        FilterRegistration.Dynamic filterReg = servletContext.addFilter("CoreSingleWarHttpFilter", new SetClassLoaderFilter());
-        filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/remoting/*");
+            FilterRegistration.Dynamic filterReg = servletContext.addFilter("CoreSingleWarHttpFilter", new SetClassLoaderFilter());
+            filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/remoting/*");
+
+        } catch (RuntimeException e) {
+            log.error("Error initializing core servlets", e);
+
+            try {
+                ApplicationContext springContext = AppContext.getApplicationContext();
+                if (springContext != null) {
+                    ((ConfigurableApplicationContext) springContext).close();
+                }
+            } catch (Exception e1) {
+                log.debug("Error closing application context: {}", e1.toString());
+            }
+
+            throw e;
+        }
     }
 
     @Override
@@ -79,6 +103,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
              * during application initialization.
              */
             @Override
+            @Nonnull
             protected ResourcePatternResolver getResourcePatternResolver() {
                 if (dependencyJars == null || dependencyJars.isEmpty()) {
                     throw new RuntimeException("No JARs defined for the 'core' block. " +
@@ -96,7 +121,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
 
     protected static class SetClassLoaderFilter implements Filter {
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
+        public void init(FilterConfig filterConfig) {
             //do nothing
         }
 

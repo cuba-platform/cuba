@@ -19,7 +19,8 @@ package com.haulmont.cuba.web.sys.singleapp;
 
 import com.haulmont.cuba.core.sys.CubaSingleAppClassLoader;
 import org.apache.commons.io.IOUtils;
-import org.springframework.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -29,7 +30,11 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
+import static org.springframework.util.ReflectionUtils.findMethod;
+import static org.springframework.util.ReflectionUtils.invokeMethod;
 
 /**
  * This class and its twin com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener separate "web" and "core" classes
@@ -46,6 +51,8 @@ import java.util.Arrays;
 public class SingleAppWebServletListener implements ServletContextListener {
     protected Object appContextLoader;
 
+    private static final Logger log = LoggerFactory.getLogger(SingleAppWebServletListener.class);
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -56,7 +63,7 @@ public class SingleAppWebServletListener implements ServletContextListener {
             ServletContext servletContext = sce.getServletContext();
             String dependenciesFile;
             try {
-                dependenciesFile = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/web.dependencies"), "UTF-8");
+                dependenciesFile = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/web.dependencies"), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException("An error occurred while loading dependencies file", e);
             }
@@ -77,22 +84,24 @@ public class SingleAppWebServletListener implements ServletContextListener {
             Class<?> appContextLoaderClass = webClassLoader.loadClass(getAppContextLoaderClassName());
             appContextLoader = appContextLoaderClass.newInstance();
 
-            Method setJarsNamesMethod = ReflectionUtils.findMethod(appContextLoaderClass, "setJarNames", String.class);
-            ReflectionUtils.invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
+            Method setJarsNamesMethod = findMethod(appContextLoaderClass, "setJarNames", String.class);
+            invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
 
-            Method contextInitializedMethod = ReflectionUtils.findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
-            ReflectionUtils.invokeMethod(contextInitializedMethod, appContextLoader, sce);
+            Method contextInitializedMethod = findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
+            invokeMethod(contextInitializedMethod, appContextLoader, sce);
 
             Thread.currentThread().setContextClassLoader(contextClassLoader);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
+            log.error("An error occurred while starting single WAR - web application", e);
+
             throw new RuntimeException("An error occurred while starting single WAR application", e);
         }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Method contextInitialized = ReflectionUtils.findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
-        ReflectionUtils.invokeMethod(contextInitialized, appContextLoader, sce);
+        Method contextInitialized = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
+        invokeMethod(contextInitialized, appContextLoader, sce);
     }
 
     protected String getAppContextLoaderClassName() {
