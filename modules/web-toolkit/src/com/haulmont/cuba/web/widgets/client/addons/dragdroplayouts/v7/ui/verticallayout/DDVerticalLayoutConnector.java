@@ -24,7 +24,7 @@ import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.util.HTML5Support;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.v7.DDVerticalLayout;
 
-@Connect(DDVerticalLayout.class)
+@Connect(value = DDVerticalLayout.class, loadStyle = Connect.LoadStyle.LAZY)
 public class DDVerticalLayoutConnector extends VerticalLayoutConnector
         implements Paintable, VHasDragFilter {
 

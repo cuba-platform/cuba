@@ -36,17 +36,14 @@ public class CubaCopyButtonExtensionConnector extends AbstractExtensionConnector
 
     @Override
     protected void extend(ServerConnector target) {
-        final VButton button = (VButton) ((ComponentConnector) target).getWidget();
+        VButton button = (VButton) ((ComponentConnector) target).getWidget();
 
-        button.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (getState().copyTargetSelector != null) {
-                    boolean success = copyToClipboard(getState().copyTargetSelector.startsWith(".")
-                            ? getState().copyTargetSelector
-                            : "." + getState().copyTargetSelector);
-                    getRpcProxy(CubaCopyButtonExtensionServerRpc.class).copied(success);
-                }
+        button.addClickHandler(event -> {
+            if (getState().copyTargetSelector != null) {
+                boolean success = copyToClipboard(getState().copyTargetSelector.startsWith(".")
+                        ? getState().copyTargetSelector
+                        : "." + getState().copyTargetSelector);
+                getRpcProxy(CubaCopyButtonExtensionServerRpc.class).copied(success);
             }
         });
     }

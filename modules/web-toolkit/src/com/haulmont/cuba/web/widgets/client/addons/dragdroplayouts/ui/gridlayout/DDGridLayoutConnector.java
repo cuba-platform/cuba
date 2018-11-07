@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces.VHasGrabFilter;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.util.HTML5Support;
 
-@Connect(DDGridLayout.class)
+@Connect(value = DDGridLayout.class, loadStyle = Connect.LoadStyle.LAZY)
 public class DDGridLayoutConnector extends GridLayoutConnector
         implements Paintable, VHasDragFilter, VHasGrabFilter, VHasDragCaptionProvider {
 

@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces.VHasGrabFilter;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.util.HTML5Support;
 
-@Connect(DDVerticalSplitPanel.class)
+@Connect(value = DDVerticalSplitPanel.class, loadStyle = Connect.LoadStyle.LAZY)
 public class DDVerticalSplitPanelConnector extends VerticalSplitPanelConnector
         implements Paintable, VHasDragFilter, VHasGrabFilter, VHasDragCaptionProvider {
 

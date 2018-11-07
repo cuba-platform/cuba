@@ -28,7 +28,7 @@ import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.interfaces.VHasGrabFilter;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.util.HTML5Support;
 
-@Connect(DDFormLayout.class)
+@Connect(value = DDFormLayout.class, loadStyle = Connect.LoadStyle.LAZY)
 public class DDFormLayoutConnector extends FormLayoutConnector
         implements Paintable, VHasDragFilter, VHasGrabFilter, VHasDragCaptionProvider {
 

@@ -20,7 +20,7 @@ import com.haulmont.cuba.web.widgets.CubaColorPicker;
 import com.vaadin.client.ui.colorpicker.ColorPickerConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(CubaColorPicker.class)
+@Connect(value = CubaColorPicker.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaColorPickerConnector extends ColorPickerConnector {
 
     @Override
