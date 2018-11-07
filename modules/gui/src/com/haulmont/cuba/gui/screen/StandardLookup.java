@@ -69,10 +69,21 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
         loadData();
         setupLookupComponent();
+        setupCommitShortcut();
     }
 
     protected void loadData() {
         getScreenData().loadAll();
+    }
+
+    protected void setupCommitShortcut() {
+        if (selectHandler == null) {
+            // window opened not as Lookup
+            Action lookupAction = getWindow().getAction(LOOKUP_SELECT_ACTION_ID);
+            if (lookupAction != null) {
+                lookupAction.setShortcut(null);
+            }
+        }
     }
 
     protected void setupLookupComponent() {
@@ -119,6 +130,11 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     }
 
     protected void select(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
+        if (selectHandler == null) {
+            // window opened not as Lookup
+            return;
+        }
+
         LookupComponent<T> lookupComponent = getLookupComponent();
         Collection<T> lookupSelectedItems = lookupComponent.getLookupSelectedItems();
         select(lookupSelectedItems);

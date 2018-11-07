@@ -44,6 +44,7 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
     public AbstractLookup() {
         addInitListener(this::initLookupActions);
+        addBeforeShowListener(this::beforeShow);
     }
 
     protected void initLookupActions(@SuppressWarnings("unused") InitEvent event) {
@@ -55,6 +56,30 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
                 .withHandler(e ->
                         close("cancel")
                 ));
+    }
+
+    private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
+        setupLookupComponent();
+        setupCommitShortcut();
+    }
+
+    protected void setupCommitShortcut() {
+        if (lookupHandler == null) {
+            // window opened not as Lookup
+            Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
+            if (selectAction != null) {
+                selectAction.setShortcut(null);
+            }
+        }
+    }
+
+    protected void setupLookupComponent() {
+        if (this.lookupHandler != null) {
+            Component lookupComponent = getLookupComponent();
+            if (lookupComponent instanceof LookupComponent) {
+                ((LookupComponent<?>) lookupComponent).setLookupSelectHandler(this::selectItemsOnClick);
+            }
+        }
     }
 
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
@@ -100,7 +125,7 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
     }
 
     protected void selectItemsOnClick(Collection collection) {
-        Action selectAction = getAction(LOOKUP_SELECT_ACTION_ID);
+        Action selectAction = getActionNN(LOOKUP_SELECT_ACTION_ID);
         selectAction.actionPerform(getLookupComponent());
     }
 
@@ -125,11 +150,6 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
         if (lookupHandler != null) {
             getComponentNN("lookupWindowActions").setVisible(true);
-
-            Component lookupComponent = getLookupComponent();
-            if (lookupComponent instanceof LookupComponent) {
-                ((LookupComponent<?>) lookupComponent).setLookupSelectHandler(this::selectItemsOnClick);
-            }
         }
     }
 }

@@ -48,6 +48,11 @@ public class SelectAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
+        if (window.getLookupHandler() == null) {
+            // window opened not as Lookup
+            return;
+        }
+
         if (!validate())
             return;
 

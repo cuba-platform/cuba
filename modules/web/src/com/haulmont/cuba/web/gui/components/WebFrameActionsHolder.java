@@ -23,7 +23,9 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 
+import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
@@ -35,6 +37,7 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     protected Component actionSource;
+    protected Consumer<PropertyChangeEvent> actionPropertyChangeListener = this::actionPropertyChanged;
 
     public WebFrameActionsHolder(Component actionSource) {
         this.actionSource = actionSource;
@@ -63,9 +66,23 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         }
 
         actionList.add(index, action);
+
+        action.addPropertyChangeListener(actionPropertyChangeListener);
     }
 
-    public com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
+    protected void actionPropertyChanged(PropertyChangeEvent propertyChangeEvent) {
+        if (Action.PROP_SHORTCUT.equals(propertyChangeEvent.getPropertyName())) {
+            Action action = (Action) propertyChangeEvent.getSource();
+
+            actions.inverse().remove(action);
+
+            if (action.getShortcutCombination() != null) {
+                actions.put(createShortcutAction(action), action);
+            }
+        }
+    }
+
+    protected com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
         KeyCombination keyCombination = action.getShortcutCombination();
         if (keyCombination != null) {
             return new com.vaadin.event.ShortcutAction(
@@ -81,6 +98,10 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
     public void removeAction(Action action) {
         if (actionList.remove(action)) {
             actions.inverse().remove(action);
+
+            if (action != null) {
+                action.removePropertyChangeListener(actionPropertyChangeListener);
+            }
         }
     }
 
