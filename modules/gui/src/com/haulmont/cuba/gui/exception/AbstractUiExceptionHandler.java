@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,13 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.cuba.core.global.RemoteException;
-import com.haulmont.cuba.gui.WindowManager;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
@@ -31,27 +29,24 @@ import java.util.List;
  *
  * <p>If you need to handle a specific exception, create a descendant of this class,
  * pass handled exception class names into constructor, implement
- * {@link #doHandle(String, String, Throwable, WindowManager)} method and annotate the class with {@code @Component}.
- *
- * @deprecated Use {@link AbstractUiExceptionHandler} instead.
+ * {@link #doHandle(String, String, Throwable, UiContext)} method and annotate the class with {@code @Component}.
  */
-@Deprecated
-public abstract class AbstractGenericExceptionHandler implements GenericExceptionHandler {
+public abstract class AbstractUiExceptionHandler implements UiExceptionHandler {
 
     protected List<String> classNames;
 
-    public AbstractGenericExceptionHandler(String... classNames) {
+    public AbstractUiExceptionHandler(String... classNames) {
         this.classNames = Arrays.asList(classNames);
     }
 
     @Override
-    public boolean handle(Throwable exception, WindowManager windowManager) {
+    public boolean handle(Throwable exception, UiContext context) {
         //noinspection unchecked
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {
             if (classNames.contains(throwable.getClass().getName())
                     && canHandle(throwable.getClass().getName(), throwable.getMessage(), throwable)) {
-                doHandle(throwable.getClass().getName(), throwable.getMessage(), throwable, windowManager);
+                doHandle(throwable.getClass().getName(), throwable.getMessage(), throwable, context);
                 return true;
             }
             if (throwable instanceof RemoteException) {
@@ -59,7 +54,7 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
                 for (RemoteException.Cause cause : remoteException.getCauses()) {
                     if (classNames.contains(cause.getClassName())
                             && canHandle(cause.getClassName(), cause.getMessage(), cause.getThrowable())) {
-                        doHandle(cause.getClassName(), cause.getMessage(), cause.getThrowable(), windowManager);
+                        doHandle(cause.getClassName(), cause.getMessage(), cause.getThrowable(), context);
                         return true;
                     }
                 }
@@ -89,8 +84,7 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
      * @param message   exception message
      * @param throwable exception instance. Can be null if the exception occurred on the server side and this
      *                  exception class isn't accessible by the client.
-     * @param windowManager WindowManager instance
+     * @param context   UI context
      */
-    protected abstract void doHandle(String className, String message, @Nullable Throwable throwable,
-                                     WindowManager windowManager);
+    protected abstract void doHandle(String className, String message, @Nullable Throwable throwable, UiContext context);
 }
