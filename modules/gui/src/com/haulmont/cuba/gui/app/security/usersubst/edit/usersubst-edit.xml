@@ -30,7 +30,7 @@
         <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="_minimal">
             <query>
                 <![CDATA[
-                select u from sec$User u where u.id <> :ds$subst.user
+                select u from sec$User u where u.id <> :ds$subst.user.id
                 ]]>
             </query>
 
