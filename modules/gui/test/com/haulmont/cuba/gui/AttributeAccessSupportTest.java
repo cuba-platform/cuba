@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.haulmont.cuba.gui;
+
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
+import com.haulmont.cuba.core.entity.SecurityState;
+import com.haulmont.cuba.gui.data.impl.testmodel1.TestEmbeddableEntity;
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * @author Dmitry Chigileychik
+ * @version $Id$
+ * @since 07.11.18
+ */
+public class AttributeAccessSupportTest {
+
+    @Test
+    public void getEmbeddableEntitySecurityStateTest() {
+        final EmbeddableEntity entity = new TestEmbeddableEntity();
+        final SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
+
+        BaseEntityInternalAccess.setSecurityState(entity, securityState);
+
+        final AttributeAccessSupport attributeAccessSupport = new AttributeAccessSupport();
+        Assert.assertNotNull(
+                "com.haulmont.cuba.gui.AttributeAccessSupport#getSecurityState returns null",
+                attributeAccessSupport.getSecurityState(entity)
+        );
+    }
+}
