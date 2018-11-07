@@ -95,10 +95,6 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
             if (StringUtils.isNotEmpty(lookupComponent)) {
                 Component component = getFrame().getComponent(lookupComponent);
                 setLookupComponent(component);
-
-                if (component instanceof LookupComponent) {
-                    ((LookupComponent<?>) component).setLookupSelectHandler(this::selectItemsOnClick);
-                }
             }
         }
     }
@@ -129,6 +125,11 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
         if (lookupHandler != null) {
             getComponentNN("lookupWindowActions").setVisible(true);
+
+            Component lookupComponent = getLookupComponent();
+            if (lookupComponent instanceof LookupComponent) {
+                ((LookupComponent<?>) lookupComponent).setLookupSelectHandler(this::selectItemsOnClick);
+            }
         }
     }
 }
