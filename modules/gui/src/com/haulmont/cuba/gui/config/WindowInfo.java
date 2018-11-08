@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.config;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.sys.RouteDefinition;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -40,7 +41,14 @@ public class WindowInfo {
     private final Element descriptor;
     private final String screenClassName;
 
+    private final RouteDefinition routeDefinition;
+
     public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider, Element descriptor) {
+        this(id, windowAttributesProvider, descriptor, null);
+    }
+
+    public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider, Element descriptor,
+                      RouteDefinition routeDefinition) {
         checkNotNullArgument(id);
         checkNotNullArgument(descriptor);
 
@@ -48,10 +56,11 @@ public class WindowInfo {
         this.windowAttributesProvider = windowAttributesProvider;
         this.descriptor = descriptor;
         this.screenClassName = null;
+        this.routeDefinition = routeDefinition;
     }
 
     public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider,
-                      String screenClassName) {
+                      String screenClassName, RouteDefinition routeDefinition) {
         checkNotNullArgument(id);
         checkNotNullArgument(screenClassName);
 
@@ -59,6 +68,7 @@ public class WindowInfo {
         this.windowAttributesProvider = windowAttributesProvider;
         this.screenClassName = screenClassName;
         this.descriptor = null;
+        this.routeDefinition = routeDefinition;
     }
 
     /**
@@ -133,6 +143,13 @@ public class WindowInfo {
      */
     public boolean getMultipleOpen() {
         return windowAttributesProvider.isMultiOpen(this);
+    }
+
+    /**
+     * @return route definition configured with {@link com.haulmont.cuba.gui.Route} annotation
+     */
+    public RouteDefinition getRouteDefinition() {
+        return routeDefinition;
     }
 
     @Override

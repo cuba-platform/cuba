@@ -19,11 +19,14 @@ package com.haulmont.cuba.gui.app.security.group.edit;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.Route;
+import com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.PickerField;
 
 import javax.inject.Named;
 
+@Route(path = "groups/edit", parentPrefix = GroupBrowser.class)
 public class GroupEditor extends AbstractEditor {
 
     @Named("fieldGroup.parent")

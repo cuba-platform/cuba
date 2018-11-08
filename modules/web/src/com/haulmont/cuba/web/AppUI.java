@@ -33,10 +33,17 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.events.UIRefreshEvent;
+import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.navigation.UrlRouting;
+import com.haulmont.cuba.web.navigation.WebUrlRouting;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.*;
+import com.haulmont.cuba.web.sys.navigation.History;
+import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
+import com.haulmont.cuba.web.sys.navigation.WebHistory;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
@@ -125,6 +132,9 @@ public class AppUI extends CubaUI
     protected Dialogs dialogs;
     protected Notifications notifications;
     protected WebBrowserTools webBrowserTools;
+    protected UrlChangeHandler urlChangeHandler;
+    protected UrlRouting urlRouting;
+    protected History history;
 
     public AppUI() {
     }
@@ -169,7 +179,7 @@ public class AppUI extends CubaUI
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
 
-        if (webConfig.getAllowHandleBrowserHistoryBack()) {
+        if (UrlHandlingMode.BACK_ONLY == webConfig.getUrlHandlingMode()) {
             historyControl = new CubaHistoryControl();
             historyControl.extend(this, this);
         }
@@ -232,9 +242,35 @@ public class AppUI extends CubaUI
         this.fragments = fragments;
     }
 
+    public UrlRouting getUrlRouting() {
+        return urlRouting;
+    }
+
+    public void setUrlRouting(UrlRouting urlRouting) {
+        this.urlRouting = urlRouting;
+    }
+
+    public UrlChangeHandler getUrlChangeHandler() {
+        return urlChangeHandler;
+    }
+
+    public void setUrlChangeHandler(UrlChangeHandler urlChangeHandler) {
+        this.urlChangeHandler = urlChangeHandler;
+    }
+
+    public History getHistory() {
+        return history;
+    }
+
+    public void setHistory(History history) {
+        this.history = history;
+    }
+
     @Override
     protected void init(VaadinRequest request) {
         log.trace("Initializing UI {}", this);
+
+        NavigationState requestedState = getUrlRouting().getState();
 
         try {
             this.testMode = globalConfig.getTestMode();
@@ -279,7 +315,7 @@ public class AppUI extends CubaUI
             return;
         }
 
-        processExternalLink(request);
+        processExternalLink(request, requestedState);
     }
 
     @Inject
@@ -303,6 +339,20 @@ public class AppUI extends CubaUI
         Screens screens = new WebScreens(this);
         autowireContext(screens, applicationContext);
         setScreens(screens);
+
+        UrlRouting urlRouting = new WebUrlRouting(this);
+        autowireContext(urlRouting, applicationContext);
+        setUrlRouting(urlRouting);
+
+        UrlChangeHandler urlChangeHandler = new UrlChangeHandler(this);
+        autowireContext(urlChangeHandler, applicationContext);
+        setUrlChangeHandler(urlChangeHandler);
+
+        getPage().addPopStateListener(urlChangeHandler::handleUriChange);
+
+        History history = new WebHistory(this);
+        autowireContext(history, applicationContext);
+        setHistory(history);
     }
 
     protected void autowireContext(Object instance, ApplicationContext applicationContext) {
@@ -435,7 +485,7 @@ public class AppUI extends CubaUI
     @Override
     public void handleRequest(VaadinRequest request) {
         // on refresh page call
-        processExternalLink(request);
+        processExternalLink(request, getUrlRouting().getState());
     }
 
     /**
@@ -501,30 +551,56 @@ public class AppUI extends CubaUI
         }
     }
 
-    public void processExternalLink(VaadinRequest request) {
+    public void processExternalLink(VaadinRequest request, NavigationState requestedState) {
+        if (isLinkHandlerRequest(request)) {
+            processLinkHandlerRequest(request);
+        } else {
+            processRequest(requestedState);
+        }
+    }
+
+    protected boolean isLinkHandlerRequest(VaadinRequest request) {
         WrappedSession wrappedSession = request.getWrappedSession();
         if (wrappedSession == null) {
-            return;
+            return false;
         }
 
         String action = (String) wrappedSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
 
-        if (webConfig.getLinkHandlerActions().contains(action)) {
-            //noinspection unchecked
-            Map<String, String> params =
-                    (Map<String, String>) wrappedSession.getAttribute(LAST_REQUEST_PARAMS_ATTR);
-            params = params != null ? params : Collections.emptyMap();
+        return webConfig.getLinkHandlerActions().contains(action);
+    }
 
-            try {
-                LinkHandler linkHandler = beanLocator.getPrototype(LinkHandler.NAME, app, action, params);
-                if (app.connection.isConnected() && linkHandler.canHandleLink()) {
-                    linkHandler.handle();
-                } else {
-                    app.linkHandler = linkHandler;
-                }
-            } catch (Exception e) {
-                error(new com.vaadin.server.ErrorEvent(e));
+    protected void processLinkHandlerRequest(VaadinRequest request) {
+        WrappedSession wrappedSession = request.getWrappedSession();
+        //noinspection unchecked
+        Map<String, String> params =
+                (Map<String, String>) wrappedSession.getAttribute(LAST_REQUEST_PARAMS_ATTR);
+        params = params != null ? params : Collections.emptyMap();
+
+        try {
+            String action = (String) wrappedSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
+            LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
+            if (app.connection.isConnected() && linkHandler.canHandleLink()) {
+                linkHandler.handle();
+            } else {
+                app.linkHandler = linkHandler;
             }
+        } catch (Exception e) {
+            error(new com.vaadin.server.ErrorEvent(e));
+        }
+    }
+
+    protected void processRequest(NavigationState navigationState) {
+        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode() || navigationState == null) {
+            return;
+        }
+
+        if (!app.getConnection().isAuthenticated()) {
+            RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, this);
+            redirectHandler.schedule(navigationState);
+            app.redirectHandler = redirectHandler;
+        } else {
+            urlChangeHandler.handleUrlChangeInternal(navigationState);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.haulmont.cuba.gui.app.security.session.log;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
@@ -9,6 +10,7 @@ import com.haulmont.cuba.gui.components.DialogAction;
 import javax.inject.Inject;
 import java.util.Map;
 
+@Route("user-session-log")
 public class SessionLogBrowser extends AbstractLookup {
 
     @Inject

@@ -66,6 +66,7 @@ import com.haulmont.cuba.web.gui.components.WebDialogWindow.GuiDialogWindow;
 import com.haulmont.cuba.web.gui.components.WebTabWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Layout;
@@ -420,6 +421,8 @@ public class WebScreens implements Screens, WindowManager {
         afterShowWindow(screen);
 
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
+
+        ui.getUrlRouting().pushState(screen);
     }
 
     protected void checkNotYetOpened(Screen screen) {
@@ -505,6 +508,34 @@ public class WebScreens implements Screens, WindowManager {
         }
 
         fireEvent(screen, AfterDetachEvent.class, new AfterDetachEvent(screen));
+
+        afterScreenRemove(screen);
+    }
+
+    protected void afterScreenRemove(Screen screen) {
+        if (screen.getWindow() instanceof RootWindow) {
+            return;
+        }
+
+        Screen currentScreen = getAnyCurrentScreen();
+        if (currentScreen != null) {
+            String currentScreenRoute = ((WebWindow) currentScreen.getWindow()).getResolvedState().asRoute();
+            UrlTools.replaceState(currentScreenRoute);
+        }
+    }
+
+    protected Screen getAnyCurrentScreen() {
+        Iterator<Screen> dialogsIterator = getOpenedScreens().getDialogScreens().iterator();
+        if (dialogsIterator.hasNext()) {
+            return dialogsIterator.next();
+        }
+
+        Iterator<Screen> screensIterator = getOpenedScreens().getCurrentBreadcrumbs().iterator();
+        if (screensIterator.hasNext()) {
+            return screensIterator.next();
+        }
+
+        return getOpenedScreens().getRootScreenOrNull();
     }
 
     protected void removeThisTabWindow(Screen screen) {
@@ -1375,6 +1406,7 @@ public class WebScreens implements Screens, WindowManager {
         WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs(screen);
         breadCrumbs.setWindowNavigateHandler(this::handleWindowBreadCrumbsNavigate);
         breadCrumbs.addWindow(screen.getWindow());
+        ((WebWindow) screen.getWindow()).setUrlStateMark(getConfiguredWorkArea().generateUrlStateMark());
 
         TabWindowContainer windowContainer = new TabWindowContainerImpl();
         windowContainer.setPrimaryStyleName("c-app-window-wrap");
@@ -1467,7 +1499,7 @@ public class WebScreens implements Screens, WindowManager {
         WindowBreadCrumbs breadCrumbs = windowContainer.getBreadCrumbs();
         Window currentWindow = breadCrumbs.getCurrentWindow();
 
-        windowContainer.removeComponent(currentWindow.unwrapComposition(com.vaadin.ui.Layout.class));
+        windowContainer.removeComponent(currentWindow.unwrapComposition(Layout.class));
 
         Window newWindow = screen.getWindow();
         com.vaadin.ui.Component newWindowComposition = newWindow.unwrapComposition(com.vaadin.ui.Component.class);
@@ -1475,6 +1507,7 @@ public class WebScreens implements Screens, WindowManager {
         windowContainer.addComponent(newWindowComposition);
 
         breadCrumbs.addWindow(newWindow);
+        ((WebWindow) newWindow).setUrlStateMark(workArea.generateUrlStateMark());
 
         if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
@@ -1503,6 +1536,7 @@ public class WebScreens implements Screens, WindowManager {
 
     protected void showDialogWindow(Screen screen) {
         DialogWindow window = (DialogWindow) screen.getWindow();
+        ((WebWindow) window).setUrlStateMark(getConfiguredWorkArea().generateUrlStateMark());
 
         CubaWindow vWindow = window.unwrapComposition(CubaWindow.class);
         vWindow.setErrorHandler(ui);

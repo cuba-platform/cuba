@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.app.ui.security.history;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.app.LinkColumnHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Route("history")
 public class ScreenHistoryBrowse extends AbstractWindow {
 
     @Inject

@@ -33,6 +33,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
+import com.haulmont.cuba.web.sys.navigation.NavigationState;
 import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
@@ -98,6 +99,9 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     protected boolean closeable = true;
 
     private EventHub eventHub;
+
+    protected int urlStateMark;
+    protected NavigationState resolvedState;
 
     public WebWindow() {
         component = createLayout();
@@ -1033,5 +1037,21 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setIconFromSet(Icons.Icon icon) {
         setIcon(icons.get(icon));
+    }
+
+    public int getUrlStateMark() {
+        return urlStateMark;
+    }
+
+    public void setUrlStateMark(int urlStateMark) {
+        this.urlStateMark = urlStateMark;
+    }
+
+    public NavigationState getResolvedState() {
+        return resolvedState;
+    }
+
+    public void setResolvedState(NavigationState resolvedState) {
+        this.resolvedState = resolvedState;
     }
 }

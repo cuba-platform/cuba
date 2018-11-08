@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.widgets.client.historycontrol;
 
 import com.vaadin.shared.communication.ServerRpc;
 
+@Deprecated
 public interface CubaHistoryControlServerRpc extends ServerRpc {
 
     void onHistoryBackPerformed();

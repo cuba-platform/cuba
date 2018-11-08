@@ -20,12 +20,14 @@ package com.haulmont.cuba.gui.app.core.about;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.BuildInfo;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
 import java.util.Map;
 
+@Route("about")
 public class AboutWindow extends AbstractWindow {
 
     @Inject

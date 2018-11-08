@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.app.core.locking;
 
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.global.LockInfo;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Route("locks")
 public class LockBrowser extends AbstractWindow {
 
     @Inject

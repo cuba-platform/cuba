@@ -17,12 +17,21 @@
 package com.haulmont.cuba.gui.sys;
 
 public final class UiControllerDefinition {
+
     private final String id;
     private final String controllerClass;
+    private final RouteDefinition routeDefinition;
 
     public UiControllerDefinition(String id, String controllerClass) {
         this.id = id;
         this.controllerClass = controllerClass;
+        this.routeDefinition = null;
+    }
+
+    public UiControllerDefinition(String id, String controllerClass, RouteDefinition routeDefinition) {
+        this.id = id;
+        this.controllerClass = controllerClass;
+        this.routeDefinition = routeDefinition;
     }
 
     public String getId() {
@@ -33,11 +42,19 @@ public final class UiControllerDefinition {
         return controllerClass;
     }
 
+    public RouteDefinition getRouteDefinition() {
+        return routeDefinition;
+    }
+
     @Override
     public String toString() {
         return "UiControllerDefinition{" +
                 "id='" + id + '\'' +
                 ", controllerClass='" + controllerClass + '\'' +
+                (routeDefinition == null
+                        ? ""
+                        : ", " + routeDefinition.toString()) +
                 '}';
     }
+
 }

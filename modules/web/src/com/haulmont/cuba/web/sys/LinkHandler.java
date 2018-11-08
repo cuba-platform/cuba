@@ -63,7 +63,7 @@ public class LinkHandler {
      * @return true if application and LinkHandler in an appropriate state.
      */
     public boolean canHandleLink() {
-        return app.getTopLevelWindow() instanceof Window.HasWorkArea;
+        return app.getTopLevelWindow().getFrameOwner() instanceof Window.HasWorkArea;
     }
 
     /**

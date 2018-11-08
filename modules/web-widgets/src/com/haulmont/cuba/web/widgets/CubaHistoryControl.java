@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import com.haulmont.cuba.web.widgets.client.historycontrol.CubaHistoryControlSer
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.AbstractComponent;
 
+@Deprecated
 public class CubaHistoryControl extends AbstractExtension {
+
     protected HistoryBackHandler handler;
 
     public CubaHistoryControl() {

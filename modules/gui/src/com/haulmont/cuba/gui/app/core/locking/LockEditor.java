@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.entity.LockDescriptorNameType;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -31,6 +32,7 @@ import javax.inject.Named;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Route(path = "locks/edit", parentPrefix = LockBrowser.class)
 public class LockEditor extends AbstractEditor {
 
     @Inject

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.vaadin.client.ui.VNotification;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaHistoryControl.class)
+@Deprecated
 public class CubaHistoryControlConnector extends AbstractExtensionConnector {
 
     protected ServerConnector target;

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.app.mainwindow;
 
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -30,6 +31,7 @@ import com.vaadin.server.Sizeable.Unit;
 import javax.inject.Inject;
 import java.util.Map;
 
+@Route("main")
 public class AppMainWindow extends AbstractMainWindow {
 
     @Inject

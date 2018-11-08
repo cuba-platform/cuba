@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -45,6 +46,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Route("roles")
 public class RoleBrowser extends AbstractLookup {
 
     protected static final String DEFAULT_ROLE_PROPERTY = "defaultRole";

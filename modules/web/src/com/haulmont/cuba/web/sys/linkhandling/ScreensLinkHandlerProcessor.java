@@ -39,6 +39,9 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
     protected WindowConfig windowConfig;
 
     @Inject
+    protected ViewRepository viewRepository;
+
+    @Inject
     protected EntityAccessExceptionHandler entityAccessExceptionHandler;
     @Inject
     protected AccessDeniedHandler accessDeniedHandler;
@@ -138,10 +141,16 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
             return metadata.create(info.getMetaClass());
         }
 
-        @SuppressWarnings("unchecked")
+        //noinspection unchecked
         LoadContext<Entity> ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
-        if (info.getViewName() != null)
-            ctx.setView(info.getViewName());
+        if (info.getViewName() != null) {
+            View view = viewRepository.findView(info.getMetaClass(), info.getViewName());
+            if (view != null) {
+                ctx.setView(view);
+            } else {
+                log.warn("Unable to find view \"{}\" for entity \"{}\"", info.getViewName(), info.getMetaClass());
+            }
+        }
         Entity entity;
         try {
             entity = dataService.load(ctx);

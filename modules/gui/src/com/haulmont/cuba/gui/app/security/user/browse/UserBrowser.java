@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
@@ -42,6 +43,7 @@ import javax.inject.Named;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Route("users")
 public class UserBrowser extends AbstractLookup {
     @Inject
     protected Table<User> usersTable;

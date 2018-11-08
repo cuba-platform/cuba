@@ -25,13 +25,11 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.sys.AnnotationScanMetadataReaderFactory;
-import com.haulmont.cuba.gui.sys.UiControllerDefinition;
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
-import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
+import com.haulmont.cuba.gui.sys.*;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
@@ -73,6 +71,7 @@ public class WindowConfig {
     private final Logger log = LoggerFactory.getLogger(WindowConfig.class);
 
     protected Map<String, WindowInfo> screens = new HashMap<>();
+    protected Map<String, String> routes = new HashMap<>();
 
     protected Map<Class, WindowInfo> primaryEditors = new HashMap<>();
     protected Map<Class, WindowInfo> primaryLookups = new HashMap<>();
@@ -248,6 +247,8 @@ public class WindowConfig {
         primaryEditors.clear();
         primaryLookups.clear();
 
+        routes.clear();
+
         loadScreenConfigurations();
         loadScreensXml();
 
@@ -260,7 +261,7 @@ public class WindowConfig {
 
             for (UiControllerDefinition definition : uiControllers) {
                 WindowInfo windowInfo = new WindowInfo(definition.getId(), windowAttributesProvider,
-                        definition.getControllerClass());
+                        definition.getControllerClass(), definition.getRouteDefinition());
                 registerScreen(definition.getId(), windowInfo);
             }
         }
@@ -302,9 +303,43 @@ public class WindowConfig {
                 log.warn("Invalid window config: 'id' attribute not defined");
                 continue;
             }
-            WindowInfo windowInfo = new WindowInfo(id, windowAttributesProvider, element);
+
+            RouteDefinition routeDef = loadRouteDef(element);
+
+            WindowInfo windowInfo = new WindowInfo(id, windowAttributesProvider, element, routeDef);
             registerScreen(id, windowInfo);
         }
+    }
+
+    protected RouteDefinition loadRouteDef(Element screenRegistration) {
+        String templateAttr = screenRegistration.attributeValue("template");
+        if (templateAttr == null || templateAttr.isEmpty()) {
+            return null;
+        }
+
+        Element screenTemplate = screenXmlLoader.load(
+                templateAttr,
+                screenRegistration.attributeValue("id"),
+                Collections.emptyMap());
+
+        String screenControllerFqn = screenTemplate.attributeValue("class");
+        if (screenControllerFqn == null || screenControllerFqn.isEmpty()) {
+            return null;
+        }
+
+        Map<String, Object> routeAnnotation = loadClassMetadata(screenControllerFqn)
+                .getAnnotationMetadata()
+                .getAnnotationAttributes(Route.class.getName());
+
+        if (routeAnnotation == null) {
+            return null;
+        }
+
+        String pathAttr = (String) routeAnnotation.get(Route.PATH_ATTRIBUTE);
+        //noinspection unchecked
+        Class<? extends Screen> parentAttr = (Class<? extends Screen>) routeAnnotation.get(Route.PARENT_ATTRIBUTE);
+
+        return new RouteDefinition(pathAttr, parentAttr);
     }
 
     protected void registerScreen(String id, WindowInfo windowInfo) {
@@ -318,6 +353,11 @@ public class WindowConfig {
         }
 
         screens.put(id, windowInfo);
+
+        RouteDefinition routeDef = windowInfo.getRouteDefinition();
+        if (routeDef != null) {
+            routes.put(routeDef.getPath(), id);
+        }
     }
 
     protected void registerPrimaryEditor(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {
@@ -368,7 +408,7 @@ public class WindowConfig {
     /**
      * Get screen information by screen ID.
      *
-     * @param id         screen ID as set up in <code>screens.xml</code>
+     * @param id screen ID as set up in <code>screens.xml</code>
      * @return screen's registration information or null if not found
      */
     @Nullable
@@ -401,7 +441,7 @@ public class WindowConfig {
     /**
      * Get screen information by screen ID.
      *
-     * @param id         screen ID as set up in <code>screens.xml</code>
+     * @param id screen ID as set up in <code>screens.xml</code>
      * @return screen's registration information
      * @throws NoSuchScreenException if the screen with specified ID is not registered
      */
@@ -411,6 +451,20 @@ public class WindowConfig {
             throw new NoSuchScreenException(id);
         }
         return windowInfo;
+    }
+
+    /**
+     * Get screen information by route.
+     *
+     * @param route route
+     * @return screen's registration information or null if not found
+     */
+    @Nullable
+    public WindowInfo findWindowInfoByRoute(String route) {
+        String screenId = routes.get(route);
+        return screenId != null
+                ? findWindowInfo(screenId)
+                : null;
     }
 
     /**

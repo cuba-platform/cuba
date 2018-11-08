@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
 import com.vaadin.client.BrowserInfo;
 
+@Deprecated
 public abstract class HistoryGwtApi {
+
     private static final String TOP_HISTORY_TOKEN = "!";
     private static final String PREVIOUS_HISTORY_TOKEN = "_";
 
