@@ -17,11 +17,15 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.screen.LookupScreen;
 
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static com.haulmont.cuba.gui.components.Window.Lookup;
 
@@ -48,7 +52,7 @@ public class SelectAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        if (window.getLookupHandler() == null) {
+        if (window.getSelectHandler() == null) {
             // window opened not as Lookup
             return;
         }
@@ -65,12 +69,17 @@ public class SelectAction extends AbstractAction {
         return lookupComponent.getLookupSelectedItems();
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean validate() {
-        Lookup.Validator validator = window.getLookupValidator();
-        if (validator != null && !validator.validate()) {
-            return false;
+        Predicate<LookupScreen.ValidationContext> validator = window.getSelectValidator();
+        if (validator == null) {
+            return true;
         }
-        return true;
+
+        LookupComponent lookupComponent = getLookupComponent();
+        Collection selected = getSelectedItems(lookupComponent);
+
+        return validator.test(new LookupScreen.ValidationContext(window, selected));
     }
 
     protected LookupComponent getLookupComponent() {
@@ -82,14 +91,6 @@ public class SelectAction extends AbstractAction {
             throw new UnsupportedOperationException("Unsupported lookupComponent type: " + lookupComponent.getClass());
         }
         return (LookupComponent) lookupComponent;
-    }
-
-    protected Lookup.Handler getLookupHandler() {
-        Lookup.Handler lookupHandler = window.getLookupHandler();
-        if (lookupHandler == null) {
-            throw new DevelopmentException("Lookup.Handler was not passed to lookup window " + window.getId());
-        }
-        return lookupHandler;
     }
 
     protected void removeListeners(Collection selected) {

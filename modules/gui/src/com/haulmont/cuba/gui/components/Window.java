@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Represents an independent screen opened inside the main application window.
@@ -457,11 +458,13 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         @Nullable
         @Deprecated
         default Handler getLookupHandler() {
-            if (getSelectHandler() == null) {
+            Consumer<Collection<T>> selectHandler = getSelectHandler();
+
+            if (!(selectHandler instanceof SelectHandlerAdapter)) {
                 return null;
             }
 
-            return ((SelectHandlerAdapter) getSelectHandler()).getHandler();
+            return ((SelectHandlerAdapter) selectHandler).getHandler();
         }
 
         /**
@@ -480,10 +483,13 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         @Deprecated
         @Nullable
         default Validator getLookupValidator() {
-            if (getSelectValidator() == null) {
+            Predicate<ValidationContext<T>> selectValidator = getSelectValidator();
+
+            if (!(selectValidator instanceof SelectValidatorAdapter)) {
                 return null;
             }
-            return ((SelectValidatorAdapter<T>) getSelectValidator()).getValidator();
+
+            return ((SelectValidatorAdapter<T>) selectValidator).getValidator();
         }
 
         /**
@@ -491,6 +497,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          *
          * @param validator validator implementation
          */
+        @SuppressWarnings("unchecked")
         @Deprecated
         default void setLookupValidator(Validator validator) {
             setSelectValidator(new SelectValidatorAdapter(validator));
@@ -587,8 +594,10 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     *  An event that is fired before a screen is closed. The way a screen was closed
-     *  can be obtained via {@link #getCloseOrigin()}.
+     * An event that is fired before a screen is closed. The way a screen was closed can be obtained
+     * via {@link #getCloseOrigin()}.
+     *
+     * @see CloseOriginType
      */
     class BeforeCloseEvent extends EventObject {
         protected boolean closePrevented = false;
@@ -607,14 +616,25 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
             return (Window) super.getSource();
         }
 
+        /**
+         * @return value that describes the event type: close by shortcut / using close button / from breadcrumbs
+         *
+         * @see CloseOriginType
+         */
         public CloseOrigin getCloseOrigin() {
             return closeOrigin;
         }
 
+        /**
+         * Sets closePrevented flag to true and therefore prevents window close.
+         */
         public void preventWindowClose() {
             this.closePrevented = true;
         }
 
+        /**
+         * @return true if at least one event handler called {@link #preventWindowClose()} and window will not be closed
+         */
         public boolean isClosePrevented() {
             return closePrevented;
         }
@@ -720,6 +740,8 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     /**
      * Marker interface for all window close types, which describes the way a window was closed.
+     *
+     * @see CloseOriginType
      */
     interface CloseOrigin {
     }
