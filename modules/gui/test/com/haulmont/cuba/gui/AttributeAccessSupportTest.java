@@ -23,21 +23,16 @@ import com.haulmont.cuba.gui.data.impl.testmodel1.TestEmbeddableEntity;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * @author Dmitry Chigileychik
- * @version $Id$
- * @since 07.11.18
- */
 public class AttributeAccessSupportTest {
 
     @Test
     public void getEmbeddableEntitySecurityStateTest() {
-        final EmbeddableEntity entity = new TestEmbeddableEntity();
-        final SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
+        EmbeddableEntity entity = new TestEmbeddableEntity();
+        SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
 
         BaseEntityInternalAccess.setSecurityState(entity, securityState);
 
-        final AttributeAccessSupport attributeAccessSupport = new AttributeAccessSupport();
+        AttributeAccessSupport attributeAccessSupport = new AttributeAccessSupport();
         Assert.assertNotNull(
                 "com.haulmont.cuba.gui.AttributeAccessSupport#getSecurityState returns null",
                 attributeAccessSupport.getSecurityState(entity)
