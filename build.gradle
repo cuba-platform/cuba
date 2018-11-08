@@ -309,8 +309,7 @@ configure(globalModule) {
         compile(bom['org.perf4j:perf4j'])
         compile(bom['com.google.code.findbugs:jsr305'])
         compile(bom['javax:javaee-api'])
-        compile(bom['javax.xml.bind:jaxb-api'])
-        compile(bom['org.glassfish.jaxb:jaxb-runtime'])
+        
         compile(bom['antlr:antlr'])
         compile(bom['org.antlr:antlr-runtime'])
         compile(bom['com.google.guava:guava'])
