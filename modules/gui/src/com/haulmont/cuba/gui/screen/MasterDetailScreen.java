@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 /**
  * Displays a list of entities on the left and details of the currently selected instance on the right.
  */
-public class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
+public abstract class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
 
     /**
      * Indicates that the screen is in editing mode.
