@@ -49,7 +49,7 @@
         <property name="cuba.springContextConfig" value="com/haulmont/cuba/spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.remotingSpringContextConfig" value="com/haulmont/cuba/remoting-spring.xml"/>
-        <property name="cuba.defaultPermissionValuesConfig" value="default-permission-values.xml"/>
+        <property name="cuba.defaultPermissionValuesConfig" value="com/haulmont/cuba/default-permission-values.xml"/>
 
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/remoting"/>
         <property name="cuba.dataSourceJndiName" value="java:comp/env/jdbc/CubaDS"/>
