@@ -52,7 +52,6 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Route("settings")
 public class SettingsWindow extends AbstractWindow {
 
     protected boolean changeThemeEnabled = true;

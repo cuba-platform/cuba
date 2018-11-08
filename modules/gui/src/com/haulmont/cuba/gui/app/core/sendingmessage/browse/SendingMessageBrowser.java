@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -50,7 +49,6 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
-@Route("email-history")
 public class SendingMessageBrowser extends AbstractWindow {
 
     protected static final String CONTENT_TEXT = "contentText";

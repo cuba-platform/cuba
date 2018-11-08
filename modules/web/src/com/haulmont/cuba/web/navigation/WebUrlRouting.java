@@ -107,7 +107,14 @@ public class WebUrlRouting implements UrlRouting {
         if (notSuitableUrlHandlingMode()) {
             return NavigationState.empty();
         }
-        return UrlTools.parseState(Page.getCurrent().getUriFragment());
+
+        if (UrlTools.headless()) {
+            log.debug("Unable to resolve navigation state in headless mode. Return empty");
+            return NavigationState.empty();
+        }
+
+        String uriFragment = Page.getCurrent().getUriFragment();
+        return UrlTools.parseState(uriFragment);
     }
 
     protected String buildNavState(Screen screen, Map<String, String> urlParams) {
@@ -148,17 +155,8 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         String dialogRoute = route.getPath();
-        if (route.getParent() == null) {
-            return dialogRoute;
-        }
-
-        Screen currentScreen = getCurrentScreen();
-        boolean openedInContext = currentScreen.getClass() == route.getParent();
-        if (!openedInContext) {
-            throw new IllegalStateException("Dialog is opened outside of its context");
-        }
-
         String contextRoute = buildCurrentScreenRoute();
+
         return StringUtils.isNotEmpty(dialogRoute) ? contextRoute + "/" + dialogRoute
                 : contextRoute;
     }

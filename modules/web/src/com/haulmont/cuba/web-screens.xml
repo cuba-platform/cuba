@@ -20,16 +20,19 @@
     <include file="/com/haulmont/cuba/gui/cuba-screens.xml"/>
 
     <screen id="settings"
-            template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"
+            route="settings"/>
 
     <screen id="saveSetInFolder" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
     <!-- JMX control -->
     <screen id="jmxConsole"
-            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"
+            route="jmx-console"/>
 
     <screen id="jmxConsoleInspectMbean"
-            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"
+            route="mbean"/>
 
     <screen id="jmxConsoleEditAttribute"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>
@@ -45,10 +48,12 @@
     <!-- -->
 
     <screen id="sec$ScreenHistory.browse"
-            template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"
+            route="history"/>
 
     <screen id="serverLog"
-            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"
+            route="server-log"/>
 
     <screen id="serverLogAddLoggerDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/addition-logger-window.xml" multipleOpen="true"/>
@@ -63,15 +68,19 @@
             class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
     
     <screen id="performanceStatistics"
-            template="/com/haulmont/cuba/web/app/ui/statistics/statistics-window.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/web/app/ui/statistics/statistics-window.xml" multipleOpen="true"
+            route="performance-statistics"/>
 
     <screen id="threadsMonitoringWindow"
-            template="/com/haulmont/cuba/web/app/ui/statistics/threads-monitoring-window.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/web/app/ui/statistics/threads-monitoring-window.xml" multipleOpen="true"
+            route="threads"/>
 
     <screen id="mainWindow"
-            template="/com/haulmont/cuba/web/app/mainwindow/mainwindow.xml"/>
+            template="/com/haulmont/cuba/web/app/mainwindow/mainwindow.xml"
+            route="main"/>
 
     <screen id="loginWindow"
-            template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"/>
+            template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
+            route="login"/>
 
 </screen-config>

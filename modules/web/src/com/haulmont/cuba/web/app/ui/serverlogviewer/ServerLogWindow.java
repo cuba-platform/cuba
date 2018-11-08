@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.PickerField.LookupAction;
@@ -60,7 +59,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Route("server-log")
 public class ServerLogWindow extends AbstractWindow {
 
     private final Logger log = LoggerFactory.getLogger(ServerLogWindow.class);

@@ -27,7 +27,6 @@ import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.security.user.browse.UserRemoveAction;
 import com.haulmont.cuba.gui.components.*;
@@ -59,7 +58,6 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.DialogAction.Type;
 
-@Route("groups")
 public class GroupBrowser extends AbstractWindow {
 
     private final Logger log = LoggerFactory.getLogger(GroupBrowser.class);

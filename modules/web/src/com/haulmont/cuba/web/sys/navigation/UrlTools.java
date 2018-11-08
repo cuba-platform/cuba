@@ -109,11 +109,21 @@ public class UrlTools {
     public static void pushState(String navigationState) {
         checkNotEmptyString(navigationState, "Unable to push empty navigation state");
 
+        if (headless()) {
+            log.debug("Unable to push navigation state in headless mode");
+            return;
+        }
+
         Page.getCurrent().setUriFragment(navigationState, false);
     }
 
     public static void replaceState(String navigationState) {
         checkNotEmptyString(navigationState, "Unable to replace by empty navigation state");
+
+        if (headless()) {
+            log.debug("Unable to replace navigation state in headless mode");
+            return;
+        }
 
         Page.getCurrent().replaceState("#" + navigationState);
     }
@@ -214,5 +224,9 @@ public class UrlTools {
 
     protected static Object fromBytes(Class idClass, ByteBuffer byteBuffer) {
         return deserializers.get(idClass).apply(byteBuffer);
+    }
+
+    public static boolean headless() {
+        return Page.getCurrent().getUI().getSession() == null;
     }
 }

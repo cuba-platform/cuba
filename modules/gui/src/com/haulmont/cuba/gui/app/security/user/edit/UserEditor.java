@@ -21,14 +21,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.events.UserPasswordChangedEvent;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
-import com.haulmont.cuba.gui.app.security.user.browse.UserBrowser;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -53,7 +51,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
-@Route(path = "users/edit", parentPrefix = UserBrowser.class)
 public class UserEditor extends AbstractEditor<User> {
 
     @Inject

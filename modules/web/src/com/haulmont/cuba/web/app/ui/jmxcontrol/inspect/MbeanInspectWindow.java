@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow;
 import com.haulmont.cuba.gui.components.*;
@@ -41,7 +40,6 @@ import javax.inject.Named;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-@Route("mbean")
 public class MbeanInspectWindow extends AbstractEditor {
 
     private final Logger log = LoggerFactory.getLogger(MbeanInspectWindow.class);

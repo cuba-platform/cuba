@@ -21,7 +21,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-@Route(path = "categories/edit", parentPrefix = CategoryBrowser.class)
 public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
     protected DataManager dataManager;

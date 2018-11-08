@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.RunTaskOnceException;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -38,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@Route("scheduled-tasks")
 public class ScheduledTaskBrowser extends AbstractWindow {
 
     private static final Logger log = LoggerFactory.getLogger(ScheduledTaskBrowser.class);

@@ -104,11 +104,11 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
         Map<String, Object> routeAnnotation = metadataReader.getAnnotationMetadata().getAnnotationAttributes(Route.class.getName());
 
         String pathAttr = null;
-        Class<? extends Screen> parentAttr = null;
+        Class<? extends Screen> parentPrefixAttr = null;
         if (routeAnnotation != null) {
             pathAttr = (String) routeAnnotation.get(Route.PATH_ATTRIBUTE);
             //noinspection unchecked
-            parentAttr = (Class<? extends Screen>) routeAnnotation.get(Route.PARENT_ATTRIBUTE);
+            parentPrefixAttr = (Class<? extends Screen>) routeAnnotation.get(Route.PARENT_PREFIX_ATTRIBUTE);
         }
 
         String className = metadataReader.getClassMetadata().getClassName();
@@ -117,7 +117,7 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
         return routeAnnotation == null
                 ? new UiControllerDefinition(controllerId, className)
                 : new UiControllerDefinition(controllerId, className,
-                        new RouteDefinition(pathAttr, parentAttr));
+                        new RouteDefinition(pathAttr, parentPrefixAttr));
     }
 
     protected boolean isCandidateUiController(MetadataReader metadataReader) {

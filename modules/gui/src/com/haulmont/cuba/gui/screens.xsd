@@ -38,6 +38,10 @@
         <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="template" type="xs:string"/>
         <xs:attribute name="multipleOpen" type="xs:boolean"/>
+
+        <!-- Route annotation replacement -->
+        <xs:attribute name="route" type="xs:string"/>
+        <xs:attribute name="routeParentPrefix" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="includeType">

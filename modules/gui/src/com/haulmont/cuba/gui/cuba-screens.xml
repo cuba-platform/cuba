@@ -24,12 +24,15 @@
     <screen id="lookupWindowActions" template="/com/haulmont/cuba/gui/lookup-window.actions.xml"/>
 
     <screen id="sec$User.browse"
-            template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"
+            route="users"/>
     <screen id="sec$User.lookup"
-            template="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"
+            route="users"/>
 
     <screen id="sec$User.edit"
-            template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"
+            route="users" routeParentPrefix="sec$User.browse"/>
 
     <screen id="sec$User.changePassword"
             template="/com/haulmont/cuba/gui/app/security/user/changepassw/change-password-dialog.xml"/>
@@ -47,26 +50,34 @@
             template="/com/haulmont/cuba/gui/app/security/usersubst/edit/usersubst-edit.xml"/>
 
     <screen id="sec$Group.edit"
-            template="/com/haulmont/cuba/gui/app/security/group/edit/group-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/group/edit/group-edit.xml"
+            route="groups/edit" routeParentPrefix="sec$Group.browse"/>
 
     <screen id="sec$Group.browse"
-            template="/com/haulmont/cuba/gui/app/security/group/browse/group-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/group/browse/group-browse.xml"
+            route="groups"/>
 
     <screen id="sec$Group.lookup"
-            template="/com/haulmont/cuba/gui/app/security/group/lookup/group-lookup.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/group/lookup/group-lookup.xml"
+            route="groups"/>
 
     <screen id="sec$Role.browse"
-            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"
+            route="roles"/>
     <screen id="sec$Role.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"
+            route="roles"/>
     <screen id="sec$Role.edit"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"
+            route="roles/edit" routeParentPrefix="sec$Role.browse"/>
 
     <screen id="sec$UserSessionEntity.browse"
-            template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"
+            route="user-sessions"/>
 
     <screen id="sec$SessionLogEntry.browse"
-            template="/com/haulmont/cuba/gui/app/security/session/log/session-log-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/session/log/session-log-browse.xml"
+            route="user-session-log"/>
 
     <screen id="sessionMessageWindow"
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-message.xml"/>
@@ -81,10 +92,12 @@
             template="/com/haulmont/cuba/gui/app/security/sessionattr/edit/session-attr-edit.xml"/>
 
     <screen id="sys$LockInfo.browse"
-            template="/com/haulmont/cuba/gui/app/core/locking/lock-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/locking/lock-browse.xml"
+            route="locks"/>
 
     <screen id="sys$LockDescriptor.edit"
-            template="/com/haulmont/cuba/gui/app/core/locking/lock-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/locking/lock-edit.xml"
+            route="locks/edit" routeParentPrefix="sys$LockInfo.browse"/>
 
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
@@ -94,7 +107,8 @@
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
     <screen id="entityRestore"
-            template="/com/haulmont/cuba/gui/app/core/restore/entity-restore.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/gui/app/core/restore/entity-restore.xml" multipleOpen="true"
+            route="entity-restore"/>
 
     <screen id="backgroundWorkWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
@@ -103,16 +117,20 @@
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-progress-window.xml"/>
 
     <screen id="sys$FileDescriptor.browse"
-            template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"
+            route="files"/>
 
     <screen id="sys$FileDescriptor.edit"
-            template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"
+            route="files/edit" routeParentPrefix="sys$FileDescriptor.browse"/>
 
     <screen id="sys$Category.browse"
-            template="/com/haulmont/cuba/gui/app/core/categories/category-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/categories/category-browse.xml"
+            route="categories"/>
 
     <screen id="sys$Category.edit"
-            template="/com/haulmont/cuba/gui/app/core/categories/category-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/categories/category-edit.xml"
+            route="categories/edit" routeParentPrefix="sys$Category.browse"/>
 
     <screen id="sys$CategoryAttribute.edit"
             template="/com/haulmont/cuba/gui/app/core/categories/attribute-edit.xml"/>
@@ -121,7 +139,8 @@
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
 
     <screen id="sys$ScheduledTask.browse"
-            template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-browse.xml"
+            route="scheduled-tasks"/>
 
     <screen id="sys$ScheduledTask.edit"
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-edit.xml"/>
@@ -130,7 +149,8 @@
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-execution-browse.xml"/>
 
     <screen id="entityInspector.browse"
-            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml" multipleOpen="true"
+            route="entity-inspector"/>
 
     <screen id="entityInspector.edit"
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
@@ -139,7 +159,8 @@
             template="/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml"/>
 
     <screen id="aboutWindow"
-            template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"
+            route="about"/>
 
     <screen id="licenseFrame"
             template="/com/haulmont/cuba/gui/app/core/license/license-frame.xml"/>
@@ -151,10 +172,12 @@
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
 
     <screen id="entityLog"
-            template="/com/haulmont/cuba/gui/app/core/entitylog/entity-log-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/entitylog/entity-log-browse.xml"
+            route="entity-log"/>
 
     <screen id="sys$SendingMessage.browse"
-            template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"
+            route="email-history"/>
 
     <screen id="sys$SendingMessage.attachments"
             template="/com/haulmont/cuba/gui/app/core/sendingmessage/attachments/sending-message-attachments.xml"/>
@@ -199,7 +222,8 @@
             template="/com/haulmont/cuba/gui/components/filter/filterselect/filter-select.xml"/>
 
     <screen id="appProperties"
-            template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-browse.xml"/>
+            template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-browse.xml"
+            route="app-properties"/>
 
     <screen id="appPropertyEditor"
             template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-edit.xml"/>

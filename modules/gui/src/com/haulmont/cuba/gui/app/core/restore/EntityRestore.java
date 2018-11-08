@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
@@ -45,7 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
-@Route("entity-restore")
 public class EntityRestore extends AbstractWindow {
 
     @Inject

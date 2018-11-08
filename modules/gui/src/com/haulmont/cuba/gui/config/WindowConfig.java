@@ -304,42 +304,33 @@ public class WindowConfig {
                 continue;
             }
 
-            RouteDefinition routeDef = loadRouteDef(element);
+            RouteDefinition routeDef = loadRouteDefinition(element);
 
             WindowInfo windowInfo = new WindowInfo(id, windowAttributesProvider, element, routeDef);
             registerScreen(id, windowInfo);
         }
     }
 
-    protected RouteDefinition loadRouteDef(Element screenRegistration) {
-        String templateAttr = screenRegistration.attributeValue("template");
-        if (templateAttr == null || templateAttr.isEmpty()) {
+    protected RouteDefinition loadRouteDefinition(Element screenElement) {
+        String routeAttr = screenElement.attributeValue("route");
+        if (routeAttr == null || routeAttr.isEmpty()) {
             return null;
         }
 
-        Element screenTemplate = screenXmlLoader.load(
-                templateAttr,
-                screenRegistration.attributeValue("id"),
-                Collections.emptyMap());
-
-        String screenControllerFqn = screenTemplate.attributeValue("class");
-        if (screenControllerFqn == null || screenControllerFqn.isEmpty()) {
-            return null;
+        Class<? extends Screen> parentPrefix = Screen.class;
+        String routeParentPrefix = screenElement.attributeValue("routeParentPrefix");
+        if (routeParentPrefix != null && !routeParentPrefix.isEmpty()) {
+            WindowInfo windowInfo = screens.get(routeParentPrefix);
+            if (windowInfo != null) {
+                Class<? extends FrameOwner> controller = windowInfo.getControllerClass();
+                if (Screen.class.isAssignableFrom(controller)) {
+                    //noinspection unchecked
+                    parentPrefix = (Class<? extends Screen>) controller;
+                }
+            }
         }
 
-        Map<String, Object> routeAnnotation = loadClassMetadata(screenControllerFqn)
-                .getAnnotationMetadata()
-                .getAnnotationAttributes(Route.class.getName());
-
-        if (routeAnnotation == null) {
-            return null;
-        }
-
-        String pathAttr = (String) routeAnnotation.get(Route.PATH_ATTRIBUTE);
-        //noinspection unchecked
-        Class<? extends Screen> parentAttr = (Class<? extends Screen>) routeAnnotation.get(Route.PARENT_ATTRIBUTE);
-
-        return new RouteDefinition(pathAttr, parentAttr);
+        return new RouteDefinition(routeAttr, parentPrefix);
     }
 
     protected void registerScreen(String id, WindowInfo windowInfo) {

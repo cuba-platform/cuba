@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.app.ui.statistics;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Timer;
@@ -27,7 +26,6 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.function.Function;
 
-@Route("threads")
 public class ThreadsMonitoringWindow extends AbstractWindow {
 
     @Inject

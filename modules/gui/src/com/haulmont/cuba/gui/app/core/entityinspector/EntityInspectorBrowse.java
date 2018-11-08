@@ -31,7 +31,6 @@ import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
@@ -66,7 +65,6 @@ import static com.google.common.base.Strings.nullToEmpty;
 import static com.haulmont.cuba.gui.export.ExportFormat.JSON;
 import static com.haulmont.cuba.gui.export.ExportFormat.ZIP;
 
-@Route("entity-inspector")
 public class EntityInspectorBrowse extends AbstractLookup {
 
     public interface Companion {

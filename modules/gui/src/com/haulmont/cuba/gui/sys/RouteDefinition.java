@@ -21,30 +21,33 @@ import com.haulmont.cuba.gui.screen.Screen;
 public class RouteDefinition {
 
     private final String path;
-    private final Class<? extends Screen> parent;
+    private final Class<? extends Screen> parentPrefix;
 
-    public RouteDefinition(String path, Class<? extends Screen> parent) {
+    public RouteDefinition(String path) {
+        this(path, Screen.class);
+    }
+
+    public RouteDefinition(String path, Class<? extends Screen> parentPrefix) {
         this.path = path;
-        this.parent = parent;
+        this.parentPrefix = parentPrefix;
     }
 
     public String getPath() {
         return path;
     }
 
-    public Class<? extends Screen> getParent() {
-        if (parent == Screen.class) {
-            return null;
-        }
-        return parent;
+    public Class<? extends Screen> getParentPrefix() {
+        return Screen.class == parentPrefix
+                ? null
+                : parentPrefix;
     }
 
     @Override
     public String toString() {
         return "RouteDefinition{" +
                 "path='" + path + '\'' +
-                (Screen.class == parent ? ""
-                        : ", parent='" + parent.getName() + '\'') +
+                (Screen.class == parentPrefix ? ""
+                        : ", parentPrefix='" + parentPrefix.getName() + '\'') +
                 '}';
     }
 }

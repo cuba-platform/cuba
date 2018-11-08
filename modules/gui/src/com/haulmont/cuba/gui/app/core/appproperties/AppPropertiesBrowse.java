@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table.SortDirection;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 /**
  * Controller of the {@code appproperties-browse.xml} screen
  */
-@Route("app-properties")
 public class AppPropertiesBrowse extends AbstractWindow {
 
     @Inject

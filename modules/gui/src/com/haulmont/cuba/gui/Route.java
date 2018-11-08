@@ -68,15 +68,13 @@ public @interface Route {
 
     String VALUE_ATTRIBUTE = "value";
     String PATH_ATTRIBUTE = "path";
-    String PARENT_ATTRIBUTE = "parent";
+    String PARENT_PREFIX_ATTRIBUTE = "parentPrefix";
 
     @AliasFor(PATH_ATTRIBUTE)
     String value() default "";
 
     @AliasFor(VALUE_ATTRIBUTE)
     String path() default "";
-
-    Class<? extends Screen> parent() default Screen.class;
 
     Class<? extends Screen> parentPrefix() default Screen.class;
 }

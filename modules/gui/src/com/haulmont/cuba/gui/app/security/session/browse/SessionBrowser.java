@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui.app.security.session.browse;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -33,7 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-@Route("user-sessions")
 public class SessionBrowser extends AbstractLookup {
 
     @Inject
