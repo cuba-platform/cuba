@@ -20,7 +20,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.AttributeAccessUpdater;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.Security;
@@ -156,11 +155,7 @@ public class AttributeAccessSupport {
     }
 
     protected SecurityState getSecurityState(Entity entity) {
-        if (entity instanceof BaseGenericIdEntity) {
-            return BaseEntityInternalAccess.getSecurityState(entity);
-        } else {
-            return null;
-        }
+        return BaseEntityInternalAccess.supportsSecurityState(entity) ? BaseEntityInternalAccess.getSecurityState(entity) : null;
     }
 
     protected boolean test(boolean value, Collection<String> attributes, String name) {
