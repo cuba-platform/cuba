@@ -72,7 +72,7 @@ public class ScreenXmlLoader {
     protected String loadTemplate(String resourcePath) {
         InputStream stream = resources.getResourceAsStream(resourcePath);
         if (stream == null) {
-            throw new DevelopmentException("Template is not found", "Path", resourcePath);
+            throw new DevelopmentException("Template is not found " + resourcePath, "Path", resourcePath);
         }
 
         try {

@@ -38,12 +38,13 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
 import com.haulmont.cuba.gui.sys.ScreenViewsLoader;
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
-import com.haulmont.cuba.gui.sys.WindowCreationHelper;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
+
+import javax.annotation.Nullable;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
@@ -130,11 +131,9 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         Element dataEl = element.element("data");
         if (dataEl != null) {
             loadScreenData(dataEl);
-        } else {
+        } else if (resultComponent.getFrameOwner() instanceof LegacyFrame) {
             Element dsContextElement = element.element("dsContext");
-            if (dsContextElement != null) {
-                loadDsContext(dsContextElement);
-            }
+            loadDsContext(dsContextElement);
         }
 
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext().getParent();
@@ -159,7 +158,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         screenDataXmlLoader.load(screenData, dataEl, hostScreenData);
     }
 
-    protected void loadDsContext(Element dsContextElement) {
+    protected void loadDsContext(@Nullable Element dsContextElement) {
         DsContext dsContext = null;
         if (resultComponent.getFrameOwner() instanceof LegacyFrame) {
             DsContextLoader dsContextLoader;
