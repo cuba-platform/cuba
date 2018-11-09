@@ -19,14 +19,13 @@ package com.haulmont.cuba.gui.screen;
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -36,7 +35,6 @@ import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -168,21 +166,16 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                         releaseLock()
                 );
             } else if (!(lockInfo instanceof LockNotSupported)) {
-                UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.class);
-
                 Messages messages = getBeanLocator().get(Messages.class);
+                DatatypeFormatter datatypeFormatter = getBeanLocator().get(DatatypeFormatter.class);
 
-                Datatype<Date> dateDatatype = getBeanLocator().get(DatatypeRegistry.class)
-                        .getNN(Date.class);
-
-                getScreenContext().getNotifications().create()
-                        .setCaption(messages.getMainMessage("entityLocked.msg"))
-                        .setDescription(
+                getScreenContext().getNotifications().create(NotificationType.HUMANIZED)
+                        .withCaption(messages.getMainMessage("entityLocked.msg"))
+                        .withDescription(
                                 messages.formatMainMessage("entityLocked.desc",
                                         lockInfo.getUser().getLogin(),
-                                        dateDatatype.format(lockInfo.getSince(), userSessionSource.getLocale())
+                                        datatypeFormatter.formatDateTime(lockInfo.getSince())
                                 ))
-                        .setType(Notifications.NotificationType.HUMANIZED)
                         .show();
 
                 Action commitAction = getWindow().getAction(WINDOW_COMMIT);

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
@@ -157,9 +158,8 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
             Messages messages = AppBeans.get(Messages.NAME);
 
             Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
-            notifications.create()
-                    .setCaption(messages.getMainMessage("accessDenied.message"))
-                    .setType(Notifications.NotificationType.ERROR)
+            notifications.create(NotificationType.ERROR)
+                    .withCaption(messages.getMainMessage("accessDenied.message"))
                     .show();
             return;
         }
@@ -168,9 +168,8 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
             Messages messages = AppBeans.get(Messages.NAME);
 
             Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
-            notifications.create()
-                    .setCaption(messages.getMainMessage("actions.BulkEdit.emptySelection"))
-                    .setType(Notifications.NotificationType.HUMANIZED)
+            notifications.create(NotificationType.HUMANIZED)
+                    .withCaption(messages.getMainMessage("actions.BulkEdit.emptySelection"))
                     .show();
 
             return;

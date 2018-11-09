@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.actions.list.CreateAction;
 import com.haulmont.cuba.gui.actions.list.EditAction;
 import com.haulmont.cuba.gui.components.*;
@@ -303,18 +304,23 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * Pessimistic lock before start of editing, if it is configured for the entity.
      */
     protected boolean lockIfNeeded(Entity entity) {
-        LockInfo lockInfo = AppBeans.get(LockService.class).lock(getLockName(), entity.getId().toString());
+        LockService lockService = getBeanLocator().get(LockService.class);
+
+        LockInfo lockInfo = lockService.lock(getLockName(), entity.getId().toString());
         if (lockInfo == null) {
             justLocked = true;
         } else if (!(lockInfo instanceof LockNotSupported)) {
             Messages messages = getBeanLocator().get(Messages.class);
-            getScreenContext().getNotifications().create()
-                    .setCaption(messages.getMainMessage("entityLocked.msg"))
-                    .setDescription(String.format(messages.getMainMessage("entityLocked.desc"),
+            DatatypeFormatter datatypeFormatter = getBeanLocator().get(DatatypeFormatter.class);
+            Notifications notifications = getScreenContext().getNotifications();
+
+            notifications.create(NotificationType.HUMANIZED)
+                    .withCaption(messages.getMainMessage("entityLocked.msg"))
+                    .withDescription(String.format(messages.getMainMessage("entityLocked.desc"),
                                     lockInfo.getUser().getLogin(),
-                                    AppBeans.get(DatatypeFormatter.class).formatDateTime(lockInfo.getSince())))
-                    .setType(Notifications.NotificationType.HUMANIZED)
+                                    datatypeFormatter.formatDateTime(lockInfo.getSince())))
                     .show();
+
             return false;
         }
         return true;

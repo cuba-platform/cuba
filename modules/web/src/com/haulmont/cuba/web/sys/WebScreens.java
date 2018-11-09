@@ -21,8 +21,8 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.Dialogs.MessageDialog;
-import com.haulmont.cuba.gui.Dialogs.OptionDialog;
+import com.haulmont.cuba.gui.Dialogs.MessageDialogBuilder;
+import com.haulmont.cuba.gui.Dialogs.OptionDialogBuilder;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Disposable;
@@ -1168,7 +1168,7 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void showNotification(String caption) {
         ui.getNotifications().create()
-                .setCaption(caption)
+                .withCaption(caption)
                 .show();
     }
 
@@ -1176,9 +1176,9 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void showNotification(String caption, Frame.NotificationType type) {
         ui.getNotifications().create()
-                .setCaption(caption)
-                .setContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
-                .setType(convertNotificationType(type))
+                .withCaption(caption)
+                .withContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
+                .withType(convertNotificationType(type))
                 .show();
     }
 
@@ -1186,10 +1186,10 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void showNotification(String caption, String description, Frame.NotificationType type) {
         ui.getNotifications().create()
-                .setCaption(caption)
-                .setDescription(description)
-                .setContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
-                .setType(convertNotificationType(type))
+                .withCaption(caption)
+                .withDescription(description)
+                .withContentMode(Frame.NotificationType.isHTML(type) ? ContentMode.HTML : ContentMode.TEXT)
+                .withType(convertNotificationType(type))
                 .show();
     }
 
@@ -1220,28 +1220,28 @@ public class WebScreens implements Screens, WindowManager {
     @SuppressWarnings("deprecation")
     @Override
     public void showMessageDialog(String title, String message, Frame.MessageType messageType) {
-        MessageDialog messageDialog = ui.getDialogs().createMessageDialog()
-                .setCaption(title)
-                .setMessage(message)
-                .setType(convertMessageType(messageType.getMessageMode()))
-                .setContentMode(
+        MessageDialogBuilder builder = ui.getDialogs().createMessageDialog()
+                .withCaption(title)
+                .withMessage(message)
+                .withType(convertMessageType(messageType.getMessageMode()))
+                .withContentMode(
                         Frame.MessageMode.isHTML(messageType.getMessageMode()) ? ContentMode.HTML : ContentMode.TEXT
                 );
 
         if (messageType.getWidth() != null) {
-            messageDialog.setWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
+            builder.withWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
         }
         if (messageType.getModal() != null) {
-            messageDialog.setModal(messageType.getModal());
+            builder.withModal(messageType.getModal());
         }
         if (messageType.getCloseOnClickOutside() != null) {
-            messageDialog.setCloseOnClickOutside(messageType.getCloseOnClickOutside());
+            builder.withCloseOnClickOutside(messageType.getCloseOnClickOutside());
         }
         if (messageType.getMaximized() != null) {
-            messageDialog.setMaximized(messageType.getMaximized());
+            builder.withMaximized(messageType.getMaximized());
         }
 
-        messageDialog.show();
+        builder.show();
     }
 
     @SuppressWarnings("deprecation")
@@ -1263,20 +1263,20 @@ public class WebScreens implements Screens, WindowManager {
     @SuppressWarnings("deprecation")
     @Override
     public void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions) {
-        OptionDialog optionDialog = ui.getDialogs().createOptionDialog()
-                .setCaption(title)
-                .setMessage(message)
-                .setType(convertMessageType(messageType.getMessageMode()))
-                .setActions(actions);
+        OptionDialogBuilder builder = ui.getDialogs().createOptionDialog()
+                .withCaption(title)
+                .withMessage(message)
+                .withType(convertMessageType(messageType.getMessageMode()))
+                .withActions(actions);
 
         if (messageType.getWidth() != null) {
-            optionDialog.setWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
+            builder.withWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
         }
         if (messageType.getMaximized() != null) {
-            optionDialog.setMaximized(messageType.getMaximized());
+            builder.withMaximized(messageType.getMaximized());
         }
 
-        optionDialog.show();
+        builder.show();
     }
 
     @Override
@@ -1287,9 +1287,9 @@ public class WebScreens implements Screens, WindowManager {
     @Override
     public void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
         ui.getDialogs().createExceptionDialog()
-                .setCaption(caption)
-                .setMessage(message)
-                .setThrowable(throwable)
+                .withCaption(caption)
+                .withMessage(message)
+                .withThrowable(throwable)
                 .show();
     }
 

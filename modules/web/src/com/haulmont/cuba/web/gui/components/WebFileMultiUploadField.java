@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Window;
@@ -127,20 +128,18 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaFile
         impl.addFileSizeLimitExceededListener(e -> {
             Notifications notifications = getScreenContext(this).getNotifications();
 
-            notifications.create()
-                    .setCaption(
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(
                             messages.formatMainMessage("multiupload.filesizeLimitExceed",
                                     e.getFileName(), getFileSizeLimitString())
                     )
-                    .setType(Notifications.NotificationType.WARNING)
                     .show();
         });
         impl.addFileExtensionNotAllowedListener(e -> {
             Notifications notifications = getScreenContext(this).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
                     .show();
         });
     }

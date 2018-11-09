@@ -26,43 +26,73 @@ import com.haulmont.cuba.gui.components.SizeUnit;
  */
 public interface Dialogs {
 
-    OptionDialog createOptionDialog();
+    /**
+     * Creates option dialog builder.
+     *
+     * @return builder
+     */
+    OptionDialogBuilder createOptionDialog();
 
-    MessageDialog createMessageDialog();
+    /**
+     * Creates option dialog builder with the passed message type.
+     *
+     * @return builder
+     */
+    OptionDialogBuilder createOptionDialog(MessageType messageType);
 
-    ExceptionDialog createExceptionDialog();
+    /**
+     * Creates message dialog builder.
+     *
+     * @return builder
+     */
+    MessageDialogBuilder createMessageDialog();
+
+    /**
+     * Creates message dialog builder with the passed message type.
+     *
+     * @return builder
+     */
+    MessageDialogBuilder createMessageDialog(MessageType messageType);
+
+    /**
+     * Creates exception dialog builder.
+     *
+     * @return builder
+     */
+    ExceptionDialogBuilder createExceptionDialog();
 
     /**
      * Dialog with options.
      */
-    interface OptionDialog {
-        OptionDialog setCaption(String caption);
+    interface OptionDialogBuilder {
+        OptionDialogBuilder withCaption(String caption);
         String getCaption();
 
-        OptionDialog setMessage(String message);
+        OptionDialogBuilder withMessage(String message);
         String getMessage();
 
-        OptionDialog setType(MessageType type);
+        OptionDialogBuilder withType(MessageType type);
         MessageType getType();
 
-        OptionDialog setContentMode(ContentMode contentMode);
+        OptionDialogBuilder withContentMode(ContentMode contentMode);
         ContentMode getContentMode();
 
-        OptionDialog setActions(Action... actions);
+        OptionDialogBuilder withActions(Action... actions);
         Action[] getActions();
 
-        OptionDialog setWidth(String width);
+        OptionDialogBuilder withWidth(String width);
         float getWidth();
         SizeUnit getWidthSizeUnit();
 
-        OptionDialog setHeight(String height);
+        OptionDialogBuilder withHeight(String height);
         float getHeight();
         SizeUnit getHeightSizeUnit();
 
         boolean isMaximized();
-        OptionDialog setMaximized(boolean maximized);
+        OptionDialogBuilder withMaximized(boolean maximized);
+        OptionDialogBuilder maximized();
 
-        OptionDialog setStyleName(String styleName);
+        OptionDialogBuilder withStyleName(String styleName);
         String getStyleName();
 
         /**
@@ -74,37 +104,40 @@ public interface Dialogs {
     /**
      * Information dialog.
      */
-    interface MessageDialog {
-        MessageDialog setCaption(String caption);
+    interface MessageDialogBuilder {
+        MessageDialogBuilder withCaption(String caption);
         String getCaption();
 
-        MessageDialog setMessage(String message);
+        MessageDialogBuilder withMessage(String message);
         String getMessage();
 
-        MessageDialog setType(MessageType type);
+        MessageDialogBuilder withType(MessageType type);
         MessageType getType();
 
-        MessageDialog setContentMode(ContentMode contentMode);
+        MessageDialogBuilder withContentMode(ContentMode contentMode);
         ContentMode getContentMode();
 
-        MessageDialog setWidth(String width);
+        MessageDialogBuilder withWidth(String width);
         float getWidth();
         SizeUnit getWidthSizeUnit();
 
-        MessageDialog setHeight(String height);
+        MessageDialogBuilder withHeight(String height);
         float getHeight();
         SizeUnit getHeightSizeUnit();
 
         boolean isModal();
-        MessageDialog setModal(boolean modal);
+        MessageDialogBuilder withModal(boolean modal);
+        MessageDialogBuilder modal();
 
         boolean isMaximized();
-        MessageDialog setMaximized(boolean maximized);
+        MessageDialogBuilder withMaximized(boolean maximized);
+        MessageDialogBuilder maximized();
 
         boolean isCloseOnClickOutside();
-        MessageDialog setCloseOnClickOutside(boolean closeOnClickOutside);
+        MessageDialogBuilder withCloseOnClickOutside(boolean closeOnClickOutside);
+        MessageDialogBuilder closeOnClickOutside();
 
-        MessageDialog setStyleName(String styleName);
+        MessageDialogBuilder withStyleName(String styleName);
         String getStyleName();
 
         /**
@@ -116,14 +149,14 @@ public interface Dialogs {
     /**
      * Unhandled exception dialog.
      */
-    interface ExceptionDialog {
-        ExceptionDialog setThrowable(Throwable throwable);
+    interface ExceptionDialogBuilder {
+        ExceptionDialogBuilder withThrowable(Throwable throwable);
         Throwable getThrowable();
 
-        ExceptionDialog setCaption(String caption);
+        ExceptionDialogBuilder withCaption(String caption);
         String getCaption();
 
-        ExceptionDialog setMessage(String message);
+        ExceptionDialogBuilder withMessage(String message);
         String getMessage();
 
         /**
@@ -133,7 +166,7 @@ public interface Dialogs {
     }
 
     /**
-     * JavaDoc
+     * Message type of a dialog.
      */
     enum MessageType {
         CONFIRMATION,

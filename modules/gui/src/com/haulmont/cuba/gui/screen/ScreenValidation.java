@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -119,10 +120,9 @@ public class ScreenValidation {
 
         Notifications notifications = getScreenContext(origin).getNotifications();
 
-        notifications.create()
-                .setType(Notifications.NotificationType.valueOf(validationNotificationType))
-                .setCaption(messages.getMainMessage("validationFail.caption"))
-                .setDescription(buffer.toString())
+        notifications.create(NotificationType.valueOf(validationNotificationType))
+                .withCaption(messages.getMainMessage("validationFail.caption"))
+                .withDescription(buffer.toString())
                 .show();
 
         focusProblemComponent(errors);
@@ -175,10 +175,10 @@ public class ScreenValidation {
 
         Dialogs dialogs = getScreenContext(origin).getDialogs();
         dialogs.createOptionDialog()
-                .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                .setMessage(messages.getMainMessage("closeUnsaved"))
-                .setType(Dialogs.MessageType.WARNING)
-                .setActions(
+                .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                .withMessage(messages.getMainMessage("closeUnsaved"))
+                .withType(Dialogs.MessageType.WARNING)
+                .withActions(
                         new DialogAction(DialogAction.Type.YES)
                                 .withHandler(e -> {
 
@@ -209,9 +209,9 @@ public class ScreenValidation {
 
         Dialogs dialogs = getScreenContext(origin).getDialogs();
         dialogs.createOptionDialog()
-                .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                .setMessage(messages.getMainMessage("saveUnsaved"))
-                .setActions(
+                .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                .withMessage(messages.getMainMessage("saveUnsaved"))
+                .withActions(
                         new DialogAction(DialogAction.Type.OK, Action.Status.PRIMARY)
                                 .withCaption(messages.getMainMessage("closeUnsaved.save"))
                                 .withHandler(e -> {

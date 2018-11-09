@@ -20,7 +20,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.CloseOriginType;
@@ -434,9 +434,8 @@ public class UrlChangeHandler {
     }
 
     protected void showNotification(String msg) {
-        ui.getNotifications().create()
-                .setCaption(msg)
-                .setType(Notifications.NotificationType.TRAY)
+        ui.getNotifications().create(NotificationType.TRAY)
+                .withCaption(msg)
                 .show();
     }
 

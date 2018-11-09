@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -38,8 +39,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -68,24 +67,36 @@ public class WebDialogs implements Dialogs {
     }
 
     @Override
-    public OptionDialog createOptionDialog() {
+    public OptionDialogBuilder createOptionDialog() {
         backgroundWorker.checkUIAccess();
 
-        return new OptionDialogImpl();
+        return new OptionDialogBuilderImpl();
     }
 
     @Override
-    public MessageDialog createMessageDialog() {
-        backgroundWorker.checkUIAccess();
-
-        return new MessageDialogImpl();
+    public OptionDialogBuilder createOptionDialog(MessageType messageType) {
+        return createOptionDialog()
+                .withType(messageType);
     }
 
     @Override
-    public ExceptionDialog createExceptionDialog() {
+    public MessageDialogBuilder createMessageDialog() {
         backgroundWorker.checkUIAccess();
 
-        return new ExceptionDialogImpl();
+        return new MessageDialogBuilderImpl();
+    }
+
+    @Override
+    public MessageDialogBuilder createMessageDialog(MessageType messageType) {
+        return createMessageDialog()
+                .withType(messageType);
+    }
+
+    @Override
+    public ExceptionDialogBuilder createExceptionDialog() {
+        backgroundWorker.checkUIAccess();
+
+        return new ExceptionDialogBuilderImpl();
     }
 
     public CubaButton createButton(Action action) {
@@ -115,7 +126,7 @@ public class WebDialogs implements Dialogs {
         return button;
     }
 
-    public class OptionDialogImpl implements OptionDialog {
+    public class OptionDialogBuilderImpl implements OptionDialogBuilder {
 
         protected CubaWindow window;
         protected CubaLabel messageLabel;
@@ -126,7 +137,7 @@ public class WebDialogs implements Dialogs {
 
         protected Action[] actions;
 
-        public OptionDialogImpl() {
+        public OptionDialogBuilderImpl() {
             window = new CubaWindow();
 
             window.setModal(true);
@@ -158,7 +169,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setCaption(String caption) {
+        public OptionDialogBuilder withCaption(String caption) {
             window.setCaption(caption);
             return this;
         }
@@ -169,7 +180,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setMessage(String message) {
+        public OptionDialogBuilder withMessage(String message) {
             messageLabel.setValue(message);
             return this;
         }
@@ -180,7 +191,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setType(MessageType type) {
+        public OptionDialogBuilder withType(MessageType type) {
             this.type = type;
             return this;
         }
@@ -191,7 +202,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setContentMode(ContentMode contentMode) {
+        public OptionDialogBuilder withContentMode(ContentMode contentMode) {
             messageLabel.setContentMode(toVaadinContentMode(contentMode));
             return this;
         }
@@ -202,7 +213,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setActions(Action... actions) {
+        public OptionDialogBuilder withActions(Action... actions) {
             this.actions = actions;
             return this;
         }
@@ -213,7 +224,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setWidth(String width) {
+        public OptionDialogBuilder withWidth(String width) {
             window.setWidth(width);
 
             if (getWidth() < 0) {
@@ -238,7 +249,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setHeight(String height) {
+        public OptionDialogBuilder withHeight(String height) {
             window.setHeight(height);
 
             if (getHeight() < 0) {
@@ -270,13 +281,19 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public OptionDialog setMaximized(boolean maximized) {
+        public OptionDialogBuilder withMaximized(boolean maximized) {
             window.setWindowMode(maximized ? WindowMode.MAXIMIZED : WindowMode.NORMAL);
             return this;
         }
 
         @Override
-        public OptionDialog setStyleName(String styleName) {
+        public OptionDialogBuilder maximized() {
+            withMaximized(true);
+            return this;
+        }
+
+        @Override
+        public OptionDialogBuilder withStyleName(String styleName) {
             window.setStyleName(styleName);
             return this;
         }
@@ -359,7 +376,7 @@ public class WebDialogs implements Dialogs {
         }
     }
 
-    public class MessageDialogImpl implements MessageDialog {
+    public class MessageDialogBuilderImpl implements MessageDialogBuilder {
         protected CubaWindow window;
         protected CubaLabel messageLabel;
         protected VerticalLayout layout;
@@ -367,7 +384,7 @@ public class WebDialogs implements Dialogs {
 
         protected MessageType type = MessageType.CONFIRMATION;
 
-        public MessageDialogImpl() {
+        public MessageDialogBuilderImpl() {
             window = new CubaWindow();
 
             window.setModal(true);
@@ -403,7 +420,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setCaption(String caption) {
+        public MessageDialogBuilder withCaption(String caption) {
             window.setCaption(caption);
             return this;
         }
@@ -414,7 +431,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setMessage(String message) {
+        public MessageDialogBuilder withMessage(String message) {
             messageLabel.setValue(message);
             return this;
         }
@@ -425,7 +442,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setType(MessageType type) {
+        public MessageDialogBuilder withType(MessageType type) {
             this.type = type;
             return this;
         }
@@ -436,7 +453,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setContentMode(ContentMode contentMode) {
+        public MessageDialogBuilder withContentMode(ContentMode contentMode) {
             messageLabel.setContentMode(toVaadinContentMode(contentMode));
             return this;
         }
@@ -447,7 +464,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setWidth(String width) {
+        public MessageDialogBuilder withWidth(String width) {
             window.setWidth(width);
 
             if (getWidth() < 0) {
@@ -472,7 +489,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setHeight(String height) {
+        public MessageDialogBuilder withHeight(String height) {
             window.setHeight(height);
 
             if (getHeight() < 0) {
@@ -504,9 +521,14 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setModal(boolean modal) {
+        public MessageDialogBuilder withModal(boolean modal) {
             window.setModal(modal);
             return this;
+        }
+
+        @Override
+        public MessageDialogBuilder modal() {
+            return withModal(true);
         }
 
         @Override
@@ -515,9 +537,14 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setMaximized(boolean maximized) {
+        public MessageDialogBuilder withMaximized(boolean maximized) {
             window.setWindowMode(maximized ? WindowMode.MAXIMIZED : WindowMode.NORMAL);
             return this;
+        }
+
+        @Override
+        public MessageDialogBuilder maximized() {
+            return withMaximized(true);
         }
 
         @Override
@@ -526,13 +553,18 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public MessageDialog setCloseOnClickOutside(boolean closeOnClickOutside) {
+        public MessageDialogBuilder withCloseOnClickOutside(boolean closeOnClickOutside) {
             window.setCloseOnClickOutside(closeOnClickOutside);
             return this;
         }
 
         @Override
-        public MessageDialog setStyleName(String styleName) {
+        public MessageDialogBuilder closeOnClickOutside() {
+            return withCloseOnClickOutside(true);
+        }
+
+        @Override
+        public MessageDialogBuilder withStyleName(String styleName) {
             window.setStyleName(styleName);
             return this;
         }
@@ -550,8 +582,9 @@ public class WebDialogs implements Dialogs {
                 window.setCubaId("messageDialog");
                 messageLabel.setCubaId("messageDialogLabel");
                 okButton.setCubaId("messageDialogOk");
+            }
 
-                // todo check if performance mode enabled
+            if (ui.isPerformanceTestMode()) {
                 window.setId(ui.getTestIdManager().getTestId("messageDialog"));
             }
 
@@ -590,13 +623,13 @@ public class WebDialogs implements Dialogs {
         }
     }
 
-    public class ExceptionDialogImpl implements ExceptionDialog {
+    public class ExceptionDialogBuilderImpl implements ExceptionDialogBuilder {
         protected String message;
         protected String caption;
         protected Throwable throwable;
 
         @Override
-        public ExceptionDialog setThrowable(Throwable throwable) {
+        public ExceptionDialogBuilder withThrowable(Throwable throwable) {
             this.throwable = throwable;
             return this;
         }
@@ -607,7 +640,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public ExceptionDialog setCaption(String caption) {
+        public ExceptionDialogBuilder withCaption(String caption) {
             this.caption = caption;
             return this;
         }
@@ -618,7 +651,7 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
-        public ExceptionDialog setMessage(String message) {
+        public ExceptionDialogBuilder withMessage(String message) {
             this.message = message;
             return this;
         }
@@ -639,8 +672,7 @@ public class WebDialogs implements Dialogs {
                 rootCause = throwable;
             }
 
-            com.haulmont.cuba.web.exception.ExceptionDialog dialog =
-                    new com.haulmont.cuba.web.exception.ExceptionDialog(rootCause, caption, message);
+            ExceptionDialog dialog = new ExceptionDialog(rootCause, caption, message);
             for (com.vaadin.ui.Window window : ui.getWindows()) {
                 if (window.isModal()) {
                     dialog.setModal(true);

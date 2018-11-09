@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
@@ -261,17 +262,15 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         impl.addFileSizeLimitExceededListener(e -> {
             Notifications notifications = getScreenContext(this).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString()))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString()))
                     .show();
         });
         impl.addFileExtensionNotAllowedListener(e -> {
             Notifications notifications = getScreenContext(this).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName()))
                     .show();
         });
     }

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
@@ -85,9 +86,8 @@ public class FilteringLookupAction extends PickerField.LookupAction {
         if (!found) {
             Notifications notifications = getScreenContext(pickerField).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.getMainMessage("dynamicAttributes.entity.filter.filterNotFound"))
                     .show();
         }
         AbstractWindow controller = (AbstractWindow) (lookupWindow).getFrameOwner();

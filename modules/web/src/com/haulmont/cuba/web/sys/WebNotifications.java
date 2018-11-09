@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.AppUI;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -45,13 +43,19 @@ public class WebNotifications implements Notifications {
     }
 
     @Override
-    public Notification create() {
+    public NotificationBuilder create() {
         backgroundWorker.checkUIAccess();
 
-        return new NotificationImpl();
+        return new NotificationBuilderImpl();
     }
 
-    public class NotificationImpl implements Notification {
+    @Override
+    public NotificationBuilder create(NotificationType type) {
+        return create()
+                .withType(type);
+    }
+
+    public class NotificationBuilderImpl implements NotificationBuilder {
         protected String caption;
         protected String description;
         protected String styleName;
@@ -62,11 +66,11 @@ public class WebNotifications implements Notifications {
         protected ContentMode contentMode = ContentMode.TEXT;
         protected NotificationType notificationType = NotificationType.HUMANIZED;
 
-        public NotificationImpl() {
+        public NotificationBuilderImpl() {
         }
 
         @Override
-        public Notification setCaption(String caption) {
+        public NotificationBuilder withCaption(String caption) {
             this.caption = caption;
             return this;
         }
@@ -77,7 +81,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setDescription(String description) {
+        public NotificationBuilder withDescription(String description) {
             this.description = description;
             return this;
         }
@@ -88,7 +92,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setType(NotificationType notificationType) {
+        public NotificationBuilder withType(NotificationType notificationType) {
             this.notificationType = notificationType;
 
             return this;
@@ -100,7 +104,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setContentMode(ContentMode contentMode) {
+        public NotificationBuilder withContentMode(ContentMode contentMode) {
             if (contentMode == ContentMode.PREFORMATTED) {
                 throw new UnsupportedOperationException("ContentMode.PREFORMATTED unsupported for Notification");
             }
@@ -115,7 +119,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setStyleName(String styleName) {
+        public NotificationBuilder withStyleName(String styleName) {
             this.styleName = styleName;
             return this;
         }
@@ -126,7 +130,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setPosition(Position position) {
+        public NotificationBuilder withPosition(Position position) {
             this.position = position;
             return this;
         }
@@ -137,7 +141,7 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
-        public Notification setHideDelayMs(int hideDelayMs) {
+        public NotificationBuilder withHideDelayMs(int hideDelayMs) {
             this.hideDelayMs = hideDelayMs;
             return this;
         }

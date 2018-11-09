@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -105,10 +106,10 @@ public class ExcelAction extends ListAction {
                 Dialogs dialogs = ComponentsHelper.getScreenContext(target).getDialogs();
 
                 dialogs.createOptionDialog()
-                        .setCaption(messages.getMainMessage("actions.exportSelectedTitle"))
-                        .setMessage(messages.getMainMessage("actions.exportSelectedCaption"))
-                        .setType(Dialogs.MessageType.CONFIRMATION)
-                        .setActions(actions)
+                        .withCaption(messages.getMainMessage("actions.exportSelectedTitle"))
+                        .withMessage(messages.getMainMessage("actions.exportSelectedCaption"))
+                        .withType(Dialogs.MessageType.CONFIRMATION)
+                        .withActions(actions)
                         .show();
             }
         } else {
@@ -170,10 +171,9 @@ public class ExcelAction extends ListAction {
         if (exporter.isXlsMaxRowNumberExceeded()) {
             Notifications notifications = ComponentsHelper.getScreenContext(target).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.getMainMessage("actions.warningExport.title"))
-                    .setDescription(messages.getMainMessage("actions.warningExport.message"))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.getMainMessage("actions.warningExport.title"))
+                    .withDescription(messages.getMainMessage("actions.warningExport.message"))
                     .show();
         }
     }

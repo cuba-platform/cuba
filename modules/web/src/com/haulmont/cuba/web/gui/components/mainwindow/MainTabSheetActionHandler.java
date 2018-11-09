@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
@@ -148,9 +149,8 @@ public class MainTabSheetActionHandler implements Action.Handler {
             if (tipsList.isEmpty()) {
                 Notifications notifications = ComponentsHelper.getScreenContext(window).getNotifications();
 
-                notifications.create()
-                        .setCaption("No layout problems found")
-                        .setType(Notifications.NotificationType.HUMANIZED)
+                notifications.create(NotificationType.HUMANIZED)
+                        .withCaption("No layout problems found")
                         .show();
             } else {
                 WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(window).getScreens();

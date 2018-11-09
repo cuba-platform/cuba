@@ -144,10 +144,10 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             Dialogs dialogs = getScreenContext(this).getDialogs();
 
             dialogs.createOptionDialog()
-                    .setCaption(messages.getMainMessage("substUserSelectDialog.title"))
-                    .setMessage(messages.formatMainMessage("substUserSelectDialog.msg", newUserName))
-                    .setType(Dialogs.MessageType.WARNING)
-                    .setActions(
+                    .withCaption(messages.getMainMessage("substUserSelectDialog.title"))
+                    .withMessage(messages.formatMainMessage("substUserSelectDialog.msg", newUserName))
+                    .withType(Dialogs.MessageType.WARNING)
+                    .withActions(
                             new ChangeSubstUserAction(userComboBox.getValue()) {
                                 @Override
                                 public void doRevert() {

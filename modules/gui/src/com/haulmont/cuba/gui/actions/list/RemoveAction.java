@@ -138,9 +138,9 @@ public class RemoveAction extends SecuredListAction {
             Dialogs dialogs = screenContext.getDialogs();
 
             dialogs.createOptionDialog()
-                    .setCaption(messages.getMainMessage("dialogs.Confirmation"))
-                    .setMessage(messages.getMainMessage("dialogs.Confirmation.Remove"))
-                    .setActions(
+                    .withCaption(messages.getMainMessage("dialogs.Confirmation"))
+                    .withMessage(messages.getMainMessage("dialogs.Confirmation.Remove"))
+                    .withActions(
                             new DialogAction(Type.YES).withHandler(e -> {
                                 container.getMutableItems().remove(entityToRemove);
                                 screenData.getDataContext().remove(entityToRemove);

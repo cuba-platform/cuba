@@ -221,9 +221,9 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         Dialogs dialogs = ComponentsHelper.getScreenContext(target.getFrame()).getDialogs();
 
         dialogs.createOptionDialog()
-                .setCaption(getConfirmationTitle())
-                .setMessage(getConfirmationMessage())
-                .setActions(
+                .withCaption(getConfirmationTitle())
+                .withMessage(getConfirmationMessage())
+                .withActions(
                         new DialogAction(Type.OK, Status.PRIMARY).withHandler(event -> {
                             try {
                                 remove(selected);

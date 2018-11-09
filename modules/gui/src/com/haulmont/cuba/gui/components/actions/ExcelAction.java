@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.export.ExcelExporter;
@@ -210,10 +211,10 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
             Dialogs dialogs = getScreenContext(listComponent).getDialogs();
 
             dialogs.createOptionDialog()
-                    .setCaption(title)
-                    .setMessage(caption)
-                    .setType(Dialogs.MessageType.CONFIRMATION)
-                    .setActions(
+                    .withCaption(title)
+                    .withMessage(caption)
+                    .withType(Dialogs.MessageType.CONFIRMATION)
+                    .withActions(
                             exportSelectedAction,
                             exportAllAction,
                             new DialogAction(Type.CANCEL)
@@ -245,10 +246,9 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
         if (exporter.isXlsMaxRowNumberExceeded()) {
             Notifications notifications = getScreenContext(listComponent).getNotifications();
 
-            notifications.create()
-                    .setCaption(messages.getMainMessage("actions.warningExport.title"))
-                    .setDescription(messages.getMainMessage("actions.warningExport.message"))
-                    .setType(Notifications.NotificationType.WARNING)
+            notifications.create(NotificationType.WARNING)
+                    .withCaption(messages.getMainMessage("actions.warningExport.title"))
+                    .withDescription(messages.getMainMessage("actions.warningExport.message"))
                     .show();
         }
     }

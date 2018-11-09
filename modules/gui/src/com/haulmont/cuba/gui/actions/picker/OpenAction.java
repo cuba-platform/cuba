@@ -118,9 +118,8 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
                 ScreenContext screenContext = ComponentsHelper.getScreenContext(pickerField);
                 Notifications notifications = screenContext.getNotifications();
 
-                notifications.create()
-                        .setDescription(messages.getMainMessage("OpenAction.objectIsDeleted"))
-                        .setType(NotificationType.HUMANIZED)
+                notifications.create(NotificationType.HUMANIZED)
+                        .withDescription(messages.getMainMessage("OpenAction.objectIsDeleted"))
                         .show();
 
                 return;

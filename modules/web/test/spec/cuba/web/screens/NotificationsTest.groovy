@@ -27,9 +27,9 @@ import spock.lang.Specification
 import static com.haulmont.cuba.gui.Notifications.NotificationType.WARNING
 import static com.haulmont.cuba.gui.Notifications.Position.BOTTOM_CENTER
 
+@SuppressWarnings(["GroovyPointlessBoolean", "GroovyAccessibility"])
 class NotificationsTest extends Specification {
 
-    @SuppressWarnings("GroovyPointlessBoolean")
     def "Notification can be show"() {
         def ui = new AppUI()
         def notifications = new WebNotifications(ui)
@@ -46,12 +46,12 @@ class NotificationsTest extends Specification {
         when:
 
         notification
-                .setCaption('Greeting')
-                .setDescription('Hello world')
-                .setPosition(BOTTOM_CENTER)
-                .setContentMode(ContentMode.HTML)
-                .setType(WARNING)
-                .setStyleName('open-notification')
+                .withCaption('Greeting')
+                .withDescription('Hello world')
+                .withPosition(BOTTOM_CENTER)
+                .withContentMode(ContentMode.HTML)
+                .withType(WARNING)
+                .withStyleName('open-notification')
 
         then:
 
@@ -85,7 +85,7 @@ class NotificationsTest extends Specification {
         when:
 
         def notification = notifications.create()
-        notification.setContentMode(ContentMode.PREFORMATTED)
+        notification.withContentMode(ContentMode.PREFORMATTED)
 
         then:
 

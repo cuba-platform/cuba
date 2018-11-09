@@ -559,9 +559,9 @@ public abstract class App {
                 Dialogs dialogs = ui.getDialogs();
 
                 dialogs.createOptionDialog()
-                        .setCaption(messages.getMainMessage("closeUnsaved.caption"))
-                        .setMessage(messages.getMainMessage("discardChangesOnClose"))
-                        .setActions(
+                        .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                        .withMessage(messages.getMainMessage("discardChangesOnClose"))
+                        .withActions(
                                 new BaseAction("closeApplication")
                                         .withCaption(messages.getMainMessage("closeApplication"))
                                         .withIcon(icons.get(CubaIcon.DIALOG_OK))
