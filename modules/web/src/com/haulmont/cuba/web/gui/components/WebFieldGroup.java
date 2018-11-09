@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertFieldGroupCaptionAlignment;
 
 public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> implements FieldGroup, UiPermissionAware {
 
@@ -156,7 +157,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
-        component.setUseInlineCaption(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+        component.setUseInlineCaption(convertFieldGroupCaptionAlignment(captionAlignment));
     }
 
     @Override
@@ -342,7 +343,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             if (fci.getTargetContextHelpIconClickHandler() != null) {
                 hasContextHelp.setContextHelpIconClickHandler(fci.getTargetContextHelpIconClickHandler());
             }
-
         }
 
         if (fieldComponent instanceof Editable && fci.getTargetEditable() != null) {
@@ -360,7 +360,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 cubaField.setRequiredMessage(fci.getTargetRequiredMessage());
             }
 
-            for (Field.Validator validator : fci.getTargetValidators()) {
+            for (Consumer validator : fci.getTargetValidators()) {
                 cubaField.addValidator(validator);
             }
         }
@@ -814,7 +814,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         protected Function targetFormatter;
         protected boolean isTargetCustom;
 
-        protected List<Field.Validator> targetValidators = new ArrayList<>(0);
+        protected List<Consumer> targetValidators = new ArrayList<>(0);
         protected Consumer<HasContextHelp.ContextHelpIconClickEvent> targetContextHelpIconClickHandler;
         protected FieldAttachMode attachMode = FieldAttachMode.APPLY_DEFAULTS;
 
@@ -1092,7 +1092,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
-        public void addValidator(Field.Validator validator) {
+        public void addValidator(Consumer<?> validator) {
             if (component instanceof Field) {
                 ((Field) component).addValidator(validator);
             } else {
@@ -1103,7 +1103,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
-        public void removeValidator(Field.Validator validator) {
+        public void removeValidator(Consumer<?> validator) {
             if (component instanceof Field) {
                 ((Field) component).removeValidator(validator);
             }
@@ -1414,11 +1414,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             this.targetFormatter = targetFormatter;
         }
 
-        public List<Field.Validator> getTargetValidators() {
+        public List<Consumer> getTargetValidators() {
             return targetValidators;
         }
 
-        public void setTargetValidators(List<Field.Validator> targetValidators) {
+        public void setTargetValidators(List<Consumer> targetValidators) {
             this.targetValidators = targetValidators;
         }
 

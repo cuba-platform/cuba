@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
@@ -33,12 +32,16 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Specific datasource for dynamic attributes.
  * It will be initialized only when main datasource will be valid.
- *
  */
 public class RuntimePropsDatasourceImpl
         extends AbstractDatasource<DynamicAttributesEntity>
@@ -207,7 +210,8 @@ public class RuntimePropsDatasourceImpl
     @Nullable
     public Category getDefaultCategory() {
         MetaClass metaClass = resolveCategorizedEntityClass();
-        Collection<Category> categoriesForMetaClass = AppBeans.get(DynamicAttributes.class).getCategoriesForMetaClass(metaClass);
+        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.class);
+        Collection<Category> categoriesForMetaClass = dynamicAttributes.getCategoriesForMetaClass(metaClass);
         for (Category category : categoriesForMetaClass) {
             if (Boolean.TRUE.equals(category.getIsDefault())) {
                 return category;
@@ -217,28 +221,29 @@ public class RuntimePropsDatasourceImpl
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     protected void setMainDs(String name) {
         mainDs = dsContext.get(name);
         if (mainDs == null) {
-            throw new DevelopmentException("runtimePropsDatasource initialization error: mainDs '" + name + "' does not exists");
+            throw new DevelopmentException(
+                    String.format("runtimePropsDatasource initialization error: mainDs '%s' does not exists", name)
+            );
         }
         mainDs.setLoadDynamicAttributes(true);
 
         dynamicAttributesGuiTools.listenDynamicAttributesChanges(mainDs);
 
-        //noinspection unchecked
         mainDs.addStateChangeListener(e -> {
-            if (State.VALID.equals(state)) {
-                if (!State.VALID.equals(e.getPrevState()))
+            if (e.getState() == State.VALID) {
+                if (e.getPrevState() != State.VALID) {
                     initMetaClass(mainDs.getItem());
-                else
+                } else {
                     valid();
+                }
             }
         });
-
-        //noinspection unchecked
         mainDs.addItemPropertyChangeListener(e -> {
-            if (e.getProperty().equals("category")) {
+            if ("category".equals(e.getProperty())) {
                 categoryChanged = true;
                 try {
                     initMetaClass(mainDs.getItem());
@@ -247,14 +252,14 @@ public class RuntimePropsDatasourceImpl
                 }
             }
         });
-
-        //noinspection unchecked
-        mainDs.addItemChangeListener(e -> {
-            initMetaClass(item);
-        });
+        mainDs.addItemChangeListener(e ->
+                initMetaClass(e.getItem())
+        );
     }
 
     protected void initMetaClass(Entity entity) {
+        checkNotNullArgument(entity);
+
         if (!(entity instanceof BaseGenericIdEntity)) {
             throw new IllegalStateException("This datasource can contain only entity with subclass of BaseGenericIdEntity");
         }
@@ -266,7 +271,7 @@ public class RuntimePropsDatasourceImpl
 
         @SuppressWarnings("unchecked")
         Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
-        Preconditions.checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
+        checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
 
         if (baseGenericIdEntity instanceof Categorized) {
             category = ((Categorized) baseGenericIdEntity).getCategory();

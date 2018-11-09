@@ -448,7 +448,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
          *
          * @param validator validator
          */
-        void addValidator(Validator validator);
+        void addValidator(Consumer<?> validator);
 
         /**
          * Remove validator. <br>
@@ -457,7 +457,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
          *
          * @param validator validator
          */
-        void removeValidator(Validator validator);
+        void removeValidator(Consumer<?> validator);
 
         /**
          * Set options datasource for declarative field. <br>
@@ -827,7 +827,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * Allows to show an arbitrary field inside a {@link FieldGroup}. Implementors of this interface have to be passed
      * to one of <code>FieldGroup.addCustomField</code> methods.
      *
-     * @deprecated Set Component implementation directly to {@link FieldConfig} using {@link FieldConfig#setComponent(Component)} method.
+     * @deprecated Set component implementation directly to {@link FieldConfig} using {@link FieldConfig#setComponent(Component)} method.
      */
     @Deprecated
     interface CustomFieldGenerator {

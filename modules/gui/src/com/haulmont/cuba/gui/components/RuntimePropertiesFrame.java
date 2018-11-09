@@ -23,11 +23,10 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -37,7 +36,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -46,12 +44,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
- * Universal frame for editing dynamic attributes
- * of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
+ * Universal frame for editing dynamic attributes of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
  */
 public class RuntimePropertiesFrame extends AbstractFrame {
 
@@ -71,7 +69,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
     protected LookupField categoryField;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected DynamicAttributes dynamicAttributes;
@@ -117,18 +115,27 @@ public class RuntimePropertiesFrame extends AbstractFrame {
 
     protected void initDatasources(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
-        if (dsId == null)
+        if (dsId == null) {
             throw new DevelopmentException("runtimeProperties initialization error: runtimeDs is not provided");
+        }
         rds = (RuntimePropsDatasource) getDsContext().get(dsId);
-        if (rds == null)
-            throw new DevelopmentException("runtimeProperties initialization error: runtimeDs '" + dsId + "' does not exists");
+        if (rds == null) {
+            throw new DevelopmentException(
+                    String.format("runtimeProperties initialization error: runtimeDs '%s' does not exists", dsId));
+        }
 
         String categoriesDsId = (String) params.get("categoriesDs");
-        if (categoriesDsId == null)
+        if (categoriesDsId == null) {
             throw new DevelopmentException("runtimeProperties initialization error: categoriesDs is not provided");
+        }
+
         categoriesDs = (CollectionDatasource) getDsContext().get(categoriesDsId);
-        if (categoriesDs == null)
-            throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exists");
+        if (categoriesDs == null) {
+            throw new DevelopmentException(
+                    String.format("runtimeProperties initialization error: categoriesDs '%s' does not exists",
+                            categoriesDsId)
+            );
+        }
     }
 
     protected void initCategoryField() {
@@ -152,7 +159,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             remove(runtime);
         }
 
-        final FieldGroup newRuntimeFieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup newRuntimeFieldGroup = uiComponents.create(FieldGroup.class);
         newRuntimeFieldGroup.setBorderVisible(Boolean.TRUE.equals(borderVisible));
 
         newRuntimeFieldGroup.setWidth("100%");
@@ -165,7 +172,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             newRuntimeFieldGroup.removeField(field);
         }
 
-        final java.util.List<FieldGroup.FieldConfig> fields = createFieldsForAttributes(newRuntimeFieldGroup);
+        List<FieldGroup.FieldConfig> fields = createFieldsForAttributes(newRuntimeFieldGroup);
         addFieldsToFieldGroup(newRuntimeFieldGroup, fields);
 
         if (!newRuntimeFieldGroup.getFields().isEmpty()) {
@@ -207,10 +214,11 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         }
     }
 
-    protected java.util.List<FieldGroup.FieldConfig> createFieldsForAttributes(FieldGroup newRuntimeFieldGroup) {
+    protected List<FieldGroup.FieldConfig> createFieldsForAttributes(FieldGroup newRuntimeFieldGroup) {
         @SuppressWarnings("unchecked")
         Collection<DynamicAttributesMetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
-        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
+        List<FieldGroup.FieldConfig> fields = new ArrayList<>(metaProperties.size());
+
         for (DynamicAttributesMetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = newRuntimeFieldGroup.createField(property.getName());
             field.setProperty(property.getName());
@@ -248,7 +256,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
 
         int columnNo = 0;
         int fieldsCount = 0;
-        for (final FieldGroup.FieldConfig field : fields) {
+        for (FieldGroup.FieldConfig field : fields) {
             fieldsCount++;
             newRuntimeFieldGroup.addField(field, columnNo);
             if (fieldsCount % rowsPerColumn == 0) {
@@ -258,8 +266,8 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         }
     }
 
-    protected Field.Validator getValidator(MetaProperty property) {
-        Field.Validator validator = null;
+    protected Consumer getValidator(MetaProperty property) {
+        Consumer validator = null;
         if (property.getRange().isDatatype()) {
             Class type = property.getRange().asDatatype().getJavaClass();
 
@@ -283,7 +291,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getProperty());
         if (metaPropertyPath != null) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            Field.Validator validator = getValidator(metaProperty);
+            Consumer validator = getValidator(metaProperty);
 
             if (validator != null) {
                 field.addValidator(validator);
@@ -294,8 +302,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
     protected void loadRequired(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
         CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(rds.resolveCategorizedEntityClass(), field.getId());
         if (attribute != null) {
-            String requiredMessage = messages.formatMessage(
-                    AppConfig.getMessagesPack(),
+            String requiredMessage = messages.formatMainMessage(
                     "validation.required.defaultMsg",
                     attribute.getName()
             );
@@ -307,9 +314,10 @@ public class RuntimePropertiesFrame extends AbstractFrame {
     protected void loadEditable(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
         if (fieldGroup.isEditable()) {
             MetaClass metaClass = rds.resolveCategorizedEntityClass();
-            MetaPropertyPath propertyPath = dynamicAttributesTools.getMetaPropertyPath(
-                    metaClass, field.getProperty());
+            MetaPropertyPath propertyPath = dynamicAttributesTools.getMetaPropertyPath(metaClass, field.getProperty());
+
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+
             boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
             if (!editableFromPermissions) {
                 field.setEditable(false);

@@ -54,10 +54,6 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
     protected ComponentLoader fragmentLoader;
     protected ComponentLoaderContext innerContext;
 
-    protected WindowConfig getWindowConfig() {
-        return beanLocator.get(WindowConfig.NAME);
-    }
-
     @Override
     public void createComponent() {
         String src = element.attributeValue("src");
@@ -296,5 +292,9 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
                 }
             }
         }
+    }
+
+    protected WindowConfig getWindowConfig() {
+        return beanLocator.get(WindowConfig.NAME);
     }
 }
