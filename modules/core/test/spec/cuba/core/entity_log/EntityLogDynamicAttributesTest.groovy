@@ -18,8 +18,6 @@ package spec.cuba.core.entity_log
 
 import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.Transaction
-import com.haulmont.cuba.core.TypedQuery
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType
 import com.haulmont.cuba.core.entity.Category
@@ -31,23 +29,17 @@ import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.app.EntityLog
 import com.haulmont.cuba.security.app.EntityLogAPI
-import com.haulmont.cuba.security.entity.*
-import com.haulmont.cuba.testsupport.TestContainer
-import com.haulmont.cuba.testsupport.TestSupport
-import org.junit.ClassRule
-import spock.lang.Shared
-import spock.lang.Specification
+import com.haulmont.cuba.security.entity.EntityLogItem
+import com.haulmont.cuba.security.entity.LoggedAttribute
+import com.haulmont.cuba.security.entity.LoggedEntity
+import com.haulmont.cuba.security.entity.User
 
 import java.sql.SQLException
 
-class EntityLogDynamicAttributesTest extends Specification {
+class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
-    @Shared
-    @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
 
     private UUID userId, categoryId, categoryAttributeId
-    private EntityLog entityLog
     private DataManager dataManager
     private DynamicAttributesManagerAPI dynamicAttributesManagerAPI
 
@@ -58,7 +50,7 @@ class EntityLogDynamicAttributesTest extends Specification {
 
         clearEntityLogTables()
 
-        cont.persistence().runInTransaction { em ->
+        withTransaction { EntityManager em ->
             clearTable(em, "SEC_ENTITY_LOG")
             clearTable(em, "SYS_ATTR_VALUE")
 
@@ -102,10 +94,6 @@ class EntityLogDynamicAttributesTest extends Specification {
     }
 
 
-    protected void clearTable(EntityManager em, String table) {
-        em.createNativeQuery("delete from " + table).executeUpdate()
-    }
-
     void cleanup() {
 
         clearEntityLogTables()
@@ -123,8 +111,6 @@ class EntityLogDynamicAttributesTest extends Specification {
         runner.update("delete from SEC_LOGGED_ENTITY")
         runner.update("delete from SYS_ATTR_VALUE")
     }
-
-
 
 
     def "EntityLog logs the creation of a dynamic attribute"() {
@@ -198,29 +184,21 @@ class EntityLogDynamicAttributesTest extends Specification {
     protected boolean isModifyType(EntityLogItem entityLogItem) {
         entityLogItem.type == EntityLogItem.Type.MODIFY
     }
+
     protected boolean isCreateType(EntityLogItem entityLogItem) {
         entityLogItem.type == EntityLogItem.Type.CREATE
     }
 
     boolean loggedOldValueMatches(EntityLogItem entityLogItem, String oldValue) {
-        dynamicAttributeEntityLog(entityLogItem).oldValue == oldValue
+        loggedOldValueMatches(entityLogItem, DYNAMIC_ATTRIBUTE_NAME, oldValue)
     }
+
     boolean loggedValueMatches(EntityLogItem entityLogItem, String value) {
-        dynamicAttributeEntityLog(entityLogItem).value == value
+        loggedValueMatches(entityLogItem, DYNAMIC_ATTRIBUTE_NAME, value)
     }
 
     private EntityLogItem latestEntityLogItem(User user) {
-        getEntityLogItems(user).first()
-    }
-
-    private EntityLogAttr dynamicAttributeEntityLog(EntityLogItem entityLogItem) {
-        entityLogItem.attributes.find { it.name == DYNAMIC_ATTRIBUTE_NAME }
-    }
-
-    private Group findCompanyGroup() {
-        cont.persistence().callInTransaction { em ->
-            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
-        }
+        getLatestEntityLogItem('sec$User', user.id)
     }
 
 
@@ -256,22 +234,4 @@ class EntityLogDynamicAttributesTest extends Specification {
     }
 
 
-    private List<EntityLogItem> getEntityLogItems(User user) {
-        Transaction tx = cont.persistence().createTransaction()
-        List<EntityLogItem> items
-        try {
-            EntityManager em = cont.persistence().getEntityManager()
-            TypedQuery<EntityLogItem> query = em.createQuery(
-                    'select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2 order by i.eventTs desc', EntityLogItem.class)
-            query.setParameter(1, 'sec$User')
-            query.setParameter(2, user.id)
-            items = query.getResultList()
-
-            tx.commit()
-        } finally {
-            tx.end()
-        }
-
-        items
-    }
 }
