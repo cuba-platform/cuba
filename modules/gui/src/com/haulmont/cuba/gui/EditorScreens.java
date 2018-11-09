@@ -122,6 +122,7 @@ public class EditorScreens {
      */
     public <E extends Entity> EditorBuilder<E> builder(ListComponent<E> listComponent) {
         checkNotNullArgument(listComponent);
+        checkNotNullArgument(listComponent.getFrame());
 
         FrameOwner frameOwner = listComponent.getFrame().getFrameOwner();
         Class<E> entityClass;
@@ -131,6 +132,7 @@ public class EditorScreens {
         } else {
             throw new IllegalStateException(String.format("Component %s is not bound to data", listComponent));
         }
+
         EditorBuilder<E> builder = new EditorBuilder<>(frameOwner, entityClass, this::buildEditor);
         builder.withListComponent(listComponent);
         builder.editEntity(listComponent.getSingleSelected());

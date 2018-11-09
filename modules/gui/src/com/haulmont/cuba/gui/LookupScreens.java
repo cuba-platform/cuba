@@ -23,7 +23,9 @@ import com.haulmont.cuba.gui.Screens.LaunchMode;
 import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -80,6 +83,39 @@ public class LookupScreens {
         return new LookupBuilder<>(origin, entityClass, this::buildLookup);
     }
 
+    /**
+     * Creates a screen builder.
+     * <p>
+     * Example of building a lookup screen:
+     * <pre>{@code
+     * SomeCustomerListScreen screen = lookupScreens.builder(Customer.class, this)
+     *         .withScreen(SomeCustomerListScreen.class)
+     *         .withLaunchMode(OpenMode.DIALOG)
+     *         .build();
+     * }</pre>
+     *
+     * @param listComponent {@code Table}, {@code DataGrid} or another component containing the list of entities
+     *
+     * @see #builder(Class, FrameOwner)
+     */
+    public <E extends Entity> LookupBuilder<E> builder(ListComponent<E> listComponent) {
+        checkNotNullArgument(listComponent);
+        checkNotNullArgument(listComponent.getFrame());
+
+        FrameOwner frameOwner = listComponent.getFrame().getFrameOwner();
+        Class<E> entityClass;
+        DataUnit<E> items = listComponent.getItems();
+        if (items instanceof EntityDataUnit<?>) {
+            entityClass = ((EntityDataUnit<E>) items).getEntityMetaClass().getJavaClass();
+        } else {
+            throw new IllegalStateException(String.format("Component %s is not bound to data", listComponent));
+        }
+
+        LookupBuilder<E> builder = new LookupBuilder<>(frameOwner, entityClass, this::buildLookup);
+        builder.withListComponent(listComponent);
+        return builder;
+    }
+
     @SuppressWarnings("unchecked")
     protected <E extends Entity> Screen buildLookup(LookupBuilder<E> builder) {
         FrameOwner origin = builder.getOrigin();
@@ -117,12 +153,9 @@ public class LookupScreens {
                     ((Focusable) field).focus();
                 });
             }
-            lookupScreen.setSelectHandler(items -> {
-                if (!items.isEmpty()) {
-                    Entity newValue = items.iterator().next();
-                    ((HasValue<E>) field).setValue((E) newValue);
-                }
-            });
+            lookupScreen.setSelectHandler(items ->
+                    handleSelectionWithField(builder, (HasValue<E>) field, items)
+            );
         }
 
         CollectionContainer<E> container = null;
@@ -149,46 +182,9 @@ public class LookupScreens {
         if (container != null) {
             CollectionContainer<E> collectionDc = container;
 
-            lookupScreen.setSelectHandler(items -> {
-                List<E> mutableItems = collectionDc.getMutableItems();
-
-                // atomicity ?
-                mutableItems.removeAll(items);
-
-                // update holder reference if needed
-                if (collectionDc instanceof Nested) {
-                    InstanceContainer holderDc = ((Nested) collectionDc).getParent();
-
-                    String property = ((Nested) collectionDc).getProperty();
-                    Entity holderItem = holderDc.getItem();
-
-                    MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
-                    MetaProperty inverseMetaProperty = metaProperty.getInverse();
-
-                    if (inverseMetaProperty != null
-                        && !inverseMetaProperty.getRange().getCardinality().isMany()) {
-
-                        Class inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
-                        Class dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());
-
-                        if (inversePropClass.isAssignableFrom(dcClass)) {
-                            ScreenData screenData = UiControllerUtils.getScreenData(builder.getOrigin());
-
-                            // update reference for One-To-Many
-                            for (E item : items) {
-                                // if the instance is already added, evict it first
-                                screenData.getDataContext().evict(item);
-                                // track changes in the related instance
-                                screenData.getDataContext().merge(item);
-                                // change reference, now it will be marked as modified
-                                item.setValue(inverseMetaProperty.getName(), holderItem);
-                            }
-                        }
-                    }
-                }
-
-                mutableItems.addAll(items);
-            });
+            lookupScreen.setSelectHandler(items ->
+                    handleSelectionWithContainer(builder, collectionDc, items)
+            );
         }
 
         if (builder.getSelectHandler() != null) {
@@ -200,6 +196,67 @@ public class LookupScreens {
         }
 
         return screen;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E extends Entity> void handleSelectionWithField(LookupBuilder<E> builder,
+                                                               HasValue<E> field, Collection<E> selectedItems) {
+        if (!selectedItems.isEmpty()) {
+            Entity newValue = selectedItems.iterator().next();
+            field.setValue((E) newValue);
+        }
+    }
+
+    protected <E extends Entity> void handleSelectionWithContainer(LookupBuilder<E> builder,
+                                                                   CollectionContainer<E> collectionDc,
+                                                                   Collection<E> selectedItems) {
+        if (selectedItems.isEmpty()) {
+            return;
+        }
+
+        List<E> mutableItems = collectionDc.getMutableItems();
+
+        // atomicity ?
+        mutableItems.removeAll(selectedItems);
+
+        Collection<E> itemsToAdd = selectedItems;
+
+        // update holder reference if needed
+        if (collectionDc instanceof Nested) {
+            InstanceContainer holderDc = ((Nested) collectionDc).getParent();
+
+            String property = ((Nested) collectionDc).getProperty();
+            Entity holderItem = holderDc.getItem();
+
+            MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
+            MetaProperty inverseMetaProperty = metaProperty.getInverse();
+
+            if (inverseMetaProperty != null
+                && !inverseMetaProperty.getRange().getCardinality().isMany()) {
+
+                Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
+                Class<?> dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());
+
+                if (inversePropClass.isAssignableFrom(dcClass)) {
+                    ScreenData screenData = UiControllerUtils.getScreenData(builder.getOrigin());
+
+                    List<E> mergedItems = new ArrayList<>(selectedItems.size());
+                    // update reference for One-To-Many
+                    for (E item : selectedItems) {
+                        // track changes in the related instance
+                        E mergedItem = screenData.getDataContext().merge(item);
+                        // change reference, now it will be marked as modified
+                        mergedItem.setValue(inverseMetaProperty.getName(), holderItem);
+
+                        mergedItems.add(mergedItem);
+                    }
+
+                    itemsToAdd = mergedItems;
+                }
+            }
+        }
+
+        mutableItems.addAll(itemsToAdd);
     }
 
     /**

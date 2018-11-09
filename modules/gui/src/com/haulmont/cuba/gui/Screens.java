@@ -138,8 +138,6 @@ public interface Screens {
     /**
      * Provides information about opened screens, does not store state. <br>
      * Each method obtains current info from UI components tree.
-     *
-     * todo naming
      */
     interface OpenedScreens {
         /**
