@@ -21,12 +21,13 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -37,12 +38,12 @@ public class FakeFilterSupport {
     protected FilterEntity filterEntity;
     protected MetaClass metaClass;
     protected ConditionsTree conditionsTree;
-    protected Frame frame;
+    protected FrameOwner frameOwner;
     protected FilterParser filterParser;
 
-    public FakeFilterSupport(Frame frame, MetaClass metaClass) {
+    public FakeFilterSupport(FrameOwner frameOwner, MetaClass metaClass) {
         this.metaClass = metaClass;
-        this.frame = frame;
+        this.frameOwner = frameOwner;
         filterParser = AppBeans.get(FilterParser.class);
     }
 
@@ -55,17 +56,17 @@ public class FakeFilterSupport {
         ((HasXmlDescriptor) fakeFilter).setXmlDescriptor(Dom4j.readDocument("<filter/>").getRootElement());
         CollectionDatasourceImpl fakeDatasource = new CollectionDatasourceImpl();
 
-        LegacyFrame frameOwner = (LegacyFrame) frame.getFrameOwner();
+        LegacyFrame legacyFrame = (LegacyFrame) this.frameOwner;
 
-        DsContextImpl fakeDsContext = new DsContextImpl(frameOwner.getDsContext().getDataSupplier());
-        FrameContextImpl fakeFrameContext = new FrameContextImpl(frame);
+        DsContextImpl fakeDsContext = new DsContextImpl(legacyFrame.getDsContext().getDataSupplier());
+        FrameContextImpl fakeFrameContext = new FrameContextImpl((Frame) legacyFrame);
         fakeDsContext.setFrameContext(fakeFrameContext);
         fakeDatasource.setDsContext(fakeDsContext);
         //Attention: this query should match the logic in com.haulmont.reports.wizard.ReportingWizardBean.createJpqlDataSet()
         fakeDatasource.setQuery("select queryEntity from " + metaClass.getName() + " queryEntity");
         fakeDatasource.setMetaClass(metaClass);
         fakeFilter.setDatasource(fakeDatasource);
-        fakeFilter.setFrame(this.frame);
+        fakeFilter.setFrame(UiControllerUtils.getFrame(frameOwner));
         return fakeFilter;
     }
 
@@ -77,7 +78,9 @@ public class FakeFilterSupport {
     }
 
     public FilterEntity createFakeFilterEntity(String xml) {
-        if (filterEntity != null) return filterEntity;
+        if (filterEntity != null) {
+            return filterEntity;
+        }
 
         Metadata metadata = AppBeans.get(Metadata.NAME);
         FilterEntity fakeFilterEntity = metadata.create(FilterEntity.class);
