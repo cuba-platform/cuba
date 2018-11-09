@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.app.ConfigStorageService
 import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.UiComponents
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.theme.ThemeConstants
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
@@ -124,6 +125,7 @@ class WebSpec extends Specification {
 
         vaadinUi.getPage() >> page
         vaadinUi.getSession() >> vaadinSession
+        vaadinUi.uiEventsMulticaster = Mock(UiEventsMulticaster)
 
         vaadinUi.applicationContext = cont.getApplicationContext()
 

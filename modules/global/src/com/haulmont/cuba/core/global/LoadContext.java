@@ -103,6 +103,13 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
     }
 
     /**
+     * @return name of metaclass of the loaded entities
+     */
+    public String getEntityMetaClass() {
+        return metaClass;
+    }
+
+    /**
      * @return query definition
      */
     public Query getQuery() {

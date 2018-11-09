@@ -17,32 +17,32 @@
 package spec.cuba.web.screens
 
 import com.haulmont.cuba.gui.screen.OpenMode
-import spec.cuba.web.WebSpec
+import spec.cuba.web.UiScreenSpec
 
 import java.util.function.Consumer
 
 @SuppressWarnings("GroovyAccessibility")
-class ScreenTest extends WebSpec {
+class MainScreenTest extends UiScreenSpec {
 
-    def "Open login window"() {
+    def "open main window"() {
         def screens = vaadinUi.screens
 
         def beforeShowListener = Mock(Consumer)
         def afterShowListener = Mock(Consumer)
 
         when:
-        def loginWindow = screens.create('loginWindow', OpenMode.ROOT)
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
 
         then:
-        loginWindow != null
+        mainWindow != null
 
         when:
-        loginWindow.addBeforeShowListener(beforeShowListener)
-        loginWindow.addAfterShowListener(afterShowListener)
-        screens.show(loginWindow)
+        mainWindow.addBeforeShowListener(beforeShowListener)
+        mainWindow.addAfterShowListener(afterShowListener)
+        screens.show(mainWindow)
 
         then:
-        vaadinUi.topLevelWindow == loginWindow.window
+        vaadinUi.topLevelWindow == mainWindow.window
         1 * beforeShowListener.accept(_)
         1 * afterShowListener.accept(_)
     }

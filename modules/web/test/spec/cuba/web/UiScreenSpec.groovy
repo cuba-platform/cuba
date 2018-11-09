@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package spec.cuba.web
+
+import com.google.common.collect.HashMultimap
+import com.haulmont.cuba.client.ClientUserSession
+import com.haulmont.cuba.client.sys.cache.CachingStrategy
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager
+import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
+
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReadWriteLock
+
+class UiScreenSpec extends WebSpec {
+
+    void setup() {
+        def session = Mock(ClientUserSession) {
+            getLocale() >> Locale.ENGLISH
+        }
+
+        this.sessionSource.getUserSession() >> session
+        session.isAuthenticated() >> true
+
+        def clientCacheManager = cont.getBean(ClientCacheManager)
+        def dynamicAttributesCacheStrategy = Mock(CachingStrategy)
+        def dynamicAttributesCache =
+                new DynamicAttributesCache(HashMultimap.create(), [:], new Date())
+        def cacheLock = Mock(ReadWriteLock)
+        cacheLock.writeLock() >> Mock(Lock)
+        cacheLock.readLock() >> Mock(Lock)
+
+        dynamicAttributesCacheStrategy.getObject() >> dynamicAttributesCache
+        dynamicAttributesCacheStrategy.loadObject() >> dynamicAttributesCache
+        dynamicAttributesCacheStrategy.lock() >> cacheLock
+
+        clientCacheManager.addCachedObject(DynamicAttributesCacheStrategy.NAME, dynamicAttributesCacheStrategy)
+    }
+
+    @SuppressWarnings("GroovyAccessibility")
+    void cleanup() {
+        def clientCacheManager = cont.getBean(ClientCacheManager)
+        clientCacheManager.cache.remove(DynamicAttributesCacheStrategy.NAME)
+    }
+}

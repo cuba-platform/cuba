@@ -37,6 +37,8 @@
 
     <logger name="com.haulmont.cuba" level="DEBUG"/>
 
+    <logger name="com.haulmont.cuba.gui.logging.UIPerformanceLogger" level="WARN"/>
+
     <logger name="com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory" level="WARN"/>
 
     <logger name="com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext" level="INFO"/>
