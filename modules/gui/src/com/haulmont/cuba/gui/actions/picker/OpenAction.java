@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -130,15 +129,7 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
                         "for the PickerField", "action ID", getId());
             }
 
-            Class<Entity> entityClass = metaClass.getJavaClass();
-            Window window = ComponentsHelper.getWindowNN(pickerField);
-
-            // todo composition
-            // todo inverseProperty support
-
-            Screen editorScreen = editorScreens.builder(entityClass, window.getFrameOwner())
-                    .editEntity(entity)
-                    .withField(pickerField)
+            Screen editorScreen = editorScreens.builder(pickerField)
                     .build();
 
             editorScreen.show();

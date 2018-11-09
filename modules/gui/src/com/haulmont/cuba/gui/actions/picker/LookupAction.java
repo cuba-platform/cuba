@@ -18,15 +18,12 @@ package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.LookupScreens;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -111,11 +108,7 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
                         "for the PickerField", "action ID", getId());
             }
 
-            Window window = ComponentsHelper.getWindowNN(pickerField);
-            Class<Entity> entityClass = metaClass.getJavaClass();
-
-            Screen lookupScreen = lookupScreens.builder(entityClass, window.getFrameOwner())
-                    .withField(pickerField)
+            Screen lookupScreen = lookupScreens.builder(pickerField)
                     .build();
             lookupScreen.show();
         } else {

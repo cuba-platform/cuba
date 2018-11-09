@@ -23,9 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Component.Focusable;
-import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
@@ -99,7 +97,7 @@ public class EditorScreens {
     }
 
     /**
-     * Creates a screen builder.
+     * Creates a screen builder using list component.
      * <p>
      * Example of building a screen for editing a currently selected entity:
      * <pre>{@code
@@ -116,7 +114,7 @@ public class EditorScreens {
      *          .build();
      * }</pre>
      *
-     * @param listComponent {@code Table}, {@code DataGrid} or another component containing the list of entities
+     * @param listComponent {@link Table}, {@link DataGrid} or another component containing the list of entities
      *
      * @see #builder(Class, FrameOwner)
      */
@@ -136,6 +134,47 @@ public class EditorScreens {
         EditorBuilder<E> builder = new EditorBuilder<>(frameOwner, entityClass, this::buildEditor);
         builder.withListComponent(listComponent);
         builder.editEntity(listComponent.getSingleSelected());
+        return builder;
+    }
+
+    /**
+     * Creates a screen builder using {@link PickerField} component.
+     * <p>
+     * Example of building a screen for editing a currently set value:
+     * <pre>{@code
+     * SomeCustomerEditor screen = editorScreens.builder(customerPickerField)
+     *          .withScreen(SomeCustomerEditor.class)
+     *          .build();
+     * }</pre>
+     * <p>
+     * Example of building a screen for creating a new entity instance:
+     * <pre>{@code
+     * SomeCustomerEditor screen = editorScreens.builder(customerPickerField)
+     *          .withScreen(SomeCustomerEditor.class)
+     *          .newEntity()
+     *          .build();
+     * }</pre>
+     *
+     * @param field {@link PickerField}, {@link LookupPickerField} or another picker component
+     *
+     * @see #builder(Class, FrameOwner)
+     */
+    public <E extends Entity> EditorBuilder<E> builder(PickerField<E> field) {
+        checkNotNullArgument(field);
+        checkNotNullArgument(field.getFrame());
+
+        FrameOwner frameOwner = field.getFrame().getFrameOwner();
+        Class<E> entityClass;
+        MetaClass metaClass = field.getMetaClass();
+        if (metaClass != null) {
+            entityClass = metaClass.getJavaClass();
+        } else {
+            throw new IllegalStateException(String.format("Component %s is not bound to meta class", field));
+        }
+
+        EditorBuilder<E> builder = new EditorBuilder<>(frameOwner, entityClass, this::buildEditor);
+        builder.withField(field);
+        builder.editEntity(field.getValue());
         return builder;
     }
 
@@ -380,11 +419,12 @@ public class EditorScreens {
          * <p>The new entity instance is accepted as the parameter. It can be initialized by code passed to
          * the {@link #withInitializer(Consumer)} method.
          *
-         * @param entity    new entity instance to be passed to the editor screen
+         * @param entity new entity instance to be passed to the editor screen
          * @see #newEntity()
          */
         public EditorBuilder<E> newEntity(E entity) {
             this.newEntity = entity;
+            this.mode = Mode.CREATE;
             return this;
         }
 
@@ -392,7 +432,7 @@ public class EditorScreens {
         /**
          * Sets {@link Mode} to {@code EDIT} and returns the builder for chaining.
          *
-         * @param entity    entity instance to be passed to the editor screen
+         * @param entity entity instance to be passed to the editor screen
          * @see #newEntity()
          */
         public EditorBuilder<E> editEntity(E entity) {
