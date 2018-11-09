@@ -24,9 +24,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Object having a value.
+ * UI component having a value.
  */
-public interface HasValue<V> {
+public interface HasValue<V> extends Component {
     V getValue();
 
     void setValue(V value);
