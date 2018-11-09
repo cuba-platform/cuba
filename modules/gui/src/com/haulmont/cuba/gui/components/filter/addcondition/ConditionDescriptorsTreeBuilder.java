@@ -19,19 +19,18 @@ package com.haulmont.cuba.gui.components.filter.addcondition;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
 import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.descriptor.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -105,15 +104,13 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
         String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
-        CollectionDatasource datasource = filter.getDatasource();
-
         Tree<AbstractConditionDescriptor> tree = new Tree<>();
         List<AbstractConditionDescriptor> propertyDescriptors = new ArrayList<>();
         List<AbstractConditionDescriptor> customDescriptors = new ArrayList<>();
 
         boolean propertiesExplicitlyDefined = false;
-        if (filter.getXmlDescriptor() != null) {
-            for (Element element : Dom4j.elements(filter.getXmlDescriptor())) {
+        if (((HasXmlDescriptor) filter).getXmlDescriptor() != null) {
+            for (Element element : ((HasXmlDescriptor) filter).getXmlDescriptor().elements()) {
                 AbstractConditionDescriptor conditionDescriptor;
                 if ("properties".equals(element.getName())) {
                     addMultiplePropertyDescriptors(element, propertyDescriptors, filter);

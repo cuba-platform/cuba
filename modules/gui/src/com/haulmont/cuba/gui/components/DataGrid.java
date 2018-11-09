@@ -2486,7 +2486,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * A column in the DataGrid.
      */
-    interface Column<E extends Entity> extends HasXmlDescriptor, HasFormatter, Serializable {
+    interface Column<E extends Entity> extends HasFormatter, Serializable {
 
         /**
          * @return id of a column

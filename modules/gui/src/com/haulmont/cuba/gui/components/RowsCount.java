@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 /**
  * Component that makes a data binding to load data by pages. Usually used with {@link Table} or {@link DataGrid}.
  */
-public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDescriptor {
+public interface RowsCount extends Component.BelongToFrame {
 
     enum State {
         FIRST_COMPLETE,     // "63 rows"

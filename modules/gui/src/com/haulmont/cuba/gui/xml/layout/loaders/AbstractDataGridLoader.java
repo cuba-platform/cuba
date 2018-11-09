@@ -26,12 +26,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.ButtonsPanel;
-import com.haulmont.cuba.gui.components.DataGrid;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DataGrid.Column;
-import com.haulmont.cuba.gui.components.HasButtonsPanel;
-import com.haulmont.cuba.gui.components.RowsCount;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.datagrid.ContainerDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -421,7 +417,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             column.setCaption(caption);
         }
 
-        column.setXmlDescriptor(element);
+        ((Component.HasXmlDescriptor) column).setXmlDescriptor(element);
 
         Integer width = loadWidth(element, "width");
         if (width != null) {

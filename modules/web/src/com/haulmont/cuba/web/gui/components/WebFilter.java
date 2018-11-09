@@ -35,7 +35,8 @@ import java.util.function.Consumer;
 /**
  * Generic filter implementation for the web-client.
  */
-public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> implements Filter, FilterImplementation {
+public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> implements Filter, FilterImplementation,
+        Component.HasXmlDescriptor {
 
     protected static final String FILTER_STYLENAME = "c-generic-filter";
 

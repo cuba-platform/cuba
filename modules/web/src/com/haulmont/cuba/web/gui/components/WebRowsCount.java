@@ -19,10 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.RowsCount;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
@@ -45,7 +42,8 @@ import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
+public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier,
+        Component.HasXmlDescriptor {
 
     protected static final String TABLE_ROWS_COUNT_STYLENAME = "c-table-rows-count";
 

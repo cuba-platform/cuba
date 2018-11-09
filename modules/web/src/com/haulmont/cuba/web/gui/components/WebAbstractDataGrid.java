@@ -2840,7 +2840,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
     }
 
-    protected static class ColumnImpl<E extends Entity> implements Column<E> {
+    protected static class ColumnImpl<E extends Entity> implements Column<E>, HasXmlDescriptor {
 
         protected final String id;
         protected final MetaPropertyPath propertyPath;

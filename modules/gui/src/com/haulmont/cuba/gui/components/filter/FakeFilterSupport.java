@@ -21,6 +21,8 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -50,7 +52,7 @@ public class FakeFilterSupport {
         }
 
         Filter fakeFilter = AppBeans.get(ComponentsFactory.NAME, ComponentsFactory.class).createComponent(Filter.class);
-        fakeFilter.setXmlDescriptor(Dom4j.readDocument("<filter/>").getRootElement());
+        ((HasXmlDescriptor) fakeFilter).setXmlDescriptor(Dom4j.readDocument("<filter/>").getRootElement());
         CollectionDatasourceImpl fakeDatasource = new CollectionDatasourceImpl();
 
         LegacyFrame frameOwner = (LegacyFrame) frame.getFrameOwner();

@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.components.compatibility.TimerStopListenerWrapper;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFrame {
+public interface Timer extends Component.BelongToFrame {
 
     String NAME = "timer";
 

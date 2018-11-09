@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaTimer;
@@ -28,7 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
-public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
+public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer,
+        Component.HasXmlDescriptor {
 
     private static final Logger log = LoggerFactory.getLogger(CubaTimer.class);
 

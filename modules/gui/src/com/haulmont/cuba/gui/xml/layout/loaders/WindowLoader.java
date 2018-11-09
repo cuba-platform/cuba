@@ -248,9 +248,9 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
     }
 
-    protected void loadTimer(UiComponents factory, final Window component, Element element) {
+    protected void loadTimer(UiComponents factory, Window component, Element element) {
         Timer timer = factory.create(Timer.class);
-        timer.setXmlDescriptor(element);
+        assignXmlDescriptor(timer, element);
         timer.setId(element.attributeValue("id"));
 
         String delay = element.attributeValue("delay");

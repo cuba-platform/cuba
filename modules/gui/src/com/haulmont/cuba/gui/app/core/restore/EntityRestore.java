@@ -199,7 +199,7 @@ public class EntityRestore extends AbstractWindow {
                     properties.attribute("exclude").setValue(excludedProperties
                             .substring(0, excludedProperties.lastIndexOf("|")));
                 }
-                filter.setXmlDescriptor(filterElement);
+                ((HasXmlDescriptor) filter).setXmlDescriptor(filterElement);
                 filter.setUseMaxResults(true);
                 filter.setDatasource(entitiesDs);
 
