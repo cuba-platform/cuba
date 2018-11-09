@@ -65,7 +65,7 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
 
     }
 
-    protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> ignored) {
+    protected void datasourceCollectionChanged(@SuppressWarnings("unused") CollectionDatasource.CollectionChangeEvent<E, K> e) {
         events.publish(ItemSetChangeEvent.class, new ItemSetChangeEvent<>(this));
     }
 
@@ -101,7 +101,7 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this, state));
         }
     }
 
@@ -177,8 +177,8 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

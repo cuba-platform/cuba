@@ -40,7 +40,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
     @Deprecated
     CollectionDatasource getDatasource();
 
-    DataUnit<E> getItems();
+    DataUnit getItems();
 
     /**
      * Allows to set icons for particular rows in the table.

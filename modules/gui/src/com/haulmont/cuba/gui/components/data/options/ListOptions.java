@@ -75,7 +75,7 @@ public class ListOptions<I> implements Options<I> {
     }
 
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<I>> listener) {
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return VoidSubscription.INSTANCE;
     }
 

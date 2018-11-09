@@ -39,6 +39,11 @@ import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
 
+/**
+ * A grid component for displaying tabular data bound to entity type.
+ *
+ * @param <E> row item type
+ */
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
         Component.HasIcon, HasContextHelp, HasRowsCount, HasSettings,
         LookupComponent<E>, Component.Focusable,

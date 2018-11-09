@@ -21,9 +21,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
@@ -118,8 +118,8 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

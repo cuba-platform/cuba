@@ -104,7 +104,7 @@ public class BulkEditors {
         return bulkEditorWindow;
     }
 
-    protected <E extends Entity> void refreshItems(DataUnit<E> dataSource) {
+    protected <E extends Entity> void refreshItems(DataUnit dataSource) {
         CollectionContainer<E> container = dataSource instanceof ContainerDataUnit ?
                 ((ContainerDataUnit) dataSource).getContainer() : null;
         if (container != null) {

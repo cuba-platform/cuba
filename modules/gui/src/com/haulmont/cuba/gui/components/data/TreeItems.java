@@ -23,7 +23,7 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface TreeItems<T> extends DataUnit<T> {
+public interface TreeItems<T> extends DataUnit {
 
     /**
      * @param item the item for obtaining the id

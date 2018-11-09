@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.data.TableItems;
 import javax.annotation.Nullable;
 
 // todo JavaDoc
-public interface EntityTableItems<E extends Entity> extends TableItems<E>, EntityDataUnit<E> {
+public interface EntityTableItems<E extends Entity> extends TableItems<E>, EntityDataUnit {
     /**
      * @return the current item contained in the source
      */

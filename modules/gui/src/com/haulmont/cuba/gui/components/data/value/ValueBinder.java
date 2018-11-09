@@ -238,7 +238,7 @@ public class ValueBinder {
             return !Objects.equals(component.getValue(), source.getValue());
         }
 
-        protected void valueSourceStateChanged(ValueSource.StateChangeEvent<V> event) {
+        protected void valueSourceStateChanged(ValueSource.StateChangeEvent event) {
             if (event.getState() == BindingState.ACTIVE) {
                 // read value to component
                 component.setValue(source.getValue());

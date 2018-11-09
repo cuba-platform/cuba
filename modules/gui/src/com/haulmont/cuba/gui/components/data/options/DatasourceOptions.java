@@ -21,8 +21,8 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
@@ -89,7 +89,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this, state));
         }
     }
 
@@ -110,8 +110,8 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

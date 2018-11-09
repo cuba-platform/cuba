@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.Options;
@@ -25,9 +24,7 @@ import com.haulmont.cuba.gui.components.data.Options;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface EntityOptions<E extends Entity> extends Options<E> {
-    MetaClass getEntityMetaClass();
-
+public interface EntityOptions<E extends Entity> extends Options<E>, EntityDataUnit {
     /**
      * Set current item in the source.
      *

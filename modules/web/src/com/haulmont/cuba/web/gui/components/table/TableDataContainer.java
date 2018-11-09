@@ -298,7 +298,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         dataEventsDelegate.tableSourcePropertyValueChanged(e);
     }
 
-    protected void datasourceStateChanged(TableItems.StateChangeEvent<I> e) {
+    protected void datasourceStateChanged(TableItems.StateChangeEvent e) {
         if (e.getState() == BindingState.INACTIVE) {
             for (TableItemWrapper itemWrapper : itemsCache.values()) {
                 returnItemWrapper(itemWrapper);

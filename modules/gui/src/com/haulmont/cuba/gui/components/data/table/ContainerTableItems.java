@@ -83,7 +83,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
         events.publish(SelectedItemChangeEvent.class, new SelectedItemChangeEvent<>(this, event.getItem()));
     }
 
-    protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<E> e) {
+    protected void containerCollectionChanged(@SuppressWarnings("unused") CollectionContainer.CollectionChangeEvent<E> e) {
         events.publish(ItemSetChangeEvent.class, new ItemSetChangeEvent<>(this));
     }
 
@@ -154,8 +154,8 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer)listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

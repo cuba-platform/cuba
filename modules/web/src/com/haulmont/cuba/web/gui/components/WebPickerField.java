@@ -128,9 +128,10 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
     @Override
     public MetaClass getMetaClass() {
-        final ValueSource<V> valueSource = getValueSource();
+        ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
-            return ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty().getRange().asClass();
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+            return metaProperty.getRange().asClass();
         } else {
             return metaClass;
         }
@@ -138,7 +139,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
     @Override
     public void setMetaClass(MetaClass metaClass) {
-        final ValueSource<V> valueSource = getValueSource();
+        ValueSource<V> valueSource = getValueSource();
         if (valueSource != null) {
             throw new IllegalStateException("ValueSource is not null");
         }

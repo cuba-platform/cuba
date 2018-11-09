@@ -126,9 +126,9 @@ public class EditorScreens {
 
         FrameOwner frameOwner = listComponent.getFrame().getFrameOwner();
         Class<E> entityClass;
-        DataUnit<E> items = listComponent.getItems();
-        if (items instanceof EntityDataUnit<?>) {
-            entityClass = ((EntityDataUnit<E>) items).getEntityMetaClass().getJavaClass();
+        DataUnit items = listComponent.getItems();
+        if (items instanceof EntityDataUnit) {
+            entityClass = ((EntityDataUnit) items).getEntityMetaClass().getJavaClass();
         } else {
             throw new IllegalStateException(String.format("Component %s is not bound to data", listComponent));
         }
@@ -154,9 +154,9 @@ public class EditorScreens {
         CollectionContainer<E> container = null;
 
         if (listComponent != null) {
-            DataUnit<E> dataSource = listComponent.getItems();
-            CollectionContainer<E> listComponentContainer = dataSource instanceof ContainerDataUnit ?
-                    ((ContainerDataUnit) dataSource).getContainer() : null;
+            DataUnit items = listComponent.getItems();
+            CollectionContainer<E> listComponentContainer = items instanceof ContainerDataUnit ?
+                    ((ContainerDataUnit) items).getContainer() : null;
             container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
         }
 

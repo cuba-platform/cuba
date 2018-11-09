@@ -148,7 +148,7 @@ public class TreeDataProvider<T> extends AbstractDataProvider<T, SerializablePre
         eventsDelegate.treeSourcePropertyValueChanged(event);
     }
 
-    protected void datasourceStateChanged(TreeItems.StateChangeEvent<T> event) {
+    protected void datasourceStateChanged(TreeItems.StateChangeEvent event) {
         eventsDelegate.treeSourceStateChanged(event);
     }
 

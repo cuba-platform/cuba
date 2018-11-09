@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * @see CheckBoxGroup
  * @see RadioButtonGroup
  */
-public interface Options<I> extends DataUnit<I> {
+public interface Options<I> extends DataUnit {
     Stream<I> getOptions();
 
     Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<I>> listener);

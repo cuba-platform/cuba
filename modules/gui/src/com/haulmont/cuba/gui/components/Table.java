@@ -45,6 +45,11 @@ import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Table UI component bound to entity type.
+ *
+ * @param <E> row item type
+ */
 public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, HasSettings,

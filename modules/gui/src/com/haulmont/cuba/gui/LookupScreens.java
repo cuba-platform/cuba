@@ -16,18 +16,21 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.gui.Screens.LaunchMode;
 import com.haulmont.cuba.gui.components.Component.Focusable;
-import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.LookupScreen.ValidationContext;
 import org.springframework.stereotype.Component;
@@ -81,17 +84,17 @@ public class LookupScreens {
     }
 
     /**
-     * Creates a screen builder.
+     * Creates a screen builder using list component.
      * <p>
      * Example of building a lookup screen:
      * <pre>{@code
-     * SomeCustomerListScreen screen = lookupScreens.builder(Customer.class, this)
+     * SomeCustomerListScreen screen = lookupScreens.builder(customersTable)
      *         .withScreen(SomeCustomerListScreen.class)
      *         .withLaunchMode(OpenMode.DIALOG)
      *         .build();
      * }</pre>
      *
-     * @param listComponent {@code Table}, {@code DataGrid} or another component containing the list of entities
+     * @param listComponent {@link Table}, {@link DataGrid} or another component containing the list of entities
      *
      * @see #builder(Class, FrameOwner)
      */
@@ -101,15 +104,48 @@ public class LookupScreens {
 
         FrameOwner frameOwner = listComponent.getFrame().getFrameOwner();
         Class<E> entityClass;
-        DataUnit<E> items = listComponent.getItems();
-        if (items instanceof EntityDataUnit<?>) {
-            entityClass = ((EntityDataUnit<E>) items).getEntityMetaClass().getJavaClass();
+        DataUnit items = listComponent.getItems();
+        if (items instanceof EntityDataUnit) {
+            entityClass = ((EntityDataUnit) items).getEntityMetaClass().getJavaClass();
         } else {
             throw new IllegalStateException(String.format("Component %s is not bound to data", listComponent));
         }
 
         LookupBuilder<E> builder = new LookupBuilder<>(frameOwner, entityClass, this::buildLookup);
         builder.withListComponent(listComponent);
+        return builder;
+    }
+
+    /**
+     * Creates a screen builder using {@link PickerField} component.
+     * <p>
+     * Example of building a lookup screen:
+     * <pre>{@code
+     * SomeCustomerListScreen screen = lookupScreens.builder(customersTable)
+     *         .withScreen(SomeCustomerListScreen.class)
+     *         .withLaunchMode(OpenMode.DIALOG)
+     *         .build();
+     * }</pre>
+     *
+     * @param field {@link PickerField}, {@link LookupPickerField} or another picker component
+     *
+     * @see #builder(Class, FrameOwner)
+     */
+    public <E extends Entity> LookupBuilder<E> builder(PickerField<E> field) {
+        checkNotNullArgument(field);
+        checkNotNullArgument(field.getFrame());
+
+        FrameOwner frameOwner = field.getFrame().getFrameOwner();
+        Class<E> entityClass;
+        MetaClass metaClass = field.getMetaClass();
+        if (metaClass != null) {
+            entityClass = metaClass.getJavaClass();
+        } else {
+            throw new IllegalStateException(String.format("Component %s is not bound to meta class", field));
+        }
+
+        LookupBuilder<E> builder = new LookupBuilder<>(frameOwner, entityClass, this::buildLookup);
+        builder.withField(field);
         return builder;
     }
 

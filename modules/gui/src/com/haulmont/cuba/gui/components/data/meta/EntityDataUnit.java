@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 
-public interface EntityDataUnit<E extends Entity> extends DataUnit<E> {
+public interface EntityDataUnit extends DataUnit {
     /**
      * @return {@link MetaClass} of an entity contained in the source
      */

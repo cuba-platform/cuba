@@ -21,7 +21,7 @@ import com.haulmont.bali.events.Subscription;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface DataUnit<T> {
+public interface DataUnit {
     /**
      * @return a state of this source
      */
@@ -33,25 +33,23 @@ public interface DataUnit<T> {
      * @param listener the listener to be added
      * @return a registration object for removing an event listener added to a source
      */
-    Subscription addStateChangeListener(Consumer<StateChangeEvent<T>> listener);
+    Subscription addStateChangeListener(Consumer<StateChangeEvent> listener);
 
     /**
      * An event that is fired when DataUnit state is changed.
-     *
-     * @param <T> the source component type
      */
-    class StateChangeEvent<T> extends EventObject {
+    class StateChangeEvent extends EventObject {
         protected BindingState state;
 
-        public StateChangeEvent(DataUnit<T> source, BindingState state) {
+        public StateChangeEvent(DataUnit source, BindingState state) {
             super(source);
             this.state = state;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public DataUnit<T> getSource() {
-            return (DataUnit<T>) super.getSource();
+        public DataUnit getSource() {
+            return (DataUnit) super.getSource();
         }
 
         public BindingState getState() {

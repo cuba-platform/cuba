@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
@@ -805,7 +806,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 if (StringUtils.isNotEmpty(type)) {
                     Actions actions = beanLocator.get(Actions.NAME);
 
-                    return actions.create(type);
+                    return actions.create(type, id);
                 }
             }
         }

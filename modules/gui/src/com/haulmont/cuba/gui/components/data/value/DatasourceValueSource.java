@@ -77,7 +77,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  state));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this,  state));
         }
     }
 
@@ -157,8 +157,8 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

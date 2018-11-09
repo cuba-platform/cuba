@@ -1430,7 +1430,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public void tableSourceStateChanged(TableItems.StateChangeEvent<E> event) {
+    public void tableSourceStateChanged(TableItems.StateChangeEvent event) {
         refreshActionsState();
     }
 

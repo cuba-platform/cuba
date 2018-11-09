@@ -24,5 +24,5 @@ import com.haulmont.cuba.gui.components.data.DataGridItems;
  *
  * @param <E> items type, extends {@link Entity}.
  */
-public interface EntityDataGridItems<E extends Entity> extends DataGridItems<E>, EntityDataUnit<E> {
+public interface EntityDataGridItems<E extends Entity> extends DataGridItems<E>, EntityDataUnit {
 }

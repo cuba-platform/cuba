@@ -20,6 +20,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
-public interface ContainerDataUnit<E extends Entity> extends DataUnit<E> {
+public interface ContainerDataUnit<E extends Entity> extends DataUnit {
     CollectionContainer<E> getContainer();
 }

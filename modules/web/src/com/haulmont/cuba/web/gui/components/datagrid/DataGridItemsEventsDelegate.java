@@ -29,7 +29,7 @@ public interface DataGridItemsEventsDelegate<I> {
 
     void dataGridSourcePropertyValueChanged(DataGridItems.ValueChangeEvent<I> event);
 
-    void dataGridSourceStateChanged(DataGridItems.StateChangeEvent<I> event);
+    void dataGridSourceStateChanged(DataGridItems.StateChangeEvent event);
 
     void dataGridSourceSelectedItemChanged(DataGridItems.SelectedItemChangeEvent<I> event);
 }

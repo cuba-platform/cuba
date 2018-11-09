@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 /**
  * JavaDoc
  */
-public interface ValueSource<V> extends DataUnit<V> {
+public interface ValueSource<V> extends DataUnit {
     V getValue();
     void setValue(V value);
 

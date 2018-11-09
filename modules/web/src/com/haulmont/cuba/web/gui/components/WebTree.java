@@ -566,7 +566,7 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public void treeSourceStateChanged(TreeItems.StateChangeEvent<E> event) {
+    public void treeSourceStateChanged(TreeItems.StateChangeEvent event) {
         refreshActionsState();
     }
 

@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -31,8 +30,7 @@ import java.util.function.Consumer;
  *
  * @param <V>
  */
-public interface EntityValueSource<E extends Entity, V> extends ValueSource<V> {
-    MetaClass getEntityMetaClass();
+public interface EntityValueSource<E extends Entity, V> extends ValueSource<V>, EntityDataUnit {
     MetaPropertyPath getMetaPropertyPath();
 
     E getItem();

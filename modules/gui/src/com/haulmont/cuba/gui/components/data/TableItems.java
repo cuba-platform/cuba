@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  *
  * @param <I>
  */
-public interface TableItems<I> extends DataUnit<I> {
+public interface TableItems<I> extends DataUnit {
     Collection<?> getItemIds();
 
     @Nullable

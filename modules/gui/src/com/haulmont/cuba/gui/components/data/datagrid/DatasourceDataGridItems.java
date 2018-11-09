@@ -65,7 +65,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
 
     }
 
-    protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> ignored) {
+    protected void datasourceCollectionChanged(@SuppressWarnings("unused") CollectionDatasource.CollectionChangeEvent<E, K> e) {
         events.publish(ItemSetChangeEvent.class, new ItemSetChangeEvent<>(this));
     }
 
@@ -101,7 +101,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this, state));
         }
     }
 
@@ -164,8 +164,8 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")

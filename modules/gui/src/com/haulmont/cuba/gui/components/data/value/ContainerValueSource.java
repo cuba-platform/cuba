@@ -62,27 +62,30 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
         MetadataTools metadataTools = beanLocator.get(MetadataTools.NAME);
         MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
-        if (metaPropertyPath == null)
+        if (metaPropertyPath == null) {
             throw new IllegalArgumentException(String.format(
                     "Could not resolve property path '%s' in '%s'", property, metaClass));
+        }
 
         this.metaPropertyPath = metaPropertyPath;
 
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
 
-        InstanceContainer parentCont = container;
+        @SuppressWarnings("unchecked")
+        InstanceContainer<Entity> parentCont = (InstanceContainer<Entity>) container;
+
         for (int i = 1; i < this.metaPropertyPath.length(); i++) {
             MetaPropertyPath intermediatePath = new MetaPropertyPath(this.metaPropertyPath.getMetaClass(),
                     Arrays.copyOf(this.metaPropertyPath.getMetaProperties(), i));
             String pathToTarget = Joiner.on('.').join(
                     Arrays.copyOfRange(this.metaPropertyPath.getPath(), i, this.metaPropertyPath.length()));
 
-            InstanceContainer propertyCont = beanLocator.get(DataComponents.class).createInstanceContainer(
-                    intermediatePath.getRangeJavaClass());
+            DataComponents dataComponents = beanLocator.get(DataComponents.class);
+            @SuppressWarnings("unchecked")
+            InstanceContainer<Entity> propertyCont = dataComponents.createInstanceContainer(intermediatePath.getRangeJavaClass());
 
-            parentCont.addItemChangeListener(e -> {
-                InstanceContainer.ItemChangeEvent event = (InstanceContainer.ItemChangeEvent) e;
+            parentCont.addItemChangeListener(event -> {
                 if (event.getItem() != null) {
                     setState(BindingState.ACTIVE);
                 } else {
@@ -92,8 +95,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
                         event.getItem().getValueEx(intermediatePath.getMetaProperty().getName()) : null);
             });
 
-            parentCont.addItemPropertyChangeListener(e -> {
-                InstanceContainer.ItemPropertyChangeEvent event = (InstanceContainer.ItemPropertyChangeEvent) e;
+            parentCont.addItemPropertyChangeListener(event -> {
                 if (Objects.equals(event.getProperty(), intermediatePath.getMetaProperty().getName())) {
                     Entity entity = (Entity) event.getValue();
                     Entity prevEntity = (Entity) event.getPrevValue();
@@ -107,8 +109,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
             });
 
             if (i == this.metaPropertyPath.length() - 1) {
-                propertyCont.addItemPropertyChangeListener(e -> {
-                    InstanceContainer.ItemPropertyChangeEvent event = (InstanceContainer.ItemPropertyChangeEvent) e;
+                propertyCont.addItemPropertyChangeListener(event -> {
                     if (Objects.equals(event.getProperty(), this.metaPropertyPath.getMetaProperty().getName())) {
                         events.publish(ValueChangeEvent.class,
                                 new ValueChangeEvent<>(this, (V) event.getPrevValue(), (V) event.getValue()));
@@ -179,8 +180,8 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @SuppressWarnings("unchecked")
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer) listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @SuppressWarnings("unchecked")
@@ -193,7 +194,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this,  BindingState.ACTIVE));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this,  BindingState.ACTIVE));
         }
     }
 

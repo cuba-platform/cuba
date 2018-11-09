@@ -23,7 +23,7 @@ public interface TableItemsEventsDelegate<I> {
 
     void tableSourcePropertyValueChanged(TableItems.ValueChangeEvent<I> event);
 
-    void tableSourceStateChanged(TableItems.StateChangeEvent<I> event);
+    void tableSourceStateChanged(TableItems.StateChangeEvent event);
 
     void tableSourceSelectedItemChanged(TableItems.SelectedItemChangeEvent<I> event);
 }

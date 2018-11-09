@@ -121,7 +121,7 @@ public class DataGridDataProvider<T> extends AbstractDataProvider<T, Serializabl
         dataEventsDelegate.dataGridSourcePropertyValueChanged(event);
     }
 
-    protected void datasourceStateChanged(DataGridItems.StateChangeEvent<T> event) {
+    protected void datasourceStateChanged(DataGridItems.StateChangeEvent event) {
         dataEventsDelegate.dataGridSourceStateChanged(event);
     }
 

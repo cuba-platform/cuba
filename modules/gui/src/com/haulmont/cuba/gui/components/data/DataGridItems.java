@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  *
  * @param <T> items type
  */
-public interface DataGridItems<T> extends DataUnit<T> {
+public interface DataGridItems<T> extends DataUnit {
 
     /**
      * @param item the item for obtaining the id

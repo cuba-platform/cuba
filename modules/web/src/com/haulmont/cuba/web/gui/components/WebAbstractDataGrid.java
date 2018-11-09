@@ -924,7 +924,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     @Override
-    public void dataGridSourceStateChanged(DataGridItems.StateChangeEvent<E> event) {
+    public void dataGridSourceStateChanged(DataGridItems.StateChangeEvent event) {
         refreshActionsState();
     }
 

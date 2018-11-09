@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.data.TreeItems;
 
 import javax.annotation.Nullable;
 
-public interface EntityTreeItems<E extends Entity> extends TreeItems<E>, EntityDataUnit<E> {
+public interface EntityTreeItems<E extends Entity> extends TreeItems<E>, EntityDataUnit {
     /**
      * @return the current item contained in the source
      */

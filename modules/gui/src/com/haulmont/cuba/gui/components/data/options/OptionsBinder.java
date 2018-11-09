@@ -114,7 +114,7 @@ public class OptionsBinder {
             }
         }
 
-        protected void optionsSourceStateChanged(Options.StateChangeEvent<V> event) {
+        protected void optionsSourceStateChanged(Options.StateChangeEvent event) {
             if (event.getState() == BindingState.ACTIVE) {
                 optionsTarget.setOptions(source.getOptions());
             }

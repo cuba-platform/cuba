@@ -85,7 +85,7 @@ public class DatasourceTableItems<E extends Entity<K>, K>
         if (this.state != state) {
             this.state = state;
 
-            events.publish(StateChangeEvent.class, new StateChangeEvent<>(this, state));
+            events.publish(StateChangeEvent.class, new StateChangeEvent(this, state));
         }
     }
 
@@ -147,8 +147,8 @@ public class DatasourceTableItems<E extends Entity<K>, K>
     }
 
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<E>> listener) {
-        return events.subscribe(StateChangeEvent.class, (Consumer)listener);
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        return events.subscribe(StateChangeEvent.class, listener);
     }
 
     @Override

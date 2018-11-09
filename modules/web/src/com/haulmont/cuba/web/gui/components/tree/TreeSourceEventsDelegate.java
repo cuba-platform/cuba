@@ -24,7 +24,7 @@ public interface TreeSourceEventsDelegate<I> {
 
     void treeSourcePropertyValueChanged(TreeItems.ValueChangeEvent<I> event);
 
-    void treeSourceStateChanged(TreeItems.StateChangeEvent<I> event);
+    void treeSourceStateChanged(TreeItems.StateChangeEvent event);
 
     void treeSourceSelectedItemChanged(TreeItems.SelectedItemChangeEvent<I> event);
 }

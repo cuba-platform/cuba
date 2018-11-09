@@ -114,7 +114,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * Returns the table's data container.
      */
     protected CollectionContainer<T> getBrowseContainer() {
-        DataUnit<T> items = getTable().getItems();
+        DataUnit items = getTable().getItems();
         if (items instanceof ContainerDataUnit)
             return ((ContainerDataUnit<T>) items).getContainer();
         else

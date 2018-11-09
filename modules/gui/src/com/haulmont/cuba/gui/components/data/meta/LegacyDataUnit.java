@@ -19,6 +19,6 @@ package com.haulmont.cuba.gui.components.data.meta;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public interface LegacyDataUnit<T> extends DataUnit<T> {
+public interface LegacyDataUnit<T> extends DataUnit {
     CollectionDatasource getDatasource();
 }
