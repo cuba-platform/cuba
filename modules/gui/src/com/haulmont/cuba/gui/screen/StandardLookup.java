@@ -32,6 +32,11 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Base class for lookup screens.
+ *
+ * @param <T> type of entity
+ */
 public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T> {
     public static final String LOOKUP_ACTIONS_FRAGMENT_ID = "lookupActions";
 

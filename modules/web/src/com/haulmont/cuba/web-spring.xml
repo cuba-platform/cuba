@@ -60,7 +60,7 @@
 
     <!-- Screens registry -->
 
-    <gui:screens base-packages="com.haulmont.cuba.gui.screen.actions,com.haulmont.cuba.gui.app,com.haulmont.cuba.web.app,com.haulmont.cuba.web.tmp"/>
+    <gui:screens base-packages="com.haulmont.cuba.gui.screen.actions,com.haulmont.cuba.gui.app,com.haulmont.cuba.web.app"/>
 
     <gui:actions base-packages="com.haulmont.cuba.gui.actions"/>
 

@@ -16,16 +16,27 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.gui.Screens.LaunchMode;
+import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.Nested;
+import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.LookupScreen.ValidationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -34,8 +45,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 /**
- * Class that provides fluent interface for building entity lookup screens with various options.
- * <p>
+ * Class that provides fluent interface for building entity lookup screens with various options. <br>
  * Inject the class into your screen controller and use {@link #builder(Class, FrameOwner)} method as an entry point.
  *
  * @see Screens
@@ -46,6 +56,8 @@ public class LookupScreens {
 
     @Inject
     protected WindowConfig windowConfig;
+    @Inject
+    protected ExtendedEntities extendedEntities;
 
     /**
      * Creates a screen builder.
@@ -99,10 +111,10 @@ public class LookupScreens {
         if (builder.getField() != null) {
             com.haulmont.cuba.gui.components.Component field = builder.getField();
 
-            if (field instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
-                screen.addAfterCloseListener(afterCloseEvent -> {
+            if (field instanceof Focusable) {
+                screen.addAfterCloseListener(event -> {
                     // move focus to owner
-                    ((com.haulmont.cuba.gui.components.Component.Focusable) field).focus();
+                    ((Focusable) field).focus();
                 });
             }
             lookupScreen.setSelectHandler(items -> {
@@ -110,6 +122,72 @@ public class LookupScreens {
                     Entity newValue = items.iterator().next();
                     ((HasValue<E>) field).setValue((E) newValue);
                 }
+            });
+        }
+
+        CollectionContainer<E> container = null;
+
+        if (builder.getListComponent() != null) {
+            ListComponent<E> listComponent = builder.getListComponent();
+
+            if (listComponent instanceof Focusable) {
+                screen.addAfterCloseListener(event -> {
+                    // move focus to owner
+                    ((Focusable) listComponent).focus();
+                });
+            }
+
+            if (listComponent.getItems() instanceof ContainerDataUnit) {
+                container = ((ContainerDataUnit<E>) listComponent.getItems()).getContainer();
+            }
+        }
+
+        if (builder.getContainer() != null) {
+            container = builder.getContainer();
+        }
+
+        if (container != null) {
+            CollectionContainer<E> collectionDc = container;
+
+            lookupScreen.setSelectHandler(items -> {
+                List<E> mutableItems = collectionDc.getMutableItems();
+
+                // atomicity ?
+                mutableItems.removeAll(items);
+
+                // update holder reference if needed
+                if (collectionDc instanceof Nested) {
+                    InstanceContainer holderDc = ((Nested) collectionDc).getParent();
+
+                    String property = ((Nested) collectionDc).getProperty();
+                    Entity holderItem = holderDc.getItem();
+
+                    MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
+                    MetaProperty inverseMetaProperty = metaProperty.getInverse();
+
+                    if (inverseMetaProperty != null
+                        && !inverseMetaProperty.getRange().getCardinality().isMany()) {
+
+                        Class inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
+                        Class dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());
+
+                        if (inversePropClass.isAssignableFrom(dcClass)) {
+                            ScreenData screenData = UiControllerUtils.getScreenData(builder.getOrigin());
+
+                            // update reference for One-To-Many
+                            for (E item : items) {
+                                // if the instance is already added, evict it first
+                                screenData.getDataContext().evict(item);
+                                // track changes in the related instance
+                                screenData.getDataContext().merge(item);
+                                // change reference, now it will be marked as modified
+                                item.setValue(inverseMetaProperty.getName(), holderItem);
+                            }
+                        }
+                    }
+                }
+
+                mutableItems.addAll(items);
             });
         }
 
@@ -137,8 +215,10 @@ public class LookupScreens {
         protected Consumer<Collection<E>> selectHandler;
         protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
         protected ScreenOptions options = FrameOwner.NO_OPTIONS;
+        protected CollectionContainer<E> container;
 
         protected String screenId;
+        protected ListComponent<E> listComponent;
         protected com.haulmont.cuba.gui.components.Component field;
 
         public LookupBuilder(LookupBuilder<E> builder) {
@@ -151,6 +231,8 @@ public class LookupScreens {
             this.selectHandler = builder.selectHandler;
             this.selectValidator = builder.selectValidator;
             this.field = builder.field;
+            this.listComponent = builder.listComponent;
+            this.container = builder.container;
             this.screenId = builder.screenId;
         }
 
@@ -223,6 +305,28 @@ public class LookupScreens {
         }
 
         /**
+         * Sets list component and returns the builder for chaining.
+         * <p>The component is used to get the {@code container} if it is not set explicitly by
+         * {@link #withContainer(CollectionContainer)} method. Usually, the list component is a {@code Table}
+         * or {@code DataGrid} displaying the list of entities.
+         */
+        public LookupBuilder<E> withListComponent(ListComponent<E> target) {
+            this.listComponent = target;
+            return this;
+        }
+
+        /**
+         * Sets {@code CollectionContainer} and returns the builder for chaining.
+         * <p>The container is updated after the lookup screen is closed. If the container is {@link Nested},
+         * the framework automatically initializes the reference to the parent entity and sets up data contexts
+         * for added One-To-Many and Many-To-Many relations.
+         */
+        public LookupBuilder<E> withContainer(CollectionContainer<E> container) {
+            this.container = container;
+            return this;
+        }
+
+        /**
          * Returns screen id set by {@link #withScreen(String)}.
          */
         public String getScreenId() {
@@ -246,6 +350,7 @@ public class LookupScreens {
         /**
          * Returns invoking screen.
          */
+        @Nonnull
         public FrameOwner getOrigin() {
             return origin;
         }
@@ -276,6 +381,20 @@ public class LookupScreens {
          */
         public com.haulmont.cuba.gui.components.Component getField() {
             return field;
+        }
+
+        /**
+         * Returns container set by {@link #withContainer(CollectionContainer)}.
+         */
+        public CollectionContainer<E> getContainer() {
+            return container;
+        }
+
+        /**
+         * Returns list component set by {@link #withListComponent(ListComponent)}.
+         */
+        public ListComponent<E> getListComponent() {
+            return listComponent;
         }
 
         /**
@@ -340,6 +459,18 @@ public class LookupScreens {
         @Override
         public LookupBuilder<E> withScreen(String screenId) {
             throw new IllegalStateException("LookupClassBuilder does not support screenId");
+        }
+
+        @Override
+        public LookupClassBuilder<E, S> withListComponent(ListComponent<E> target) {
+            super.withListComponent(target);
+            return this;
+        }
+
+        @Override
+        public LookupClassBuilder<E, S> withContainer(CollectionContainer<E> container) {
+            super.withContainer(container);
+            return this;
         }
 
         @SuppressWarnings("unchecked")

@@ -45,7 +45,10 @@ import java.util.HashSet;
 import java.util.function.Consumer;
 
 /**
- * Base class for editor screens
+ * Base class for editor screens. <br>
+ * Supports pessimistic locking, cross field validation and checks for unsaved changes on close.
+ *
+ * @param <T> type of entity
  */
 public abstract class StandardEditor<T extends Entity> extends Screen implements EditorScreen<T> {
 
@@ -54,7 +57,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     private T entityToEdit;
     private boolean crossFieldValidate = true;
     private boolean justLocked = false;
-    private boolean readOnly = false; // todo
+    private boolean readOnly = false;
 
     protected StandardEditor() {
         addInitListener(this::initActions);
@@ -399,9 +402,11 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     /**
-     * JavaDoc
+     * Tries to validate and commit data. If data committed successfully then closes the screen with
+     * {@link #WINDOW_COMMIT_AND_CLOSE} action. May show validation errors or open an additional dialog before closing
+     * the screen.
      *
-     * @return
+     * @return result of close request
      */
     public OperationResult closeWithCommit() {
         return commitChanges()
@@ -409,12 +414,48 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     /**
-     * JavaDoc
+     * Ignores the unsaved changes and closes the screen with {@link #WINDOW_DISCARD_AND_CLOSE_ACTION} action.
+     *
+     * @return result of close request
      */
     public OperationResult closeWithDiscard() {
         return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
     }
 
+    /**
+     * Adds a listener to {@link InitEntityEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    @SuppressWarnings("unchecked")
+    protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {
+        return getEventHub().subscribe(InitEntityEvent.class, (Consumer) listener);
+    }
+
+    /**
+     * Event sent befire the new entity instance is set to edited entity container.
+     * Used for default values initialization for entity instance. <br>
+     * There are two ways to add an event handler:
+     * <br>
+     * 1. Programmatically:
+     * <pre>{@code
+     *    addInitEntityEventListener(event -> {
+     *       // handle event here
+     *    });
+     * }</pre>
+     * <p>
+     * 2. Declaratively using method with {@link Subscribe} annotation: <br>
+     * <pre>{@code
+     *    @Subscribe
+     *    protected void onInitEntity(InitEntityEvent event) {
+     *       // handle event here
+     *    }
+     * }</pre>
+     *
+     * @param <E> type of entity
+     * @see #addInitEntityListener(Consumer)
+     */
     @TriggerOnce
     public static class InitEntityEvent<E> extends EventObject {
         private final E entity;
@@ -432,13 +473,5 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         public E getEntity() {
             return entity;
         }
-    }
-
-    /**
-     * Adds a listener to {@link InitEntityEvent}.
-     */
-    @SuppressWarnings("unchecked")
-    protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {
-        return getEventHub().subscribe(InitEntityEvent.class, (Consumer) listener);
     }
 }

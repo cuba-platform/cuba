@@ -139,13 +139,13 @@ public class EditorScreens {
 
     @SuppressWarnings("unchecked")
     protected <E extends Entity, S extends Screen> S buildEditor(EditorBuilder<E> builder) {
-        FrameOwner origin = builder.getOrigin();
-        Screens screens = getScreenContext(origin).getScreens();
-
         if (builder.getMode() == Mode.EDIT && builder.getEditedEntity() == null) {
             throw new IllegalStateException(String.format("Editor of %s cannot be open with mode EDIT, entity is not set",
                     builder.getEntityClass()));
         }
+
+        FrameOwner origin = builder.getOrigin();
+        Screens screens = getScreenContext(origin).getScreens();
 
         ListComponent<E> listComponent = builder.getListComponent();
 
@@ -158,56 +158,11 @@ public class EditorScreens {
             container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
         }
 
+        E entity = initEntity(builder, container);
 
-        E entity;
-        if (builder.getMode() == Mode.CREATE) {
-            if (builder.getNewEntity() == null) {
-                entity = metadata.create(builder.getEntityClass());
-            } else {
-                entity = builder.getNewEntity();
-            }
-            if (container instanceof Nested) {
-                initializeNestedEntity(entity, (Nested) container);
-            }
-            if (builder.getInitializer() != null) {
-                builder.getInitializer().accept(entity);
-            }
-        } else {
-            entity = builder.getEditedEntity();
-        }
-
-        Screen screen;
-
-        if (builder instanceof EditorClassBuilder) {
-            Class screenClass = ((EditorClassBuilder) builder).getScreenClass();
-            screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
-        } else {
-            String editorScreenId;
-
-            if (builder.getScreenId() != null) {
-                editorScreenId = builder.getScreenId();
-            } else {
-                editorScreenId = windowConfig.getEditorScreen(entity).getId();
-            }
-
-            // legacy screens support
-            WindowInfo windowInfo = windowConfig.getWindowInfo(editorScreenId);
-            ScreenOptions options = builder.getOptions();
-            if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())
-                && options == FrameOwner.NO_OPTIONS) {
-                options = new MapScreenOptions(singletonMap(WindowParams.ITEM.name(), entity));
-            }
-
-            screen = screens.create(editorScreenId, builder.getLaunchMode(), options);
-        }
-
-        if (!(screen instanceof EditorScreen)) {
-            throw new IllegalArgumentException(String.format("Screen %s does not implement EditorScreen: %s",
-                    screen.getId(), screen.getClass()));
-        }
+        Screen screen = createScreen(builder, screens, entity);
 
         EditorScreen<E> editorScreen = (EditorScreen<E>) screen;
-
         editorScreen.setEntityToEdit(entity);
 
         DataContext parentDataContext = builder.getParentDataContext();
@@ -219,8 +174,8 @@ public class EditorScreens {
 
         if (container != null) {
             CollectionContainer<E> ct = container;
-            screen.addAfterCloseListener(afterCloseEvent -> {
-                CloseAction closeAction = afterCloseEvent.getCloseAction();
+            screen.addAfterCloseListener(event -> {
+                CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     if (builder.getMode() == Mode.CREATE) {
                         if (ct instanceof Nested || !clientConfig.getCreateActionAddsFirst()) {
@@ -240,8 +195,8 @@ public class EditorScreens {
 
         com.haulmont.cuba.gui.components.Component field = builder.getField();
         if (field != null) {
-            screen.addAfterCloseListener(afterCloseEvent -> {
-                CloseAction closeAction = afterCloseEvent.getCloseAction();
+            screen.addAfterCloseListener(event -> {
+                CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     // todo do we need to remove listeners from entity here ?
                     // todo composition support
@@ -255,6 +210,64 @@ public class EditorScreens {
         }
 
         return (S) screen;
+    }
+
+    protected <E extends Entity> E initEntity(EditorBuilder<E> builder, CollectionContainer<E> container) {
+        E entity;
+
+        if (builder.getMode() == Mode.CREATE) {
+            if (builder.getNewEntity() == null) {
+                entity = metadata.create(builder.getEntityClass());
+            } else {
+                entity = builder.getNewEntity();
+            }
+            if (container instanceof Nested) {
+                initializeNestedEntity(entity, (Nested) container);
+            }
+            if (builder.getInitializer() != null) {
+                builder.getInitializer().accept(entity);
+            }
+        } else {
+            entity = builder.getEditedEntity();
+        }
+
+        return entity;
+    }
+
+    protected <E extends Entity> Screen createScreen(EditorBuilder<E> builder, Screens screens, E entity) {
+        Screen screen;
+
+        if (builder instanceof EditorClassBuilder) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Screen> screenClass = ((EditorClassBuilder) builder).getScreenClass();
+            screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+        } else {
+            String editorScreenId;
+
+            if (builder.getScreenId() != null) {
+                editorScreenId = builder.getScreenId();
+            } else {
+                editorScreenId = windowConfig.getEditorScreen(entity).getId();
+            }
+
+            // legacy screens support
+            WindowInfo windowInfo = windowConfig.getWindowInfo(editorScreenId);
+            ScreenOptions options = builder.getOptions();
+
+            if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())
+                && options == FrameOwner.NO_OPTIONS) {
+                options = new MapScreenOptions(singletonMap(WindowParams.ITEM.name(), entity));
+            }
+
+            screen = screens.create(editorScreenId, builder.getLaunchMode(), options);
+        }
+
+        if (!(screen instanceof EditorScreen)) {
+            throw new IllegalArgumentException(String.format("Screen %s does not implement EditorScreen: %s",
+                    screen.getId(), screen.getClass()));
+        }
+
+        return screen;
     }
 
     protected  <E extends Entity> void initializeNestedEntity(E entity, Nested container) {

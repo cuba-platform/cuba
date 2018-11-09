@@ -17,13 +17,12 @@
 package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.EditorScreens;
+import com.haulmont.cuba.gui.LookupScreens;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
@@ -31,24 +30,24 @@ import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
 
-@ActionType(CreateAction.ID)
-public class CreateAction extends ListAction {
+@ActionType(AddAction.ID)
+public class AddAction extends ListAction {
 
-    public static final String ID = "create";
+    public static final String ID = "add";
 
     protected Security security;
-    protected EditorScreens editorScreens;
+    protected LookupScreens lookupScreens;
 
-    public CreateAction() {
+    public AddAction() {
         super(ID);
     }
 
-    public CreateAction(String id) {
+    public AddAction(String id) {
         super(id);
     }
 
@@ -58,24 +57,18 @@ public class CreateAction extends ListAction {
     }
 
     @Inject
-    protected void setMessages(Messages messages) {
-        this.caption = messages.getMainMessage("actions.Create");
+    protected void setLookupScreens(LookupScreens lookupScreens) {
+        this.lookupScreens = lookupScreens;
     }
 
     @Inject
     protected void setIcons(Icons icons) {
-        this.icon = icons.get(CubaIcon.CREATE_ACTION);
+        this.icon = icons.get(CubaIcon.ADD_ACTION);
     }
 
     @Inject
-    protected void setConfiguration(Configuration configuration) {
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        setShortcut(clientConfig.getTableInsertShortcut());
-    }
-
-    @Inject
-    protected void setEditorScreens(EditorScreens editorScreens) {
-        this.editorScreens = editorScreens;
+    protected void setMessages(Messages messages) {
+        this.caption = messages.getMainMessage("actions.Add");
     }
 
     @Override
@@ -89,9 +82,17 @@ public class CreateAction extends ListAction {
             return true;
         }
 
-        boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
-        if (!createPermitted) {
-            return false;
+        EntityDataUnit dataUnit = (EntityDataUnit) target.getItems();
+        if (dataUnit instanceof Nested) {
+            Nested nestedContainer = (Nested) dataUnit;
+
+            MetaClass holderMetaClass = nestedContainer.getParent().getEntityMetaClass();
+            MetaProperty metaProperty = holderMetaClass.getPropertyNN(nestedContainer.getProperty());
+
+            boolean attrPermitted = security.isEntityAttrUpdatePermitted(holderMetaClass, metaProperty.getName());
+            if (!attrPermitted) {
+                return false;
+            }
         }
 
         return super.isPermitted();
@@ -103,7 +104,7 @@ public class CreateAction extends ListAction {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
             if (!(target.getItems() instanceof EntityDataUnit)) {
-                throw new IllegalStateException("CreateAction target items is null or does not implement EntityDataUnit");
+                throw new IllegalStateException("AddAction target items is null or does not implement EntityDataUnit");
             }
 
             MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
@@ -114,11 +115,11 @@ public class CreateAction extends ListAction {
             Window window = ComponentsHelper.getWindowNN(target);
             Class<Entity> entityClass = metaClass.getJavaClass();
 
-            Screen editor = editorScreens.builder(entityClass, window.getFrameOwner())
-                    .newEntity()
+            Screen lookupScreen = lookupScreens.builder(entityClass, window.getFrameOwner())
                     .withListComponent(target)
                     .build();
-            editor.show();
+
+            lookupScreen.show();
         } else {
             super.actionPerform(component);
         }
