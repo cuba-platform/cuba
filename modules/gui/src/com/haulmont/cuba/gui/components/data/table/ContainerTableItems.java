@@ -30,6 +30,8 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.impl.AggregatableDelegate;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ import java.util.stream.Collectors;
 
 public class ContainerTableItems<E extends Entity> implements EntityTableItems<E>, TableItems.Sortable<E>,
         ContainerDataUnit<E>, AggregatableTableItems<E> {
+
+    private static final Logger log = LoggerFactory.getLogger(ContainerTableItems.class);
 
     protected CollectionContainer<E> container;
 
@@ -216,7 +220,11 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        container.getSorter().sort(createSort(propertyId, ascending));
+        if (container.getSorter() != null) {
+            container.getSorter().sort(createSort(propertyId, ascending));
+        } else {
+            log.debug("Container {} sorter is null", container);
+        }
     }
 
     protected Sort createSort(Object[] propertyId, boolean[] ascending) {
