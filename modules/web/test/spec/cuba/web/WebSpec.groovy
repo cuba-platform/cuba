@@ -16,6 +16,7 @@
 
 package spec.cuba.web
 
+import com.haulmont.cuba.client.ClientUserSession
 import com.haulmont.cuba.core.app.ConfigStorageService
 import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
@@ -23,10 +24,7 @@ import com.haulmont.cuba.gui.UiComponents
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.theme.ThemeConstants
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
-import com.haulmont.cuba.web.App
-import com.haulmont.cuba.web.AppUI
-import com.haulmont.cuba.web.Connection
-import com.haulmont.cuba.web.DefaultApp
+import com.haulmont.cuba.web.*
 import com.haulmont.cuba.web.sys.AppCookies
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
@@ -55,6 +53,8 @@ class WebSpec extends Specification {
     ComponentsFactory componentsFactory
     UiComponents uiComponents
 
+    UserSessionSource sessionSource
+
     AppUI vaadinUi
 
     @SuppressWarnings("GroovyAccessibility")
@@ -67,6 +67,8 @@ class WebSpec extends Specification {
         dataComponents = cont.getBean(DataComponents)
         componentsFactory = cont.getBean(ComponentsFactory)
         uiComponents = cont.getBean(UiComponents)
+
+        sessionSource = Mock(UserSessionSource)
 
         // all the rest is required for web components
 
@@ -107,6 +109,10 @@ class WebSpec extends Specification {
         vaadinUi.messages = cont.getBean(Messages)
         vaadinUi.getConnectorTracker() >> vaadinConnectorTracker
 
+        vaadinUi.globalConfig = Mock(GlobalConfig)
+        vaadinUi.webConfig = Mock(WebConfig)
+        vaadinUi.beanLocator = Mock(BeanLocator)
+
         def page = new Page(vaadinUi, new PageState())
         def vaadinRequest = Mock(VaadinRequest) {
             getParameter("v-loc") >> "http://localhost:8080/app"
@@ -121,7 +127,18 @@ class WebSpec extends Specification {
 
         vaadinUi.applicationContext = cont.getApplicationContext()
 
+        def session = Mock(ClientUserSession) {
+            getLocale() >> Locale.ENGLISH
+        }
+
+        this.sessionSource.getUserSession() >> session
+        session.isAuthenticated() >> false
+
+        vaadinUi.userSessionSource = this.sessionSource
+
         UI.setCurrent(vaadinUi)
+
+        vaadinUi.init(vaadinRequest)
     }
 
     void cleanup() {

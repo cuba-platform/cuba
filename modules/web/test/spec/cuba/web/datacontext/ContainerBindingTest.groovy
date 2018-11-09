@@ -61,11 +61,11 @@ class ContainerBindingTest extends WebSpec {
 
         CollectionContainer<Foo> container = dataComponents.createCollectionContainer(Foo)
 
-        Table<Foo> table = componentsFactory.createComponent(Table)
+        Table<Foo> table = uiComponents.create(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath("name")))
         table.setItems(new ContainerTableItems(container))
 
-        TextField textField = componentsFactory.createComponent(TextField)
+        TextField textField = uiComponents.create(TextField)
         textField.setValueSource(new ContainerValueSource(container, 'name'))
 
         Foo foo1 = new Foo(name: 'foo1')

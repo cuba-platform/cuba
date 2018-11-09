@@ -16,41 +16,12 @@
 
 package spec.cuba.web.components
 
-import com.haulmont.cuba.client.ClientUserSession
-import com.haulmont.cuba.core.global.BeanLocator
-import com.haulmont.cuba.core.global.GlobalConfig
-import com.haulmont.cuba.core.global.UserSessionSource
-import com.haulmont.cuba.gui.UiComponents
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.mainwindow.*
-import com.haulmont.cuba.web.WebConfig
-import com.vaadin.server.VaadinRequest
 import spec.cuba.web.WebSpec
 
 @SuppressWarnings("GroovyAccessibility")
 class CreateComponentTest extends WebSpec {
-
-    private UserSessionSource sessionSource
-
-    def setup() {
-        this.sessionSource = Mock(UserSessionSource)
-        def session = Mock(ClientUserSession) {
-            getLocale() >> Locale.ENGLISH
-        }
-
-        this.sessionSource.getUserSession() >> session
-        session.isAuthenticated() >> false
-
-        vaadinUi.userSessionSource = this.sessionSource
-        vaadinUi.globalConfig = Mock(GlobalConfig)
-        vaadinUi.webConfig = Mock(WebConfig)
-        vaadinUi.beanLocator = Mock(BeanLocator)
-
-        def vaadinRequest = Mock(VaadinRequest)
-        vaadinUi.init(vaadinRequest)
-
-        uiComponents = cont.getBean(UiComponents.NAME)
-    }
 
     def "Create all standard UI components with UiComponents"() {
         expect:

@@ -32,7 +32,6 @@ import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.StringTokenizer;
@@ -199,25 +198,22 @@ public class TestContainer extends ExternalResource {
         AppContext.Internals.setAppComponents(new AppComponents(getAppComponents(), "core"));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     protected void initAppProperties() {
-        final Properties properties = new Properties();
+        Properties properties = new Properties();
 
         List<String> locations = getAppPropertiesFiles();
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         for (String location : locations) {
             Resource resource = resourceLoader.getResource(location);
             if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
+                try (InputStream stream = resource.getInputStream()) {
                     properties.load(stream);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
+                    throw new RuntimeException("Unable to load properties file", e);
                 }
             } else {
-                log.warn("Resource " + location + " not found, ignore it");
+                log.warn("Resource {} not found, ignore it", location);
             }
         }
 
@@ -242,6 +238,7 @@ public class TestContainer extends ExternalResource {
         dir.mkdirs();
 
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
+        appProperties.put(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
 
     protected void initAppContext() {
