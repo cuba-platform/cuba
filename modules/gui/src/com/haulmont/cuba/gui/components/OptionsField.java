@@ -38,7 +38,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @param <V> type of value
  * @param <I> type of option items
  */
-public interface OptionsField<V, I> extends Field<V> {
+public interface OptionsField<V, I> extends Field<V>, HasCaptionMode {
 
     /**
      * Sets options for UI component.
@@ -55,9 +55,9 @@ public interface OptionsField<V, I> extends Field<V> {
     /**
      * Sets function that provides caption for option items.
      *
-     * @param captionProvider caption provider
+     * @param optionCaptionProvider caption provider for options
      */
-    void setOptionCaptionProvider(Function<? super I, String> captionProvider);
+    void setOptionCaptionProvider(Function<? super I, String> optionCaptionProvider);
     /**
      * @return caption provider for options
      */
@@ -108,30 +108,6 @@ public interface OptionsField<V, I> extends Field<V> {
     /*
      * Deprecated API
      */
-
-    /**
-     * @return caption mode
-     */
-    @Deprecated
-    CaptionMode getCaptionMode();
-    /**
-     * @param captionMode caption property
-     * @deprecated Use {{@link #setOptionCaptionProvider(Function)}} instead.
-     */
-    @Deprecated
-    void setCaptionMode(CaptionMode captionMode);
-
-    /**
-     * @return caption property
-     */
-    @Deprecated
-    String getCaptionProperty();
-    /**
-     * @param captionProperty caption property
-     * @deprecated Use {{@link #setOptionCaptionProvider(Function)}} instead.
-     */
-    @Deprecated
-    void setCaptionProperty(String captionProperty);
 
     /**
      * @return options datasource

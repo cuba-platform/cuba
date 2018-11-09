@@ -18,12 +18,25 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.data.Options;
 
+import java.util.function.Function;
+
 /**
  * A group of RadioButtons. Individual radiobuttons are made from items supplied by a {@link Options}.
  *
  * @param <I> item type
  */
 public interface RadioButtonGroup<I> extends OptionsField<I, I>, LookupComponent, Component.Focusable, HasOrientation {
+
     String NAME = "radioButtonGroup";
 
+    /**
+     * @return icon provider of the LookupField.
+     */
+    Function<? super I, String> getOptionIconProvider();
+    /**
+     * Set the icon provider for the LookupField.
+     *
+     * @param optionIconProvider provider which provides icons for options
+     */
+    void setOptionIconProvider(Function<? super I, String> optionIconProvider);
 }

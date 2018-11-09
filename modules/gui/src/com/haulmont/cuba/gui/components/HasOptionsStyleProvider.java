@@ -16,20 +16,34 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.util.function.Function;
+
 /**
  * A component that is marked with this interface allows to manage additional style names for options displayed
  * by this component.
+ *
+ * @param <I> todo
  */
-public interface HasOptionsStyleProvider {
+public interface HasOptionsStyleProvider<I> extends Component {
     /**
      * Sets the given {@code optionsStyleProvider} to the component.
      *
      * @param optionsStyleProvider {@link OptionsStyleProvider} instance that will be user by this component
      */
-    void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider);
+    @Deprecated
+    default void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        // todo
+    }
 
     /**
      * @return {@link OptionsStyleProvider} instance that is used by this component
      */
-    OptionsStyleProvider getOptionsStyleProvider();
+    @Deprecated
+    default OptionsStyleProvider getOptionsStyleProvider() {
+        // todo
+        return null;
+    }
+
+    void setOptionStyleProvider(Function<? super I, String> optionStyleProvider);
+    Function<? super I, String> getOptionStyleProvider();
 }

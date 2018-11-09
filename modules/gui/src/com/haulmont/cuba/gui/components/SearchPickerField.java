@@ -20,7 +20,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
- * SearchPickerField adds to PickerField the ability to search an entity.
+ * SearchPickerField adds to PickerField the ability to search an entity using a special options datasource.
  */
 public interface SearchPickerField<V extends Entity> extends SearchField<V>, PickerField<V> {
 

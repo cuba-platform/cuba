@@ -16,13 +16,16 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- * An object that returns stylename for the given {@code item} (option) that is displayed by the given
- * {@code component}.
- *
- * vaadin8 typings
- */
-@FunctionalInterface
-public interface OptionsStyleProvider {
-    String getItemStyleName(Component component, Object item);
+// vaadin8 implement as compatibility layer
+@Deprecated
+public interface HasCaptionMode {
+    @Deprecated
+    CaptionMode getCaptionMode();
+    @Deprecated
+    void setCaptionMode(CaptionMode captionMode);
+
+    @Deprecated
+    String getCaptionProperty();
+    @Deprecated
+    void setCaptionProperty(String captionProperty);
 }

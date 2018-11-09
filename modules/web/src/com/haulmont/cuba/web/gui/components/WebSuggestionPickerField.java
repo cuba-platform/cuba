@@ -16,11 +16,11 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V>
         implements SuggestionPickerField<V>, SecuredActionsHolder {
@@ -207,7 +209,7 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     }
 
     @Override
-    public void addFieldListener(FieldListener listener) {
+    public Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener) {
         throw new UnsupportedOperationException();
     }
 
@@ -321,6 +323,18 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     }
 
     @Override
+    public void setOptionStyleProvider(Function<? super V, String> optionStyleProvider) {
+        // todo
+    }
+
+    @Override
+    public Function<? super V, String> getOptionStyleProvider() {
+        // todo
+
+        return null;
+    }
+
+    @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
 
@@ -339,30 +353,5 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         super.removeStyleName(styleName);
 
         getComponent().removePopupStyleName(styleName);
-    }
-
-    @Override
-    public void commit() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void discard() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isBuffered() {
-        return false;
-    }
-
-    @Override
-    public void setBuffered(boolean buffered) {
-        throw new UnsupportedOperationException("Buffered mode isn't supported");
-    }
-
-    @Override
-    public boolean isModified() {
-        throw new UnsupportedOperationException();
     }
 }

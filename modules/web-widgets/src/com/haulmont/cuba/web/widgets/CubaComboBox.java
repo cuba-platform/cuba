@@ -26,6 +26,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.LegacyComponent;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class CubaComboBox<V> extends ComboBox<V> implements Action.Container, LegacyComponent {
@@ -36,7 +37,7 @@ public class CubaComboBox<V> extends ComboBox<V> implements Action.Container, Le
      */
     protected ActionManager shortcutsManager;
 
-    protected BiFunction<Object, Object, Boolean> customValueEquals;
+    protected BiFunction<V, V, Boolean> customValueEquals;
 
     public CubaComboBox() {
     }
@@ -85,25 +86,33 @@ public class CubaComboBox<V> extends ComboBox<V> implements Action.Container, Le
         getActionManager().removeActionHandler(actionHandler);
     }
 
-/* vaadin8
     @Override
-    protected boolean fieldValueEquals(Object value1, Object value2) {
+    public boolean isSelected(V item) {
+        V selectedItem = getSelectedItem().orElse(null);
+
         if (customValueEquals != null) {
-            Boolean equals = customValueEquals.apply(value1, value2);
-            if (equals != null) {
-                return equals;
+            if (customValueEquals.apply(selectedItem, item)) {
+                return true;
+            }
+        } else {
+            if (Objects.equals(selectedItem, item)) {
+                return true;
             }
         }
-        // only if instance the same,
-        // we can set instance of entity with the same id but different property values
-        return super.fieldValueEquals(value1, value2);
-    }*/
 
-    public BiFunction<Object, Object, Boolean> getCustomValueEquals() {
+        if (item == null || selectedItem == null) {
+            return false;
+        }
+
+        return Objects.equals(getDataProvider().getId(selectedItem),
+                getDataProvider().getId(item));
+    }
+
+    public BiFunction<V, V, Boolean> getCustomValueEquals() {
         return customValueEquals;
     }
 
-    public void setCustomValueEquals(BiFunction<Object, Object, Boolean> customValueEquals) {
+    public void setCustomValueEquals(BiFunction<V, V, Boolean> customValueEquals) {
         this.customValueEquals = customValueEquals;
     }
 }

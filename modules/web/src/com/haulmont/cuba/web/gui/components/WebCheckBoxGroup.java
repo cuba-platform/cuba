@@ -7,7 +7,10 @@ import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCheckBoxGroup;
+import com.vaadin.server.Resource;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
@@ -19,15 +22,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_ITEM_ICON_GENERATOR;
+
 public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>, Set<V>, Set<V>>
         implements CheckBoxGroup<V>, InitializingBean {
 
     /* Beans */
     protected MetadataTools metadataTools;
+    protected IconResolver iconResolver;
 
     protected OptionsBinding<V> optionsBinding;
 
     protected Function<? super V, String> optionCaptionProvider;
+    protected Function<? super V, String> optionIconProvider;
 
     public WebCheckBoxGroup() {
         component = createComponent();
@@ -49,8 +56,13 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     @Inject
-    public void setMetadataTools(MetadataTools metadataTools) {
+    protected void setMetadataTools(MetadataTools metadataTools) {
         this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    protected void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
     }
 
     protected String generateItemCaption(V item) {
@@ -137,8 +149,13 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        this.optionCaptionProvider = captionProvider;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        if (this.optionCaptionProvider != optionCaptionProvider) {
+            this.optionCaptionProvider = optionCaptionProvider;
+
+            // reset item captions
+            component.setItemCaptionGenerator(this::generateItemCaption);
+        }
     }
 
     @Override
@@ -166,5 +183,39 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     @Override
     public void setCaptionProperty(String captionProperty) {
         // VAADIN8: gg, implement
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
+        if (this.optionIconProvider != optionIconProvider) {
+            // noinspection unchecked
+            this.optionIconProvider = optionIconProvider;
+
+            if (optionIconProvider != null) {
+                component.setItemIconGenerator(this::generateOptionIcon);
+            } else {
+                component.setItemIconGenerator(NULL_ITEM_ICON_GENERATOR);
+            }
+        }
+    }
+
+    @Override
+    public Function<? super V, String> getOptionIconProvider() {
+        return optionIconProvider;
+    }
+
+    protected Resource generateOptionIcon(V item) {
+        String resourceId;
+        try {
+            // noinspection unchecked
+            resourceId = optionIconProvider.apply(item);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(WebCheckBoxGroup.class)
+                    .warn("Error invoking optionIconProvider apply method", e);
+            return null;
+        }
+
+        return iconResolver.getIconResource(resourceId);
     }
 }

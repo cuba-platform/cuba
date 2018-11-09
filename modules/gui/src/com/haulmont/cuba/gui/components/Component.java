@@ -425,4 +425,16 @@ public interface Component {
          */
         void setIconFromSet(Icons.Icon icon);
     }
+
+    /**
+     * An object that returns stylename for the given {@code item} (option) that is displayed by the given
+     * {@code component}.
+     *
+     * @deprecated todo
+     */
+    @FunctionalInterface
+    @Deprecated
+    interface OptionsStyleProvider<I> {
+        String getItemStyleName(Component component, I item);
+    }
 }

@@ -28,6 +28,7 @@ import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -297,7 +298,7 @@ public class CubaSuggestionField<T> extends AbstractField<T> {
         return getState(false).popupWidth;
     }
 
-    public void setOptionsStyleProvider(Function<Object, String> optionsStyleProvider) {
+    public void setOptionsStyleProvider(@Nullable Function<Object, String> optionsStyleProvider) {
         this.optionsStyleProvider = optionsStyleProvider;
     }
 }

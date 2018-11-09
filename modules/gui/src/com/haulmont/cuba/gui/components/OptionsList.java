@@ -18,16 +18,16 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * todo JavaDoc
+ * Simple list select component.
  *
- * @param <V>
- * @param <I>
+ * @param <V> value type: single type or {@code Collection<I>}
+ * @param <I> item type
  */
 public interface OptionsList<V, I> extends OptionsField<V, I>, Component.Focusable {
+    String NAME = "optionsList";
+
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
-
-    String NAME = "optionsList";
 
     /**
      * Sets visibility for first null element in list.

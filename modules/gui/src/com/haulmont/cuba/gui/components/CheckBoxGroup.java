@@ -19,14 +19,25 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.components.data.Options;
 
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * A group of Checkboxes. Individual checkboxes are made from items supplied by {@link Options}.
  *
  * @param <I> item type
  */
-public interface CheckBoxGroup<I>
-        extends OptionsField<Set<I>, I>, LookupComponent, Component.Focusable, HasOrientation {
+public interface CheckBoxGroup<I> extends OptionsField<Set<I>, I>, LookupComponent, Component.Focusable, HasOrientation {
+
     String NAME = "checkBoxGroup";
 
+    /**
+     * Set the icon provider for the LookupField.
+     *
+     * @param optionIconProvider provider which provides icons for options
+     */
+    void setOptionIconProvider(Function<? super I, String> optionIconProvider);
+    /**
+     * @return icon provider of the LookupField.
+     */
+    Function<? super I, String> getOptionIconProvider();
 }

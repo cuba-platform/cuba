@@ -3,11 +3,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.RadioButtonGroup;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRadioButtonGroup;
+import com.vaadin.server.Resource;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
@@ -18,14 +21,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_ITEM_ICON_GENERATOR;
+
 public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGroup<V>, V, V>
         implements RadioButtonGroup<V>, InitializingBean {
 
     /* Beans */
     protected MetadataTools metadataTools;
+    protected IconResolver iconResolver;
 
     protected OptionsBinding<V> optionsBinding;
 
+    protected Function<? super V, String> optionIconProvider;
     protected Function<? super V, String> optionCaptionProvider;
 
     public WebRadioButtonGroup() {
@@ -38,8 +45,18 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
         return new CubaRadioButtonGroup<>();
     }
 
+    @Inject
+    protected void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
+    @Inject
+    protected void setOptionsBinding(OptionsBinding<V> optionsBinding) {
+        this.optionsBinding = optionsBinding;
+    }
+
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -135,8 +152,13 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        this.optionCaptionProvider = captionProvider;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        if (this.optionCaptionProvider != optionCaptionProvider) {
+            this.optionCaptionProvider = optionCaptionProvider;
+
+            // reset item captions
+            component.setItemCaptionGenerator(this::generateItemCaption);
+        }
     }
 
     @Override
@@ -164,5 +186,39 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     @Override
     public void setCaptionProperty(String captionProperty) {
         // VAADIN8: gg, implement
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
+        if (this.optionIconProvider != optionIconProvider) {
+            // noinspection unchecked
+            this.optionIconProvider = optionIconProvider;
+
+            if (optionIconProvider != null) {
+                component.setItemIconGenerator(this::generateOptionIcon);
+            } else {
+                component.setItemIconGenerator(NULL_ITEM_ICON_GENERATOR);
+            }
+        }
+    }
+
+    @Override
+    public Function<? super V, String> getOptionIconProvider() {
+        return optionIconProvider;
+    }
+
+    protected Resource generateOptionIcon(V item) {
+        String resourceId;
+        try {
+            // noinspection unchecked
+            resourceId = optionIconProvider.apply(item);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(WebRadioButtonGroup.class)
+                    .warn("Error invoking optionIconProvider apply method", e);
+            return null;
+        }
+
+        return iconResolver.getIconResource(resourceId);
     }
 }

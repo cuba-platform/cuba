@@ -17,10 +17,10 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * todo JavaDoc
+ * Either radio button group or multiple checkbox select component.
  *
- * @param <V>
- * @param <I>
+ * @param <V> value type: single type or {@code Collection<I>}
+ * @param <I> item type
  */
 @Deprecated
 public interface OptionsGroup<V, I> extends OptionsField<V, I>, LookupComponent, Component.Focusable, HasOrientation {

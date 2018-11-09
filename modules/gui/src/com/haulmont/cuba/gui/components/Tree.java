@@ -27,7 +27,7 @@ import java.util.function.Function;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
                                                 Component.HasCaption, Component.HasIcon, LookupComponent<E>,
-                                                Component.Focusable, HasContextHelp {
+                                                Component.Focusable, HasContextHelp, HasCaptionMode {
 
     String NAME = "tree";
 
@@ -66,12 +66,6 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
     void expandUpTo(int level);
 
     boolean isExpanded(Object itemId);
-
-    CaptionMode getCaptionMode();
-    void setCaptionMode(CaptionMode captionMode);
-
-    String getCaptionProperty();
-    void setCaptionProperty(String captionProperty);
 
     String getHierarchyProperty();
 

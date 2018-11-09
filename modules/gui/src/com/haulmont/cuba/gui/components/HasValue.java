@@ -25,6 +25,8 @@ import java.util.function.Consumer;
 
 /**
  * UI component having a value.
+ *
+ * @param <V> value type
  */
 public interface HasValue<V> extends Component {
     V getValue();

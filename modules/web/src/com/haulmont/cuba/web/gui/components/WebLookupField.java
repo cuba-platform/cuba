@@ -27,7 +27,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
@@ -39,7 +38,8 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
-import com.vaadin.ui.ItemCaptionGenerator;
+import com.vaadin.ui.IconGenerator;
+import com.vaadin.ui.StyleGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -60,6 +60,9 @@ import static com.vaadin.event.ShortcutAction.ModifierKey;
 public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         implements LookupField<V>, InitializingBean {
 
+    public static final StyleGenerator NULL_STYLE_GENERATOR = item -> null;
+    public static final IconGenerator NULL_ITEM_ICON_GENERATOR = item -> null;
+
     protected FilterMode filterMode = FilterMode.CONTAINS;
 
     protected V nullOption;
@@ -70,14 +73,13 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     // todo
     protected Consumer<ErrorMessage> componentErrorHandler;
 
-    protected OptionsStyleProvider optionsStyleProvider;
     protected Function<? super V, String> optionIconProvider;
     protected Function<? super V, String> optionCaptionProvider;
+    protected Function<? super V, String> optionStyleProvider;
+
     protected FilterPredicate filterPredicate;
 
-    @Inject
     protected MetadataTools metadataTools;
-    @Inject
     protected IconResolver iconResolver;
 
     protected OptionsBinding<V> optionsBinding;
@@ -92,6 +94,24 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
     protected CubaComboBox<V> createComponent() {
         return new CubaComboBox<>();
+    }
+
+    @Inject
+    protected void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    protected void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
+    protected void handleClearShortcut(@SuppressWarnings("unused") Object sender, @SuppressWarnings("unused") Object target) {
+        if (!isRequired()
+                && isEnabledRecursive()
+                && isEditableWithParent()) {
+            setValue(null);
+        }
     }
 
     @Override
@@ -112,13 +132,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
         component.addShortcutListener(new ShortcutListenerDelegate("clearShortcut",
                 KeyCode.DELETE, new int[]{ModifierKey.SHIFT})
-                        .withHandler((sender, target) -> {
-                            if (!isRequired()
-                                    && isEnabledRecursive()
-                                    && isEditableWithParent()) {
-                                setValue(null);
-                            }
-                        }));
+                        .withHandler(this::handleClearShortcut));
     }
 
     protected String generateDefaultItemCaption(V item) {
@@ -142,7 +156,19 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         return generateDefaultItemCaption(item);
     }
 
+    protected String generateItemStylename(V item) {
+        if (optionStyleProvider == null) {
+            return null;
+        }
+
+        return this.optionStyleProvider.apply(item);
+    }
+
     protected boolean filterItemTest(String itemCaption, String filterText) {
+        if (filterPredicate != null) {
+            return filterPredicate.test(itemCaption, filterText);
+        }
+
         if (filterMode == FilterMode.NO) {
             return true;
         }
@@ -158,6 +184,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
                 .contains(filterText.toLowerCase(locale));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void valueBindingConnected(ValueSource<V> valueSource) {
         super.valueBindingConnected(valueSource);
@@ -173,8 +200,10 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
             if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                 CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
-                    // todo separate options class
+
+                if (categoryAttribute != null
+                        && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+
                     setOptionsMap((Map<String, V>) categoryAttribute.getLocalizedEnumerationMap());
                 }
             }
@@ -272,12 +301,13 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        this.optionCaptionProvider = captionProvider;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        if (this.optionCaptionProvider != optionCaptionProvider) {
+            this.optionCaptionProvider = optionCaptionProvider;
 
-        component.setItemCaptionGenerator(captionProvider != null ?
-                (ItemCaptionGenerator<V>) captionProvider::apply
-                : null);
+            // reset item captions
+            component.setItemCaptionGenerator(this::generateItemCaption);
+        }
     }
 
     @Override
@@ -299,6 +329,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
     @Override
     public String getCaptionProperty() {
+//        vaadin8
         return null;
     }
 
@@ -380,15 +411,16 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
         if (this.optionIconProvider != optionIconProvider) {
             // noinspection unchecked
             this.optionIconProvider = optionIconProvider;
 
-            if (optionIconProvider == null) {
-                component.setItemIconGenerator(null);
-            } else {
+            if (optionIconProvider != null) {
                 component.setItemIconGenerator(this::generateOptionIcon);
+            } else {
+                component.setItemIconGenerator(NULL_ITEM_ICON_GENERATOR);
             }
         }
     }
@@ -410,7 +442,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
             resourceId = optionIconProvider.apply(item);
         } catch (Exception e) {
             LoggerFactory.getLogger(WebLookupField.class)
-                    .warn("Error invoking OptionIconProvider getItemIcon method", e);
+                    .warn("Error invoking optionIconProvider apply method", e);
             return null;
         }
 
@@ -465,34 +497,28 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         return super.isModified();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
-        this.optionsStyleProvider = optionsStyleProvider;
+    public void setOptionStyleProvider(Function<? super V, String> optionStyleProvider) {
+        if (this.optionStyleProvider != optionStyleProvider) {
+            this.optionStyleProvider = optionStyleProvider;
 
-//        vaadin8 | the same for the WebLookupPickerField, WebSearchPickerField
-        /*if (optionsStyleProvider != null) {
-            component.setItemStyleGenerator((comboBox, item) ->
-                    optionsStyleProvider.getItemStyleName(this, item));
-        } else {
-            component.setItemStyleGenerator(null);
-        }*/
+            if (optionStyleProvider != null) {
+                component.setStyleGenerator(this::generateItemStylename);
+            } else {
+                component.setStyleGenerator(NULL_STYLE_GENERATOR);
+            }
+        }
     }
 
     @Override
-    public OptionsStyleProvider getOptionsStyleProvider() {
-        return optionsStyleProvider;
+    public Function<? super V, String> getOptionStyleProvider() {
+        return optionStyleProvider;
     }
 
     @Override
     public void setFilterPredicate(FilterPredicate filterPredicate) {
         this.filterPredicate = filterPredicate;
-
-        if (filterPredicate != null) {
-//            vaadin8 | the same for the WebLookupPickerField, WebSearchPickerField
-//            component.setFilterPredicate(filterPredicate::test);
-        } else {
-//            component.setFilterPredicate(null);
-        }
     }
 
     @Override

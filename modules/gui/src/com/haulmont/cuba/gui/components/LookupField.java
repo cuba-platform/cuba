@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buffered, LookupComponent,
-        Component.Focusable, HasOptionsStyleProvider {
+        Component.Focusable, HasOptionsStyleProvider<V> {
 
     String NAME = "lookupField";
 
@@ -134,11 +134,13 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
 
     /**
      * Set the icon provider for LookupField.
-     * vaadin8 deprecate
      *
      * @param optionClass        class of the option
      * @param optionIconProvider provider which provides icons for options
+     *
+     * @deprecated Use {@link #setOptionIconProvider(Function)}
      */
+    @Deprecated
     void setOptionIconProvider(Class<V> optionClass, Function<? super V, String> optionIconProvider);
 
     /**

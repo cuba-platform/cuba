@@ -24,6 +24,10 @@ import com.vaadin.v7.data.util.converter.Converter;
 import java.util.Locale;
 import java.util.function.Function;
 
+/**
+ * todo replace with direct MetadataTools call
+ */
+@Deprecated
 public class StringToEntityConverter implements Converter<String, Entity> {
 
     protected Function<Object, String> formatter;
