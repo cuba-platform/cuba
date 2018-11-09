@@ -26,8 +26,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.util.OperationResult;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -38,8 +41,6 @@ import java.util.function.Predicate;
  * @param <T> type of entity
  */
 public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T> {
-    public static final String LOOKUP_ACTIONS_FRAGMENT_ID = "lookupActions";
-
     protected Consumer<Collection<T>> selectHandler;
     protected Predicate<ValidationContext<T>> selectValidator;
 
@@ -53,11 +54,13 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
 
         Configuration configuration = getBeanLocator().get(Configuration.NAME);
         Messages messages = getBeanLocator().get(Messages.NAME);
+        Icons icons = getBeanLocator().get(Icons.NAME);
 
         String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
 
         Action commitAction = new BaseAction(LOOKUP_SELECT_ACTION_ID)
                 .withCaption(messages.getMainMessage("actions.Select"))
+                .withIcon(icons.get(CubaIcon.LOOKUP_OK))
                 .withPrimary(true)
                 .withShortcut(commitShortcut)
                 .withHandler(this::select);
@@ -66,6 +69,7 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
 
         Action closeAction = new BaseAction(LOOKUP_CANCEL_ACTION_ID)
                 .withCaption(messages.getMainMessage("actions.Cancel"))
+                .withIcon(icons.get(CubaIcon.LOOKUP_CANCEL))
                 .withHandler(this::cancel);
 
         window.addAction(closeAction);
@@ -106,9 +110,9 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     public void setSelectHandler(Consumer<Collection<T>> selectHandler) {
         this.selectHandler = selectHandler;
 
-        Component lookupActionsFragment = getWindow().getComponent(LOOKUP_ACTIONS_FRAGMENT_ID);
-        if (lookupActionsFragment != null) {
-            lookupActionsFragment.setVisible(true);
+        Component lookupActionsLayout = getLookupActionsLayout();
+        if (lookupActionsLayout != null) {
+            lookupActionsLayout.setVisible(true);
         }
     }
 
@@ -120,6 +124,11 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     @Override
     public void setSelectValidator(Predicate<ValidationContext<T>> selectValidator) {
         this.selectValidator = selectValidator;
+    }
+
+    @Nullable
+    protected Component getLookupActionsLayout() {
+        return getWindow().getComponent("lookupActions");
     }
 
     @SuppressWarnings("unchecked")

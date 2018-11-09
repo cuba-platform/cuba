@@ -2875,9 +2875,7 @@
 
     <xs:complexType name="initialLayoutComponent">
         <xs:sequence>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:choice>
+            <xs:group ref="layoutOrComponent"/>
         </xs:sequence>
 
         <xs:attribute name="id" type="xs:string"/>

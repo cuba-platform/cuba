@@ -16,17 +16,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.components.Window.Lookup;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
-import org.springframework.core.annotation.Order;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -44,6 +41,7 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
 
     public AbstractLookup() {
         addInitListener(this::initLookupActions);
+        addAfterInitListener(this::afterInit);
         addBeforeShowListener(this::beforeShow);
     }
 
@@ -82,8 +80,6 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
         }
     }
 
-    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
-    @Subscribe
     protected void afterInit(AfterInitEvent event) {
         initLookupLayout();
     }
@@ -124,7 +120,7 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
         }
     }
 
-    protected void selectItemsOnClick(Collection collection) {
+    protected void selectItemsOnClick(@SuppressWarnings("unused") Collection collection) {
         Action selectAction = getActionNN(LOOKUP_SELECT_ACTION_ID);
         selectAction.actionPerform(getLookupComponent());
     }

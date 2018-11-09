@@ -26,9 +26,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
-import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
@@ -65,11 +66,13 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
         Configuration configuration = getBeanLocator().get(Configuration.NAME);
         Messages messages = getBeanLocator().get(Messages.NAME);
+        Icons icons = getBeanLocator().get(Icons.NAME);
 
         String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
 
         Action commitAndCloseAction = new BaseAction(WINDOW_COMMIT_AND_CLOSE)
                 .withCaption(messages.getMainMessage("actions.Ok"))
+                .withIcon(icons.get(CubaIcon.EDITOR_OK))
                 .withPrimary(true)
                 .withShortcut(commitShortcut)
                 .withHandler(this::commitAndClose);
@@ -83,6 +86,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         window.addAction(commitAction);
 
         Action closeAction = new BaseAction(WINDOW_CLOSE)
+                .withIcon(icons.get(CubaIcon.EDITOR_CANCEL))
                 .withCaption(messages.getMainMessage("actions.Cancel"))
                 .withHandler(this::cancel);
 
