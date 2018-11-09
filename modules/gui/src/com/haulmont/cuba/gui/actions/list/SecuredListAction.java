@@ -28,9 +28,9 @@ import javax.inject.Inject;
 /**
  * Standard action that changes enabled property depending on selection of a bound {@link ListComponent}.
  * <br>
- * You can use fluent API to create instances of ItemTrackingAction and assign handlers to them:
+ * You can use fluent API to create instances of SecuredListAction and assign handlers to them:
  * <pre>{@code
- *     Action action = new ItemTrackingAction("moveToTrash")
+ *     Action action = new SecuredListAction("moveToTrash")
  *             .withCaption("Move to trash")
  *             .withIcon("icons/trash.png")
  *             .withHandler(event -> {
@@ -57,7 +57,9 @@ public abstract class SecuredListAction extends ListAction implements Action.Has
 
     @Override
     protected boolean isApplicable() {
-        return target != null && !target.getSelected().isEmpty() && super.isApplicable();
+        return target != null
+                && target.getSingleSelected() != null
+                && super.isApplicable();
     }
 
     @Override

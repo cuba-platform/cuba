@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -37,7 +36,7 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @ActionType(ExcludeAction.ID)
-public class ExcludeAction extends ListAction {
+public class ExcludeAction extends SecuredListAction {
 
     public static final String ID = "exclude";
 
