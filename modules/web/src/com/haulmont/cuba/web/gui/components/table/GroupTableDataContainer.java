@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.widgets.data.GroupTableContainer;
 
@@ -313,5 +314,15 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
             return itemId != null && itemId.equals(last);
         }
         return super.isLastId(itemId);
+    }
+
+    @Override
+    protected void datasourceItemSetChanged(TableItems.ItemSetChangeEvent<I> e) {
+        super.datasourceItemSetChanged(e);
+
+        if (hasGroups()) {
+            Object[] groupProps = new ArrayList<>(getGroupProperties()).toArray();
+            doGroup(groupProps);
+        }
     }
 }
