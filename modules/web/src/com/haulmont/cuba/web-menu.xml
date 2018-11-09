@@ -41,7 +41,8 @@
 
     <menu id="help">
         <item id="aboutWindow" openType="DIALOG"/>
-        <item id="printDomain"/>
+        <item id="printDomain"
+              class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
         <separator/>
         <item id="settings"/>
         <item id="logWindow"

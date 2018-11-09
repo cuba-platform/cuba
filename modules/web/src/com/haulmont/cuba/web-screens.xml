@@ -63,9 +63,6 @@
 
     <screen id="serverLogDownloadOptionsDialog"
             template="com/haulmont/cuba/web/app/ui/serverlogviewer/log-download-options.xml"/>
-
-    <screen id="printDomain"
-            class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
     
     <screen id="performanceStatistics"
             template="/com/haulmont/cuba/web/app/ui/statistics/statistics-window.xml" multipleOpen="true"

@@ -18,27 +18,33 @@
 package com.haulmont.cuba.web.app.domain;
 
 import com.haulmont.cuba.core.app.DomainDescriptionService;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 import java.nio.charset.StandardCharsets;
 
 /**
  * Class providing domain model description. It can be called from the main menu.
  */
-public class DomainProvider implements Runnable {
+public class DomainProvider implements Runnable, BeanLocatorAware {
+
+    protected BeanLocator beanLocator;
 
     @Override
     public void run() {
-        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.NAME);
+        DomainDescriptionService service = beanLocator.get(DomainDescriptionService.NAME);
         String description = service.getDomainDescription();
 
-        ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.class);
-        ((WebExportDisplay) exportDisplay).setNewWindow(true);
+        ExportDisplay exportDisplay = beanLocator.getPrototype(ExportDisplay.NAME, true);
         exportDisplay.show(new ByteArrayDataProvider(description.getBytes(StandardCharsets.UTF_8)),
                 "domain-description.html", ExportFormat.HTML);
+    }
+
+    @Override
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
 }

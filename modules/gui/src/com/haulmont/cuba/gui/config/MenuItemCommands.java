@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -296,6 +297,10 @@ public class MenuItemCommands {
                 classInstance = clazz.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
+            }
+
+            if (classInstance instanceof BeanLocatorAware) {
+                ((BeanLocatorAware) classInstance).setBeanLocator(beanLocator);
             }
 
             if (classInstance instanceof Consumer) {
