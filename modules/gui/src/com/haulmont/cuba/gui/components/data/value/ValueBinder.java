@@ -35,7 +35,7 @@ import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
-import com.haulmont.cuba.gui.components.validators.BeanValidator;
+import com.haulmont.cuba.gui.components.validators.BeanPropertyValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -117,7 +117,7 @@ public class ValueBinder {
             BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
 
             if (beanDescriptor.isBeanConstrained()) {
-                component.addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
+                component.addValidator(beanLocator.getPrototype(BeanPropertyValidator.NAME, enclosingJavaClass, metaProperty.getName()));
             }
         }
     }
@@ -185,7 +185,7 @@ public class ValueBinder {
             Collection<? extends Consumer<?>> validators = component.getValidators();
 
             for (Consumer validator : validators.toArray(new Consumer[0])) {
-                if (validator instanceof BeanValidator) {
+                if (validator instanceof BeanPropertyValidator) {
                     component.removeValidator(validator);
                 }
             }
