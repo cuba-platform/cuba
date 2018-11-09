@@ -16,21 +16,21 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
-import com.haulmont.cuba.gui.app.security.entity.AssignableTarget;
+import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.components.TextField;
 
 import java.util.function.Predicate;
 
-public class ScreenNameFilter<T extends AssignableTarget> implements Predicate<T> {
+public class ScreenNameFilter implements Predicate<BasicPermissionTarget> {
 
-    protected final TextField<String> screenFilter;
+    protected TextField<String> screenFilter;
 
     public ScreenNameFilter(TextField<String> screenFilter) {
         this.screenFilter = screenFilter;
     }
 
     @Override
-    public boolean test(T target) {
+    public boolean test(BasicPermissionTarget target) {
         if (target != null) {
             String filterTerm = screenFilter.getValue();
             if (filterTerm == null || filterTerm.isEmpty()) {

@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.app.security.ds.MultiplePermissionTargetsDatasource;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
@@ -28,9 +29,7 @@ import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -70,10 +69,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
     protected Table<MultiplePermissionTarget> propertyPermissionsTable;
 
     @Inject
-    protected Label selectedTargetCaption;
+    protected Label<String> selectedTargetCaption;
 
     @Inject
-    protected Label selectedTargetLocalCaption;
+    protected Label<String> selectedTargetLocalCaption;
 
     /* Panels */
 
@@ -86,7 +85,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     /* Filter */
 
     @Inject
-    protected TextField entityFilter;
+    protected TextField<String> entityFilter;
 
     @Inject
     protected CheckBox assignedOnlyCheckBox;
@@ -107,14 +106,14 @@ public class AttributePermissionsFrame extends AbstractFrame {
     protected boolean hasPermissionsToModifyPermission;
 
     @Inject
-    private ComponentsFactory componentsFactory;
+    private UiComponents uiComponents;
 
     @Inject
     private GroupBoxLayout editPane;
 
     protected class AttributePermissionControl {
 
-        protected Label attributeLabel;
+        protected Label<String> attributeLabel;
         protected CheckBox modifyCheckBox;
         protected CheckBox readOnlyCheckBox;
         protected CheckBox hideCheckBox;
@@ -128,22 +127,22 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
             AttributePermissionVariant permissionVariant = item.getPermissionVariant(attributeName);
 
-            attributeLabel = componentsFactory.createComponent(Label.class);
+            attributeLabel = uiComponents.create(Label.NAME);
             attributeLabel.setValue(attributeName);
 
-            modifyCheckBox = componentsFactory.createComponent(CheckBox.class);
+            modifyCheckBox = uiComponents.create(CheckBox.class);
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(getFrame());
             modifyCheckBox.setDescription(attributeName);
             modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
-            readOnlyCheckBox = componentsFactory.createComponent(CheckBox.class);
+            readOnlyCheckBox = uiComponents.create(CheckBox.class);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(getFrame());
             readOnlyCheckBox.setDescription(attributeName);
             readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
-            hideCheckBox = componentsFactory.createComponent(CheckBox.class);
+            hideCheckBox = uiComponents.create(CheckBox.class);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(getFrame());
             hideCheckBox.setDescription(attributeName);
@@ -268,9 +267,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
             assignedOnlyCheckBox.setValue(Boolean.TRUE);
         }
 
-        assignedOnlyCheckBox.addValueChangeListener(e -> {
-            applyFilter();
-        });
+        assignedOnlyCheckBox.addValueChangeListener(e -> applyFilter());
 
         attributeTargetsDs.setPermissionDs(propertyPermissionsDs);
         attributeTargetsDs.setFilter(
@@ -328,10 +325,11 @@ public class AttributePermissionsFrame extends AbstractFrame {
         if (attributeTargetsDs.getItemIds().isEmpty()) {
             String message;
             Object value = entityFilter.getValue();
-            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()))
+            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue())) {
                 message = String.format(getMessage("noAssignedItemsForFilter"), value != null ? value : " ");
-            else
+            } else {
                 message = String.format(getMessage("noItemsForFilter"), value != null ? value : " ");
+            }
             showNotification(message, NotificationType.HUMANIZED);
         }
     }
@@ -413,7 +411,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     protected void compileEditPane(MultiplePermissionTarget item) {
-        GridLayout editGrid = componentsFactory.createComponent(GridLayout.class);
+        GridLayout editGrid = uiComponents.create(GridLayout.class);
         editGrid.setFrame(frame);
         editGrid.setId("editGrid");
         editGrid.setWidth("100%");
@@ -462,48 +460,48 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     protected void compileDefaultControls(GridLayout editGrid) {
-        Label emptyLabel = componentsFactory.createComponent(Label.class);
+        Label<String> emptyLabel = uiComponents.create(Label.NAME);
         editGrid.add(emptyLabel, 0, 0);
 
-        Label modifyLabel = componentsFactory.createComponent(Label.class);
+        Label<String> modifyLabel = uiComponents.create(Label.NAME);
         modifyLabel.setValue(getMessage("checkbox.modify"));
         modifyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         modifyLabel.setStyleName("centered");
 
-        BoxLayout modifyBox = componentsFactory.createComponent(HBoxLayout.class);
+        BoxLayout modifyBox = uiComponents.create(HBoxLayout.class);
         modifyBox.setMargin(false, true, false, false);
         modifyBox.setFrame(getFrame());
         modifyBox.add(modifyLabel);
 
         editGrid.add(modifyBox, 1, 0);
 
-        Label readOnlyLabel = componentsFactory.createComponent(Label.class);
+        Label<String> readOnlyLabel = uiComponents.create(Label.NAME);
         readOnlyLabel.setValue(getMessage("checkbox.readOnly"));
         readOnlyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         readOnlyLabel.setStyleName("centered");
 
-        BoxLayout readOnlyBox = componentsFactory.createComponent(HBoxLayout.class);
+        BoxLayout readOnlyBox = uiComponents.create(HBoxLayout.class);
         readOnlyBox.setMargin(false, true, false, true);
         readOnlyBox.setFrame(getFrame());
         readOnlyBox.add(readOnlyLabel);
 
         editGrid.add(readOnlyBox, 2, 0);
 
-        Label hideLabel = componentsFactory.createComponent(Label.class);
+        Label<String> hideLabel = uiComponents.create(Label.NAME);
         hideLabel.setValue(getMessage("checkbox.hide"));
         hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
         hideLabel.setStyleName("centered");
 
-        BoxLayout hideBox = componentsFactory.createComponent(HBoxLayout.class);
+        BoxLayout hideBox = uiComponents.create(HBoxLayout.class);
         hideBox.setFrame(getFrame());
         hideBox.setMargin(false, false, false, true);
         hideBox.add(hideLabel);
 
         editGrid.add(hideBox, 3, 0);
 
-        allModifyCheck = componentsFactory.createComponent(CheckBox.class);
-        allReadOnlyCheck = componentsFactory.createComponent(CheckBox.class);
-        allHideCheck = componentsFactory.createComponent(CheckBox.class);
+        allModifyCheck = uiComponents.create(CheckBox.class);
+        allReadOnlyCheck = uiComponents.create(CheckBox.class);
+        allHideCheck = uiComponents.create(CheckBox.class);
 
         allModifyCheck.setFrame(getFrame());
         allReadOnlyCheck.setFrame(getFrame());
@@ -517,7 +515,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
-        emptyLabel = componentsFactory.createComponent(Label.class);
+        emptyLabel = uiComponents.create(Label.NAME);
         emptyLabel.setValue(getMessage("allEntities"));
         editGrid.add(emptyLabel, 0, 1);
 

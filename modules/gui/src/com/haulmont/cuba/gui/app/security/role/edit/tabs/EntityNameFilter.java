@@ -32,13 +32,14 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
 
     protected Metadata metadata;
 
-    protected final CheckBox assignedOnlyCheckBox;
-    protected final CheckBox systemLevelCheckBox;
+    protected CheckBox assignedOnlyCheckBox;
+    protected CheckBox systemLevelCheckBox;
 
-    protected final TextField<String> entityFilter;
+    protected TextField<String> entityFilter;
 
     public EntityNameFilter(Metadata metadata, CheckBox assignedOnlyCheckBox, CheckBox systemLevelCheckBox,
-                            TextField entityFilter) {
+                            TextField<String> entityFilter) {
+
         this.metadata = metadata;
         this.assignedOnlyCheckBox = assignedOnlyCheckBox;
         this.systemLevelCheckBox = systemLevelCheckBox;

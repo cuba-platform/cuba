@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -62,10 +61,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected Table<OperationPermissionTarget> entityPermissionsTable;
 
     @Inject
-    protected Label selectedTargetCaption;
+    protected Label<String> selectedTargetCaption;
 
     @Inject
-    protected Label selectedTargetLocalCaption;
+    protected Label<String> selectedTargetLocalCaption;
 
     @Inject
     protected UserSession userSession;
@@ -79,7 +78,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     /* Filter */
 
     @Inject
-    protected TextField entityFilter;
+    protected TextField<String> entityFilter;
 
     @Inject
     protected CheckBox assignedOnlyCheckBox;
@@ -99,7 +98,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected CheckBox allAllowCheck;
-
     @Inject
     protected CheckBox allDenyCheck;
 
@@ -126,6 +124,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                                        String allowChecker, String denyChecker) {
             this.operation = operation;
             this.metaProperty = metaProperty;
+            //noinspection unchecked
             this.operationLabel = (Label) getComponent(operationLabel);
             this.allowChecker = (CheckBox) getComponent(allowChecker);
             this.denyChecker = (CheckBox) getComponent(denyChecker);
@@ -188,9 +187,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
             assignedOnlyCheckBox.setValue(Boolean.TRUE);
         }
 
-        assignedOnlyCheckBox.addValueChangeListener(e -> {
-            applyFilter();
-        });
+        assignedOnlyCheckBox.addValueChangeListener(e -> applyFilter());
 
         entityTargetsDs.setPermissionDs(entityPermissionsDs);
         entityTargetsDs.setFilter(new EntityNameFilter<>(
@@ -251,10 +248,12 @@ public class EntityPermissionsFrame extends AbstractFrame {
         if (entityTargetsDs.getItemIds().isEmpty()) {
             String message;
             Object value = entityFilter.getValue();
-            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()))
+            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue())) {
                 message = String.format(getMessage("noAssignedItemsForFilter"), value != null ? value : " ");
-            else
+            } else {
                 message = String.format(getMessage("noItemsForFilter"), value != null ? value : " ");
+            }
+
             showNotification(message, NotificationType.HUMANIZED);
         }
     }
@@ -398,7 +397,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         if (isSingleSelection()) {
             if (item != null) {
                 for (EntityOperationControl control : operationControls) {
-                    updateCheckBoxes(item.<PermissionVariant>getValue(control.getMetaProperty()),
+                    updateCheckBoxes(item.getValue(control.getMetaProperty()),
                             control.getAllowChecker(), control.getDenyChecker());
                 }
 

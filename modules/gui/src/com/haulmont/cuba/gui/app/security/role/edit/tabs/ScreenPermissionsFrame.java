@@ -78,7 +78,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     protected GroupBoxLayout screensEditPane;
 
     @Inject
-    protected TextField screenFilter;
+    protected TextField<String> screenFilter;
 
     protected boolean itemChanging = false;
 
@@ -126,7 +126,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             }
         });
 
-        screenPermissionsTreeDs.setFilter(new ScreenNameFilter<>(screenFilter));
+        screenPermissionsTreeDs.setFilter(new ScreenNameFilter(screenFilter));
         screenFilter.addEnterPressListener(e -> applyFilter());
 
         allowCheckBox.addValueChangeListener(e -> {
@@ -188,7 +188,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     public void loadPermissions() {
         screenPermissionsDs.refresh();
         screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
-        screenPermissionsTree.refresh();
+
+        screenPermissionsDs.refresh();
         screenPermissionsTree.expandAll();
         screenPermissionsTree.collapse("root:others");
     }

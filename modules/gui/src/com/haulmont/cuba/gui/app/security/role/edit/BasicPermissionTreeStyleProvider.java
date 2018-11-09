@@ -17,26 +17,21 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.components.Table;
 
-public class BasicPermissionTreeStyleProvider implements Table.StyleProvider {
+public class BasicPermissionTreeStyleProvider implements Table.StyleProvider<BasicPermissionTarget> {
     @Override
-    public String getStyleName(Entity entity, String property) {
-        if (property != null) {
-            if ("caption".equals(property)) {
-                if (entity instanceof BasicPermissionTarget) {
-                    PermissionVariant permissionVariant = ((BasicPermissionTarget) entity).getPermissionVariant();
-                    switch (permissionVariant) {
-                        case ALLOWED:
-                            return "allowedItem";
+    public String getStyleName(BasicPermissionTarget entity, String property) {
+        if ("caption".equals(property)) {
+            PermissionVariant permissionVariant = entity.getPermissionVariant();
+            switch (permissionVariant) {
+                case ALLOWED:
+                    return "allowedItem";
 
-                        case DISALLOWED:
-                            return "disallowedItem";
-                    }
-                }
+                case DISALLOWED:
+                    return "disallowedItem";
             }
         }
         return null;

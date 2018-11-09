@@ -76,7 +76,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     protected Companion companion;
 
     @Inject
-    private GroupBoxLayout specificEditPane;
+    protected GroupBoxLayout specificEditPane;
 
     protected boolean itemChanging = false;
 
