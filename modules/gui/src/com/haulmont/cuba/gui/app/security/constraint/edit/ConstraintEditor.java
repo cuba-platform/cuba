@@ -158,6 +158,9 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             groovyScript.setContextHelpIconClickHandler(event ->
                     getGroovyScriptHelp());
         }
+
+        String groupInstanceName = metadata.getTools().getInstanceName(getItem().getGroup());
+        setCaption(formatMessage("caption", groupInstanceName));
     }
 
     protected void setupVisibility() {
