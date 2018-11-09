@@ -530,6 +530,9 @@ public class AppUI extends CubaUI
         return testIdManager;
     }
 
+    /**
+     * @return true if UI test mode is enabled and cuba-id attribute should be added to DOM tree
+     */
     public boolean isTestMode() {
         return testMode;
     }

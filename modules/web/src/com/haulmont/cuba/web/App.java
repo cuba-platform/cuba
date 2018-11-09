@@ -188,8 +188,11 @@ public abstract class App {
 
     /**
      * @return current UI
+     *
+     * @deprecated Use {@link AppUI#getCurrent()} instead.
      */
     @Nullable
+    @Deprecated
     public AppUI getAppUI() {
         return AppUI.getCurrent();
     }
@@ -395,7 +398,9 @@ public abstract class App {
 
     /**
      * @return WindowManagerImpl instance or null if the current UI has no MainWindow
+     * @deprecated Get screens API from {@link AppUI} instead.
      */
+    @Deprecated
     public WebScreens getWindowManager() {
         AppUI ui = getAppUI();
         if (ui == null) {

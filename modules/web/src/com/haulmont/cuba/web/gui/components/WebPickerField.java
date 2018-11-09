@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.valueproviders.EntityNameValueProvider;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.vaadin.data.ValueProvider;
@@ -263,13 +262,10 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
     protected void setPickerButtonIcon(CubaButton button, String icon) {
         if (!StringUtils.isEmpty(icon)) {
-            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
-            Resource iconResource = iconResolver.getIconResource(icon);
+            Resource iconResource = getIconResource(icon);
             button.setIcon(iconResource);
-            button.addStyleName(ICON_STYLE);
         } else {
             button.setIcon(null);
-            button.removeStyleName(ICON_STYLE);
         }
     }
 

@@ -120,7 +120,6 @@ public class WebDialogs implements Dialogs {
         }
         if (StringUtils.isNotEmpty(action.getIcon())) {
             button.setIcon(iconResolver.getIconResource(action.getIcon()));
-            button.addStyleName(WebButton.ICON_STYLE);
         }
 
         return button;

@@ -18,16 +18,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
@@ -100,6 +97,8 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
+import static com.haulmont.cuba.gui.components.Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID;
+import static com.haulmont.cuba.gui.components.Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID;
 
 public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E>, E extends Entity>
         extends WebAbstractComponent<C>
@@ -532,23 +531,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         if (action != null && action.isEnabled()) {
-            Window window = ComponentsHelper.getWindowImplementation(WebAbstractDataGrid.this);
-            if (window instanceof Window.Wrapper) {
-                window = ((Window.Wrapper) window).getWrappedWindow();
-            }
-
-            if (!(window instanceof Window.Lookup)) {
-                action.actionPerform(WebAbstractDataGrid.this);
-            } else {
-                Window.Lookup lookup = (Window.Lookup) window;
-
-                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
-                if (lookupComponent != this)
-                    action.actionPerform(WebAbstractDataGrid.this);
-                else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
-                    action.actionPerform(WebAbstractDataGrid.this);
-                }
-            }
+            action.actionPerform(WebAbstractDataGrid.this);
         }
     }
 
@@ -564,10 +547,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             selectHandler.accept(selected);
         };
 
-        setEnterPressAction(new BaseAction(Window.Lookup.LOOKUP_ENTER_PRESSED_ACTION_ID)
+        setEnterPressAction(new BaseAction(LOOKUP_ENTER_PRESSED_ACTION_ID)
                 .withHandler(actionHandler));
 
-        setItemClickAction(new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
+        setItemClickAction(new BaseAction(LOOKUP_ITEM_CLICK_ACTION_ID)
                 .withHandler(actionHandler));
     }
 
@@ -664,7 +647,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         component.setColumnOrder(getColumnOrder());
     }
-
 
     protected String generateColumnCaption(Column<E> column) {
         return column.getPropertyPath() != null
@@ -1828,7 +1810,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     public void setId(String id) {
         super.setId(id);
 
-        if (id != null && AppUI.getCurrent().isTestMode()) {
+        AppUI ui = AppUI.getCurrent();
+        if (id != null
+                && ui != null
+                && ui.isTestMode()) {
             componentComposition.setCubaId(id + "_composition");
         }
     }
@@ -1993,7 +1978,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                     .map(String::valueOf)
                     .collect(Collectors.toList());
 
-            List<String> loadedIds = Dom4j.elements(columnsElem, "columns").stream()
+            List<String> loadedIds = columnsElem.elements("columns").stream()
                     .map(colElem -> colElem.attributeValue("id"))
                     .collect(Collectors.toList());
 
@@ -2009,7 +1994,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         List<Column<E>> newColumns = new ArrayList<>();
 
         // add columns from saved settings
-        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+        for (Element colElem : columnsElem.elements("columns")) {
             for (Column<E> column : oldColumns) {
                 if (column.getId().equals(colElem.attributeValue("id"))) {
                     newColumns.add(column);

@@ -66,8 +66,7 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     @Override
     public void editableChanged(PickerField pickerField, boolean editable) {
-        setEditable(editable);
-
+        // open action is available in read-only picker
         if (editable) {
             setIcon(icons.get(CubaIcon.PICKERFIELD_OPEN));
         } else {

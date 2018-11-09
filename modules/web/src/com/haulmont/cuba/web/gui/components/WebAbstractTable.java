@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
@@ -38,9 +37,9 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
@@ -1138,22 +1137,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         if (action != null && action.isEnabled()) {
-            Window window = ComponentsHelper.getWindowImplementation(this);
-            if (window instanceof Window.Wrapper) {
-                window = ((Window.Wrapper) window).getWrappedWindow();
-            }
-
-            if (!(window instanceof Window.Lookup)) {
-                action.actionPerform(WebAbstractTable.this);
-            } else {
-                Window.Lookup lookup = (Window.Lookup) window;
-
-                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
-                if (lookupComponent != this
-                        || Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID.equals(action.getId())) {
-                    action.actionPerform(WebAbstractTable.this);
-                }
-            }
+            action.actionPerform(WebAbstractTable.this);
         }
     }
 
@@ -1834,7 +1818,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             Collection<String> loadedIds = new ArrayList<>();
-            for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+            for (Element colElem : columnsElem.elements("columns")) {
                 loadedIds.add(colElem.attributeValue("id"));
             }
 
@@ -1856,7 +1840,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         List<Object> newColumns = new ArrayList<>();
 
         // add columns from saved settings
-        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+        for (Element colElem : columnsElem.elements("columns")) {
             for (Object column : oldColumns) {
                 if (column.toString().equals(colElem.attributeValue("id"))) {
                     newColumns.add(column);

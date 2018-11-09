@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButton;
 import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
@@ -332,14 +331,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implem
 
     protected void setPopupButtonIcon(Button button, String icon) {
         if (!StringUtils.isEmpty(icon)) {
-            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
-
-            Resource iconResource = iconResolver.getIconResource(icon);
+            Resource iconResource = getIconResource(icon);
             button.setIcon(iconResource);
-            button.addStyleName(ICON_STYLE);
         } else {
             button.setIcon(null);
-            button.removeStyleName(ICON_STYLE);
         }
     }
 

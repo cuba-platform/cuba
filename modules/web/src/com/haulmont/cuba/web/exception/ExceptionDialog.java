@@ -19,11 +19,14 @@ package com.haulmont.cuba.web.exception;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Dialogs.MessageType;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -34,12 +37,8 @@ import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.widgets.CubaWindow;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.window.WindowMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -366,32 +365,25 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     protected void logoutPrompt() {
-        App app = AppUI.getCurrent().getApp();
+        Dialogs dialogs = ((AppUI) getUI()).getDialogs();
 
-        WindowManager wm = app.getWindowManager();
-        wm.showOptionDialog(
-                messages.getMainMessage("exceptionDialog.logoutCaption"),
-                messages.getMainMessage("exceptionDialog.logoutMessage"),
-                Frame.MessageType.WARNING,
-                new Action[]{
-                        new AbstractAction(messages.getMainMessage("closeApplication")) {
-                            @Override
-                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                forceLogout();
-                            }
-
-                            @Override
-                            public String getIcon() {
-                                return "icons/ok.png";
-                            }
-                        },
+        dialogs.createOptionDialog(MessageType.WARNING)
+                .withCaption(messages.getMainMessage("exceptionDialog.logoutCaption"))
+                .withMessage(messages.getMainMessage("exceptionDialog.logoutMessage"))
+                .withActions(
+                        new BaseAction("close")
+                                .withCaption(messages.getMainMessage("closeApplication"))
+                                .withIcon("icons/ok.png")
+                                .withHandler(event -> forceLogout()),
                         new DialogAction(Type.CANCEL, Status.PRIMARY)
-                }
-        );
+                )
+                .show();
     }
 
     protected void forceLogout() {
-        App app = ((AppUI) getUI()).getApp();
+        AppUI ui = (AppUI) getUI();
+
+        App app = ui.getApp();
         try {
             Connection connection = app.getConnection();
             if (connection.isConnected()) {
@@ -403,7 +395,7 @@ public class ExceptionDialog extends CubaWindow {
             // always restart UI
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
 
-            getUI().getPage().open(url, "_self");
+            ui.getPage().open(url, "_self");
         }
     }
 

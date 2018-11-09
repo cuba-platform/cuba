@@ -20,12 +20,13 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
@@ -47,15 +48,15 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
  */
 public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.AbstractComponent
         & com.vaadin.event.Action.ShortcutNotifier>
-        extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.SecuredActionsHolder {
+        extends WebAbstractComponent<T> implements SecuredActionsHolder {
 
-    protected final List<Action> actionList = new ArrayList<>(5);
+    protected List<Action> actionList = new ArrayList<>(5);
     protected Map<Action, CubaButton> actionButtons = new HashMap<>(5);
 
     protected VerticalLayout contextMenuPopup;
 
-    protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
-    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
+    protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected boolean showIconsForPopupMenuActions;
 
@@ -65,8 +66,6 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         contextMenuPopup = new VerticalLayout();
         contextMenuPopup.setSpacing(false);
         contextMenuPopup.setMargin(false);
-
-        contextMenuPopup.setCubaId("cubaContextMenu");
 
         contextMenuPopup.setSizeUndefined();
         contextMenuPopup.setStyleName("c-cm-container");
@@ -100,6 +99,11 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
                 return WebAbstractActionsHolderComponent.this.getActions();
             }
         };
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null && ui.isTestMode()) {
+            contextMenuPopup.setCubaId("cubaContextMenu");
+        }
     }
 
     protected void actionPropertyChanged(PropertyChangeEvent evt) {
@@ -132,13 +136,10 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
 
     protected void setContextMenuButtonIcon(CubaButton button, String icon) {
         if (!StringUtils.isEmpty(icon)) {
-            IconResolver iconResolver = beanLocator.get(IconResolver.NAME);
-            Resource iconResource = iconResolver.getIconResource(icon);
+            Resource iconResource = getIconResource(icon);
             button.setIcon(iconResource);
-            button.addStyleName(ICON_STYLE);
         } else {
             button.setIcon(null);
-            button.removeStyleName(ICON_STYLE);
         }
     }
 

@@ -57,6 +57,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected BeanLocator beanLocator;
 
+    // private, lazily initialized
     private EventHub eventHub = null;
 
     @Inject
@@ -97,7 +98,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setFrame(Frame frame) {
         this.frame = frame;
 
-        if (frame != null) {
+        if (frame instanceof FrameImplementation) {
             ((FrameImplementation) frame).registerComponent(this);
         }
     }
@@ -256,7 +257,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
-        if (!StringUtils.isEmpty(icon)) {
+
+        if (StringUtils.isNotEmpty(icon)) {
             Resource iconResource = getIconResource(icon);
             getComposition().setIcon(iconResource);
             getComposition().addStyleName(ICON_STYLE);

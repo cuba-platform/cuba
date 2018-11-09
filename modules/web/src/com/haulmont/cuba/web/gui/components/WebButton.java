@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaButton;
+import com.vaadin.server.Resource;
 import com.vaadin.shared.MouseEventDetails;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +61,9 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
         if (action != null) {
             action.actionPerform(getActionEventTarget());
         }
-        publish(ClickEvent.class, new ClickEvent(this));
+        if (hasSubscriptions(ClickEvent.class)) {
+            publish(ClickEvent.class, new ClickEvent(this));
+        }
         afterActionPerformed();
     }
 
@@ -75,6 +78,19 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     @Override
     public Action getAction() {
         return action;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+
+        // -icon style is added automatically on the client-side of CubaButton
+        if (StringUtils.isNotEmpty(icon)) {
+            Resource iconResource = getIconResource(icon);
+            component.setIcon(iconResource);
+        } else {
+            component.setIcon(null);
+        }
     }
 
     @Override

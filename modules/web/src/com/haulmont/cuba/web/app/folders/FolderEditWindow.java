@@ -180,7 +180,6 @@ public class FolderEditWindow extends CubaWindow {
 
         cancelBtn = new CubaButton(getMessage("actions.Cancel"));
         cancelBtn.setIcon(iconResolver.getIconResource("icons/cancel.png"));
-        cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(event ->
                 forceClose()
         );

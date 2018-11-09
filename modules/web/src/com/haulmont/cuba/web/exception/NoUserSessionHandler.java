@@ -27,14 +27,12 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.haulmont.cuba.web.widgets.CubaWindow;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.slf4j.Logger;
@@ -67,23 +65,25 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         try {
+            AppUI ui = AppUI.getCurrent();
+
             // we may show two or more dialogs if user pressed F5 and we have no valid user session
             // just remove previous dialog and show new
-            List<Window> noUserSessionDialogs = app.getAppUI().getWindows().stream()
+            List<Window> noUserSessionDialogs = ui.getWindows().stream()
                     .filter(w -> w instanceof NoUserSessionExceptionDialog)
                     .collect(Collectors.toList());
             for (Window dialog : noUserSessionDialogs) {
-                app.getAppUI().removeWindow(dialog);
+                ui.removeWindow(dialog);
             }
 
-            showNoUserSessionDialog(app);
+            showNoUserSessionDialog(ui);
         } catch (Throwable th) {
             log.error("Unable to handle NoUserSessionException", throwable);
             log.error("Exception in NoUserSessionHandler", th);
         }
     }
 
-    protected void showNoUserSessionDialog(App app) {
+    protected void showNoUserSessionDialog(AppUI ui) {
         Messages messages = AppBeans.get(Messages.NAME);
 
         Window dialog = new NoUserSessionExceptionDialog();
@@ -92,16 +92,6 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         dialog.setClosable(false);
         dialog.setResizable(false);
         dialog.setModal(true);
-
-        AppUI ui = app.getAppUI();
-
-        if (ui.isTestMode()) {
-            dialog.setCubaId("optionDialog");
-        }
-
-        if (ui.isPerformanceTestMode()) {
-            dialog.setId(ui.getTestIdManager().getTestId("optionDialog"));
-        }
 
         CubaLabel messageLab = new CubaLabel();
         messageLab.setWidthUndefined();
@@ -115,16 +105,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         layout.setSpacing(true);
         dialog.setContent(layout);
 
-        Button reloginBtn = new Button();
-        if (ui.isTestMode()) {
-            reloginBtn.setCubaId("reloginBtn");
-        }
-
-        if (ui.isPerformanceTestMode()) {
-            reloginBtn.setId(ui.getTestIdManager().getTestId("reloginBtn"));
-        }
-
-        reloginBtn.addStyleName(WebButton.ICON_STYLE);
+        CubaButton reloginBtn = new CubaButton();
         reloginBtn.addStyleName("c-primary-action");
         reloginBtn.addClickListener(event -> relogin());
         reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
@@ -145,6 +126,16 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         ui.addWindow(dialog);
 
         dialog.center();
+
+        if (ui.isTestMode()) {
+            dialog.setCubaId("optionDialog");
+            reloginBtn.setCubaId("reloginBtn");
+        }
+
+        if (ui.isPerformanceTestMode()) {
+            dialog.setId(ui.getTestIdManager().getTestId("optionDialog"));
+            reloginBtn.setId(ui.getTestIdManager().getTestId("reloginBtn"));
+        }
     }
 
     protected void relogin() {

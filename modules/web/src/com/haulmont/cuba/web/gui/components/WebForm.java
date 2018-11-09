@@ -44,6 +44,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implements Form, UiPermissionAware {
 
+    private static final Logger log = LoggerFactory.getLogger(WebForm.class);
+
     protected List<List<Component>> columnComponentMapping = new ArrayList<>();
 
     protected ValueSourceProvider valueSourceProvider;
@@ -167,13 +169,6 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
         }
 
         String debugId = getDebugId();
-
-        if (ui.isTestMode()) {
-            if (composition != null) {
-                composition.setCubaId(id);
-            }
-        }
-
         if (ui.isPerformanceTestMode()) {
             if (composition != null && debugId != null) {
                 TestIdManager testIdManager = ui.getTestIdManager();
@@ -348,14 +343,12 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
     public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
         checkNotNullArgument(permissionDescriptor);
 
-        final Logger log = LoggerFactory.getLogger(WebForm.class);
-
-        final String subComponentId = permissionDescriptor.getSubComponentId();
-        final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
-        final String screenId = permissionDescriptor.getScreenId();
+        String subComponentId = permissionDescriptor.getSubComponentId();
+        UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        String screenId = permissionDescriptor.getScreenId();
 
         if (subComponentId != null) {
-            final Component component = getComponent(subComponentId);
+            Component component = getComponent(subComponentId);
             if (component != null) {
                 if (permissionValue == UiPermissionValue.HIDE) {
                     component.setVisible(false);
@@ -368,7 +361,7 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
                         subComponentId, screenId);
             }
         } else {
-            final String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
+            String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
             Component component = getComponent(actionHolderComponentId);
             if (!(component instanceof SecuredActionsHolder)) {
                 log.info("Couldn't find suitable component {} in window {} for UI security rule",
