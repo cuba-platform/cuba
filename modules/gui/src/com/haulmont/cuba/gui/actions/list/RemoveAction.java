@@ -19,45 +19,28 @@ package com.haulmont.cuba.gui.actions.list;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.RemoveHelper;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.Nested;
-import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
-
-import java.util.Collection;
-
-import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
-import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenData;
 
 @ActionType(RemoveAction.ID)
 public class RemoveAction extends SecuredListAction {
 
     public static final String ID = "remove";
 
-    protected Messages messages;
-
     @Inject
-    protected DataManager dataManager;
+    protected RemoveHelper removeHelper;
 
     public RemoveAction() {
         super(ID);
@@ -74,7 +57,6 @@ public class RemoveAction extends SecuredListAction {
 
     @Inject
     protected void setMessages(Messages messages) {
-        this.messages = messages;
         this.caption = messages.getMainMessage("actions.Remove");
     }
 
@@ -86,7 +68,7 @@ public class RemoveAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (target == null || !(target.getItems() instanceof EntityDataUnit)) {
+        if (target == null || !(target.getItems() instanceof ContainerDataUnit)) {
             return false;
         }
 
@@ -98,7 +80,7 @@ public class RemoveAction extends SecuredListAction {
     }
 
     protected boolean checkRemovePermission() {
-        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+        MetaClass metaClass = ((ContainerDataUnit) target.getItems()).getEntityMetaClass();
         if (metaClass == null) {
             return true;
         }
@@ -108,7 +90,18 @@ public class RemoveAction extends SecuredListAction {
             return false;
         }
 
-        // todo support nested properties or use separate action ?
+        EntityDataUnit dataUnit = (EntityDataUnit) target.getItems();
+        if (dataUnit instanceof Nested) {
+            Nested nestedContainer = (Nested) dataUnit;
+
+            MetaClass masterMetaClass = nestedContainer.getMaster().getEntityMetaClass();
+            MetaProperty metaProperty = masterMetaClass.getPropertyNN(nestedContainer.getProperty());
+
+            boolean attrPermitted = security.isEntityAttrUpdatePermitted(masterMetaClass, metaProperty.getName());
+            if (!attrPermitted) {
+                return false;
+            }
+        }
 
         return true;
     }
@@ -117,80 +110,19 @@ public class RemoveAction extends SecuredListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target.getItems() instanceof EntityDataUnit)) {
-                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement EntityDataUnit");
-            }
             if (!(target.getItems() instanceof ContainerDataUnit)) {
-                throw new IllegalStateException("RemoveAction target dataSource is null or does not implement ContainerDataUnit");
+                throw new IllegalStateException("RemoveAction target items is null or does not implement ContainerDataUnit");
             }
 
-            CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
+            ContainerDataUnit items = (ContainerDataUnit) target.getItems();
+            CollectionContainer container = items.getContainer();
             if (container == null) {
                 throw new IllegalStateException("RemoveAction target is not bound to CollectionContainer");
             }
 
-            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
-            if (metaClass == null) {
-                throw new IllegalStateException("Target is not bound to entity");
-            }
-
-            Collection<Entity> entitiesToRemove = target.getSelected();
-            if (entitiesToRemove.isEmpty()) {
-                throw new IllegalStateException("There are no selected items in EditAction target");
-            }
-
-            Window window = ComponentsHelper.getWindowNN(target);
-            ScreenData screenData = getScreenData(window.getFrameOwner());
-            ScreenContext screenContext = getScreenContext(window.getFrameOwner());
-
-            Dialogs dialogs = screenContext.getDialogs();
-
-            dialogs.createOptionDialog()
-                    .withCaption(messages.getMainMessage("dialogs.Confirmation"))
-                    .withMessage(messages.getMainMessage("dialogs.Confirmation.Remove"))
-                    .withActions(
-                            new DialogAction(Type.YES).withHandler(e -> {
-                                container.getMutableItems().removeAll(entitiesToRemove);
-                                commitIfNeeded(entitiesToRemove, container, screenData);
-
-                                if (target instanceof Component.Focusable) {
-                                    ((Component.Focusable) target).focus();
-                                }
-                            }),
-                            new DialogAction(Type.NO).withHandler(e -> {
-                                if (target instanceof Component.Focusable) {
-                                    ((Component.Focusable) target).focus();
-                                }
-                            })
-                    )
-                    .show();
+            removeHelper.removeSelected(target);
         } else {
             super.actionPerform(component);
-        }
-    }
-
-    protected void commitIfNeeded(Collection<Entity> entitiesToRemove, CollectionContainer container, ScreenData screenData) {
-        boolean needCommit = true;
-        if (container instanceof Nested) {
-            InstanceContainer masterContainer = ((Nested) container).getMaster();
-            String property = ((Nested) container).getProperty();
-
-            MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
-            MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
-
-            needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
-        }
-        if (needCommit) {
-            CommitContext commitContext = new CommitContext();
-            for (Entity entity : entitiesToRemove) {
-                screenData.getDataContext().evict(entity);
-                commitContext.addInstanceToRemove(entity);
-            }
-            dataManager.commit(commitContext);
-        } else {
-            for (Entity entity : entitiesToRemove) {
-                screenData.getDataContext().remove(entity);
-            }
         }
     }
 }

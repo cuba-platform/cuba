@@ -18,10 +18,11 @@ package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.RemoveHelper;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -29,19 +30,19 @@ import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.Nested;
 
 import javax.inject.Inject;
-import java.util.Set;
 
 @ActionType(ExcludeAction.ID)
 public class ExcludeAction extends SecuredListAction {
 
     public static final String ID = "exclude";
 
+    @Inject
     protected Security security;
-    protected ExtendedEntities extendedEntities;
+    @Inject
+    protected RemoveHelper removeHelper;
 
     public ExcludeAction() {
         super(ID);
@@ -52,16 +53,6 @@ public class ExcludeAction extends SecuredListAction {
     }
 
     @Inject
-    protected void setSecurity(Security security) {
-        this.security = security;
-    }
-
-    @Inject
-    protected void setExtendedEntities(ExtendedEntities extendedEntities) {
-        this.extendedEntities = extendedEntities;
-    }
-
-    @Inject
     protected void setIcons(Icons icons) {
         this.icon = icons.get(CubaIcon.EXCLUDE_ACTION);
     }
@@ -69,6 +60,12 @@ public class ExcludeAction extends SecuredListAction {
     @Inject
     protected void setMessages(Messages messages) {
         this.caption = messages.getMainMessage("actions.Exclude");
+    }
+
+    @Inject
+    protected void setConfiguration(Configuration configuration) {
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        setShortcut(clientConfig.getTableRemoveShortcut());
     }
 
     @Override
@@ -107,38 +104,13 @@ public class ExcludeAction extends SecuredListAction {
                 throw new IllegalStateException("ExcludeAction target items is null or does not implement ContainerDataUnit");
             }
 
-            CollectionContainer<Entity> collectionDc = ((ContainerDataUnit) target.getItems()).getContainer();
-
-            Set<? extends Entity> selectedItems = target.getSelected();
-
-            if (!selectedItems.isEmpty()) {
-                if (collectionDc instanceof Nested) {
-                    InstanceContainer masterDc = ((Nested) collectionDc).getMaster();
-
-                    String property = ((Nested) collectionDc).getProperty();
-                    Entity masterItem = masterDc.getItem();
-
-                    MetaProperty metaProperty = masterItem.getMetaClass().getPropertyNN(property);
-                    MetaProperty inverseMetaProperty = metaProperty.getInverse();
-
-                    if (inverseMetaProperty != null
-                            && !inverseMetaProperty.getRange().getCardinality().isMany()) {
-
-                        Class inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
-                        Class dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());
-
-                        if (inversePropClass.isAssignableFrom(dcClass)) {
-
-                            // update reference for One-To-Many
-                            for (Entity item : selectedItems) {
-                                item.setValue(inverseMetaProperty.getName(), null);
-                            }
-                        }
-                    }
-                }
-
-                collectionDc.getMutableItems().removeAll(selectedItems);
+            ContainerDataUnit items = (ContainerDataUnit) target.getItems();
+            CollectionContainer container = items.getContainer();
+            if (container == null) {
+                throw new IllegalStateException("ExcludeAction target is not bound to CollectionContainer");
             }
+
+            removeHelper.excludeSelected(target);
         } else {
             super.actionPerform(component);
         }

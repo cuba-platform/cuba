@@ -73,8 +73,9 @@ public class LookupScreens {
      *         .build();
      * }</pre>
      *
-     * @param entityClass   entity class
-     * @param origin        invoking screen
+     * @param entityClass entity class
+     * @param origin      invoking screen
+     * @param <E>         type of entity
      */
     public <E extends Entity> LookupBuilder<E> builder(Class<E> entityClass, FrameOwner origin) {
         checkNotNullArgument(entityClass);
@@ -95,7 +96,7 @@ public class LookupScreens {
      * }</pre>
      *
      * @param listComponent {@link Table}, {@link DataGrid} or another component containing the list of entities
-     *
+     * @param <E>           type of entity
      * @see #builder(Class, FrameOwner)
      */
     public <E extends Entity> LookupBuilder<E> builder(ListComponent<E> listComponent) {
@@ -128,7 +129,7 @@ public class LookupScreens {
      * }</pre>
      *
      * @param field {@link PickerField}, {@link LookupPickerField} or another picker component
-     *
+     * @param <E>   type of entity
      * @see #builder(Class, FrameOwner)
      */
     public <E extends Entity> LookupBuilder<E> builder(PickerField<E> field) {
@@ -232,7 +233,7 @@ public class LookupScreens {
     }
 
     @SuppressWarnings("unchecked")
-    protected <E extends Entity> void handleSelectionWithField(LookupBuilder<E> builder,
+    protected <E extends Entity> void handleSelectionWithField(@SuppressWarnings("unused") LookupBuilder<E> builder,
                                                                HasValue<E> field, Collection<E> selectedItems) {
         if (!selectedItems.isEmpty()) {
             Entity newValue = selectedItems.iterator().next();
@@ -262,7 +263,7 @@ public class LookupScreens {
             inverseMetaProperty = metaProperty.getInverse();
 
             if (inverseMetaProperty != null
-                && !inverseMetaProperty.getRange().getCardinality().isMany()) {
+                    && !inverseMetaProperty.getRange().getCardinality().isMany()) {
 
                 Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
                 Class<?> dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());

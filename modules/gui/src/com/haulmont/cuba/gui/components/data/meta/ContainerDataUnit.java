@@ -17,9 +17,8 @@
 package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
-public interface ContainerDataUnit<E extends Entity> extends DataUnit {
+public interface ContainerDataUnit<E extends Entity> extends EntityDataUnit {
     CollectionContainer<E> getContainer();
 }
