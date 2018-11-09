@@ -286,9 +286,11 @@ public class MenuItemCommands {
             }
 
             if (!Runnable.class.isAssignableFrom(clazz)
-                    && !Consumer.class.isAssignableFrom(clazz)) {
+                    && !Consumer.class.isAssignableFrom(clazz)
+                    && !MenuItemRunnable.class.isAssignableFrom(clazz)) {
+
                 throw new IllegalStateException(
-                        String.format("Class \"%s\" must implement Runnable or Consumer<Map<String, Object>>",
+                        String.format("Class \"%s\" must implement Runnable or Consumer<Map<String, Object>> or MenuItemRunnable",
                                 runnableClass));
             }
 
@@ -303,10 +305,10 @@ public class MenuItemCommands {
                 ((BeanLocatorAware) classInstance).setBeanLocator(beanLocator);
             }
 
-            if (classInstance instanceof Consumer) {
-                ((Consumer) classInstance).accept(params);
-            } else if (classInstance instanceof MenuItemRunnable) {
+            if (classInstance instanceof MenuItemRunnable) {
                 ((MenuItemRunnable) classInstance).run(origin, item);
+            } else if (classInstance instanceof Consumer) {
+                ((Consumer) classInstance).accept(params);
             } else {
                 ((Runnable) classInstance).run();
             }

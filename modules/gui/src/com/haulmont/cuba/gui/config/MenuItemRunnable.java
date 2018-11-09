@@ -22,5 +22,11 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
  * Interface for runnable classes of a menu item in menu config.
  */
 public interface MenuItemRunnable {
+    /**
+     * Runs action of menu item. Called by the menu UI component when menu item triggered by a user.
+     *
+     * @param origin   origin screen
+     * @param menuItem menu item
+     */
     void run(FrameOwner origin, MenuItem menuItem);
 }
