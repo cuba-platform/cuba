@@ -6,7 +6,6 @@
 <p align="center">
 <a href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="license" title=""></a>
 <a href="https://travis-ci.org/cuba-platform/cuba"><img src="https://travis-ci.org/cuba-platform/cuba.svg?branch=master" alt="Build Status" title=""></a>
-<a href="https://gitter.im/cuba-platform/cuba"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/cuba-platform/cuba" title=""></a>
 </p>
 
 
