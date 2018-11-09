@@ -39,9 +39,10 @@ public class ScreenHistoryDatasource extends CollectionDatasourceImpl<ScreenHist
         } else {
             user = userSession.getUser();
         }
-        Map<String, Object> modifiedParams = new HashMap<>();
-        modifiedParams.putAll(params);
-        modifiedParams.put("userId", user);
+
+        Map<String, Object> modifiedParams = new HashMap<>(params);
+        modifiedParams.put("userId", user.getId());
+
         super.loadData(modifiedParams);
     }
 }
