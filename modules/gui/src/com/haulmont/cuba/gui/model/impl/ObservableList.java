@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.ForwardingList;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionChangeType;
 
 import java.io.ObjectStreamException;
@@ -32,10 +33,18 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
 
     private List<T> delegate;
     private transient BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
+    private Map<Object, Integer> idMap;
 
     public ObservableList(List<T> delegate, BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
         this.delegate = delegate;
         this.onCollectionChanged = onCollectionChanged;
+    }
+
+    public ObservableList(List<T> delegate, Map<Object, Integer> idMap,
+                          BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
+        this.delegate = delegate;
+        this.onCollectionChanged = onCollectionChanged;
+        this.idMap = idMap;
     }
 
     private Object writeReplace() throws ObjectStreamException {
@@ -109,19 +118,51 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object object) {
-        boolean changed = super.remove(object);
-        if (changed)
-            fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList((T) object));
-        return changed;
+        if (idMap != null && object instanceof Entity) {
+            Integer index = idMap.get(((Entity) object).getId());
+            if (index != null) {
+                T itemForRemove = delegate.get(index);
+
+                boolean changed = super.remove(object);
+                if (changed)
+                    fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList(itemForRemove));
+                return changed;
+            }
+            return false;
+        } else {
+            boolean changed = super.remove(object);
+            if (changed)
+                fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, Collections.singletonList((T) object));
+            return changed;
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean removeAll(Collection<?> collection) {
-        boolean changed = super.removeAll(collection);
-        if (changed)
-            fireCollectionRefreshed();
-        return changed;
+        if (idMap != null) {
+            List<T> itemsForRemove = new ArrayList<>(collection.size());
+
+            for (Object object : collection) {
+                if (object instanceof Entity) {
+                    Integer index = idMap.get(((Entity) object).getId());
+                    if (index != null) {
+                        itemsForRemove.add((T) object);
+                    }
+                }
+            }
+
+            boolean changed = super.removeAll(itemsForRemove);
+            if (changed) {
+                fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, itemsForRemove);
+            }
+            return changed;
+        } else {
+            boolean changed = super.removeAll(collection);
+            if (changed)
+                fireCollectionChanged(CollectionChangeType.REMOVE_ITEMS, (Collection<? extends T>) collection);
+            return changed;
+        }
     }
 
     @Override
@@ -136,8 +177,9 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public void clear() {
         boolean wasEmpty = isEmpty();
         super.clear();
-        if (!wasEmpty)
+        if (!wasEmpty) {
             fireCollectionRefreshed();
+        }
     }
 
     @Override

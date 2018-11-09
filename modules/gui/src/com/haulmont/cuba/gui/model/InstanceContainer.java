@@ -38,21 +38,22 @@ public interface InstanceContainer<E extends Entity> {
 
     /**
      * Returns the contained entity instance.
+     *
      * @throws IllegalStateException if there is no entity in the container
      */
     @Nonnull
     E getItem();
 
     /**
+     * Sets the given entity instance to the container.
+     */
+    void setItem(@Nullable E entity);
+
+    /**
      * Returns the contained entity instance or null if there is no entity in the container.
      */
     @Nullable
     E getItemOrNull();
-
-    /**
-     * Sets the given entity instance to the container.
-     */
-    void setItem(@Nullable E entity);
 
     /**
      * Returns the meta-class of entities that can be stored in the container.
@@ -70,6 +71,28 @@ public interface InstanceContainer<E extends Entity> {
      * Sets a view to be used when loading entities for this container.
      */
     void setView(View view);
+
+    /**
+     * Adds listener to {@link ItemPropertyChangeEvent}s.
+     */
+    Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<E>> listener);
+
+    /**
+     * Adds listener to {@link ItemChangeEvent}s.
+     */
+    Subscription addItemChangeListener(Consumer<ItemChangeEvent<E>> listener);
+
+    /**
+     * Disables all event listeners on container data change.
+     * <br>
+     * Can be used with {@link #unmute()} for bulk data modification as a perfomance optimization.
+     */
+    void mute();
+
+    /**
+     * Enables all event listeners. No events are fired on this call.
+     */
+    void unmute();
 
     /**
      * Event sent on changing a property value of the contained entity instance.
@@ -140,11 +163,6 @@ public interface InstanceContainer<E extends Entity> {
     }
 
     /**
-     * Adds listener to {@link ItemPropertyChangeEvent}s.
-     */
-    Subscription addItemPropertyChangeListener(Consumer<ItemPropertyChangeEvent<E>> listener);
-
-    /**
      * Event sent when the entity instance selected in the container is replaced with another instance or null.
      */
     class ItemChangeEvent<T extends Entity> extends EventObject {
@@ -192,10 +210,4 @@ public interface InstanceContainer<E extends Entity> {
                     '}';
         }
     }
-
-    /**
-     * Adds listener to {@link ItemChangeEvent}s.
-     */
-    Subscription addItemChangeListener(Consumer<ItemChangeEvent<E>> listener);
-
 }

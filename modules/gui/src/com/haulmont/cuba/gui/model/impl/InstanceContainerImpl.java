@@ -46,9 +46,10 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     protected View view;
 
     protected EventHub events = new EventHub();
-    protected boolean listenersEnabled = true;
-    protected Instance.PropertyChangeListener listener = new ItemListener();
+    protected Instance.PropertyChangeListener listener = this::itemPropertyChanged;
     protected DataLoader loader;
+
+    protected boolean listenersEnabled = true;
 
     public InstanceContainerImpl(MetaClass entityMetaClass) {
         this.entityMetaClass = entityMetaClass;
@@ -64,8 +65,9 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     @Override
     public E getItem() {
         E item = getItemOrNull();
-        if (item == null)
+        if (item == null) {
             throw new IllegalStateException("Current item is null");
+        }
         return item;
     }
 
@@ -119,12 +121,6 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
         return events.subscribe(ItemChangeEvent.class, (Consumer) listener);
     }
 
-    protected void fireItemChanged(E prevItem) {
-        ItemChangeEvent<E> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItemOrNull());
-        log.trace("itemChanged: {}", itemChangeEvent);
-        events.publish(ItemChangeEvent.class, itemChangeEvent);
-    }
-
     protected void attachListener(Instance entity) {
         if (entity != null) {
             entity.addPropertyChangeListener(listener);
@@ -156,20 +152,37 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
         this.loader = loader;
     }
 
-    protected class ItemListener implements Instance.PropertyChangeListener {
-        @SuppressWarnings("unchecked")
-        @Override
-        public void propertyChanged(Instance.PropertyChangeEvent e) {
-            if (!listenersEnabled) {
-                return;
-            }
-
-            ItemPropertyChangeEvent<E> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(InstanceContainerImpl.this,
-                    (E) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
-
-            log.trace("propertyChanged: {}", itemPropertyChangeEvent);
-
-            events.publish(ItemPropertyChangeEvent.class, itemPropertyChangeEvent);
+    protected void fireItemChanged(E prevItem) {
+        if (!listenersEnabled) {
+            return;
         }
+
+        ItemChangeEvent<E> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItemOrNull());
+        log.trace("itemChanged: {}", itemChangeEvent);
+        events.publish(ItemChangeEvent.class, itemChangeEvent);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void itemPropertyChanged(Instance.PropertyChangeEvent e) {
+        if (!listenersEnabled) {
+            return;
+        }
+
+        ItemPropertyChangeEvent<E> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(InstanceContainerImpl.this,
+                (E) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+
+        log.trace("propertyChanged: {}", itemPropertyChangeEvent);
+
+        events.publish(ItemPropertyChangeEvent.class, itemPropertyChangeEvent);
+    }
+
+    @Override
+    public void mute() {
+        this.listenersEnabled = true;
+    }
+
+    @Override
+    public void unmute() {
+        this.listenersEnabled = false;
     }
 }

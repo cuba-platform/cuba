@@ -18,10 +18,15 @@ package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems
+import com.haulmont.cuba.gui.model.CollectionChangeType
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
 import spec.cuba.web.WebSpec
+
+import java.util.function.Consumer
+
+import static com.haulmont.cuba.gui.model.CollectionContainer.CollectionChangeEvent
 
 class CollectionContainerUsageTest extends WebSpec {
 
@@ -276,4 +281,49 @@ class CollectionContainerUsageTest extends WebSpec {
         modified.size() == 0
     }
 
+    def "remove single item with fired event"() {
+        Foo foo1 = new Foo(name: 'foo1')
+        Foo foo2 = new Foo(name: 'foo2')
+        Foo foo3 = new Foo(name: 'foo3')
+
+        def listener = Mock(Consumer)
+
+        container.items = [foo1, foo2, foo3]
+        container.addCollectionChangeListener(listener)
+
+        when: "removing the first item"
+
+        container.mutableItems.remove(foo1)
+
+        then: "container fired event with item"
+
+        1 * listener.accept(_) >> { List arguments ->
+            CollectionChangeEvent event = arguments[0]
+            assert event.changeType == CollectionChangeType.REMOVE_ITEMS
+            assert event.changes == [foo1]
+        }
+    }
+
+    def "remove multiple items with fired event"() {
+        Foo foo1 = new Foo(name: 'foo1')
+        Foo foo2 = new Foo(name: 'foo2')
+        Foo foo3 = new Foo(name: 'foo3')
+
+        def listener = Mock(Consumer)
+
+        container.items = [foo1, foo2, foo3]
+        container.addCollectionChangeListener(listener)
+
+        when: "remove 2 items"
+
+        container.mutableItems.removeAll([foo2, foo3])
+
+        then: "container fired event with items"
+
+        1 * listener.accept(_) >> { List arguments ->
+            CollectionChangeEvent event = arguments[0]
+            assert event.changeType == CollectionChangeType.REMOVE_ITEMS
+            assert event.changes == [foo2, foo3]
+        }
+    }
 }

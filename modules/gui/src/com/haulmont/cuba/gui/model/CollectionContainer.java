@@ -37,17 +37,18 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
     List<E> getItems();
 
     /**
-     * Returns mutable list of contained entities. Changes in the list produce {@link CollectionChangeEvent}.
-     */
-    List<E> getMutableItems();
-
-    /**
      * Sets a collection of entities to the container.
      */
     void setItems(@Nullable Collection<E> entities);
 
     /**
+     * Returns mutable list of contained entities. Changes in the list produce {@link CollectionChangeEvent}.
+     */
+    List<E> getMutableItems();
+
+    /**
      * Returns entity by its id.
+     *
      * @throws IllegalArgumentException if the container doesn't have an entity with the given id
      */
     @Nonnull
@@ -86,6 +87,30 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
      * Sets sorter object.
      */
     void setSorter(Sorter sorter);
+
+    /**
+     * Enables all event listeners. Events fired on this call depend on the passed {@code mode}.
+     *
+     * @param mode mode
+     */
+    void unmute(UnmuteEventsMode mode);
+
+    /**
+     * Adds listener to {@link CollectionChangeEvent}.
+     */
+    Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener);
+
+    enum UnmuteEventsMode {
+        /**
+         * No events are raised on unmute.
+         */
+        SILENT,
+
+        /**
+         * Fire a {@link CollectionChangeEvent} with {@link CollectionChangeType#REFRESH} type on unmute.
+         */
+        FIRE_REFRESH_EVENT
+    }
 
     /**
      * Event sent on changes in the container items collection - adding, removing, replacing elements.
@@ -136,9 +161,4 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
                     '}';
         }
     }
-
-    /**
-     * Adds listener to {@link CollectionChangeEvent}.
-     */
-    Subscription addCollectionChangeListener(Consumer<CollectionChangeEvent<E>> listener);
 }

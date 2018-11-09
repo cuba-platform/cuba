@@ -63,7 +63,7 @@ public class CollectionPropertyContainerImpl<E extends Entity>
 
     @Override
     public List<E> getMutableItems() {
-        return new ObservableList<>(collection, (changeType, changes) -> {
+        return new ObservableList<>(collection, idMap, (changeType, changes) -> {
             buildIdMap();
             clearItemIfNotExists();
             updateMaster();

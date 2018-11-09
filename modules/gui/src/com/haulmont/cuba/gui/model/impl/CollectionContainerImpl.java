@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -31,6 +30,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  *
@@ -70,7 +71,7 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public List<E> getMutableItems() {
-        return new ObservableList<>(collection, (changeType, changes) -> {
+        return new ObservableList<>(collection, idMap, (changeType, changes) -> {
             buildIdMap();
             clearItemIfNotExists();
             fireCollectionChanged(changeType, changes);
@@ -128,7 +129,8 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public void replaceItem(E entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
+
         Object id = entity.getId();
         int idx = getItemIndex(id);
         CollectionChangeType changeType;
@@ -166,7 +168,20 @@ public class CollectionContainerImpl<E extends Entity>
         this.sorter = sorter;
     }
 
+    @Override
+    public void unmute(UnmuteEventsMode mode) {
+        this.listenersEnabled = false;
+
+        if (mode ==  UnmuteEventsMode.FIRE_REFRESH_EVENT) {
+            fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
+        }
+    }
+
     protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends E> changes) {
+        if (!listenersEnabled) {
+            return;
+        }
+
         CollectionChangeEvent<E> collectionChangeEvent = new CollectionChangeEvent<>(this, type, changes);
         log.trace("collectionChanged: {}", collectionChangeEvent);
         events.publish(CollectionChangeEvent.class, collectionChangeEvent);
