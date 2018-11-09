@@ -17,49 +17,28 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.CheckBoxGroup;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.RadioButtonGroup;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * todo JavaDoc
+ * Options object that can provide items as options for UI components.
  *
  * @param <I> type of option object
+ *
+ * @see LookupField
+ * @see CheckBoxGroup
+ * @see RadioButtonGroup
  */
 public interface Options<I> extends DataUnit<I> {
     Stream<I> getOptions();
 
-    Subscription addValueChangeListener(Consumer<ValueChangeEvent<I>> listener);
     Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<I>> listener);
 
-    // todo
-    class ValueChangeEvent<T> extends EventObject {
-        private final T prevValue;
-        private final T value;
-
-        public ValueChangeEvent(Options<T> source, T prevValue, T value) {
-            super(source);
-            this.prevValue = prevValue;
-            this.value = value;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Options<T> getSource() {
-            return (Options<T>) super.getSource();
-        }
-
-        public T getPrevValue() {
-            return prevValue;
-        }
-
-        public T getValue() {
-            return value;
-        }
-    }
-
-    // todo
     class OptionsChangeEvent<T> extends EventObject {
         public OptionsChangeEvent(Options<T> source) {
             super(source);

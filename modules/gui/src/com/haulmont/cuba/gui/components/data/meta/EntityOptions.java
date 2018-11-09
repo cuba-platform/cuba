@@ -16,10 +16,14 @@
 
 package com.haulmont.cuba.gui.components.data.meta;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.Options;
+
+import java.util.EventObject;
+import java.util.function.Consumer;
 
 public interface EntityOptions<E extends Entity> extends Options<E> {
     MetaClass getEntityMetaClass();
@@ -45,4 +49,31 @@ public interface EntityOptions<E extends Entity> extends Options<E> {
      * Refreshes the source moving it to the {@link BindingState#ACTIVE} state
      */
     void refresh();
+
+    Subscription addValueChangeListener(Consumer<ValueChangeEvent<E>> listener);
+
+    class ValueChangeEvent<T> extends EventObject {
+        private final T prevValue;
+        private final T value;
+
+        public ValueChangeEvent(Options<T> source, T prevValue, T value) {
+            super(source);
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Options<T> getSource() {
+            return (Options<T>) super.getSource();
+        }
+
+        public T getPrevValue() {
+            return prevValue;
+        }
+
+        public T getValue() {
+            return value;
+        }
+    }
 }

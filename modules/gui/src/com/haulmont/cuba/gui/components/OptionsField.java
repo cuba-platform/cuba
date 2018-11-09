@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
@@ -31,33 +30,113 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
- * todo JavaDoc
+ * UI component having options.
  *
- * @param <V>
- * @param <I>
+ * @param <V> type of value
+ * @param <I> type of option items
  */
 public interface OptionsField<V, I> extends Field<V> {
+
+    /**
+     * Sets options for UI component.
+     *
+     * @param options options
+     * @see ListOptions
+     */
     void setOptions(Options<I> options);
+    /**
+     * @return options object
+     */
     Options<I> getOptions();
 
+    /**
+     * Sets function that provides caption for option items.
+     *
+     * @param captionProvider caption provider
+     */
     void setOptionCaptionProvider(Function<? super I, String> captionProvider);
+    /**
+     * @return caption provider for options
+     */
     Function<? super I, String> getOptionCaptionProvider();
+
+    /**
+     * Sets options from the passed list.
+     *
+     * @param optionsList options
+     * @see ListOptions#of(Object, Object[])
+     */
+    default void setOptionsList(List<I> optionsList) {
+        setOptions(new ListOptions<>(optionsList));
+    }
+
+    /**
+     * Sets options from the passed map and automatically applies option caption provider based on map keys.
+     *
+     * @param map options
+     * @see ListOptions#of(Object, Object[])
+     */
+    default void setOptionsMap(Map<String, I> map) {
+        checkNotNullArgument(map);
+
+        BiMap<String, I> biMap = ImmutableBiMap.copyOf(map);
+
+        setOptions(new MapOptions<>(map));
+        setOptionCaptionProvider(v -> biMap.inverse().get(v));
+    }
+
+    /**
+     * Sets options from the passed enum class. Enum class must be Java enumeration and implement {@link EnumClass}.
+     *
+     * @param optionsEnum enum class
+     */
+    @SuppressWarnings("unchecked")
+    default void setOptionsEnum(Class<I> optionsEnum) {
+        checkNotNullArgument(optionsEnum);
+
+        if (!optionsEnum.isEnum()
+                || !EnumClass.class.isAssignableFrom(optionsEnum)) {
+            throw new IllegalArgumentException("Options class must be enumeration and implement EnumClass " + optionsEnum);
+        }
+
+        setOptions(new EnumOptions(optionsEnum));
+    }
 
     /*
      * Deprecated API
      */
 
+    /**
+     * @return caption mode
+     */
     @Deprecated
     CaptionMode getCaptionMode();
+    /**
+     * @param captionMode caption property
+     * @deprecated Use {{@link #setOptionCaptionProvider(Function)}} instead.
+     */
     @Deprecated
     void setCaptionMode(CaptionMode captionMode);
 
+    /**
+     * @return caption property
+     */
     @Deprecated
     String getCaptionProperty();
+    /**
+     * @param captionProperty caption property
+     * @deprecated Use {{@link #setOptionCaptionProvider(Function)}} instead.
+     */
     @Deprecated
     void setCaptionProperty(String captionProperty);
 
+    /**
+     * @return options datasource
+     * @deprecated Use {@link #getOptions()} instead.
+     */
     @Deprecated
     default CollectionDatasource getOptionsDatasource() {
         Options<I> options = getOptions();
@@ -66,6 +145,11 @@ public interface OptionsField<V, I> extends Field<V> {
         }
         return null;
     }
+
+    /**
+     * @param datasource datasource
+     * @deprecated set options using {@link #setOptions(Options)} with {@link DatasourceOptions}.
+     */
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setOptionsDatasource(CollectionDatasource datasource) {
@@ -76,6 +160,11 @@ public interface OptionsField<V, I> extends Field<V> {
         }
     }
 
+    /**
+     * @return options list
+     * @deprecated Use {@link #getOptions()} instead.
+     */
+    @Deprecated
     default List getOptionsList() {
         Options options = getOptions();
         if (options instanceof ListOptions) {
@@ -83,11 +172,11 @@ public interface OptionsField<V, I> extends Field<V> {
         }
         return null;
     }
-    @SuppressWarnings("unchecked")
-    default void setOptionsList(List optionsList) {
-        setOptions(new ListOptions<>(optionsList));
-    }
 
+    /**
+     * @return options map
+     * @deprecated Use {@link #getOptions()} instead.
+     */
     @SuppressWarnings("unchecked")
     @Deprecated
     default Map<String, ?> getOptionsMap() {
@@ -99,18 +188,9 @@ public interface OptionsField<V, I> extends Field<V> {
     }
 
     /**
-     * JavaDoc
+     * @return enumclass
+     * @deprecated Use {@link #getOptions()} instead.
      */
-    @Deprecated
-    default void setOptionsMap(Map<String, I> map) {
-        Preconditions.checkNotNullArgument(map);
-
-        BiMap<String, I> biMap = ImmutableBiMap.copyOf(map);
-
-        setOptions(new MapOptions<>(map));
-        setOptionCaptionProvider(v -> biMap.inverse().get(v));
-    }
-
     @SuppressWarnings("unchecked")
     @Deprecated
     default Class<? extends EnumClass> getOptionsEnum() {
@@ -119,16 +199,5 @@ public interface OptionsField<V, I> extends Field<V> {
             return ((EnumOptions) options).getEnumClass();
         }
         return null;
-    }
-
-    /**
-     * JavaDoc
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    default void setOptionsEnum(Class<V> optionsEnum) {
-        Preconditions.checkNotNullArgument(optionsEnum);
-
-        setOptions(new EnumOptions(optionsEnum));
     }
 }

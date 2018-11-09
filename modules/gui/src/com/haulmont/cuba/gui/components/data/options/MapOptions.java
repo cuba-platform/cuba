@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.data.options;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.sys.VoidSubscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.Options;
 
@@ -26,21 +25,28 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class MapOptions<V> implements Options<V> {
-    protected Map<String, V> options;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-    public MapOptions(Map<String, V> options) {
-        Preconditions.checkNotNullArgument(options);
+/**
+ * Options based on a map.
+ *
+ * @param <I> item type
+ */
+public class MapOptions<I> implements Options<I> {
+    protected Map<String, I> options;
+
+    public MapOptions(Map<String, I> options) {
+        checkNotNullArgument(options);
 
         this.options = options;
     }
 
-    public Map<String, V> getItemsCollection() {
+    public Map<String, I> getItemsCollection() {
         return options;
     }
 
     @Override
-    public Stream<V> getOptions() {
+    public Stream<I> getOptions() {
         return options.values().stream();
     }
 
@@ -51,11 +57,6 @@ public class MapOptions<V> implements Options<V> {
 
     @Override
     public Subscription addStateChangeListener(Consumer listener) {
-        return VoidSubscription.INSTANCE;
-    }
-
-    @Override
-    public Subscription addValueChangeListener(Consumer listener) {
         return VoidSubscription.INSTANCE;
     }
 

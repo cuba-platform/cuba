@@ -20,15 +20,20 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 import java.util.Arrays;
 
-public class EnumOptions<V extends EnumClass> extends ListOptions<V> {
-    private Class<V> enumClass;
+/**
+ * Options based on an enumeration class.
+ *
+ * @param <I> item type
+ */
+public class EnumOptions<I extends EnumClass> extends ListOptions<I> {
+    private Class<I> enumClass;
 
-    public EnumOptions(Class<V> enumClass) {
+    public EnumOptions(Class<I> enumClass) {
         super(Arrays.asList(enumClass.getEnumConstants()));
         this.enumClass = enumClass;
     }
 
-    public Class<V> getEnumClass() {
+    public Class<I> getEnumClass() {
         return enumClass;
     }
 }

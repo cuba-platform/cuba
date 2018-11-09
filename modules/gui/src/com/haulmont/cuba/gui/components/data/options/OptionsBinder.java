@@ -21,9 +21,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -81,23 +81,27 @@ public class OptionsBinder {
             }
         }
 
-        public void bind() {
+        public <E extends Entity> void bind() {
             if (source instanceof EntityOptions
                     && component instanceof HasValue) {
                 this.componentValueChangeSubscription =
                         ((HasValue<?>) component).addValueChangeListener(this::componentValueChanged);
+
+                this.sourceValueChangeSupscription =
+                        ((EntityOptions<E>) source).addValueChangeListener(this::optionsSourceValueChanged);
             }
+
             this.sourceStateChangeSupscription = source.addStateChangeListener(this::optionsSourceStateChanged);
-            this.sourceValueChangeSupscription = source.addValueChangeListener(this::optionsSourceValueChanged);
             this.sourceOptionsChangeSupscription = source.addOptionsChangeListener(this::optionsSourceOptionsChanged);
         }
 
-        protected void optionsSourceOptionsChanged(Options.OptionsChangeEvent<V> event) {
+        protected void optionsSourceOptionsChanged(@SuppressWarnings("unused") Options.OptionsChangeEvent<V> event) {
             optionsTarget.setOptions(source.getOptions());
         }
 
-        protected void optionsSourceValueChanged(Options.ValueChangeEvent<V> event) {
-            optionsTarget.setOptions(source.getOptions());
+        @SuppressWarnings("unchecked")
+        protected void optionsSourceValueChanged(EntityOptions.ValueChangeEvent<? extends Entity> event) {
+            ((HasValue) optionsTarget).setValue(event.getValue());
         }
 
         @SuppressWarnings("unchecked")
@@ -121,6 +125,21 @@ public class OptionsBinder {
             if (this.componentValueChangeSubscription != null) {
                 this.componentValueChangeSubscription.remove();
                 this.componentValueChangeSubscription = null;
+            }
+
+            if (this.sourceValueChangeSupscription != null) {
+                this.sourceValueChangeSupscription.remove();
+                this.sourceValueChangeSupscription = null;
+            }
+
+            if (this.sourceOptionsChangeSupscription != null) {
+                this.sourceOptionsChangeSupscription.remove();
+                this.sourceOptionsChangeSupscription = null;
+            }
+
+            if (this.sourceStateChangeSupscription != null) {
+                this.sourceStateChangeSupscription.remove();
+                this.sourceStateChangeSupscription = null;
             }
         }
     }

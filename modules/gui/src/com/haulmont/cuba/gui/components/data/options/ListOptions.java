@@ -21,26 +21,51 @@ import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.Options;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ListOptions<V> implements Options<V> {
-    protected Collection<V> options;
+/**
+ * Options based on a simple collection.
+ *
+ * @param <I> item type
+ */
+public class ListOptions<I> implements Options<I> {
+    protected Collection<I> options;
 
-    public ListOptions(Collection<V> options) {
+    public ListOptions(Collection<I> options) {
         Preconditions.checkNotNullArgument(options);
 
         this.options = options;
     }
 
-    public Collection<V> getItemsCollection() {
+    @SafeVarargs
+    public static <V> ListOptions<V> of(V v, V... vs) {
+        List<V> options = new ArrayList<>();
+        options.add(v);
+
+        if (vs != null) {
+            CollectionUtils.addAll(options, vs);
+        }
+
+        return new ListOptions<>(options);
+    }
+
+    public static <V> ListOptions<V> empty() {
+        return new ListOptions<>(Collections.emptyList());
+    }
+
+    public Collection<I> getItemsCollection() {
         return options;
     }
 
     @Override
-    public Stream<V> getOptions() {
+    public Stream<I> getOptions() {
         return options.stream();
     }
 
@@ -50,17 +75,12 @@ public class ListOptions<V> implements Options<V> {
     }
 
     @Override
-    public Subscription addStateChangeListener(Consumer<StateChangeEvent<V>> listener) {
+    public Subscription addStateChangeListener(Consumer<StateChangeEvent<I>> listener) {
         return VoidSubscription.INSTANCE;
     }
 
     @Override
-    public Subscription addValueChangeListener(Consumer<ValueChangeEvent<V>> listener) {
-        return VoidSubscription.INSTANCE;
-    }
-
-    @Override
-    public Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<V>> listener) {
+    public Subscription addOptionsChangeListener(Consumer<OptionsChangeEvent<I>> listener) {
         return VoidSubscription.INSTANCE;
     }
 }

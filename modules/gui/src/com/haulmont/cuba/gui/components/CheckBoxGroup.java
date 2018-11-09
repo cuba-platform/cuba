@@ -16,14 +16,17 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.data.Options;
+
 import java.util.Set;
 
 /**
- * JavaDoc
- * @param <V>
+ * A group of Checkboxes. Individual checkboxes are made from items supplied by {@link Options}.
+ *
+ * @param <I> item type
  */
-public interface CheckBoxGroup<V>
-        extends OptionsField<Set<V>, V>, LookupComponent, Component.Focusable, HasOrientation {
+public interface CheckBoxGroup<I>
+        extends OptionsField<Set<I>, I>, LookupComponent, Component.Focusable, HasOrientation {
     String NAME = "checkBoxGroup";
 
 }

@@ -51,7 +51,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
         }
     }
 
-    protected void datasourceCollectionChanged(CollectionDatasource.CollectionChangeEvent<E, K> e) {
+    protected void datasourceCollectionChanged(@SuppressWarnings("unused") CollectionDatasource.CollectionChangeEvent<E, K> e) {
         events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
     }
 
@@ -85,7 +85,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
         return BindingState.INACTIVE;
     }
 
-    public void setState(BindingState state) {
+    protected void setState(BindingState state) {
         if (this.state != state) {
             this.state = state;
 

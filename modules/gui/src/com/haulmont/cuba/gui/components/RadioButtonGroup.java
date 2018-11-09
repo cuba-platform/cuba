@@ -16,12 +16,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.data.Options;
+
 /**
- * JavaDoc
- * @param <V>
+ * A group of RadioButtons. Individual radiobuttons are made from items supplied by a {@link Options}.
+ *
+ * @param <I> item type
  */
-public interface RadioButtonGroup<V>
-        extends OptionsField<V, V>, LookupComponent, Component.Focusable, HasOrientation {
+public interface RadioButtonGroup<I> extends OptionsField<I, I>, LookupComponent, Component.Focusable, HasOrientation {
     String NAME = "radioButtonGroup";
 
 }

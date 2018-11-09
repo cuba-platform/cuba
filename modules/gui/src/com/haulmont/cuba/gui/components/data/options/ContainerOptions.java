@@ -31,6 +31,12 @@ import com.haulmont.cuba.gui.model.HasLoader;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * Options based on a data container.
+ *
+ * @param <E> entity type
+ * @param <K> entity key type
+ */
 public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, EntityOptions<E>,  ContainerDataUnit<E> {
 
     protected CollectionContainer<E> container;
@@ -52,7 +58,7 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
     }
 
-    protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<E> e) {
+    protected void containerCollectionChanged(@SuppressWarnings("unused") CollectionContainer.CollectionChangeEvent<E> e) {
         if (deferredSelectedItem != null) {
             container.setItem(deferredSelectedItem);
             deferredSelectedItem = null;
@@ -95,8 +101,9 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     @Override
     public void refresh() {
-       if (loader != null)
-           loader.load();
+        if (loader != null) {
+            loader.load();
+        }
     }
 
     @Override
