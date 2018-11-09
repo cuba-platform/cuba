@@ -1357,8 +1357,14 @@ public class WebScreens implements Screens, WindowManager {
 
     // used only for legacy screens
     @Deprecated
-    protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
-        Map<String, Object> map = new HashMap<>(params.size());
+    protected Map<String, Object> createParametersMap(WindowInfo windowInfo, @Nullable Map<String, Object> params) {
+        Map<String, Object> map;
+
+        if (params != null) {
+            map = new HashMap<>(params.size());
+        } else {
+            map = new HashMap<>();
+        }
 
         Element element = windowInfo.getDescriptor();
         if (element != null) {
@@ -1378,7 +1384,9 @@ public class WebScreens implements Screens, WindowManager {
                 }
             }
         }
-        map.putAll(params);
+        if (params != null) {
+            map.putAll(params);
+        }
 
         return map;
     }

@@ -18,18 +18,21 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
-import com.haulmont.cuba.web.jmx.entity.*;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperationParameter;
 import com.haulmont.cuba.web.widgets.CubaTable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +42,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static com.haulmont.cuba.web.jmx.entity.AttributeHelper.convertTypeToReadableName;
 
 public class MbeanInspectWindow extends AbstractEditor {
 
@@ -60,7 +65,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     protected CollectionDatasource<ManagedBeanAttribute, UUID> attrDs;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected WebConfig webConfig;
@@ -69,13 +74,13 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attributesTable);
-        vaadinAttrTable.setTextSelectionEnabled(true);
+        attributesTable.unwrap(CubaTable.class)
+                .setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);
         attributesTable.addGeneratedColumn("type", entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
-            label.setValue(AttributeHelper.convertTypeToReadableName(entity.getType()));
+            Label<String> label = uiComponents.create(Label.NAME);
+            label.setValue(convertTypeToReadableName(entity.getType()));
             return label;
         });
 
@@ -130,37 +135,38 @@ public class MbeanInspectWindow extends AbstractEditor {
 
     protected void initOperationsLayout(ManagedBeanInfo mbean) {
         BoxLayout container = operations;
-        for (final ManagedBeanOperation op : mbean.getOperations()) {
-            BoxLayout vl = componentsFactory.createComponent(VBoxLayout.class);
+
+        for (ManagedBeanOperation op : mbean.getOperations()) {
+            BoxLayout vl = uiComponents.create(VBoxLayout.class);
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
             vl.setStyleName("c-mbeans-operation-container");
 
-            Label nameLbl = componentsFactory.createComponent(Label.class);
-            nameLbl.setValue(AttributeHelper.convertTypeToReadableName(op.getReturnType()) + " " + op.getName() + "()");
+            Label<String> nameLbl = uiComponents.create(Label.TYPE_DEFAULT);
+            nameLbl.setValue(convertTypeToReadableName(op.getReturnType()) + " " + op.getName() + "()");
             nameLbl.setStyleName("h2");
             vl.add(nameLbl);
 
             if (StringUtils.isNotEmpty(op.getDescription())) {
-                Label descrLbl = componentsFactory.createComponent(Label.class);
+                Label<String> descrLbl = uiComponents.create(Label.TYPE_DEFAULT);
                 descrLbl.setValue(op.getDescription());
                 vl.add(descrLbl);
             }
 
-            final List<AttributeEditor> attrProviders = new ArrayList<>();
+            List<AttributeEditor> attrProviders = new ArrayList<>();
 
             if (!op.getParameters().isEmpty()) {
-                GridLayout grid = componentsFactory.createComponent(GridLayout.class);
+                GridLayout grid = uiComponents.create(GridLayout.class);
                 grid.setSpacing(true);
                 grid.setColumns(3);
                 grid.setRows(op.getParameters().size());
                 int row = 0;
                 for (ManagedBeanOperationParameter param : op.getParameters()) {
-                    Label pnameLbl = componentsFactory.createComponent(Label.class);
+                    Label<String> pnameLbl = uiComponents.create(Label.TYPE_DEFAULT);
                     pnameLbl.setValue(param.getName());
 
-                    Label ptypeLbl = componentsFactory.createComponent(Label.class);
-                    ptypeLbl.setValue(AttributeHelper.convertTypeToReadableName(param.getType()));
+                    Label<String> ptypeLbl = uiComponents.create(Label.TYPE_DEFAULT);
+                    ptypeLbl.setValue(convertTypeToReadableName(param.getType()));
 
                     AttributeEditor prov = new AttributeEditor(frame, param.getType());
                     attrProviders.add(prov);
@@ -169,10 +175,10 @@ public class MbeanInspectWindow extends AbstractEditor {
                     Component editComposition = editField;
 
                     if (StringUtils.isNotBlank(param.getDescription())) {
-                        Label pdescrLbl = componentsFactory.createComponent(Label.class);
+                        Label<String> pdescrLbl = uiComponents.create(Label.TYPE_DEFAULT);
                         pdescrLbl.setValue(param.getDescription());
 
-                        BoxLayout editorLayout = componentsFactory.createComponent(VBoxLayout.class);
+                        BoxLayout editorLayout = uiComponents.create(VBoxLayout.class);
                         editorLayout.add(editField);
                         editorLayout.add(pdescrLbl);
 
@@ -187,24 +193,18 @@ public class MbeanInspectWindow extends AbstractEditor {
                 vl.add(grid);
             }
 
-            Button invokeBtn = componentsFactory.createComponent(Button.class);
-            invokeBtn.setAction(new AbstractAction("invoke") {
-                @Override
-                public void actionPerform(Component component) {
-                    invokeOperation(op, attrProviders);
-                }
-
-                @Override
-                public String getCaption() {
-                    return getMessage("mbean.operation.invoke");
-                }
-            });
+            Button invokeBtn = uiComponents.create(Button.class);
+            invokeBtn.setAction(new BaseAction("invoke")
+                    .withCaption(getMessage("mbean.operation.invoke"))
+                    .withHandler(event ->
+                            invokeOperation(op, attrProviders)
+                    ));
 
             vl.add(invokeBtn);
             container.add(vl);
         }
         if (mbean.getOperations().isEmpty()) {
-            Label lbl = componentsFactory.createComponent(Label.class);
+            Label<String> lbl = uiComponents.create(Label.TYPE_DEFAULT);
             lbl.setValue(getMessage("mbean.operations.none"));
             container.add(lbl);
         }
@@ -230,7 +230,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     protected void runSynchronously(ManagedBeanOperation operation, Object[] paramValues) {
-        Map<String, Object> resultMap = null;
+        Map<String, Object> resultMap = Collections.emptyMap();
         try {
             Object res = jmxControlAPI.invokeOperation(operation, paramValues);
             if (res != null) {
@@ -252,10 +252,10 @@ public class MbeanInspectWindow extends AbstractEditor {
         w.addCloseListener(actionId -> reloadAttributes());
     }
 
-    protected void runAsynchronously(final ManagedBeanOperation operation, final Object[] paramValues, Long timeout) {
+    protected void runAsynchronously(ManagedBeanOperation operation, Object[] paramValues, Long timeout) {
         BackgroundTask<Long, Object> task = new BackgroundTask<Long, Object>(timeout, TimeUnit.MILLISECONDS, this) {
             @Override
-            public Object run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+            public Object run(TaskLifeCycle<Long> taskLifeCycle) {
                 return jmxControlAPI.invokeOperation(operation, paramValues);
             }
 
