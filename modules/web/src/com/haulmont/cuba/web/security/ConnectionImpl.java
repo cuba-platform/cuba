@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.security;
 
-import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Events;
@@ -51,13 +51,14 @@ import javax.inject.Inject;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
  * Default {@link Connection} implementation for web-client.
  */
 @Component(Connection.NAME)
 @Scope(VaadinSessionScope.NAME)
-public class ConnectionImpl extends EventRouter implements Connection {
+public class ConnectionImpl implements Connection {
 
     private static final Logger log = LoggerFactory.getLogger(ConnectionImpl.class);
 
@@ -79,6 +80,8 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
     // initial or used on login IP of the user
     protected String userRemoteAddress = null;
+
+    protected EventHub eventHub = new EventHub();
 
     @Override
     public void login(Credentials credentials) throws LoginException {
@@ -223,12 +226,12 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
     protected void fireStateChangeListeners(UserSession previousSession, UserSession newSession) {
         StateChangeEvent event = new StateChangeEvent(this, previousSession, newSession);
-        fireEvent(StateChangeListener.class, StateChangeListener::connectionStateChanged, event);
+        eventHub.publish(StateChangeEvent.class, event);
     }
 
     protected void fireSubstitutionListeners() {
         UserSubstitutedEvent event = new UserSubstitutedEvent(this);
-        fireEvent(UserSubstitutionListener.class, UserSubstitutionListener::userSubstituted, event);
+        eventHub.publish(UserSubstitutedEvent.class, event);
     }
 
     protected void publishUserConnectedEvent(Credentials credentials) {
@@ -309,7 +312,7 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
         setSessionInternal(null);
 
-        removeListeners(UserSubstitutionListener.class);
+        eventHub.unsubscribe(UserSubstitutedEvent.class);
 
         publishDisconnectedEvent(previousSession);
 
@@ -386,23 +389,23 @@ public class ConnectionImpl extends EventRouter implements Connection {
     }
 
     @Override
-    public void addStateChangeListener(StateChangeListener listener) {
-        addListener(StateChangeListener.class, listener);
+    public void addStateChangeListener(Consumer<StateChangeEvent> listener) {
+        eventHub.subscribe(StateChangeEvent.class, listener);
     }
 
     @Override
-    public void removeStateChangeListener(StateChangeListener listener) {
-        removeListener(StateChangeListener.class, listener);
+    public void removeStateChangeListener(Consumer<StateChangeEvent> listener) {
+        eventHub.unsubscribe(StateChangeEvent.class, listener);
     }
 
     @Override
-    public void addUserSubstitutionListener(UserSubstitutionListener listener) {
-        addListener(UserSubstitutionListener.class, listener);
+    public void addUserSubstitutionListener(Consumer<UserSubstitutedEvent> listener) {
+        eventHub.subscribe(UserSubstitutedEvent.class, listener);
     }
 
     @Override
-    public void removeUserSubstitutionListener(UserSubstitutionListener listener) {
-        removeListener(UserSubstitutionListener.class, listener);
+    public void removeUserSubstitutionListener(Consumer<UserSubstitutedEvent> listener) {
+        eventHub.unsubscribe(UserSubstitutedEvent.class, listener);
     }
 
     @PostConstruct

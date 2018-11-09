@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * Interface to be implemented by objects that connect web-client to the middleware.
@@ -110,44 +111,28 @@ public interface Connection extends ExternallyAuthenticatedConnection {
      *
      * @param listener listener to add
      */
-    void addStateChangeListener(StateChangeListener listener);
+    void addStateChangeListener(Consumer<StateChangeEvent> listener);
 
     /**
      * Remove a connection listener.
      *
      * @param listener listener to remove
      */
-    void removeStateChangeListener(StateChangeListener listener);
+    void removeStateChangeListener(Consumer<StateChangeEvent> listener);
 
     /**
      * Add a user substitution listener.
      *
      * @param listener listener to add
      */
-    void addUserSubstitutionListener(UserSubstitutionListener listener);
+    void addUserSubstitutionListener(Consumer<UserSubstitutedEvent> listener);
 
     /**
      * Remove a user substitution listener.
      *
      * @param listener listener to remove
      */
-    void removeUserSubstitutionListener(UserSubstitutionListener listener);
-
-    /**
-     * Listener of connection events. See {@link com.haulmont.cuba.web.Connection}.
-     */
-    @FunctionalInterface
-    interface StateChangeListener {
-        void connectionStateChanged(StateChangeEvent event);
-    }
-
-    /**
-     * Listener of user substitution events. See {@link com.haulmont.cuba.web.Connection}.
-     */
-    @FunctionalInterface
-    interface UserSubstitutionListener {
-        void userSubstituted(UserSubstitutedEvent event);
-    }
+    void removeUserSubstitutionListener(Consumer<UserSubstitutedEvent> listener);
 
     class StateChangeEvent extends EventObject {
         private final UserSession previousSession;

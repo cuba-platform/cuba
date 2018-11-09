@@ -39,7 +39,8 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Locale;
 
-import static com.haulmont.cuba.web.Connection.*;
+import static com.haulmont.cuba.web.Connection.StateChangeEvent;
+import static com.haulmont.cuba.web.Connection.UserSubstitutedEvent;
 import static com.haulmont.cuba.web.security.ExternalUserCredentials.isLoggedInWithExternalAuth;
 
 /**
@@ -48,7 +49,7 @@ import static com.haulmont.cuba.web.security.ExternalUserCredentials.isLoggedInW
  */
 @Component(App.NAME)
 @Scope(VaadinSessionScope.NAME)
-public class DefaultApp extends App implements StateChangeListener, UserSubstitutionListener {
+public class DefaultApp extends App {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultApp.class);
 
@@ -58,12 +59,11 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
     @Override
     protected Connection createConnection() {
         Connection connection = super.createConnection();
-        connection.addStateChangeListener(this);
+        connection.addStateChangeListener(this::connectionStateChanged);
         return connection;
     }
 
-    @Override
-    public void connectionStateChanged(StateChangeEvent event) {
+    protected void connectionStateChanged(StateChangeEvent event) {
         Connection connection = event.getSource();
 
         log.debug("connectionStateChanged connected: {}, authenticated: {}",
@@ -78,7 +78,7 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
             setLocale(userSession.getLocale());
 
             // substitution listeners are cleared by connection on logout
-            connection.addUserSubstitutionListener(this);
+            connection.addUserSubstitutionListener(this::userSubstituted);
 
             preventSessionFixation(connection, userSession);
 
@@ -113,6 +113,14 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
 
             publishAppLoggedOutEvent(event.getPreviousSession());
         }
+    }
+
+    protected void userSubstituted(UserSubstitutedEvent event) {
+        cleanupBackgroundTasks();
+        clearSettingsCache();
+        closeAllWindows();
+
+        initializeUi();
     }
 
     protected void publishAppLoggedOutEvent(UserSession previousSession) {
@@ -240,14 +248,5 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
         closeAllWindows();
 
         super.navigateTo(topLevelWindowId);
-    }
-
-    @Override
-    public void userSubstituted(UserSubstitutedEvent event) {
-        cleanupBackgroundTasks();
-        clearSettingsCache();
-        closeAllWindows();
-
-        initializeUi();
     }
 }

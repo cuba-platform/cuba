@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Event that is fired by {@link Connection} when session user has been substituted on middleware right before firing
- * {@link Connection.StateChangeListener} listeners.
+ * {@link Connection.StateChangeEvent}.
  */
 public class UserSessionSubstitutedEvent extends ApplicationEvent {
     protected final UserSession sourceSession;
