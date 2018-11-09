@@ -281,7 +281,9 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
         this.optionCaptionProvider = captionProvider;
 
-        component.setItemCaptionGenerator((ItemCaptionGenerator<V>) captionProvider::apply);
+        component.setItemCaptionGenerator(captionProvider != null ?
+                (ItemCaptionGenerator<V>) captionProvider::apply
+                : null);
     }
 
     @Override
