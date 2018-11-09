@@ -25,65 +25,27 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ActionsPermissions;
-import com.haulmont.cuba.gui.components.ButtonsPanel;
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.gui.components.DataGridEditorFieldFactory;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.LookupComponent;
-import com.haulmont.cuba.gui.components.RowsCount;
-import com.haulmont.cuba.gui.components.ShortcutsDelegate;
-import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.WindowDelegate;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakStateChangeListener;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.gui.components.renderers.RendererWrapper;
-import com.haulmont.cuba.web.gui.components.renderers.WebButtonRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebCheckBoxRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebClickableTextRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebComponentRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebDateRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebHtmlRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebImageRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebNumberRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebProgressBarRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebTextRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaGrid;
-import com.haulmont.cuba.web.toolkit.ui.CubaGridContextMenu;
-import com.haulmont.cuba.web.toolkit.ui.CubaGridEditorFieldFactory;
-import com.haulmont.cuba.web.toolkit.ui.CubaMultiCheckSelectionModel;
-import com.haulmont.cuba.web.toolkit.ui.CubaMultiSelectionModel;
-import com.haulmont.cuba.web.toolkit.ui.CubaSingleSelectionModel;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToObjectConverter;
@@ -99,29 +61,16 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -2621,13 +2570,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
-    public boolean isCrossFieldValidate() {
-        return component.isCrossFieldValidate();
+    public boolean isEditorCrossFieldValidationEnabled() {
+        return component.isEditorCrossFieldValidationEnabled();
     }
 
     @Override
-    public void setCrossFieldValidate(boolean crossFieldValidate) {
-        component.setCrossFieldValidate(crossFieldValidate);
+    public void setEditorCrossFieldValidationEnabled(boolean crossFieldValidate) {
+        component.setEditorCrossFieldValidationEnabled(crossFieldValidate);
     }
 
     protected class DataGridDsWrapper extends DataGridIndexedCollectionDsWrapper {

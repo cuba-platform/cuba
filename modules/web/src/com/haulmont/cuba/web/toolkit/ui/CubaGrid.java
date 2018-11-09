@@ -40,15 +40,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.BeforeEditorOpenListener.EDITOR_OPEN_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorCloseListener.EDITOR_CLOSE_METHOD;
+import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.BeforeEditorOpenListener.EDITOR_OPEN_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPostCommitListener.EDITOR_POST_COMMIT_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPreCommitListener.EDITOR_PRE_COMMIT_METHOD;
 
@@ -63,7 +58,7 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
     protected boolean crossFieldValidate = true;
 
     protected Security security = AppBeans.get(Security.NAME);
-    protected BeanValidation beanValidation = AppBeans.get(BeanValidation .class);
+    protected BeanValidation beanValidation = AppBeans.get(BeanValidation.class);
 
     public CubaGrid(CubaGridEditorFieldFactory editorFieldFactory) {
         this(null, null, editorFieldFactory);
@@ -231,30 +226,15 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
             Map<Field<?>, Validator.InvalidValueException> invalidValueExceptions = commitFields();
 
-            if (isCrossFieldValidate()) {
-                @SuppressWarnings("unchecked") Entity entity = collectionDatasource.getItem(getEditedItemId());
-                javax.validation.Validator validator = beanValidation.getValidator();
-                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, UiCrossFieldChecks.class);
-
-                Validator.InvalidValueException[] validationExceptions = violations.stream()
-                        .filter(violation -> {
-                            Path propertyPath = violation.getPropertyPath();
-
-                            Path.Node lastNode = Iterables.getLast(propertyPath);
-                            return lastNode.getKind() == ElementKind.BEAN;
-                        })
-                        .map(violation -> new Validator.InvalidValueException(violation.getMessage()))
-                        .toArray(Validator.InvalidValueException[]::new);
-                if (validationExceptions.length > 0) {
-                    throw new Validator.InvalidValueException("Item validation failed", validationExceptions);
-                }
-            }
-
-            if (invalidValueExceptions.isEmpty()) {
-                fireEditorPostCommitEvent();
-            } else {
+            if (!invalidValueExceptions.isEmpty()) {
                 throw new FieldGroup.FieldGroupInvalidValueException(invalidValueExceptions);
             }
+
+            if (isEditorCrossFieldValidationEnabled()) {
+                itemCrossFieldValidate();
+            }
+
+            fireEditorPostCommitEvent();
         } catch (Exception e) {
             throw new FieldGroup.CommitException("Commit failed", null, e);
         }
@@ -284,11 +264,30 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         }
     }
 
-    public boolean isCrossFieldValidate() {
+    protected void itemCrossFieldValidate() throws Validator.InvalidValueException {
+        @SuppressWarnings("unchecked") Entity entity = collectionDatasource.getItem(getEditedItemId());
+        javax.validation.Validator validator = beanValidation.getValidator();
+        Set<ConstraintViolation<Entity>> violations = validator.validate(entity, UiCrossFieldChecks.class);
+
+        Validator.InvalidValueException[] validationExceptions = violations.stream()
+                .filter(violation -> {
+                    Path propertyPath = violation.getPropertyPath();
+
+                    Path.Node lastNode = Iterables.getLast(propertyPath);
+                    return lastNode.getKind() == ElementKind.BEAN;
+                })
+                .map(violation -> new Validator.InvalidValueException(violation.getMessage()))
+                .toArray(Validator.InvalidValueException[]::new);
+        if (validationExceptions.length > 0) {
+            throw new Validator.InvalidValueException("Item validation failed", validationExceptions);
+        }
+    }
+
+    public boolean isEditorCrossFieldValidationEnabled() {
         return crossFieldValidate;
     }
 
-    public void setCrossFieldValidate(boolean crossFieldValidate) {
+    public void setEditorCrossFieldValidationEnabled(boolean crossFieldValidate) {
         this.crossFieldValidate = crossFieldValidate;
     }
 

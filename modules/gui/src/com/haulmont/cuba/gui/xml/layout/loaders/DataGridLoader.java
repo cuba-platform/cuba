@@ -449,9 +449,9 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
     }
 
     protected void loadCrossFieldValidate(DataGrid component, Element element) {
-        String crossFieldValidate = element.attributeValue("crossFieldValidate");
+        String crossFieldValidate = element.attributeValue("editorCrossFieldValidationEnabled");
         if (StringUtils.isNotEmpty(crossFieldValidate)) {
-            component.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
+            component.setEditorCrossFieldValidationEnabled(Boolean.parseBoolean(crossFieldValidate));
         }
     }
 }
