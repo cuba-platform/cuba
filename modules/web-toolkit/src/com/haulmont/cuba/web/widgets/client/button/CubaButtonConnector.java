@@ -27,6 +27,8 @@ import com.vaadin.shared.ui.Connect;
 @Connect(value = CubaButton.class)
 public class CubaButtonConnector extends ButtonConnector {
 
+    public static final String ICON_STYLE = "icon";
+
     protected boolean pendingResponse = false;
 
     public CubaButtonConnector() {
@@ -50,7 +52,9 @@ public class CubaButtonConnector extends ButtonConnector {
 
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        stopResponsePending();
+        if (getState().useResponsePending) {
+            stopResponsePending();
+        }
 
         super.onStateChanged(stateChangeEvent);
 
@@ -62,10 +66,17 @@ public class CubaButtonConnector extends ButtonConnector {
                 getWidget().removeStyleDependentName("empty-caption");
             }
         }
+
+        if (getIconUri() != null) {
+            getWidget().addStyleName(ICON_STYLE);
+        } else {
+            getWidget().removeStyleName(ICON_STYLE);
+        }
     }
 
     @Override
     public void onClick(ClickEvent event) {
+        // todo get rid of it
         if (ValidationErrorHolder.hasValidationErrors()) {
             return;
         }

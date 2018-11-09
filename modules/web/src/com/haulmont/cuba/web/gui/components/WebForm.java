@@ -48,11 +48,10 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
 
     protected ValueSourceProvider valueSourceProvider;
 
-    {
-        columnComponentMapping.add(new ArrayList<>());
-    }
-
     public WebForm() {
+        // add first column
+        columnComponentMapping.add(new ArrayList<>());
+
         component = createComponent();
     }
 
@@ -61,20 +60,6 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
     }
 
     protected boolean editable = true;
-
-    @Override
-    public void setId(String id) {
-        super.setId(id);
-
-        if (id != null && AppUI.getCurrent().isTestMode()) {
-            for (Component component : getOwnComponents()) {
-                com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(component);
-                if (composition != null) {
-                    composition.setCubaId(component.getId());
-                }
-            }
-        }
-    }
 
     @Override
     public void setDebugId(String id) {

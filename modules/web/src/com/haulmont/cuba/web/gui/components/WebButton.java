@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.shared.MouseEventDetails;
 import org.apache.commons.lang3.StringUtils;
@@ -132,6 +133,13 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);
+
+                if (component.getCubaId() == null) {
+                    AppUI ui = AppUI.getCurrent();
+                    if (ui != null && ui.isTestMode()) {
+                        component.setCubaId(action.getId());
+                    }
+                }
             }
 
             boolean primaryAction = action instanceof AbstractAction && ((AbstractAction) action).isPrimary();
@@ -141,21 +149,6 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                 removeStyleName("c-primary-action");
             }
         }
-    }
-
-    @Override
-    public void setStyleName(String name) {
-        super.setStyleName(name);
-        if (getIcon() != null)
-            component.addStyleName(ICON_STYLE);
-    }
-
-    @Override
-    public String getStyleName() {
-        if (getIcon() != null)
-            return StringUtils.normalizeSpace(super.getStyleName().replace(ICON_STYLE, ""));
-
-        return super.getStyleName();
     }
 
     @Override
