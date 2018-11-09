@@ -1229,7 +1229,8 @@ public class WebScreens implements Screens, WindowManager {
                 );
 
         if (messageType.getWidth() != null) {
-            builder.withWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
+            SizeUnit sizeUnit = messageType.getWidthUnit() != null ? messageType.getWidthUnit() : SizeUnit.PIXELS;
+            builder.withWidth(messageType.getWidth() + sizeUnit.getSymbol());
         }
         if (messageType.getModal() != null) {
             builder.withModal(messageType.getModal());
@@ -1270,7 +1271,8 @@ public class WebScreens implements Screens, WindowManager {
                 .withActions(actions);
 
         if (messageType.getWidth() != null) {
-            builder.withWidth(messageType.getWidth() + messageType.getWidthUnit().getSymbol());
+            SizeUnit sizeUnit = messageType.getWidthUnit() != null ? messageType.getWidthUnit() : SizeUnit.PIXELS;
+            builder.withWidth(messageType.getWidth() + sizeUnit.getSymbol());
         }
         if (messageType.getMaximized() != null) {
             builder.withMaximized(messageType.getMaximized());

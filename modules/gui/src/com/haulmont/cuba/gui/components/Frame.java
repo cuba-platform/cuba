@@ -115,7 +115,7 @@ public interface Frame
         }
 
         private Float width;
-        private SizeUnit widthUnit;
+        private SizeUnit widthUnit = SizeUnit.PIXELS;
         private Boolean modal;
         private Boolean closeOnClickOutside;
         private Boolean maximized;
@@ -186,6 +186,7 @@ public interface Frame
             MessageType instance = getMutableInstance();
 
             instance.width = -1.0f;
+            instance.widthUnit = SizeUnit.PIXELS;
             return instance;
         }
 
