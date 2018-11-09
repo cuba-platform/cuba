@@ -123,6 +123,8 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected Folders folders = AppBeans.get(Folders.NAME);
 
+    protected EntityStates entityStates = AppBeans.get(EntityStates.class);
+
     protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
 
     protected Frame frame;
@@ -604,12 +606,16 @@ public class CubaFoldersPane extends VerticalLayout {
      * @return a parent folder
      */
     protected Folder getFolderParent(Folder folder) {
-        Folder parent = folder.getParent();
-        return parent == null
-                ? null
-                : PersistenceHelper.isDeleted(parent)
-                ? null
-                : parent;
+        if (!entityStates.isLoaded(folder, "parent")) {
+            return null;
+        } else {
+            Folder parent = folder.getParent();
+            return parent == null
+                    ? null
+                    : PersistenceHelper.isDeleted(parent)
+                    ? null
+                    : parent;
+        }
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
