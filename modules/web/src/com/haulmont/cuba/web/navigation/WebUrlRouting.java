@@ -50,7 +50,6 @@ public class WebUrlRouting implements UrlRouting {
 
     @Inject
     protected Events events;
-
     @Inject
     protected WebConfig webConfig;
 
@@ -109,7 +108,7 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         if (UrlTools.headless()) {
-            log.debug("Unable to resolve navigation state in headless mode");
+            log.trace("Unable to resolve navigation state in headless mode");
             return NavigationState.empty();
         }
 

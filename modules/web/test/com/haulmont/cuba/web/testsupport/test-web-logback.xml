@@ -45,6 +45,8 @@
 
     <!-- End CUBA -->
 
+    <logger name="com.vaadin" level="WARN"/>
+
     <logger name="org.springframework" level="WARN"/>
 
     <logger name="eclipselink" level="WARN"/>

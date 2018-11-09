@@ -231,6 +231,11 @@ public class UrlTools {
     }
 
     public static boolean headless() {
-        return Page.getCurrent().getUI().getSession() == null;
+        Page current = Page.getCurrent();
+        if (current == null) {
+            return true;
+        }
+
+        return current.getUI().getSession() == null;
     }
 }

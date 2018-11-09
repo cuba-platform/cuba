@@ -41,7 +41,7 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
         attachValueChangeListener(component);
     }
 
-    private CubaRadioButtonGroup<V> createComponent() {
+    protected CubaRadioButtonGroup<V> createComponent() {
         return new CubaRadioButtonGroup<>();
     }
 
@@ -51,8 +51,8 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     }
 
     @Inject
-    protected void setOptionsBinding(OptionsBinding<V> optionsBinding) {
-        this.optionsBinding = optionsBinding;
+    protected void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
     }
 
     @Override
@@ -83,11 +83,6 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
         }
 
         return metadataTools.format(item);
-    }
-
-    @Inject
-    public void setMetadataTools(MetadataTools metadataTools) {
-        this.metadataTools = metadataTools;
     }
 
     @Override

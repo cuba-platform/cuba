@@ -30,7 +30,11 @@ import com.haulmont.cuba.web.DefaultApp
 import com.haulmont.cuba.web.sys.AppCookies
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.vaadin.server.Page
+import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinSession
+import com.vaadin.server.WebBrowser
+import com.vaadin.shared.ui.ui.PageState
 import com.vaadin.ui.ConnectorTracker
 import com.vaadin.ui.UI
 import org.junit.ClassRule
@@ -81,6 +85,8 @@ class WebSpec extends Specification {
         app.connection = connection
         app.events = Mock(Events)
 
+        def webBrowser = new WebBrowser()
+
         VaadinSession vaadinSession = Mock() {
             hasLock() >> true
             getAttribute(App) >> app
@@ -88,6 +94,7 @@ class WebSpec extends Specification {
             getAttribute(Connection) >> connection
             getAttribute(Connection.NAME) >> connection
             getLocale() >> Locale.ENGLISH
+            getBrowser() >> webBrowser
         }
         VaadinSession.setCurrent(vaadinSession)
 
@@ -99,6 +106,18 @@ class WebSpec extends Specification {
         vaadinUi.app = app
         vaadinUi.messages = cont.getBean(Messages)
         vaadinUi.getConnectorTracker() >> vaadinConnectorTracker
+
+        def page = new Page(vaadinUi, new PageState())
+        def vaadinRequest = Mock(VaadinRequest) {
+            getParameter("v-loc") >> "http://localhost:8080/app"
+            getParameter("v-cw") >> "1280"
+            getParameter("v-ch") >> "1080"
+            getParameter("v-wn") >> "1"
+        }
+        page.init(vaadinRequest)
+
+        vaadinUi.getPage() >> page
+        vaadinUi.getSession() >> vaadinSession
 
         vaadinUi.applicationContext = cont.getApplicationContext()
 
