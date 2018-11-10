@@ -594,8 +594,8 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     * An event that is fired before a screen is closed. The way a screen was closed can be obtained
-     * via {@link #getCloseOrigin()}.
+     * Event sent right before the window is closed. The way the window is closing can be obtained
+     * via {@link #getCloseOrigin()}. Closing can be prevented by invoking {@link #preventWindowClose()}.
      *
      * @see CloseOriginType
      */

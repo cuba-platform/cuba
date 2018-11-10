@@ -1735,7 +1735,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     void removeColumnResizeListener(Consumer<ColumnResizeEvent> listener);
 
     /**
-     * An event that specifies what in a selection has changed, and where the
+     * Event when the selection changes. It specifies what in a selection has changed, and where the
      * selection took place.
      */
     class SelectionEvent<E extends Entity> extends AbstractDataGridEvent implements HasUserOriginated {

@@ -63,7 +63,7 @@ public interface Button extends Component, Component.HasCaption, Component.Belon
     Subscription addClickListener(Consumer<ClickEvent> listener);
 
     /**
-     * Click event that is thrown, when the button is clicked.
+     * Event sent when the button is clicked.
      */
     class ClickEvent extends EventObject {
         public ClickEvent(Button source) {

@@ -40,6 +40,9 @@ public interface LayoutClickNotifier {
     @Deprecated
     void removeLayoutClickListener(Consumer<LayoutClickEvent> listener);
 
+    /**
+     * Event sent when a user clicks mouse inside the layout.
+     */
     class LayoutClickEvent extends EventObject {
         private final Component childComponent;
         private final MouseEventDetails mouseEventDetails;

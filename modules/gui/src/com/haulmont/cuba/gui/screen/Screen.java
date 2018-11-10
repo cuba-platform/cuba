@@ -307,7 +307,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent when the screen controller is created and dependency injection is completed.
      */
     @TriggerOnce
     public static class InitEvent extends EventObject {
@@ -329,9 +329,9 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
-     * <p>
-     * Used by UI components to perform actions after UiController initialized
+     * Event sent when the screen controller is created, dependency injection is completed, and all components have
+     * completed their internal initialization procedures. Nested screen fragments (if any) have sent their
+     * {@code InitEvent} and {@code AfterInitEvent}.
      */
     @TriggerOnce
     public static class AfterInitEvent extends EventObject {
@@ -353,7 +353,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent right before the screen is shown by {@link Screens#show(Screen)} method.
      */
     @TriggerOnce
     public static class BeforeShowEvent extends EventObject {
@@ -368,7 +368,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent after the screen is shown by {@link Screens#show(Screen)} method.
      */
     @TriggerOnce
     public static class AfterShowEvent extends EventObject {
@@ -383,7 +383,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent right before the screen is closed by its {@link #close(CloseAction)} method.
      */
     public static class BeforeCloseEvent extends EventObject {
 
@@ -430,7 +430,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent after the screen is closed by its {@link #close(CloseAction)} method.
      */
     public static class AfterCloseEvent extends EventObject {
 
@@ -456,7 +456,7 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
-     * Event that is fired after the screen has been removed from UI. Usually this event is used for resource cleanup.
+     * Event sent after the screen is removed from UI. This event can be used for cleaning up resources.
      */
     public static class AfterDetachEvent extends EventObject {
 

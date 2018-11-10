@@ -356,7 +356,7 @@ public interface Table<E extends Entity>
     void removeColumnCollapseListener(Consumer<ColumnCollapseEvent> listener);
 
     /**
-     * An event that is fired every time column collapse state has been changed.
+     * Event sent every time column collapse state changes.
      *
      * @param <E> type of a table
      */
@@ -720,7 +720,7 @@ public interface Table<E extends Entity>
     Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener);
 
     /**
-     * An event that specifies what in a selection has changed, and where the
+     * Event when the selection changes. It specifies what in a selection has changed, and where the
      * selection took place.
      */
     class SelectionEvent<E extends Entity> extends EventObject implements HasUserOriginated {

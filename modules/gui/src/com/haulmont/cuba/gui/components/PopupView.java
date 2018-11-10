@@ -90,7 +90,7 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
     void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener);
 
     /**
-     * This event is received by the PopupVisibilityListeners when the visibility of the popup changes.
+     * Event sent when the visibility of the popup changes.
      */
     class PopupVisibilityEvent extends EventObject {
         public PopupVisibilityEvent(PopupView popupView) {

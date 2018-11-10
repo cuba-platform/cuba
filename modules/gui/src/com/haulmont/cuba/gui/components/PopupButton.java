@@ -141,7 +141,7 @@ public interface PopupButton extends ActionsHolder, Component.HasCaption, Compon
     void removePopupVisibilityListener(Consumer<PopupVisibilityEvent> listener);
 
     /**
-     * This event is received by the PopupVisibilityListeners when the visibility of the popup changes.
+     * Event sent when the visibility of the popup changes.
      */
     class PopupVisibilityEvent extends EventObject {
         public PopupVisibilityEvent(PopupButton popupButton) {

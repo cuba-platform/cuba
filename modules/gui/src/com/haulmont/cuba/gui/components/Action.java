@@ -211,6 +211,9 @@ public interface Action {
         PRIMARY
     }
 
+    /**
+     * Event sent when the action is performed.
+     */
     class ActionPerformedEvent extends EventObject {
         private final Component component;
 
