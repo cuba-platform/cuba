@@ -121,9 +121,9 @@ public abstract class ScreenFragment implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Sets id of the screen fragment. Called by the framework during screen init to assign screen id.
      *
-     * @param id
+     * @param id screen id
      */
     protected void setId(String id) {
         this.id = id;
@@ -177,27 +177,47 @@ public abstract class ScreenFragment implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Adds {@link InitEvent} listener.
      *
-     * @param listener
-     * @return
+     * @param listener listener
+     * @return subscription
      */
     protected Subscription addInitListener(Consumer<InitEvent> listener) {
         return eventHub.subscribe(InitEvent.class, listener);
     }
 
     /**
-     * JavaDoc
+     * Adds {@link AfterInitEvent} listener.
      *
-     * @param listener
-     * @return
+     * @param listener listener
+     * @return subscription
      */
     protected Subscription addAfterInitListener(Consumer<AfterInitEvent> listener) {
         return eventHub.subscribe(AfterInitEvent.class, listener);
     }
 
     /**
-     * JavaDoc
+     * Event sent when the screen controller is created and dependency injection is completed. <br>
+     * If the screen is declared in host screen declaratively this event if fired after {@link Screen.InitEvent} of the
+     * host controller. <br>
+     * There are two ways to add an event handler:
+     * <br>
+     * 1. Programmatically from a class constructor:
+     * <pre>{@code
+     *    addInitListener(event -> {
+     *       // handle event here
+     *    });
+     * }</pre>
+     * <p>
+     * 2. Declaratively using method with {@link Subscribe} annotation: <br>
+     * <pre>{@code
+     *    @Subscribe
+     *    protected void onInit(InitEvent event) {
+     *       // handle event here
+     *    }
+     * }</pre>
+     *
+     * @see #addInitListener(Consumer)
      */
     @TriggerOnce
     public static class InitEvent extends EventObject {
@@ -219,9 +239,26 @@ public abstract class ScreenFragment implements FrameOwner {
     }
 
     /**
-     * JavaDoc
+     * Event sent when the screen fragment controller is created, dependency injection is completed, and all components
+     * have completed their internal initialization procedures. <br>
+     * There are two ways to add an event handler:
+     * <br>
+     * 1. Programmatically from the class constructor:
+     * <pre>{@code
+     *    addAfterInitListener(event -> {
+     *       // handle event here
+     *    });
+     * }</pre>
+     * <p>
+     * 2. Declaratively using method with {@link Subscribe} annotation: <br>
+     * <pre>{@code
+     *    @Subscribe
+     *    protected void onAfterInit(AfterInitEvent event) {
+     *       // handle event here
+     *    }
+     * }</pre>
      *
-     * Used by UI components to perform actions after UiController initialized.
+     * @see #addAfterInitListener(Consumer)
      */
     @TriggerOnce
     public static class AfterInitEvent extends EventObject {
@@ -242,5 +279,5 @@ public abstract class ScreenFragment implements FrameOwner {
         }
     }
 
-    // todo events: attached / detached / events from parent
+    // todo attached / detached / events from parent
 }

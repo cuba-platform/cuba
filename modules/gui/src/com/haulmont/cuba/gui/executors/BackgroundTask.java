@@ -27,12 +27,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Background task for execute by {@link BackgroundWorker}.
- * <br> If the task is associated with a screen through ownerFrame constructor parameter, it will be canceled when
- * the screen is closed.
- * <br> If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
- *
- * <br> Simplest usage example:
+ * Background task for execute by {@link BackgroundWorker}. <br>
+ * If the task is associated with a screen through ownerFrame constructor parameter, it will be canceled when
+ * the screen is closed. <br>
+ * If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
+ * <br>
+ * Simplest usage example:
  * <pre>{@code
  *    BackgroundTask<Integer, Void> task = new BackgroundTask<Integer, Void>(10, this) {
  *        public Void run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
