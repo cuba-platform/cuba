@@ -572,12 +572,12 @@ public interface Table<E extends Entity>
      *
      * @param columnId id of column
      * @param clickListener click listener
-     * @deprecated Use {@link #setClickListener(String, Consumer)} instead
+     * @deprecated Use {@link #setCellClickListener(String, Consumer)} instead
      */
     @Deprecated
     default void setClickListener(String columnId, CellClickListener<? super E> clickListener) {
         //noinspection unchecked
-        setClickListener(columnId, new TableCellClickListenerWrapper(clickListener));
+        setCellClickListener(columnId, new TableCellClickListenerWrapper(clickListener));
     }
 
     /**
@@ -588,7 +588,7 @@ public interface Table<E extends Entity>
      * @param columnId id of column
      * @param clickListener click listener
      */
-    void setClickListener(String columnId, Consumer<CellClickEvent<E>> clickListener);
+    void setCellClickListener(String columnId, Consumer<CellClickEvent<E>> clickListener);
 
     /**
      * Remove click listener.
@@ -599,6 +599,8 @@ public interface Table<E extends Entity>
 
     /**
      * Lightweight click listener for table cells.
+     *
+     * @deprecated Use {@link #setCellClickListener(String, Consumer)} instead.
      */
     @Deprecated
     interface CellClickListener<T extends Entity> {
@@ -720,7 +722,7 @@ public interface Table<E extends Entity>
     Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener);
 
     /**
-     * Event when the selection changes. It specifies what in a selection has changed, and where the
+     * Event sent when the selection changes. It specifies what in a selection has changed, and where the
      * selection took place.
      */
     class SelectionEvent<E extends Entity> extends EventObject implements HasUserOriginated {
