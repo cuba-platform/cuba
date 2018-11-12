@@ -16,18 +16,14 @@
 
 package com.haulmont.cuba.gui.sys;
 
-import com.haulmont.cuba.gui.screen.Screen;
+import org.springframework.util.StringUtils;
 
 public class RouteDefinition {
 
     private final String path;
-    private final Class<? extends Screen> parentPrefix;
+    private final String parentPrefix;
 
-    public RouteDefinition(String path) {
-        this(path, Screen.class);
-    }
-
-    public RouteDefinition(String path, Class<? extends Screen> parentPrefix) {
+    public RouteDefinition(String path, String parentPrefix) {
         this.path = path;
         this.parentPrefix = parentPrefix;
     }
@@ -36,18 +32,16 @@ public class RouteDefinition {
         return path;
     }
 
-    public Class<? extends Screen> getParentPrefix() {
-        return Screen.class == parentPrefix
-                ? null
-                : parentPrefix;
+    public String getParentPrefix() {
+        return parentPrefix;
     }
 
     @Override
     public String toString() {
         return "RouteDefinition{" +
                 "path='" + path + '\'' +
-                (Screen.class == parentPrefix ? ""
-                        : ", parentPrefix='" + parentPrefix.getName() + '\'') +
+                (StringUtils.isEmpty(parentPrefix) ? ""
+                        : ", parentPrefix='" + parentPrefix + '\'') +
                 '}';
     }
 }

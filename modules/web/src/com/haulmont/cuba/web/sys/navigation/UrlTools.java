@@ -39,13 +39,14 @@ public class UrlTools {
     protected static final String ROOT_ROUTE = "^(\\w+)$";
     protected static final Pattern ROOT_ROUTE_PATTERN = Pattern.compile(ROOT_ROUTE);
 
-    protected static final String NESTED_ROUTE = "^(\\w+)(?:/(\\d+))?/([\\w-]+(?:|/[\\w-]+)*)$";
+    protected static final String NESTED_ROUTE = "^(\\w+)(?:/(\\d+))?(?:/([\\w-]+(?:|/[\\w-]+)*))?$";
     protected static final Pattern NESTED_ROUTE_PATTERN = Pattern.compile(NESTED_ROUTE);
 
     protected static final String PARAMS_ROUTE = "^(\\w+)(?:(?:/(\\d+))?/([\\w-]+(?:|/[\\w-]+)*))?\\?(.+)$";
     protected static final Pattern PARAMS_ROUTE_PATTERN = Pattern.compile(PARAMS_ROUTE);
 
-    protected static final String PARAMS_REGEX = "^(?:(?:\\w+=[a-zA-Z0-9_/+%]+)?|\\w+=[a-zA-Z0-9_/+%]+(?:&\\w+=[a-zA-Z0-9_/+%]+)+)$";
+    protected static final String PARAMS_REGEX =
+            "^(?:(?:\\w+=[-a-zA-Z0-9_/+%]+)?|\\w+=[-a-zA-Z0-9_/+%]+(?:&\\w+=[-a-zA-Z0-9_/+%]+)+)$";
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
 
     @SuppressWarnings("CodeBlock2Expr")
@@ -133,78 +134,81 @@ public class UrlTools {
             return NavigationState.empty();
         }
 
-        if (ROOT_ROUTE_PATTERN.matcher(uriFragment).matches()) {
-            return parseRootRoute(uriFragment);
+        NavigationState navigationState = parseRootRoute(uriFragment);
+
+        if (navigationState == null) {
+            navigationState = parseNestedRoute(uriFragment);
         }
 
-        if (NESTED_ROUTE_PATTERN.matcher(uriFragment).matches()) {
-            return parseNestedRoute(uriFragment);
+        if (navigationState == null) {
+            navigationState = parseParamsRoute(uriFragment);
         }
 
-        if (PARAMS_ROUTE_PATTERN.matcher(uriFragment).matches()) {
-            return parseParamsRoute(uriFragment);
+        if (navigationState == null) {
+            log.info("Unable to determine navigation state for the given fragment: \"{}\"", uriFragment);
+            return NavigationState.empty();
         }
 
-        log.info("Unable to parse \"{}\" as navigation state. Return empty", uriFragment);
-        return NavigationState.empty();
+        return navigationState;
     }
 
     protected static NavigationState parseRootRoute(String uriFragment) {
         Matcher matcher = ROOT_ROUTE_PATTERN.matcher(uriFragment);
-        if (matcher.matches()) {
-            String root = matcher.group(1);
-            return new NavigationState(root, "", "", Collections.emptyMap());
+        if (!matcher.matches()) {
+            return null;
         }
 
-        throw new RuntimeException("Unable to parse root route");
+        String root = matcher.group(1);
+        return new NavigationState(root, "", "", Collections.emptyMap());
     }
 
     protected static NavigationState parseNestedRoute(String uriFragment) {
         Matcher matcher = NESTED_ROUTE_PATTERN.matcher(uriFragment);
-        if (matcher.matches()) {
-            String root = matcher.group(1);
-
-            String stateMark;
-            String nestedRoute;
-            if (matcher.groupCount() == 2) {
-                stateMark = "";
-                nestedRoute = matcher.group(2);
-            } else {
-                stateMark = matcher.group(2);
-                nestedRoute = matcher.group(3);
-            }
-
-            return new NavigationState(root, stateMark, nestedRoute, Collections.emptyMap());
+        if (!matcher.matches()) {
+            return null;
         }
 
-        throw new RuntimeException("Unable to parse nested route");
+        String root = matcher.group(1);
+        String stateMark;
+        String nestedRoute;
+
+        if (matcher.groupCount() == 2) {
+            stateMark = "";
+            nestedRoute = matcher.group(2);
+        } else {
+            stateMark = matcher.group(2);
+            nestedRoute = matcher.group(3);
+        }
+
+        return new NavigationState(root, stateMark, nestedRoute, Collections.emptyMap());
     }
 
     protected static NavigationState parseParamsRoute(String uriFragment) {
         Matcher matcher = PARAMS_ROUTE_PATTERN.matcher(uriFragment);
-        if (matcher.matches()) {
-            String root = matcher.group(1);
-            String params = matcher.group(matcher.groupCount());
-
-            String stateMark;
-            String nestedRoute;
-            if (matcher.groupCount() == 3) {
-                stateMark = "";
-                nestedRoute = matcher.group(2);
-            } else {
-                stateMark = matcher.group(2);
-                nestedRoute = matcher.group(3);
-            }
-
-            return new NavigationState(root, stateMark, nestedRoute, extractParams(params));
+        if (!matcher.matches()) {
+            return null;
         }
 
-        throw new RuntimeException("Unable to parse params route");
+        String root = matcher.group(1);
+        String stateMark;
+        String nestedRoute;
+        String params = matcher.group(matcher.groupCount());
+
+        if (matcher.groupCount() == 3) {
+            stateMark = "";
+            nestedRoute = matcher.group(2);
+        } else {
+            stateMark = matcher.group(2);
+            nestedRoute = matcher.group(3);
+        }
+
+        return new NavigationState(root, stateMark, nestedRoute, extractParams(params));
     }
 
     protected static Map<String, String> extractParams(String paramsString) {
         if (!PARAMS_PATTERN.matcher(paramsString).matches()) {
-            throw new RuntimeException("Params string is broken");
+            log.info("Unable to extract params from the given params string: \"{}\"", paramsString);
+            return Collections.emptyMap();
         }
 
         String[] paramPairs = paramsString.split("&");

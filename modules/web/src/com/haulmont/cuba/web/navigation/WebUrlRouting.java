@@ -109,7 +109,7 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         if (UrlTools.headless()) {
-            log.debug("Unable to resolve navigation state in headless mode. Return empty");
+            log.debug("Unable to resolve navigation state in headless mode");
             return NavigationState.empty();
         }
 
@@ -149,16 +149,27 @@ public class WebUrlRouting implements UrlRouting {
     }
 
     protected String buildDialogRoute(Screen dialog) {
-        RouteDefinition route = getRouteDef(dialog);
-        if (route == null) {
-            return buildCurrentScreenRoute();
+        RouteDefinition routeDef = getRouteDef(dialog);
+        String currentScreenRoute = buildCurrentScreenRoute();
+
+        if (routeDef == null) {
+            return currentScreenRoute;
         }
 
-        String dialogRoute = route.getPath();
-        String contextRoute = buildCurrentScreenRoute();
+        String dialogRoute = routeDef.getPath();
+        if (dialogRoute == null || dialogRoute.isEmpty()) {
+            return currentScreenRoute;
+        }
 
-        return StringUtils.isNotEmpty(dialogRoute) ? contextRoute + "/" + dialogRoute
-                : contextRoute;
+        String parentPrefix = routeDef.getParentPrefix();
+        if (StringUtils.isNotEmpty(parentPrefix)
+                && currentScreenRoute.endsWith(parentPrefix)) {
+            dialogRoute = dialogRoute.substring(parentPrefix.length() + 1);
+        }
+
+        return StringUtils.isEmpty(currentScreenRoute)
+                ? dialogRoute
+                : currentScreenRoute + '/' + dialogRoute;
     }
 
     protected String buildCurrentScreenRoute() {
@@ -185,47 +196,46 @@ public class WebUrlRouting implements UrlRouting {
     protected String buildRoutePart(String prevSubRoute, Screen screen) {
         String screenRoute = getRoute(screen);
 
-        Route routeAnnotation = screen.getClass().getAnnotation(Route.class);
-        if (routeAnnotation == null) {
+        String parentPrefix = getScreenParentPrefix(screen);
+        if (StringUtils.isEmpty(parentPrefix)) {
             return screenRoute;
         }
 
-        Class<? extends Screen> parentPrefixClass = routeAnnotation.parentPrefix();
-        if (Screen.class == parentPrefixClass) {
-            return screenRoute;
-        }
-
-        Route parentPrefixClassRoute = parentPrefixClass.getAnnotation(Route.class);
-        if (parentPrefixClassRoute == null) {
-            log.info("\"{}\" screen is specified as parent prefix but it has no route");
-            return screenRoute;
-        }
-
-        String parentRoute = !parentPrefixClassRoute.value().isEmpty()
-                ? parentPrefixClassRoute.value()
-                : parentPrefixClassRoute.path();
-
-        if (parentRoute.isEmpty()) {
-            return screenRoute;
-        }
-
-        if (Objects.equals(prevSubRoute, parentRoute)) {
-            return screenRoute.replace(parentRoute + "/", "");
+        if (Objects.equals(prevSubRoute, parentPrefix)) {
+            return screenRoute.replace(parentPrefix + "/", "");
         } else {
             return screenRoute;
         }
     }
 
+    protected String getScreenParentPrefix(Screen screen) {
+        String parentPrefix = null;
+
+        Route routeAnnotation = screen.getClass().getAnnotation(Route.class);
+        if (routeAnnotation != null) {
+            return routeAnnotation.parentPrefix();
+        } else {
+            RouteDefinition routeDef = getScreenContext(screen)
+                    .getWindowInfo()
+                    .getRouteDefinition();
+            if (routeDef != null) {
+                parentPrefix = routeDef.getParentPrefix();
+            }
+        }
+
+        return parentPrefix;
+    }
+
     protected String buildParamsString(Screen screen, Map<String, String> urlParams) {
         String route = getRoute(screen);
-        if (StringUtils.isEmpty(route) && MapUtils.isNotEmpty(urlParams)) {
-            log.info("There's no route for screen {}. Ignore URL params");
+        if (StringUtils.isEmpty(route) && (MapUtils.isNotEmpty(urlParams) || isEditor(screen))) {
+            log.info("There's no route for screen \"{}\". URL params will be ignored", screen.getId());
             return "";
         }
 
         Map<String, String> params = new LinkedHashMap<>();
 
-        if (screen instanceof EditorScreen) {
+        if (isEditor(screen)) {
             Object entityId = ((EditorScreen) screen).getEditedEntity().getId();
             String base64Id = UrlTools.serializeId(entityId);
 
@@ -242,6 +252,10 @@ public class WebUrlRouting implements UrlRouting {
         return !paramsString.isEmpty() ? "?" + paramsString : "";
     }
 
+    protected boolean isEditor(Screen screen) {
+        return screen instanceof EditorScreen;
+    }
+
     protected String getRoute(Screen screen) {
         RouteDefinition routeDef = getRouteDef(screen);
         String route = routeDef != null ? routeDef.getPath() : null;
@@ -250,14 +264,9 @@ public class WebUrlRouting implements UrlRouting {
     }
 
     protected RouteDefinition getRouteDef(Screen screen) {
-        return screen == null ? null
+        return screen == null
+                ? null
                 : getScreenContext(screen).getWindowInfo().getRouteDefinition();
-    }
-
-    protected Screen getCurrentScreen() {
-        Iterator<Screen> screens = ui.getScreens().getOpenedScreens().getCurrentBreadcrumbs()
-                .iterator();
-        return screens.hasNext() ? screens.next() : null;
     }
 
     protected String getStateMark(Screen screen) {

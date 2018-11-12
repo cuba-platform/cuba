@@ -32,7 +32,7 @@
 
     <screen id="sec$User.edit"
             template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"
-            route="users" routeParentPrefix="sec$User.browse"/>
+            route="users/edit" routeParentPrefix="users"/>
 
     <screen id="sec$User.changePassword"
             template="/com/haulmont/cuba/gui/app/security/user/changepassw/change-password-dialog.xml"/>
@@ -51,7 +51,7 @@
 
     <screen id="sec$Group.edit"
             template="/com/haulmont/cuba/gui/app/security/group/edit/group-edit.xml"
-            route="groups/edit" routeParentPrefix="sec$Group.browse"/>
+            route="groups/edit" routeParentPrefix="groups"/>
 
     <screen id="sec$Group.browse"
             template="/com/haulmont/cuba/gui/app/security/group/browse/group-browse.xml"
@@ -69,7 +69,7 @@
             route="roles"/>
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"
-            route="roles/edit" routeParentPrefix="sec$Role.browse"/>
+            route="roles/edit" routeParentPrefix="roles"/>
 
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"
@@ -97,7 +97,7 @@
 
     <screen id="sys$LockDescriptor.edit"
             template="/com/haulmont/cuba/gui/app/core/locking/lock-edit.xml"
-            route="locks/edit" routeParentPrefix="sys$LockInfo.browse"/>
+            route="locks/edit" routeParentPrefix="locks"/>
 
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
@@ -122,7 +122,7 @@
 
     <screen id="sys$FileDescriptor.edit"
             template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"
-            route="files/edit" routeParentPrefix="sys$FileDescriptor.browse"/>
+            route="files/edit" routeParentPrefix="files"/>
 
     <screen id="sys$Category.browse"
             template="/com/haulmont/cuba/gui/app/core/categories/category-browse.xml"
@@ -130,7 +130,7 @@
 
     <screen id="sys$Category.edit"
             template="/com/haulmont/cuba/gui/app/core/categories/category-edit.xml"
-            route="categories/edit" routeParentPrefix="sys$Category.browse"/>
+            route="categories/edit" routeParentPrefix="categories"/>
 
     <screen id="sys$CategoryAttribute.edit"
             template="/com/haulmont/cuba/gui/app/core/categories/attribute-edit.xml"/>

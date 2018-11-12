@@ -101,23 +101,28 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
             valueAttr = (String) uiControllerAnn.get(UiController.VALUE_ATTRIBUTE);
         }
 
-        Map<String, Object> routeAnnotation = metadataReader.getAnnotationMetadata().getAnnotationAttributes(Route.class.getName());
-
-        String pathAttr = null;
-        Class<? extends Screen> parentPrefixAttr = null;
-        if (routeAnnotation != null) {
-            pathAttr = (String) routeAnnotation.get(Route.PATH_ATTRIBUTE);
-            //noinspection unchecked
-            parentPrefixAttr = (Class<? extends Screen>) routeAnnotation.get(Route.PARENT_PREFIX_ATTRIBUTE);
-        }
-
         String className = metadataReader.getClassMetadata().getClassName();
         String controllerId = UiDescriptorUtils.getInferredScreenId(idAttr, valueAttr, className);
+        RouteDefinition routeDefinition = extractRouteDefinition(metadataReader);
 
-        return routeAnnotation == null
-                ? new UiControllerDefinition(controllerId, className)
-                : new UiControllerDefinition(controllerId, className,
-                        new RouteDefinition(pathAttr, parentPrefixAttr));
+        return new UiControllerDefinition(controllerId, className, routeDefinition);
+    }
+
+    protected RouteDefinition extractRouteDefinition(MetadataReader metadataReader) {
+        Map<String, Object> routeAnnotation =
+                metadataReader.getAnnotationMetadata().getAnnotationAttributes(Route.class.getName());
+
+        RouteDefinition routeDefinition = null;
+
+        if (routeAnnotation != null) {
+            String pathAttr = (String) routeAnnotation.get(Route.PATH_ATTRIBUTE);
+            //noinspection unchecked
+            String parentPrefixAttr = (String) routeAnnotation.get(Route.PARENT_PREFIX_ATTRIBUTE);
+
+            routeDefinition = new RouteDefinition(pathAttr, parentPrefixAttr);
+        }
+
+        return routeDefinition;
     }
 
     protected boolean isCandidateUiController(MetadataReader metadataReader) {

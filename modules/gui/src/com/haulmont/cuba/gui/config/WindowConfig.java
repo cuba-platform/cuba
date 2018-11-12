@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
@@ -317,18 +316,7 @@ public class WindowConfig {
             return null;
         }
 
-        Class<? extends Screen> parentPrefix = Screen.class;
-        String routeParentPrefix = screenElement.attributeValue("routeParentPrefix");
-        if (routeParentPrefix != null && !routeParentPrefix.isEmpty()) {
-            WindowInfo windowInfo = screens.get(routeParentPrefix);
-            if (windowInfo != null) {
-                Class<? extends FrameOwner> controller = windowInfo.getControllerClass();
-                if (Screen.class.isAssignableFrom(controller)) {
-                    //noinspection unchecked
-                    parentPrefix = (Class<? extends Screen>) controller;
-                }
-            }
-        }
+        String parentPrefix = screenElement.attributeValue("routeParentPrefix");
 
         return new RouteDefinition(routeAttr, parentPrefix);
     }

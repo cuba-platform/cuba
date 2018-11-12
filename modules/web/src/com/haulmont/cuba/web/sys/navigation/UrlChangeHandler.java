@@ -19,14 +19,7 @@ package com.haulmont.cuba.web.sys.navigation;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
@@ -58,12 +51,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
+import static com.haulmont.cuba.web.sys.navigation.UrlTools.pushState;
+import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 
 public class UrlChangeHandler {
 
@@ -176,7 +167,7 @@ public class UrlChangeHandler {
         NavigationState prevState = getHistory().backward();
         selectScreen(findActiveScreenByState(prevState));
         //noinspection ConstantConditions
-        UrlTools.replaceState(prevState.asRoute());
+        replaceState(prevState.asRoute());
     }
 
     protected void handleHistoryForward() {
@@ -187,7 +178,7 @@ public class UrlChangeHandler {
 
         String route = getResolvedState(currentScreen).asRoute();
 
-        UrlTools.pushState(route);
+        pushState(route);
         showNotification(messages.getMainMessage("navigation.unableToGoForward"));
     }
 
@@ -240,7 +231,8 @@ public class UrlChangeHandler {
             return true;
         }
 
-        showNotification(messages.getMainMessage("navigation.rootChangeIsNotSupported"));
+        log.info("Navigation between root screens is not supported");
+
         revertNavigationState();
 
         return true;
@@ -259,7 +251,6 @@ public class UrlChangeHandler {
             return false;
         }
 
-        // TODO: handle few opened screens
         WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedState.getNestedRoute());
 
         if (windowInfo == null) {
@@ -454,7 +445,7 @@ public class UrlChangeHandler {
         if (screen == null) {
             screen = getAnyCurrentScreen();
         }
-        UrlTools.pushState(getResolvedState(screen).asRoute());
+        pushState(getResolvedState(screen).asRoute());
     }
 
     protected void handleNoAuthNavigation(NavigationState requestedState) {
@@ -467,6 +458,11 @@ public class UrlChangeHandler {
             RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, ui);
             redirectHandler.schedule(requestedState);
             App.getInstance().setRedirectHandler(redirectHandler);
+        } else if (rootState(requestedState)) {
+            Screen rootScreen = getOpenedScreens().getRootScreenOrNull();
+            if (rootScreen != null) {
+                pushState(getResolvedState(rootScreen).asRoute());
+            }
         }
 
         showNotification(messages.getMainMessage("navigation.shouldLogInFirst"));

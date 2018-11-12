@@ -40,8 +40,8 @@ import java.lang.annotation.*;
  * property is set but parent screen isn't opened annotated screen route will not be applied.
  * <p><br>
  *
- * URL squashing can be used if the "parentPrefix" property is specified. Annotated screen route will be merged with
- * a route configured in property value screen if a parent is currently opened.
+ * The "parentPrefix" property enables to merge common route parts if a route of previous screen in tab is the same as
+ * route configured in this property.
  * <p><br>
  *
  * Example. Let two screens exist:
@@ -49,7 +49,7 @@ import java.lang.annotation.*;
  *   @Route("orders")
  *   public class OrderBrowse { ... }
  *
- *   @Route(route = "orders/edit", parentPrefix = OrderBrowse.class)
+ *   @Route(route = "orders/edit", parentPrefix = "orders")
  *   public class OrderEdit { ... }
  * }</pre>
  *
@@ -76,5 +76,5 @@ public @interface Route {
     @AliasFor(VALUE_ATTRIBUTE)
     String path() default "";
 
-    Class<? extends Screen> parentPrefix() default Screen.class;
+    String parentPrefix() default "";
 }
