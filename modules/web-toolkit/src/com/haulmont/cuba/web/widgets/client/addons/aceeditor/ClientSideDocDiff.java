@@ -26,8 +26,6 @@ import com.haulmont.cuba.web.widgets.client.addons.aceeditor.TransportDoc.Transp
 
 import com.google.gwt.core.client.JsArray;
 
-
-
 public class ClientSideDocDiff {
 
 	public static final DiffMatchPatchJSNI dmp = DiffMatchPatchJSNI.newInstance();
@@ -60,8 +58,6 @@ public class ClientSideDocDiff {
 		return new ClientSideDocDiff(patches, msd, rowAnnDiff, markerAnnDiff);
 	}
 	
-
-	//TODO XXX
 	private static SetDiff<MarkerAnnotation, TransportMarkerAnnotation> diffMA(
 			Set<MarkerAnnotation> anns1,
 			Set<MarkerAnnotation> anns2) {
@@ -77,7 +73,6 @@ public class ClientSideDocDiff {
 		return new SetDiff.Differ<MarkerAnnotation,TransportMarkerAnnotation>().diff(anns1, anns2);
 	}
 
-	//TODO XXX
 	private static SetDiff<RowAnnotation, TransportRowAnnotation> diffRA(
 			Set<RowAnnotation> anns1,
 			Set<RowAnnotation> anns2) {
@@ -169,17 +164,4 @@ public class ClientSideDocDiff {
 			diffs = dmp.diff_main(s1, s2);
 		}
 	}
-	
-//	public static AceMarker adjustMarkerBasedOnContext(MarkerAddition ma,
-//			String text) {
-//		int start = GwtTextDiff.getDMP().match_main(text, ma., ma.startPos);
-//		if (start == -1) {
-//			return null;
-//		}
-//		int end = GwtTextDiff.getDMP().match_main(text, ma.endContext, ma.endPos);
-//		if (end == -1) {
-//			return null;
-//		}
-//		return null;
-//	}
 }

@@ -35,12 +35,14 @@ import com.vaadin.shared.ui.hascontexthelp.HasContextHelpServerRpc;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorConnector;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.AceEditorWidget;
 
-@Connect(CubaSourceCodeEditor.class)
+@Connect(value = CubaSourceCodeEditor.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaSourceCodeEditorConnector extends AceEditorConnector
         implements HasContextHelpConnector, HasRequiredIndicator {
+
     private boolean resetEditHistory = false;
 
     public CubaSourceCodeEditorConnector() {
+        //noinspection Convert2Lambda
         registerRpc(CubaSourceCodeEditorClientRpc.class, new CubaSourceCodeEditorClientRpc() {
             @Override
             public void resetEditHistory() {

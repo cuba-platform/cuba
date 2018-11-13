@@ -24,7 +24,7 @@ import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.orderedlayout.HorizontalLayoutConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(value = DDHorizontalLayout.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(value = DDHorizontalLayout.class, loadStyle = Connect.LoadStyle.NONE)
 public class DDHorizontalLayoutConnector extends HorizontalLayoutConnector
         implements Paintable, VHasDragFilter {
 

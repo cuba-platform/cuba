@@ -23,7 +23,7 @@ import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggestPopup;
 import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggesterConnector;
 
 @SuppressWarnings("serial")
-@Connect(SuggestionExtension.class)
+@Connect(value = SuggestionExtension.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaSuggesterConnector extends SuggesterConnector {
 
     @Override

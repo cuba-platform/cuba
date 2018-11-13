@@ -42,7 +42,7 @@ import com.vaadin.shared.ui.Connect;
  * 
  */
 @SuppressWarnings("serial")
-@Connect(SuggestionExtension.class)
+@Connect(value = SuggestionExtension.class, loadStyle = Connect.LoadStyle.LAZY)
 public class SuggesterConnector extends AbstractExtensionConnector implements
 		GwtAceKeyboardHandler, SuggestionSelectedListener, SelectionChangeListener {
 

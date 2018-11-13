@@ -40,11 +40,9 @@ import com.vaadin.client.ui.layout.ElementResizeListener;
 import com.vaadin.shared.ui.Connect;
 
 @SuppressWarnings("serial")
-@Connect(AceEditor.class)
+@Connect(value = AceEditor.class, loadStyle = Connect.LoadStyle.LAZY)
 public class AceEditorConnector extends AbstractHasComponentsConnector
 		implements TextChangeListener, SelectionChangeListener, FocusChangeListener {
-
-//	private static Logger logger = Logger.getLogger(AceEditorConnector.class.getName());
 
     protected AceEditorServerRpc serverRpc =
             RpcProxy.create(AceEditorServerRpc.class, this);
@@ -409,15 +407,11 @@ public class AceEditorConnector extends AbstractHasComponentsConnector
 
 	@Override
 	public void updateCaption(ComponentConnector connector) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onConnectorHierarchyChange(
 			ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
