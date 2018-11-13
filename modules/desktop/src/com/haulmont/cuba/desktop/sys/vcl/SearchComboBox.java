@@ -25,6 +25,14 @@ import java.awt.*;
 
 public class SearchComboBox extends ExtendedComboBox {
 
+    private final SynthComboBoxUIExt ui;
+
+    private static class SynthComboBoxUIExt extends SynthComboBoxUI {
+        private JList getListBox() {
+            return listBox;
+        }
+    }
+
     public SearchComboBox() {
         UIDefaults laf = new UIDefaults();
 
@@ -39,7 +47,7 @@ public class SearchComboBox extends ExtendedComboBox {
 
         SwingUtilities.updateComponentTreeUI(this);
 
-        setUI(new SynthComboBoxUI() {
+        setUI(ui = new SynthComboBoxUIExt() {
             @Override
             protected JButton createArrowButton() {
                 JButton button = super.createArrowButton();
@@ -49,6 +57,11 @@ public class SearchComboBox extends ExtendedComboBox {
         });
         setButtonVisible(false);
         setHideButton(true);
+    }
+
+    public void resetScrolling() {
+        JList list = ui.getListBox();
+        list.ensureIndexIsVisible(0);
     }
 
     public void showSearchPopup() {
