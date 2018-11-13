@@ -26,7 +26,10 @@ public class LogItem {
     private Date timestamp;
     private LogLevel level;
     private String message;
+
+    // legacy link
     private Throwable throwable;
+    private String fullStackTrace;
 
     public LogItem(Date timestamp, LogLevel level, String message, Throwable throwable) {
         this.timestamp = timestamp;
@@ -44,12 +47,29 @@ public class LogItem {
     }
 
     public String getStacktrace() {
+        if (fullStackTrace != null) {
+            return fullStackTrace;
+        }
+
         return throwable != null ? ExceptionUtils.getStackTrace(throwable) : "";
     }
 
+    /**
+     * @return null if has been appended to log
+     */
     @Nullable
     public Throwable getThrowable() {
         return throwable;
+    }
+
+    /**
+     * Cleans reference to throwable. Stacktrace still will be available.
+     */
+    public void sanitize() {
+        if (throwable != null) {
+            fullStackTrace = ExceptionUtils.getStackTrace(throwable);
+        }
+        this.throwable = null;
     }
 
     public Date getTimestamp() {
