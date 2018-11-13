@@ -58,7 +58,10 @@ public class AppLog {
             else
                 log.debug("{}: {}", item.getLevel(), msg);
         }
-        
+
+        // clean reference to throwable
+        item.sanitize();
+
         if (items.size() >= CAPACITY) {
             items.removeLast();
         }
