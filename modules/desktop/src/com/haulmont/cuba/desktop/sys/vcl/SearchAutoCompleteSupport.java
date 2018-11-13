@@ -205,6 +205,9 @@ public final class SearchAutoCompleteSupport<E> {
     // Haulmont API
     private boolean filterEnabled = true;
 
+    /** <tt>false</tt> indicates that field should not be automatically completed on option select from popup. */
+    private boolean optionCompletionEnabled = true;
+
     /**
      * <tt>false</tt> if the user can specify values that do not appear in the
      * ComboBoxModel; <tt>true</tt> otherwise.
@@ -494,6 +497,14 @@ public final class SearchAutoCompleteSupport<E> {
 
     public void setFilterEnabled(boolean filterEnabled) {
         this.filterEnabled = filterEnabled;
+    }
+
+    public boolean isOptionCompletionEnabled() {
+        return optionCompletionEnabled;
+    }
+
+    public void setOptionCompletionEnabled(boolean enabled) {
+        this.optionCompletionEnabled = enabled;
     }
 
     /**
@@ -1656,11 +1667,17 @@ public final class SearchAutoCompleteSupport<E> {
                 final ActionListener[] listeners = unregisterAllActionListeners(comboBox);
                 try {
                     comboBox.setSelectedIndex(index);
+                    if (!optionCompletionEnabled) {
+                        comboBoxEditorComponent.setText(prefix);
+                    }
                 } finally {
                     registerAllActionListeners(comboBox, listeners);
                 }
             } else {
                 comboBox.setSelectedIndex(index);
+                if (!optionCompletionEnabled) {
+                    comboBoxEditorComponent.setText(prefix);
+                }
             }
 
             // if the original index wasn't valid, we've cleared the selection
