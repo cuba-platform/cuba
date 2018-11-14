@@ -100,7 +100,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
             this.selectedItemChangeSubscription = null;
         }
         wrappersPool.clear();
-        itemsCache.clear();
+        resetCachedItems();
     }
 
     @Override
@@ -154,7 +154,8 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
 
         ignoreListeners = true;
 
-        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
+        UI ui = UI.getCurrent();
+        if (ui != null && ui.getConnectorTracker().isWritingResponse()) {
             // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
             return;
         }
@@ -261,11 +262,17 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         removeItemSetChangeListener(listener);
     }
 
+    protected void resetCachedItems() {
+        itemsCache.clear();
+    }
+
     protected void datasourceItemSetChanged(TableItems.ItemSetChangeEvent<I> e) {
         for (TableItemWrapper itemWrapper : itemsCache.values()) {
             returnItemWrapper(itemWrapper);
         }
-        itemsCache.clear();
+        resetCachedItems();
+
+        beforeFireItemSetChanged();
 
         boolean prevIgnoreListeners = ignoreListeners;
         try {
@@ -275,6 +282,10 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         }
 
         dataEventsDelegate.tableSourceItemSetChanged(e);
+    }
+
+    protected void beforeFireItemSetChanged() {
+        // can be overridden in descendants
     }
 
     protected void datasourceValueChanged(TableItems.ValueChangeEvent<I> e) {
@@ -292,7 +303,7 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
             for (TableItemWrapper itemWrapper : itemsCache.values()) {
                 returnItemWrapper(itemWrapper);
             }
-            itemsCache.clear();
+            resetCachedItems();
         }
 
         dataEventsDelegate.tableSourceStateChanged(e);

@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components.table;
 
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
-import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.widgets.data.GroupTableContainer;
 
@@ -47,6 +46,10 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     }
 
     protected Set<GroupInfo> saveState() {
+        if (expandedGroups.isEmpty()) {
+            return Collections.emptySet();
+        }
+
         //save expanding state
         return new HashSet<>(expandedGroups);
     }
@@ -65,7 +68,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         Set<GroupInfo> expandState = saveState();
         getGroupTableSource().groupBy(properties);
         restoreState(expandState);
-        resetCachedItems();
+        resetGroupCachedItems();
     }
 
     @Override
@@ -142,7 +145,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
             expandedGroups.clear();
 
             expand(rootGroups());
-            resetCachedItems();
+            resetGroupCachedItems();
         }
     }
 
@@ -159,7 +162,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     public void expand(Object id) {
         if (isGroup(id)) {
             expandedGroups.add((GroupInfo) id);
-            resetCachedItems();
+            resetGroupCachedItems();
         }
     }
 
@@ -167,7 +170,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     public void collapseAll() {
         if (hasGroups()) {
             expandedGroups.clear();
-            resetCachedItems();
+            resetGroupCachedItems();
         }
     }
 
@@ -176,7 +179,7 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         if (isGroup(id)) {
             //noinspection RedundantCast
             expandedGroups.remove((GroupInfo) id);
-            resetCachedItems();
+            resetGroupCachedItems();
         }
     }
 
@@ -197,10 +200,10 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
 
     protected List getCachedItemIds() {
         if (cachedItemIds == null) {
-            List<Object> result = new ArrayList<>();
-            //noinspection unchecked
-
             if (getGroupTableSource().hasGroups()) {
+                //noinspection unchecked
+                List<Object> result = new ArrayList<>();
+
                 List<GroupInfo> roots = getGroupTableSource().rootGroups();
                 if (!roots.isEmpty()) {
                     for (GroupInfo root : roots) {
@@ -210,9 +213,8 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
                 }
                 cachedItemIds = result;
             } else {
-                cachedItemIds = new ArrayList<>();
-                //noinspection unchecked
-                cachedItemIds.addAll(getGroupTableSource().getItemIds());
+                Collection<?> itemIds = getGroupTableSource().getItemIds();
+                cachedItemIds = new ArrayList<>(itemIds);
             }
 
             if (!cachedItemIds.isEmpty()) {
@@ -239,7 +241,14 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         }
     }
 
+    @Override
     protected void resetCachedItems() {
+        super.resetCachedItems();
+
+        resetGroupCachedItems();
+    }
+
+    protected void resetGroupCachedItems() {
         cachedItemIds = null;
         first = null;
         last = null;
@@ -278,8 +287,10 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
             if (isLastId(itemId)) {
                 return null;
             }
-            int index = getCachedItemIds().indexOf(itemId);
-            return getCachedItemIds().get(index + 1);
+            List cachedItemIds = getCachedItemIds();
+
+            int index = cachedItemIds.indexOf(itemId);
+            return cachedItemIds.get(index + 1);
         }
         return super.nextItemId(itemId);
     }
@@ -294,8 +305,10 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
             if (isFirstId(itemId)) {
                 return null;
             }
-            int index = getCachedItemIds().indexOf(itemId);
-            return getCachedItemIds().get(index - 1);
+            List cachedItemIds = getCachedItemIds();
+
+            int index = cachedItemIds.indexOf(itemId);
+            return cachedItemIds.get(index - 1);
         }
         return super.prevItemId(itemId);
     }
@@ -317,11 +330,19 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     }
 
     @Override
-    protected void datasourceItemSetChanged(TableItems.ItemSetChangeEvent<I> e) {
-        super.datasourceItemSetChanged(e);
+    protected void beforeFireItemSetChanged() {
+        super.beforeFireItemSetChanged();
 
         if (hasGroups()) {
-            Object[] groupProps = new ArrayList<>(getGroupProperties()).toArray();
+            Collection<?> groupProperties = getGroupProperties();
+            Object[] groupProps = new Object[groupProperties.size()];
+
+            int i = 0;
+            for (Object groupProperty : groupProperties) {
+                groupProps[i] = groupProperty;
+                i++;
+            }
+
             doGroup(groupProps);
         }
     }
