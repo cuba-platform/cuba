@@ -122,6 +122,11 @@ public class CollectionContainerImpl<E extends Entity>
     }
 
     @Override
+    public boolean containsItem(Object entityId) {
+        return getItemIndex(entityId) > -1;
+    }
+
+    @Override
     public void replaceItem(E entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Object id = entity.getId();

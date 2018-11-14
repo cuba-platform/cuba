@@ -65,6 +65,11 @@ public interface CollectionContainer<E extends Entity> extends InstanceContainer
     int getItemIndex(Object entityId);
 
     /**
+     * Returns true if an item with the given id exists in the container.
+     */
+    boolean containsItem(Object entityId);
+
+    /**
      * If the item with the same id exists in the container, it is replaced with the given instance. If not, the given
      * instance is added to the items list.
      * <p>
