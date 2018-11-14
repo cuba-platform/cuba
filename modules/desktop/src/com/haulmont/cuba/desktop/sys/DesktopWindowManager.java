@@ -1387,6 +1387,7 @@ public class DesktopWindowManager extends WindowManagerImpl {
                                 action.actionPerform(null);
                                 dialog.setVisible(false);
                                 cleanupAfterModalDialogClosed(null);
+                                dialog.dispose();
                                 return;
                         }
                     }
@@ -1407,6 +1408,7 @@ public class DesktopWindowManager extends WindowManagerImpl {
                     actions[0].actionPerform(null);
                     dialog.setVisible(false);
                     cleanupAfterModalDialogClosed(null);
+                    dialog.dispose();
                 } else {
                     for (Action action : actions) {
                         if (action instanceof DialogAction) {
@@ -1417,6 +1419,7 @@ public class DesktopWindowManager extends WindowManagerImpl {
                                     action.actionPerform(null);
                                     dialog.setVisible(false);
                                     cleanupAfterModalDialogClosed(null);
+                                    dialog.dispose();
                                     return;
                             }
                         }
