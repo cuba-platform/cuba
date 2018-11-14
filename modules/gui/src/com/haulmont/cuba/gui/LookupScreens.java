@@ -27,10 +27,7 @@ import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.Nested;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.LookupScreen.ValidationContext;
 import org.springframework.stereotype.Component;
@@ -214,22 +211,19 @@ public class LookupScreens {
             return;
         }
 
-        List<E> mutableItems = collectionDc.getMutableItems();
-
-        // atomicity ?
-        mutableItems.removeAll(selectedItems);
-
-        Collection<E> itemsToAdd = selectedItems;
+        boolean initializeMasterReference = false;
+        Entity holderItem = null;
+        MetaProperty inverseMetaProperty = null;
 
         // update holder reference if needed
         if (collectionDc instanceof Nested) {
             InstanceContainer holderDc = ((Nested) collectionDc).getParent();
 
             String property = ((Nested) collectionDc).getProperty();
-            Entity holderItem = holderDc.getItem();
+            holderItem = holderDc.getItem();
 
             MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
-            MetaProperty inverseMetaProperty = metaProperty.getInverse();
+            inverseMetaProperty = metaProperty.getInverse();
 
             if (inverseMetaProperty != null
                 && !inverseMetaProperty.getRange().getCardinality().isMany()) {
@@ -237,26 +231,26 @@ public class LookupScreens {
                 Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseMetaProperty.getDomain());
                 Class<?> dcClass = extendedEntities.getEffectiveClass(collectionDc.getEntityMetaClass());
 
-                if (inversePropClass.isAssignableFrom(dcClass)) {
-                    ScreenData screenData = UiControllerUtils.getScreenData(builder.getOrigin());
-
-                    List<E> mergedItems = new ArrayList<>(selectedItems.size());
-                    // update reference for One-To-Many
-                    for (E item : selectedItems) {
-                        // track changes in the related instance
-                        E mergedItem = screenData.getDataContext().merge(item);
-                        // change reference, now it will be marked as modified
-                        mergedItem.setValue(inverseMetaProperty.getName(), holderItem);
-
-                        mergedItems.add(mergedItem);
-                    }
-
-                    itemsToAdd = mergedItems;
-                }
+                initializeMasterReference = inversePropClass.isAssignableFrom(dcClass);
             }
         }
 
-        mutableItems.addAll(itemsToAdd);
+        DataContext dataContext = UiControllerUtils.getScreenData(builder.getOrigin()).getDataContext();
+
+        List<E> mergedItems = new ArrayList<>(selectedItems.size());
+        for (E item : selectedItems) {
+            if (!collectionDc.containsItem(item.getId())) {
+                // track changes in the related instance
+                E mergedItem = dataContext.merge(item);
+                if (initializeMasterReference) {
+                    // change reference, now it will be marked as modified
+                    mergedItem.setValue(inverseMetaProperty.getName(), holderItem);
+                }
+                mergedItems.add(mergedItem);
+            }
+        }
+
+        collectionDc.getMutableItems().addAll(mergedItems);
     }
 
     /**
