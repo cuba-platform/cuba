@@ -246,7 +246,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
     protected boolean isGroupTableSettingsChanged(Element groupPropertiesElement) {
         if (groupPropertiesElement == null) {
-            return isDefaultGroupTableSettingsChanged();
+            if (defaultSettings != null) {
+                groupPropertiesElement = defaultSettings.getRootElement().element("groupProperties");
+                if (groupPropertiesElement == null) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
 
         List<Element> settingsProperties = groupPropertiesElement.elements("property");
@@ -273,19 +280,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         return false;
-    }
-
-    protected boolean isDefaultGroupTableSettingsChanged() {
-        Element groupPropertiesElement = null;
-
-        if (defaultSettings != null) {
-            groupPropertiesElement = defaultSettings.getRootElement().element("groupProperties");
-            if (groupPropertiesElement == null) {
-                return true;
-            }
-        }
-
-        return isGroupTableSettingsChanged(groupPropertiesElement);
     }
 
     @Override

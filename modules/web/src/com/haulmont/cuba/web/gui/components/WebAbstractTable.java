@@ -1992,7 +1992,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected boolean isCommonTableSettingsChanged(Element columnsElem) {
         if (columnsElem == null) {
-            return isDefaultTableSettingsChanged();
+            if (defaultSettings != null) {
+                columnsElem = defaultSettings.getRootElement().element("columns");
+                if (columnsElem == null) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
 
         List<Element> settingsColumnList = columnsElem.elements("columns");
@@ -2029,19 +2036,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         return false;
-    }
-
-    protected boolean isDefaultTableSettingsChanged() {
-        Element columnsElement = null;
-
-        if (defaultSettings != null) {
-            columnsElement = defaultSettings.getRootElement().element("columns");
-            if (columnsElement == null) {
-                return true;
-            }
-        }
-
-        return isCommonTableSettingsChanged(columnsElement);
     }
 
     protected boolean isSettingsSortPropertyChanged(String settingsSortProperty, String settingsSortAscending) {
