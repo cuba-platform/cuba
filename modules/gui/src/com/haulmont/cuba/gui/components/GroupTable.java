@@ -152,6 +152,11 @@ public interface GroupTable<E extends Entity> extends Table<E> {
         }
     }
 
+    /**
+     * Object that contains information about group aggregation distribution.
+     *
+     * @param <V> entity type
+     */
     class GroupAggregationDistributionContext<V> extends AggregationDistributionContext<V> {
 
         protected GroupInfo groupInfo;

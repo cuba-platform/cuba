@@ -440,14 +440,14 @@ public interface Table<E extends Entity>
     }
 
     /**
+     * Set aggregation distribution provider to handle distribution of data on rows.
      *
-     * @param distributionProvider
+     * @param distributionProvider distribution provider
      */
     void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider);
 
     /**
-     *
-     * @return
+     * @return aggregation distribution provider
      */
     AggregationDistributionProvider<E> getAggregationDistributionProvider();
 
@@ -931,15 +931,22 @@ public interface Table<E extends Entity>
     }
 
     /**
-     *
+     * Allows to handle a group or total aggregation value changes.
      */
     interface AggregationDistributionProvider<E> {
 
+        /**
+         * Invoked when a group or total aggregation value is changed.
+         *
+         * @param context context
+         */
         void onDistribution(AggregationDistributionContext<E> context);
     }
 
     /**
+     * Object that contains information about aggregation distribution.
      *
+     * @param <E> entity type
      */
     class AggregationDistributionContext<E> {
         protected Column column;
