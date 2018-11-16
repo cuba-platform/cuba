@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
@@ -339,7 +340,18 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         removeButton = componentsFactory.createComponent(Button.class);
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
-        RemoveAction removeAction = new RemoveAction(entitiesTable);
+        RemoveAction removeAction = new RemoveAction(entitiesTable) {
+            @Override
+            protected boolean isPermitted() {
+                if (getTarget().getSingleSelected() instanceof SoftDelete) {
+                    for (Object e : getTarget().getSelected()) {
+                        if (((SoftDelete) e).isDeleted())
+                            return false;
+                    }
+                }
+                return super.isPermitted();
+            }
+        };
         removeAction.setAfterRemoveHandler(removedItems -> entitiesDs.refresh());
         table.addAction(removeAction);
         removeButton.setAction(removeAction);
