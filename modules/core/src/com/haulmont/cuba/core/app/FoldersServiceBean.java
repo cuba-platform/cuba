@@ -51,6 +51,7 @@ import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
@@ -334,6 +335,8 @@ public class FoldersServiceBean implements FoldersService {
 
     protected XStream createXStream() {
         XStream xStream = new CubaXStream();
+        XStream.setupDefaultSecurity(xStream);
+        xStream.allowTypeHierarchy(Serializable.class);
         //createTs and createdBy removed from BaseGenericIdEntity,
         //and import from old versions (platform 6.2) is performed with errors
         //so omit field processing

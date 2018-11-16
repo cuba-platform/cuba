@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -250,6 +251,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                 };
             }
         };
+        XStream.setupDefaultSecurity(xStream);
+        xStream.allowTypeHierarchy(Serializable.class);
         xStream.omitField(BaseGenericIdEntity.class, "createTs");
         xStream.omitField(BaseGenericIdEntity.class, "createdBy");
 
