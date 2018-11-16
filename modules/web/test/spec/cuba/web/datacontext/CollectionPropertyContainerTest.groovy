@@ -42,7 +42,7 @@ class CollectionPropertyContainerTest extends WebSpec {
         this.order.orderLines.addAll([this.orderLine1, this.orderLine2])
     }
 
-    def "property reflects changes"() {
+    def "property reflects changes when using getMutableItems"() {
 
         orderCt.setItem(order)
         linesCt.setItems(order.orderLines)
@@ -57,7 +57,7 @@ class CollectionPropertyContainerTest extends WebSpec {
         !order.orderLines.contains(orderLine2)
     }
 
-    def "property does not reflect changes"() {
+    def "property does not reflect changes when using getDisconnectedItems"() {
 
         orderCt.setItem(order)
         linesCt.setItems(order.orderLines)
@@ -70,4 +70,25 @@ class CollectionPropertyContainerTest extends WebSpec {
 
         order.orderLines.containsAll([orderLine1, orderLine2])
     }
+
+    def "property reflects changes if new collection is set using setItems"() {
+
+        orderCt.setItem(order)
+        linesCt.setItems(order.orderLines)
+
+        def orderLine3 = new OrderLine(order: this.order, quantity: 3)
+        def orderLine4 = new OrderLine(order: this.order, quantity: 4)
+        def otherLines = [orderLine3, orderLine4]
+
+        when:
+
+        linesCt.setItems(otherLines)
+
+        then:
+
+        !order.orderLines.contains(orderLine1)
+        !order.orderLines.contains(orderLine2)
+        order.orderLines.containsAll(orderLine3, orderLine4)
+    }
+
 }

@@ -71,8 +71,10 @@ public class KeyValueCollectionContainerImpl
 
     @Override
     public void setItems(@Nullable Collection<KeyValueEntity> entities) {
-        for (KeyValueEntity entity : entities) {
-            entity.setMetaClass(entityMetaClass);
+        if (entities != null) {
+            for (KeyValueEntity entity : entities) {
+                entity.setMetaClass(entityMetaClass);
+            }
         }
         super.setItems(entities);
     }

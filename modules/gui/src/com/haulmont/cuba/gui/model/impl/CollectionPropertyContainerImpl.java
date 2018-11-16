@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.CollectionPropertyContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -64,23 +65,53 @@ public class CollectionPropertyContainerImpl<E extends Entity>
         });
     }
 
+    @Override
+    public void setItems(@Nullable Collection<E> entities) {
+        super.setItems(entities);
+        Entity parentItem = parent.getItemOrNull();
+        if (parentItem != null) {
+            MetaProperty parentProperty = getParentProperty();
+            Collection parentCollection = parentItem.getValue(parentProperty.getName());
+            if (parentCollection != entities) {
+                updateParentCollection(parentProperty, parentCollection, entities);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     protected void updateParent() {
-        MetaClass parentMetaClass = parent.getEntityMetaClass();
-        MetaProperty metaProperty = parentMetaClass.getPropertyNN(property);
+        MetaProperty parentProperty = getParentProperty();
+        Collection parentCollection = parent.getItem().getValue(parentProperty.getName());
+        updateParentCollection(parentProperty, parentCollection, this.collection);
+    }
 
-        if (metaProperty.getRange().getCardinality().isMany()) {
-            Collection collection = parent.getItem().getValue(metaProperty.getName());
-            if (collection == null) {
+    protected MetaProperty getParentProperty() {
+        MetaClass parentMetaClass = parent.getEntityMetaClass();
+        MetaProperty parentProperty = parentMetaClass.getPropertyNN(property);
+        if (!parentProperty.getRange().getCardinality().isMany()) {
+            throw new IllegalStateException(String.format("Property '%s' is not a collection", property));
+        }
+        return parentProperty;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateParentCollection(MetaProperty metaProperty,
+                                        @Nullable Collection parentCollection,
+                                        @Nullable Collection<E> newCollection) {
+        if (newCollection == null) {
+            parent.getItem().setValue(metaProperty.getName(), null);
+        } else {
+            if (parentCollection == null) {
                 if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
-                    collection = new ArrayList(this.collection);
+                    parentCollection = new ArrayList(newCollection);
                 } else {
-                    collection = new LinkedHashSet(this.collection);
+                    parentCollection = new LinkedHashSet(newCollection);
                 }
-                parent.getItem().setValue(metaProperty.getName(), collection);
+                parent.getItem().setValue(metaProperty.getName(), parentCollection);
+            } else {
+                parentCollection.clear();
+                parentCollection.addAll(newCollection);
             }
-            collection.clear();
-            collection.addAll(this.collection);
         }
     }
 }
